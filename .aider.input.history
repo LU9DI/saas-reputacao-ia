@@ -1,0 +1,33 @@
+
+# 2026-08-26 15:52:36.963183
++y
+
+# 2026-08-26 15:52:54.579048
++yes
+
+# 2026-08-26 15:58:17.179349
++act as an autonomous AGI engineer. Scan this directory. i have a capitalization casing error in 'frontend/src/app/contexts/LanguageContext.tsx' vs 'Contexts'. Fix all imports and the folder name autonomously so the Next.js project builds. Then, update 'backend/server.ts' to handle the POST route '/api/reviews' and print incoming payloads. Do not ask me for confirmation, execute the file changes directly.
+
+# 2026-08-26 16:41:02.505837
++Act as an autonomous AGI engineer. Scan this directory. Fix the capitalization casing error in 'frontend/src/app/contexts/LanguageContext.tsx' vs 'Contexts' across all imports so the Next.js project builds smoothly. Then, open 'backend/server.ts' and add a clean POST route at '/api/reviews' to accept and console.log incoming feedback payloads. Execute all file changes directly without asking for confirmation.
+
+# 2026-08-26 17:14:04.169435
++Act as an autonomous AGI engineer. Scan this directory. Fix the capitalization casing error in 'frontend/src/app/contexts/LanguageContext.tsx' vs 'Contexts' across all imports so the Next.js project builds smoothly. Then, open 'backend/server.ts' and add a clean POST route at '/api/reviews' to accept and console.log incoming feedback payloads. Execute all file changes directly without asking for confirmation
+
+# 2026-08-26 19:01:43.599782
++y
+
+# 2026-08-26 19:01:53.911697
++yes
+
+# 2026-08-26 19:04:37.687652
++Act as an autonomous AGI engineer. Scan this directory. Fix the capitalization casing error in 'frontend/src/app/contexts/LanguageContext.tsx' vs 'Contexts' across all imports so the Next.js project builds smoothly. Then, open 'backend/server.ts' and add a clean POST route at '/api/reviews' to accept and console.log incoming feedback payloads. Execute all file changes directly without asking for confirmation.
+
+# 2026-08-26 19:13:54.545975
++]
+
+# 2026-08-26 19:33:17.944822
++corrija os erros do programa
+
+# 2026-08-26 19:42:29.161218
++[
