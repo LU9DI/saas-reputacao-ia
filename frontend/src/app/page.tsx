@@ -1,7 +1,19 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building2, FileText, CheckCircle2, AlertCircle, Globe, ExternalLink, Copy, Link2 } from 'lucide-react';
+import {
+  Building2,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Globe,
+  ExternalLink,
+  Copy,
+  Link2,
+  Download,
+  LayoutDashboard,
+} from 'lucide-react';
+import QRCode from 'qrcode';
 
 const traducoes = {
   pt: {
@@ -20,8 +32,11 @@ const traducoes = {
     copiarLink: 'Copiar Link Oficial',
     linkCopiado: 'Link copiado para a área de transferência!',
     abrirLink: 'Abrir Página de Avaliação',
+    baixarQr: 'Baixar QR Code',
+    abrirPainel: 'Abrir Meu Painel',
     avisoExpiracao: 'Seu acesso expira automaticamente em 7 dias se não houver assinatura.',
     cnpjInvalido: 'CNPJ inválido. Verifique os dígitos.',
+    qrHint: 'Imprima e cole no balcão, cardápio ou embalagem.',
   },
   en: {
     titulo: 'Activate Your 7-Day Free Trial',
@@ -39,8 +54,11 @@ const traducoes = {
     copiarLink: 'Copy Official Link',
     linkCopiado: 'Link copied to clipboard!',
     abrirLink: 'Open Review Page',
+    baixarQr: 'Download QR Code',
+    abrirPainel: 'Open My Dashboard',
     avisoExpiracao: 'Your access automatically expires in 7 days without a subscription.',
     cnpjInvalido: 'Invalid Tax ID. Please check the information.',
+    qrHint: 'Print and place on the counter, menu or packaging.',
   },
   es: {
     titulo: 'Activa tus 7 Días Gratis',
@@ -58,8 +76,11 @@ const traducoes = {
     copiarLink: 'Copiar Enlace Oficial',
     linkCopiado: '¡Enlace copiado al portapapeles!',
     abrirLink: 'Abrir Página de Opiniones',
+    baixarQr: 'Descargar Código QR',
+    abrirPainel: 'Abrir Mi Panel',
     avisoExpiracao: 'Tu acceso expira automáticamente en 7 días sin una suscripción.',
     cnpjInvalido: 'Identificación fiscal inválida. Verifique los dígitos.',
+    qrHint: 'Imprime y coloca en el mostrador, menú o empaque.',
   },
 };
 
@@ -89,8 +110,13 @@ export default function Home() {
   const [googleUrl, setGoogleUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
-  const [sucessoData, setSucessoData] = useState<{ link_acesso: string } | null>(null);
+  const [sucessoData, setSucessoData] = useState<{
+    link_acesso: string;
+    link_painel?: string;
+    empresa_id?: string;
+  } | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -101,6 +127,20 @@ export default function Home() {
       else setIdioma('pt');
     }
   }, []);
+
+  useEffect(() => {
+    if (!sucessoData?.link_acesso) {
+      setQrDataUrl(null);
+      return;
+    }
+    QRCode.toDataURL(sucessoData.link_acesso, {
+      width: 280,
+      margin: 2,
+      color: { dark: '#0f172a', light: '#ffffff' },
+    })
+      .then(setQrDataUrl)
+      .catch(() => setQrDataUrl(null));
+  }, [sucessoData]);
 
   const t = traducoes[idioma];
 
@@ -131,7 +171,6 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validarCnpjInput(cnpj)) {
       setErro(t.cnpjInvalido);
       return;
@@ -160,10 +199,8 @@ export default function Home() {
       });
 
       clearTimeout(timeout);
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Erro ao processar ativação.');
-
       setSucessoData(data);
     } catch (err: any) {
       if (err.name === 'AbortError') {
@@ -197,6 +234,14 @@ export default function Home() {
       setCopiado(true);
       setTimeout(() => setCopiado(false), 3000);
     }
+  };
+
+  const baixarQr = () => {
+    if (!qrDataUrl) return;
+    const a = document.createElement('a');
+    a.href = qrDataUrl;
+    a.download = `qr-avaliacao-${nomeEmpresa.replace(/\s+/g, '-').toLowerCase() || 'empresa'}.png`;
+    a.click();
   };
 
   return (
@@ -302,6 +347,13 @@ export default function Home() {
             </div>
             <p className="text-sm font-medium text-slate-900">{t.sucesso}</p>
 
+            {qrDataUrl && (
+              <div className="flex flex-col items-center gap-2 py-2">
+                <img src={qrDataUrl} alt="QR Code de avaliação" className="w-48 h-48 rounded-xl border border-slate-200" />
+                <p className="text-xs text-slate-400">{t.qrHint}</p>
+              </div>
+            )}
+
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 break-all select-all font-mono text-left">
               {sucessoData.link_acesso}
             </div>
@@ -316,6 +368,16 @@ export default function Home() {
                 {t.copiarLink}
               </button>
 
+              {qrDataUrl && (
+                <button
+                  onClick={baixarQr}
+                  className="w-full bg-white hover:bg-slate-50 text-slate-800 font-medium py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 cursor-pointer border border-slate-200"
+                >
+                  <Download size={16} aria-hidden="true" />
+                  {t.baixarQr}
+                </button>
+              )}
+
               <a
                 href={sucessoData.link_acesso}
                 target="_blank"
@@ -325,6 +387,16 @@ export default function Home() {
                 <ExternalLink size={16} aria-hidden="true" />
                 {t.abrirLink}
               </a>
+
+              {sucessoData.link_painel && (
+                <a
+                  href={sucessoData.link_painel}
+                  className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                >
+                  <LayoutDashboard size={16} aria-hidden="true" />
+                  {t.abrirPainel}
+                </a>
+              )}
             </div>
 
             {copiado && (
