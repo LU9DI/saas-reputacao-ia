@@ -41,32 +41,31 @@ async function callGroq(
   return data.choices[0].message.content.trim();
 }
 
-export async function generateResponse(prompt: string): Promise<string> {
-  return callGroq(
-    'Você é o gerente de um estabelecimento comercial. Responda de forma empática, profissional e breve (máximo 3 frases) a avaliações negativas de clientes. Peça desculpas quando apropriado e indique que a equipe vai analisar o caso. Não invente políticas ou promessas específicas.',
-    prompt
-  );
-}
-
 export async function gerarRespostaReview(
   nomeCliente: string,
   rating: number,
   comment: string,
-  nomeEmpresa?: string
+  nomeEmpresa?: string,
+  exemplosEstilo?: string
 ): Promise<string> {
   const local = nomeEmpresa ? ` do estabelecimento "${nomeEmpresa}"` : '';
+
+  let system =
+    'Você responde avaliações negativas de clientes de forma empática, profissional e breve (máximo 3 frases). Peça desculpas quando apropriado e indique que a equipe vai analisar. Não invente políticas ou promessas específicas.';
+
+  if (exemplosEstilo && exemplosEstilo.trim().length > 20) {
+    system += `\n\nImite o estilo de escrita do dono do negócio com base nestes exemplos de respostas anteriores dele:\n---\n${exemplosEstilo.slice(0, 1500)}\n---\nMantenha o mesmo tom, vocabulário e formalidade.`;
+  }
+
   const prompt = `Cliente: ${nomeCliente || 'Anônimo'}
 Nota: ${rating}/5
 Comentário: ${comment}
 
-Escreva uma resposta curta e profissional para esta avaliação negativa${local}.`;
-  return generateResponse(prompt);
+Escreva uma resposta curta para esta avaliação negativa${local}.`;
+
+  return callGroq(system, prompt);
 }
 
-/**
- * Gera tags semânticas (hashtags) com base no sentimento e conteúdo do comentário.
- * Retorna array de strings no formato #CamelCase (máx. 5).
- */
 export async function gerarTagsSemanticas(
   rating: number,
   comment: string
@@ -84,7 +83,6 @@ Não explique. Não use markdown. Apenas o array JSON.`;
 
   const user = `Nota: ${rating}/5
 Comentário: ${comment}`;
-
   const raw = await callGroq(system, user, 120, 0.3);
 
   try {
@@ -96,7 +94,6 @@ Comentário: ${comment}`;
       .filter((t: string) => t.startsWith('#') && t.length > 2 && t.length < 40)
       .slice(0, 5);
   } catch {
-    // Fallback: extrai hashtags do texto
     const matches = raw.match(/#[\wÀ-ú]+/g);
     return matches ? matches.slice(0, 5) : [];
   }

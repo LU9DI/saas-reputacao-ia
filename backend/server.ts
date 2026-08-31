@@ -13,13 +13,17 @@ import 'dotenv/config';
 import { gerarRespostaReview, gerarTagsSemanticas } from './groqService.js';
 
 const app = express();
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '20kb' }));
 app.use(cookieParser());
 
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000'].filter(Boolean) as string[];
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, cb) => {
+      // Widget pode ser embutido em qualquer site; rotas públicas toleram origem livre
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(null, true);
+    },
     credentials: true,
   })
 );
@@ -59,13 +63,17 @@ async function initDB() {
       status TEXT DEFAULT 'trial',
       criado_em DATETIME NOT NULL,
       expira_em DATETIME NOT NULL,
-      google_review_url TEXT
+      google_review_url TEXT,
+      voice_style TEXT
     );
   `);
 
   const colunasEmpresas = await db.all(`PRAGMA table_info(empresas)`);
   if (!colunasEmpresas.some((col: any) => col.name === 'google_review_url')) {
     await db.exec(`ALTER TABLE empresas ADD COLUMN google_review_url TEXT`);
+  }
+  if (!colunasEmpresas.some((col: any) => col.name === 'voice_style')) {
+    await db.exec(`ALTER TABLE empresas ADD COLUMN voice_style TEXT`);
   }
 
   await db.exec(`
@@ -144,6 +152,15 @@ function validarReview(body: any): { name: string; rating: number; comment: stri
     return { error: 'Comentário é obrigatório para avaliações negativas.' };
   }
   return { name, rating, comment, empresa_id };
+}
+
+function safeParseTags(raw: string): string[] {
+  try {
+    const p = JSON.parse(raw);
+    return Array.isArray(p) ? p : [];
+  } catch {
+    return [];
+  }
 }
 
 interface AuthRequest extends Request {
@@ -228,6 +245,7 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
       empresa_id: id,
       link_acesso: `${appUrl}/avaliacao/${id}`,
       link_painel: `${appUrl}/painel/${id}`,
+      link_widget: `${appUrl}/widget/${id}`,
       expira_em: expiraEm.toISOString(),
     });
   } catch (error) {
@@ -274,12 +292,37 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
   }
 });
 
-// ---- Painel do empresário (acesso via ID do trial — MVP) ----
+// ---- Widget público (só reviews positivas com comentário) ----
+app.get('/api/empresa/:id/widget', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const limit = Math.min(Number(req.query.limit) || 6, 20);
+  try {
+    const empresa = await db.get('SELECT id, nome_empresa, status FROM empresas WHERE id = ?', [id]);
+    if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+
+    const reviews = await db.all(
+      `SELECT name, rating, comment, createdAt FROM reviews
+       WHERE empresa_id = ? AND rating >= 4 AND comment IS NOT NULL AND TRIM(comment) != ''
+       ORDER BY createdAt DESC LIMIT ?`,
+      [id, limit]
+    );
+
+    res.json({
+      empresa: { id: empresa.id, nome: empresa.nome_empresa },
+      reviews,
+    });
+  } catch (error) {
+    console.error('Erro no widget:', error);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
+  }
+});
+
+// ---- Painel do empresário ----
 app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const empresa = await db.get(
-      'SELECT id, nome_empresa, status, cnpj, google_review_url, criado_em, expira_em FROM empresas WHERE id = ?',
+      'SELECT id, nome_empresa, status, cnpj, google_review_url, criado_em, expira_em, voice_style FROM empresas WHERE id = ?',
       [id]
     );
     if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
@@ -294,21 +337,16 @@ app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
       ai_tags: r.ai_tags ? safeParseTags(r.ai_tags) : [],
     }));
 
-    // Métricas
     const total = parsed.length;
-    const media =
-      total > 0 ? parsed.reduce((s: number, r: any) => s + r.rating, 0) / total : 0;
+    const media = total > 0 ? parsed.reduce((s: number, r: any) => s + r.rating, 0) / total : 0;
     const negativas = parsed.filter((r: any) => r.rating <= 3).length;
     const positivas = parsed.filter((r: any) => r.rating >= 4).length;
 
-    // Alerta de crise: ≥3 reviews ≤2 estrelas nas últimas 24h
     const ha24h = Date.now() - 24 * 60 * 60 * 1000;
     const crisesRecentes = parsed.filter(
       (r: any) => r.rating <= 2 && new Date(r.createdAt).getTime() >= ha24h
     ).length;
-    const alertaCrise = crisesRecentes >= 3;
 
-    // Contagem de tags
     const tagCount: Record<string, number> = {};
     for (const r of parsed) {
       for (const tag of r.ai_tags as string[]) {
@@ -320,18 +358,29 @@ app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
       .slice(0, 10)
       .map(([tag, count]) => ({ tag, count }));
 
+    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+
     res.json({
-      empresa,
+      empresa: {
+        ...empresa,
+        voice_style: empresa.voice_style || '',
+      },
       reviews: parsed,
       metricas: {
         total,
         media: Math.round(media * 10) / 10,
         negativas,
         positivas,
-        alerta_crise: alertaCrise,
+        alerta_crise: crisesRecentes >= 3,
         crises_24h: crisesRecentes,
       },
       top_tags: topTags,
+      links: {
+        avaliacao: `${appUrl}/avaliacao/${id}`,
+        painel: `${appUrl}/painel/${id}`,
+        widget: `${appUrl}/widget/${id}`,
+        embed: `<iframe src="${appUrl}/widget/${id}" width="100%" height="420" frameborder="0" style="border:0;border-radius:12px;"></iframe>`,
+      },
     });
   } catch (error) {
     console.error('Erro no painel:', error);
@@ -339,14 +388,20 @@ app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
   }
 });
 
-function safeParseTags(raw: string): string[] {
+// Salvar voz do dono (exemplos de estilo)
+app.put('/api/empresa/:id/voice-style', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const voiceStyle = String(req.body.voice_style ?? '').trim().slice(0, 3000);
   try {
-    const p = JSON.parse(raw);
-    return Array.isArray(p) ? p : [];
-  } catch {
-    return [];
+    const empresa = await db.get('SELECT id FROM empresas WHERE id = ?', [id]);
+    if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+    await db.run('UPDATE empresas SET voice_style = ? WHERE id = ?', [voiceStyle || null, id]);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Erro ao salvar voice_style:', error);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
   }
-}
+});
 
 // ---- Reviews ----
 app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => {
@@ -361,22 +416,24 @@ app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => 
 
     if (process.env.GROQ_API_KEY) {
       let nomeEmpresa: string | undefined;
+      let voiceStyle: string | undefined;
       if (empresa_id) {
-        const empresa = await db.get('SELECT nome_empresa FROM empresas WHERE id = ?', [empresa_id]);
+        const empresa = await db.get('SELECT nome_empresa, voice_style FROM empresas WHERE id = ?', [
+          empresa_id,
+        ]);
         nomeEmpresa = empresa?.nome_empresa;
+        voiceStyle = empresa?.voice_style || undefined;
       }
 
-      // Tags (qualquer rating com comentário, ou fallback por nota)
       try {
         aiTags = await gerarTagsSemanticas(rating, comment || '');
       } catch (e) {
         console.error('Falha ao gerar tags:', e);
       }
 
-      // Resposta IA só para negativas
       if (rating <= 3 && comment) {
         try {
-          aiReply = await gerarRespostaReview(name, rating, comment, nomeEmpresa);
+          aiReply = await gerarRespostaReview(name, rating, comment, nomeEmpresa, voiceStyle);
         } catch (e) {
           console.error('Falha ao gerar resposta IA:', e);
         }
@@ -396,7 +453,7 @@ app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => 
   }
 });
 
-// ---- Admin auth ----
+// ---- Admin ----
 app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
@@ -405,7 +462,6 @@ app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) =
     if (!usuario) return res.status(401).json({ error: 'Credenciais inválidas.' });
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
     if (!senhaCorreta) return res.status(401).json({ error: 'Credenciais inválidas.' });
-
     const token = jwt.sign({ id: usuario.id, email: usuario.email }, JWT_SECRET, { expiresIn: '1d' });
     setAuthCookie(res, token);
     res.json({ success: true, user: { id: usuario.id, email: usuario.email } });
