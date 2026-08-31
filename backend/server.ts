@@ -9,13 +9,14 @@ import rateLimit from 'express-rate-limit';
 import type { Request, Response, NextFunction } from 'express';
 import type { Database } from 'sqlite';
 import 'dotenv/config';
+import { gerarRespostaReview } from './groqService.js';
 
 const app = express();
 app.use(express.json({ limit: '10kb' }));
 
 // CORS restrito
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000'].filter(Boolean) as string[];
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 let db: Database;
 
@@ -25,7 +26,6 @@ let db: Database;
 async function initDB() {
   db = await open({ filename: './database.sqlite', driver: sqlite3.Database });
 
-  // Tabela de empresas (trial) com coluna de link do Google
   await db.exec(`
     CREATE TABLE IF NOT EXISTS empresas (
       id TEXT PRIMARY KEY,
@@ -38,14 +38,12 @@ async function initDB() {
     );
   `);
 
-  // Migração para bancos antigos
-  const colunas = await db.all(`PRAGMA table_info(empresas)`);
-  const temColunaGoogle = colunas.some((col: any) => col.name === 'google_review_url');
-  if (!temColunaGoogle) {
+  // Migração: google_review_url
+  const colunasEmpresas = await db.all(`PRAGMA table_info(empresas)`);
+  if (!colunasEmpresas.some((col: any) => col.name === 'google_review_url')) {
     await db.exec(`ALTER TABLE empresas ADD COLUMN google_review_url TEXT`);
   }
 
-  // Tabela de usuários admin
   await db.exec(`
     CREATE TABLE IF NOT EXISTS usuarios (
       id TEXT PRIMARY KEY,
@@ -54,7 +52,6 @@ async function initDB() {
     );
   `);
 
-  // Tabela de reviews (avaliações dos clientes)
   await db.exec(`
     CREATE TABLE IF NOT EXISTS reviews (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,16 +59,26 @@ async function initDB() {
       name TEXT,
       rating INTEGER,
       comment TEXT,
+      ai_reply TEXT,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
-  // Criação do admin padrão (apenas se não existir)
+  // Migração: ai_reply
+  const colunasReviews = await db.all(`PRAGMA table_info(reviews)`);
+  if (!colunasReviews.some((col: any) => col.name === 'ai_reply')) {
+    await db.exec(`ALTER TABLE reviews ADD COLUMN ai_reply TEXT`);
+  }
+
   const adminExiste = await db.get('SELECT * FROM usuarios WHERE email = ?', ['admin@seusaas.com']);
   if (!adminExiste) {
     const senhaPadrao = process.env.ADMIN_PASSWORD || 'MudeEstaSenha123!';
     const hash = await bcrypt.hash(senhaPadrao, 10);
-    await db.run('INSERT INTO usuarios (id, email, senha_hash) VALUES (?, ?, ?)', [crypto.randomUUID(), 'admin@seusaas.com', hash]);
+    await db.run('INSERT INTO usuarios (id, email, senha_hash) VALUES (?, ?, ?)', [
+      crypto.randomUUID(),
+      'admin@seusaas.com',
+      hash,
+    ]);
     console.log('🔑 Admin padrão criado. Altere a senha após o primeiro login.');
   }
 }
@@ -102,7 +109,6 @@ function cnpjValido(cnpj: string): boolean {
   return parseInt(cnpj[12]) === digito1 && parseInt(cnpj[13]) === digito2;
 }
 
-// Validação de review centralizada
 function validarReview(body: any): { name: string; rating: number; comment: string; empresa_id?: string } | { error: string } {
   const name = String(body.name ?? '').trim().slice(0, 100);
   const comment = String(body.comment ?? '').trim().slice(0, 500);
@@ -127,7 +133,7 @@ interface AuthRequest extends Request {
 
 const JWT_SECRET = process.env.JWT_SECRET || 'segredo-dev';
 if (!process.env.JWT_SECRET) {
-  console.warn('⚠️ JWT_SECRET não definido! Usando segredo temporário.');
+  console.warn('⚠️ JWT_SECRET não definido! Usando segredo temporário. Defina JWT_SECRET no .env em produção.');
 }
 
 function autenticarToken(req: AuthRequest, res: Response, next: NextFunction) {
@@ -148,19 +154,19 @@ function autenticarToken(req: AuthRequest, res: Response, next: NextFunction) {
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
-  message: { error: 'Muitas tentativas de login. Tente novamente mais tarde.' }
+  message: { error: 'Muitas tentativas de login. Tente novamente mais tarde.' },
 });
 
 const trialLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  message: { error: 'Limite de ativações excedido. Tente novamente mais tarde.' }
+  message: { error: 'Limite de ativações excedido. Tente novamente mais tarde.' },
 });
 
 const reviewsLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 30,
-  message: { error: 'Muitas avaliações enviadas. Tente novamente mais tarde.' }
+  message: { error: 'Muitas avaliações enviadas. Tente novamente mais tarde.' },
 });
 
 // ============================================================
@@ -183,7 +189,7 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
       await db.run(
         `INSERT INTO empresas (id, cnpj, nome_empresa, google_review_url, criado_em, expira_em)
          VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, cnpj, nome, googleReviewUrl, criadoEm.toISOString(), expiraEm.toISOString()]
+        [id, cnpj, nome, googleReviewUrl || null, criadoEm.toISOString(), expiraEm.toISOString()]
       );
     } catch (e: any) {
       if (e.code === 'SQLITE_CONSTRAINT') {
@@ -196,7 +202,7 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
     res.status(201).json({
       success: true,
       link_acesso: `${appUrl}/avaliacao/${id}`,
-      expira_em: expiraEm.toISOString()
+      expira_em: expiraEm.toISOString(),
     });
   } catch (error) {
     console.error('Erro ao ativar trial:', error);
@@ -221,7 +227,7 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
         valido: false,
         motivo: 'expired',
         nome: empresa.nome_empresa,
-        google_review_url: empresa.google_review_url || null
+        google_review_url: empresa.google_review_url || null,
       });
     }
 
@@ -229,7 +235,7 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
       return res.json({
         valido: true,
         nome: empresa.nome_empresa,
-        google_review_url: empresa.google_review_url || null
+        google_review_url: empresa.google_review_url || null,
       });
     }
 
@@ -237,7 +243,7 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
       valido: false,
       motivo: 'inactive',
       nome: empresa.nome_empresa,
-      google_review_url: empresa.google_review_url || null
+      google_review_url: empresa.google_review_url || null,
     });
   } catch (error) {
     console.error('Erro ao validar acesso:', error);
@@ -246,20 +252,38 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
 });
 
 // ============================================================
-// 7. ROTA DE REVIEWS (com validação e rate limit)
+// 7. ROTA DE REVIEWS (com validação, rate limit e IA)
 // ============================================================
 app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => {
   const resultado = validarReview(req.body);
   if ('error' in resultado) return res.status(400).json({ error: resultado.error });
 
   const { name, rating, comment, empresa_id } = resultado;
+
   try {
+    let aiReply: string | null = null;
+
+    // Gera resposta automática apenas para avaliações negativas (se a chave estiver configurada)
+    if (rating <= 3 && comment && process.env.GROQ_API_KEY) {
+      try {
+        let nomeEmpresa: string | undefined;
+        if (empresa_id) {
+          const empresa = await db.get('SELECT nome_empresa FROM empresas WHERE id = ?', [empresa_id]);
+          nomeEmpresa = empresa?.nome_empresa;
+        }
+        aiReply = await gerarRespostaReview(name, rating, comment, nomeEmpresa);
+      } catch (aiError) {
+        console.error('Falha ao gerar resposta IA (review salva mesmo assim):', aiError);
+      }
+    }
+
     await db.run(
-      'INSERT INTO reviews (empresa_id, name, rating, comment) VALUES (?, ?, ?, ?)',
-      [empresa_id || null, name, rating, comment]
+      'INSERT INTO reviews (empresa_id, name, rating, comment, ai_reply) VALUES (?, ?, ?, ?, ?)',
+      [empresa_id || null, name, rating, comment, aiReply]
     );
-    console.log('📥 Review salvo no banco:', { name, rating, comment, empresa_id });
-    res.status(201).json({ success: true });
+
+    console.log('📥 Review salvo:', { name, rating, empresa_id, temAiReply: !!aiReply });
+    res.status(201).json({ success: true, ai_reply: aiReply });
   } catch (error) {
     console.error('Erro ao salvar review:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
@@ -290,7 +314,9 @@ app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) =
 // ============================================================
 app.get('/api/admin/empresas', autenticarToken, async (req: AuthRequest, res: Response) => {
   try {
-    const empresas = await db.all('SELECT id, cnpj, nome_empresa, status, google_review_url, criado_em, expira_em FROM empresas');
+    const empresas = await db.all(
+      'SELECT id, cnpj, nome_empresa, status, google_review_url, criado_em, expira_em FROM empresas ORDER BY criado_em DESC'
+    );
     res.json(empresas);
   } catch (error) {
     console.error('Erro ao listar empresas:', error);
@@ -344,13 +370,3 @@ async function main() {
 }
 
 main();
-
-
-
-
-
-
-
-
-
-
