@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit';
 import type { Request, Response, NextFunction } from 'express';
 import type { Database } from 'sqlite';
 import 'dotenv/config';
-import { gerarRespostaReview } from './groqService.js';
+import { gerarRespostaReview, gerarTagsSemanticas } from './groqService.js';
 
 const app = express();
 app.use(express.json({ limit: '10kb' }));
@@ -34,7 +34,7 @@ function setAuthCookie(res: Response, token: string) {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
-    maxAge: 24 * 60 * 60 * 1000, // 1 dia
+    maxAge: 24 * 60 * 60 * 1000,
     path: '/',
   });
 }
@@ -48,9 +48,6 @@ function clearAuthCookie(res: Response) {
   });
 }
 
-// ============================================================
-// 1. INICIALIZAÇÃO DO BANCO
-// ============================================================
 async function initDB() {
   db = await open({ filename: './database.sqlite', driver: sqlite3.Database });
 
@@ -87,6 +84,7 @@ async function initDB() {
       rating INTEGER,
       comment TEXT,
       ai_reply TEXT,
+      ai_tags TEXT,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
@@ -94,6 +92,9 @@ async function initDB() {
   const colunasReviews = await db.all(`PRAGMA table_info(reviews)`);
   if (!colunasReviews.some((col: any) => col.name === 'ai_reply')) {
     await db.exec(`ALTER TABLE reviews ADD COLUMN ai_reply TEXT`);
+  }
+  if (!colunasReviews.some((col: any) => col.name === 'ai_tags')) {
+    await db.exec(`ALTER TABLE reviews ADD COLUMN ai_tags TEXT`);
   }
 
   const adminExiste = await db.get('SELECT * FROM usuarios WHERE email = ?', ['admin@seusaas.com']);
@@ -109,16 +110,12 @@ async function initDB() {
   }
 }
 
-// ============================================================
-// 2. FUNÇÕES AUXILIARES (CNPJ)
-// ============================================================
 function normalizarCnpj(cnpj: string): string {
   return cnpj.replace(/\D/g, '');
 }
 
 function cnpjValido(cnpj: string): boolean {
   if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
-
   const calcularDigito = (base: string, pesoInicial: number): number => {
     let soma = 0;
     let peso = pesoInicial;
@@ -129,7 +126,6 @@ function cnpjValido(cnpj: string): boolean {
     const resto = soma % 11;
     return resto < 2 ? 0 : 11 - resto;
   };
-
   const digito1 = calcularDigito(cnpj.slice(0, 12), 5);
   const digito2 = calcularDigito(cnpj.slice(0, 12) + digito1, 6);
   return parseInt(cnpj[12]) === digito1 && parseInt(cnpj[13]) === digito2;
@@ -150,26 +146,20 @@ function validarReview(body: any): { name: string; rating: number; comment: stri
   return { name, rating, comment, empresa_id };
 }
 
-// ============================================================
-// 3. MIDDLEWARE DE AUTENTICAÇÃO JWT (cookie httpOnly OU Bearer)
-// ============================================================
 interface AuthRequest extends Request {
   user?: { id: string; email: string };
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || 'segredo-dev';
 if (!process.env.JWT_SECRET) {
-  console.warn('⚠️ JWT_SECRET não definido! Usando segredo temporário. Defina JWT_SECRET no .env em produção.');
+  console.warn('⚠️ JWT_SECRET não definido! Usando segredo temporário.');
 }
 
 function extrairToken(req: Request): string | null {
   const fromCookie = req.cookies?.[COOKIE_NAME];
   if (fromCookie) return fromCookie;
-
   const authHeader = req.headers['authorization'];
-  if (authHeader?.startsWith('Bearer ')) {
-    return authHeader.slice(7);
-  }
+  if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
   return null;
 }
 
@@ -177,17 +167,13 @@ function autenticarToken(req: AuthRequest, res: Response, next: NextFunction) {
   const token = extrairToken(req);
   if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
-    req.user = decoded;
+    req.user = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
     next();
   } catch {
     return res.status(401).json({ error: 'Token inválido ou expirado.' });
   }
 }
 
-// ============================================================
-// 4. RATE LIMITERS
-// ============================================================
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -206,9 +192,7 @@ const reviewsLimiter = rateLimit({
   message: { error: 'Muitas avaliações enviadas. Tente novamente mais tarde.' },
 });
 
-// ============================================================
-// 5. ROTA DE ATIVAÇÃO DE TRIAL
-// ============================================================
+// ---- Trial ----
 app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) => {
   try {
     const cnpj = normalizarCnpj(req.body.cnpj ?? '');
@@ -217,8 +201,6 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
 
     if (!cnpjValido(cnpj)) return res.status(400).json({ error: 'CNPJ inválido.' });
     if (nome.length < 2 || nome.length > 120) return res.status(400).json({ error: 'Nome da empresa inválido.' });
-
-    // Valida URL do Google se fornecida
     if (googleReviewUrl && !/^https?:\/\//i.test(googleReviewUrl)) {
       return res.status(400).json({ error: 'URL do Google Reviews inválida. Use um link completo (https://...).' });
     }
@@ -243,7 +225,9 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
     const appUrl = process.env.APP_URL || 'http://localhost:3000';
     res.status(201).json({
       success: true,
+      empresa_id: id,
       link_acesso: `${appUrl}/avaliacao/${id}`,
+      link_painel: `${appUrl}/painel/${id}`,
       expira_em: expiraEm.toISOString(),
     });
   } catch (error) {
@@ -252,9 +236,6 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
   }
 });
 
-// ============================================================
-// 6. ROTA DE VALIDAÇÃO DO TRIAL
-// ============================================================
 app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -293,9 +274,81 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
   }
 });
 
-// ============================================================
-// 7. ROTA DE REVIEWS (com validação, rate limit e IA)
-// ============================================================
+// ---- Painel do empresário (acesso via ID do trial — MVP) ----
+app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const empresa = await db.get(
+      'SELECT id, nome_empresa, status, cnpj, google_review_url, criado_em, expira_em FROM empresas WHERE id = ?',
+      [id]
+    );
+    if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+
+    const reviews = await db.all(
+      'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 200',
+      [id]
+    );
+
+    const parsed = reviews.map((r: any) => ({
+      ...r,
+      ai_tags: r.ai_tags ? safeParseTags(r.ai_tags) : [],
+    }));
+
+    // Métricas
+    const total = parsed.length;
+    const media =
+      total > 0 ? parsed.reduce((s: number, r: any) => s + r.rating, 0) / total : 0;
+    const negativas = parsed.filter((r: any) => r.rating <= 3).length;
+    const positivas = parsed.filter((r: any) => r.rating >= 4).length;
+
+    // Alerta de crise: ≥3 reviews ≤2 estrelas nas últimas 24h
+    const ha24h = Date.now() - 24 * 60 * 60 * 1000;
+    const crisesRecentes = parsed.filter(
+      (r: any) => r.rating <= 2 && new Date(r.createdAt).getTime() >= ha24h
+    ).length;
+    const alertaCrise = crisesRecentes >= 3;
+
+    // Contagem de tags
+    const tagCount: Record<string, number> = {};
+    for (const r of parsed) {
+      for (const tag of r.ai_tags as string[]) {
+        tagCount[tag] = (tagCount[tag] || 0) + 1;
+      }
+    }
+    const topTags = Object.entries(tagCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([tag, count]) => ({ tag, count }));
+
+    res.json({
+      empresa,
+      reviews: parsed,
+      metricas: {
+        total,
+        media: Math.round(media * 10) / 10,
+        negativas,
+        positivas,
+        alerta_crise: alertaCrise,
+        crises_24h: crisesRecentes,
+      },
+      top_tags: topTags,
+    });
+  } catch (error) {
+    console.error('Erro no painel:', error);
+    res.status(500).json({ error: 'Erro interno do servidor.' });
+  }
+});
+
+function safeParseTags(raw: string): string[] {
+  try {
+    const p = JSON.parse(raw);
+    return Array.isArray(p) ? p : [];
+  } catch {
+    return [];
+  }
+}
+
+// ---- Reviews ----
 app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => {
   const resultado = validarReview(req.body);
   if ('error' in resultado) return res.status(400).json({ error: resultado.error });
@@ -304,36 +357,46 @@ app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => 
 
   try {
     let aiReply: string | null = null;
+    let aiTags: string[] = [];
 
-    if (rating <= 3 && comment && process.env.GROQ_API_KEY) {
+    if (process.env.GROQ_API_KEY) {
+      let nomeEmpresa: string | undefined;
+      if (empresa_id) {
+        const empresa = await db.get('SELECT nome_empresa FROM empresas WHERE id = ?', [empresa_id]);
+        nomeEmpresa = empresa?.nome_empresa;
+      }
+
+      // Tags (qualquer rating com comentário, ou fallback por nota)
       try {
-        let nomeEmpresa: string | undefined;
-        if (empresa_id) {
-          const empresa = await db.get('SELECT nome_empresa FROM empresas WHERE id = ?', [empresa_id]);
-          nomeEmpresa = empresa?.nome_empresa;
+        aiTags = await gerarTagsSemanticas(rating, comment || '');
+      } catch (e) {
+        console.error('Falha ao gerar tags:', e);
+      }
+
+      // Resposta IA só para negativas
+      if (rating <= 3 && comment) {
+        try {
+          aiReply = await gerarRespostaReview(name, rating, comment, nomeEmpresa);
+        } catch (e) {
+          console.error('Falha ao gerar resposta IA:', e);
         }
-        aiReply = await gerarRespostaReview(name, rating, comment, nomeEmpresa);
-      } catch (aiError) {
-        console.error('Falha ao gerar resposta IA (review salva mesmo assim):', aiError);
       }
     }
 
     await db.run(
-      'INSERT INTO reviews (empresa_id, name, rating, comment, ai_reply) VALUES (?, ?, ?, ?, ?)',
-      [empresa_id || null, name, rating, comment, aiReply]
+      'INSERT INTO reviews (empresa_id, name, rating, comment, ai_reply, ai_tags) VALUES (?, ?, ?, ?, ?, ?)',
+      [empresa_id || null, name, rating, comment, aiReply, JSON.stringify(aiTags)]
     );
 
-    console.log('📥 Review salvo:', { name, rating, empresa_id, temAiReply: !!aiReply });
-    res.status(201).json({ success: true, ai_reply: aiReply });
+    console.log('📥 Review salvo:', { name, rating, empresa_id, tags: aiTags.length, temAiReply: !!aiReply });
+    res.status(201).json({ success: true, ai_reply: aiReply, ai_tags: aiTags });
   } catch (error) {
     console.error('Erro ao salvar review:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
 
-// ============================================================
-// 8. LOGIN / LOGOUT DE ADMIN
-// ============================================================
+// ---- Admin auth ----
 app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) => {
   const { email, senha } = req.body;
   if (!email || !senha) return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
@@ -345,11 +408,7 @@ app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) =
 
     const token = jwt.sign({ id: usuario.id, email: usuario.email }, JWT_SECRET, { expiresIn: '1d' });
     setAuthCookie(res, token);
-
-    res.json({
-      success: true,
-      user: { id: usuario.id, email: usuario.email },
-    });
+    res.json({ success: true, user: { id: usuario.id, email: usuario.email } });
   } catch (error) {
     console.error('Erro no login:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
@@ -365,9 +424,6 @@ app.get('/api/admin/me', autenticarToken, (req: AuthRequest, res: Response) => {
   res.json({ user: req.user });
 });
 
-// ============================================================
-// 9. ROTAS PROTEGIDAS
-// ============================================================
 app.get('/api/admin/empresas', autenticarToken, async (_req: AuthRequest, res: Response) => {
   try {
     const empresas = await db.all(
@@ -383,7 +439,12 @@ app.get('/api/admin/empresas', autenticarToken, async (_req: AuthRequest, res: R
 app.get('/api/admin/reviews', autenticarToken, async (_req: AuthRequest, res: Response) => {
   try {
     const reviews = await db.all('SELECT * FROM reviews ORDER BY createdAt DESC LIMIT 100');
-    res.json(reviews);
+    res.json(
+      reviews.map((r: any) => ({
+        ...r,
+        ai_tags: r.ai_tags ? safeParseTags(r.ai_tags) : [],
+      }))
+    );
   } catch (error) {
     console.error('Erro ao listar reviews:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
@@ -410,9 +471,6 @@ app.post('/api/admin/trocar-senha', autenticarToken, async (req: AuthRequest, re
   }
 });
 
-// ============================================================
-// 10. INICIALIZAÇÃO DO SERVIDOR
-// ============================================================
 const PORT = process.env.PORT || 5000;
 
 async function main() {
