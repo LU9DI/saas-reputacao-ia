@@ -15,10 +15,9 @@ export async function generateResponse(prompt: string): Promise<string> {
   if (!GROQ_API_KEY) {
     throw new Error('GROQ_API_KEY não configurada. Defina no arquivo .env');
   }
-  console.log('KEY:', JSON.stringify(GROQ_API_KEY)); // aqui, fora do if
 
   const body = {
-    model: 'llama-3.3-70b-versatile', 
+    model: 'llama-3.3-70b-versatile',
     messages: [
       {
         role: 'system',
@@ -29,11 +28,10 @@ export async function generateResponse(prompt: string): Promise<string> {
         content: prompt,
       },
     ],
-    max_tokens: 150,      // limite de tokens na resposta
-    temperature: 0.7,     // criatividade (0 = determinístico, 1 = criativo)
+    max_tokens: 150,
+    temperature: 0.7,
   };
 
-  // Faz a requisição POST usando fetch
   const response = await fetch(GROQ_API_URL, {
     method: 'POST',
     headers: {
@@ -43,15 +41,11 @@ export async function generateResponse(prompt: string): Promise<string> {
     body: JSON.stringify(body),
   });
 
-  // Se a resposta não for ok, lança erro com status e corpo
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`Groq API error ${response.status}: ${errorText}`);
   }
 
-  // Extrai o JSON da resposta
   const data = await response.json();
-
-  // Retorna o texto da primeira escolha
   return data.choices[0].message.content.trim();
 }

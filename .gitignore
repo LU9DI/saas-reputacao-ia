@@ -1,6 +1,22 @@
 node_modules/
 .env
+.env.*
 *.db
 *.sqlite
+*.sqlite3
 .next/
 dist/
+build/
+
+# Aider / AI tooling
+.aider*
+.aider.tags.cache.v4/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Prisma generated
+**/generated/prisma

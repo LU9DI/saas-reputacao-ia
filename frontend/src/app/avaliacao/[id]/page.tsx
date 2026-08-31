@@ -53,6 +53,7 @@ export default function PaginaAvaliacao() {
         name: name || 'Anônimo',
         rating: selectedRating,
         comment: '',
+        empresa_id: empresaId,
       });
 
       const blob = new Blob([payload], { type: 'application/json' });
@@ -86,6 +87,7 @@ export default function PaginaAvaliacao() {
           name: name || 'Anônimo',
           rating,
           comment,
+          empresa_id: empresaId,
         }),
       });
 
