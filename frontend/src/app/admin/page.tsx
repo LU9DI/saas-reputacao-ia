@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, Star, LogOut, RefreshCw, AlertCircle } from 'lucide-react';
+import { Building2, Star, LogOut, RefreshCw, AlertCircle, Bot } from 'lucide-react';
 
 interface Empresa {
   id: string;
@@ -20,6 +20,7 @@ interface Review {
   name: string;
   rating: number;
   comment: string;
+  ai_reply: string | null;
   createdAt: string;
 }
 
@@ -61,7 +62,7 @@ export default function AdminDashboard() {
 
       setEmpresas(dadosEmpresas);
       setReviews(dadosReviews);
-    } catch (err) {
+    } catch {
       setErro('Falha ao buscar informações. Verifique se o backend está online.');
     } finally {
       setLoading(false);
@@ -84,19 +85,27 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-slate-100 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Cabeçalho */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Painel Administrativo</h1>
             <p className="text-sm text-slate-500">Visão geral das empresas e avaliações</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors text-sm cursor-pointer"
-          >
-            <LogOut size={16} />
-            Sair
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => token && carregarDados(token)}
+              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors text-sm cursor-pointer"
+            >
+              <RefreshCw size={16} />
+              Atualizar
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors text-sm cursor-pointer"
+            >
+              <LogOut size={16} />
+              Sair
+            </button>
+          </div>
         </div>
 
         {erro && (
@@ -106,7 +115,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Cards resumo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
             <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
@@ -128,12 +136,11 @@ export default function AdminDashboard() {
               Trials Ativos
             </div>
             <span className="text-2xl font-bold text-slate-900">
-              {empresas.filter(e => e.status === 'trial').length}
+              {empresas.filter((e) => e.status === 'trial').length}
             </span>
           </div>
         </div>
 
-        {/* Lista de empresas */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="p-5 border-b border-slate-200">
             <h2 className="font-semibold text-slate-800">Empresas Registradas</h2>
@@ -157,11 +164,13 @@ export default function AdminDashboard() {
                       <td className="px-5 py-4 font-medium text-slate-800">{empresa.nome_empresa}</td>
                       <td className="px-5 py-4 text-slate-600">{empresa.cnpj}</td>
                       <td className="px-5 py-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          empresa.status === 'ativo' 
-                            ? 'bg-green-100 text-green-700' 
-                            : 'bg-amber-100 text-amber-700'
-                        }`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                            empresa.status === 'ativo'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-amber-100 text-amber-700'
+                          }`}
+                        >
                           {empresa.status}
                         </span>
                       </td>
@@ -176,7 +185,6 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Lista de avaliações recentes */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="p-5 border-b border-slate-200">
             <h2 className="font-semibold text-slate-800">Últimas Avaliações</h2>
@@ -186,19 +194,47 @@ export default function AdminDashboard() {
           ) : (
             <div className="divide-y divide-slate-100">
               {reviews.map((review) => (
-                <div key={review.id} className="p-5 flex items-start gap-4">
-                  <div className="flex text-yellow-400">
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <Star key={i} size={16} fill={i < review.rating ? 'currentColor' : 'none'} strokeWidth={1.5} />
-                    ))}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-slate-800">{review.name}</span>
-                      <span className="text-xs text-slate-400">{new Date(review.createdAt).toLocaleString()}</span>
+                <div key={review.id} className="p-5 space-y-2">
+                  <div className="flex items-start gap-4">
+                    <div className="flex text-yellow-400 shrink-0">
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <Star
+                          key={i}
+                          size={16}
+                          fill={i < review.rating ? 'currentColor' : 'none'}
+                          strokeWidth={1.5}
+                        />
+                      ))}
                     </div>
-                    <p className="text-sm text-slate-600">{review.comment}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <span className="font-medium text-slate-800">{review.name}</span>
+                        <span className="text-xs text-slate-400">
+                          {new Date(review.createdAt).toLocaleString()}
+                        </span>
+                        {review.empresa_id && (
+                          <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-mono">
+                            {review.empresa_id.slice(0, 8)}…
+                          </span>
+                        )}
+                      </div>
+                      {review.comment ? (
+                        <p className="text-sm text-slate-600">{review.comment}</p>
+                      ) : (
+                        <p className="text-sm text-slate-400 italic">Sem comentário (avaliação positiva)</p>
+                      )}
+                    </div>
                   </div>
+
+                  {review.ai_reply && (
+                    <div className="ml-8 mt-2 bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-sm">
+                      <div className="flex items-center gap-1.5 text-indigo-600 font-medium mb-1">
+                        <Bot size={14} />
+                        Resposta sugerida pela IA
+                      </div>
+                      <p className="text-slate-700">{review.ai_reply}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -208,5 +244,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
-
