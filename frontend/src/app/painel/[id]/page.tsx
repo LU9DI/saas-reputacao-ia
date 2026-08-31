@@ -2,19 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import {
-  Star,
-  AlertTriangle,
-  RefreshCw,
-  Bot,
-  Tag,
-  TrendingUp,
-  MessageSquare,
-  Code2,
-  Copy,
-  Mic,
-  Check,
-} from 'lucide-react';
 
 interface Review {
   id: number;
@@ -32,7 +19,6 @@ interface PainelData {
     nome_empresa: string;
     status: string;
     expira_em: string;
-    google_review_url: string | null;
     voice_style?: string;
   };
   reviews: Review[];
@@ -53,33 +39,49 @@ interface PainelData {
   };
 }
 
+function Stars({ n }: { n: number }) {
+  return (
+    <span className="text-amber-400 tracking-tight text-sm" aria-label={`${n} de 5`}>
+      {'★'.repeat(n)}
+      <span className="text-slate-200">{'★'.repeat(5 - n)}</span>
+    </span>
+  );
+}
+
 export default function PainelEmpresa() {
   const params = useParams();
-  const empresaId = params.id as string;
+  const empresaId = String(params?.id || '');
 
   const [data, setData] = useState<PainelData | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [voiceStyle, setVoiceStyle] = useState('');
-  const [salvandoVoz, setSalvandoVoz] = useState(false);
-  const [vozSalva, setVozSalva] = useState(false);
-  const [copiado, setCopiado] = useState(false);
+  const [salvando, setSalvando] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   const carregar = async () => {
+    if (!empresaId) {
+      setErro('ID da empresa inválido.');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setErro('');
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiUrl}/api/empresa/${empresaId}/painel`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Não foi possível carregar o painel.');
-      }
-      const json = await res.json();
+      const res = await fetch(`${api}/api/empresa/${empresaId}/painel`);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
       setData(json);
       setVoiceStyle(json.empresa?.voice_style || '');
     } catch (e: any) {
-      setErro(e.message || 'Erro de conexão.');
+      setErro(
+        e.message === 'Failed to fetch'
+          ? 'Não foi possível conectar à API. Confirme se o backend está em http://localhost:5000'
+          : e.message || 'Erro ao carregar.'
+      );
+      setData(null);
     } finally {
       setLoading(false);
     }
@@ -87,282 +89,241 @@ export default function PainelEmpresa() {
 
   useEffect(() => {
     carregar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaId]);
 
   const salvarVoz = async () => {
-    setSalvandoVoz(true);
-    setVozSalva(false);
+    setSalvando(true);
+    setMsg('');
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const res = await fetch(`${apiUrl}/api/empresa/${empresaId}/voice-style`, {
+      const res = await fetch(`${api}/api/empresa/${empresaId}/voice-style`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ voice_style: voiceStyle }),
       });
       if (!res.ok) throw new Error('Falha ao salvar');
-      setVozSalva(true);
-      setTimeout(() => setVozSalva(false), 2500);
+      setMsg('Estilo salvo.');
     } catch {
-      setErro('Não foi possível salvar o estilo de escrita.');
+      setMsg('Não foi possível salvar.');
     } finally {
-      setSalvandoVoz(false);
+      setSalvando(false);
     }
   };
 
-  const copiarEmbed = async () => {
-    if (!data?.links?.embed) return;
+  const copiar = async (texto: string) => {
     try {
-      await navigator.clipboard.writeText(data.links.embed);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2000);
+      await navigator.clipboard.writeText(texto);
+      setMsg('Copiado!');
+      setTimeout(() => setMsg(''), 2000);
     } catch {
-      /* ignore */
+      setMsg('Não foi possível copiar.');
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <RefreshCw className="animate-spin text-indigo-600" size={32} />
+      <div className="min-h-screen flex items-center justify-center text-slate-400 text-sm">
+        Carregando painel…
       </div>
     );
   }
 
   if (erro || !data) {
     return (
-      <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center gap-4 p-4">
-        <p className="text-slate-700">{erro || 'Painel indisponível.'}</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 p-6 text-center">
+        <p className="text-slate-600 max-w-sm">{erro || 'Painel indisponível.'}</p>
+        <p className="text-xs text-slate-400 font-mono break-all">ID: {empresaId || '(vazio)'}</p>
         <button
+          type="button"
           onClick={carregar}
-          className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-medium"
+          className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700"
         >
-          Tentar novamente
+          Tentar de novo
         </button>
       </div>
     );
   }
 
   const { empresa, reviews, metricas, top_tags, links } = data;
-  const painelUrl =
-    links?.painel ||
-    `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/painel/${empresaId}`;
 
   return (
-    <div className="min-h-screen bg-slate-100 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div className="min-h-screen bg-slate-50">
+      <header className="border-b border-slate-200/80 bg-white">
+        <div className="max-w-3xl mx-auto px-5 py-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900">{empresa.nome_empresa}</h1>
-            <p className="text-sm text-slate-500">
-              Painel de reputação · Trial até{' '}
-              {new Date(empresa.expira_em).toLocaleDateString()}
+            <p className="text-xs font-medium uppercase tracking-wider text-indigo-600 mb-1">
+              Painel
             </p>
-            <p className="text-xs text-slate-400 mt-1 font-mono break-all">{painelUrl}</p>
+            <h1 className="text-xl font-semibold text-slate-900 tracking-tight">
+              {empresa.nome_empresa}
+            </h1>
+            <p className="text-sm text-slate-500 mt-0.5">
+              Trial até {new Date(empresa.expira_em).toLocaleDateString('pt-BR')}
+            </p>
           </div>
           <button
+            type="button"
             onClick={carregar}
-            className="flex items-center gap-2 self-start bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm text-slate-700 hover:bg-slate-50"
+            className="text-sm text-slate-500 hover:text-slate-800 shrink-0"
           >
-            <RefreshCw size={16} />
             Atualizar
           </button>
         </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-5 py-8 space-y-6">
+        {msg && (
+          <p className="text-sm text-center text-emerald-600 font-medium">{msg}</p>
+        )}
 
         {metricas.alerta_crise && (
-          <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
-            <AlertTriangle className="shrink-0 mt-0.5" size={20} />
-            <div>
-              <p className="font-semibold">Alerta de crise</p>
-              <p className="text-sm">
-                {metricas.crises_24h} avaliações com 1–2 estrelas nas últimas 24 horas. Priorize o
-                contato com esses clientes.
-              </p>
-            </div>
+          <div className="rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-800">
+            <strong>Alerta:</strong> {metricas.crises_24h} notas baixas (1–2★) nas últimas 24h.
           </div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MetricCard icon={<MessageSquare size={16} />} label="Total" value={String(metricas.total)} />
-          <MetricCard
-            icon={<TrendingUp size={16} />}
-            label="Média"
-            value={metricas.total ? metricas.media.toFixed(1) : '—'}
-          />
-          <MetricCard icon={<Star size={16} />} label="Positivas" value={String(metricas.positivas)} />
-          <MetricCard
-            icon={<AlertTriangle size={16} />}
-            label="Negativas"
-            value={String(metricas.negativas)}
-          />
-        </div>
-
-        {/* Widget embed */}
-        {links && (
-          <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-            <h2 className="font-semibold text-slate-800 flex items-center gap-2">
-              <Code2 size={16} className="text-indigo-500" />
-              Parede de provas sociais (widget)
-            </h2>
-            <p className="text-sm text-slate-500">
-              Cole este código no site da sua empresa para exibir as melhores avaliações.
-            </p>
-            <pre className="bg-slate-900 text-slate-100 text-xs p-3 rounded-xl overflow-x-auto">
-              {links.embed}
-            </pre>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={copiarEmbed}
-                className="flex items-center gap-2 bg-slate-900 text-white text-sm px-4 py-2 rounded-xl"
-              >
-                {copiado ? <Check size={14} /> : <Copy size={14} />}
-                {copiado ? 'Copiado!' : 'Copiar código'}
-              </button>
-              <a
-                href={links.widget}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-indigo-50 text-indigo-700 text-sm px-4 py-2 rounded-xl"
-              >
-                Ver widget
-              </a>
+        {/* Métricas */}
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { label: 'Total', value: metricas.total },
+            { label: 'Média', value: metricas.total ? metricas.media.toFixed(1) : '—' },
+            { label: 'Positivas', value: metricas.positivas },
+            { label: 'Negativas', value: metricas.negativas },
+          ].map((m) => (
+            <div
+              key={m.label}
+              className="bg-white rounded-2xl border border-slate-100 shadow-soft px-4 py-4 text-center"
+            >
+              <p className="text-2xl font-semibold text-slate-900 tabular-nums">{m.value}</p>
+              <p className="text-xs text-slate-500 mt-1">{m.label}</p>
             </div>
-          </div>
+          ))}
+        </section>
+
+        {/* Links úteis */}
+        {links && (
+          <section className="bg-white rounded-2xl border border-slate-100 shadow-soft p-5 space-y-4">
+            <h2 className="text-sm font-semibold text-slate-900">Links</h2>
+            <div className="space-y-2 text-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <span className="text-slate-500 w-24 shrink-0">Avaliação</span>
+                <a href={links.avaliacao} className="text-indigo-600 hover:underline break-all">
+                  {links.avaliacao}
+                </a>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <span className="text-slate-500 w-24 shrink-0">Widget</span>
+                <a href={links.widget} className="text-indigo-600 hover:underline break-all">
+                  {links.widget}
+                </a>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 mb-2">Código para o site</p>
+              <pre className="text-[11px] leading-relaxed bg-slate-900 text-slate-100 rounded-xl p-3 overflow-x-auto">
+                {links.embed}
+              </pre>
+              <button
+                type="button"
+                onClick={() => copiar(links.embed)}
+                className="mt-2 text-sm text-indigo-600 font-medium hover:text-indigo-800"
+              >
+                Copiar código
+              </button>
+            </div>
+          </section>
         )}
 
         {/* Voz do dono */}
-        <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-          <h2 className="font-semibold text-slate-800 flex items-center gap-2">
-            <Mic size={16} className="text-indigo-500" />
-            Voz do dono (estilo de resposta)
-          </h2>
+        <section className="bg-white rounded-2xl border border-slate-100 shadow-soft p-5 space-y-3">
+          <h2 className="text-sm font-semibold text-slate-900">Estilo de resposta (IA)</h2>
           <p className="text-sm text-slate-500">
-            Cole 3–5 respostas reais que você já deu a clientes. A IA vai imitar seu tom ao sugerir
-            respostas para avaliações negativas.
+            Cole exemplos de como você responde clientes. A IA usa esse tom nas sugestões.
           </p>
           <textarea
             value={voiceStyle}
             onChange={(e) => setVoiceStyle(e.target.value.slice(0, 3000))}
-            rows={5}
-            placeholder={
-              'Exemplo:\n"Olá! Obrigado pelo feedback. Lamento que a espera tenha sido longa — já reforçamos a equipe no horário de pico."\n\n"Oi, Maria! Que bom saber que gostou da pizza. Te esperamos de novo!"'
-            }
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            rows={4}
+            placeholder="Ex.: Obrigado pelo feedback. Lamento o ocorrido e já estamos resolvendo…"
+            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
           />
           <button
+            type="button"
             onClick={salvarVoz}
-            disabled={salvandoVoz}
-            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium px-4 py-2.5 rounded-xl"
+            disabled={salvando}
+            className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
           >
-            {salvandoVoz ? 'Salvando…' : vozSalva ? 'Salvo!' : 'Salvar estilo'}
+            {salvando ? 'Salvando…' : 'Salvar'}
           </button>
-        </div>
+        </section>
 
+        {/* Tags */}
         {top_tags.length > 0 && (
-          <div className="bg-white rounded-xl border border-slate-200 p-5">
-            <h2 className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
-              <Tag size={16} className="text-indigo-500" />
-              Temas mais citados
-            </h2>
+          <section className="bg-white rounded-2xl border border-slate-100 shadow-soft p-5">
+            <h2 className="text-sm font-semibold text-slate-900 mb-3">Temas</h2>
             <div className="flex flex-wrap gap-2">
               {top_tags.map(({ tag, count }) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-medium px-3 py-1.5 rounded-full"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full"
                 >
                   {tag}
-                  <span className="bg-indigo-100 text-indigo-600 rounded-full px-1.5 py-0.5 text-[10px]">
-                    {count}
-                  </span>
+                  <span className="text-slate-400">{count}</span>
                 </span>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-          <div className="p-5 border-b border-slate-200">
-            <h2 className="font-semibold text-slate-800">Avaliações recebidas</h2>
+        {/* Reviews */}
+        <section className="bg-white rounded-2xl border border-slate-100 shadow-soft overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900">Avaliações</h2>
           </div>
           {reviews.length === 0 ? (
-            <p className="p-5 text-sm text-slate-500">
-              Ainda não há avaliações. Compartilhe o link ou o QR Code com seus clientes.
+            <p className="px-5 py-8 text-sm text-slate-500 text-center">
+              Nenhuma avaliação ainda. Compartilhe o link ou o QR Code.
             </p>
           ) : (
-            <div className="divide-y divide-slate-100">
-              {reviews.map((review) => (
-                <div key={review.id} className="p-5 space-y-2">
-                  <div className="flex items-start gap-3">
-                    <div className="flex text-yellow-400 shrink-0">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <Star
-                          key={i}
-                          size={14}
-                          fill={i < review.rating ? 'currentColor' : 'none'}
-                          strokeWidth={1.5}
-                        />
+            <ul className="divide-y divide-slate-100">
+              {reviews.map((r) => (
+                <li key={r.id} className="px-5 py-4 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <Stars n={r.rating} />
+                    <time className="text-xs text-slate-400">
+                      {new Date(r.createdAt).toLocaleString('pt-BR')}
+                    </time>
+                  </div>
+                  <p className="text-sm font-medium text-slate-800">{r.name}</p>
+                  {r.comment ? (
+                    <p className="text-sm text-slate-600 leading-relaxed">{r.comment}</p>
+                  ) : (
+                    <p className="text-sm text-slate-400 italic">Sem comentário</p>
+                  )}
+                  {r.ai_tags?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {r.ai_tags.map((t) => (
+                        <span
+                          key={t}
+                          className="text-[11px] text-slate-500 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-full"
+                        >
+                          {t}
+                        </span>
                       ))}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="font-medium text-slate-800 text-sm">{review.name}</span>
-                        <span className="text-xs text-slate-400">
-                          {new Date(review.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-                      {review.comment ? (
-                        <p className="text-sm text-slate-600">{review.comment}</p>
-                      ) : (
-                        <p className="text-sm text-slate-400 italic">Sem comentário</p>
-                      )}
-                      {review.ai_tags?.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {review.ai_tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {review.ai_reply && (
-                    <div className="ml-6 bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-sm">
-                      <div className="flex items-center gap-1.5 text-indigo-600 font-medium mb-1">
-                        <Bot size={14} />
-                        Resposta sugerida pela IA
-                      </div>
-                      <p className="text-slate-700">{review.ai_reply}</p>
+                  )}
+                  {r.ai_reply && (
+                    <div className="mt-2 rounded-xl bg-indigo-50/80 border border-indigo-100 px-3 py-2.5">
+                      <p className="text-[11px] font-medium text-indigo-600 mb-1">Sugestão da IA</p>
+                      <p className="text-sm text-slate-700 leading-relaxed">{r.ai_reply}</p>
                     </div>
                   )}
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MetricCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4">
-      <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 mb-1">
-        {icon}
-        {label}
-      </div>
-      <span className="text-xl font-bold text-slate-900">{value}</span>
+        </section>
+      </main>
     </div>
   );
 }

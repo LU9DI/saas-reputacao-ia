@@ -2,74 +2,84 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Star } from 'lucide-react';
 
 interface Review {
   name: string;
   rating: number;
   comment: string;
-  createdAt: string;
 }
 
-export default function WidgetProvasSociais() {
+export default function WidgetProvas() {
   const params = useParams();
-  const empresaId = params.id as string;
+  const id = String(params?.id || '');
   const [nome, setNome] = useState('');
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState('');
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-    fetch(`${apiUrl}/api/empresa/${empresaId}/widget?limit=6`)
-      .then((r) => r.json())
+    if (!id) {
+      setErro('ID inválido');
+      setLoading(false);
+      return;
+    }
+    const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    fetch(`${api}/api/empresa/${id}/widget?limit=6`)
+      .then(async (r) => {
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || 'Erro ao carregar');
+        return j;
+      })
       .then((data) => {
         setNome(data.empresa?.nome || '');
         setReviews(data.reviews || []);
       })
-      .catch(() => {})
+      .catch((e) => setErro(e.message || 'Falha na conexão'))
       .finally(() => setLoading(false));
-  }, [empresaId]);
+  }, [id]);
 
   if (loading) {
     return (
-      <div className="p-6 text-center text-slate-400 text-sm font-sans">Carregando avaliações…</div>
+      <div className="p-8 text-center text-sm text-slate-400 bg-white min-h-[120px]">
+        Carregando…
+      </div>
+    );
+  }
+
+  if (erro) {
+    return (
+      <div className="p-8 text-center text-sm text-slate-500 bg-white min-h-[120px]">{erro}</div>
     );
   }
 
   if (reviews.length === 0) {
     return (
-      <div className="p-6 text-center text-slate-400 text-sm font-sans">
-        Em breve, depoimentos de clientes{nome ? ` de ${nome}` : ''}.
+      <div className="p-8 text-center text-sm text-slate-400 bg-white min-h-[120px]">
+        Em breve, depoimentos{nome ? ` de ${nome}` : ''}.
       </div>
     );
   }
 
   return (
-    <div className="font-sans bg-white p-4 md:p-6">
-      <div className="mb-4">
-        <h3 className="text-sm font-semibold text-slate-800">
-          O que dizem nossos clientes{nome ? ` · ${nome}` : ''}
-        </h3>
-      </div>
+    <div className="bg-white p-5 md:p-6 font-sans">
+      <p className="text-xs font-medium uppercase tracking-wider text-slate-400 mb-4">
+        Clientes{nome ? ` · ${nome}` : ''}
+      </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {reviews.map((r, i) => (
-          <div
+          <article
             key={i}
-            className="rounded-xl border border-slate-100 bg-slate-50/80 p-4 shadow-sm"
+            className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 flex flex-col"
           >
-            <div className="flex text-amber-400 mb-2">
-              {Array.from({ length: 5 }, (_, idx) => (
-                <Star
-                  key={idx}
-                  size={14}
-                  fill={idx < r.rating ? 'currentColor' : 'none'}
-                  strokeWidth={1.5}
-                />
-              ))}
-            </div>
-            <p className="text-sm text-slate-700 leading-relaxed line-clamp-4">“{r.comment}”</p>
-            <p className="mt-2 text-xs font-medium text-slate-500">— {r.name || 'Cliente'}</p>
-          </div>
+            <span className="text-amber-400 text-sm mb-2 tracking-tight">
+              {'★'.repeat(r.rating)}
+              <span className="text-slate-200">{'★'.repeat(5 - r.rating)}</span>
+            </span>
+            <p className="text-sm text-slate-700 leading-relaxed flex-1">
+              “{r.comment}”
+            </p>
+            <p className="mt-3 text-xs font-medium text-slate-500">— {r.name || 'Cliente'}</p>
+          </article>
         ))}
       </div>
     </div>

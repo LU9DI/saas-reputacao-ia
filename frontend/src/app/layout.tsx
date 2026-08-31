@@ -1,4 +1,10 @@
-import { LanguageProvider } from './Contexts/LanguageContext';
+import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'Reputação IA',
+  description: 'Gestão inteligente de reputação e avaliações',
+};
 
 export default function RootLayout({
   children,
@@ -7,11 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body>
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
-      </body>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
