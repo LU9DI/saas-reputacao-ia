@@ -10,6 +10,10 @@ import {
   Tag,
   TrendingUp,
   MessageSquare,
+  Code2,
+  Copy,
+  Mic,
+  Check,
 } from 'lucide-react';
 
 interface Review {
@@ -29,6 +33,7 @@ interface PainelData {
     status: string;
     expira_em: string;
     google_review_url: string | null;
+    voice_style?: string;
   };
   reviews: Review[];
   metricas: {
@@ -40,6 +45,12 @@ interface PainelData {
     crises_24h: number;
   };
   top_tags: { tag: string; count: number }[];
+  links?: {
+    avaliacao: string;
+    painel: string;
+    widget: string;
+    embed: string;
+  };
 }
 
 export default function PainelEmpresa() {
@@ -49,6 +60,10 @@ export default function PainelEmpresa() {
   const [data, setData] = useState<PainelData | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
+  const [voiceStyle, setVoiceStyle] = useState('');
+  const [salvandoVoz, setSalvandoVoz] = useState(false);
+  const [vozSalva, setVozSalva] = useState(false);
+  const [copiado, setCopiado] = useState(false);
 
   const carregar = async () => {
     setLoading(true);
@@ -60,7 +75,9 @@ export default function PainelEmpresa() {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || 'Não foi possível carregar o painel.');
       }
-      setData(await res.json());
+      const json = await res.json();
+      setData(json);
+      setVoiceStyle(json.empresa?.voice_style || '');
     } catch (e: any) {
       setErro(e.message || 'Erro de conexão.');
     } finally {
@@ -71,6 +88,37 @@ export default function PainelEmpresa() {
   useEffect(() => {
     carregar();
   }, [empresaId]);
+
+  const salvarVoz = async () => {
+    setSalvandoVoz(true);
+    setVozSalva(false);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/empresa/${empresaId}/voice-style`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voice_style: voiceStyle }),
+      });
+      if (!res.ok) throw new Error('Falha ao salvar');
+      setVozSalva(true);
+      setTimeout(() => setVozSalva(false), 2500);
+    } catch {
+      setErro('Não foi possível salvar o estilo de escrita.');
+    } finally {
+      setSalvandoVoz(false);
+    }
+  };
+
+  const copiarEmbed = async () => {
+    if (!data?.links?.embed) return;
+    try {
+      await navigator.clipboard.writeText(data.links.embed);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      /* ignore */
+    }
+  };
 
   if (loading) {
     return (
@@ -94,7 +142,10 @@ export default function PainelEmpresa() {
     );
   }
 
-  const { empresa, reviews, metricas, top_tags } = data;
+  const { empresa, reviews, metricas, top_tags, links } = data;
+  const painelUrl =
+    links?.painel ||
+    `${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/painel/${empresaId}`;
 
   return (
     <div className="min-h-screen bg-slate-100 p-4 md:p-8">
@@ -106,6 +157,7 @@ export default function PainelEmpresa() {
               Painel de reputação · Trial até{' '}
               {new Date(empresa.expira_em).toLocaleDateString()}
             </p>
+            <p className="text-xs text-slate-400 mt-1 font-mono break-all">{painelUrl}</p>
           </div>
           <button
             onClick={carregar}
@@ -142,6 +194,67 @@ export default function PainelEmpresa() {
             label="Negativas"
             value={String(metricas.negativas)}
           />
+        </div>
+
+        {/* Widget embed */}
+        {links && (
+          <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+            <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+              <Code2 size={16} className="text-indigo-500" />
+              Parede de provas sociais (widget)
+            </h2>
+            <p className="text-sm text-slate-500">
+              Cole este código no site da sua empresa para exibir as melhores avaliações.
+            </p>
+            <pre className="bg-slate-900 text-slate-100 text-xs p-3 rounded-xl overflow-x-auto">
+              {links.embed}
+            </pre>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={copiarEmbed}
+                className="flex items-center gap-2 bg-slate-900 text-white text-sm px-4 py-2 rounded-xl"
+              >
+                {copiado ? <Check size={14} /> : <Copy size={14} />}
+                {copiado ? 'Copiado!' : 'Copiar código'}
+              </button>
+              <a
+                href={links.widget}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-indigo-50 text-indigo-700 text-sm px-4 py-2 rounded-xl"
+              >
+                Ver widget
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Voz do dono */}
+        <div className="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
+          <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+            <Mic size={16} className="text-indigo-500" />
+            Voz do dono (estilo de resposta)
+          </h2>
+          <p className="text-sm text-slate-500">
+            Cole 3–5 respostas reais que você já deu a clientes. A IA vai imitar seu tom ao sugerir
+            respostas para avaliações negativas.
+          </p>
+          <textarea
+            value={voiceStyle}
+            onChange={(e) => setVoiceStyle(e.target.value.slice(0, 3000))}
+            rows={5}
+            placeholder={
+              'Exemplo:\n"Olá! Obrigado pelo feedback. Lamento que a espera tenha sido longa — já reforçamos a equipe no horário de pico."\n\n"Oi, Maria! Que bom saber que gostou da pizza. Te esperamos de novo!"'
+            }
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          />
+          <button
+            onClick={salvarVoz}
+            disabled={salvandoVoz}
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium px-4 py-2.5 rounded-xl"
+          >
+            {salvandoVoz ? 'Salvando…' : vozSalva ? 'Salvo!' : 'Salvar estilo'}
+          </button>
         </div>
 
         {top_tags.length > 0 && (
