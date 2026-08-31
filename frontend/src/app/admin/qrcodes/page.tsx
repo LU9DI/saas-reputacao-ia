@@ -1,102 +1,179 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import QRCode from 'qrcode';
+import { Building2, QrCode, RefreshCw, AlertCircle } from 'lucide-react';
+
+interface Empresa {
+  id: string;
+  nome_empresa: string;
+}
 
 export default function QrCodesPage() {
+  const router = useRouter();
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [empresaSelecionada, setEmpresaSelecionada] = useState('');
   const [tableNumber, setTableNumber] = useState('');
   const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState('');
 
-  const generateQrCode = async () => {
-    if (!tableNumber) return alert('Por favor, digite o número da mesa!');
+  // Verifica token e carrega empresas
+  useEffect(() => {
+    const token = localStorage.getItem('token_saas_reputacao');
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+
+    const buscarEmpresas = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const response = await fetch(`${apiUrl}/api/admin/empresas`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error();
+        const dados = await response.json();
+        setEmpresas(dados);
+        if (dados.length > 0) {
+          setEmpresaSelecionada(dados[0].id);
+        }
+      } catch {
+        setErro('Não foi possível carregar as empresas. Verifique sua conexão.');
+      }
+    };
+
+    buscarEmpresas();
+  }, [router]);
+
+  const handleGerarQrCode = async () => {
+    setErro('');
+
+    if (!empresaSelecionada) {
+      setErro('Selecione uma empresa para gerar o QR Code.');
+      return;
+    }
+
+    if (!tableNumber || Number(tableNumber) <= 0 || !Number.isInteger(Number(tableNumber))) {
+      setErro('Número da mesa inválido. Use apenas números inteiros positivos.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      // URL dinâmica usando variável de ambiente (Fallback para localhost)
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-      const link = `${baseUrl}/review?table=${tableNumber}`;
-      
-      // Gera a imagem do QR Code em formato Base64
-      const url = await QRCode.toDataURL(link, { 
-        width: 350, 
+      const link = `${baseUrl}/avaliacao/${empresaSelecionada}?mesa=${tableNumber}`;
+
+      const url = await QRCode.toDataURL(link, {
+        width: 350,
         margin: 2,
         color: {
           dark: '#000000',
-          light: '#ffffff'
-        }
+          light: '#ffffff',
+        },
       });
+
       setQrCodeUrl(url);
-    } catch (err) {
-      console.error('Erro ao gerar QR Code:', err);
+    } catch {
+      setErro('Erro ao gerar QR Code. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '600px', margin: '0 auto' }}>
-      <h1 style={{ color: '#111', fontSize: '28px', marginBottom: '10px' }}>🏆 Gerador de QR Codes - Mesas</h1>
-      <p style={{ color: '#666', marginBottom: '30px' }}>Gere e baixe os códigos visuais para colar nas mesas do estabelecimento.</p>
-      
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
-        <input
-          type="number"
-          placeholder="Nº da Mesa"
-          value={tableNumber}
-          onChange={(e) => setTableNumber(e.target.value)}
-          style={{ 
-            padding: '12px', 
-            fontSize: '16px', 
-            width: '130px', 
-            borderRadius: '6px', 
-            border: '1px solid #ccc' 
-          }}
-        />
-        <button 
-          onClick={generateQrCode} 
-          style={{ 
-            padding: '12px 24px', 
-            fontSize: '16px', 
-            backgroundColor: '#000', 
-            color: '#fff', 
-            border: 'none', 
-            borderRadius: '6px', 
-            cursor: 'pointer', 
-            fontWeight: 'bold' 
-          }}
-        >
-          Gerar Código
-        </button>
-      </div>
+  const handleDownload = () => {
+    if (!qrCodeUrl) return;
+    const link = document.createElement('a');
+    link.href = qrCodeUrl;
+    link.download = `mesa-${tableNumber}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-      {qrCodeUrl && (
-        <div style={{ 
-          marginTop: '30px', 
-          padding: '20px', 
-          border: '1px solid #eee', 
-          borderRadius: '8px', 
-          textAlign: 'center', 
-          backgroundColor: '#fafafa' 
-        }}>
-          <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>Mesa {tableNumber}</h3>
-          <img src={qrCodeUrl} alt="QR Code" style={{ border: '4px solid #fff', borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-          <br />
-          <a 
-            href={qrCodeUrl} 
-            download={`mesa-${tableNumber}.png`} 
-            style={{ 
-              display: 'inline-block', 
-              marginTop: '20px', 
-              padding: '12px 24px', 
-              backgroundColor: '#0070f3', 
-              color: '#fff', 
-              textDecoration: 'none', 
-              borderRadius: '6px', 
-              fontWeight: 'bold' 
-            }}
-          >
-            📥 Baixar Imagem PNG
-          </a>
+  return (
+    <div className="min-h-screen bg-slate-100 p-6">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+            <QrCode size={22} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Gerador de QR Codes</h1>
+            <p className="text-sm text-slate-500">Crie códigos para colar nas mesas do estabelecimento</p>
+          </div>
         </div>
-      )}
+
+        {erro && (
+          <div role="alert" className="flex items-center gap-3 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 text-sm">
+            <AlertCircle size={18} className="shrink-0" />
+            <span>{erro}</span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label htmlFor="empresa" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+              <Building2 size={14} /> Empresa
+            </label>
+            <select
+              id="empresa"
+              value={empresaSelecionada}
+              onChange={(e) => setEmpresaSelecionada(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+            >
+              {empresas.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.nome_empresa}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="mesa" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+              Nº da Mesa
+            </label>
+            <input
+              id="mesa"
+              type="number"
+              min="1"
+              step="1"
+              value={tableNumber}
+              onChange={(e) => setTableNumber(e.target.value)}
+              placeholder="Ex: 12"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+            />
+          </div>
+        </div>
+
+        <button
+          onClick={handleGerarQrCode}
+          disabled={loading}
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-md shadow-indigo-100 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+        >
+          {loading ? <RefreshCw size={16} className="animate-spin" /> : <QrCode size={16} />}
+          {loading ? 'Gerando...' : 'Gerar QR Code'}
+        </button>
+        {qrCodeUrl && (
+          <div className="text-center space-y-4 pt-4 border-t border-slate-200">
+            <h3 className="font-semibold text-slate-800">QR Code - Mesa {tableNumber}</h3>
+            <img
+              src={qrCodeUrl}
+              alt={`QR Code para mesa ${tableNumber}`}
+              className="mx-auto rounded-lg border-4 border-white shadow-md"
+            />
+            <button
+              onClick={handleDownload}
+              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-6 rounded-xl transition-colors text-sm cursor-pointer"
+            >
+              📥 Baixar Imagem PNG
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-

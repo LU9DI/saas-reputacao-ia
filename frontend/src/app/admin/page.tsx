@@ -1,75 +1,212 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Building2, Star, LogOut, RefreshCw, AlertCircle } from 'lucide-react';
+
+interface Empresa {
+  id: string;
+  cnpj: string;
+  nome_empresa: string;
+  status: string;
+  google_review_url: string | null;
+  criado_em: string;
+  expira_em: string;
+}
 
 interface Review {
-  id: string;
+  id: number;
+  empresa_id: string | null;
   name: string;
   rating: number;
   comment: string;
-  aiReply: string | null;
   createdAt: string;
 }
 
 export default function AdminDashboard() {
+  const router = useRouter();
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState('');
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token_saas_reputacao') : null;
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/reviews')
-      .then((res) => res.json())
-      .then((data) => setReviews(data))
-      .catch((err) => console.error('Erro ao buscar reviews:', err));
-  }, []);
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+    carregarDados(token);
+  }, [router, token]);
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert('Resposta copiada para a área de transferência!');
+  const carregarDados = async (token: string) => {
+    setLoading(true);
+    setErro('');
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const headers = { Authorization: `Bearer ${token}` };
+
+      const [resEmpresas, resReviews] = await Promise.all([
+        fetch(`${apiUrl}/api/admin/empresas`, { headers }),
+        fetch(`${apiUrl}/api/admin/reviews`, { headers }),
+      ]);
+
+      if (!resEmpresas.ok || !resReviews.ok) {
+        throw new Error('Erro ao carregar dados.');
+      }
+
+      const dadosEmpresas = await resEmpresas.json();
+      const dadosReviews = await resReviews.json();
+
+      setEmpresas(dadosEmpresas);
+      setReviews(dadosReviews);
+    } catch (err) {
+      setErro('Falha ao buscar informações. Verifique se o backend está online.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <div style={{ padding: '40px', fontFamily: 'sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh' }}>
-      <div style={{ display: 'flex', justifyContent: 'between', alignItems: 'center', marginBottom: '30px' }}>
-        <div>
-          <h1 style={{ fontSize: '28px', color: '#111', margin: 0 }}>📊 Painel de Gestão de Reputação</h1>
-          <p style={{ color: '#666', margin: '5px 0 0 0' }}>Gerencie as críticas retidas e utilize as respostas da IA.</p>
-        </div>
-        <div style={{ padding: '15px 25px', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '8px', fontWeight: 'bold' }}>
-          Críticas Retidas: {reviews.length}
-        </div>
+  const handleLogout = () => {
+    localStorage.removeItem('token_saas_reputacao');
+    router.push('/admin/login');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+        <RefreshCw className="animate-spin text-indigo-600" size={32} />
       </div>
+    );
+  }
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
-        {reviews.map((review) => (
-          <div key={review.id} style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', border: '1px solid #e5e7eb' }}>
-            <div style={{ display: 'flex', justifyContent: 'between', marginBottom: '10px' }}>
-              <strong style={{ fontSize: '18px' }}>{review.name}</strong>
-              <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>⭐ {review.rating}/5</span>
-            </div>
-            
-            <p style={{ color: '#374151', backgroundColor: '#f3f4f6', padding: '10px', borderRadius: '6px', fontSize: '14px' }}>
-              "{review.comment}"
-            </p>
-
-            {review.aiReply && (
-              <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #f3f4f6' }}>
-                <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#059669', textTransform: 'uppercase' }}>🪄 Sugestão da IA (Llama 3):</span>
-                <p style={{ color: '#047857', fontSize: '14px', margin: '5px 0 15px 0', lineHeight: '1.4' }}>
-                  {review.aiReply}
-                </p>
-                <button
-                  onClick={() => copyToClipboard(review.aiReply || '')}
-                  style={{ width: '100%', padding: '10px', backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
-                >
-                  📋 Copiar Resposta Oficial
-                </button>
-              </div>
-            )}
+  return (
+    <div className="min-h-screen bg-slate-100 p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Cabeçalho */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Painel Administrativo</h1>
+            <p className="text-sm text-slate-500">Visão geral das empresas e avaliações</p>
           </div>
-        ))}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors text-sm cursor-pointer"
+          >
+            <LogOut size={16} />
+            Sair
+          </button>
+        </div>
+
+        {erro && (
+          <div className="flex items-center gap-3 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 text-sm" role="alert">
+            <AlertCircle size={18} className="shrink-0" />
+            <span>{erro}</span>
+          </div>
+        )}
+
+        {/* Cards resumo */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
+              <Building2 size={16} className="text-indigo-500" />
+              Empresas
+            </div>
+            <span className="text-2xl font-bold text-slate-900">{empresas.length}</span>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
+              <Star size={16} className="text-yellow-500" />
+              Avaliações
+            </div>
+            <span className="text-2xl font-bold text-slate-900">{reviews.length}</span>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
+              <RefreshCw size={16} className="text-green-500" />
+              Trials Ativos
+            </div>
+            <span className="text-2xl font-bold text-slate-900">
+              {empresas.filter(e => e.status === 'trial').length}
+            </span>
+          </div>
+        </div>
+
+        {/* Lista de empresas */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-5 border-b border-slate-200">
+            <h2 className="font-semibold text-slate-800">Empresas Registradas</h2>
+          </div>
+          {empresas.length === 0 ? (
+            <p className="p-5 text-sm text-slate-500">Nenhuma empresa ativou o trial ainda.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-xs">
+                  <tr>
+                    <th className="px-5 py-3 text-left">Nome</th>
+                    <th className="px-5 py-3 text-left">CNPJ</th>
+                    <th className="px-5 py-3 text-left">Status</th>
+                    <th className="px-5 py-3 text-left">Expira em</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {empresas.map((empresa) => (
+                    <tr key={empresa.id} className="hover:bg-slate-50/50">
+                      <td className="px-5 py-4 font-medium text-slate-800">{empresa.nome_empresa}</td>
+                      <td className="px-5 py-4 text-slate-600">{empresa.cnpj}</td>
+                      <td className="px-5 py-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          empresa.status === 'ativo' 
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-amber-100 text-amber-700'
+                        }`}>
+                          {empresa.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-slate-600">
+                        {new Date(empresa.expira_em).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Lista de avaliações recentes */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="p-5 border-b border-slate-200">
+            <h2 className="font-semibold text-slate-800">Últimas Avaliações</h2>
+          </div>
+          {reviews.length === 0 ? (
+            <p className="p-5 text-sm text-slate-500">Nenhuma avaliação recebida ainda.</p>
+          ) : (
+            <div className="divide-y divide-slate-100">
+              {reviews.map((review) => (
+                <div key={review.id} className="p-5 flex items-start gap-4">
+                  <div className="flex text-yellow-400">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <Star key={i} size={16} fill={i < review.rating ? 'currentColor' : 'none'} strokeWidth={1.5} />
+                    ))}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-slate-800">{review.name}</span>
+                      <span className="text-xs text-slate-400">{new Date(review.createdAt).toLocaleString()}</span>
+                    </div>
+                    <p className="text-sm text-slate-600">{review.comment}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
 
 
