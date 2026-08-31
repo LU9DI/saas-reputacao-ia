@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import crypto from 'crypto';
@@ -13,12 +14,39 @@ import { gerarRespostaReview } from './groqService.js';
 
 const app = express();
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
-// CORS restrito
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000'].filter(Boolean) as string[];
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 let db: Database;
+
+const COOKIE_NAME = 'saas_auth_token';
+const isProd = process.env.NODE_ENV === 'production';
+
+function setAuthCookie(res: Response, token: string) {
+  res.cookie(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000, // 1 dia
+    path: '/',
+  });
+}
+
+function clearAuthCookie(res: Response) {
+  res.clearCookie(COOKIE_NAME, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    path: '/',
+  });
+}
 
 // ============================================================
 // 1. INICIALIZAÇÃO DO BANCO
@@ -38,7 +66,6 @@ async function initDB() {
     );
   `);
 
-  // Migração: google_review_url
   const colunasEmpresas = await db.all(`PRAGMA table_info(empresas)`);
   if (!colunasEmpresas.some((col: any) => col.name === 'google_review_url')) {
     await db.exec(`ALTER TABLE empresas ADD COLUMN google_review_url TEXT`);
@@ -64,7 +91,6 @@ async function initDB() {
     );
   `);
 
-  // Migração: ai_reply
   const colunasReviews = await db.all(`PRAGMA table_info(reviews)`);
   if (!colunasReviews.some((col: any) => col.name === 'ai_reply')) {
     await db.exec(`ALTER TABLE reviews ADD COLUMN ai_reply TEXT`);
@@ -125,7 +151,7 @@ function validarReview(body: any): { name: string; rating: number; comment: stri
 }
 
 // ============================================================
-// 3. MIDDLEWARE DE AUTENTICAÇÃO JWT
+// 3. MIDDLEWARE DE AUTENTICAÇÃO JWT (cookie httpOnly OU Bearer)
 // ============================================================
 interface AuthRequest extends Request {
   user?: { id: string; email: string };
@@ -136,8 +162,19 @@ if (!process.env.JWT_SECRET) {
   console.warn('⚠️ JWT_SECRET não definido! Usando segredo temporário. Defina JWT_SECRET no .env em produção.');
 }
 
+function extrairToken(req: Request): string | null {
+  const fromCookie = req.cookies?.[COOKIE_NAME];
+  if (fromCookie) return fromCookie;
+
+  const authHeader = req.headers['authorization'];
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.slice(7);
+  }
+  return null;
+}
+
 function autenticarToken(req: AuthRequest, res: Response, next: NextFunction) {
-  const token = req.headers['authorization']?.split(' ')[1];
+  const token = extrairToken(req);
   if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
@@ -176,10 +213,15 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
   try {
     const cnpj = normalizarCnpj(req.body.cnpj ?? '');
     const nome = String(req.body.nome_empresa ?? '').trim().slice(0, 120);
-    const googleReviewUrl = String(req.body.google_review_url ?? '').trim().slice(0, 200);
+    const googleReviewUrl = String(req.body.google_review_url ?? '').trim().slice(0, 500);
 
     if (!cnpjValido(cnpj)) return res.status(400).json({ error: 'CNPJ inválido.' });
     if (nome.length < 2 || nome.length > 120) return res.status(400).json({ error: 'Nome da empresa inválido.' });
+
+    // Valida URL do Google se fornecida
+    if (googleReviewUrl && !/^https?:\/\//i.test(googleReviewUrl)) {
+      return res.status(400).json({ error: 'URL do Google Reviews inválida. Use um link completo (https://...).' });
+    }
 
     const id = crypto.randomUUID();
     const criadoEm = new Date();
@@ -263,7 +305,6 @@ app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => 
   try {
     let aiReply: string | null = null;
 
-    // Gera resposta automática apenas para avaliações negativas (se a chave estiver configurada)
     if (rating <= 3 && comment && process.env.GROQ_API_KEY) {
       try {
         let nomeEmpresa: string | undefined;
@@ -291,7 +332,7 @@ app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => 
 });
 
 // ============================================================
-// 8. LOGIN DE ADMIN
+// 8. LOGIN / LOGOUT DE ADMIN
 // ============================================================
 app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) => {
   const { email, senha } = req.body;
@@ -301,18 +342,33 @@ app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) =
     if (!usuario) return res.status(401).json({ error: 'Credenciais inválidas.' });
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
     if (!senhaCorreta) return res.status(401).json({ error: 'Credenciais inválidas.' });
+
     const token = jwt.sign({ id: usuario.id, email: usuario.email }, JWT_SECRET, { expiresIn: '1d' });
-    res.json({ success: true, token, user: { id: usuario.id, email: usuario.email } });
+    setAuthCookie(res, token);
+
+    res.json({
+      success: true,
+      user: { id: usuario.id, email: usuario.email },
+    });
   } catch (error) {
     console.error('Erro no login:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
 
+app.post('/api/admin/logout', (_req: Request, res: Response) => {
+  clearAuthCookie(res);
+  res.json({ success: true });
+});
+
+app.get('/api/admin/me', autenticarToken, (req: AuthRequest, res: Response) => {
+  res.json({ user: req.user });
+});
+
 // ============================================================
 // 9. ROTAS PROTEGIDAS
 // ============================================================
-app.get('/api/admin/empresas', autenticarToken, async (req: AuthRequest, res: Response) => {
+app.get('/api/admin/empresas', autenticarToken, async (_req: AuthRequest, res: Response) => {
   try {
     const empresas = await db.all(
       'SELECT id, cnpj, nome_empresa, status, google_review_url, criado_em, expira_em FROM empresas ORDER BY criado_em DESC'
@@ -324,7 +380,7 @@ app.get('/api/admin/empresas', autenticarToken, async (req: AuthRequest, res: Re
   }
 });
 
-app.get('/api/admin/reviews', autenticarToken, async (req: AuthRequest, res: Response) => {
+app.get('/api/admin/reviews', autenticarToken, async (_req: AuthRequest, res: Response) => {
   try {
     const reviews = await db.all('SELECT * FROM reviews ORDER BY createdAt DESC LIMIT 100');
     res.json(reviews);

@@ -1,58 +1,66 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Building2, FileText, CheckCircle2, AlertCircle, Globe, ExternalLink, Copy } from 'lucide-react';
+import { Building2, FileText, CheckCircle2, AlertCircle, Globe, ExternalLink, Copy, Link2 } from 'lucide-react';
 
-// 🌐 Dicionário de Idiomas
 const traducoes = {
   pt: {
-    titulo: "Ative seus 7 Dias Grátis",
-    subtitulo: "Insira os dados da sua empresa para liberar seu link e QR Code de avaliações imediatamente. Sem cartão de crédito.",
-    labelEmpresa: "Nome da Empresa",
-    placeholderEmpresa: "Ex: Restaurante Sabor Único",
-    labelCnpj: "CNPJ / Tax ID",
-    placeholderCnpj: "00.000.000/0000-00",
-    botao: "Ativar Meu Período de Testes",
-    carregando: "Processando ativação...",
-    sucesso: "Parabéns! Seu trial foi ativado com sucesso.",
-    copiarLink: "Copiar Link Oficial",
-    linkCopiado: "Link copiado para a área de transferência!",
-    abrirLink: "Abrir Página de Avaliação",
-    avisoExpiracao: "Seu acesso expira automaticamente em 7 dias se não houver assinatura.",
-    cnpjInvalido: "CNPJ inválido. Verifique os dígitos."
+    titulo: 'Ative seus 7 Dias Grátis',
+    subtitulo:
+      'Insira os dados da sua empresa para liberar seu link e QR Code de avaliações imediatamente. Sem cartão de crédito.',
+    labelEmpresa: 'Nome da Empresa',
+    placeholderEmpresa: 'Ex: Restaurante Sabor Único',
+    labelCnpj: 'CNPJ / Tax ID',
+    placeholderCnpj: '00.000.000/0000-00',
+    labelGoogle: 'Link do Google Reviews (opcional)',
+    placeholderGoogle: 'https://g.page/r/... ou link de avaliação',
+    botao: 'Ativar Meu Período de Testes',
+    carregando: 'Processando ativação...',
+    sucesso: 'Parabéns! Seu trial foi ativado com sucesso.',
+    copiarLink: 'Copiar Link Oficial',
+    linkCopiado: 'Link copiado para a área de transferência!',
+    abrirLink: 'Abrir Página de Avaliação',
+    avisoExpiracao: 'Seu acesso expira automaticamente em 7 dias se não houver assinatura.',
+    cnpjInvalido: 'CNPJ inválido. Verifique os dígitos.',
   },
   en: {
-    titulo: "Activate Your 7-Day Free Trial",
-    subtitulo: "Enter your company details to release your review link and QR Code immediately. No credit card required.",
-    labelEmpresa: "Company Name",
-    placeholderEmpresa: "Ex: Unique Flavor Restaurant",
-    labelCnpj: "Tax ID / Registration Number",
-    placeholderCnpj: "Numbers or Tax Registration",
-    botao: "Activate My Free Trial",
-    carregando: "Processing activation...",
-    sucesso: "Congratulations! Your trial has been successfully activated.",
-    copiarLink: "Copy Official Link",
-    linkCopiado: "Link copied to clipboard!",
-    abrirLink: "Open Review Page",
-    avisoExpiracao: "Your access automatically expires in 7 days without a subscription.",
-    cnpjInvalido: "Invalid Tax ID. Please check the information."
+    titulo: 'Activate Your 7-Day Free Trial',
+    subtitulo:
+      'Enter your company details to release your review link and QR Code immediately. No credit card required.',
+    labelEmpresa: 'Company Name',
+    placeholderEmpresa: 'Ex: Unique Flavor Restaurant',
+    labelCnpj: 'Tax ID / Registration Number',
+    placeholderCnpj: 'Numbers or Tax Registration',
+    labelGoogle: 'Google Reviews link (optional)',
+    placeholderGoogle: 'https://g.page/r/... or review link',
+    botao: 'Activate My Free Trial',
+    carregando: 'Processing activation...',
+    sucesso: 'Congratulations! Your trial has been successfully activated.',
+    copiarLink: 'Copy Official Link',
+    linkCopiado: 'Link copied to clipboard!',
+    abrirLink: 'Open Review Page',
+    avisoExpiracao: 'Your access automatically expires in 7 days without a subscription.',
+    cnpjInvalido: 'Invalid Tax ID. Please check the information.',
   },
   es: {
-    titulo: "Activa tus 7 Días Gratis",
-    subtitulo: "Ingresa los datos de tu empresa para liberar tu enlace y código QR de opiniones de inmediato. Sin tarjeta de crédito.",
-    labelEmpresa: "Nombre de la Empresa",
-    placeholderEmpresa: "Ej: Restaurante Sabor Único",
-    labelCnpj: "Identificación Fiscal / Tax ID",
-    placeholderCnpj: "Ingrese solo números o ID fiscal",
-    botao: "Activar Mi Período de Prueba",
-    carregando: "Procesando activación...",
-    sucesso: "¡Felicitaciones! Tu prueba ha sido activada con éxito.",
-    copiarLink: "Copiar Enlace Oficial",
-    linkCopiado: "¡Enlace copiado al portapapeles!",
-    abrirLink: "Abrir Página de Opiniones",
-    avisoExpiracao: "Tu acceso expira automáticamente en 7 días sin una suscripción.",
-    cnpjInvalido: "Identificación fiscal inválida. Verifique los dígitos."
-  }
+    titulo: 'Activa tus 7 Días Gratis',
+    subtitulo:
+      'Ingresa los datos de tu empresa para liberar tu enlace y código QR de opiniones de inmediato. Sin tarjeta de crédito.',
+    labelEmpresa: 'Nombre de la Empresa',
+    placeholderEmpresa: 'Ej: Restaurante Sabor Único',
+    labelCnpj: 'Identificación Fiscal / Tax ID',
+    placeholderCnpj: 'Ingrese solo números o ID fiscal',
+    labelGoogle: 'Enlace de Google Reviews (opcional)',
+    placeholderGoogle: 'https://g.page/r/... o enlace de opiniones',
+    botao: 'Activar Mi Período de Prueba',
+    carregando: 'Procesando activación...',
+    sucesso: '¡Felicitaciones! Tu prueba ha sido activada con éxito.',
+    copiarLink: 'Copiar Enlace Oficial',
+    linkCopiado: '¡Enlace copiado al portapapeles!',
+    abrirLink: 'Abrir Página de Opiniones',
+    avisoExpiracao: 'Tu acceso expira automáticamente en 7 días sin una suscripción.',
+    cnpjInvalido: 'Identificación fiscal inválida. Verifique los dígitos.',
+  },
 };
 
 type Idioma = 'pt' | 'en' | 'es';
@@ -78,6 +86,7 @@ export default function Home() {
   const [idioma, setIdioma] = useState<Idioma>('pt');
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [cnpj, setCnpj] = useState('');
+  const [googleUrl, setGoogleUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
   const [sucessoData, setSucessoData] = useState<{ link_acesso: string } | null>(null);
@@ -86,7 +95,7 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const langs = navigator.languages || [navigator.language || (navigator as any).userLanguage];
-      const lang = langs.find(l => l.startsWith('en') || l.startsWith('es') || l.startsWith('pt'));
+      const lang = langs.find((l) => l.startsWith('en') || l.startsWith('es') || l.startsWith('pt'));
       if (lang?.startsWith('en')) setIdioma('en');
       else if (lang?.startsWith('es')) setIdioma('es');
       else setIdioma('pt');
@@ -111,17 +120,13 @@ export default function Home() {
 
   const validarCnpjInput = (valor: string): boolean => {
     const numeros = valor.replace(/\D/g, '');
-    if (idioma === 'pt') {
-      return cnpjValido(numeros);
-    }
+    if (idioma === 'pt') return cnpjValido(numeros);
     return numeros.length >= 5;
   };
 
   const handleIdiomaChange = (novo: Idioma) => {
     setIdioma(novo);
-    if (novo !== 'pt') {
-      setCnpj(cnpj.replace(/\D/g, ''));
-    }
+    if (novo !== 'pt') setCnpj(cnpj.replace(/\D/g, ''));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,7 +151,11 @@ export default function Home() {
       const response = await fetch(`${apiUrl}/api/trial/ativar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cnpj: cnpjLimpo, nome_empresa: nomeEmpresa.trim() }),
+        body: JSON.stringify({
+          cnpj: cnpjLimpo,
+          nome_empresa: nomeEmpresa.trim(),
+          google_review_url: googleUrl.trim() || undefined,
+        }),
         signal: controller.signal,
       });
 
@@ -160,7 +169,11 @@ export default function Home() {
       if (err.name === 'AbortError') {
         setErro('Tempo de conexão esgotado. Tente novamente.');
       } else {
-        setErro(err.message === 'Failed to fetch' ? 'Não foi possível conectar ao servidor. Verifique se a API está online.' : err.message);
+        setErro(
+          err.message === 'Failed to fetch'
+            ? 'Não foi possível conectar ao servidor. Verifique se a API está online.'
+            : err.message
+        );
       }
     } finally {
       clearTimeout(timeout);
@@ -209,7 +222,10 @@ export default function Home() {
         </div>
 
         {erro && (
-          <div role="alert" className="flex items-center gap-3 bg-red-50 text-red-700 p-3.5 rounded-xl border border-red-100 text-sm">
+          <div
+            role="alert"
+            className="flex items-center gap-3 bg-red-50 text-red-700 p-3.5 rounded-xl border border-red-100 text-sm"
+          >
             <AlertCircle size={18} className="shrink-0" aria-hidden="true" />
             <span>{erro}</span>
           </div>
@@ -218,7 +234,10 @@ export default function Home() {
         {!sucessoData ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="nome-empresa" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+              <label
+                htmlFor="nome-empresa"
+                className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+              >
                 <Building2 size={14} aria-hidden="true" /> {t.labelEmpresa}
               </label>
               <input
@@ -233,7 +252,10 @@ export default function Home() {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="cnpj" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+              <label
+                htmlFor="cnpj"
+                className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+              >
                 <FileText size={14} aria-hidden="true" /> {t.labelCnpj}
               </label>
               <input
@@ -244,6 +266,23 @@ export default function Home() {
                 value={cnpj}
                 onChange={(e) => aplicarMascaraCnpj(e.target.value)}
                 placeholder={t.placeholderCnpj}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="google-url"
+                className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+              >
+                <Link2 size={14} aria-hidden="true" /> {t.labelGoogle}
+              </label>
+              <input
+                id="google-url"
+                type="url"
+                value={googleUrl}
+                onChange={(e) => setGoogleUrl(e.target.value)}
+                placeholder={t.placeholderGoogle}
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
               />
             </div>
@@ -301,4 +340,3 @@ export default function Home() {
     </div>
   );
 }
-

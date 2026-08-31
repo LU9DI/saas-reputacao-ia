@@ -24,6 +24,7 @@ export default function AdminLogin() {
       const response = await fetch(`${apiUrl}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, senha }),
         signal: controller.signal,
       });
@@ -35,8 +36,8 @@ export default function AdminLogin() {
         throw new Error(data.error || 'Credenciais inválidas.');
       }
 
-      // Armazenamento do token (para MVP; em produção, migre para cookies httpOnly)
-      localStorage.setItem('token_saas_reputacao', data.token);
+      // Token fica em cookie httpOnly — limpa eventual localStorage antigo
+      localStorage.removeItem('token_saas_reputacao');
 
       router.push('/admin');
     } catch (err: any) {
@@ -60,7 +61,10 @@ export default function AdminLogin() {
         </div>
 
         {erro && (
-          <div role="alert" className="flex items-center gap-3 bg-red-50 text-red-700 p-3.5 rounded-xl border border-red-100 text-sm">
+          <div
+            role="alert"
+            className="flex items-center gap-3 bg-red-50 text-red-700 p-3.5 rounded-xl border border-red-100 text-sm"
+          >
             <AlertCircle size={18} className="shrink-0" aria-hidden="true" />
             <span>{erro}</span>
           </div>
@@ -68,7 +72,10 @@ export default function AdminLogin() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+            <label
+              htmlFor="email"
+              className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+            >
               <Mail size={14} aria-hidden="true" /> E-mail
             </label>
             <input
@@ -77,14 +84,20 @@ export default function AdminLogin() {
               required
               autoComplete="email"
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setErro(''); }}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErro('');
+              }}
               placeholder="admin@seusaas.com"
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="senha" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+            <label
+              htmlFor="senha"
+              className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+            >
               <Lock size={14} aria-hidden="true" /> Senha
             </label>
             <input
@@ -93,7 +106,10 @@ export default function AdminLogin() {
               required
               autoComplete="current-password"
               value={senha}
-              onChange={(e) => { setSenha(e.target.value); setErro(''); }}
+              onChange={(e) => {
+                setSenha(e.target.value);
+                setErro('');
+              }}
               placeholder="••••••••"
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
             />

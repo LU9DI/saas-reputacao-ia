@@ -24,6 +24,8 @@ interface Review {
   createdAt: string;
 }
 
+const apiUrl = () => process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -31,37 +33,34 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token_saas_reputacao') : null;
-
   useEffect(() => {
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-    carregarDados(token);
-  }, [router, token]);
+    carregarDados();
+  }, []);
 
-  const carregarDados = async (token: string) => {
+  const carregarDados = async () => {
     setLoading(true);
     setErro('');
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      const headers = { Authorization: `Bearer ${token}` };
+      const base = apiUrl();
+
+      // Verifica sessão via cookie httpOnly
+      const meRes = await fetch(`${base}/api/admin/me`, { credentials: 'include' });
+      if (!meRes.ok) {
+        router.push('/admin/login');
+        return;
+      }
 
       const [resEmpresas, resReviews] = await Promise.all([
-        fetch(`${apiUrl}/api/admin/empresas`, { headers }),
-        fetch(`${apiUrl}/api/admin/reviews`, { headers }),
+        fetch(`${base}/api/admin/empresas`, { credentials: 'include' }),
+        fetch(`${base}/api/admin/reviews`, { credentials: 'include' }),
       ]);
 
       if (!resEmpresas.ok || !resReviews.ok) {
         throw new Error('Erro ao carregar dados.');
       }
 
-      const dadosEmpresas = await resEmpresas.json();
-      const dadosReviews = await resReviews.json();
-
-      setEmpresas(dadosEmpresas);
-      setReviews(dadosReviews);
+      setEmpresas(await resEmpresas.json());
+      setReviews(await resReviews.json());
     } catch {
       setErro('Falha ao buscar informações. Verifique se o backend está online.');
     } finally {
@@ -69,7 +68,15 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch(`${apiUrl()}/api/admin/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // ignora erro de rede no logout
+    }
     localStorage.removeItem('token_saas_reputacao');
     router.push('/admin/login');
   };
@@ -92,7 +99,7 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => token && carregarDados(token)}
+              onClick={carregarDados}
               className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors text-sm cursor-pointer"
             >
               <RefreshCw size={16} />
@@ -109,7 +116,10 @@ export default function AdminDashboard() {
         </div>
 
         {erro && (
-          <div className="flex items-center gap-3 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 text-sm" role="alert">
+          <div
+            className="flex items-center gap-3 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 text-sm"
+            role="alert"
+          >
             <AlertCircle size={18} className="shrink-0" />
             <span>{erro}</span>
           </div>
@@ -155,6 +165,7 @@ export default function AdminDashboard() {
                     <th className="px-5 py-3 text-left">Nome</th>
                     <th className="px-5 py-3 text-left">CNPJ</th>
                     <th className="px-5 py-3 text-left">Status</th>
+                    <th className="px-5 py-3 text-left">Google</th>
                     <th className="px-5 py-3 text-left">Expira em</th>
                   </tr>
                 </thead>
@@ -173,6 +184,20 @@ export default function AdminDashboard() {
                         >
                           {empresa.status}
                         </span>
+                      </td>
+                      <td className="px-5 py-4 text-slate-600">
+                        {empresa.google_review_url ? (
+                          <a
+                            href={empresa.google_review_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-indigo-600 hover:underline text-xs"
+                          >
+                            Link
+                          </a>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
                       </td>
                       <td className="px-5 py-4 text-slate-600">
                         {new Date(empresa.expira_em).toLocaleDateString()}
