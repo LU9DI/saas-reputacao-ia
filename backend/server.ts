@@ -19,11 +19,7 @@ app.use(cookieParser());
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000'].filter(Boolean) as string[];
 app.use(
   cors({
-    origin: (origin, cb) => {
-      // Widget pode ser embutido em qualquer site; rotas públicas toleram origem livre
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(null, true);
-    },
+    origin: true,
     credentials: true,
   })
 );
@@ -32,6 +28,7 @@ let db: Database;
 
 const COOKIE_NAME = 'saas_auth_token';
 const isProd = process.env.NODE_ENV === 'production';
+const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
 function setAuthCookie(res: Response, token: string) {
   res.cookie(COOKIE_NAME, token, {
@@ -52,6 +49,47 @@ function clearAuthCookie(res: Response) {
   });
 }
 
+/** Nome da empresa → slug amigável (ex: "Pizzaria do Zé" → "pizzaria-do-ze") */
+function slugify(texto: string): string {
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48) || 'empresa';
+}
+
+async function slugUnico(base: string): Promise<string> {
+  let slug = base;
+  let n = 0;
+  while (true) {
+    const existe = await db.get('SELECT id FROM empresas WHERE slug = ?', [slug]);
+    if (!existe) return slug;
+    n += 1;
+    slug = `${base}-${n}`;
+  }
+}
+
+/** Busca empresa por UUID ou por slug */
+async function findEmpresa(ref: string) {
+  if (!ref) return null;
+  // UUID tem hífens e 36 chars tipicamente
+  const porId = await db.get('SELECT * FROM empresas WHERE id = ?', [ref]);
+  if (porId) return porId;
+  return db.get('SELECT * FROM empresas WHERE slug = ?', [ref]);
+}
+
+function linksEmpresa(slugOrId: string) {
+  const key = slugOrId;
+  return {
+    avaliacao: `${APP_URL}/avaliacao/${key}`,
+    painel: `${APP_URL}/painel/${key}`,
+    widget: `${APP_URL}/widget/${key}`,
+    embed: `<iframe src="${APP_URL}/widget/${key}" width="100%" height="420" frameborder="0" style="border:0;border-radius:12px;" title="Avaliações"></iframe>`,
+  };
+}
+
 async function initDB() {
   db = await open({ filename: './database.sqlite', driver: sqlite3.Database });
 
@@ -60,6 +98,7 @@ async function initDB() {
       id TEXT PRIMARY KEY,
       cnpj TEXT UNIQUE NOT NULL,
       nome_empresa TEXT NOT NULL,
+      slug TEXT UNIQUE,
       status TEXT DEFAULT 'trial',
       criado_em DATETIME NOT NULL,
       expira_em DATETIME NOT NULL,
@@ -69,11 +108,31 @@ async function initDB() {
   `);
 
   const colunasEmpresas = await db.all(`PRAGMA table_info(empresas)`);
-  if (!colunasEmpresas.some((col: any) => col.name === 'google_review_url')) {
+  const nomes = colunasEmpresas.map((c: any) => c.name);
+  if (!nomes.includes('google_review_url')) {
     await db.exec(`ALTER TABLE empresas ADD COLUMN google_review_url TEXT`);
   }
-  if (!colunasEmpresas.some((col: any) => col.name === 'voice_style')) {
+  if (!nomes.includes('voice_style')) {
     await db.exec(`ALTER TABLE empresas ADD COLUMN voice_style TEXT`);
+  }
+  if (!nomes.includes('slug')) {
+    await db.exec(`ALTER TABLE empresas ADD COLUMN slug TEXT`);
+  }
+
+  // Preenche slug para empresas antigas sem slug
+  const semSlug = await db.all('SELECT id, nome_empresa FROM empresas WHERE slug IS NULL OR slug = ""');
+  for (const e of semSlug) {
+    const base = slugify(e.nome_empresa);
+    const slug = await slugUnico(base);
+    await db.run('UPDATE empresas SET slug = ? WHERE id = ?', [slug, e.id]);
+    console.log(`🔗 Slug gerado: ${slug} ← ${e.nome_empresa}`);
+  }
+
+  // Índice único no slug (se ainda não existir)
+  try {
+    await db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_empresas_slug ON empresas(slug)`);
+  } catch {
+    /* ok */
   }
 
   await db.exec(`
@@ -139,11 +198,11 @@ function cnpjValido(cnpj: string): boolean {
   return parseInt(cnpj[12]) === digito1 && parseInt(cnpj[13]) === digito2;
 }
 
-function validarReview(body: any): { name: string; rating: number; comment: string; empresa_id?: string } | { error: string } {
+function validarReview(body: any): { name: string; rating: number; comment: string; empresa_ref?: string } | { error: string } {
   const name = String(body.name ?? '').trim().slice(0, 100);
   const comment = String(body.comment ?? '').trim().slice(0, 500);
   const rating = Number(body.rating);
-  const empresa_id = body.empresa_id ? String(body.empresa_id).slice(0, 100) : undefined;
+  const empresa_ref = body.empresa_id ? String(body.empresa_id).slice(0, 100) : undefined;
 
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
     return { error: 'Rating deve ser um número inteiro entre 1 e 5.' };
@@ -151,7 +210,7 @@ function validarReview(body: any): { name: string; rating: number; comment: stri
   if (rating <= 3 && comment.length === 0) {
     return { error: 'Comentário é obrigatório para avaliações negativas.' };
   }
-  return { name, rating, comment, empresa_id };
+  return { name, rating, comment, empresa_ref };
 }
 
 function safeParseTags(raw: string): string[] {
@@ -219,18 +278,19 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
     if (!cnpjValido(cnpj)) return res.status(400).json({ error: 'CNPJ inválido.' });
     if (nome.length < 2 || nome.length > 120) return res.status(400).json({ error: 'Nome da empresa inválido.' });
     if (googleReviewUrl && !/^https?:\/\//i.test(googleReviewUrl)) {
-      return res.status(400).json({ error: 'URL do Google Reviews inválida. Use um link completo (https://...).' });
+      return res.status(400).json({ error: 'URL do Google Reviews inválida.' });
     }
 
     const id = crypto.randomUUID();
+    const slug = await slugUnico(slugify(nome));
     const criadoEm = new Date();
     const expiraEm = new Date(criadoEm.getTime() + 7 * 24 * 60 * 60 * 1000);
 
     try {
       await db.run(
-        `INSERT INTO empresas (id, cnpj, nome_empresa, google_review_url, criado_em, expira_em)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [id, cnpj, nome, googleReviewUrl || null, criadoEm.toISOString(), expiraEm.toISOString()]
+        `INSERT INTO empresas (id, cnpj, nome_empresa, slug, google_review_url, criado_em, expira_em)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [id, cnpj, nome, slug, googleReviewUrl || null, criadoEm.toISOString(), expiraEm.toISOString()]
       );
     } catch (e: any) {
       if (e.code === 'SQLITE_CONSTRAINT') {
@@ -239,13 +299,14 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
       throw e;
     }
 
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const links = linksEmpresa(slug);
     res.status(201).json({
       success: true,
       empresa_id: id,
-      link_acesso: `${appUrl}/avaliacao/${id}`,
-      link_painel: `${appUrl}/painel/${id}`,
-      link_widget: `${appUrl}/widget/${id}`,
+      slug,
+      link_acesso: links.avaliacao,
+      link_painel: links.painel,
+      link_widget: links.widget,
       expira_em: expiraEm.toISOString(),
     });
   } catch (error) {
@@ -254,10 +315,9 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
   }
 });
 
-app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
-  const { id } = req.params;
+app.get('/api/empresa/:ref/validar', async (req: Request, res: Response) => {
   try {
-    const empresa = await db.get('SELECT * FROM empresas WHERE id = ?', [id]);
+    const empresa = await findEmpresa(req.params.ref);
     if (!empresa) return res.status(404).json({ valido: false, motivo: 'not_found' });
 
     const agora = new Date();
@@ -268,6 +328,8 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
         valido: false,
         motivo: 'expired',
         nome: empresa.nome_empresa,
+        empresa_id: empresa.id,
+        slug: empresa.slug,
         google_review_url: empresa.google_review_url || null,
       });
     }
@@ -276,6 +338,8 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
       return res.json({
         valido: true,
         nome: empresa.nome_empresa,
+        empresa_id: empresa.id,
+        slug: empresa.slug,
         google_review_url: empresa.google_review_url || null,
       });
     }
@@ -284,31 +348,31 @@ app.get('/api/empresa/:id/validar', async (req: Request, res: Response) => {
       valido: false,
       motivo: 'inactive',
       nome: empresa.nome_empresa,
+      empresa_id: empresa.id,
+      slug: empresa.slug,
       google_review_url: empresa.google_review_url || null,
     });
   } catch (error) {
-    console.error('Erro ao validar acesso:', error);
+    console.error('Erro ao validar:', error);
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
 
-// ---- Widget público (só reviews positivas com comentário) ----
-app.get('/api/empresa/:id/widget', async (req: Request, res: Response) => {
-  const { id } = req.params;
+app.get('/api/empresa/:ref/widget', async (req: Request, res: Response) => {
   const limit = Math.min(Number(req.query.limit) || 6, 20);
   try {
-    const empresa = await db.get('SELECT id, nome_empresa, status FROM empresas WHERE id = ?', [id]);
+    const empresa = await findEmpresa(req.params.ref);
     if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
 
     const reviews = await db.all(
       `SELECT name, rating, comment, createdAt FROM reviews
        WHERE empresa_id = ? AND rating >= 4 AND comment IS NOT NULL AND TRIM(comment) != ''
        ORDER BY createdAt DESC LIMIT ?`,
-      [id, limit]
+      [empresa.id, limit]
     );
 
     res.json({
-      empresa: { id: empresa.id, nome: empresa.nome_empresa },
+      empresa: { id: empresa.id, slug: empresa.slug, nome: empresa.nome_empresa },
       reviews,
     });
   } catch (error) {
@@ -317,19 +381,14 @@ app.get('/api/empresa/:id/widget', async (req: Request, res: Response) => {
   }
 });
 
-// ---- Painel do empresário ----
-app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
-  const { id } = req.params;
+app.get('/api/empresa/:ref/painel', async (req: Request, res: Response) => {
   try {
-    const empresa = await db.get(
-      'SELECT id, nome_empresa, status, cnpj, google_review_url, criado_em, expira_em, voice_style FROM empresas WHERE id = ?',
-      [id]
-    );
+    const empresa = await findEmpresa(req.params.ref);
     if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
 
     const reviews = await db.all(
       'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 200',
-      [id]
+      [empresa.id]
     );
 
     const parsed = reviews.map((r: any) => ({
@@ -347,22 +406,18 @@ app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
       (r: any) => r.rating <= 2 && new Date(r.createdAt).getTime() >= ha24h
     ).length;
 
-    const tagCount: Record<string, number> = {};
-    for (const r of parsed) {
-      for (const tag of r.ai_tags as string[]) {
-        tagCount[tag] = (tagCount[tag] || 0) + 1;
-      }
-    }
-    const topTags = Object.entries(tagCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([tag, count]) => ({ tag, count }));
-
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const key = empresa.slug || empresa.id;
 
     res.json({
       empresa: {
-        ...empresa,
+        id: empresa.id,
+        slug: empresa.slug,
+        nome_empresa: empresa.nome_empresa,
+        status: empresa.status,
+        cnpj: empresa.cnpj,
+        google_review_url: empresa.google_review_url,
+        criado_em: empresa.criado_em,
+        expira_em: empresa.expira_em,
         voice_style: empresa.voice_style || '',
       },
       reviews: parsed,
@@ -374,13 +429,7 @@ app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
         alerta_crise: crisesRecentes >= 3,
         crises_24h: crisesRecentes,
       },
-      top_tags: topTags,
-      links: {
-        avaliacao: `${appUrl}/avaliacao/${id}`,
-        painel: `${appUrl}/painel/${id}`,
-        widget: `${appUrl}/widget/${id}`,
-        embed: `<iframe src="${appUrl}/widget/${id}" width="100%" height="420" frameborder="0" style="border:0;border-radius:12px;"></iframe>`,
-      },
+      links: linksEmpresa(key),
     });
   } catch (error) {
     console.error('Erro no painel:', error);
@@ -388,14 +437,12 @@ app.get('/api/empresa/:id/painel', async (req: Request, res: Response) => {
   }
 });
 
-// Salvar voz do dono (exemplos de estilo)
-app.put('/api/empresa/:id/voice-style', async (req: Request, res: Response) => {
-  const { id } = req.params;
+app.put('/api/empresa/:ref/voice-style', async (req: Request, res: Response) => {
   const voiceStyle = String(req.body.voice_style ?? '').trim().slice(0, 3000);
   try {
-    const empresa = await db.get('SELECT id FROM empresas WHERE id = ?', [id]);
+    const empresa = await findEmpresa(req.params.ref);
     if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
-    await db.run('UPDATE empresas SET voice_style = ? WHERE id = ?', [voiceStyle || null, id]);
+    await db.run('UPDATE empresas SET voice_style = ? WHERE id = ?', [voiceStyle || null, empresa.id]);
     res.json({ success: true });
   } catch (error) {
     console.error('Erro ao salvar voice_style:', error);
@@ -403,34 +450,35 @@ app.put('/api/empresa/:id/voice-style', async (req: Request, res: Response) => {
   }
 });
 
-// ---- Reviews ----
 app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => {
   const resultado = validarReview(req.body);
   if ('error' in resultado) return res.status(400).json({ error: resultado.error });
 
-  const { name, rating, comment, empresa_id } = resultado;
+  const { name, rating, comment, empresa_ref } = resultado;
 
   try {
+    let empresaId: string | null = null;
+    let nomeEmpresa: string | undefined;
+    let voiceStyle: string | undefined;
+
+    if (empresa_ref) {
+      const empresa = await findEmpresa(empresa_ref);
+      if (empresa) {
+        empresaId = empresa.id;
+        nomeEmpresa = empresa.nome_empresa;
+        voiceStyle = empresa.voice_style || undefined;
+      }
+    }
+
     let aiReply: string | null = null;
     let aiTags: string[] = [];
 
     if (process.env.GROQ_API_KEY) {
-      let nomeEmpresa: string | undefined;
-      let voiceStyle: string | undefined;
-      if (empresa_id) {
-        const empresa = await db.get('SELECT nome_empresa, voice_style FROM empresas WHERE id = ?', [
-          empresa_id,
-        ]);
-        nomeEmpresa = empresa?.nome_empresa;
-        voiceStyle = empresa?.voice_style || undefined;
-      }
-
       try {
         aiTags = await gerarTagsSemanticas(rating, comment || '');
       } catch (e) {
         console.error('Falha ao gerar tags:', e);
       }
-
       if (rating <= 3 && comment) {
         try {
           aiReply = await gerarRespostaReview(name, rating, comment, nomeEmpresa, voiceStyle);
@@ -442,10 +490,9 @@ app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => 
 
     await db.run(
       'INSERT INTO reviews (empresa_id, name, rating, comment, ai_reply, ai_tags) VALUES (?, ?, ?, ?, ?, ?)',
-      [empresa_id || null, name, rating, comment, aiReply, JSON.stringify(aiTags)]
+      [empresaId, name, rating, comment, aiReply, JSON.stringify(aiTags)]
     );
 
-    console.log('📥 Review salvo:', { name, rating, empresa_id, tags: aiTags.length, temAiReply: !!aiReply });
     res.status(201).json({ success: true, ai_reply: aiReply, ai_tags: aiTags });
   } catch (error) {
     console.error('Erro ao salvar review:', error);
@@ -483,7 +530,7 @@ app.get('/api/admin/me', autenticarToken, (req: AuthRequest, res: Response) => {
 app.get('/api/admin/empresas', autenticarToken, async (_req: AuthRequest, res: Response) => {
   try {
     const empresas = await db.all(
-      'SELECT id, cnpj, nome_empresa, status, google_review_url, criado_em, expira_em FROM empresas ORDER BY criado_em DESC'
+      'SELECT id, slug, cnpj, nome_empresa, status, google_review_url, criado_em, expira_em FROM empresas ORDER BY criado_em DESC'
     );
     res.json(empresas);
   } catch (error) {
@@ -532,9 +579,9 @@ const PORT = process.env.PORT || 5000;
 async function main() {
   try {
     await initDB();
-    app.listen(PORT, () => console.log(`🚀 Servidor rodando em http://localhost:${PORT}`));
+    app.listen(PORT, () => console.log(`🚀 Servidor em http://localhost:${PORT}`));
   } catch (error) {
-    console.error('❌ Falha ao inicializar o banco de dados:', error);
+    console.error('❌ Falha ao iniciar:', error);
     process.exit(1);
   }
 }
