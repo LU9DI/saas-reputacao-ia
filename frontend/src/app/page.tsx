@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { getEnv } from './utils/env';
+import { PlanCards } from './components/PlanCards';
 
 const traducoes = {
   pt: {
@@ -38,6 +39,7 @@ const traducoes = {
     avisoExpiracao: 'Seu acesso expira automaticamente em 7 dias se não houver assinatura.',
     cnpjInvalido: 'CNPJ inválido. Verifique os dígitos.',
     qrHint: 'Imprima e cole no balcão, cardápio ou embalagem.',
+    planosTitulo: 'Quer continuar depois do trial?',
   },
   en: {
     titulo: 'Activate Your 7-Day Free Trial',
@@ -60,6 +62,7 @@ const traducoes = {
     avisoExpiracao: 'Your access automatically expires in 7 days without a subscription.',
     cnpjInvalido: 'Invalid Tax ID. Please check the information.',
     qrHint: 'Print and place on the counter, menu or packaging.',
+    planosTitulo: 'Want to continue after the trial?',
   },
   es: {
     titulo: 'Activa tus 7 Días Gratis',
@@ -82,6 +85,7 @@ const traducoes = {
     avisoExpiracao: 'Tu acceso expira automáticamente en 7 días sin una suscripción.',
     cnpjInvalido: 'Identificación fiscal inválida. Verifique los dígitos.',
     qrHint: 'Imprime y coloca en el mostrador, menú o empaque.',
+    planosTitulo: '¿Quieres continuar después de la prueba?',
   },
 };
 
@@ -118,6 +122,7 @@ export default function Home() {
   } | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [checkoutMsg, setCheckoutMsg] = useState('');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -126,6 +131,10 @@ export default function Home() {
       if (lang?.startsWith('en')) setIdioma('en');
       else if (lang?.startsWith('es')) setIdioma('es');
       else setIdioma('pt');
+
+      const q = new URLSearchParams(window.location.search);
+      if (q.get('checkout') === 'success') setCheckoutMsg('Pagamento recebido. Seu plano será ativado em instantes.');
+      if (q.get('checkout') === 'cancel') setCheckoutMsg('Checkout cancelado. Você pode tentar de novo quando quiser.');
     }
   }, []);
 
@@ -246,7 +255,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 font-sans text-slate-800">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 font-sans text-slate-800 gap-10">
       <div className="absolute top-4 right-4 flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-200">
         <Globe size={16} className="text-slate-500" aria-hidden="true" />
         <select
@@ -260,6 +269,12 @@ export default function Home() {
           <option value="es">Español</option>
         </select>
       </div>
+
+      {checkoutMsg && (
+        <div className="w-full max-w-md bg-emerald-50 border border-emerald-100 text-emerald-800 text-sm rounded-xl px-4 py-3 text-center">
+          {checkoutMsg}
+        </div>
+      )}
 
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8 space-y-6">
         <div className="text-center space-y-2">
@@ -409,6 +424,12 @@ export default function Home() {
             <p className="text-xs text-slate-400 italic pt-2">{t.avisoExpiracao}</p>
           </div>
         )}
+      </div>
+
+      {/* Planos → Stripe Checkout (cartão) */}
+      <div className="w-full px-2 pb-10">
+        <p className="text-center text-sm font-medium text-slate-600 mb-4">{t.planosTitulo}</p>
+        <PlanCards empresaId={sucessoData?.empresa_id} requireEmpresa={false} />
       </div>
     </div>
   );
