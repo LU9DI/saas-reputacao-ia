@@ -10,6 +10,8 @@ export type PlanCard = {
   period: string;
   features: string[];
   highlight?: boolean;
+  /** true = assinatura mensal (texto de cancelamento Netflix-style) */
+  mensal?: boolean;
 };
 
 const DEFAULT_PLANS: PlanCard[] = [
@@ -19,6 +21,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     price: 'R$ 69,90',
     period: '/mês',
     features: ['150 avaliações/mês', 'WhatsApp integrado', 'Gráficos básicos'],
+    mensal: true,
   },
   {
     key: 'pro-anual',
@@ -26,6 +29,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     price: 'R$ 49,90',
     period: '/mês (cobrança anual)',
     features: ['150 avaliações/mês', 'Economia no anual', 'WhatsApp integrado'],
+    mensal: false,
   },
   {
     key: 'ultra',
@@ -34,6 +38,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     period: '/mês',
     features: ['1.000 avaliações/mês', 'Respostas com IA', '1 relatório PDF/mês'],
     highlight: true,
+    mensal: true,
   },
   {
     key: 'corporate',
@@ -41,12 +46,15 @@ const DEFAULT_PLANS: PlanCard[] = [
     price: 'R$ 499,90',
     period: '/mês',
     features: ['Avaliações ilimitadas', 'IA sem limites', 'Dashboard multi-unidades'],
+    mensal: true,
   },
 ];
 
+const TEXTO_CANCELAMENTO_MENSAL =
+  'A assinatura mensal poderá ser cancelada a qualquer momento. Em caso de cancelamento antes do término do ciclo, o acesso permanece ativo até o último dia do período já pago — sem cobrança adicional no mês seguinte.';
+
 type Props = {
   empresaId?: string | null;
-  /** Se true, exige empresaId antes de ir ao Stripe */
   requireEmpresa?: boolean;
 };
 
@@ -57,7 +65,7 @@ export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
   const irParaCheckout = async (planoKey: string) => {
     setErro('');
     if (requireEmpresa && !empresaId) {
-      setErro('Ative o trial acima antes de assinar um plano, ou informe a empresa.');
+      setErro('Ative o período de testes acima antes de assinar um plano.');
       return;
     }
     setLoading(planoKey);
@@ -74,7 +82,6 @@ export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
       if (!data.checkout_url) throw new Error('URL de checkout ausente.');
-      // Redireciona para a tela de cartão do Stripe
       window.location.href = data.checkout_url;
     } catch (e: any) {
       setErro(e.message || 'Erro ao abrir checkout');
@@ -84,10 +91,14 @@ export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4">
-      <div className="text-center space-y-1">
-        <h2 className="text-lg font-bold text-slate-900">Escolha seu plano</h2>
-        <p className="text-sm text-slate-500">
-          Ao clicar, você vai para a tela segura do Stripe para cadastrar o cartão.
+      <div className="text-center space-y-2">
+        <h2 className="text-lg font-bold text-slate-900">Escolha o plano mais adequado</h2>
+        <p className="text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          Ao selecionar um plano, você será direcionado à página segura do Stripe para cadastrar o
+          meio de pagamento.
+        </p>
+        <p className="text-xs text-slate-600 max-w-2xl mx-auto leading-relaxed bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left sm:text-center">
+          {TEXTO_CANCELAMENTO_MENSAL}
         </p>
       </div>
 
@@ -101,8 +112,7 @@ export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
         {DEFAULT_PLANS.map((p) => (
           <div
             key={p.key}
-            className={`rounded-2xl border p-4 flex flex-col bg-white ${
-              p.highlight ? 'border-indigo-300 shadow-md ring-1 ring-indigo-100' : 'border-slate-200'
+            className={`rounded-2xl border p-4 flex flex-col bg-white ${\n              p.highlight ? 'border-indigo-300 shadow-md ring-1 ring-indigo-100' : 'border-slate-200'
             }`}
           >
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{p.label}</p>
@@ -116,13 +126,17 @@ export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
                   • {f}
                 </li>
               ))}
+              {p.mensal && (
+                <li className="text-xs text-slate-500 leading-snug pt-1">
+                  • Cancelamento a qualquer momento, com uso até o fim do ciclo pago
+                </li>
+              )}
             </ul>
             <button
               type="button"
               disabled={!!loading}
               onClick={() => irParaCheckout(p.key)}
-              className={`mt-4 w-full py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 ${
-                p.highlight
+              className={`mt-4 w-full py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 ${\n                p.highlight
                   ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
                   : 'bg-slate-900 hover:bg-slate-800 text-white'
               }`}
