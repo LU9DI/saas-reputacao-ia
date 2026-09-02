@@ -1,4 +1,7 @@
 // Serviço de geração de respostas e tags com Groq
+import { getPlanFromRequest, getCurrentMonth } from './planUtils.js';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
@@ -13,15 +16,15 @@ async function callGroq(
     throw new Error('GROQ_API_KEY não configurada. Defina no arquivo .env');
   }
 
-  const body = {
-    model: 'llama-3.3-70b-versatile',
+const body = {
+    model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b', // Tenta ler do .env, senão usa o padrão
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },
     ],
     max_tokens: maxTokens,
     temperature,
-  };
+};
 
   const response = await fetch(GROQ_API_URL, {
     method: 'POST',

@@ -24,7 +24,7 @@ app.use(
   })
 );
 
-let db: Database;
+export let db: Database;
 
 const COOKIE_NAME = 'saas_auth_token';
 const isProd = process.env.NODE_ENV === 'production';
@@ -106,6 +106,41 @@ async function initDB() {
       voice_style TEXT
     );
   `);
+
+  // Tabela para controle de uso da IA (tags e respostas)
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS usage (
+      plan TEXT NOT NULL,
+      month TEXT NOT NULL,
+      tags INTEGER DEFAULT 0,
+      respostas INTEGER DEFAULT 0,
+      PRIMARY KEY (plan, month)
+    );
+  `);
+
+  // Tabela para QR Codes seguros
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS qrcodes (
+      id TEXT PRIMARY KEY,
+      empresa_id TEXT NOT NULL,
+      criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (empresa_id) REFERENCES empresas(id)
+    );
+  `);
+
+  // Tabela para relatórios mensais agregados
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS relatorios_mensais (
+      empresa_id TEXT NOT NULL,
+      mes TEXT NOT NULL,
+      total INTEGER,
+      media REAL,
+      negativas INTEGER,
+      positivas INTEGER,
+      PRIMARY KEY (empresa_id, mes)
+    );
+  `);
+
 
   const colunasEmpresas = await db.all(`PRAGMA table_info(empresas)`);
   const nomes = colunasEmpresas.map((c: any) => c.name);
@@ -401,6 +436,22 @@ app.get('/api/empresa/:ref/painel', async (req: Request, res: Response) => {
     const negativas = parsed.filter((r: any) => r.rating <= 3).length;
     const positivas = parsed.filter((r: any) => r.rating >= 4).length;
 
+    // ----- cálculo do período anterior (mesmo número de reviews) -----
+    const oldestCurrent = parsed[parsed.length - 1]?.createdAt;
+    let prevTotal = 0;
+    let prevMedia = 0;
+    let evolucaoPercentual = 0;
+    if (oldestCurrent) {
+      const previous = await db.all(
+        `SELECT * FROM reviews WHERE empresa_id = ? AND createdAt < ? ORDER BY createdAt DESC LIMIT ?`,
+        [empresa.id, oldestCurrent, total]
+      );
+      prevTotal = previous.length;
+      const prevSum = previous.reduce((s: number, r: any) => s + r.rating, 0);
+      prevMedia = prevTotal > 0 ? prevSum / prevTotal : 0;
+      evolucaoPercentual = prevMedia === 0 ? 0 : ((media - prevMedia) / prevMedia) * 100;
+    }
+
     const ha24h = Date.now() - 24 * 60 * 60 * 1000;
     const crisesRecentes = parsed.filter(
       (r: any) => r.rating <= 2 && new Date(r.createdAt).getTime() >= ha24h
@@ -422,13 +473,16 @@ app.get('/api/empresa/:ref/painel', async (req: Request, res: Response) => {
       },
       reviews: parsed,
       metricas: {
-        total,
-        media: Math.round(media * 10) / 10,
-        negativas,
-        positivas,
-        alerta_crise: crisesRecentes >= 3,
-        crises_24h: crisesRecentes,
-      },
+          total,
+          media: Math.round(media * 10) / 10,
+          prevTotal,
+          prevMedia: Math.round(prevMedia * 10) / 10,
+          evolucao_percentual: Math.round(evolucaoPercentual * 10) / 10,
+          negativas,
+          positivas,
+          alerta_crise: crisesRecentes >= 3,
+          crises_24h: crisesRecentes,
+        },
       links: linksEmpresa(key),
     });
   } catch (error) {
