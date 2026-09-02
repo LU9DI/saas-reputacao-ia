@@ -1,18 +1,8 @@
 /**
  * Stripe Checkout — planos do produto atual (Pro / Ultra / Corporativo).
  * Não altera regras de trial, PDF ou IA; só cobrança e ativação via webhook.
- *
- * Env:
- *   STRIPE_SECRET_KEY=sk_test_... ou sk_live_...
- *   STRIPE_WEBHOOK_SECRET=whsec_...  (produção: obrigatório)
- *   APP_URL / FRONTEND_URL — success/cancel URLs
- *
- * Opcional (Price IDs do Dashboard). Se omitidos, usa price_data em BRL:
- *   STRIPE_PRICE_PRO_MONTHLY=
- *   STRIPE_PRICE_PRO_YEARLY=
- *   STRIPE_PRICE_ULTRA=
- *   STRIPE_PRICE_CORPORATE=
  */
+import crypto from 'crypto';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
@@ -22,10 +12,8 @@ export type PlanoDef = {
   key: PlanoKey;
   planDb: 'pro' | 'ultra' | 'corporate';
   label: string;
-  /** centavos BRL */
   unitAmount: number;
   interval: 'month' | 'year';
-  /** reviews/mês — alinhado ao server.ts */
   reviewLimit: number;
   envPriceId?: string;
 };
@@ -44,7 +32,7 @@ export const PLANOS: Record<string, PlanoDef> = {
     key: 'pro-anual',
     planDb: 'pro',
     label: 'Pro Anual',
-    unitAmount: 4990 * 12, // R$ 49,90/mês cobrado anualmente
+    unitAmount: 4990 * 12,
     interval: 'year',
     reviewLimit: 150,
     envPriceId: process.env.STRIPE_PRICE_PRO_YEARLY,
@@ -100,10 +88,7 @@ function appUrl(): string {
   );
 }
 
-async function stripeForm(
-  path: string,
-  params: Record<string, string>
-): Promise<any> {
+async function stripeForm(path: string, params: Record<string, string>): Promise<any> {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY não configurada');
 
@@ -176,21 +161,17 @@ export async function criarCheckoutSession(opts: {
   };
 }
 
-/** Verificação de assinatura do webhook (Stripe-Signature). */
 export function constructStripeEvent(rawBody: Buffer | string, signature: string | undefined): any {
   const secret = stripeWebhookSecret();
   const isProd = process.env.NODE_ENV === 'production';
 
   if (!secret) {
     if (isProd) throw new Error('STRIPE_WEBHOOK_SECRET obrigatório em produção');
-    // dev: aceita JSON cru sem assinatura
     const text = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
     return JSON.parse(text);
   }
   if (!signature) throw new Error('Assinatura Stripe ausente');
 
-  // Verificação HMAC no padrão Stripe (t=,v1=)
-  const crypto = require('crypto') as typeof import('crypto');
   const elements = signature.split(',').map((p) => p.trim());
   let timestamp = '';
   const signatures: string[] = [];
@@ -213,7 +194,6 @@ export function constructStripeEvent(rawBody: Buffer | string, signature: string
   });
   if (!ok) throw new Error('Falha na verificação da assinatura Stripe');
 
-  // tolerância de 5 min
   const ts = Number(timestamp);
   if (Math.abs(Date.now() / 1000 - ts) > 300) throw new Error('Timestamp Stripe expirado');
 
