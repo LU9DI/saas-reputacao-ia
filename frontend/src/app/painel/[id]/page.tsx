@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
+import { getEnv } from '../../utils/env';
 
 interface Review {
   id: number;
@@ -57,11 +58,11 @@ export default function PainelEmpresa() {
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
 
-  const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
     typeof window !== 'undefined'
       ? window.location.origin
-      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      : getEnv('NEXT_PUBLIC_APP_URL');
 
   const linkAvaliacao =
     data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
@@ -325,3 +326,4 @@ export default function PainelEmpresa() {
     </div>
   );
 }
+

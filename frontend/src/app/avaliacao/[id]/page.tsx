@@ -22,7 +22,7 @@ export default function PaginaAvaliacao() {
 
   const validarAcesso = async () => {
     setErroValidacao(false);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
       const response = await fetch(`${apiUrl}/api/empresa/${empresaId}/validar`);
       const data = await response.json();
@@ -48,7 +48,7 @@ export default function PaginaAvaliacao() {
     setErro('');
 
     if (selectedRating >= 4) {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const payload = JSON.stringify({
         name: name || 'Anônimo',
         rating: selectedRating,
@@ -79,7 +79,7 @@ export default function PaginaAvaliacao() {
     setErro('');
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${apiUrl}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

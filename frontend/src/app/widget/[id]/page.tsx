@@ -23,7 +23,7 @@ export default function WidgetProvas() {
       setLoading(false);
       return;
     }
-    const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const api = process.env.NEXT_PUBLIC_API_URL;
     fetch(`${api}/api/empresa/${id}/widget?limit=6`)
       .then(async (r) => {
         const j = await r.json().catch(() => ({}));

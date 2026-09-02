@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import QRCode from 'qrcode';
 import { Building2, QrCode, RefreshCw, AlertCircle } from 'lucide-react';
+import { getEnv } from '../../utils/env';
 
 interface Empresa {
   id: string;
@@ -29,7 +30,7 @@ export default function QrCodesPage() {
 
     const buscarEmpresas = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         const response = await fetch(`${apiUrl}/api/admin/empresas`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -63,7 +64,7 @@ export default function QrCodesPage() {
     setLoading(true);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const baseUrl = getEnv('NEXT_PUBLIC_APP_URL');
       const link = `${baseUrl}/avaliacao/${empresaSelecionada}?mesa=${tableNumber}`;
 
       const url = await QRCode.toDataURL(link, {

@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import QRCode from 'qrcode';
+import { getEnv } from './utils/env';
 
 const traducoes = {
   pt: {
@@ -184,7 +185,7 @@ export default function Home() {
     const timeout = setTimeout(() => controller.abort(), 10000);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
       const cnpjLimpo = cnpj.replace(/\D/g, '');
 
       const response = await fetch(`${apiUrl}/api/trial/ativar`, {
