@@ -1,10 +1,13 @@
 /**
- * Rotas Stripe isoladas — montadas no server atual sem reescrever trial/IA/PDF.
+ * Rotas Stripe isoladas.
+ * Política de cancelamento (assinatura mensal):
+ * - Pode cancelar a qualquer momento.
+ * - O acesso permanece até o fim do período já pago (current_period_end).
+ * - Só então o status passa a bloqueado (evento subscription.deleted / fim do ciclo).
  */
 import type { Express, Request, Response } from 'express';
 import type { Database } from 'sqlite';
 import express from 'express';
-import crypto from 'crypto';
 import {
   stripeConfigured,
   criarCheckoutSession,
@@ -22,6 +25,25 @@ async function ensureStripeColumns(db: Database) {
   if (!cols.includes('stripe_subscription_id')) {
     await db.exec(`ALTER TABLE empresas ADD COLUMN stripe_subscription_id TEXT`);
   }
+  // 1 = solicitou cancelamento; acesso segue até expira_em
+  if (!cols.includes('cancel_at_period_end')) {
+    await db.exec(`ALTER TABLE empresas ADD COLUMN cancel_at_period_end INTEGER DEFAULT 0`);
+  }
+}
+
+/** Unix seconds → ISO */
+function fromUnix(sec: unknown): string | null {
+  const n = Number(sec);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return new Date(n * 1000).toISOString();
+}
+
+function periodEndFromStripe(obj: any): string | null {
+  return (
+    fromUnix(obj?.current_period_end) ||
+    fromUnix(obj?.items?.data?.[0]?.current_period_end) ||
+    null
+  );
 }
 
 async function activatePlan(
@@ -29,7 +51,8 @@ async function activatePlan(
   empresaId: string,
   planDb: string,
   customerId?: string | null,
-  subscriptionId?: string | null
+  subscriptionId?: string | null,
+  periodEndIso?: string | null
 ) {
   const normalized =
     planDb === 'corporativo' || planDb === 'corporate'
@@ -38,11 +61,12 @@ async function activatePlan(
         ? 'ultra'
         : 'pro';
 
-  const cycleDays = normalized === 'pro' && planDb === 'pro-anual' ? 365 : 30;
-  const expira = new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString();
+  const expira =
+    periodEndIso ||
+    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
   await db.run(
-    `UPDATE empresas SET status = 'ativo', plan = ?, expira_em = ? WHERE id = ?`,
+    `UPDATE empresas SET status = 'ativo', plan = ?, expira_em = ?, cancel_at_period_end = 0 WHERE id = ?`,
     [normalized, expira, empresaId]
   );
   if (customerId) {
@@ -59,9 +83,88 @@ async function activatePlan(
   }
 }
 
+/**
+ * Cancelamento solicitado: mantém status ativo até expira_em (fim do ciclo pago).
+ * Espelha o comportamento típico de serviços como a Netflix.
+ */
+async function markCancelAtPeriodEnd(
+  db: Database,
+  empresaId: string,
+  periodEndIso: string | null
+) {
+  if (periodEndIso) {
+    await db.run(
+      `UPDATE empresas SET cancel_at_period_end = 1, expira_em = ?, status = 'ativo' WHERE id = ?`,
+      [periodEndIso, empresaId]
+    );
+  } else {
+    await db.run(
+      `UPDATE empresas SET cancel_at_period_end = 1, status = 'ativo' WHERE id = ?`,
+      [empresaId]
+    );
+  }
+}
+
+async function blockEmpresa(db: Database, empresaId: string) {
+  await db.run(
+    `UPDATE empresas SET status = 'bloqueado', cancel_at_period_end = 0 WHERE id = ?`,
+    [empresaId]
+  );
+}
+
+/**
+ * Acesso válido se:
+ * - status trial e ainda não expirou, ou
+ * - status ativo e (sem expira_em ou ainda dentro do prazo).
+ * Quem cancelou no meio do mês continua ativo até expira_em.
+ */
+export function empresaTemAcesso(empresa: {
+  status?: string;
+  expira_em?: string | null;
+}): boolean {
+  const status = String(empresa?.status || '');
+  const agora = Date.now();
+  const fim = empresa?.expira_em ? new Date(empresa.expira_em).getTime() : null;
+
+  if (status === 'ativo') {
+    if (fim == null || Number.isNaN(fim)) return true;
+    return agora <= fim;
+  }
+  if (status === 'trial') {
+    if (fim == null || Number.isNaN(fim)) return true;
+    return agora <= fim;
+  }
+  return false;
+}
+
+/** Job leve: bloqueia assinaturas cujo período já acabou após cancelamento. */
+export async function enforcarExpiracoes(db: Database) {
+  const agora = new Date().toISOString();
+  await db.run(
+    `UPDATE empresas
+     SET status = 'bloqueado', cancel_at_period_end = 0
+     WHERE status = 'ativo'
+       AND cancel_at_period_end = 1
+       AND expira_em IS NOT NULL
+       AND expira_em < ?`,
+    [agora]
+  );
+}
+
+async function resolveEmpresaId(
+  db: Database,
+  empresaId: string | null,
+  customerId: string | null
+): Promise<string | null> {
+  if (empresaId) return empresaId;
+  if (!customerId) return null;
+  const row = await db.get('SELECT id FROM empresas WHERE stripe_customer_id = ?', [
+    customerId,
+  ]);
+  return row?.id || null;
+}
+
 export function mountStripeRoutes(app: Express, getDb: () => Database) {
-  // Webhook precisa do body cru — registra ANTES de parsers JSON genéricos se possível.
-  // Aqui usamos raw só nesta rota.
   app.post(
     '/api/webhook/stripe',
     express.raw({ type: 'application/json' }),
@@ -72,30 +175,61 @@ export function mountStripeRoutes(app: Express, getDb: () => Database) {
         const event = constructStripeEvent(raw, sig);
         const db = getDb();
         await ensureStripeColumns(db);
+        await enforcarExpiracoes(db);
 
         const type = String(event.type || '');
         const obj = event.data?.object || {};
 
+        // —— Assinatura atualizada: cancelamento no fim do ciclo (Netflix) ——
+        if (type === 'customer.subscription.updated') {
+          let { empresaId, planDb, customerId, subscriptionId } =
+            extractFromStripeObject(obj);
+          empresaId = await resolveEmpresaId(db, empresaId, customerId);
+          const periodEnd = periodEndFromStripe(obj);
+          const stripeStatus = String(obj.status || '');
+
+          // Pediu cancelamento, mas o ciclo ainda está vigente
+          if (obj.cancel_at_period_end === true && empresaId) {
+            await markCancelAtPeriodEnd(db, empresaId, periodEnd);
+            return res.json({ ok: true, action: 'cancel_at_period_end' });
+          }
+
+          // Já cancelada de fato no Stripe
+          if (stripeStatus === 'canceled' && empresaId) {
+            // Se ainda há tempo pago, mantém até o fim; senão bloqueia
+            if (periodEnd && new Date(periodEnd).getTime() > Date.now()) {
+              await markCancelAtPeriodEnd(db, empresaId, periodEnd);
+              return res.json({ ok: true, action: 'grace_until_period_end' });
+            }
+            await blockEmpresa(db, empresaId);
+            return res.json({ ok: true, action: 'block' });
+          }
+
+          // Renovação / reativação
+          if (stripeStatus === 'active' && empresaId) {
+            const resolved = resolvePlano(planDb || obj.metadata?.plan_db || 'pro');
+            await activatePlan(
+              db,
+              empresaId,
+              resolved?.planDb || planDb || 'pro',
+              customerId,
+              subscriptionId,
+              periodEnd
+            );
+            return res.json({ ok: true, action: 'activate' });
+          }
+        }
+
+        // —— Checkout / criação / fatura paga ——
         if (
           type === 'checkout.session.completed' ||
           type === 'customer.subscription.created' ||
-          type === 'customer.subscription.updated' ||
           type === 'invoice.paid'
         ) {
-          let { empresaId, planDb, customerId, subscriptionId } = extractFromStripeObject(obj);
-
-          if (!empresaId && customerId) {
-            const row = await db.get(
-              'SELECT id FROM empresas WHERE stripe_customer_id = ?',
-              [customerId]
-            );
-            if (row) empresaId = row.id;
-          }
-
-          if (type === 'customer.subscription.updated' && obj.status === 'canceled' && empresaId) {
-            await db.run(`UPDATE empresas SET status = 'bloqueado' WHERE id = ?`, [empresaId]);
-            return res.json({ ok: true, action: 'block' });
-          }
+          let { empresaId, planDb, customerId, subscriptionId } =
+            extractFromStripeObject(obj);
+          empresaId = await resolveEmpresaId(db, empresaId, customerId);
+          const periodEnd = periodEndFromStripe(obj);
 
           if (
             type === 'checkout.session.completed' &&
@@ -106,35 +240,37 @@ export function mountStripeRoutes(app: Express, getDb: () => Database) {
             return res.json({ ok: true, action: 'pending' });
           }
 
-          if (empresaId && planDb) {
-            const resolved = resolvePlano(planDb);
+          if (empresaId && (planDb || type === 'invoice.paid')) {
+            const resolved = resolvePlano(planDb || 'pro');
             await activatePlan(
               db,
               empresaId,
-              resolved?.planDb || planDb,
+              resolved?.planDb || planDb || 'pro',
               customerId,
-              subscriptionId
+              subscriptionId,
+              periodEnd
             );
             return res.json({ ok: true, action: 'activate' });
           }
         }
 
-        if (
-          (type === 'customer.subscription.deleted' || type === 'charge.refunded') &&
-          obj
-        ) {
-          const { empresaId, customerId } = extractFromStripeObject(obj);
-          let id = empresaId;
-          if (!id && customerId) {
-            const row = await db.get(
-              'SELECT id FROM empresas WHERE stripe_customer_id = ?',
-              [customerId]
-            );
-            id = row?.id || null;
+        // —— Fim real da assinatura (após o último dia pago) ——
+        if (type === 'customer.subscription.deleted') {
+          let { empresaId, customerId } = extractFromStripeObject(obj);
+          empresaId = await resolveEmpresaId(db, empresaId, customerId);
+          if (empresaId) {
+            await blockEmpresa(db, empresaId);
+            return res.json({ ok: true, action: 'block_period_ended' });
           }
-          if (id) {
-            await db.run(`UPDATE empresas SET status = 'bloqueado' WHERE id = ?`, [id]);
-            return res.json({ ok: true, action: 'block' });
+        }
+
+        // Reembolso total: encerra acesso (política distinta do cancelamento normal)
+        if (type === 'charge.refunded') {
+          let { empresaId, customerId } = extractFromStripeObject(obj);
+          empresaId = await resolveEmpresaId(db, empresaId, customerId);
+          if (empresaId) {
+            await blockEmpresa(db, empresaId);
+            return res.json({ ok: true, action: 'block_refund' });
           }
         }
 
@@ -150,13 +286,11 @@ export function mountStripeRoutes(app: Express, getDb: () => Database) {
     res.json({
       stripe: stripeConfigured(),
       planos: listPlanosPublicos(),
+      politica_cancelamento:
+        'A assinatura mensal poderá ser cancelada a qualquer momento. O acesso permanece até o último dia do período já pago.',
     });
   });
 
-  /**
-   * Clique no plano → URL do Stripe Checkout (tela de cartão).
-   * Body: { plano: 'pro'|'pro-anual'|'ultra'|'corporate', empresa_id?, email? }
-   */
   app.post('/api/checkout', async (req: Request, res: Response) => {
     try {
       if (!stripeConfigured()) {
@@ -200,6 +334,16 @@ export function mountStripeRoutes(app: Express, getDb: () => Database) {
     }
   });
 
-  // evita unused import se tree-shake reclamar
-  void crypto;
+  // Varredura periódica leve (a cada hora) — encerra quem já passou do fim do ciclo
+  const timer = setInterval(() => {
+    try {
+      const db = getDb();
+      enforcarExpiracoes(db).catch(() => {});
+    } catch {
+      /* db ainda não pronto */
+    }
+  }, 60 * 60 * 1000);
+  if (typeof timer === 'object' && timer && 'unref' in timer) {
+    (timer as NodeJS.Timeout).unref();
+  }
 }
