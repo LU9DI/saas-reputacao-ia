@@ -1,26 +1,20 @@
 /**
- * Stripe Checkout — 5 planos: Pro, Pro Anual, Ultra, Rei, Corporativo.
+ * Stripe Checkout — planos com valores originais.
+ * pro | pro-anual | ultra | corporate (rei no front mapeia para ultra)
  */
 import crypto from 'crypto';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
-export type PlanoKey =
-  | 'pro'
-  | 'pro-anual'
-  | 'ultra'
-  | 'rei'
-  | 'corporate'
-  | 'corporativo';
+export type PlanoKey = 'pro' | 'pro-anual' | 'ultra' | 'rei' | 'corporate' | 'corporativo';
 
 export type PlanoDef = {
   key: PlanoKey;
-  planDb: 'pro' | 'ultra' | 'rei' | 'corporate';
+  planDb: 'pro' | 'ultra' | 'corporate';
   label: string;
   unitAmount: number;
   interval: 'month' | 'year';
   reviewLimit: number;
-  aiEnabled: boolean;
   envPriceId?: string;
 };
 
@@ -32,7 +26,6 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 6990,
     interval: 'month',
     reviewLimit: 150,
-    aiEnabled: false,
     envPriceId: process.env.STRIPE_PRICE_PRO_MONTHLY,
   },
   'pro-anual': {
@@ -42,7 +35,6 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 4990 * 12,
     interval: 'year',
     reviewLimit: 150,
-    aiEnabled: false,
     envPriceId: process.env.STRIPE_PRICE_PRO_YEARLY,
   },
   ultra: {
@@ -52,18 +44,17 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 19990,
     interval: 'month',
     reviewLimit: 1000,
-    aiEnabled: true,
     envPriceId: process.env.STRIPE_PRICE_ULTRA,
   },
+  /** Rei = mesmo valor/benefícios do Ultra (sem inventar preço) */
   rei: {
     key: 'rei',
-    planDb: 'rei',
+    planDb: 'ultra',
     label: 'Rei',
-    unitAmount: 29990,
+    unitAmount: 19990,
     interval: 'month',
-    reviewLimit: 3000,
-    aiEnabled: true,
-    envPriceId: process.env.STRIPE_PRICE_REI,
+    reviewLimit: 1000,
+    envPriceId: process.env.STRIPE_PRICE_ULTRA,
   },
   corporate: {
     key: 'corporate',
@@ -72,7 +63,6 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 49990,
     interval: 'month',
     reviewLimit: Number.MAX_SAFE_INTEGER,
-    aiEnabled: true,
     envPriceId: process.env.STRIPE_PRICE_CORPORATE,
   },
   corporativo: {
@@ -82,7 +72,6 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 49990,
     interval: 'month',
     reviewLimit: Number.MAX_SAFE_INTEGER,
-    aiEnabled: true,
     envPriceId: process.env.STRIPE_PRICE_CORPORATE,
   },
 };
@@ -266,7 +255,6 @@ export function listPlanosPublicos() {
       value: p.unitAmount / 100,
       interval: p.interval,
       reviewLimit: p.reviewLimit === Number.MAX_SAFE_INTEGER ? null : p.reviewLimit,
-      ai: p.aiEnabled,
     };
   });
 }

@@ -15,9 +15,10 @@ export type PlanCard = {
 };
 
 /**
- * 5 planos em uma linha (desktop):
- * Pro | Pro Anual | Ultra | Rei | Corporativo
- * Rei fica sempre ao lado do Corporativo.
+ * Valores originais (sem alteração de preço).
+ * Ordem no desktop: Pro | Pro Anual | Ultra | Rei | Corporativo
+ * → Rei fica ao lado do Corporativo.
+ * Texto de cancelamento e "Como funciona" ficam ABAIXO dos cards.
  */
 const DEFAULT_PLANS: PlanCard[] = [
   {
@@ -47,9 +48,9 @@ const DEFAULT_PLANS: PlanCard[] = [
   {
     key: 'rei',
     label: 'Rei',
-    price: 'R$ 299,90',
+    price: 'R$ 199,90',
     period: '/mês',
-    features: ['3.000 avaliações/mês', 'IA prioritária', '2 relatórios PDF/mês', 'WhatsApp + alertas'],
+    features: ['1.000 avaliações/mês', 'Respostas com IA', '1 relatório PDF/mês'],
     highlight: true,
     mensal: true,
   },
@@ -85,11 +86,13 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     setLoading(planoKey);
     try {
       const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
+      // Rei usa o mesmo checkout do Ultra (preço original)
+      const planoCheckout = planoKey === 'rei' ? 'ultra' : planoKey;
       const res = await fetch(`${apiUrl}/api/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          plano: planoKey,
+          plano: planoCheckout,
           empresa_id: empresaId || undefined,
         }),
       });
@@ -119,7 +122,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         </p>
       )}
 
-      {/* 5 planos: Pro | Pro Anual | Ultra | Rei | Corporativo */}
+      {/* 5 cards: Rei imediatamente à esquerda do Corporativo */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 items-stretch">
         {DEFAULT_PLANS.map((p) => (
           <div
@@ -160,6 +163,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         ))}
       </div>
 
+      {/* Texto SEMPRE abaixo dos planos */}
       <p className="text-xs text-slate-600 max-w-3xl mx-auto leading-relaxed bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left sm:text-center">
         {TEXTO_CANCELAMENTO_MENSAL}
       </p>
