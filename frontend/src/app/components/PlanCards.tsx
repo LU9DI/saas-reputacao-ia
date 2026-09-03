@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getEnv } from '../utils/env';
+import { ComoFunciona } from './ComoFunciona';
 
 export type PlanCard = {
   key: string;
@@ -56,9 +57,11 @@ const TEXTO_CANCELAMENTO_MENSAL =
 type Props = {
   empresaId?: string | null;
   requireEmpresa?: boolean;
+  /** Exibe o bloco "Como funciona" abaixo dos planos (padrão: sim) */
+  showComoFunciona?: boolean;
 };
 
-export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
+export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona = true }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
   const [erro, setErro] = useState('');
 
@@ -112,7 +115,8 @@ export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
         {DEFAULT_PLANS.map((p) => (
           <div
             key={p.key}
-            className={`rounded-2xl border p-4 flex flex-col bg-white ${\n              p.highlight ? 'border-indigo-300 shadow-md ring-1 ring-indigo-100' : 'border-slate-200'
+            className={`rounded-2xl border p-4 flex flex-col bg-white ${
+              p.highlight ? 'border-indigo-300 shadow-md ring-1 ring-indigo-100' : 'border-slate-200'
             }`}
           >
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{p.label}</p>
@@ -146,6 +150,8 @@ export function PlanCards({ empresaId, requireEmpresa = false }: Props) {
           </div>
         ))}
       </div>
+
+      {showComoFunciona && <ComoFunciona />}
     </div>
   );
 }
