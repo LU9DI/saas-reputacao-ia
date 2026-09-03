@@ -15,14 +15,14 @@ export type PlanCard = {
 };
 
 /**
- * Tabela oficial:
- * Inicial      R$ 69,90/mês  | R$ 49,90/mês no anual
- * Pro         R$ 109,90/mês  | R$ 99,90/mês no anual
- * Ultra       R$ 199,90/mês  | R$ 149,90/mês no anual
- * Corporativo R$ 499,90/mês  | R$ 429,90/mês no anual
- * Rei         R$ 999,90/mês  | R$ 899,90/mês no anual — até 10.000 feedbacks
+ * Tabela oficial (limites informados pelo produto):
+ * Inicial      R$ 69,90 / 49,90  — 150 feedbacks/mês
+ * Pro         R$ 109,90 / 99,90  — 400 feedbacks/mês
+ * Ultra       R$ 199,90 / 149,90 — 800 feedbacks/mês
+ * Corporativo R$ 499,90 / 429,90 — 3.500 feedbacks/mês
+ * Rei         R$ 999,90 / 899,90 — 10.000 feedbacks/mês
  *
- * Ordem: Inicial | Pro | Ultra | Rei | Corporativo (Rei ao lado do Corp)
+ * Ordem: Inicial | Pro | Ultra | Rei | Corporativo
  */
 const DEFAULT_PLANS: PlanCard[] = [
   {
@@ -31,7 +31,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     label: 'Inicial',
     priceMensal: 'R$ 69,90',
     priceAnual: 'R$ 49,90',
-    features: ['150 avaliações/mês', 'WhatsApp integrado', 'Gráficos básicos'],
+    features: ['150 feedbacks/mês', 'WhatsApp integrado', 'Gráficos básicos'],
   },
   {
     keyMensal: 'pro',
@@ -39,7 +39,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     label: 'Pro',
     priceMensal: 'R$ 109,90',
     priceAnual: 'R$ 99,90',
-    features: ['500 avaliações/mês', 'WhatsApp integrado', 'Gráficos avançados'],
+    features: ['400 feedbacks/mês', 'WhatsApp integrado', 'Gráficos avançados'],
   },
   {
     keyMensal: 'ultra',
@@ -47,7 +47,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     label: 'Ultra',
     priceMensal: 'R$ 199,90',
     priceAnual: 'R$ 149,90',
-    features: ['1.000 avaliações/mês', 'Respostas com IA', '1 relatório PDF/mês'],
+    features: ['800 feedbacks/mês', 'Respostas com IA', '1 relatório PDF/mês'],
   },
   {
     keyMensal: 'rei',
@@ -56,7 +56,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     priceMensal: 'R$ 999,90',
     priceAnual: 'R$ 899,90',
     features: [
-      'Até 10.000 feedbacks/mês',
+      '10.000 feedbacks/mês',
       'IA prioritária e respostas ilimitadas',
       'Relatórios PDF avançados',
       'Suporte prioritário',
@@ -69,7 +69,7 @@ const DEFAULT_PLANS: PlanCard[] = [
     label: 'Corporativo',
     priceMensal: 'R$ 499,90',
     priceAnual: 'R$ 429,90',
-    features: ['Avaliações ilimitadas', 'IA sem limites', 'Dashboard multi-unidades'],
+    features: ['3.500 feedbacks/mês', 'IA sem limites de resposta', 'Dashboard multi-unidades'],
   },
 ];
 
@@ -81,10 +81,6 @@ type Props = {
   requireEmpresa?: boolean;
   showComoFunciona?: boolean;
 };
-
-function formatBRL(label: string) {
-  return label;
-}
 
 export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona = true }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
@@ -127,7 +123,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           meio de pagamento.
         </p>
 
-        {/* Alternância mensal / anual */}
         <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 text-sm">
           <button
             type="button"
@@ -158,8 +153,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         {DEFAULT_PLANS.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
           const price = ciclo === 'mensal' ? p.priceMensal : p.priceAnual;
-          const period =
-            ciclo === 'mensal' ? '/mês' : '/mês (cobrança anual)';
+          const period = ciclo === 'mensal' ? '/mês' : '/mês (cobrança anual)';
 
           return (
             <div
@@ -171,7 +165,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
             >
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{p.label}</p>
               <p className="mt-1 text-xl font-bold text-slate-900">
-                {formatBRL(price)}
+                {price}
                 <span className="text-xs font-normal text-slate-400">{period}</span>
               </p>
               <ul className="mt-3 space-y-1.5 flex-1">
