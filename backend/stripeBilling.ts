@@ -1,20 +1,26 @@
 /**
- * Stripe Checkout — planos do produto atual (Pro / Ultra / Corporativo).
- * Não altera regras de trial, PDF ou IA; só cobrança e ativação via webhook.
+ * Stripe Checkout — 5 planos: Pro, Pro Anual, Ultra, Rei, Corporativo.
  */
 import crypto from 'crypto';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
-export type PlanoKey = 'pro' | 'pro-anual' | 'ultra' | 'corporate' | 'corporativo';
+export type PlanoKey =
+  | 'pro'
+  | 'pro-anual'
+  | 'ultra'
+  | 'rei'
+  | 'corporate'
+  | 'corporativo';
 
 export type PlanoDef = {
   key: PlanoKey;
-  planDb: 'pro' | 'ultra' | 'corporate';
+  planDb: 'pro' | 'ultra' | 'rei' | 'corporate';
   label: string;
   unitAmount: number;
   interval: 'month' | 'year';
   reviewLimit: number;
+  aiEnabled: boolean;
   envPriceId?: string;
 };
 
@@ -26,6 +32,7 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 6990,
     interval: 'month',
     reviewLimit: 150,
+    aiEnabled: false,
     envPriceId: process.env.STRIPE_PRICE_PRO_MONTHLY,
   },
   'pro-anual': {
@@ -35,6 +42,7 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 4990 * 12,
     interval: 'year',
     reviewLimit: 150,
+    aiEnabled: false,
     envPriceId: process.env.STRIPE_PRICE_PRO_YEARLY,
   },
   ultra: {
@@ -44,7 +52,18 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 19990,
     interval: 'month',
     reviewLimit: 1000,
+    aiEnabled: true,
     envPriceId: process.env.STRIPE_PRICE_ULTRA,
+  },
+  rei: {
+    key: 'rei',
+    planDb: 'rei',
+    label: 'Rei',
+    unitAmount: 29990,
+    interval: 'month',
+    reviewLimit: 3000,
+    aiEnabled: true,
+    envPriceId: process.env.STRIPE_PRICE_REI,
   },
   corporate: {
     key: 'corporate',
@@ -53,6 +72,7 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 49990,
     interval: 'month',
     reviewLimit: Number.MAX_SAFE_INTEGER,
+    aiEnabled: true,
     envPriceId: process.env.STRIPE_PRICE_CORPORATE,
   },
   corporativo: {
@@ -62,6 +82,7 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 49990,
     interval: 'month',
     reviewLimit: Number.MAX_SAFE_INTEGER,
+    aiEnabled: true,
     envPriceId: process.env.STRIPE_PRICE_CORPORATE,
   },
 };
@@ -129,6 +150,7 @@ export async function criarCheckoutSession(opts: {
     'subscription_data[metadata][plano]': plano.key,
     'subscription_data[metadata][plan_db]': plano.planDb,
     allow_promotion_codes: 'true',
+    'payment_method_types[0]': 'card',
   };
 
   if (opts.empresaId) {
@@ -161,7 +183,6 @@ export async function criarCheckoutSession(opts: {
   };
 }
 
-/** Customer Portal — cartão, faturas e cancelamento (no fim do ciclo). */
 export async function criarPortalSession(customerId: string): Promise<{ url: string }> {
   const session = await stripeForm('/billing_portal/sessions', {
     customer: customerId,
@@ -237,7 +258,7 @@ export function extractFromStripeObject(obj: any): {
 }
 
 export function listPlanosPublicos() {
-  return ['pro', 'pro-anual', 'ultra', 'corporate'].map((k) => {
+  return ['pro', 'pro-anual', 'ultra', 'rei', 'corporate'].map((k) => {
     const p = PLANOS[k];
     return {
       key: p.key,
@@ -245,6 +266,7 @@ export function listPlanosPublicos() {
       value: p.unitAmount / 100,
       interval: p.interval,
       reviewLimit: p.reviewLimit === Number.MAX_SAFE_INTEGER ? null : p.reviewLimit,
+      ai: p.aiEnabled,
     };
   });
 }

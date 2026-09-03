@@ -11,14 +11,13 @@ export type PlanCard = {
   period: string;
   features: string[];
   highlight?: boolean;
-  /** true = assinatura mensal (texto de cancelamento Netflix-style) */
   mensal?: boolean;
 };
 
 /**
- * Ordem visual (uma linha no desktop):
- * Pro | Pro Anual | Ultra (Rei) | Corporativo
- * "Rei" = Ultra (plano destaque), sempre ao lado do Corporativo — nunca embaixo.
+ * 5 planos em uma linha (desktop):
+ * Pro | Pro Anual | Ultra | Rei | Corporativo
+ * Rei fica sempre ao lado do Corporativo.
  */
 const DEFAULT_PLANS: PlanCard[] = [
   {
@@ -39,10 +38,18 @@ const DEFAULT_PLANS: PlanCard[] = [
   },
   {
     key: 'ultra',
-    label: 'Rei (Ultra)',
+    label: 'Ultra',
     price: 'R$ 199,90',
     period: '/mês',
     features: ['1.000 avaliações/mês', 'Respostas com IA', '1 relatório PDF/mês'],
+    mensal: true,
+  },
+  {
+    key: 'rei',
+    label: 'Rei',
+    price: 'R$ 299,90',
+    period: '/mês',
+    features: ['3.000 avaliações/mês', 'IA prioritária', '2 relatórios PDF/mês', 'WhatsApp + alertas'],
     highlight: true,
     mensal: true,
   },
@@ -62,7 +69,6 @@ const TEXTO_CANCELAMENTO_MENSAL =
 type Props = {
   empresaId?: string | null;
   requireEmpresa?: boolean;
-  /** Exibe o bloco "Como funciona" abaixo dos planos (padrão: sim) */
   showComoFunciona?: boolean;
 };
 
@@ -98,7 +104,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       <div className="text-center space-y-2">
         <h2 className="text-lg font-bold text-slate-900">Escolha o plano mais adequado</h2>
         <p className="text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
@@ -113,8 +119,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         </p>
       )}
 
-      {/* 4 cards na mesma linha no desktop: Pro | Pro Anual | Rei | Corporativo */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
+      {/* 5 planos: Pro | Pro Anual | Ultra | Rei | Corporativo */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 items-stretch">
         {DEFAULT_PLANS.map((p) => (
           <div
             key={p.key}
@@ -154,12 +160,10 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         ))}
       </div>
 
-      {/* Texto de cancelamento — SEMPRE abaixo dos cards de plano */}
       <p className="text-xs text-slate-600 max-w-3xl mx-auto leading-relaxed bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left sm:text-center">
         {TEXTO_CANCELAMENTO_MENSAL}
       </p>
 
-      {/* "Como funciona" — abaixo do texto de cancelamento e dos planos */}
       {showComoFunciona && <ComoFunciona />}
     </div>
   );
