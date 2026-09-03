@@ -39,6 +39,17 @@ interface PainelData {
   };
 }
 
+interface AssinaturaInfo {
+  status: string;
+  plan?: string;
+  expira_em?: string;
+  expira_em_formatado?: string | null;
+  cancel_at_period_end?: boolean;
+  tem_acesso?: boolean;
+  mensagem?: string | null;
+  aviso_cancelamento?: string | null;
+}
+
 function Stars({ n }: { n: number }) {
   return (
     <span className="text-amber-500/90 text-[13px] tracking-wide" aria-hidden>
@@ -53,6 +64,7 @@ export default function PainelEmpresa() {
   const empresaId = String(params?.id || '');
 
   const [data, setData] = useState<PainelData | null>(null);
+  const [assinatura, setAssinatura] = useState<AssinaturaInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [qrUrl, setQrUrl] = useState<string | null>(null);
@@ -60,9 +72,7 @@ export default function PainelEmpresa() {
 
   const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
-    typeof window !== 'undefined'
-      ? window.location.origin
-      : getEnv('NEXT_PUBLIC_APP_URL');
+    typeof window !== 'undefined' ? window.location.origin : getEnv('NEXT_PUBLIC_APP_URL');
 
   const linkAvaliacao =
     data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
@@ -80,6 +90,14 @@ export default function PainelEmpresa() {
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
       setData(json);
+
+      // Status de assinatura / cancelamento (não bloqueia o painel se falhar)
+      try {
+        const r2 = await fetch(`${api}/api/empresa/${empresaId}/assinatura`);
+        if (r2.ok) setAssinatura(await r2.json());
+      } catch {
+        /* opcional */
+      }
     } catch (e: any) {
       setErro(
         e.message === 'Failed to fetch'
@@ -155,8 +173,21 @@ export default function PainelEmpresa() {
 
   const { empresa, reviews, metricas } = data;
   const criticas = reviews.filter((r) => r.rating <= 3);
-  const statusLabel =
-    empresa.status === 'trial'
+
+  const cancelado = !!assinatura?.cancel_at_period_end;
+  const ateFormatado =
+    assinatura?.expira_em_formatado ||
+    (empresa.expira_em
+      ? new Date(empresa.expira_em).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        })
+      : null);
+
+  const statusLabel = cancelado
+    ? 'Cancelada — acesso até o fim do ciclo'
+    : empresa.status === 'trial'
       ? '7 dias grátis ativos'
       : empresa.status === 'ativo'
         ? 'Licença ativa'
@@ -164,7 +195,6 @@ export default function PainelEmpresa() {
 
   return (
     <div className="min-h-screen bg-[#f7f7f8] text-slate-800">
-      {/* Header */}
       <header className="bg-white border-b border-slate-200/60">
         <div className="max-w-5xl mx-auto px-6 md:px-10 py-7 flex items-center justify-between gap-6">
           <div>
@@ -184,7 +214,26 @@ export default function PainelEmpresa() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 md:px-10 py-10 space-y-10">
-        {/* Métricas */}
+        {/* Aviso de cancelamento: uso até o fim do período pago */}
+        {cancelado && (
+          <div
+            role="status"
+            className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950 leading-relaxed"
+          >
+            <p className="font-semibold text-amber-900">Assinatura cancelada</p>
+            <p className="mt-1 text-amber-900/90">
+              {assinatura?.aviso_cancelamento ||
+                `Você tem direito de usar o sistema até ${ateFormatado || 'o último dia do período já pago'}. O acesso será encerrado automaticamente após essa data — não há bloqueio antecipado.`}
+            </p>
+          </div>
+        )}
+
+        {!cancelado && assinatura?.mensagem && (
+          <div className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm text-slate-600">
+            {assinatura.mensagem}
+          </div>
+        )}
+
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div className="bg-white rounded-2xl px-6 py-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] border border-slate-100/80">
             <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
@@ -210,16 +259,21 @@ export default function PainelEmpresa() {
             <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">
               Status da licença
             </p>
-            <p className="mt-3 text-lg font-semibold text-emerald-700 tracking-tight">
+            <p
+              className={`mt-3 text-lg font-semibold tracking-tight ${
+                cancelado ? 'text-amber-700' : 'text-emerald-700'
+              }`}
+            >
               {statusLabel}
             </p>
             <p className="mt-1 text-xs text-slate-400">
-              Até {new Date(empresa.expira_em).toLocaleDateString('pt-BR')}
+              {cancelado ? 'Uso liberado até' : 'Válido até'}{' '}
+              {ateFormatado ||
+                new Date(empresa.expira_em).toLocaleDateString('pt-BR')}
             </p>
           </div>
         </section>
 
-        {/* Link + QR */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="bg-white rounded-2xl px-6 py-6 shadow-[0_1px_3px_rgba(15,23,42,0.04)] border border-slate-100/80 flex flex-col">
             <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400 mb-4">
@@ -248,11 +302,7 @@ export default function PainelEmpresa() {
             </p>
             {qrUrl ? (
               <>
-                <img
-                  src={qrUrl}
-                  alt="QR Code de avaliação"
-                  className="w-40 h-40 rounded-lg"
-                />
+                <img src={qrUrl} alt="QR Code de avaliação" className="w-40 h-40 rounded-lg" />
                 <button
                   type="button"
                   onClick={baixarQr}
@@ -267,7 +317,6 @@ export default function PainelEmpresa() {
           </div>
         </section>
 
-        {/* Feedbacks privados */}
         <section className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(15,23,42,0.04)] border border-slate-100/80 overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-100">
             <h2 className="text-sm font-semibold text-slate-900">Feedbacks privados</h2>
@@ -288,7 +337,9 @@ export default function PainelEmpresa() {
               {criticas.map((r, index) => (
                 <li
                   key={r.id}
-                  className={`px-6 py-6 ${index !== criticas.length - 1 ? 'border-b border-slate-100' : ''}`}
+                  className={`px-6 py-6 ${
+                    index !== criticas.length - 1 ? 'border-b border-slate-100' : ''
+                  }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                     <div className="flex items-center gap-3">
@@ -326,4 +377,3 @@ export default function PainelEmpresa() {
     </div>
   );
 }
-
