@@ -12,6 +12,8 @@ import {
   Link2,
   Download,
   LayoutDashboard,
+  Mail,
+  Lock,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { getEnv } from './utils/env';
@@ -21,11 +23,15 @@ const traducoes = {
   pt: {
     titulo: 'Ative seus 7 Dias Grátis',
     subtitulo:
-      'Insira os dados da sua empresa para liberar seu link e QR Code de avaliações imediatamente. Sem cartão de crédito.',
+      'Cadastre a empresa com CNPJ, e-mail e senha. Sem cartão de crédito nos 7 dias de teste.',
     labelEmpresa: 'Nome da Empresa',
     placeholderEmpresa: 'Ex: Restaurante Sabor Único',
     labelCnpj: 'CNPJ / Tax ID',
     placeholderCnpj: '00.000.000/0000-00',
+    labelEmail: 'E-mail de acesso',
+    placeholderEmail: 'seu@email.com',
+    labelSenha: 'Senha de acesso',
+    placeholderSenha: 'Mínimo 6 caracteres',
     labelGoogle: 'Link do Google Reviews (opcional)',
     placeholderGoogle: 'https://g.page/r/... ou link de avaliação',
     botao: 'Ativar Meu Período de Testes',
@@ -40,15 +46,19 @@ const traducoes = {
     cnpjInvalido: 'CNPJ inválido. Verifique os dígitos.',
     qrHint: 'Imprima e cole no balcão, cardápio ou embalagem.',
     planosTitulo: 'Quer continuar depois do trial?',
+    esqueciSenha: 'Esqueci a senha',
   },
   en: {
     titulo: 'Activate Your 7-Day Free Trial',
-    subtitulo:
-      'Enter your company details to release your review link and QR Code immediately. No credit card required.',
+    subtitulo: 'Register with company details, email and password. No credit card for the 7-day trial.',
     labelEmpresa: 'Company Name',
     placeholderEmpresa: 'Ex: Unique Flavor Restaurant',
     labelCnpj: 'Tax ID / Registration Number',
     placeholderCnpj: 'Numbers or Tax Registration',
+    labelEmail: 'Access email',
+    placeholderEmail: 'you@email.com',
+    labelSenha: 'Password',
+    placeholderSenha: 'At least 6 characters',
     labelGoogle: 'Google Reviews link (optional)',
     placeholderGoogle: 'https://g.page/r/... or review link',
     botao: 'Activate My Free Trial',
@@ -63,15 +73,19 @@ const traducoes = {
     cnpjInvalido: 'Invalid Tax ID. Please check the information.',
     qrHint: 'Print and place on the counter, menu or packaging.',
     planosTitulo: 'Want to continue after the trial?',
+    esqueciSenha: 'Forgot password',
   },
   es: {
     titulo: 'Activa tus 7 Días Gratis',
-    subtitulo:
-      'Ingresa los datos de tu empresa para liberar tu enlace y código QR de opiniones de inmediato. Sin tarjeta de crédito.',
+    subtitulo: 'Registra la empresa con CNPJ, correo y contraseña. Sin tarjeta en los 7 días de prueba.',
     labelEmpresa: 'Nombre de la Empresa',
     placeholderEmpresa: 'Ej: Restaurante Sabor Único',
     labelCnpj: 'Identificación Fiscal / Tax ID',
     placeholderCnpj: 'Ingrese solo números o ID fiscal',
+    labelEmail: 'Correo de acceso',
+    placeholderEmail: 'tu@email.com',
+    labelSenha: 'Contraseña',
+    placeholderSenha: 'Mínimo 6 caracteres',
     labelGoogle: 'Enlace de Google Reviews (opcional)',
     placeholderGoogle: 'https://g.page/r/... o enlace de opiniones',
     botao: 'Activar Mi Período de Prueba',
@@ -86,6 +100,7 @@ const traducoes = {
     cnpjInvalido: 'Identificación fiscal inválida. Verifique los dígitos.',
     qrHint: 'Imprime y coloca en el mostrador, menú o empaque.',
     planosTitulo: '¿Quieres continuar después de la prueba?',
+    esqueciSenha: 'Olvidé la contraseña',
   },
 };
 
@@ -112,6 +127,8 @@ export default function Home() {
   const [idioma, setIdioma] = useState<Idioma>('pt');
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [cnpj, setCnpj] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [googleUrl, setGoogleUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -185,6 +202,14 @@ export default function Home() {
       setErro(t.cnpjInvalido);
       return;
     }
+    if (!email.trim() || !email.includes('@')) {
+      setErro('Informe um e-mail válido.');
+      return;
+    }
+    if (senha.length < 6) {
+      setErro('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
 
     setLoading(true);
     setErro('');
@@ -204,6 +229,8 @@ export default function Home() {
           cnpj: cnpjLimpo,
           nome_empresa: nomeEmpresa.trim(),
           google_review_url: googleUrl.trim() || undefined,
+          email: email.trim().toLowerCase(),
+          senha,
         }),
         signal: controller.signal,
       });
@@ -295,10 +322,7 @@ export default function Home() {
         {!sucessoData ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label
-                htmlFor="nome-empresa"
-                className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
-              >
+              <label htmlFor="nome-empresa" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 <Building2 size={14} aria-hidden="true" /> {t.labelEmpresa}
               </label>
               <input
@@ -308,15 +332,12 @@ export default function Home() {
                 value={nomeEmpresa}
                 onChange={(e) => setNomeEmpresa(e.target.value)}
                 placeholder={t.placeholderEmpresa}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label
-                htmlFor="cnpj"
-                className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
-              >
+              <label htmlFor="cnpj" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 <FileText size={14} aria-hidden="true" /> {t.labelCnpj}
               </label>
               <input
@@ -327,15 +348,43 @@ export default function Home() {
                 value={cnpj}
                 onChange={(e) => aplicarMascaraCnpj(e.target.value)}
                 placeholder={t.placeholderCnpj}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label
-                htmlFor="google-url"
-                className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
-              >
+              <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                <Mail size={14} aria-hidden="true" /> {t.labelEmail}
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t.placeholderEmail}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="senha" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                <Lock size={14} aria-hidden="true" /> {t.labelSenha}
+              </label>
+              <input
+                id="senha"
+                type="password"
+                required
+                minLength={6}
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                placeholder={t.placeholderSenha}
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="google-url" className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                 <Link2 size={14} aria-hidden="true" /> {t.labelGoogle}
               </label>
               <input
@@ -344,7 +393,7 @@ export default function Home() {
                 value={googleUrl}
                 onChange={(e) => setGoogleUrl(e.target.value)}
                 placeholder={t.placeholderGoogle}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
               />
             </div>
 
@@ -355,6 +404,12 @@ export default function Home() {
             >
               {loading ? t.carregando : t.botao}
             </button>
+
+            <p className="text-center text-xs text-slate-500">
+              <a href="/recuperar-senha" className="underline hover:text-indigo-600">
+                {t.esqueciSenha}
+              </a>
+            </p>
           </form>
         ) : (
           <div className="text-center space-y-4 py-2" aria-live="polite">
@@ -377,56 +432,42 @@ export default function Home() {
             <div className="space-y-2 pt-1">
               <button
                 onClick={copiarParaTransferencia}
-                aria-label={t.copiarLink}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2"
               >
-                <Copy size={16} aria-hidden="true" />
-                {t.copiarLink}
+                <Copy size={16} /> {t.copiarLink}
               </button>
-
               {qrDataUrl && (
                 <button
                   onClick={baixarQr}
-                  className="w-full bg-white hover:bg-slate-50 text-slate-800 font-medium py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 cursor-pointer border border-slate-200"
+                  className="w-full bg-white hover:bg-slate-50 text-slate-800 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 border border-slate-200"
                 >
-                  <Download size={16} aria-hidden="true" />
-                  {t.baixarQr}
+                  <Download size={16} /> {t.baixarQr}
                 </button>
               )}
-
               <a
                 href={sucessoData.link_acesso}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                className="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2"
               >
-                <ExternalLink size={16} aria-hidden="true" />
-                {t.abrirLink}
+                <ExternalLink size={16} /> {t.abrirLink}
               </a>
-
               {sucessoData.link_painel && (
                 <a
                   href={sucessoData.link_painel}
-                  className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                  className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2"
                 >
-                  <LayoutDashboard size={16} aria-hidden="true" />
-                  {t.abrirPainel}
+                  <LayoutDashboard size={16} /> {t.abrirPainel}
                 </a>
               )}
             </div>
 
-            {copiado && (
-              <p className="text-xs text-green-600 font-semibold transition-all duration-300" role="alert">
-                {t.linkCopiado}
-              </p>
-            )}
-
+            {copiado && <p className="text-xs text-green-600 font-semibold">{t.linkCopiado}</p>}
             <p className="text-xs text-slate-400 italic pt-2">{t.avisoExpiracao}</p>
           </div>
         )}
       </div>
 
-      {/* Planos → Stripe Checkout (cartão) */}
       <div className="w-full px-2 pb-10">
         <p className="text-center text-sm font-medium text-slate-600 mb-4">{t.planosTitulo}</p>
         <PlanCards empresaId={sucessoData?.empresa_id} requireEmpresa={false} />
