@@ -1,78 +1,168 @@
 /**
- * Stripe Checkout — planos com valores originais.
- * pro | pro-anual | ultra | corporate (rei no front mapeia para ultra)
+ * Stripe Checkout — tabela oficial de planos
+ * Inicial | Pro | Ultra | Corporativo | Rei  (mensal e anual)
  */
 import crypto from 'crypto';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
-export type PlanoKey = 'pro' | 'pro-anual' | 'ultra' | 'rei' | 'corporate' | 'corporativo';
+export type PlanDb = 'inicial' | 'pro' | 'ultra' | 'corporate' | 'rei';
+
+export type PlanoKey =
+  | 'inicial'
+  | 'inicial-anual'
+  | 'pro'
+  | 'pro-anual'
+  | 'ultra'
+  | 'ultra-anual'
+  | 'corporate'
+  | 'corporate-anual'
+  | 'corporativo'
+  | 'corporativo-anual'
+  | 'rei'
+  | 'rei-anual';
 
 export type PlanoDef = {
   key: PlanoKey;
-  planDb: 'pro' | 'ultra' | 'corporate';
+  planDb: PlanDb;
   label: string;
+  /** valor cobrado no Stripe (centavos) — mensal ou total do ano */
   unitAmount: number;
   interval: 'month' | 'year';
+  /** preço mensal exibido (reais) */
+  displayMonthly: number;
   reviewLimit: number;
   envPriceId?: string;
 };
 
+/**
+ * Preços (mensal / equivalente mensal no anual):
+ * Inicial      69,90 / 49,90
+ * Pro         109,90 / 99,90
+ * Ultra       199,90 / 149,90
+ * Corporativo 499,90 / 429,90
+ * Rei         999,90 / 899,90  — até 10.000 feedbacks/mês
+ */
 export const PLANOS: Record<string, PlanoDef> = {
+  inicial: {
+    key: 'inicial',
+    planDb: 'inicial',
+    label: 'Inicial Mensal',
+    unitAmount: 6990,
+    interval: 'month',
+    displayMonthly: 69.9,
+    reviewLimit: 150,
+    envPriceId: process.env.STRIPE_PRICE_INICIAL_MONTHLY,
+  },
+  'inicial-anual': {
+    key: 'inicial-anual',
+    planDb: 'inicial',
+    label: 'Inicial Anual',
+    unitAmount: 4990 * 12,
+    interval: 'year',
+    displayMonthly: 49.9,
+    reviewLimit: 150,
+    envPriceId: process.env.STRIPE_PRICE_INICIAL_YEARLY,
+  },
   pro: {
     key: 'pro',
     planDb: 'pro',
     label: 'Pro Mensal',
-    unitAmount: 6990,
+    unitAmount: 10990,
     interval: 'month',
-    reviewLimit: 150,
+    displayMonthly: 109.9,
+    reviewLimit: 500,
     envPriceId: process.env.STRIPE_PRICE_PRO_MONTHLY,
   },
   'pro-anual': {
     key: 'pro-anual',
     planDb: 'pro',
     label: 'Pro Anual',
-    unitAmount: 4990 * 12,
+    unitAmount: 9990 * 12,
     interval: 'year',
-    reviewLimit: 150,
+    displayMonthly: 99.9,
+    reviewLimit: 500,
     envPriceId: process.env.STRIPE_PRICE_PRO_YEARLY,
   },
   ultra: {
     key: 'ultra',
     planDb: 'ultra',
-    label: 'Ultra',
+    label: 'Ultra Mensal',
     unitAmount: 19990,
     interval: 'month',
+    displayMonthly: 199.9,
     reviewLimit: 1000,
-    envPriceId: process.env.STRIPE_PRICE_ULTRA,
+    envPriceId: process.env.STRIPE_PRICE_ULTRA_MONTHLY || process.env.STRIPE_PRICE_ULTRA,
   },
-  /** Rei = mesmo valor/benefícios do Ultra (sem inventar preço) */
-  rei: {
-    key: 'rei',
+  'ultra-anual': {
+    key: 'ultra-anual',
     planDb: 'ultra',
-    label: 'Rei',
-    unitAmount: 19990,
-    interval: 'month',
+    label: 'Ultra Anual',
+    unitAmount: 14990 * 12,
+    interval: 'year',
+    displayMonthly: 149.9,
     reviewLimit: 1000,
-    envPriceId: process.env.STRIPE_PRICE_ULTRA,
+    envPriceId: process.env.STRIPE_PRICE_ULTRA_YEARLY,
   },
   corporate: {
     key: 'corporate',
     planDb: 'corporate',
-    label: 'Corporativo',
+    label: 'Corporativo Mensal',
     unitAmount: 49990,
     interval: 'month',
+    displayMonthly: 499.9,
     reviewLimit: Number.MAX_SAFE_INTEGER,
-    envPriceId: process.env.STRIPE_PRICE_CORPORATE,
+    envPriceId: process.env.STRIPE_PRICE_CORPORATE_MONTHLY || process.env.STRIPE_PRICE_CORPORATE,
+  },
+  'corporate-anual': {
+    key: 'corporate-anual',
+    planDb: 'corporate',
+    label: 'Corporativo Anual',
+    unitAmount: 42990 * 12,
+    interval: 'year',
+    displayMonthly: 429.9,
+    reviewLimit: Number.MAX_SAFE_INTEGER,
+    envPriceId: process.env.STRIPE_PRICE_CORPORATE_YEARLY,
   },
   corporativo: {
     key: 'corporativo',
     planDb: 'corporate',
-    label: 'Corporativo',
+    label: 'Corporativo Mensal',
     unitAmount: 49990,
     interval: 'month',
+    displayMonthly: 499.9,
     reviewLimit: Number.MAX_SAFE_INTEGER,
-    envPriceId: process.env.STRIPE_PRICE_CORPORATE,
+    envPriceId: process.env.STRIPE_PRICE_CORPORATE_MONTHLY || process.env.STRIPE_PRICE_CORPORATE,
+  },
+  'corporativo-anual': {
+    key: 'corporativo-anual',
+    planDb: 'corporate',
+    label: 'Corporativo Anual',
+    unitAmount: 42990 * 12,
+    interval: 'year',
+    displayMonthly: 429.9,
+    reviewLimit: Number.MAX_SAFE_INTEGER,
+    envPriceId: process.env.STRIPE_PRICE_CORPORATE_YEARLY,
+  },
+  rei: {
+    key: 'rei',
+    planDb: 'rei',
+    label: 'Rei Mensal',
+    unitAmount: 99990,
+    interval: 'month',
+    displayMonthly: 999.9,
+    reviewLimit: 10000,
+    envPriceId: process.env.STRIPE_PRICE_REI_MONTHLY,
+  },
+  'rei-anual': {
+    key: 'rei-anual',
+    planDb: 'rei',
+    label: 'Rei Anual',
+    unitAmount: 89990 * 12,
+    interval: 'year',
+    displayMonthly: 899.9,
+    reviewLimit: 10000,
+    envPriceId: process.env.STRIPE_PRICE_REI_YEARLY,
   },
 };
 
@@ -168,7 +258,7 @@ export async function criarCheckoutSession(opts: {
     sessionId: session.id,
     checkoutUrl: session.url,
     label: plano.label,
-    value: plano.unitAmount / 100,
+    value: plano.displayMonthly,
   };
 }
 
@@ -247,12 +337,23 @@ export function extractFromStripeObject(obj: any): {
 }
 
 export function listPlanosPublicos() {
-  return ['pro', 'pro-anual', 'ultra', 'rei', 'corporate'].map((k) => {
+  return [
+    'inicial',
+    'inicial-anual',
+    'pro',
+    'pro-anual',
+    'ultra',
+    'ultra-anual',
+    'corporate',
+    'corporate-anual',
+    'rei',
+    'rei-anual',
+  ].map((k) => {
     const p = PLANOS[k];
     return {
       key: p.key,
       label: p.label,
-      value: p.unitAmount / 100,
+      valueMonthly: p.displayMonthly,
       interval: p.interval,
       reviewLimit: p.reviewLimit === Number.MAX_SAFE_INTEGER ? null : p.reviewLimit,
     };
