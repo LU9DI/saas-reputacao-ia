@@ -161,6 +161,16 @@ export async function criarCheckoutSession(opts: {
   };
 }
 
+/** Customer Portal — cartão, faturas e cancelamento (no fim do ciclo). */
+export async function criarPortalSession(customerId: string): Promise<{ url: string }> {
+  const session = await stripeForm('/billing_portal/sessions', {
+    customer: customerId,
+    return_url: `${appUrl()}/`,
+  });
+  if (!session.url) throw new Error('Stripe não retornou URL do portal');
+  return { url: session.url };
+}
+
 export function constructStripeEvent(rawBody: Buffer | string, signature: string | undefined): any {
   const secret = stripeWebhookSecret();
   const isProd = process.env.NODE_ENV === 'production';
