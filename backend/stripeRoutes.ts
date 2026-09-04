@@ -131,20 +131,20 @@ export async function enforcarExpiracoes(db: Database) {
   const agora = new Date().toISOString();
   await db.run(
     `UPDATE empresas
-     SET status = 'bloqueado', cancel_at_period_end = 0
-     WHERE status = 'ativo'
-       AND cancel_at_period_end = 1
-       AND expira_em IS NOT NULL
-       AND expira_em < ?`,
+    SET status = 'bloqueado', cancel_at_period_end = 0
+    WHERE status = 'ativo'
+      AND cancel_at_period_end = 1
+      AND expira_em IS NOT NULL
+      AND expira_em < ?`,
     [agora]
   );
   await db.run(
     `UPDATE empresas
-     SET status = 'bloqueado'
-     WHERE status IN ('trial', 'ativo')
-       AND cancel_at_period_end = 0
-       AND expira_em IS NOT NULL
-       AND expira_em < ?`,
+    SET status = 'bloqueado'
+    WHERE status IN ('trial', 'ativo')
+      AND cancel_at_period_end = 0
+      AND expira_em IS NOT NULL
+      AND expira_em < ?`,
     [agora]
   );
 }

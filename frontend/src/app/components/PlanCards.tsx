@@ -14,6 +14,7 @@ export type PlanCard = {
   highlight?: boolean;
 };
 
+<<<<<<< Updated upstream
 /**
  * Tabela oficial (limites informados pelo produto):
  * Inicial      R$ 69,90 / 49,90  — 150 feedbacks/mês
@@ -112,6 +113,14 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       setErro(e.message || 'Erro ao abrir checkout');
       setLoading(null);
     }
+=======
+  const linksCheckout = {
+    Inicial: isAnual ? 'https://stripe.com' : 'https://stripe.com',
+    Pro: isAnual ? 'https://stripe.com' : 'https://stripe.com',
+    Ultra: isAnual ? 'https://stripe.com' : 'https://stripe.com',
+    Corporativo: isAnual ? 'https://stripe.com' : 'https://stripe.com',
+    REI: isAnual ? 'https://stripe.com' : 'https://stripe.com',
+>>>>>>> Stashed changes
   };
 
   return (
@@ -143,11 +152,32 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         </div>
       </div>
 
+<<<<<<< Updated upstream
       {erro && (
         <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2 text-center">
           {erro}
         </p>
       )}
+=======
+      {/* Grade com os 5 Planos Oficiais do Filtra.ia */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch pt-4">
+      
+        {/* 1. PLANO Inicial */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:border-slate-300 transition">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Plano Inicial</h3>
+              <p className="text-xs text-slate-400 mt-1">O escudo essencial de ouvidoria para comércios locais, lojas e oficinas.</p>
+            </div>
+            
+            <div className="flex items-baseline">
+              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '49,90' : '69,90'}</span>
+              <span className="text-xs text-slate-400 font-medium">/mês</span>
+            </div>
+            <p className="text-[10px] text-slate-400 leading-normal">
+              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
+            </p>
+>>>>>>> Stashed changes
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 items-stretch">
         {DEFAULT_PLANS.map((p) => {
@@ -192,8 +222,125 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                 {loading === key ? 'Abrindo Stripe…' : 'Assinar com cartão'}
               </button>
             </div>
+<<<<<<< Updated upstream
           );
         })}
+=======
+            
+            <div className="flex items-baseline">
+              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '99,90' : '109,90'}</span>
+              <span className="text-xs text-slate-400 font-medium">/mês</span>
+            </div>
+            <p className="text-[10px] text-slate-400 leading-normal">
+              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
+            </p>
+
+            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
+              <li className="flex items-start gap-2">✔ <span><strong>Até 400 Feedbacks</strong> por mês</span></li>
+              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
+              <li className="flex items-start gap-2">✔ <span>Dashboard Simples com Gráficos</span></li>
+              <li className="flex items-start gap-2">✔ <span>Identificação Universal (Mesa/Link)</span></li>
+              <li className="flex items-start gap-2">✔ <span><strong>Relatórios Automatizados</strong></span></li>
+              <li className="flex items-start gap-2 text-slate-300 line-through">× <span>IA</span></li>
+            </ul>
+          </div>
+          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
+            Assinar Plano PRO
+          </a>
+        </div>
+
+        {/* 2. PLANO ULTRA (Destaque Comercial) */}
+        <div className="bg-white rounded-2xl border-2 border-slate-900 p-6 flex flex-col justify-between shadow-md relative transform md:-translate-y-2">
+          <div className="absolute top-0 right-1/2 transform translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white text-[9px] tracking-wider font-black py-0.5 px-3 rounded-full uppercase">
+            Mais Recomendado
+          </div>
+          <div className="space-y-4">
+            <div className="pt-2">
+              <h3 className="text-lg font-bold text-slate-900">Plano Ultra</h3>
+              <p className="text-xs text-slate-400 mt-1">Pós-venda inteligente operado por Inteligência Artificial ativa.</p>
+            </div>
+            
+            <div className="flex items-baseline">
+              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? 'R$ 149,90' : 'R$ 199,90'}</span>
+              <span className="text-xs text-slate-400 font-medium">/mês</span>
+            </div>
+            <p className="text-[10px] text-slate-400 leading-normal">
+              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
+            </p>
+
+            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
+              <li className="flex items-start gap-2">✔ <span><strong>Até 800 Feedbacks</strong> por mês</span></li>
+              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
+              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>Dashboard Analítico de Gráficos</span></li>
+              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>IA Avançada + 1 Relatório Mensal em PDF</span></li>
+              <li className="flex items-start gap-2">✔ <span>Análise de Sentimento & Sugestão de Respostas</span></li>
+            </ul>
+          </div>
+          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
+            Assinar Plano Ultra com IA
+          </a>
+        </div>
+
+        {/* 3. PLANO CORPORATIVO */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:border-slate-300 transition">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Corporativo</h3>
+              <p className="text-xs text-slate-400 mt-1">O plano para empresas maiores e grandes marcas.</p>
+            </div>
+            
+            <div className="flex items-baseline">
+              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '429,90' : '499,90'}</span>
+              <span className="text-xs text-slate-400 font-medium">/mês</span>
+            </div>
+            <p className="text-[10px] text-slate-400 leading-normal">
+              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
+            </p>
+
+            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
+              <li className="flex items-start gap-2">✔ <span><strong>Até 3.500 Feedbacks por mês</strong></span></li>
+              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
+              <li className="flex items-start gap-2 text-blue-600 font-bold">✔ <span>Dashboard Completo Multi-Unidades (Filiais)</span></li>
+              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>IA Avançada + 1 Relatório Mensal em PDF</span></li>
+              <li className="flex items-start gap-2">✔ <span>Suporte Prioritário via WhatsApp</span></li>
+              <li className="flex items-start gap-2">✔ <span>Acesso antecipado a novas funcionalidades</span></li>
+            </ul>
+          </div>
+          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
+            Assinar Plano Corporativo com IA
+          </a>
+        </div>
+
+        {/* 3. PLANO REI */} 
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:border-slate-300 transition">
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Plano REI</h3>
+              <p className="text-xs text-slate-400 mt-1">Estrutura robusta sob medida para franquias, redes e grandes marcas.</p>
+            </div>
+            
+            <div className="flex items-baseline">
+              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '899,90' : '999,90'}</span>
+              <span className="text-xs text-slate-400 font-medium">/mês</span>
+            </div>
+          <p className="text-[10px] text-slate-400 leading-normal">
+              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
+            </p>
+
+            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
+              <li className="flex items-start gap-2">✔ <span><strong>Até 10.000 Feedbacks por mês</strong></span></li>
+              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
+              <li className="flex items-start gap-2 text-blue-600 font-bold">✔ <span>Dashboard Completo Multi-Unidades (Filiais)</span></li>
+              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>IA Avançada + 1 Relatório Mensal em PDF</span></li>
+              <li className="flex items-start gap-2">✔ <span>Suporte Prioritário via WhatsApp</span></li>
+              <li className="flex items-start gap-2">✔ <span>Acesso antecipado a novas funcionalidades</span></li>
+            </ul>
+          </div>
+          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
+            Assinar Plano REI com IA
+          </a>
+        </div>
+>>>>>>> Stashed changes
       </div>
 
       <p className="text-xs text-slate-600 max-w-3xl mx-auto leading-relaxed bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left sm:text-center">
