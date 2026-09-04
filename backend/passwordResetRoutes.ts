@@ -1,10 +1,6 @@
 /**
  * Recuperação de senha por e-mail (clientes / empresas).
  * A conta ADMIN do SaaS NÃO usa este fluxo — ver adminPasswordReset.ts.
- *
- * Rotas:
- *   POST /api/auth/forgot-password  { email? , cnpj? }
- *   POST /api/auth/reset-password   { token, nova_senha }
  */
 import type { Express, Request, Response } from 'express';
 import type { Database } from 'sqlite';
@@ -12,6 +8,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import rateLimit from 'express-rate-limit';
 import { enviarEmail, smtpConfigured } from './mailer.js';
+import { validarSenhaEmpresa } from './passwordPolicy.js';
 
 const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
   /\/$/,
@@ -70,7 +67,9 @@ export async function createUsuarioForEmpresa(
   await ensureAuthColumns(db);
   const email = opts.email.trim().toLowerCase();
   if (!emailValido(email)) throw new Error('E-mail inválido.');
-  if (opts.senha.length < 6) throw new Error('A senha deve ter pelo menos 6 caracteres.');
+
+  const pol = validarSenhaEmpresa(opts.senha);
+  if (!pol.ok) throw new Error(pol.error);
 
   const existenteEmail = await db.get('SELECT id FROM usuarios WHERE email = ?', [email]);
   if (existenteEmail) throw new Error('Este e-mail já está em uso.');
@@ -120,12 +119,11 @@ export function mountPasswordResetRoutes(app: Express, getDb: () => Database) {
         return res.status(400).json({ error: 'Informe o e-mail cadastrado.' });
       }
 
-      // Conta do dono do SaaS: não envia link pelo fluxo público
       if (usuario && isAdminAccount(usuario)) {
         return res.json({
           success: true,
           message:
-            'Contas administrativas usam recuperação protegida em /admin/recuperar-senha (chave do servidor).',
+            'Contas administrativas usam recuperação protegida em /admin/login (chave do servidor).',
         });
       }
 
@@ -180,8 +178,10 @@ export function mountPasswordResetRoutes(app: Express, getDb: () => Database) {
       if (!token || token.length < 20) {
         return res.status(400).json({ error: 'Token inválido.' });
       }
-      if (nova.length < 6) {
-        return res.status(400).json({ error: 'A nova senha deve ter pelo menos 6 caracteres.' });
+
+      const pol = validarSenhaEmpresa(nova);
+      if (!pol.ok) {
+        return res.status(400).json({ error: pol.error });
       }
 
       const db = getDb();
@@ -205,7 +205,7 @@ export function mountPasswordResetRoutes(app: Express, getDb: () => Database) {
       const usuario = await db.get('SELECT * FROM usuarios WHERE id = ?', [row.usuario_id]);
       if (usuario && isAdminAccount(usuario)) {
         return res.status(403).json({
-          error: 'Use /admin/recuperar-senha para redefinir a senha do administrador.',
+          error: 'Use /admin/login para redefinir a senha do administrador.',
         });
       }
 
