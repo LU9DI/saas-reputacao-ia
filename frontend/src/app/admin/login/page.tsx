@@ -36,9 +36,7 @@ export default function AdminLogin() {
         throw new Error(data.error || 'Credenciais inválidas.');
       }
 
-      // Token fica em cookie httpOnly — limpa eventual localStorage antigo
       localStorage.removeItem('token_saas_reputacao');
-
       router.push('/admin');
     } catch (err: any) {
       if (err.name === 'AbortError') {
@@ -57,7 +55,7 @@ export default function AdminLogin() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 text-slate-800">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Painel Administrativo</h1>
-          <p className="text-sm text-slate-500">Entre com suas credenciais de gestor</p>
+          <p className="text-sm text-slate-500">Acesso restrito ao dono do SaaS</p>
         </div>
 
         {erro && (
@@ -123,6 +121,12 @@ export default function AdminLogin() {
             {loading && <Loader2 size={16} className="animate-spin" aria-hidden="true" />}
             {loading ? 'Entrando...' : 'Acessar Painel'}
           </button>
+
+          <p className="text-center text-xs text-slate-500">
+            <a href="/admin/recuperar-senha" className="underline hover:text-indigo-600">
+              Esqueci a senha do admin
+            </a>
+          </p>
         </form>
       </div>
     </div>
