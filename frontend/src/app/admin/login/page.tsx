@@ -6,6 +6,12 @@ import { Lock, Mail, AlertCircle, Loader2, Shield, KeyRound } from 'lucide-react
 
 type Step = 'senha' | 'mfa' | 'recuperar' | 'redefinir';
 
+const TOKEN_KEY = 'admin_saas_token';
+
+function apiBase() {
+  return (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+}
+
 function AdminLoginForm() {
   const router = useRouter();
   const search = useSearchParams();
@@ -32,7 +38,18 @@ function AdminLoginForm() {
     }
   }, [tokenFromUrl]);
 
-  const api = () => process.env.NEXT_PUBLIC_API_URL;
+  const entrarNoPainel = (jwt?: string) => {
+    if (jwt) {
+      try {
+        localStorage.setItem(TOKEN_KEY, jwt);
+      } catch {
+        /* private mode */
+      }
+    }
+    localStorage.removeItem('token_saas_reputacao');
+    // hard navigation evita ficar preso se o cookie cross-origin falhar
+    window.location.assign('/admin');
+  };
 
   const titulo =
     step === 'mfa'
@@ -50,20 +67,30 @@ function AdminLoginForm() {
     setMsg('');
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const base = apiBase();
 
     try {
       if (step === 'senha') {
-        const response = await fetch(`${api()}/api/admin/login`, {
+        const response = await fetch(`${base}/api/admin/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ email, senha }),
+          body: JSON.stringify({ email: email.trim().toLowerCase(), senha }),
           signal: controller.signal,
         });
         clearTimeout(timeout);
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Credenciais inválidas.');
+
+        let data: any = {};
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error(`Resposta inválida do servidor (${response.status}). A API está em ${base}?`);
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || `Falha no login (${response.status}).`);
+        }
 
         if (data.mfa_required && data.mfa_token) {
           setMfaToken(data.mfa_token);
@@ -72,13 +99,12 @@ function AdminLoginForm() {
           return;
         }
 
-        localStorage.removeItem('token_saas_reputacao');
-        router.push('/admin');
+        entrarNoPainel(data.token);
         return;
       }
 
       if (step === 'mfa') {
-        const response = await fetch(`${api()}/api/admin/mfa/verify`, {
+        const response = await fetch(`${base}/api/admin/mfa/verify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -88,13 +114,12 @@ function AdminLoginForm() {
         clearTimeout(timeout);
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Código inválido.');
-        localStorage.removeItem('token_saas_reputacao');
-        router.push('/admin');
+        entrarNoPainel(data.token);
         return;
       }
 
       if (step === 'recuperar') {
-        const res = await fetch(`${api()}/api/admin/forgot-password`, {
+        const res = await fetch(`${base}/api/admin/forgot-password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -114,7 +139,7 @@ function AdminLoginForm() {
       if (step === 'redefinir') {
         if (novaSenha !== confirma) throw new Error('As senhas não coincidem.');
         if (novaSenha.length < 10) throw new Error('A senha deve ter pelo menos 10 caracteres.');
-        const res = await fetch(`${api()}/api/admin/reset-password`, {
+        const res = await fetch(`${base}/api/admin/reset-password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token, nova_senha: novaSenha }),
@@ -135,9 +160,11 @@ function AdminLoginForm() {
       }
     } catch (err: any) {
       if (err.name === 'AbortError') {
-        setErro('Tempo de conexão esgotado. Tente novamente.');
+        setErro(`Tempo esgotado. Confira se a API está rodando em ${apiBase()}.`);
+      } else if (String(err.message || '').includes('Failed to fetch')) {
+        setErro(`Não conectou na API (${apiBase()}). Suba o backend e confira NEXT_PUBLIC_API_URL.`);
       } else {
-        setErro(err.message === 'Failed to fetch' ? 'Erro de conexão com o servidor.' : err.message);
+        setErro(err.message || 'Erro no login');
       }
     } finally {
       clearTimeout(timeout);
@@ -258,9 +285,6 @@ function AdminLoginForm() {
                 placeholder="000 000"
                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 tracking-widest text-center font-mono text-lg"
               />
-              <p className="text-[11px] text-slate-400">
-                Google Authenticator / Authy, ou um código de backup.
-              </p>
             </div>
           )}
 
@@ -276,8 +300,7 @@ function AdminLoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@seusaas.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  autoComplete="email"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
                 />
               </div>
               <div className="space-y-1.5">
@@ -290,13 +313,9 @@ function AdminLoginForm() {
                   value={chave}
                   onChange={(e) => setChave(e.target.value)}
                   placeholder="ADMIN_RECOVERY_SECRET do .env"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
                   autoComplete="off"
                 />
-                <p className="text-[11px] text-slate-400 leading-snug">
-                  Valor de <code className="bg-slate-100 px-1 rounded">ADMIN_RECOVERY_SECRET</code> no
-                  servidor — não é a senha de login.
-                </p>
               </div>
             </>
           )}
@@ -324,7 +343,6 @@ function AdminLoginForm() {
                   value={novaSenha}
                   onChange={(e) => setNovaSenha(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
-                  autoComplete="new-password"
                 />
               </div>
               <div className="space-y-1.5">
@@ -336,7 +354,6 @@ function AdminLoginForm() {
                   value={confirma}
                   onChange={(e) => setConfirma(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
-                  autoComplete="new-password"
                 />
               </div>
             </>
@@ -345,13 +362,13 @@ function AdminLoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-md shadow-indigo-100 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl text-sm disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 size={16} className="animate-spin" />}
             {loading
               ? 'Aguarde…'
               : step === 'senha'
-                ? 'Continuar'
+                ? 'Entrar'
                 : step === 'mfa'
                   ? 'Verificar e entrar'
                   : step === 'recuperar'
@@ -360,7 +377,7 @@ function AdminLoginForm() {
           </button>
 
           {step === 'senha' && (
-            <p className="text-center text-xs text-slate-500 space-x-2">
+            <p className="text-center text-xs text-slate-500">
               <button
                 type="button"
                 className="underline hover:text-indigo-600"
@@ -372,34 +389,10 @@ function AdminLoginForm() {
               >
                 Esqueci a senha
               </button>
-              <span className="text-slate-300">·</span>
-              <a href="/admin/mfa" className="underline hover:text-indigo-600">
-                Configurar MFA
-              </a>
             </p>
           )}
 
-          {step === 'recuperar' && (
-            <p className="text-center text-xs text-slate-500 space-x-2">
-              <button type="button" className="underline hover:text-indigo-600" onClick={voltarLogin}>
-                Voltar ao login
-              </button>
-              <span className="text-slate-300">·</span>
-              <button
-                type="button"
-                className="underline hover:text-indigo-600"
-                onClick={() => {
-                  setStep('redefinir');
-                  setErro('');
-                  setMsg('');
-                }}
-              >
-                Já tenho o token
-              </button>
-            </p>
-          )}
-
-          {(step === 'mfa' || step === 'redefinir') && (
+          {step !== 'senha' && (
             <p className="text-center text-xs text-slate-500">
               <button type="button" className="underline hover:text-indigo-600" onClick={voltarLogin}>
                 Voltar ao login
@@ -407,6 +400,8 @@ function AdminLoginForm() {
             </p>
           )}
         </form>
+
+        <p className="text-[10px] text-center text-slate-400">API: {apiBase()}</p>
       </div>
     </div>
   );
