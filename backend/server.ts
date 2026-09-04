@@ -24,6 +24,7 @@ import { mountMfaRoutes, ensureMfaColumns } from './mfa.js';
 import { validarSenhaEmpresa } from './passwordPolicy.js';
 import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured } from './stripeBilling.js';
+import { normalizarCnpj, cnpjValido } from './lib/cnpj.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,27 +63,6 @@ function setAuthCookie(res: Response, token: string) {
 function clearAuthCookie(res: Response) {
   res.clearCookie(COOKIE_NAME, { path: '/' });
   res.clearCookie('auth_token', { path: '/' });
-}
-
-function normalizarCnpj(cnpj: string): string {
-  return String(cnpj || '').replace(/\D/g, '');
-}
-
-function cnpjValido(cnpj: string): boolean {
-  if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
-  const calc = (base: string, pesoInicial: number) => {
-    let soma = 0,
-      peso = pesoInicial;
-    for (let i = 0; i < base.length; i++) {
-      soma += parseInt(base[i]) * peso;
-      peso = peso === 2 ? 9 : peso - 1;
-    }
-    const resto = soma % 11;
-    return resto < 2 ? 0 : 11 - resto;
-  };
-  const d1 = calc(cnpj.slice(0, 12), 5);
-  const d2 = calc(cnpj.slice(0, 12) + d1, 6);
-  return parseInt(cnpj[12]) === d1 && parseInt(cnpj[13]) === d2;
 }
 
 function slugify(texto: string): string {
@@ -231,16 +211,10 @@ async function initDB() {
   }
 }
 
-// —— Health ——
 app.get('/api/health', (_req, res) => {
-  res.json({
-    ok: true,
-    stripe: stripeConfigured(),
-    time: new Date().toISOString(),
-  });
+  res.json({ ok: true, stripe: stripeConfigured(), time: new Date().toISOString() });
 });
 
-// —— Trial ——
 app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) => {
   try {
     const cnpj = normalizarCnpj(req.body.cnpj ?? '');
@@ -294,7 +268,6 @@ app.post('/api/trial/ativar', trialLimiter, async (req: Request, res: Response) 
   }
 });
 
-// —— Login empresa (CNPJ + senha) ——
 app.post('/api/auth/login', loginLimiter, async (req: Request, res: Response) => {
   try {
     const cnpj = normalizarCnpj(req.body.cnpj ?? '');
@@ -308,11 +281,7 @@ app.post('/api/auth/login', loginLimiter, async (req: Request, res: Response) =>
     if (!ok) return res.status(401).json({ error: 'Credenciais inválidas.' });
 
     const token = jwt.sign(
-      {
-        id: usuario.id,
-        nome_funcionario: usuario.nome_funcionario,
-        empresa_id: usuario.empresa_id,
-      },
+      { id: usuario.id, nome_funcionario: usuario.nome_funcionario, empresa_id: usuario.empresa_id },
       JWT_SECRET,
       { expiresIn: '1d' }
     );
@@ -337,7 +306,6 @@ app.post('/api/auth/logout', (_req, res) => {
   res.json({ success: true });
 });
 
-// —— Empresa validar ——
 app.get('/api/empresa/:ref/validar', async (req: Request, res: Response) => {
   try {
     const empresa = await findEmpresa(req.params.ref);
@@ -370,7 +338,6 @@ app.get('/api/empresa/:ref/validar', async (req: Request, res: Response) => {
   }
 });
 
-// —— Reviews ——
 app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => {
   try {
     const name = String(req.body.name ?? '').trim().slice(0, 100);
@@ -418,7 +385,6 @@ app.get('/api/reviews/:ref', async (req: Request, res: Response) => {
   }
 });
 
-// —— Admin listagens ——
 app.get('/api/admin/empresas', autenticarToken, async (req: AuthRequest, res: Response) => {
   if (req.user?.empresa_id !== 'admin' && req.user?.role !== 'admin') {
     return res.status(403).json({ error: 'Acesso negado.' });
