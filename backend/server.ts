@@ -40,3 +40,105 @@
  * [x] Task wire: Stripe + recuperação de senha + trial com e-mail/senha.
  * ============================================================================
  */
+
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
+import crypto from 'crypto';
+import path from 'path';
+import fs from 'fs';
+import PDFDocument from 'pdfkit';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
+import type { Request, Response, NextFunction } from 'express';
+import type { Database } from 'sqlite';
+import 'dotenv/config';
+import { mountPasswordResetRoutes, createUsuarioForEmpresa, ensureAuthColumns } from './passwordResetRoutes.js';
+import { mountStripeRoutes } from './stripeRoutes.js';
+import { stripeConfigured } from './stripeBilling.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(cookieParser());
+// JSON em todas as rotas, exceto webhook Stripe (precisa do body cru)
+app.use((req, res, next) => {
+  if (req.originalUrl?.startsWith('/api/webhook/stripe')) return next();
+  return express.json({ limit: '20kb' })(req, res, next);
+});
+
+const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:3000'].filter(Boolean) as string[];
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+
+export let db!: Database;
+
+const COOKIE_NAME = 'saas_auth_token';
+const isProd = process.env.NODE_ENV === 'production';
+const APP_URL = process.env.APP_URL || 'http://localhost:3000';
+
+function setAuthCookie(res: Response, token: string) {
+  res.cookie(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    maxAge: 24 * 60 * 60 * 1000,
+    path: '/',
+  });
+}
+
+function clearAuthCookie(res: Response) {
+  res.clearCookie(COOKIE_NAME, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    path: '/',
+  });
+}
+
+function slugify(texto: string): string {
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48) || 'empresa';
+}
+
+async function slugUnico(base: string): Promise<string> {
+  let slug = base;
+  let n = 0;
+  while (true) {
+    const existe = await db.get('SELECT id FROM empresas WHERE slug = ?', [slug]);
+    if (!existe) return slug;
+    n += 1;
+    slug = `${base}-${n}`;
+  }
+}
+
+async function findEmpresa(ref: string) {
+  if (!ref) return null;
+  const porId = await db.get('SELECT * FROM empresas WHERE id = ?', [ref]);
+  if (porId) return porId;
+  return db.get('SELECT * FROM empresas WHERE slug = ?', [ref]);
+}
+
+function linksEmpresa(slugOrId: string, plan: string = 'trial') {
+  const key = slugOrId;
+  return {
+    avaliacao: `${APP_URL}/avaliacao/${key}`,
+    painel: `${APP_URL}/painel/${key}`,
+    widget: `${APP_URL}/widget/${key}`,
+    embed: `<iframe src="${APP_URL}/widget/${key}" width="100%" height="420" frameborder="0" style="border:0;border-radius:12px;" title="Avaliações"></iframe>`,
+    whatsapp: montarWhatsAppLink(plan, key),
+  };
+}
