@@ -1,22 +1,6 @@
 /**
  * Autenticação multifator (TOTP) — painel admin Filtra.IA
- *
- * Compatível com Google Authenticator, Authy, 1Password, etc.
- * Implementação RFC 6238 em Node puro (sem dependência extra).
- *
- * Rotas (montar com mountMfaRoutes):
- *   POST /api/admin/mfa/setup     → { otpauth_url, secret, qr_otpauth }  (autenticado ou pós-senha)
- *   POST /api/admin/mfa/confirm   → { code } ativa MFA + devolve backup codes
- *   POST /api/admin/mfa/verify    → { mfa_token, code } completa login
- *   POST /api/admin/mfa/disable   → { code } desliga MFA (autenticado)
- *   GET  /api/admin/mfa/status    → { enabled }
- *
- * Fluxo de login:
- *   1) POST /api/admin/login { email, senha }
- *      → se MFA off: cookie JWT
- *      → se MFA on:  { mfa_required: true, mfa_token }
- *   2) POST /api/admin/mfa/verify { mfa_token, code }
- *      → cookie JWT
+ * Implementação RFC 6238 em Node puro.
  */
 import type { Express, Request, Response, NextFunction } from 'express';
 import type { Database } from 'sqlite';
@@ -24,8 +8,6 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
-
-// ─── Base32 (RFC 4648) ───────────────────────────────────────────────
 
 const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
@@ -62,8 +44,6 @@ function base32Decode(str: string): Buffer {
   }
   return Buffer.from(out);
 }
-
-// ─── TOTP ────────────────────────────────────────────────────────────
 
 function hotp(secret: Buffer, counter: number): string {
   const buf = Buffer.alloc(8);
@@ -112,12 +92,10 @@ export function buildOtpauthUrl(opts: {
 function generateBackupCodes(n = 8): string[] {
   const codes: string[] = [];
   for (let i = 0; i < n; i++) {
-    codes.push(crypto.randomBytes(4).toString('hex')); // 8 hex chars
+    codes.push(crypto.randomBytes(4).toString('hex'));
   }
   return codes;
 }
-
-// ─── Schema ──────────────────────────────────────────────────────────
 
 export async function ensureMfaColumns(db: Database): Promise<void> {
   const cols = (await db.all(`PRAGMA table_info(usuarios)`)).map((c: any) => c.name);
@@ -138,8 +116,6 @@ function isAdminUser(u: any): boolean {
   return u?.empresa_id === 'admin' || String(u?.email || '').toLowerCase() === adminMail;
 }
 
-// ─── Rotas ───────────────────────────────────────────────────────────
-
 const mfaLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
@@ -152,97 +128,71 @@ export function mountMfaRoutes(
   opts: {
     JWT_SECRET: string;
     setAuthCookie: (res: Response, token: string) => void;
-    /** Middleware que preenche req.user a partir do JWT de sessão */
     autenticarToken: (req: any, res: Response, next: NextFunction) => void;
   }
 ) {
-  /** Inicia setup: gera secret pendente */
-  app.post(
-    '/api/admin/mfa/setup',
-    opts.autenticarToken,
-    mfaLimiter,
-    async (req: any, res: Response) => {
-      try {
-        const db = getDb();
-        await ensureMfaColumns(db);
-        const usuario = await db.get('SELECT * FROM usuarios WHERE id = ?', [req.user?.id]);
-        if (!usuario || !isAdminUser(usuario)) {
-          return res.status(403).json({ error: 'Apenas o admin pode configurar MFA.' });
-        }
-        if (usuario.mfa_enabled) {
-          return res.status(400).json({ error: 'MFA já está ativo. Desative antes de reconfigurar.' });
-        }
-
-        const secret = generateTotpSecret();
-        await db.run('UPDATE usuarios SET mfa_pending_secret = ? WHERE id = ?', [secret, usuario.id]);
-
-        const otpauth_url = buildOtpauthUrl({
-          secret,
-          email: usuario.email || 'admin@seusaas.com',
-          issuer: 'Filtra.IA Admin',
-        });
-
-        return res.json({
-          success: true,
-          secret,
-          otpauth_url,
-          // o front pode gerar QR a partir do otpauth_url (ex.: api.qrserver.com ou lib local)
-          message: 'Escaneie o QR no autenticador e confirme com um código de 6 dígitos.',
-        });
-      } catch (e) {
-        console.error('mfa setup:', e);
-        return res.status(500).json({ error: 'Erro interno.' });
+  app.post('/api/admin/mfa/setup', opts.autenticarToken, mfaLimiter, async (req: any, res: Response) => {
+    try {
+      const db = getDb();
+      await ensureMfaColumns(db);
+      const usuario = await db.get('SELECT * FROM usuarios WHERE id = ?', [req.user?.id]);
+      if (!usuario || !isAdminUser(usuario)) {
+        return res.status(403).json({ error: 'Apenas o admin pode configurar MFA.' });
       }
-    }
-  );
-
-  /** Confirma o 1º código e ativa MFA + emite backup codes (mostrados 1x) */
-  app.post(
-    '/api/admin/mfa/confirm',
-    opts.autenticarToken,
-    mfaLimiter,
-    async (req: any, res: Response) => {
-      try {
-        const code = String(req.body.code || req.body.token || '').trim();
-        const db = getDb();
-        await ensureMfaColumns(db);
-        const usuario = await db.get('SELECT * FROM usuarios WHERE id = ?', [req.user?.id]);
-        if (!usuario || !isAdminUser(usuario)) {
-          return res.status(403).json({ error: 'Acesso negado.' });
-        }
-        if (!usuario.mfa_pending_secret) {
-          return res.status(400).json({ error: 'Inicie o setup MFA primeiro.' });
-        }
-        if (!verifyTotp(usuario.mfa_pending_secret, code)) {
-          return res.status(401).json({ error: 'Código inválido. Tente o código atual do autenticador.' });
-        }
-
-        const backups = generateBackupCodes(8);
-        const hashes = await Promise.all(backups.map((c) => bcrypt.hash(c, 10)));
-
-        await db.run(
-          `UPDATE usuarios SET
-            mfa_secret = ?,
-            mfa_enabled = 1,
-            mfa_pending_secret = NULL,
-            mfa_backup_hashes = ?
-           WHERE id = ?`,
-          [usuario.mfa_pending_secret, JSON.stringify(hashes), usuario.id]
-        );
-
-        return res.json({
-          success: true,
-          message: 'MFA ativado. Guarde os códigos de backup em local seguro — eles não serão mostrados de novo.',
-          backup_codes: backups,
-        });
-      } catch (e) {
-        console.error('mfa confirm:', e);
-        return res.status(500).json({ error: 'Erro interno.' });
+      if (usuario.mfa_enabled) {
+        return res.status(400).json({ error: 'MFA já está ativo. Desative antes de reconfigurar.' });
       }
+      const secret = generateTotpSecret();
+      await db.run('UPDATE usuarios SET mfa_pending_secret = ? WHERE id = ?', [secret, usuario.id]);
+      const otpauth_url = buildOtpauthUrl({
+        secret,
+        email: usuario.email || 'admin@seusaas.com',
+        issuer: 'Filtra.IA Admin',
+      });
+      return res.json({
+        success: true,
+        secret,
+        otpauth_url,
+        message: 'Escaneie o QR no autenticador e confirme com um código de 6 dígitos.',
+      });
+    } catch (e) {
+      console.error('mfa setup:', e);
+      return res.status(500).json({ error: 'Erro interno.' });
     }
-  );
+  });
 
-  /** Status */
+  app.post('/api/admin/mfa/confirm', opts.autenticarToken, mfaLimiter, async (req: any, res: Response) => {
+    try {
+      const code = String(req.body.code || req.body.token || '').trim();
+      const db = getDb();
+      await ensureMfaColumns(db);
+      const usuario = await db.get('SELECT * FROM usuarios WHERE id = ?', [req.user?.id]);
+      if (!usuario || !isAdminUser(usuario)) {
+        return res.status(403).json({ error: 'Acesso negado.' });
+      }
+      if (!usuario.mfa_pending_secret) {
+        return res.status(400).json({ error: 'Inicie o setup MFA primeiro.' });
+      }
+      if (!verifyTotp(usuario.mfa_pending_secret, code)) {
+        return res.status(401).json({ error: 'Código inválido. Tente o código atual do autenticador.' });
+      }
+      const backups = generateBackupCodes(8);
+      const hashes = await Promise.all(backups.map((c) => bcrypt.hash(c, 10)));
+      await db.run(
+        `UPDATE usuarios SET mfa_secret = ?, mfa_enabled = 1, mfa_pending_secret = NULL, mfa_backup_hashes = ? WHERE id = ?`,
+        [usuario.mfa_pending_secret, JSON.stringify(hashes), usuario.id]
+      );
+      return res.json({
+        success: true,
+        message: 'MFA ativado. Guarde os códigos de backup.',
+        backup_codes: backups,
+      });
+    } catch (e) {
+      console.error('mfa confirm:', e);
+      return res.status(500).json({ error: 'Erro interno.' });
+    }
+  });
+
   app.get('/api/admin/mfa/status', opts.autenticarToken, async (req: any, res: Response) => {
     try {
       const db = getDb();
@@ -254,61 +204,49 @@ export function mountMfaRoutes(
     }
   });
 
-  /** Desativa MFA (precisa de código TOTP ou backup válido) */
-  app.post(
-    '/api/admin/mfa/disable',
-    opts.autenticarToken,
-    mfaLimiter,
-    async (req: any, res: Response) => {
+  app.post('/api/admin/mfa/disable', opts.autenticarToken, mfaLimiter, async (req: any, res: Response) => {
+    try {
+      const code = String(req.body.code || '').trim();
+      const db = getDb();
+      await ensureMfaColumns(db);
+      const usuario = await db.get('SELECT * FROM usuarios WHERE id = ?', [req.user?.id]);
+      if (!usuario || !isAdminUser(usuario)) {
+        return res.status(403).json({ error: 'Acesso negado.' });
+      }
+      if (!usuario.mfa_enabled) {
+        return res.json({ success: true, message: 'MFA já estava desativado.' });
+      }
+      const totpOk = usuario.mfa_secret && verifyTotp(usuario.mfa_secret, code);
+      let backupOk = false;
+      let backupHashes: string[] = [];
       try {
-        const code = String(req.body.code || '').trim();
-        const db = getDb();
-        await ensureMfaColumns(db);
-        const usuario = await db.get('SELECT * FROM usuarios WHERE id = ?', [req.user?.id]);
-        if (!usuario || !isAdminUser(usuario)) {
-          return res.status(403).json({ error: 'Acesso negado.' });
-        }
-        if (!usuario.mfa_enabled) {
-          return res.json({ success: true, message: 'MFA já estava desativado.' });
-        }
-
-        const totpOk = usuario.mfa_secret && verifyTotp(usuario.mfa_secret, code);
-        let backupOk = false;
-        let backupHashes: string[] = [];
-        try {
-          backupHashes = JSON.parse(usuario.mfa_backup_hashes || '[]');
-        } catch {
-          backupHashes = [];
-        }
-        if (!totpOk && code) {
-          for (let i = 0; i < backupHashes.length; i++) {
-            if (await bcrypt.compare(code.toLowerCase(), backupHashes[i])) {
-              backupOk = true;
-              backupHashes.splice(i, 1);
-              break;
-            }
+        backupHashes = JSON.parse(usuario.mfa_backup_hashes || '[]');
+      } catch {
+        backupHashes = [];
+      }
+      if (!totpOk && code) {
+        for (let i = 0; i < backupHashes.length; i++) {
+          if (await bcrypt.compare(code.toLowerCase(), backupHashes[i])) {
+            backupOk = true;
+            backupHashes.splice(i, 1);
+            break;
           }
         }
-        if (!totpOk && !backupOk) {
-          return res.status(401).json({ error: 'Código MFA ou backup inválido.' });
-        }
-
-        await db.run(
-          `UPDATE usuarios SET mfa_enabled = 0, mfa_secret = NULL, mfa_backup_hashes = NULL, mfa_pending_secret = NULL WHERE id = ?`,
-          [usuario.id]
-        );
-        return res.json({ success: true, message: 'MFA desativado.' });
-      } catch (e) {
-        console.error('mfa disable:', e);
-        return res.status(500).json({ error: 'Erro interno.' });
       }
+      if (!totpOk && !backupOk) {
+        return res.status(401).json({ error: 'Código MFA ou backup inválido.' });
+      }
+      await db.run(
+        `UPDATE usuarios SET mfa_enabled = 0, mfa_secret = NULL, mfa_backup_hashes = NULL, mfa_pending_secret = NULL WHERE id = ?`,
+        [usuario.id]
+      );
+      return res.json({ success: true, message: 'MFA desativado.' });
+    } catch (e) {
+      console.error('mfa disable:', e);
+      return res.status(500).json({ error: 'Erro interno.' });
     }
-  );
+  });
 
-  /**
-   * Segundo fator no login (após senha correta).
-   * Body: { mfa_token, code }
-   */
   app.post('/api/admin/mfa/verify', mfaLimiter, async (req: Request, res: Response) => {
     try {
       const mfaToken = String(req.body.mfa_token || '').trim();
@@ -336,7 +274,6 @@ export function mountMfaRoutes(
 
       let ok = !!(usuario.mfa_secret && verifyTotp(usuario.mfa_secret, code));
 
-      // tenta backup code
       if (!ok) {
         let hashes: string[] = [];
         try {
@@ -376,6 +313,7 @@ export function mountMfaRoutes(
 
       return res.json({
         success: true,
+        token: session,
         tokenPayload: {
           id: usuario.id,
           nome_funcionario: usuario.nome_funcionario,
@@ -390,9 +328,6 @@ export function mountMfaRoutes(
   });
 }
 
-/**
- * Usado pelo login: se MFA ativo, devolve desafio em vez de sessão completa.
- */
 export function issueMfaChallenge(
   usuario: any,
   JWT_SECRET: string
