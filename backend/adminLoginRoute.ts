@@ -2,12 +2,12 @@
  * Login do painel administrativo (e-mail + senha [+ MFA se ativo]).
  *
  * POST /api/admin/login { email, senha }
- *   → sem MFA: cookie JWT + success
- *   → com MFA: { mfa_required: true, mfa_token }  (validar em /api/admin/mfa/verify)
+ *   → sem MFA: cookie + { success, token, tokenPayload }
+ *   → com MFA: { mfa_required, mfa_token }
  *
- * Credenciais padrão:
- *   e-mail: admin@seusaas.com
- *   senha:  ADMIN_PASSWORD no .env  OU  MudeEstaSenha123!
+ * Em localhost (front :3000 / API :5000) o cookie httpOnly muitas vezes
+ * NÃO é enviado em fetch cross-origin. Por isso o `token` também vai no JSON
+ * para o front guardar e mandar em Authorization: Bearer.
  */
 import type { Express, Request, Response } from 'express';
 import type { Database } from 'sqlite';
@@ -18,7 +18,7 @@ import { ensureMfaColumns, issueMfaChallenge } from './mfa.js';
 
 const adminLoginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 30,
   message: { error: 'Muitas tentativas de login. Tente novamente mais tarde.' },
 });
 
@@ -69,7 +69,6 @@ export function mountAdminLoginRoute(
         return res.status(401).json({ error: 'Credenciais inválidas.' });
       }
 
-      // MFA ativo → não emite sessão ainda
       if (usuario.mfa_enabled) {
         const challenge = issueMfaChallenge(usuario, opts.JWT_SECRET);
         return res.json({
@@ -96,6 +95,7 @@ export function mountAdminLoginRoute(
       return res.json({
         success: true,
         mfa_required: false,
+        token, // fallback para localhost cross-origin
         tokenPayload: {
           id: usuario.id,
           nome_funcionario: usuario.nome_funcionario,
@@ -107,5 +107,41 @@ export function mountAdminLoginRoute(
       console.error('Erro no admin login:', e);
       return res.status(500).json({ error: 'Erro interno do servidor.' });
     }
+  });
+
+  /** Sessão atual do admin (cookie ou Bearer) */
+  app.get('/api/admin/me', async (req: Request, res: Response) => {
+    try {
+      const raw =
+        (req as any).cookies?.auth_token ||
+        (req as any).cookies?.saas_auth_token ||
+        (req.headers.authorization?.startsWith('Bearer ')
+          ? req.headers.authorization.slice(7)
+          : null);
+
+      if (!raw) {
+        return res.status(401).json({ error: 'Não autenticado.' });
+      }
+
+      const decoded = jwt.verify(raw, opts.JWT_SECRET) as any;
+      if (decoded.role !== 'admin' && decoded.empresa_id !== 'admin') {
+        return res.status(403).json({ error: 'Não é admin.' });
+      }
+
+      return res.json({
+        id: decoded.id,
+        role: 'admin',
+        empresa_id: decoded.empresa_id,
+        nome_funcionario: decoded.nome_funcionario,
+      });
+    } catch {
+      return res.status(401).json({ error: 'Sessão inválida ou expirada.' });
+    }
+  });
+
+  app.post('/api/admin/logout', (_req: Request, res: Response) => {
+    res.clearCookie('auth_token', { path: '/' });
+    res.clearCookie('saas_auth_token', { path: '/' });
+    return res.json({ success: true });
   });
 }
