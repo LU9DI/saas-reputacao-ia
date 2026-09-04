@@ -8,9 +8,12 @@
  * 4) Token de 30 min, uso único
  * 5) Nova senha: mín. 10 caracteres + número
  *
+ * O formulário fica embutido em /admin/login (não em página separada).
+ * Link do e-mail: /admin/login?token=...
+ *
  * .env:
  *   ADMIN_RECOVERY_SECRET=uma-chave-longa-e-secreta
- *   ADMIN_EMAIL=admin@seusaas.com   (opcional; default admin@seusaas.com)
+ *   ADMIN_EMAIL=admin@seusaas.com
  */
 import type { Express, Request, Response } from 'express';
 import type { Database } from 'sqlite';
@@ -37,7 +40,6 @@ function timingSafeEqualStr(a: string, b: string): boolean {
   const ba = Buffer.from(a);
   const bb = Buffer.from(b);
   if (ba.length !== bb.length) {
-    // compara mesmo assim para não vazar tamanho de forma trivial
     crypto.timingSafeEqual(ba, ba);
     return false;
   }
@@ -45,7 +47,7 @@ function timingSafeEqualStr(a: string, b: string): boolean {
 }
 
 const adminForgotLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hora
+  windowMs: 60 * 60 * 1000,
   max: 5,
   message: { error: 'Muitas tentativas de recuperação do admin. Aguarde 1 hora.' },
 });
@@ -63,10 +65,6 @@ export function isAdminUsuario(usuario: any): boolean {
 }
 
 export function mountAdminPasswordResetRoutes(app: Express, getDb: () => Database) {
-  /**
-   * POST /api/admin/forgot-password
-   * Body: { email, recovery_secret }
-   */
   app.post('/api/admin/forgot-password', adminForgotLimiter, async (req: Request, res: Response) => {
     try {
       const secretCfg = recoverySecret();
@@ -83,7 +81,6 @@ export function mountAdminPasswordResetRoutes(app: Express, getDb: () => Databas
         .toLowerCase();
       const recoverySecretBody = String(req.body.recovery_secret || req.body.chave || '').trim();
 
-      // Resposta genérica — não confirma se o e-mail existe
       const okMsg =
         'Se os dados estiverem corretos, um link de redefinição será enviado ao e-mail do administrador.';
 
@@ -92,7 +89,6 @@ export function mountAdminPasswordResetRoutes(app: Express, getDb: () => Databas
       }
 
       if (!timingSafeEqualStr(recoverySecretBody, secretCfg)) {
-        // atraso artificial leve
         await new Promise((r) => setTimeout(r, 400 + Math.random() * 400));
         return res.status(401).json({ error: 'Dados inválidos.' });
       }
@@ -112,7 +108,7 @@ export function mountAdminPasswordResetRoutes(app: Express, getDb: () => Databas
 
       const token = crypto.randomBytes(32).toString('hex');
       const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-      const expira = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // 30 min
+      const expira = new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
       await db.run(
         `INSERT INTO password_resets (id, usuario_id, token_hash, expira_em, usado)
@@ -120,7 +116,8 @@ export function mountAdminPasswordResetRoutes(app: Express, getDb: () => Databas
         [crypto.randomUUID(), usuario.id, tokenHash, expira]
       );
 
-      const link = `${APP_URL}/admin/recuperar-senha?token=${token}`;
+      // Mesma página do login admin — não abre rota separada
+      const link = `${APP_URL}/admin/login?token=${token}`;
       await enviarEmail({
         to: usuario.email,
         subject: 'Filtra.IA — redefinição de senha do ADMIN',
@@ -148,7 +145,6 @@ export function mountAdminPasswordResetRoutes(app: Express, getDb: () => Databas
         success: true,
         message: okMsg,
         smtp: smtpConfigured(),
-        // só em desenvolvimento, para facilitar teste local sem SMTP
         ...(process.env.NODE_ENV !== 'production' && !smtpConfigured() ? { dev_link: link } : {}),
       });
     } catch (e: any) {
@@ -157,11 +153,6 @@ export function mountAdminPasswordResetRoutes(app: Express, getDb: () => Databas
     }
   });
 
-  /**
-   * POST /api/admin/reset-password
-   * Body: { token, nova_senha }
-   * Senha forte obrigatória.
-   */
   app.post('/api/admin/reset-password', adminResetLimiter, async (req: Request, res: Response) => {
     try {
       const token = String(req.body.token || '').trim();
