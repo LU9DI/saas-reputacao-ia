@@ -10,7 +10,6 @@ function RecuperarForm() {
 
   const [modo, setModo] = useState<'pedir' | 'redefinir'>(tokenFromUrl ? 'redefinir' : 'pedir');
   const [email, setEmail] = useState('');
-  const [cnpj, setCnpj] = useState('');
   const [token, setToken] = useState(tokenFromUrl);
   const [novaSenha, setNovaSenha] = useState('');
   const [msg, setMsg] = useState('');
@@ -31,18 +30,21 @@ function RecuperarForm() {
     setLoading(true);
     setErro('');
     setMsg('');
+    const emailTrim = email.trim().toLowerCase();
+    if (!emailTrim || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
+      setErro('Informe um e-mail válido.');
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${api()}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim() || undefined,
-          cnpj: cnpj.replace(/\D/g, '') || undefined,
-        }),
+        body: JSON.stringify({ email: emailTrim }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Falha na solicitação');
-      setMsg(data.message || 'Se os dados estiverem corretos, enviaremos um e-mail.');
+      setMsg(data.message || 'Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.');
     } catch (err: any) {
       setErro(err.message || 'Erro');
     } finally {
@@ -63,7 +65,7 @@ function RecuperarForm() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Falha ao redefinir');
-      setMsg(data.message || 'Senha atualizada.');
+      setMsg(data.message || 'Senha atualizada. Você já pode entrar.');
     } catch (err: any) {
       setErro(err.message || 'Erro');
     } finally {
@@ -77,7 +79,7 @@ function RecuperarForm() {
         <h1 className="text-xl font-bold text-slate-900 text-center">Recuperação de senha</h1>
         <p className="text-sm text-slate-500 text-center">
           {modo === 'pedir'
-            ? 'Informe o e-mail ou o CNPJ cadastrado. Enviaremos um link seguro para redefinir a senha.'
+            ? 'Informe o e-mail cadastrado. Enviaremos um link seguro para redefinir a senha.'
             : 'Defina uma nova senha para a sua conta.'}
         </p>
 
@@ -96,20 +98,12 @@ function RecuperarForm() {
               <label className="text-xs font-semibold text-slate-600 uppercase">E-mail</label>
               <input
                 type="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm"
                 placeholder="seu@email.com"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-600 uppercase">Ou CNPJ</label>
-              <input
-                type="text"
-                value={cnpj}
-                onChange={(e) => setCnpj(e.target.value)}
-                className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm"
-                placeholder="00.000.000/0000-00"
+                autoComplete="email"
               />
             </div>
             <button
@@ -161,8 +155,12 @@ function RecuperarForm() {
         )}
 
         <p className="text-center text-xs text-slate-400">
+          <a href="/login" className="underline">
+            Voltar ao login
+          </a>
+          {' · '}
           <a href="/" className="underline">
-            Voltar ao início
+            Início
           </a>
         </p>
       </div>
@@ -172,7 +170,11 @@ function RecuperarForm() {
 
 export default function RecuperarSenhaPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm text-slate-500">Carregando…</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center text-sm text-slate-500">Carregando…</div>
+      }
+    >
       <RecuperarForm />
     </Suspense>
   );
