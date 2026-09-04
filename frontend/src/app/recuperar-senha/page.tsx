@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getEnv } from '../utils/env';
+import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from '../utils/passwordPolicy';
 
 function RecuperarForm() {
   const search = useSearchParams();
@@ -23,7 +24,7 @@ function RecuperarForm() {
     }
   }, [tokenFromUrl]);
 
-  const api = () => getEnv('NEXT_PUBLIC_API_URL');
+  const api = () => getEnv('NEXT_PUBLIC_API_URL') || 'http://localhost:5000';
 
   const pedirLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +58,12 @@ function RecuperarForm() {
     setLoading(true);
     setErro('');
     setMsg('');
+    const pol = validarSenhaEmpresa(novaSenha);
+    if (!pol.ok) {
+      setErro(pol.error);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${api()}/api/auth/reset-password`, {
         method: 'POST',
@@ -80,7 +87,7 @@ function RecuperarForm() {
         <p className="text-sm text-slate-500 text-center">
           {modo === 'pedir'
             ? 'Informe o e-mail cadastrado. Enviaremos um link seguro para redefinir a senha.'
-            : 'Defina uma nova senha para a sua conta.'}
+            : 'Defina uma nova senha forte para a conta da empresa.'}
         </p>
 
         {erro && (
@@ -139,10 +146,11 @@ function RecuperarForm() {
                 type="password"
                 value={novaSenha}
                 onChange={(e) => setNovaSenha(e.target.value)}
-                minLength={6}
+                minLength={8}
                 className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm"
                 required
               />
+              <p className="mt-1 text-[11px] text-slate-400">{SENHA_EMPRESA_HINT}</p>
             </div>
             <button
               type="submit"
