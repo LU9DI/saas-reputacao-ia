@@ -24,7 +24,20 @@ interface Review {
   createdAt: string;
 }
 
-const apiUrl = () => process.env.NEXT_PUBLIC_API_URL;
+const TOKEN_KEY = 'admin_saas_token';
+
+const apiUrl = () => (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+
+function authHeaders(): HeadersInit {
+  const h: Record<string, string> = {};
+  try {
+    const t = localStorage.getItem(TOKEN_KEY);
+    if (t) h.Authorization = `Bearer ${t}`;
+  } catch {
+    /* ignore */
+  }
+  return h;
+}
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -42,27 +55,43 @@ export default function AdminDashboard() {
     setErro('');
     try {
       const base = apiUrl();
+      const headers = authHeaders();
 
-      // Verifica sessão via cookie httpOnly
-      const meRes = await fetch(`${base}/api/admin/me`, { credentials: 'include' });
+      const meRes = await fetch(`${base}/api/admin/me`, {
+        credentials: 'include',
+        headers,
+      });
       if (!meRes.ok) {
-        router.push('/admin/login');
+        try {
+          localStorage.removeItem(TOKEN_KEY);
+        } catch {
+          /* */
+        }
+        router.replace('/admin/login');
         return;
       }
 
       const [resEmpresas, resReviews] = await Promise.all([
-        fetch(`${base}/api/admin/empresas`, { credentials: 'include' }),
-        fetch(`${base}/api/admin/reviews`, { credentials: 'include' }),
+        fetch(`${base}/api/admin/empresas`, { credentials: 'include', headers }),
+        fetch(`${base}/api/admin/reviews`, { credentials: 'include', headers }),
       ]);
 
-      if (!resEmpresas.ok || !resReviews.ok) {
-        throw new Error('Erro ao carregar dados.');
+      if (resEmpresas.ok) {
+        setEmpresas(await resEmpresas.json());
+      } else {
+        setEmpresas([]);
+      }
+      if (resReviews.ok) {
+        setReviews(await resReviews.json());
+      } else {
+        setReviews([]);
       }
 
-      setEmpresas(await resEmpresas.json());
-      setReviews(await resReviews.json());
+      if (!resEmpresas.ok && !resReviews.ok) {
+        setErro('Sessão ok, mas rotas /api/admin/empresas ou /reviews ainda não respondem no backend.');
+      }
     } catch {
-      setErro('Falha ao buscar informações. Verifique se o backend está online.');
+      setErro(`Falha ao buscar dados. API em ${apiUrl()} está online?`);
     } finally {
       setLoading(false);
     }
@@ -73,12 +102,18 @@ export default function AdminDashboard() {
       await fetch(`${apiUrl()}/api/admin/logout`, {
         method: 'POST',
         credentials: 'include',
+        headers: authHeaders(),
       });
     } catch {
-      // ignora erro de rede no logout
+      /* */
     }
-    localStorage.removeItem('token_saas_reputacao');
-    router.push('/admin/login');
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem('token_saas_reputacao');
+    } catch {
+      /* */
+    }
+    window.location.assign('/admin/login');
   };
 
   if (loading) {
@@ -237,20 +272,14 @@ export default function AdminDashboard() {
                         <span className="text-xs text-slate-400">
                           {new Date(review.createdAt).toLocaleString()}
                         </span>
-                        {review.empresa_id && (
-                          <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-mono">
-                            {review.empresa_id.slice(0, 8)}…
-                          </span>
-                        )}
                       </div>
                       {review.comment ? (
                         <p className="text-sm text-slate-600">{review.comment}</p>
                       ) : (
-                        <p className="text-sm text-slate-400 italic">Sem comentário (avaliação positiva)</p>
+                        <p className="text-sm text-slate-400 italic">Sem comentário</p>
                       )}
                     </div>
                   </div>
-
                   {review.ai_reply && (
                     <div className="ml-8 mt-2 bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-sm">
                       <div className="flex items-center gap-1.5 text-indigo-600 font-medium mb-1">
