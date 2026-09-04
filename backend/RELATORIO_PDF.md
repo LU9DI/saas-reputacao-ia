@@ -5,7 +5,7 @@
 Os PDFs deixam de ser só caixas de KPI e passam a ter **gráficos nativos (PDFKit)** e, nos planos multi-unidade, **quebra de página por filial**.
 
 | Plano | Gráficos | Filiais |
-|-------|----------|---------|
+
 | **Pro / Ultra** | Barras de distribuição 1★–5★ + bloco IA simples | Não |
 | **Corporativo** | Distribuição + **ranking de unidades** + **1 página por filial** (KPIs + barras) | Sim |
 | **Rei** | Tudo do Corporativo + **donut** positivas/críticas + **barras horizontais de gargalos** + donut também em cada filial | Sim |
@@ -44,6 +44,6 @@ Se não houver filiais cadastradas, o relatório Corporativo/Rei ainda gera a p�
 
 ## Elegibilidade
 
-`pro`, `ultra`, `corporate`, `corporativo`, `rei`.
+`pro`, `ultra`, `corporativo`, `rei`.
 
-(Inicial e trial continuam sem PDF mensal.)
+(Inicial e teste continuam sem PDF mensal.)

@@ -1,6 +1,5 @@
 'use client'; 
 
-<<<<<<< Updated upstream
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, Mail, AlertCircle, Loader2, Shield, KeyRound } from 'lucide-react';
@@ -14,19 +13,12 @@ function apiBase() {
 }
 
 function AdminLoginForm() {
-=======
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-export default function AdminLoginPage() {
->>>>>>> Stashed changes
   const router = useRouter();
   const search = useSearchParams();
   const tokenFromUrl = search.get('token') || '';
 
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-<<<<<<< Updated upstream
   const [mfaCode, setMfaCode] = useState('');
   const [mfaToken, setMfaToken] = useState('');
   const [chave, setChave] = useState('');
@@ -55,7 +47,6 @@ export default function AdminLoginPage() {
       }
     }
     localStorage.removeItem('token_saas_reputacao');
-    // hard navigation evita ficar preso se o cookie cross-origin falhar
     window.location.assign('/admin');
   };
 
@@ -67,16 +58,12 @@ export default function AdminLoginPage() {
         : step === 'redefinir'
           ? 'Definir nova senha'
           : 'Acesso restrito ao dono do SaaS';
-=======
-  const [erro, setErro] = useState('');
-  const [loading, setLoading] = useState(false);
->>>>>>> Stashed changes
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
-<<<<<<< Updated upstream
     setMsg('');
+    setLoading(true);
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
@@ -172,38 +159,12 @@ export default function AdminLoginPage() {
       }
     } catch (err: any) {
       if (err.name === 'AbortError') {
-        setErro(`Tempo esgotado. Confira se a API está rodando em ${apiBase()}.`);
+        setErro(`Tempo esgotado. Confira se a API está rodando em ${base}.`);
       } else if (String(err.message || '').includes('Failed to fetch')) {
-        setErro(`Não conectou na API (${apiBase()}). Suba o backend e confira NEXT_PUBLIC_API_URL.`);
+        setErro(`Não conectou na API (${base}). Suba o backend e confira NEXT_PUBLIC_API_URL.`);
       } else {
         setErro(err.message || 'Erro no login');
       }
-=======
-    setLoading(true);
-
-    try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      
-      const response = await fetch(`${baseUrl}/api/admin/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', 
-        body: JSON.stringify({ email, senha }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao realizar login');
-      }
-
-      router.push('/admin/dashboard'); 
-      
-    } catch (err: any) {
-      setErro(err.message);
->>>>>>> Stashed changes
     } finally {
       setLoading(false);
     }
@@ -220,7 +181,6 @@ export default function AdminLoginPage() {
   };
 
   return (
-<<<<<<< Updated upstream
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 text-slate-800">
         <div className="text-center space-y-2">
@@ -396,61 +356,11 @@ export default function AdminLoginPage() {
               </div>
             </>
           )}
-=======
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-lg">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Acesso Administrativo
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">FILTRA.AI</p>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                E-mail
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="admin@filtra.ai"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="senha" className="block text-sm font-medium text-gray-700">
-                Senha
-              </label>
-              <input
-                id="senha"
-                type="password"
-                required
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                placeholder="••••••••"
-              />
-            </div>
-          </div>
-
-          {erro && (
-            <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-              {erro}
-            </div>
-          )}
->>>>>>> Stashed changes
 
           <button
             type="submit"
             disabled={loading}
-<<<<<<< Updated upstream
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl text-sm disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
           >
             {loading && <Loader2 size={16} className="animate-spin" />}
             {loading
@@ -462,11 +372,6 @@ export default function AdminLoginPage() {
                   : step === 'recuperar'
                     ? 'Enviar link seguro'
                     : 'Salvar nova senha'}
-=======
-            className="flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {loading ? 'Autenticando...' : 'Entrar'}
->>>>>>> Stashed changes
           </button>
 
           {step === 'senha' && (
@@ -498,10 +403,9 @@ export default function AdminLoginPage() {
       </div>
     </div>
   );
-<<<<<<< Updated upstream
 }
 
-export default function AdminLogin() {
+export default function AdminLoginPage() {
   return (
     <Suspense
       fallback={
@@ -514,6 +418,5 @@ export default function AdminLogin() {
     </Suspense>
   );
 }
-=======
-}
->>>>>>> Stashed changes
+
+

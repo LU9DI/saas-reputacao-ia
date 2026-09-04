@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { getEnv } from '../utils/env';
 import { ComoFunciona } from './ComoFunciona';
+import { Check, X, ShieldCheck, Loader2, Sparkles } from 'lucide-react';
 
 export type PlanCard = {
   keyMensal: string;
@@ -11,20 +12,10 @@ export type PlanCard = {
   priceMensal: string;
   priceAnual: string;
   features: string[];
+  missingFeatures?: string[];
   highlight?: boolean;
 };
 
-<<<<<<< Updated upstream
-/**
- * Tabela oficial (limites informados pelo produto):
- * Inicial      R$ 69,90 / 49,90  — 150 feedbacks/mês
- * Pro         R$ 109,90 / 99,90  — 400 feedbacks/mês
- * Ultra       R$ 199,90 / 149,90 — 800 feedbacks/mês
- * Corporativo R$ 499,90 / 429,90 — 3.500 feedbacks/mês
- * Rei         R$ 999,90 / 899,90 — 10.000 feedbacks/mês
- *
- * Ordem: Inicial | Pro | Ultra | Rei | Corporativo
- */
 const DEFAULT_PLANS: PlanCard[] = [
   {
     keyMensal: 'inicial',
@@ -32,7 +23,8 @@ const DEFAULT_PLANS: PlanCard[] = [
     label: 'Inicial',
     priceMensal: 'R$ 69,90',
     priceAnual: 'R$ 49,90',
-    features: ['150 feedbacks/mês', 'WhatsApp integrado', 'Gráficos básicos'],
+    features: ['150 feedbacks/mês', 'WPP Integrado', 'Gráficos básicos'],
+    missingFeatures: ['Integrado com IA'],
   },
   {
     keyMensal: 'pro',
@@ -40,7 +32,8 @@ const DEFAULT_PLANS: PlanCard[] = [
     label: 'Pro',
     priceMensal: 'R$ 109,90',
     priceAnual: 'R$ 99,90',
-    features: ['400 feedbacks/mês', 'WhatsApp integrado', 'Gráficos avançados'],
+    features: ['400 feedbacks/mês', 'WPP Integrado', 'Gráficos básicos', '1 Relatório PDF/mês'],
+    missingFeatures: ['Integrado com IA'],
   },
   {
     keyMensal: 'ultra',
@@ -48,34 +41,47 @@ const DEFAULT_PLANS: PlanCard[] = [
     label: 'Ultra',
     priceMensal: 'R$ 199,90',
     priceAnual: 'R$ 149,90',
-    features: ['800 feedbacks/mês', 'Respostas com IA', '1 relatório PDF/mês'],
-  },
-  {
-    keyMensal: 'rei',
-    keyAnual: 'rei-anual',
-    label: 'Rei',
-    priceMensal: 'R$ 999,90',
-    priceAnual: 'R$ 899,90',
     features: [
-      '10.000 feedbacks/mês',
-      'IA prioritária e respostas ilimitadas',
-      'Relatórios PDF avançados',
-      'Suporte prioritário',
+      '800 feedbacks/mês',
+      'Integrado com IA',
+      '1 Relatório PDF/mês',
+      'Dashboard com análises',
+      'Acesso antecipado a novas funções',
     ],
     highlight: true,
   },
   {
-    keyMensal: 'corporate',
-    keyAnual: 'corporate-anual',
+    keyMensal: 'corporativo',
+    keyAnual: 'corporativo-anual',
     label: 'Corporativo',
     priceMensal: 'R$ 499,90',
     priceAnual: 'R$ 429,90',
-    features: ['3.500 feedbacks/mês', 'IA sem limites de resposta', 'Dashboard multi-unidades'],
+    features: [
+      '2.500 feedbacks/mês',
+      'WPP Integrado',
+      'IA Ativa',
+      '1 Relatório PDF/mês',
+      'Dashboard Multi-unidades',
+      'Suporte Prioritário',
+      'Acesso antecipado a novas funções',
+    ],
+  },
+  {
+    keyMensal: 'rei',
+    keyAnual: 'rei-anual',
+    label: 'REI',
+    priceMensal: 'R$ 999,90',
+    priceAnual: 'R$ 899,90',
+    features: [
+      '8.000 feedbacks/mês',
+      'IA Ativa',
+      '1 Relatório PDF/mês',
+      'Dashboard Multi-unidades',
+      'Suporte Prioritário',
+      'Acesso antecipado a novas funções',
+    ],
   },
 ];
-
-const TEXTO_CANCELAMENTO_MENSAL =
-  'A assinatura mensal poderá ser cancelada a qualquer momento. Em caso de cancelamento antes do término do ciclo, o acesso permanece ativo até o último dia do período já pago — sem cobrança adicional no mês seguinte.';
 
 type Props = {
   empresaId?: string | null;
@@ -113,30 +119,53 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       setErro(e.message || 'Erro ao abrir checkout');
       setLoading(null);
     }
-=======
-  const linksCheckout = {
-    Inicial: isAnual ? 'https://stripe.com' : 'https://stripe.com',
-    Pro: isAnual ? 'https://stripe.com' : 'https://stripe.com',
-    Ultra: isAnual ? 'https://stripe.com' : 'https://stripe.com',
-    Corporativo: isAnual ? 'https://stripe.com' : 'https://stripe.com',
-    REI: isAnual ? 'https://stripe.com' : 'https://stripe.com',
->>>>>>> Stashed changes
+  };
+
+  const formatarFeature = (text: string, isMissing: boolean = false) => {
+    if (isMissing) {
+      return (
+        <span className="text-slate-400 line-through decoration-slate-400/60 font-normal">
+          {text}
+        </span>
+      );
+    }
+
+    const lower = text.toLowerCase();
+    const isHighlighted = [
+      'wpp integrado',
+      'ia',
+      'relatório pdf',
+      'dashboard multi-unidades',
+      'suporte prioritário',
+      'acesso antecipado',
+    ].some((keyword) => lower.includes(keyword));
+
+    if (isHighlighted) {
+      return (
+        <span className="font-bold text-indigo-900 bg-indigo-100 border border-indigo-200/60 shadow-sm px-2.5 py-0.5 rounded align-middle inline-flex items-center gap-1 mt-0.5">
+          {lower.includes('ia') && <Sparkles size={12} className="text-indigo-600" />}
+          {text}
+        </span>
+      );
+    }
+    return <span className="text-slate-600 font-medium mt-1">{text}</span>;
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-8">
       <div className="text-center space-y-3">
-        <h2 className="text-lg font-bold text-slate-900">Escolha o plano mais adequado</h2>
-        <p className="text-sm text-slate-500 max-w-2xl mx-auto leading-relaxed">
-          Ao selecionar um plano, você será direcionado à página segura do Stripe para cadastrar o
-          meio de pagamento.
+        <h2 className="text-2xl font-bold text-slate-100">Deseja continuar depois do período de testes?</h2>
+        <p className="text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          Escolha o plano ideal para garantir continuidade e transformar feedbacks em crescimento com total segurança via Stripe.
         </p>
 
-        <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 text-sm">
+        {/* TOGGLE MENSAL / ANUAL */}
+        <div className="inline-flex rounded-xl border border-slate-700 bg-slate-900 p-1 text-sm shadow-inner mt-4">
           <button
             type="button"
             onClick={() => setCiclo('mensal')}
-            className={`px-4 py-1.5 rounded-lg font-medium transition-colors ${\n              ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              ciclo === 'mensal' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             Mensal
@@ -144,7 +173,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           <button
             type="button"
             onClick={() => setCiclo('anual')}
-            className={`px-4 py-1.5 rounded-lg font-medium transition-colors ${\n              ciclo === 'anual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              ciclo === 'anual' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             Anual
@@ -152,202 +182,91 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         </div>
       </div>
 
-<<<<<<< Updated upstream
       {erro && (
-        <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2 text-center">
+        <p className="text-sm text-red-300 bg-red-950/50 border border-red-900/50 rounded-xl px-4 py-3 text-center max-w-3xl mx-auto">
           {erro}
         </p>
       )}
-=======
-      {/* Grade com os 5 Planos Oficiais do Filtra.ia */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch pt-4">
-      
-        {/* 1. PLANO Inicial */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:border-slate-300 transition">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">Plano Inicial</h3>
-              <p className="text-xs text-slate-400 mt-1">O escudo essencial de ouvidoria para comércios locais, lojas e oficinas.</p>
-            </div>
-            
-            <div className="flex items-baseline">
-              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '49,90' : '69,90'}</span>
-              <span className="text-xs text-slate-400 font-medium">/mês</span>
-            </div>
-            <p className="text-[10px] text-slate-400 leading-normal">
-              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
-            </p>
->>>>>>> Stashed changes
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
         {DEFAULT_PLANS.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
           const price = ciclo === 'mensal' ? p.priceMensal : p.priceAnual;
-          const period = ciclo === 'mensal' ? '/mês' : '/mês (cobrança anual)';
+          const period = ciclo === 'mensal' ? '/mês' : 'cobrança anual';
 
           return (
             <div
               key={p.label}
-              className={`rounded-2xl border p-4 flex flex-col bg-white min-w-0 ${\n                p.highlight
-                  ? 'border-amber-300 shadow-md ring-1 ring-amber-100'
-                  : 'border-slate-200'
+              className={`rounded-2xl p-6 flex flex-col justify-between bg-white min-w-0 transition-all duration-300 ${
+                p.highlight
+                  ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-900/20 transform md:-translate-y-2'
+                  : 'border border-slate-200 hover:border-indigo-300 shadow-sm'
               }`}
             >
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{p.label}</p>
-              <p className="mt-1 text-xl font-bold text-slate-900">
-                {price}
-                <span className="text-xs font-normal text-slate-400">{period}</span>
-              </p>
-              <ul className="mt-3 space-y-1.5 flex-1">
-                {p.features.map((f) => (
-                  <li key={f} className="text-xs text-slate-600 leading-snug">
-                    • {f}
-                  </li>
-                ))}
-                {ciclo === 'mensal' && (
-                  <li className="text-xs text-slate-500 leading-snug pt-1">
-                    • Cancelamento a qualquer momento, com uso até o fim do ciclo pago
-                  </li>
-                )}
-              </ul>
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{p.label}</p>
+                  {p.highlight && (
+                    <span className="bg-indigo-600 text-white text-[9px] tracking-widest font-black py-1 px-2.5 rounded-full uppercase shadow-sm">
+                      Popular
+                    </span>
+                  )}
+                </div>
+                
+                <p className="text-3xl font-black text-slate-900 tracking-tight flex flex-col">
+                  {price}
+                  <span className="text-xs font-semibold text-slate-400 mt-1">{period}</span>
+                </p>
+
+                <ul className="mt-6 space-y-3.5 border-t border-slate-100 pt-6">
+                  {p.features.map((f, i) => (
+                    <li key={i} className="text-[13px] leading-snug flex items-start gap-2.5">
+                      <Check size={16} className="text-emerald-500 shrink-0 mt-1" strokeWidth={3} />
+                      {formatarFeature(f, false)}
+                    </li>
+                  ))}
+
+                  {p.missingFeatures?.map((mf, i) => (
+                    <li key={`missing-${i}`} className="text-[13px] leading-snug flex items-start gap-2.5 opacity-75">
+                      <X size={16} className="text-red-400 shrink-0 mt-1" strokeWidth={2.5} />
+                      {formatarFeature(mf, true)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               <button
                 type="button"
                 disabled={!!loading}
                 onClick={() => irParaCheckout(key)}
-                className={`mt-4 w-full py-2.5 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 ${\n                  p.highlight
-                    ? 'bg-amber-600 hover:bg-amber-700 text-white'
-                    : 'bg-slate-900 hover:bg-slate-800 text-white'
+                className={`mt-8 w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
+                  p.highlight
+                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
+                    : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
                 }`}
               >
-                {loading === key ? 'Abrindo Stripe…' : 'Assinar com cartão'}
+                {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
+                {loading === key ? 'Redirecionando…' : 'Assinar plano'}
               </button>
             </div>
-<<<<<<< Updated upstream
           );
         })}
-=======
-            
-            <div className="flex items-baseline">
-              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '99,90' : '109,90'}</span>
-              <span className="text-xs text-slate-400 font-medium">/mês</span>
-            </div>
-            <p className="text-[10px] text-slate-400 leading-normal">
-              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
-              <li className="flex items-start gap-2">✔ <span><strong>Até 400 Feedbacks</strong> por mês</span></li>
-              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
-              <li className="flex items-start gap-2">✔ <span>Dashboard Simples com Gráficos</span></li>
-              <li className="flex items-start gap-2">✔ <span>Identificação Universal (Mesa/Link)</span></li>
-              <li className="flex items-start gap-2">✔ <span><strong>Relatórios Automatizados</strong></span></li>
-              <li className="flex items-start gap-2 text-slate-300 line-through">× <span>IA</span></li>
-            </ul>
-          </div>
-          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
-            Assinar Plano PRO
-          </a>
-        </div>
-
-        {/* 2. PLANO ULTRA (Destaque Comercial) */}
-        <div className="bg-white rounded-2xl border-2 border-slate-900 p-6 flex flex-col justify-between shadow-md relative transform md:-translate-y-2">
-          <div className="absolute top-0 right-1/2 transform translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white text-[9px] tracking-wider font-black py-0.5 px-3 rounded-full uppercase">
-            Mais Recomendado
-          </div>
-          <div className="space-y-4">
-            <div className="pt-2">
-              <h3 className="text-lg font-bold text-slate-900">Plano Ultra</h3>
-              <p className="text-xs text-slate-400 mt-1">Pós-venda inteligente operado por Inteligência Artificial ativa.</p>
-            </div>
-            
-            <div className="flex items-baseline">
-              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? 'R$ 149,90' : 'R$ 199,90'}</span>
-              <span className="text-xs text-slate-400 font-medium">/mês</span>
-            </div>
-            <p className="text-[10px] text-slate-400 leading-normal">
-              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
-              <li className="flex items-start gap-2">✔ <span><strong>Até 800 Feedbacks</strong> por mês</span></li>
-              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
-              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>Dashboard Analítico de Gráficos</span></li>
-              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>IA Avançada + 1 Relatório Mensal em PDF</span></li>
-              <li className="flex items-start gap-2">✔ <span>Análise de Sentimento & Sugestão de Respostas</span></li>
-            </ul>
-          </div>
-          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
-            Assinar Plano Ultra com IA
-          </a>
-        </div>
-
-        {/* 3. PLANO CORPORATIVO */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:border-slate-300 transition">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">Corporativo</h3>
-              <p className="text-xs text-slate-400 mt-1">O plano para empresas maiores e grandes marcas.</p>
-            </div>
-            
-            <div className="flex items-baseline">
-              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '429,90' : '499,90'}</span>
-              <span className="text-xs text-slate-400 font-medium">/mês</span>
-            </div>
-            <p className="text-[10px] text-slate-400 leading-normal">
-              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
-              <li className="flex items-start gap-2">✔ <span><strong>Até 3.500 Feedbacks por mês</strong></span></li>
-              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
-              <li className="flex items-start gap-2 text-blue-600 font-bold">✔ <span>Dashboard Completo Multi-Unidades (Filiais)</span></li>
-              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>IA Avançada + 1 Relatório Mensal em PDF</span></li>
-              <li className="flex items-start gap-2">✔ <span>Suporte Prioritário via WhatsApp</span></li>
-              <li className="flex items-start gap-2">✔ <span>Acesso antecipado a novas funcionalidades</span></li>
-            </ul>
-          </div>
-          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
-            Assinar Plano Corporativo com IA
-          </a>
-        </div>
-
-        {/* 3. PLANO REI */} 
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between shadow-sm hover:border-slate-300 transition">
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">Plano REI</h3>
-              <p className="text-xs text-slate-400 mt-1">Estrutura robusta sob medida para franquias, redes e grandes marcas.</p>
-            </div>
-            
-            <div className="flex items-baseline">
-              <span className="text-3xl font-black text-slate-900">R$ {isAnual ? '899,90' : '999,90'}</span>
-              <span className="text-xs text-slate-400 font-medium">/mês</span>
-            </div>
-          <p className="text-[10px] text-slate-400 leading-normal">
-              {isAnual ? 'Assinatura anual recorrente. Sem fidelidade, cancelamento livre a qualquer momento.' : 'Assinatura mensal recorrente. Sem fidelidade, cancelamento livre a qualquer momento.'}
-            </p>
-
-            <ul className="space-y-2.5 text-xs text-slate-600 border-t border-slate-100 pt-4">
-              <li className="flex items-start gap-2">✔ <span><strong>Até 10.000 Feedbacks por mês</strong></span></li>
-              <li className="flex items-start gap-2 text-slate-900 font-medium">✔ <span className="text-green-600">WhatsApp Integrado (Botão de Crise)</span></li>
-              <li className="flex items-start gap-2 text-blue-600 font-bold">✔ <span>Dashboard Completo Multi-Unidades (Filiais)</span></li>
-              <li className="flex items-start gap-2 text-purple-700 font-semibold">✔ <span>IA Avançada + 1 Relatório Mensal em PDF</span></li>
-              <li className="flex items-start gap-2">✔ <span>Suporte Prioritário via WhatsApp</span></li>
-              <li className="flex items-start gap-2">✔ <span>Acesso antecipado a novas funcionalidades</span></li>
-            </ul>
-          </div>
-          <a href={linksCheckout.Pro} className="mt-6 block w-full text-center bg-slate-900 hover:bg-black text-white font-medium py-2 rounded-xl transition text-xs">
-            Assinar Plano REI com IA
-          </a>
-        </div>
->>>>>>> Stashed changes
       </div>
 
-      <p className="text-xs text-slate-600 max-w-3xl mx-auto leading-relaxed bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-left sm:text-center">
-        {TEXTO_CANCELAMENTO_MENSAL}
-      </p>
+      <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 shadow-sm">
+        <div className="bg-emerald-500/20 p-2.5 rounded-full shrink-0">
+          <ShieldCheck className="text-emerald-400" size={26} strokeWidth={2.5} />
+        </div>
+        <p className="text-sm text-emerald-100 text-center sm:text-left leading-relaxed">
+          <strong className="font-bold text-white">Cancele a qualquer momento.</strong> Sem multas, sem fidelidade ou letras miúdas. Caso cancele sua assinatura antes da renovação, você continuará com acesso total até o último dia pago.
+        </p>
+      </div>
 
-      {showComoFunciona && <ComoFunciona />}
+      {showComoFunciona && (
+        <div className="pt-10">
+          <ComoFunciona />
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 ## Credenciais
 
 | Campo | Valor |
-|-------|--------|
+
 | **URL** | `/admin/login` |
 | **E-mail** | `admin@seusaas.com` |
 | **Senha** | `MudeEstaSenha123!` |
@@ -124,7 +124,7 @@ curl -i -X POST http://localhost:5000/api/admin/login \
 ## Login de empresa (não é o admin)
 
 | Campo | Valor |
-|-------|--------|
+
 | URL | `/login` |
 | CNPJ | o do trial |
 | Senha | a cadastrada no trial |

@@ -45,7 +45,7 @@ const traducoes = {
     avisoExpiracao: 'Seu acesso expira automaticamente em 7 dias se não houver assinatura.',
     cnpjInvalido: 'CNPJ inválido. Verifique os dígitos.',
     qrHint: 'Imprima e cole no balcão, cardápio ou embalagem.',
-    planosTitulo: 'Quer continuar depois do trial?',
+    planosTitulo: 'Quer continuar depois do teste de 7 dias?',
     esqueciSenha: 'Esqueci a senha',
   },
   en: {
@@ -72,7 +72,7 @@ const traducoes = {
     avisoExpiracao: 'Your access automatically expires in 7 days without a subscription.',
     cnpjInvalido: 'Invalid Tax ID. Please check the information.',
     qrHint: 'Print and place on the counter, menu or packaging.',
-    planosTitulo: 'Want to continue after the trial?',
+    planosTitulo: 'Want to continue after the 7-day test?',
     esqueciSenha: 'Forgot password',
   },
   es: {

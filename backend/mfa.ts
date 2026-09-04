@@ -345,3 +345,4 @@ export async function userHasMfa(db: Database, usuarioId: string): Promise<boole
   const u = await db.get('SELECT mfa_enabled FROM usuarios WHERE id = ?', [usuarioId]);
   return !!(u && u.mfa_enabled);
 }
+

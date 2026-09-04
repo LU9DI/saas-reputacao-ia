@@ -73,3 +73,4 @@ export function makeClearAuthCookie(isProd: boolean, cookieName = 'auth_token') 
     });
   };
 }
+

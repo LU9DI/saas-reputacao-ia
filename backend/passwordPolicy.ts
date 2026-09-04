@@ -40,3 +40,4 @@ export function validarSenhaEmpresa(senha: string): { ok: true } | { ok: false; 
 
 export const SENHA_EMPRESA_HINT =
   'Mín. 8 caracteres, 1 maiúscula, 1 número e 1 especial (!@#$%)';
+

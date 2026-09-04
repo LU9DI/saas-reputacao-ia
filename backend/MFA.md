@@ -35,7 +35,7 @@ mountMfaRoutes(app, () => db, {
 ## Rotas
 
 | Método | Rota | Função |
-|--------|------|--------|
+
 | POST | `/api/admin/login` | Senha; se MFA on → `mfa_token` |
 | POST | `/api/admin/mfa/verify` | Valida TOTP/backup e emite sessão |
 | POST | `/api/admin/mfa/setup` | Gera secret (sessão autenticada) |

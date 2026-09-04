@@ -1,8 +1,5 @@
-<<<<<<< Updated upstream
-/** Restaurado — ver backend/authMiddleware.ts e RESTORE_SERVER.md */
 export {};
 throw new Error('Use o arquivo local completo. Em breve push do server.ts integral.');
-=======
 /**
  * ============================================================================
  * 🚀 GITHUB SPEC KIT - METADADOS DE ESPECIFICAÇÃO E CONSTITUIÇÃO DO MICRO-SAAS
@@ -25,12 +22,16 @@ throw new Error('Use o arquivo local completo. Em breve push do server.ts integr
  *
  * /plan (Tabela de Precificação, Limites Globais e Regras de IA)
  * --------------------------------------------------
- * - PLANO PRO MENSAL (R$ 69,90) | ANUAL (R$ 49,90/mês): Limite de 150 avaliações/mês.
+ * - PLANO Inicial MENSAL (R$ 69,90) | ANUAL (R$ 49,90/mês): Limite de 150 avaliações/mês.
  *   Inclui WhatsApp integrado (botão de crise), gráficos visuais básicos e cancelamento sem multa. Sem IA.
- * - PLANO ULTRA (R$ 199,90/mês): Limite de 1.000 avaliações/mês.
- *   Inclui WhatsApp integrado, DASHBOARD SIMPLES, 1 Relatório Mensal em PDF por IA e respostas personalizadas por IA.
- * - PLANO CORPORATIVO (R$ 499,90/mês): Avaliações ilimitadas.
- *   Inclui WhatsApp integrado, IA sem limites, 1 Relatório Mensal e DASHBOARD COMPLETO Multi-Unidades (Franquias/Filiais).
+ * - Plano Pro Mensal (R$ 99,90) | Anual (R$ 109,90/mês): Limite de 400 avaliações/mês.
+ *   Inclui WhatsApp integrado (botão de crise), gráficos visuais básicos e cancelamento sem multa.Com PDF e sem IA.
+ * - PLANO Ultra (R$ 199,90/mês) | ANUAL (R$ 149,90/mês): Limite de 800 avaliações/mês.
+ *   Inclui WhatsApp integrado, DASHBOARD com graficos e analises, 1 Relatório Mensal em PDF por IA e respostas personalizadas por IA.
+ * - PLANO Corporativo (R$ 499,90/mês) | ANUAL (R$ 429,90/mês): até 2.500 avaliações/mês.
+ *   Inclui WhatsApp integrado, IA até 2.500 feedbacks, 1 Relatório Mensal e DASHBOARD COMPLETO Multi-Unidades (Franquias/Filiais).
+ * - PLANO REI (R$ 999,90/mês) | ANUAL (R$ 899,90/mês): até 8.000 avaliações/mês.
+ *   Inclui WhatsApp integrado, IA priorizando respostas, 1 Relatório Mensal e DASHBOARD COMPLETO Multi-Unidades (Franquias/Filiais), suporte prioritário.
  *
  * /specify (O Comportamento Desejado do Fluxo Atual)
  * -----------------------------------------------------
@@ -65,6 +66,7 @@ import 'dotenv/config';
 import { mountPasswordResetRoutes, createUsuarioForEmpresa, ensureAuthColumns } from './passwordResetRoutes.js';
 import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured } from './stripeBilling.js';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -138,7 +140,7 @@ async function findEmpresa(ref: string) {
   return db.get('SELECT * FROM empresas WHERE slug = ?', [ref]);
 }
 
-function linksEmpresa(slugOrId: string, plan: string = 'trial') {
+function linksEmpresa(slugOrId: string, plan: string = 'teste') {
   const key = slugOrId;
   return {
     avaliacao: `${APP_URL}/avaliacao/${key}`,
@@ -168,8 +170,8 @@ async function initDB() {
       cnpj TEXT UNIQUE NOT NULL,
       nome_empresa TEXT NOT NULL,
       slug TEXT UNIQUE,
-      status TEXT DEFAULT 'trial',
-      plan TEXT DEFAULT 'trial',
+      status TEXT DEFAULT 'teste',
+      plan TEXT DEFAULT 'teste',
       criado_em DATETIME NOT NULL,
       expira_em DATETIME NOT NULL,
       google_review_url TEXT,
@@ -225,7 +227,7 @@ async function initDB() {
   if (!nomes.includes('google_review_url')) await db.exec(`ALTER TABLE empresas ADD COLUMN google_review_url TEXT`);
   if (!nomes.includes('voice_style')) await db.exec(`ALTER TABLE empresas ADD COLUMN voice_style TEXT`);
   if (!nomes.includes('slug')) await db.exec(`ALTER TABLE empresas ADD COLUMN slug TEXT`);
-  if (!nomes.includes('plan')) await db.exec(`ALTER TABLE empresas ADD COLUMN plan TEXT DEFAULT 'trial'`);
+  if (!nomes.includes('plan')) await db.exec(`ALTER TABLE empresas ADD COLUMN plan TEXT DEFAULT 'teste'`);
   if (!nomes.includes('whatsapp_suporte')) await db.exec(`ALTER TABLE empresas ADD COLUMN whatsapp_suporte TEXT`);
   if (!nomes.includes('empresa_pai_id')) await db.exec(`ALTER TABLE empresas ADD COLUMN empresa_pai_id TEXT`);
 
@@ -329,7 +331,7 @@ function safeParseTags(raw: string): string[] {
 }
 
 interface AuthRequest extends Request {
-  user?: { id: string; nome_funcionario: string; empresa_id: string };
+  user?: { id: string; nome_funcionario: string; empresa_id: string; email?: string; role?: string };
 }
 
 const JWT_SECRET: string = process.env.JWT_SECRET ?? '';
@@ -355,6 +357,8 @@ function autenticarToken(req: AuthRequest, res: Response, next: NextFunction) {
       id: payload.id,
       nome_funcionario: payload.nome_funcionario,
       empresa_id: payload.empresa_id,
+      email: payload.email,
+      role: payload.role,
     };
     next();
   } catch {
@@ -670,13 +674,12 @@ app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => 
     }
 
     const limits: Record<string, number> = {
-      trial: 30,
+      teste: 30,
       inicial: 150,
       pro: 400,
       ultra: 800,
-      corporate: 3500,
-      corporativo: 3500,
-      rei: 10000,
+      corporativo: 2.500,
+      rei: 8.000,
     };
     if (empresaId) {
       const now = new Date();
@@ -781,7 +784,7 @@ app.post('/api/admin/login', loginLimiter, async (req: Request, res: Response) =
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha_hash);
     if (!senhaCorreta) return res.status(401).json({ error: 'Credenciais inválidas.' });
 
-    const token = jwt.sign({ id: usuario.id, email: usuario.email }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: usuario.id, email: usuario.email, role: usuario.role || 'admin' }, JWT_SECRET, { expiresIn: '1d' });
     setAuthCookie(res, token);
     res.json({ success: true, user: { id: usuario.id, email: usuario.email } });
   } catch (error) {
@@ -840,7 +843,7 @@ app.get('/api/admin/overview', autenticarToken, async (_req: AuthRequest, res: R
       ORDER BY e.criado_em DESC
     `);
     const usoGeral = await db.get('SELECT COALESCE(SUM(tokens), 0) AS tokens FROM ai_usage');
-    const limites: Record<string, number> = { inicial: 150, pro: 400, ultra: 800, corporativo: 3500, corporate: 3500, rei: 10000, trial: 30 };
+    const limites: Record<string, number> = { inicial: 150, pro: 400, ultra: 800, corporativo: 2.500, rei: 8.000, trial: 30 };
     const clientes = empresas.map((empresa: any) => {
       const limite = limites[String(empresa.plan || 'trial').toLowerCase()] || limites.trial;
       const percentual = Math.min(100, Math.round((Number(empresa.total_reviews) / limite) * 100));
@@ -911,24 +914,6 @@ function montarWhatsAppLink(arg0: string, key: string) {
   return `https://wa.me/?text=${encodeURIComponent(mensagem)}`;
 }
 
-function fileURLToPath(url: string) {
-  const parsed = new URL(url);
-  if (parsed.protocol !== 'file:') {
-    throw new TypeError(`Esperada uma URL file:, recebido ${parsed.protocol}`);
-  }
-  const pathname = decodeURIComponent(parsed.pathname);
-  if (process.platform === 'win32') {
-    if (parsed.hostname && parsed.hostname !== 'localhost') {
-      return `\\\\${parsed.hostname}${pathname.replace(/\//g, '\\')}`;
-    }
-    return pathname.replace(/^\/[a-zA-Z]:/, (drive) => drive.slice(1)).replace(/\//g, '\\');
-  }
-  if (parsed.hostname && parsed.hostname !== 'localhost') {
-    return `//${parsed.hostname}${pathname}`;
-  }
-  return pathname;
-}
-
 async function callGroq(systemContent: string, userContent: string) {
   const chave = crypto.createHash('sha256').update(`${systemContent}\n${userContent}`).digest('hex');
   exigirIntervaloIA(chave);
@@ -980,12 +965,12 @@ async function gerarRelatorioMensalPDF(empresaId: string, mesAno: string, planoP
     if (empresaMae) empresa = empresaMae;
   }
   const planoTesteSelecionado = obterPlanoTeste(planoPreview);
-  const plano = planoTesteSelecionado || String(empresa.plan || 'Inicial').toLowerCase();
-  if (!planoTesteSelecionado && !['pro', 'ultra', 'corporate', 'corporativo', 'rei'].includes(plano)) {
+  const plano = planoTesteSelecionado || String(empresa.plan || 'teste').toLowerCase();
+  if (!planoTesteSelecionado && !['pro', 'ultra', 'corporativo', 'rei'].includes(plano)) {
     throw new Error('Plano não elegível para relatório mensal.');
   }
 
-  const empresasRelatorio = ['corporate', 'corporativo', 'rei'].includes(plano)
+  const empresasRelatorio = ['corporativo', 'rei'].includes(plano)
     ? await db.all(
         `SELECT * FROM empresas WHERE id = ? OR empresa_pai_id = ? ORDER BY id = ? DESC, nome_empresa`,
         [empresa.id, empresa.id, empresa.id]
@@ -1015,7 +1000,7 @@ async function gerarRelatorioMensalPDF(empresaId: string, mesAno: string, planoP
       [4, 'Entrega correta, mas poderia ser mais rapida.'],
       [5, 'Equipe preparada e atendimento profissional.'],
     ];
-    const quantidade = plano === 'pro' ? 8 : plano === 'ultra' ? 12 : plano === 'corporativo' || plano === 'corporate' ? 18 : 24;
+    const quantidade = plano === 'pro' ? 8 : plano === 'ultra' ? 12 : plano === 'corporativo' || plano === 'rei' ? 18 : 24;
     reviews = Array.from({ length: quantidade }, (_, index) => {
       const exemplo = exemplos[index % exemplos.length];
       return { rating: exemplo[0], comment: `${exemplo[1]} [DEMO]`, empresa_id: empresa.id };
@@ -1052,7 +1037,7 @@ async function gerarRelatorioMensalPDF(empresaId: string, mesAno: string, planoP
         nome: unidade.nome_empresa,
         reviews: reviews.filter((review) => review.empresa_id === unidade.id),
       }))
-    : demo && (plano === 'corporativo' || plano === 'corporate' || plano === 'rei')
+    : demo && (plano === 'corporativo' || plano === 'rei')
       ? ['Filial Centro', 'Filial Shopping', 'Filial Norte'].map((nome, index) => ({
           nome,
           reviews: reviews.filter((_, reviewIndex) => reviewIndex % 3 === index),
@@ -1252,7 +1237,7 @@ Analise o bloco de comentários abaixo e devolva, em JSON simples, dois campos:
   }
   doc.y = chartY + chartHeight + 18;
 
-  if (['ultra', 'corporate', 'corporativo', 'rei'].includes(plano)) {
+  if (['ultra', 'corporativo', 'rei'].includes(plano)) {
     const trendY = doc.y;
     drawTrend(trendY);
     doc.y = trendY + 145;
@@ -1277,7 +1262,7 @@ Analise o bloco de comentários abaixo e devolva, em JSON simples, dois campos:
   doc.fillColor(navy).fontSize(9.5).font('Helvetica-Bold').text('Recomendação Estratégica:', 56, recY + 16);
   doc.fillColor(ink).fontSize(9.5).font('Helvetica').text(recommendation, 56, recY + 33, { width: pageWidth - 28, lineGap: 2.5 });
 
-  if (['corporate', 'corporativo', 'rei'].includes(plano)) {
+  if (['corporativo', 'rei'].includes(plano)) {
     doc.addPage();
     doc.fillColor(navy).fontSize(18).font('Helvetica-Bold').text('FILTRA.IA');
     doc.moveDown(0.25).fillColor(muted).fontSize(9).font('Helvetica').text('ANÁLISE DE GOVERNANÇA E PERFORMANCE');
@@ -1369,7 +1354,8 @@ Analise o bloco de comentários abaixo e devolva, em JSON simples, dois campos:
   return Buffer.concat(chunks);
 }
 
-app.post('/api/relatorio/mensal', async (req, res) => {
+// ROTA PROTEGIDA COM AUTENTICAÇÃO PARA O RELATÓRIO MENSAL EM PDF
+app.post('/api/relatorio/mensal', autenticarToken, async (req: AuthRequest, res: Response) => {
   try {
     const empresaId = req.body.empresaId ?? req.body.empresa_id;
     const mesAno = req.body.mesAno ?? req.body.mes_ano;
@@ -1404,4 +1390,3 @@ async function gerarRespostaReview(
   const prompt = `Cliente: ${name || 'Anônimo'}\nNota: ${rating}/5\nComentário: ${comment}\n\nEscreva uma resposta curta para esta avaliação negativa${local}.`;
   return callGroq(system, prompt);
 }
->>>>>>> Stashed changes

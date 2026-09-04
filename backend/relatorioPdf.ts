@@ -4,18 +4,13 @@
  * Ultra ........ gráficos simples (distribuição de notas + KPIs)
  * Corporativo .. + ranking de filiais + 1 página por filial
  * Rei .......... gráficos elaborados + filiais + tags + sentimento detalhado
- *
- * Uso:
- *   import { gerarRelatorioMensalPDF, ensureUnidadesSchema } from './relatorioPdf.js';
- *   // no initDB: await ensureUnidadesSchema(db);
- *   const buf = await gerarRelatorioMensalPDF(db, empresaId, '2026-09', callGroq);
  */
 import type { Database } from 'sqlite';
 import PDFDocument from 'pdfkit';
 
 // ─── Tipos ───────────────────────────────────────────────────────────
 
-export type PlanPdf = 'ultra' | 'corporate' | 'corporativo' | 'rei' | 'pro';
+export type PlanPdf = 'ultra' | 'corporativo' | 'rei' | 'pro';
 
 type ReviewRow = {
   rating: number;
@@ -60,7 +55,7 @@ export async function ensureUnidadesSchema(db: Database): Promise<void> {
 // ─── Métricas ────────────────────────────────────────────────────────
 
 function distNotas(reviews: ReviewRow[]): number[] {
-  const d = [0, 0, 0, 0, 0]; // índices 0..4 = notas 1..5
+  const d = [0, 0, 0, 0, 0];
   for (const r of reviews) {
     const n = Number(r.rating);
     if (n >= 1 && n <= 5) d[n - 1] += 1;
@@ -97,7 +92,6 @@ function agrupadoPorUnidade(
     }
   }
 
-  // unidades sem review ainda (só no ranking corporativo)
   for (const u of unidades) {
     if (!map.has(u.id)) out.push({ unidade: u, reviews: [] });
   }
@@ -148,7 +142,6 @@ function drawBarChart(
     width: width - 24,
   });
 
-  // grade horizontal
   for (let i = 0; i <= 4; i++) {
     const gy = chartTop + chartH - (chartH * i) / 4;
     doc
@@ -240,12 +233,10 @@ function drawDonutSimple(
     width: size + 4,
   });
 
-  // arco positivo (aproximação com fatias)
   const slices = 48;
   for (let i = 0; i < slices; i++) {
     const a0 = -Math.PI / 2 + (i / slices) * Math.PI * 2;
     const a1 = -Math.PI / 2 + ((i + 1) / slices) * Math.PI * 2;
-    const mid = (a0 + a1) / 2 + Math.PI / 2; // 0 no topo
     const angFromTop = ((i + 0.5) / slices) * Math.PI * 2;
     const col = angFromTop <= posAngle ? COLORS.green : COLORS.red;
     doc
@@ -255,7 +246,6 @@ function drawDonutSimple(
       .closePath()
       .fill(col);
   }
-  // furo
   doc.circle(cx, cy, r * 0.55).fill('#ffffff');
   const pct = Math.round((positive / total) * 100);
   doc
@@ -360,7 +350,6 @@ function paginaFilial(
       negative: criticas,
       title: 'Mix de sentimento',
     });
-    // mini tabela ao lado
     const tx = 180;
     const ty = doc.y + 10;
     doc.roundedRect(tx, ty, pageWidth - 150, 120, 6).fillAndStroke('#ffffff', COLORS.line);
@@ -396,12 +385,11 @@ export async function gerarRelatorioMensalPDF(
   if (!empresa) throw new Error('Empresa não encontrada.');
 
   const plan = String(empresa.plan || '').toLowerCase();
-  const elegivel = ['ultra', 'pro', 'corporate', 'corporativo', 'rei'].includes(plan);
+  const elegivel = ['ultra', 'pro', 'corporativo', 'rei'].includes(plan);
   if (!elegivel) throw new Error('Plano não elegível para relatório mensal.');
 
   const isRei = plan === 'rei';
-  const isCorp = plan === 'corporate' || plan === 'corporativo' || isRei;
-  // Ultra/Pro = simples; Corp = + filiais; Rei = elaborado + filiais
+  const isCorp = plan === 'corporativo' || isRei;
   const elaborate = isRei;
 
   const reviews: ReviewRow[] = await db.all(
@@ -423,7 +411,6 @@ export async function gerarRelatorioMensalPDF(
   const positivas = reviews.filter((r) => r.rating >= 4).length;
   const totalAvaliacoes = reviews.length;
 
-  // IA (gargalos) — só se houver callGroq e comentários
   let sentimentoPrincipal = 'sem dados';
   let topGargalos: string[] = [];
   if (callGroq && reviews.some((r) => r.comment?.trim())) {
@@ -448,18 +435,8 @@ Analise o bloco de comentários e devolva JSON com:
 
   const [ano, mes] = mesAno.split('-');
   const nomesMeses = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro',
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
   ];
   const periodoFormatado =
     ano && Number(mes) >= 1 && Number(mes) <= 12
@@ -490,7 +467,6 @@ Analise o bloco de comentários e devolva JSON com:
   drawWatermark();
   doc.on('pageAdded', drawWatermark);
 
-  // ── Capa / cabeçalho ──
   doc.rect(0, 0, doc.page.width, 72).fill(COLORS.navy);
   doc.fillColor('#ffffff').font('Helvetica-Bold').fontSize(16).text('FILTRA.IA', 42, 22);
   doc
@@ -512,7 +488,6 @@ Analise o bloco de comentários e devolva JSON com:
     .text(`Período: ${periodoFormatado}  ·  Emitido em ${emissao}  ·  Plano: ${plan.toUpperCase()}`);
   doc.moveDown(0.8);
 
-  // ── KPIs ──
   sectionTitle(doc, 'Painel executivo', 'Indicadores consolidados do período');
   const gap = 10;
   const kw = (pageWidth - gap * 2) / 3;
@@ -538,7 +513,6 @@ Analise o bloco de comentários e devolva JSON com:
   );
   doc.y = ky + 96;
 
-  // ── Gráfico distribuição (todos os planos elegíveis) ──
   sectionTitle(doc, 'Distribuição de notas', 'Volume de avaliações por estrela');
   drawBarChart(doc, {
     x: 42,
@@ -551,7 +525,6 @@ Analise o bloco de comentários e devolva JSON com:
   });
   doc.y += 176;
 
-  // ── Rei: donut + gargalos em barras ──
   if (elaborate) {
     if (doc.y > 520) doc.addPage();
     sectionTitle(doc, 'Análise avançada', 'Proporção positiva/crítica e principais gargalos');
@@ -578,7 +551,6 @@ Analise o bloco de comentários e devolva JSON com:
     });
     doc.y = rowY + Math.max(156, hBars) + 16;
   } else if (plan === 'ultra' || plan === 'pro') {
-    // bloco IA simples
     sectionTitle(doc, 'Leitura de IA', 'Sentimento e pontos de atenção');
     const aiY = doc.y;
     doc.roundedRect(42, aiY, pageWidth, 70, 6).fillAndStroke('#ffffff', COLORS.line);
@@ -607,7 +579,6 @@ Analise o bloco de comentários e devolva JSON com:
     doc.y = aiY + 86;
   }
 
-  // ── Corporativo / Rei: ranking de filiais na 1ª página ──
   if (isCorp) {
     const grupos = agrupadoPorUnidade(reviews, unidades);
     if (doc.y > 480) doc.addPage();
@@ -617,7 +588,6 @@ Analise o bloco de comentários e devolva JSON com:
       'Comparativo de média e volume por filial (quebra de página a seguir)'
     );
 
-    // cabeçalho tabela
     const tableY = doc.y;
     doc.roundedRect(42, tableY, pageWidth, 22 + grupos.length * 18, 6).fillAndStroke('#ffffff', COLORS.line);
     doc.fillColor(COLORS.muted).font('Helvetica-Bold').fontSize(7.5);
@@ -641,7 +611,6 @@ Analise o bloco de comentários e devolva JSON com:
     });
     doc.y = tableY + 28 + grupos.length * 18;
 
-    // páginas individuais
     for (const g of grupos) {
       if (g.reviews.length === 0 && unidades.length === 0) continue;
       paginaFilial(doc, {
@@ -655,7 +624,6 @@ Analise o bloco de comentários e devolva JSON com:
     }
   }
 
-  // ── Recomendação ──
   if (doc.y > 680) doc.addPage();
   sectionTitle(doc, 'Recomendação estratégica', 'Próximo passo sugerido');
   const rec =

@@ -3,13 +3,13 @@
  * Inicial | Pro | Ultra | Corporativo | Rei  (mensal e anual)
  *
  * Limites de feedbacks/mês (definidos pelo produto):
- * inicial 150 | pro 400 | ultra 800 | corporate 3500 | rei 10000
+ * inicial 150 | pro 400 | ultra 800 | corporativo 2500 | rei 8000
  */
 import crypto from 'crypto';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
-export type PlanDb = 'inicial' | 'pro' | 'ultra' | 'corporate' | 'rei';
+export type PlanDb = 'inicial' | 'pro' | 'ultra' | 'corporativo' | 'rei';
 
 export type PlanoKey =
   | 'inicial'
@@ -18,8 +18,6 @@ export type PlanoKey =
   | 'pro-anual'
   | 'ultra'
   | 'ultra-anual'
-  | 'corporate'
-  | 'corporate-anual'
   | 'corporativo'
   | 'corporativo-anual'
   | 'rei'
@@ -97,44 +95,24 @@ export const PLANOS: Record<string, PlanoDef> = {
     reviewLimit: 800,
     envPriceId: process.env.STRIPE_PRICE_ULTRA_YEARLY,
   },
-  corporate: {
-    key: 'corporate',
-    planDb: 'corporate',
-    label: 'Corporativo Mensal',
-    unitAmount: 49990,
-    interval: 'month',
-    displayMonthly: 499.9,
-    reviewLimit: 3500,
-    envPriceId: process.env.STRIPE_PRICE_CORPORATE_MONTHLY || process.env.STRIPE_PRICE_CORPORATE,
-  },
-  'corporate-anual': {
-    key: 'corporate-anual',
-    planDb: 'corporate',
-    label: 'Corporativo Anual',
-    unitAmount: 42990 * 12,
-    interval: 'year',
-    displayMonthly: 429.9,
-    reviewLimit: 3500,
-    envPriceId: process.env.STRIPE_PRICE_CORPORATE_YEARLY,
-  },
   corporativo: {
     key: 'corporativo',
-    planDb: 'corporate',
+    planDb: 'corporativo',
     label: 'Corporativo Mensal',
     unitAmount: 49990,
     interval: 'month',
     displayMonthly: 499.9,
-    reviewLimit: 3500,
+    reviewLimit: 2500,
     envPriceId: process.env.STRIPE_PRICE_CORPORATE_MONTHLY || process.env.STRIPE_PRICE_CORPORATE,
   },
   'corporativo-anual': {
     key: 'corporativo-anual',
-    planDb: 'corporate',
+    planDb: 'corporativo',
     label: 'Corporativo Anual',
     unitAmount: 42990 * 12,
     interval: 'year',
     displayMonthly: 429.9,
-    reviewLimit: 3500,
+    reviewLimit: 2500,
     envPriceId: process.env.STRIPE_PRICE_CORPORATE_YEARLY,
   },
   rei: {
@@ -144,7 +122,7 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 99990,
     interval: 'month',
     displayMonthly: 999.9,
-    reviewLimit: 10000,
+    reviewLimit: 8000,
     envPriceId: process.env.STRIPE_PRICE_REI_MONTHLY,
   },
   'rei-anual': {
@@ -154,7 +132,7 @@ export const PLANOS: Record<string, PlanoDef> = {
     unitAmount: 89990 * 12,
     interval: 'year',
     displayMonthly: 899.9,
-    reviewLimit: 10000,
+    reviewLimit: 8000,
     envPriceId: process.env.STRIPE_PRICE_REI_YEARLY,
   },
 };
@@ -337,8 +315,8 @@ export function listPlanosPublicos() {
     'pro-anual',
     'ultra',
     'ultra-anual',
-    'corporate',
-    'corporate-anual',
+    'corporativo',
+    'corporativo-anual',
     'rei',
     'rei-anual',
   ].map((k) => {
@@ -352,3 +330,4 @@ export function listPlanosPublicos() {
     };
   });
 }
+

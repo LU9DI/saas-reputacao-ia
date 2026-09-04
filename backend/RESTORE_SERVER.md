@@ -18,20 +18,20 @@ p = Path('backend/server.ts')
 t = p.read_text(encoding='utf-8')
 
 old_limits = """    const limits: Record<string, number> = {
-      trial: 30,
+      teste: 30,
       pro: 150,
-      ultra: 1000,
-      corporate: Number.MAX_SAFE_INTEGER,
+      ultra: 800,
+      corporativo: 2500,
+      rei: 8000,
     };"""
 
 new_limits = """    const limits: Record<string, number> = {
-      trial: 30,
+      teste: 30,
       inicial: 150,
       pro: 400,
       ultra: 800,
-      corporate: 3500,
-      corporativo: 3500,
-      rei: 10000,
+      corporativo: 2500,
+      rei: 8000,
     };"""
 
 if old_limits in t:
@@ -50,7 +50,7 @@ old_spec = """ * /plan (Tabela de Precificação, Limites Globais e Regras de IA
  * --------------------------------------------------
  * - PLANO PRO MENSAL (R$ 69,90) | ANUAL (R$ 49,90/mês): Limite de 150 avaliações/mês.
  *   Inclui WhatsApp integrado (botão de crise), gráficos visuais básicos e cancelamento sem multa. Sem IA.
- * - PLANO ULTRA (R$ 199,90/mês): Limite de 1.000 avaliações/mês.
+ * - PLANO ULTRA (R$ 199,90/mês): Limite de 800 avaliações/mês.
  *   Inclui WhatsApp integrado, DASHBOARD SIMPLES, 1 Relatório Mensal em PDF por IA e respostas personalizadas por IA.
  * - PLANO CORPORATIVO (R$ 499,90/mês): Avaliações ilimitadas.
  *   Inclui WhatsApp integrado, IA sem limites, 1 Relatório Mensal e DASHBOARD COMPLETO Multi-Unidades (Franquias/Filiais)."""
@@ -60,8 +60,8 @@ new_spec = """ * /plan (Tabela de Precificação, Limites Globais e Regras de IA
  * - INICIAL (R$ 69,90/mês | R$ 49,90/mês no anual): 150 feedbacks/mês.
  * - PRO (R$ 109,90/mês | R$ 99,90/mês no anual): 400 feedbacks/mês.
  * - ULTRA (R$ 199,90/mês | R$ 149,90/mês no anual): 800 feedbacks/mês. IA + 1 relatório PDF/mês.
- * - CORPORATIVO (R$ 499,90/mês | R$ 429,90/mês no anual): 3.500 feedbacks/mês. Dashboard multi-unidades.
- * - REI (R$ 999,90/mês | R$ 899,90/mês no anual): 10.000 feedbacks/mês. IA prioritária e relatórios avançados."""
+ * - CORPORATIVO (R$ 499,90/mês | R$ 429,90/mês no anual): 2.500 feedbacks/mês. Dashboard multi-unidades.
+ * - REI (R$ 999,90/mês | R$ 899,90/mês no anual): 8.000 feedbacks/mês. IA prioritária e relatórios avançados."""
 
 if old_spec in t:
     t = t.replace(old_spec, new_spec)
@@ -79,10 +79,10 @@ git push
 ## Limites oficiais (referência)
 
 | Plano | Feedbacks/mês |
-|-------|----------------|
+
 | Inicial | 150 |
 | Pro | 400 |
 | Ultra | 800 |
-| Corporativo | 3.500 |
-| Rei | 10.000 |
-| trial | 30 |
+| Corporativo | 2.500 |
+| Rei | 8.000 |
+| teste | 30 |
