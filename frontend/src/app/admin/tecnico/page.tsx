@@ -19,7 +19,7 @@ function authHeaders(): HeadersInit {
 }
 
 function fmtDt(s: string | null | undefined) {
-  if (!s) return '—';
+  if (!s) return '\u2014';
   try {
     return new Date(s).toLocaleString('pt-BR', {
       day: '2-digit',
@@ -54,6 +54,27 @@ function StatusPill({ ok, label }: { ok: boolean | null; label?: string }) {
 }
 
 const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
+
+function EventList({ eventos }: { eventos: any[] }) {
+  if (!eventos?.length) {
+    return <p className="px-5 py-8 text-sm text-zinc-600 text-center">Nenhum evento registrado ainda.</p>;
+  }
+  return (
+    <div className="max-h-56 overflow-y-auto divide-y divide-zinc-800/80">
+      {eventos.map((e) => (
+        <div key={e.id} className="px-5 py-3 text-sm flex flex-wrap gap-x-3 gap-y-1">
+          <StatusPill
+            ok={e.status === 'ok' ? true : e.status === 'error' ? false : null}
+            label={e.status}
+          />
+          <span className="font-mono text-xs text-zinc-300">{e.event_type || '\u2014'}</span>
+          <span className="text-xs text-zinc-500">{e.detail}</span>
+          <span className="text-xs text-zinc-600 ml-auto">{fmtDt(e.created_at)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function AdminTecnicoPage() {
   const router = useRouter();
@@ -103,27 +124,29 @@ export default function AdminTecnicoPage() {
   if (loading && !data) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-zinc-500 text-sm">
-        Carregando área técnica…
+        Carregando área técnica\u2026
       </div>
     );
   }
 
   const stripe = data?.webhooks?.stripe;
   const n8n = data?.webhooks?.n8n;
+  const paypal = data?.webhooks?.paypal;
   const criticas = data?.criticas_retidas;
   const pdf = data?.pdf;
   const sistema = data?.sistema;
+  const retry = data?.retry_queue;
 
   return (
     <div className="min-h-screen bg-black text-zinc-100">
       <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[11px] uppercase tracking-wide text-zinc-500">Admin · Ops</p>
+            <p className="text-[11px] uppercase tracking-wide text-zinc-500">Admin \u00b7 Ops</p>
             <h1 className="text-xl font-bold tracking-tight">Área técnica</h1>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Webhooks · Críticas retidas · PDF
-              {data?.gerado_em ? ` · atualizado ${fmtDt(data.gerado_em)}` : ''}
+              Webhooks \u00b7 Críticas retidas \u00b7 PDF \u00b7 Retry
+              {data?.gerado_em ? ` \u00b7 atualizado ${fmtDt(data.gerado_em)}` : ''}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -142,7 +165,7 @@ export default function AdminTecnicoPage() {
               href="/admin"
               className="text-sm px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800"
             >
-              ← Painel
+              \u2190 Painel
             </Link>
           </div>
         </div>
@@ -155,10 +178,10 @@ export default function AdminTecnicoPage() {
           </div>
         )}
 
-        {/* Sistema flags */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
             { t: 'Stripe', ok: sistema?.stripe },
+            { t: 'PayPal', ok: sistema?.paypal },
             { t: 'SMTP', ok: sistema?.smtp },
             { t: 'Groq IA', ok: sistema?.groq },
             { t: 'Jobs secret', ok: sistema?.jobs_secret },
@@ -170,8 +193,7 @@ export default function AdminTecnicoPage() {
           ))}
         </section>
 
-        {/* Webhooks */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           <div className={`${card} overflow-hidden`}>
             <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
               <div>
@@ -181,26 +203,12 @@ export default function AdminTecnicoPage() {
               <StatusPill ok={stripe?.ok ?? null} />
             </div>
             <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
-              <span>24h: {stripe?.stats_24h?.ok ?? 0} ok / {stripe?.stats_24h?.errors ?? 0} erro</span>
-              <span>Último: {stripe?.last_age || '—'}</span>
+              <span>
+                24h: {stripe?.stats_24h?.ok ?? 0} ok / {stripe?.stats_24h?.errors ?? 0} erro
+              </span>
+              <span>\u00daltimo: {stripe?.last_age || '\u2014'}</span>
             </div>
-            <div className="max-h-64 overflow-y-auto divide-y divide-zinc-800/80">
-              {(stripe?.eventos || []).length === 0 ? (
-                <p className="px-5 py-8 text-sm text-zinc-600 text-center">Nenhum evento registrado ainda.</p>
-              ) : (
-                (stripe.eventos as any[]).map((e) => (
-                  <div key={e.id} className="px-5 py-3 text-sm flex flex-wrap gap-x-3 gap-y-1">
-                    <StatusPill
-                      ok={e.status === 'ok' ? true : e.status === 'error' ? false : null}
-                      label={e.status}
-                    />
-                    <span className="font-mono text-xs text-zinc-300">{e.event_type || '—'}</span>
-                    <span className="text-xs text-zinc-500">{e.detail}</span>
-                    <span className="text-xs text-zinc-600 ml-auto">{fmtDt(e.created_at)}</span>
-                  </div>
-                ))
-              )}
-            </div>
+            <EventList eventos={stripe?.eventos || []} />
           </div>
 
           <div className={`${card} overflow-hidden`}>
@@ -210,51 +218,79 @@ export default function AdminTecnicoPage() {
                 <p className="text-xs text-zinc-500 mt-0.5">{n8n?.detalhe}</p>
                 <p className="text-[11px] text-zinc-600 mt-1 font-mono">
                   inbound: {n8n?.inbound || '/api/webhook/n8n'}
-                  {n8n?.url_mascarada ? ` · out: ${n8n.url_mascarada}` : ''}
                 </p>
               </div>
               <StatusPill ok={n8n?.ok ?? null} />
             </div>
             <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
-              <span>24h: {n8n?.stats_24h?.ok ?? 0} ok / {n8n?.stats_24h?.errors ?? 0} erro</span>
-              <span>Último: {n8n?.last_age || '—'}</span>
-              <span>Ping: {n8n?.ping_ok === true ? 'OK' : n8n?.ping_ok === false ? 'falha' : '—'}</span>
+              <span>
+                24h: {n8n?.stats_24h?.ok ?? 0} ok / {n8n?.stats_24h?.errors ?? 0} erro
+              </span>
+              <span>Ping: {n8n?.ping_ok === true ? 'OK' : n8n?.ping_ok === false ? 'falha' : '\u2014'}</span>
             </div>
-            <div className="max-h-64 overflow-y-auto divide-y divide-zinc-800/80">
-              {(n8n?.eventos || []).length === 0 ? (
-                <p className="px-5 py-8 text-sm text-zinc-600 text-center">
-                  Aguardando POST do n8n em /api/webhook/n8n
-                </p>
-              ) : (
-                (n8n.eventos as any[]).map((e) => (
-                  <div key={e.id} className="px-5 py-3 text-sm flex flex-wrap gap-x-3 gap-y-1">
-                    <StatusPill
-                      ok={e.status === 'ok' ? true : e.status === 'error' ? false : null}
-                      label={e.status}
-                    />
-                    <span className="font-mono text-xs text-zinc-300">{e.event_type || '—'}</span>
-                    <span className="text-xs text-zinc-500">{e.detail}</span>
-                    <span className="text-xs text-zinc-600 ml-auto">{fmtDt(e.created_at)}</span>
-                  </div>
-                ))
-              )}
+            <EventList eventos={n8n?.eventos || []} />
+          </div>
+
+          <div className={`${card} overflow-hidden`}>
+            <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold">Webhook PayPal</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">{paypal?.detalhe}</p>
+                <p className="text-[11px] text-zinc-600 mt-1 font-mono">/api/webhook/paypal</p>
+              </div>
+              <StatusPill ok={paypal?.ok ?? null} />
             </div>
+            <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
+              <span>
+                24h: {paypal?.stats_24h?.ok ?? 0} ok / {paypal?.stats_24h?.errors ?? 0} erro
+              </span>
+              <span>Webhook ID: {paypal?.webhook_id ? 'sim' : 'n\u00e3o'}</span>
+            </div>
+            <EventList eventos={paypal?.eventos || []} />
           </div>
         </section>
 
-        {/* Críticas retidas */}
-        <section className={`${card} overflow-hidden`}>
-          <div className="px-5 py-4 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <h2 className="text-sm font-semibold">Críticas retidas (auditoria IA)</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">
-                Notas 1–3★ privadas no SQLite · {criticas?.total ?? 0} total ·{' '}
-                {criticas?.com_resposta_ia ?? 0} com IA · {criticas?.sem_resposta_ia ?? 0} sem IA
-              </p>
+        {retry && (
+          <section className={`${card} px-5 py-4`}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold">Fila de retry</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">
+                  Jobs pendentes / falhos (webhooks, capture, e-mail)
+                </p>
+              </div>
+              <StatusPill
+                ok={(retry.pending_due || 0) === 0}
+                label={
+                  (retry.pending_due || 0) > 0
+                    ? `${retry.pending_due} prontos`
+                    : 'Em dia'
+                }
+              />
             </div>
+            <div className="mt-3 flex flex-wrap gap-3 text-xs text-zinc-400">
+              {Object.entries(retry.by_status || {}).map(([st, c]) => (
+                <span key={st} className="px-2 py-1 rounded-lg bg-zinc-950 border border-zinc-800">
+                  {st}: {String(c)}
+                </span>
+              ))}
+              {!Object.keys(retry.by_status || {}).length && (
+                <span className="text-zinc-600">Fila vazia</span>
+              )}
+            </div>
+          </section>
+        )}
+
+        <section className={`${card} overflow-hidden`}>
+          <div className="px-5 py-4 border-b border-zinc-800">
+            <h2 className="text-sm font-semibold">Cr\u00edticas retidas (auditoria IA)</h2>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              Notas 1\u20133\u2605 no SQLite \u00b7 {criticas?.total ?? 0} total \u00b7{' '}
+              {criticas?.com_resposta_ia ?? 0} com IA \u00b7 {criticas?.sem_resposta_ia ?? 0} sem IA
+            </p>
           </div>
           {(criticas?.items || []).length === 0 ? (
-            <p className="px-5 py-12 text-center text-sm text-zinc-600">Nenhuma crítica retida.</p>
+            <p className="px-5 py-12 text-center text-sm text-zinc-600">Nenhuma cr\u00edtica retida.</p>
           ) : (
             <ul className="divide-y divide-zinc-800 max-h-[520px] overflow-y-auto">
               {(criticas.items as any[]).map((r) => (
@@ -262,26 +298,20 @@ export default function AdminTecnicoPage() {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="text-sm font-medium text-zinc-200">{r.nome_empresa}</span>
                     <span className="text-[10px] uppercase text-zinc-500">{r.plan}</span>
-                    <span className="text-amber-400 text-xs">{'★'.repeat(r.rating)}</span>
+                    <span className="text-amber-400 text-xs">{'\u2605'.repeat(r.rating)}</span>
                     <span className="text-xs text-zinc-600 ml-auto">{fmtDt(r.createdAt)}</span>
                   </div>
                   <p className="text-sm text-zinc-400">
                     <span className="text-zinc-300">{r.name}</span>
-                    {r.comment ? ` — ${r.comment}` : ''}
+                    {r.comment ? ` \u2014 ${r.comment}` : ''}
                   </p>
-                  {r.client_whatsapp && (
-                    <p className="text-xs text-emerald-400/80 mt-1">WPP cliente: {r.client_whatsapp}</p>
-                  )}
                   {r.ai_reply ? (
                     <div className="mt-2 pl-3 border-l-2 border-indigo-500/40">
-                      <p className="text-[10px] uppercase text-zinc-500 mb-0.5">Resposta Groq / IA</p>
+                      <p className="text-[10px] uppercase text-zinc-500 mb-0.5">Resposta IA</p>
                       <p className="text-sm text-zinc-300">{r.ai_reply}</p>
-                      {!!r.ai_tags?.length && (
-                        <p className="text-[11px] text-zinc-600 mt-1">tags: {r.ai_tags.join(', ')}</p>
-                      )}
                     </div>
                   ) : (
-                    <p className="text-xs text-amber-600/80 mt-2">Sem resposta IA (plano sem IA ou falha)</p>
+                    <p className="text-xs text-amber-600/80 mt-2">Sem resposta IA</p>
                   )}
                 </li>
               ))}
@@ -289,21 +319,23 @@ export default function AdminTecnicoPage() {
           )}
         </section>
 
-        {/* PDF */}
         <section className={`${card} overflow-hidden`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
             <div>
-              <h2 className="text-sm font-semibold">Status relatório PDF</h2>
+              <h2 className="text-sm font-semibold">Status relat\u00f3rio PDF</h2>
               <p className="text-xs text-zinc-500 mt-0.5">{pdf?.detalhe}</p>
+              <p className="text-[11px] text-zinc-600 mt-1">
+                Coluna Auth mostra jwt_cliente / jwt_admin / publico \u2014 gera\u00e7\u00e3o com token JWT
+              </p>
             </div>
             <StatusPill ok={pdf?.ok ?? null} />
           </div>
           <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
             <span>
               24h: {pdf?.stats_24h?.ok ?? 0} ok / {pdf?.stats_24h?.errors ?? 0} erro /{' '}
-              {pdf?.stats_24h?.forbidden ?? 0} plano bloqueado
+              {pdf?.stats_24h?.forbidden ?? 0} plano / JWT: {pdf?.stats_24h?.jwt ?? 0}
             </span>
-            <span>Último: {pdf?.last_age || '—'}</span>
+            <span>\u00daltimo: {pdf?.last_age || '\u2014'}</span>
           </div>
           <div className="overflow-x-auto max-h-72">
             <table className="w-full text-sm">
@@ -311,10 +343,9 @@ export default function AdminTecnicoPage() {
                 <tr>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Empresa</th>
-                  <th className="px-4 py-2 text-left">Mês</th>
+                  <th className="px-4 py-2 text-left">M\u00eas</th>
                   <th className="px-4 py-2 text-left">Auth</th>
                   <th className="px-4 py-2 text-right">ms</th>
-                  <th className="px-4 py-2 text-right">bytes</th>
                   <th className="px-4 py-2 text-left">Erro</th>
                   <th className="px-4 py-2 text-right">Quando</th>
                 </tr>
@@ -322,8 +353,8 @@ export default function AdminTecnicoPage() {
               <tbody className="divide-y divide-zinc-800">
                 {(pdf?.logs || []).length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-8 text-center text-zinc-600">
-                      Nenhuma geração registrada.
+                    <td colSpan={7} className="px-4 py-8 text-center text-zinc-600">
+                      Nenhuma gera\u00e7\u00e3o registrada.
                     </td>
                   </tr>
                 ) : (
@@ -335,14 +366,11 @@ export default function AdminTecnicoPage() {
                           label={l.status}
                         />
                       </td>
-                      <td className="px-4 py-2 text-zinc-300">{l.empresa_nome || l.empresa_id || '—'}</td>
-                      <td className="px-4 py-2 font-mono text-xs">{l.mes || '—'}</td>
-                      <td className="px-4 py-2 font-mono text-xs text-zinc-500">{l.auth_mode || '—'}</td>
+                      <td className="px-4 py-2 text-zinc-300">{l.empresa_nome || l.empresa_id || '\u2014'}</td>
+                      <td className="px-4 py-2 font-mono text-xs">{l.mes || '\u2014'}</td>
+                      <td className="px-4 py-2 font-mono text-xs text-zinc-500">{l.auth_mode || '\u2014'}</td>
                       <td className="px-4 py-2 text-right tabular-nums text-zinc-400">
-                        {l.duration_ms ?? '—'}
-                      </td>
-                      <td className="px-4 py-2 text-right tabular-nums text-zinc-400">
-                        {l.bytes != null ? Number(l.bytes).toLocaleString('pt-BR') : '—'}
+                        {l.duration_ms ?? '\u2014'}
                       </td>
                       <td className="px-4 py-2 text-xs text-red-400/80 max-w-[180px] truncate">
                         {l.error || ''}
