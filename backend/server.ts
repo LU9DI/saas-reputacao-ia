@@ -40,6 +40,8 @@ import { ensureWebAuthnSchema, webauthnConfig } from './lib/webauthn.js';
 import { ensurePushSchema, pushConfigured, initWebPush } from './lib/push.js';
 import { ensureAiUsageSchema } from './lib/aiUsage.js';
 import { ensureOpsTables } from './lib/opsLog.js';
+import { ensureRetryQueue, startRetryWorker } from './lib/retryQueue.js';
+import { registerAllRetryHandlers } from './lib/retryHandlers.js';
 import { allowPlanSwitch } from './lib/plans.js';
 import { smtpConfigured } from './lib/mailer.js';
 import {
@@ -148,6 +150,13 @@ async function main() {
     await ensureOpsTables(getDb());
   } catch (e) {
     console.warn('ensureOpsTables:', e);
+  }
+  try {
+    await ensureRetryQueue(getDb());
+    registerAllRetryHandlers();
+    startRetryWorker();
+  } catch (e) {
+    console.warn('retry queue:', e);
   }
 
   await runSentimentBackfillOnBoot();
