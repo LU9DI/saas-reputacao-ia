@@ -21,7 +21,7 @@ import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
 import { mountMfaRoutes } from './mfa.js';
 import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured } from './stripeBilling.js';
-import { aiConfigured, listAiProviders } from './groqService.js';
+import { aiConfigured, listAiProviders, getAiLoadStats } from './groqService.js';
 
 assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
@@ -40,6 +40,7 @@ app.get('/api/health', (_req, res) => {
     stripe: stripeConfigured(),
     ai: aiConfigured(),
     ai_providers: listAiProviders(),
+    ai_load: getAiLoadStats(),
     env: process.env.NODE_ENV || 'development',
     time: new Date().toISOString(),
   });
@@ -66,8 +67,9 @@ async function main() {
   app.use(errorHandler);
 
   const providers = listAiProviders();
+  const load = getAiLoadStats();
   console.log(
-    `🤖 IA: ${providers.length ? providers.join(' → ') : 'OFF — GROQ_API_KEY e/ou GEMINI_API_KEY'}`
+    `🤖 IA: ${providers.length ? providers.join(' + ') : 'OFF'} | balance=${load.mode}`
   );
   console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF — defina STRIPE_SECRET_KEY no .env'}`);
   app.listen(PORT, () => {
