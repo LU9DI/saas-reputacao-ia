@@ -77,6 +77,15 @@ export async function initDB(): Promise<Database> {
       criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+  await _db.exec(`
+    CREATE TABLE IF NOT EXISTS usage (
+      plan TEXT NOT NULL,
+      month TEXT NOT NULL,
+      tags INTEGER DEFAULT 0,
+      respostas INTEGER DEFAULT 0,
+      PRIMARY KEY (plan, month)
+    );
+  `);
 
   await ensureAuthColumns(_db);
   await ensureMfaColumns(_db);
