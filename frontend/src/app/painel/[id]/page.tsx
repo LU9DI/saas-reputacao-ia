@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
@@ -14,6 +14,8 @@ interface Review {
   ai_reply: string | null;
   ai_tags: string[];
   createdAt: string;
+  sentiment?: string | null;
+  is_test?: boolean;
 }
 
 interface PainelData {
@@ -44,6 +46,7 @@ interface PainelData {
       negativas: number;
       media: number;
     }[];
+    sentimento_mix?: { positivo: number; neutro: number; negativo: number };
   };
   dashboard?: {
     nivel: string;
@@ -73,6 +76,35 @@ interface AssinaturaInfo {
   aviso_cancelamento?: string | null;
 }
 
+function mesAtualYYYYMM(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/** Últimos N meses no formato YYYY-MM (incluindo o atual) */
+function listarMesesOpcoes(qtd = 12): string[] {
+  const out: string[] = [];
+  const d = new Date();
+  d.setDate(1);
+  for (let i = 0; i < qtd; i++) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    out.push(`${y}-${m}`);
+    d.setMonth(d.getMonth() - 1);
+  }
+  return out;
+}
+
+function labelMes(yyyyMm: string): string {
+  const [y, m] = yyyyMm.split('-').map(Number);
+  if (!y || !m) return yyyyMm;
+  const nome = new Date(y, m - 1, 1).toLocaleDateString('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  });
+  return nome.charAt(0).toUpperCase() + nome.slice(1);
+}
+
 function Stars({ n }: { n: number }) {
   return (
     <span className="text-amber-500/90 text-[13px] tracking-wide" aria-hidden>
@@ -88,6 +120,7 @@ function textoFeedback(r: Review, nomeEmpresa?: string): string {
     nomeEmpresa ? `Empresa: ${nomeEmpresa}` : '',
     r.comment ? `Comentário: ${r.comment}` : '',
     r.ai_reply ? `Resposta IA: ${r.ai_reply}` : '',
+    r.sentiment ? `Sentimento: ${r.sentiment}` : '',
     r.createdAt ? `Data: ${new Date(r.createdAt).toLocaleString('pt-BR')}` : '',
   ]
     .filter(Boolean)
@@ -110,6 +143,9 @@ export default function PainelEmpresa() {
   const [msgWpp, setMsgWpp] = useState('');
   const [baixandoPdf, setBaixandoPdf] = useState(false);
   const [msgPdf, setMsgPdf] = useState('');
+  const [mesPdf, setMesPdf] = useState(mesAtualYYYYMM);
+
+  const mesesOpcoes = useMemo(() => listarMesesOpcoes(18), []);
 
   const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
@@ -221,8 +257,7 @@ export default function PainelEmpresa() {
     setBaixandoPdf(true);
     setMsgPdf('');
     try {
-      const now = new Date();
-      const mes = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const mes = /^\d{4}-\d{2}$/.test(mesPdf) ? mesPdf : mesAtualYYYYMM();
       const res = await fetch(`${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${mes}`);
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -235,7 +270,7 @@ export default function PainelEmpresa() {
       a.download = `relatorio-${mes}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-      setMsgPdf('PDF baixado.');
+      setMsgPdf(`PDF de ${labelMes(mes)} baixado.`);
     } catch (e: any) {
       setMsgPdf(e.message || 'Não foi possível baixar o PDF');
     } finally {
@@ -271,7 +306,7 @@ export default function PainelEmpresa() {
   }
 
   const { empresa, reviews, metricas, dashboard } = data;
-  const criticas = reviews.filter((r) => r.rating <= 3);
+  const criticas = reviews.filter((r) => r.rating <= 3 && !r.is_test);
   const temWpp = Boolean(empresa.whatsapp_url);
   const dist = metricas.distribuicao || [0, 0, 0, 0, 0];
   const nivel = dashboard?.nivel || 'basico';
@@ -298,16 +333,45 @@ export default function PainelEmpresa() {
               Dashboard · Plano <span className="font-semibold text-slate-700">{planLabel}</span>
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {pdfOk ? (
-              <button
-                type="button"
-                disabled={baixandoPdf}
-                onClick={baixarPdf}
-                className="text-sm px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 disabled:opacity-50"
-              >
-                {baixandoPdf ? 'Gerando PDF…' : 'Baixar relatório PDF'}
-              </button>
+              <>
+                <label className="sr-only" htmlFor="mes-pdf">
+                  Mês do relatório
+                </label>
+                <select
+                  id="mes-pdf"
+                  value={mesPdf}
+                  onChange={(e) => setMesPdf(e.target.value)}
+                  className="text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                  title="Mês do relatório PDF"
+                >
+                  {mesesOpcoes.map((m) => (
+                    <option key={m} value={m}>
+                      {labelMes(m)}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="month"
+                  value={mesPdf}
+                  max={mesAtualYYYYMM()}
+                  onChange={(e) => {
+                    if (e.target.value) setMesPdf(e.target.value);
+                  }}
+                  className="text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Escolher mês (calendário)"
+                  title="Ou escolha no calendário"
+                />
+                <button
+                  type="button"
+                  disabled={baixandoPdf}
+                  onClick={baixarPdf}
+                  className="text-sm px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 disabled:opacity-50"
+                >
+                  {baixandoPdf ? 'Gerando PDF…' : 'Baixar PDF'}
+                </button>
+              </>
             ) : (
               <span className="text-xs text-slate-400 max-w-[180px] text-right">
                 PDF a partir do plano Pro
@@ -322,7 +386,11 @@ export default function PainelEmpresa() {
             </button>
           </div>
         </div>
-        {msgPdf && <p className="text-center text-xs text-slate-500 pb-3">{msgPdf}</p>}
+        {msgPdf && (
+          <p className="text-center text-xs text-slate-500 pb-3" role="status">
+            {msgPdf}
+          </p>
+        )}
       </header>
 
       <main className="max-w-5xl mx-auto px-6 md:px-10 py-10 space-y-8">
@@ -331,6 +399,40 @@ export default function PainelEmpresa() {
             <p className="font-semibold">Assinatura cancelada</p>
             <p className="mt-1">{assinatura?.aviso_cancelamento || `Acesso até ${ateFormatado}`}</p>
           </div>
+        )}
+
+        {pdfOk && (
+          <section className="bg-white rounded-2xl px-6 py-5 border border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Relatório mensal
+              </p>
+              <p className="text-sm text-slate-600 mt-1">
+                Baixe o PDF de <strong>{labelMes(mesPdf)}</strong> conforme seu plano ({planLabel}).
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <select
+                value={mesPdf}
+                onChange={(e) => setMesPdf(e.target.value)}
+                className="text-sm px-3 py-2.5 rounded-xl border border-slate-200 bg-white"
+              >
+                {mesesOpcoes.map((m) => (
+                  <option key={m} value={m}>
+                    {labelMes(m)}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                disabled={baixandoPdf}
+                onClick={baixarPdf}
+                className="text-sm px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 disabled:opacity-50"
+              >
+                {baixandoPdf ? 'Gerando…' : 'Baixar relatório PDF'}
+              </button>
+            </div>
+          </section>
         )}
 
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -452,6 +554,19 @@ export default function PainelEmpresa() {
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-medium">{r.name}</span>
                       <Stars n={r.rating} />
+                      {r.sentiment && (
+                        <span
+                          className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full ${
+                            r.sentiment === 'negativo'
+                              ? 'bg-red-50 text-red-700'
+                              : r.sentiment === 'positivo'
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'bg-slate-100 text-slate-600'
+                          }`}
+                        >
+                          {r.sentiment}
+                        </span>
+                      )}
                     </div>
                     <time className="text-xs text-slate-400">
                       {new Date(r.createdAt).toLocaleString('pt-BR', {
