@@ -14,6 +14,8 @@ import {
   Cpu,
   FlaskConical,
   Workflow,
+  Download,
+  ExternalLink,
 } from 'lucide-react';
 
 interface Empresa {
@@ -32,6 +34,7 @@ interface Empresa {
   total_tokens?: number;
   atrasado?: boolean;
   mrr_estimado?: number;
+  painel_path?: string;
 }
 
 interface Dashboard {
@@ -62,7 +65,6 @@ interface Dashboard {
     expira_em: string;
     dias_atraso: number;
   }[];
-  por_plano: Record<string, number>;
 }
 
 interface Integracoes {
@@ -71,9 +73,20 @@ interface Integracoes {
   whatsapp: { api_env: boolean; empresas_com_wpp: number; ok: boolean; detalhe: string };
 }
 
+interface StripeInv {
+  id: string;
+  number: string | null;
+  status: string;
+  customer_email: string | null;
+  amount_due: number;
+  amount_paid: number;
+  currency: string;
+  created: string | null;
+  hosted_invoice_url: string | null;
+}
+
 interface Review {
   id: number;
-  empresa_id: string | null;
   nome_empresa?: string;
   name: string;
   rating: number;
@@ -115,8 +128,7 @@ function fmtDt(s: string) {
 }
 
 function StatusDot({ ok }: { ok: boolean | null }) {
-  const c =
-    ok === true ? 'bg-emerald-500' : ok === false ? 'bg-red-500' : 'bg-zinc-500';
+  const c = ok === true ? 'bg-emerald-500' : ok === false ? 'bg-red-500' : 'bg-zinc-500';
   return <span className={`inline-block w-2 h-2 rounded-full ${c}`} />;
 }
 
@@ -126,6 +138,11 @@ export default function AdminDashboard() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [integ, setInteg] = useState<Integracoes | null>(null);
+  const [stripeInv, setStripeInv] = useState<{
+    configured: boolean;
+    invoices: StripeInv[];
+    error?: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [msg, setMsg] = useState('');
@@ -150,20 +167,22 @@ export default function AdminDashboard() {
         return;
       }
 
-      const [rDash, rEmp, rRev, rInt] = await Promise.all([
+      const [rDash, rEmp, rRev, rInt, rStripe] = await Promise.all([
         fetch(`${base}/api/admin/dashboard`, { credentials: 'include', headers }),
         fetch(`${base}/api/admin/empresas`, { credentials: 'include', headers }),
         fetch(`${base}/api/admin/reviews`, { credentials: 'include', headers }),
         fetch(`${base}/api/admin/integracoes`, { credentials: 'include', headers }),
+        fetch(`${base}/api/admin/stripe/invoices`, { credentials: 'include', headers }),
       ]);
 
       if (rDash.ok) setDash(await rDash.json());
       if (rEmp.ok) setEmpresas(await rEmp.json());
       if (rRev.ok) setReviews(await rRev.json());
       if (rInt.ok) setInteg(await rInt.json());
+      if (rStripe.ok) setStripeInv(await rStripe.json());
 
       if (!rDash.ok && !rEmp.ok) {
-        setErro('Falha ao carregar dados do admin. Verifique se a API subiu com as rotas novas.');
+        setErro('Falha ao carregar dados do admin.');
       }
     } catch {
       setErro(`Falha de rede. API em ${apiUrl()} online?`);
@@ -209,6 +228,26 @@ export default function AdminDashboard() {
     }
   };
 
+  const baixarCsv = async () => {
+    try {
+      const res = await fetch(`${apiUrl()}/api/admin/empresas.csv`, {
+        credentials: 'include',
+        headers: authHeaders(),
+      });
+      if (!res.ok) throw new Error('Falha no CSV');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'empresas-filtra.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+      setMsg('CSV baixado.');
+    } catch (e: any) {
+      setMsg(e.message || 'Erro CSV');
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await fetch(`${apiUrl()}/api/admin/logout`, {
@@ -245,7 +284,14 @@ export default function AdminDashboard() {
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Painel Admin</h1>
             <p className="text-sm text-zinc-500">Faturamento, clientes, tokens e integrações</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={baixarCsv}
+              className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-sm py-2 px-4 rounded-xl border border-zinc-800"
+            >
+              <Download size={16} /> CSV
+            </button>
             <button
               type="button"
               onClick={carregarDados}
@@ -274,7 +320,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
             { icon: Building2, label: 'Ativos', value: k?.clientes_ativos ?? '—', sub: `${k?.total_empresas ?? 0} total` },
@@ -295,14 +340,13 @@ export default function AdminDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Top tokens */}
           <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden lg:col-span-2">
             <div className="px-5 py-4 border-b border-zinc-800 flex items-center gap-2">
               <Cpu size={16} className="text-amber-400" />
-              <h2 className="font-semibold text-sm">Top 10 — consumo de tokens IA</h2>
+              <h2 className="font-semibold text-sm">Top 10 — tokens IA</h2>
             </div>
             {!dash?.top_tokens?.length ? (
-              <p className="p-5 text-sm text-zinc-500">Sem uso de tokens registrado ainda.</p>
+              <p className="p-5 text-sm text-zinc-500">Sem uso de tokens ainda (gera com reviews + IA).</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -323,7 +367,7 @@ export default function AdminDashboard() {
                           <div className="text-xs text-zinc-500">{t.cnpj}</div>
                         </td>
                         <td className="px-4 py-2.5 uppercase text-xs">{t.plan || '—'}</td>
-                        <td className="px-4 py-2.5 text-right tabular-nums font-medium text-amber-300">
+                        <td className="px-4 py-2.5 text-right tabular-nums text-amber-300">
                           {t.total_tokens.toLocaleString('pt-BR')}
                         </td>
                       </tr>
@@ -334,196 +378,100 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          {/* Integrações n8n */}
           <div className="bg-zinc-900/80 border border-zinc-800/80 rounded-2xl p-5 space-y-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-zinc-400">
               <Workflow size={16} /> Integrações
-              <span className="text-[10px] font-normal text-zinc-600">(discreto)</span>
             </div>
             {integ ? (
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
                   <StatusDot ok={integ.n8n.ok} />
                   <div>
-                    <p className="font-medium text-zinc-200">n8n</p>
-                    <p className="text-xs text-zinc-500">
-                      {integ.n8n.configurado
-                        ? `${integ.n8n.url_mascarada} · ${integ.n8n.detalhe}`
-                        : integ.n8n.detalhe}
-                    </p>
+                    <p className="font-medium">n8n</p>
+                    <p className="text-xs text-zinc-500">{integ.n8n.detalhe}</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <StatusDot ok={integ.google_maps.ok} />
                   <div>
-                    <p className="font-medium text-zinc-200">Google Maps / reviews</p>
+                    <p className="font-medium">Google Maps</p>
                     <p className="text-xs text-zinc-500">{integ.google_maps.detalhe}</p>
-                    <p className="text-[11px] text-zinc-600">
-                      {integ.google_maps.empresas_com_link_google} empresa(s) com link Google
-                    </p>
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <StatusDot ok={integ.whatsapp.ok} />
                   <div>
-                    <p className="font-medium text-zinc-200">WhatsApp</p>
+                    <p className="font-medium">WhatsApp</p>
                     <p className="text-xs text-zinc-500">{integ.whatsapp.detalhe}</p>
                   </div>
                 </li>
               </ul>
             ) : (
-              <p className="text-xs text-zinc-500">Sem dados de integração.</p>
+              <p className="text-xs text-zinc-500">Sem dados.</p>
             )}
-            <p className="text-[10px] text-zinc-600 leading-relaxed">
-              Configure <code className="text-zinc-500">N8N_WEBHOOK_URL</code> no .env da API para o
-              health-check automático do n8n.
-            </p>
           </div>
         </div>
 
-        {/* Faturas atrasadas */}
-        {!!dash?.faturas_atrasadas?.length && (
-          <div className="bg-red-950/20 border border-red-900/40 rounded-2xl overflow-hidden">
-            <div className="px-5 py-3 border-b border-red-900/40 text-sm font-semibold text-red-300">
-              Faturas / acessos atrasados
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="text-xs text-zinc-500">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Empresa</th>
-                    <th className="px-4 py-2 text-left">CNPJ</th>
-                    <th className="px-4 py-2 text-left">Plano</th>
-                    <th className="px-4 py-2 text-left">Venceu</th>
-                    <th className="px-4 py-2 text-right">Dias</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-red-900/20">
-                  {dash.faturas_atrasadas.map((f) => (
-                    <tr key={f.id}>
-                      <td className="px-4 py-2">{f.nome_empresa}</td>
-                      <td className="px-4 py-2 text-zinc-400">{f.cnpj}</td>
-                      <td className="px-4 py-2 uppercase text-xs">{f.plan}</td>
-                      <td className="px-4 py-2 text-zinc-400">{fmtDt(f.expira_em)}</td>
-                      <td className="px-4 py-2 text-right text-red-400 font-medium">{f.dias_atraso}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Empresas */}
+        {/* Stripe */}
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-          <div className="p-5 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-semibold text-sm">Empresas</h2>
-            <input
-              value={filtro}
-              onChange={(e) => setFiltro(e.target.value)}
-              placeholder="Buscar nome, CNPJ, plano…"
-              className="text-sm px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 w-full sm:w-64 outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+          <div className="px-5 py-4 border-b border-zinc-800 flex items-center gap-2">
+            <DollarSign size={16} className="text-emerald-400" />
+            <h2 className="font-semibold text-sm">Faturas Stripe</h2>
+            {stripeInv && !stripeInv.configured && (
+              <span className="text-xs text-zinc-500">· STRIPE_SECRET_KEY não configurada</span>
+            )}
+            {stripeInv?.error && <span className="text-xs text-red-400">· {stripeInv.error}</span>}
           </div>
-          {empresasFiltradas.length === 0 ? (
-            <p className="p-5 text-sm text-zinc-500">Nenhuma empresa encontrada.</p>
+          {!stripeInv?.invoices?.length ? (
+            <p className="p-5 text-sm text-zinc-500">Nenhuma fatura retornada pelo Stripe.</p>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto max-h-64">
               <table className="w-full text-sm">
-                <thead className="bg-zinc-950/80 text-zinc-500 uppercase tracking-wider text-[10px]">
+                <thead className="text-xs text-zinc-500 uppercase">
                   <tr>
-                    <th className="px-4 py-3 text-left">Empresa / CNPJ</th>
-                    <th className="px-4 py-3 text-left">Cadastro</th>
-                    <th className="px-4 py-3 text-left">Plano</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Expira</th>
-                    <th className="px-4 py-3 text-right">Tokens</th>
-                    <th className="px-4 py-3 text-left">Maps / WPP</th>
-                    <th className="px-4 py-3 text-right">Ações</th>
+                    <th className="px-4 py-2 text-left">Nº</th>
+                    <th className="px-4 py-2 text-left">Status</th>
+                    <th className="px-4 py-2 text-left">Cliente</th>
+                    <th className="px-4 py-2 text-right">Pago</th>
+                    <th className="px-4 py-2 text-left">Data</th>
+                    <th className="px-4 py-2 text-right">Link</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800">
-                  {empresasFiltradas.map((e) => (
-                    <tr key={e.id} className="hover:bg-zinc-800/40">
-                      <td className="px-4 py-3">
-                        <div className="font-medium text-zinc-100">{e.nome_empresa}</div>
-                        <div className="text-xs text-zinc-500 font-mono">{e.cnpj}</div>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-zinc-400 whitespace-nowrap">
-                        {fmtDt(e.criado_em)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="uppercase text-xs font-semibold text-indigo-300">
-                          {e.plan || '—'}
-                        </span>
-                        <div className="text-[10px] text-zinc-600">{e.billing_cycle || 'month'}</div>
-                      </td>
-                      <td className="px-4 py-3">
+                  {stripeInv.invoices.map((inv) => (
+                    <tr key={inv.id}>
+                      <td className="px-4 py-2 font-mono text-xs">{inv.number || inv.id.slice(-8)}</td>
+                      <td className="px-4 py-2">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                            e.atrasado
-                              ? 'bg-red-500/20 text-red-300'
-                              : e.status === 'ativo'
-                                ? 'bg-emerald-500/20 text-emerald-300'
-                                : e.status === 'cancelado' || e.status === 'bloqueado'
-                                  ? 'bg-zinc-700 text-zinc-400'
-                                  : 'bg-amber-500/20 text-amber-300'
+                          className={`text-[10px] px-2 py-0.5 rounded-full ${
+                            inv.status === 'paid'
+                              ? 'bg-emerald-500/20 text-emerald-300'
+                              : inv.status === 'open'
+                                ? 'bg-amber-500/20 text-amber-300'
+                                : 'bg-zinc-700 text-zinc-400'
                           }`}
                         >
-                          {e.atrasado ? 'atrasado' : e.status}
+                          {inv.status}
                         </span>
-                        {e.cancel_at_period_end && (
-                          <div className="text-[10px] text-amber-500 mt-0.5">canc. pendente</div>
+                      </td>
+                      <td className="px-4 py-2 text-zinc-400 text-xs">{inv.customer_email || '—'}</td>
+                      <td className="px-4 py-2 text-right tabular-nums">
+                        {fmtMoney(inv.amount_paid || inv.amount_due)}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-zinc-500">
+                        {inv.created ? fmtDt(inv.created) : '—'}
+                      </td>
+                      <td className="px-4 py-2 text-right">
+                        {inv.hosted_invoice_url && (
+                          <a
+                            href={inv.hosted_invoice_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-indigo-400 text-xs hover:underline"
+                          >
+                            abrir
+                          </a>
                         )}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-zinc-400 whitespace-nowrap">
-                        {fmtDt(e.expira_em)}
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums text-zinc-300">
-                        {(e.total_tokens || 0).toLocaleString('pt-BR')}
-                      </td>
-                      <td className="px-4 py-3 text-xs">
-                        <div className="flex flex-col gap-0.5">
-                          <span className={e.google_review_url ? 'text-emerald-400' : 'text-zinc-600'}>
-                            Maps {e.google_review_url ? '✓' : '—'}
-                          </span>
-                          <span className={e.whatsapp_suporte ? 'text-emerald-400' : 'text-zinc-600'}>
-                            WPP {e.whatsapp_suporte ? '✓' : '—'}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap justify-end gap-1">
-                          <button
-                            type="button"
-                            disabled={busyId === e.id}
-                            onClick={() => acao(e.id, 'renovar', { ciclo: 'month' })}
-                            className="text-[10px] px-2 py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white disabled:opacity-50"
-                            title="+30 dias"
-                          >
-                            +1 mês
-                          </button>
-                          <button
-                            type="button"
-                            disabled={busyId === e.id}
-                            onClick={() => acao(e.id, 'renovar', { ciclo: 'year' })}
-                            className="text-[10px] px-2 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-indigo-100 disabled:opacity-50"
-                            title="+365 dias"
-                          >
-                            +1 ano
-                          </button>
-                          <button
-                            type="button"
-                            disabled={busyId === e.id}
-                            onClick={() => {
-                              if (confirm(`Cancelar plano de ${e.nome_empresa}?`))
-                                acao(e.id, 'cancelar', { imediato: true });
-                            }}
-                            className="text-[10px] px-2 py-1 rounded-lg bg-red-950 text-red-300 border border-red-900/50 hover:bg-red-900/40 disabled:opacity-50"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
                       </td>
                     </tr>
                   ))}
@@ -533,31 +481,151 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Reviews */}
+        {!!dash?.faturas_atrasadas?.length && (
+          <div className="bg-red-950/20 border border-red-900/40 rounded-2xl overflow-hidden">
+            <div className="px-5 py-3 text-sm font-semibold text-red-300">Acessos atrasados (banco)</div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-red-900/20">
+                  {dash.faturas_atrasadas.map((f) => (
+                    <tr key={f.id}>
+                      <td className="px-4 py-2">{f.nome_empresa}</td>
+                      <td className="px-4 py-2 text-zinc-400">{f.cnpj}</td>
+                      <td className="px-4 py-2 uppercase text-xs">{f.plan}</td>
+                      <td className="px-4 py-2 text-red-400 text-right">{f.dias_atraso}d</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+          <div className="p-5 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-semibold text-sm">Empresas</h2>
+            <input
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+              placeholder="Buscar…"
+              className="text-sm px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 w-full sm:w-64 outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          {empresasFiltradas.length === 0 ? (
+            <p className="p-5 text-sm text-zinc-500">Nenhuma empresa.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-zinc-950/80 text-zinc-500 uppercase text-[10px]">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Empresa</th>
+                    <th className="px-4 py-3 text-left">Cadastro</th>
+                    <th className="px-4 py-3 text-left">Plano</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">Expira</th>
+                    <th className="px-4 py-3 text-right">Tokens</th>
+                    <th className="px-4 py-3 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800">
+                  {empresasFiltradas.map((e) => {
+                    const path = e.painel_path || `/painel/${e.slug || e.id}`;
+                    return (
+                      <tr key={e.id} className="hover:bg-zinc-800/40">
+                        <td className="px-4 py-3">
+                          <div className="font-medium">{e.nome_empresa}</div>
+                          <div className="text-xs text-zinc-500 font-mono">{e.cnpj}</div>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-zinc-400 whitespace-nowrap">
+                          {fmtDt(e.criado_em)}
+                        </td>
+                        <td className="px-4 py-3 uppercase text-xs text-indigo-300">{e.plan || '—'}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                              e.atrasado
+                                ? 'bg-red-500/20 text-red-300'
+                                : e.status === 'ativo'
+                                  ? 'bg-emerald-500/20 text-emerald-300'
+                                  : 'bg-amber-500/20 text-amber-300'
+                            }`}
+                          >
+                            {e.atrasado ? 'atrasado' : e.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-zinc-400">{fmtDt(e.expira_em)}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">
+                          {(e.total_tokens || 0).toLocaleString('pt-BR')}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap justify-end gap-1">
+                            <a
+                              href={path}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[10px] px-2 py-1 rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800 inline-flex items-center gap-1"
+                            >
+                              <ExternalLink size={10} /> Painel
+                            </a>
+                            <button
+                              type="button"
+                              disabled={busyId === e.id}
+                              onClick={() => acao(e.id, 'renovar', { ciclo: 'month' })}
+                              className="text-[10px] px-2 py-1 rounded-lg bg-indigo-600/80 text-white disabled:opacity-50"
+                            >
+                              +1 mês
+                            </button>
+                            <button
+                              type="button"
+                              disabled={busyId === e.id}
+                              onClick={() => acao(e.id, 'renovar', { ciclo: 'year' })}
+                              className="text-[10px] px-2 py-1 rounded-lg bg-indigo-900 text-indigo-100 disabled:opacity-50"
+                            >
+                              +1 ano
+                            </button>
+                            <button
+                              type="button"
+                              disabled={busyId === e.id}
+                              onClick={() => {
+                                if (confirm(`Cancelar ${e.nome_empresa}?`))
+                                  acao(e.id, 'cancelar', { imediato: true });
+                              }}
+                              className="text-[10px] px-2 py-1 rounded-lg bg-red-950 text-red-300 border border-red-900/50 disabled:opacity-50"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
           <div className="p-5 border-b border-zinc-800">
             <h2 className="font-semibold text-sm">Últimas avaliações</h2>
           </div>
           {reviews.length === 0 ? (
-            <p className="p-5 text-sm text-zinc-500">Nenhuma avaliação.</p>
+            <p className="p-5 text-sm text-zinc-500">Nenhuma.</p>
           ) : (
-            <div className="divide-y divide-zinc-800 max-h-96 overflow-y-auto">
-              {reviews.slice(0, 40).map((r) => (
-                <div key={r.id} className="p-4 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+            <div className="divide-y divide-zinc-800 max-h-80 overflow-y-auto">
+              {reviews.slice(0, 30).map((r) => (
+                <div key={r.id} className="p-4">
+                  <div className="flex flex-wrap gap-2 text-xs text-zinc-500">
                     <span className="text-amber-400">{'★'.repeat(r.rating)}</span>
-                    <span className="font-medium text-zinc-200">{r.name}</span>
+                    <span className="text-zinc-200">{r.name}</span>
                     {r.nome_empresa && <span>· {r.nome_empresa}</span>}
                     <span>· {fmtDt(r.createdAt)}</span>
                   </div>
-                  {r.comment && <p className="text-sm text-zinc-400">{r.comment}</p>}
+                  {r.comment && <p className="text-sm text-zinc-400 mt-1">{r.comment}</p>}
                   {r.ai_reply && (
-                    <div className="mt-2 pl-3 border-l-2 border-indigo-500/40 text-sm text-zinc-300">
-                      <span className="inline-flex items-center gap-1 text-indigo-400 text-xs mb-0.5">
-                        <Bot size={12} /> IA
-                      </span>
-                      <p>{r.ai_reply}</p>
-                    </div>
+                    <p className="text-sm text-zinc-300 mt-2 border-l-2 border-indigo-500/40 pl-3">
+                      <Bot size={12} className="inline text-indigo-400" /> {r.ai_reply}
+                    </p>
                   )}
                 </div>
               ))}
