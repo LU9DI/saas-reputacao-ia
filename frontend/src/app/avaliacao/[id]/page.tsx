@@ -19,6 +19,7 @@ export default function PaginaAvaliacao() {
   const [erroValidacao, setErroValidacao] = useState(false);
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [googleReviewUrl, setGoogleReviewUrl] = useState('');
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
   const totalStars = Array.from({ length: 5 }, (_, i) => i + 1);
   const apiUrl = () => getEnv('NEXT_PUBLIC_API_URL');
@@ -32,6 +33,7 @@ export default function PaginaAvaliacao() {
         setTrialValido(true);
         setNomeEmpresa(data.nome || '');
         setGoogleReviewUrl(data.google_review_url || '');
+        setWhatsappUrl(data.whatsapp_url || null);
       } else {
         setTrialValido(false);
         setNomeEmpresa(data.nome || '');
@@ -94,6 +96,19 @@ export default function PaginaAvaliacao() {
         setErro(await readApiError(response, 'Não foi possível enviar o feedback.'));
         return;
       }
+
+      // Após crítica privada → WhatsApp da empresa (se cadastrado)
+      if (whatsappUrl) {
+        const texto = [
+          `Olá! Acabei de enviar um feedback (${rating}★)${nomeEmpresa ? ` sobre ${nomeEmpresa}` : ''}.`,
+          comment.trim() ? `\nResumo: ${comment.trim().slice(0, 280)}` : '',
+          `\n— ${name.trim() || 'Cliente'}`,
+        ].join('');
+        const sep = whatsappUrl.includes('?') ? '&' : '?';
+        window.location.href = `${whatsappUrl}${sep}text=${encodeURIComponent(texto)}`;
+        return;
+      }
+
       setSubmitted(true);
     } catch {
       setErro('Não foi possível enviar seu feedback. Tente novamente.');
@@ -210,8 +225,17 @@ export default function PaginaAvaliacao() {
                 disabled={loading}
                 className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-3 px-4 rounded-xl transition disabled:opacity-50"
               >
-                {loading ? 'Enviando...' : 'Enviar crítica privada'}
+                {loading
+                  ? 'Enviando...'
+                  : whatsappUrl
+                    ? 'Enviar e falar no WhatsApp'
+                    : 'Enviar crítica privada'}
               </button>
+              {whatsappUrl && (
+                <p className="text-[11px] text-zinc-500 text-center">
+                  Após enviar, você será direcionado ao WhatsApp da empresa para conversar.
+                </p>
+              )}
             </div>
           )}
         </form>
