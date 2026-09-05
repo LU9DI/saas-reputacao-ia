@@ -14,11 +14,10 @@ export function allowPlanSwitch(): boolean {
   return process.env.NODE_ENV !== 'production';
 }
 
-/** PDF mensal: todos os 5 planos (e trial em modo teste). */
+/** PDF mensal: Pro e acima (e trial em modo teste de planos). Inicial não tem PDF. */
 export function planTemPdf(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
-  if (['inicial', 'pro', 'ultra', 'corporativo', 'rei'].includes(p)) return true;
-  // trial: só se estiver testando planos
+  if (['pro', 'ultra', 'corporativo', 'rei'].includes(p)) return true;
   if ((p === 'trial' || p === 'teste') && allowPlanSwitch()) return true;
   return false;
 }
