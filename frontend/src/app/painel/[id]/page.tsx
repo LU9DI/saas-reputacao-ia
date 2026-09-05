@@ -98,6 +98,17 @@ async function copiarTexto(texto: string): Promise<boolean> {
   }
 }
 
+function authHeaders(): HeadersInit {
+  const h: Record<string, string> = { 'Content-Type': 'application/json' };
+  try {
+    const t = localStorage.getItem('filtra_token');
+    if (t) h.Authorization = `Bearer ${t}`;
+  } catch {
+    /* */
+  }
+  return h;
+}
+
 const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
 const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
@@ -206,11 +217,17 @@ export default function PainelEmpresa() {
     try {
       const res = await fetch(`${api}/api/empresa/${empresaId}/whatsapp`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: authHeaders(),
         body: JSON.stringify({ whatsapp: whatsappInput }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || 'Falha ao salvar');
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          throw new Error('Faça login em /login para alterar o WhatsApp da empresa.');
+        }
+        throw new Error(json.error || 'Falha ao salvar');
+      }
       setMsgWpp('WhatsApp salvo.');
       await carregar();
     } catch (e: any) {
@@ -250,7 +267,6 @@ export default function PainelEmpresa() {
   const nivel = dashboard?.nivel || 'basico';
   const pdfOk = Boolean(dashboard?.pdf_disponivel || dashboard?.plan_switch);
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
-  // Universal: todos os planos (e trial)
   const showWppCliente = dashboard?.mostrar_whatsapp_cliente !== false;
   const showCopiar = dashboard?.mostrar_copiar_resposta !== false;
 
@@ -367,6 +383,10 @@ export default function PainelEmpresa() {
 
         <section className={`${card} px-6 py-6 space-y-3`}>
           <p className={label}>WhatsApp de suporte (empresa)</p>
+          <p className="text-xs text-zinc-500">
+            Número que aparece no formulário público de feedback (botão "falar no WhatsApp").
+            É preciso estar logado em /login para salvar.
+          </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="tel"
@@ -385,6 +405,16 @@ export default function PainelEmpresa() {
             </button>
           </div>
           {msgWpp && <p className="text-xs text-zinc-500">{msgWpp}</p>}
+          {empresa.whatsapp_url && (
+            <a
+              href={empresa.whatsapp_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex text-sm text-emerald-400 hover:underline"
+            >
+              Testar link WhatsApp da empresa →
+            </a>
+          )}
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -421,7 +451,7 @@ export default function PainelEmpresa() {
           <div className="px-6 py-5 border-b border-zinc-800">
             <h2 className="text-sm font-semibold text-zinc-200">Feedbacks privados</h2>
             <p className="text-xs text-zinc-500 mt-1">
-              WhatsApp do cliente e copiar resposta disponíveis em todos os planos
+              WhatsApp do cliente (quando informado) e botão de contato em cada crítica
             </p>
           </div>
           {criticas.length === 0 ? (
@@ -434,6 +464,7 @@ export default function PainelEmpresa() {
                   `Olá${r.name && r.name !== 'Anônimo' ? ` ${r.name}` : ''}, obrigado pelo feedback. Vamos analisar e retornar o mais breve possível.`;
                 const keyCopy = `copy-${r.id}`;
                 const keyWa = `wa-${r.id}`;
+                const waCliente = r.client_whatsapp_url;
                 return (
                   <li
                     key={r.id}
@@ -468,10 +499,10 @@ export default function PainelEmpresa() {
 
                     {showWppCliente && (
                       <div className="mt-4 flex flex-wrap items-center gap-2">
-                        {r.client_whatsapp_url ? (
+                        {waCliente ? (
                           <>
                             <a
-                              href={r.client_whatsapp_url}
+                              href={waCliente}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-500"
@@ -488,12 +519,12 @@ export default function PainelEmpresa() {
                             >
                               {copiadoId === keyWa ? 'Número copiado!' : 'Copiar número'}
                             </button>
-                            <span className="text-xs text-zinc-500 font-mono">
-                              {r.client_whatsapp}
-                            </span>
+                            <span className="text-xs text-zinc-500 font-mono">{r.client_whatsapp}</span>
                           </>
                         ) : (
-                          <span className="text-xs text-zinc-600">WhatsApp do cliente não informado</span>
+                          <span className="text-xs text-amber-600/80">
+                            WhatsApp do cliente não informado neste feedback
+                          </span>
                         )}
                       </div>
                     )}
