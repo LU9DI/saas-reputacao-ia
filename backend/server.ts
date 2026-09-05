@@ -20,6 +20,7 @@ import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
 import { mountReviewRoutes } from './routes/reviewRoutes.js';
 import { mountAdminDashboardRoutes } from './routes/adminDashboardRoutes.js';
 import { mountAdminTecnicoRoutes } from './routes/adminTecnicoRoutes.js';
+import { mountAdminNegocioRoutes } from './routes/adminNegocioRoutes.js';
 import { mountTokenMetricsRoutes } from './routes/tokenMetricsRoutes.js';
 import { mountRelatorioRoutes } from './routes/relatorioRoutes.js';
 import { mountPlanSwitchRoutes } from './routes/planSwitchRoutes.js';
@@ -32,7 +33,7 @@ import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
 import { mountMfaRoutes } from './mfa.js';
 import { mountStripeRoutes } from './stripeRoutes.js';
-import { stripeConfigured } from './stripeBilling.js';
+import { stripeConfigured, refreshPlanPricesFromDb } from './stripeBilling.js';
 import { paypalConfigured } from './lib/paypal.js';
 import { aiConfigured, listAiProviders, getAiLoadStats } from './groqService.js';
 import { ensureUnidadesSchema } from './relatorioPdf.js';
@@ -42,6 +43,7 @@ import { ensureAiUsageSchema } from './lib/aiUsage.js';
 import { ensureOpsTables } from './lib/opsLog.js';
 import { ensureRetryQueue, startRetryWorker } from './lib/retryQueue.js';
 import { registerAllRetryHandlers } from './lib/retryHandlers.js';
+import { ensurePlanPricingSchema } from './lib/planPricing.js';
 import { allowPlanSwitch } from './lib/plans.js';
 import { smtpConfigured } from './lib/mailer.js';
 import {
@@ -152,6 +154,12 @@ async function main() {
     console.warn('ensureOpsTables:', e);
   }
   try {
+    await ensurePlanPricingSchema(getDb());
+    await refreshPlanPricesFromDb(getDb());
+  } catch (e) {
+    console.warn('plan pricing:', e);
+  }
+  try {
     await ensureRetryQueue(getDb());
     registerAllRetryHandlers();
     startRetryWorker();
@@ -167,6 +175,7 @@ async function main() {
   mountReviewRoutes(app);
   mountAdminDashboardRoutes(app);
   mountAdminTecnicoRoutes(app);
+  mountAdminNegocioRoutes(app);
   mountTokenMetricsRoutes(app);
   mountRelatorioRoutes(app);
   mountPlanSwitchRoutes(app);
