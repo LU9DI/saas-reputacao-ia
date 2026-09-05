@@ -4,8 +4,10 @@
  * ou query ?secret=
  *
  * Endpoints:
- *   POST /api/jobs/trial-expiring   — trials que expiram em 1–2 dias
- *   POST /api/jobs/expirations      — lembretes + bloqueio + e-mail de acesso encerrado
+ *   POST /api/jobs/trial-expiring
+ *   POST /api/jobs/expirations
+ *   POST /api/jobs/retry-failures  — processa fila de retry
+ *   GET  /api/jobs/retry-stats
  */
 import type { Express, Request, Response } from 'express';
 import { getDb } from '../lib/db.js';
@@ -16,6 +18,7 @@ import {
   smtpConfigured,
 } from '../lib/notifications.js';
 import { enforcarExpiracoes } from '../services/billingService.js';
+import { processRetryQueue, retryQueueStats } from '../lib/retryQueue.js';
 
 function authorized(req: Request): boolean {
   const secret = process.env.JOBS_SECRET?.trim();
@@ -53,10 +56,29 @@ function recentementeEnviado(iso: string | null | undefined, agora: number, hora
 }
 
 export function mountJobsRoutes(app: Express) {
-  /**
-   * POST /api/jobs/trial-expiring
-   * E-mail para trials que expiram em até 2 dias.
-   */
+  app.post('/api/jobs/retry-failures', async (req: Request, res: Response) => {
+    if (!authorized(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const limit = Math.min(100, Math.max(1, Number(req.body?.limit || req.query.limit || 30)));
+      const result = await processRetryQueue(getDb(), limit);
+      const stats = await retryQueueStats(getDb());
+      res.json({ success: true, ...result, queue: stats });
+    } catch (e: any) {
+      console.error('jobs/retry-failures:', e?.message || e);
+      res.status(500).json({ error: 'INTERNAL_SERVER_ERROR' });
+    }
+  });
+
+  app.get('/api/jobs/retry-stats', async (req: Request, res: Response) => {
+    if (!authorized(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const stats = await retryQueueStats(getDb());
+      res.json({ success: true, ...stats });
+    } catch (e: any) {
+      res.status(500).json({ error: e?.message || 'error' });
+    }
+  });
+
   app.post('/api/jobs/trial-expiring', async (req: Request, res: Response) => {
     if (!authorized(req)) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -127,14 +149,6 @@ export function mountJobsRoutes(app: Express) {
     }
   });
 
-  /**
-   * POST /api/jobs/expirations
-   * Job completo diário:
-   *  1) Lembrete trial (1–2 dias)
-   *  2) Lembrete assinatura ativa / cancelada (1–3 dias)
-   *  3) Bloqueia quem já venceu
-   *  4) E-mail "acesso encerrado" para quem acabou de ser bloqueado
-   */
   app.post('/api/jobs/expirations', async (req: Request, res: Response) => {
     if (!authorized(req)) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -156,7 +170,6 @@ export function mountJobsRoutes(app: Express) {
         bloqueados: 0,
       };
 
-      // —— 1) Trial expirando (até 2 dias) ——
       const trials = await db.all(
         `SELECT e.id, e.nome_empresa, e.slug, e.expira_em, e.trial_remind_sent_at, u.email
          FROM empresas e
@@ -191,7 +204,6 @@ export function mountJobsRoutes(app: Express) {
         } else stats.pulados++;
       }
 
-      // —— 2) Assinatura ativa ou cancelada expirando em até 3 dias ——
       const assinaturas = await db.all(
         `SELECT e.id, e.nome_empresa, e.slug, e.plan, e.expira_em, e.cancel_at_period_end,
                 e.expiry_remind_sent_at, u.email
@@ -230,7 +242,6 @@ export function mountJobsRoutes(app: Express) {
         } else stats.pulados++;
       }
 
-      // —— 3) Quem vai ser bloqueado agora (antes do UPDATE) ——
       const aBloquear = await db.all(
         `SELECT e.id, e.nome_empresa, e.slug, e.plan, e.status, e.expira_em,
                 e.cancel_at_period_end, e.expired_notice_sent_at, u.email
@@ -246,11 +257,9 @@ export function mountJobsRoutes(app: Express) {
         [agoraIso]
       );
 
-      // —— 4) Bloqueio efetivo ——
       await enforcarExpiracoes(db);
       stats.bloqueados = (aBloquear || []).length;
 
-      // —— 5) E-mail de acesso encerrado ——
       for (const e of aBloquear || []) {
         if (!e.email || recentementeEnviado(e.expired_notice_sent_at, agora, 72)) {
           stats.pulados++;
@@ -282,10 +291,19 @@ export function mountJobsRoutes(app: Express) {
         } else stats.pulados++;
       }
 
+      // também processa retries pendentes neste job diário
+      let retry = null;
+      try {
+        retry = await processRetryQueue(db, 40);
+      } catch {
+        /* */
+      }
+
       res.json({
         success: true,
         ...stats,
         smtp: smtpConfigured(),
+        retry,
       });
     } catch (e: any) {
       console.error('jobs/expirations:', e?.message || e);
