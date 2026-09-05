@@ -19,6 +19,8 @@ interface Review {
   createdAt: string;
   sentiment?: string | null;
   is_test?: boolean;
+  client_whatsapp?: string | null;
+  client_whatsapp_url?: string | null;
 }
 
 interface PainelData {
@@ -48,6 +50,11 @@ interface PainelData {
     pdf_disponivel: boolean;
     plan_switch?: boolean;
     mostrar_crise?: boolean;
+    tem_ia?: boolean;
+    trial_completo?: boolean;
+    mostrar_whatsapp_cliente?: boolean;
+    mostrar_copiar_resposta?: boolean;
+    mostrar_ia_respostas?: boolean;
   };
   links?: { avaliacao: string; relatorio_pdf?: string | null };
 }
@@ -82,6 +89,15 @@ function Stars({ n }: { n: number }) {
   );
 }
 
+async function copiarTexto(texto: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(texto);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
 const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
@@ -93,6 +109,7 @@ export default function PainelEmpresa() {
   const [erro, setErro] = useState('');
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const [copiadoId, setCopiadoId] = useState<string | null>(null);
   const [whatsappInput, setWhatsappInput] = useState('');
   const [salvandoWpp, setSalvandoWpp] = useState(false);
   const [msgWpp, setMsgWpp] = useState('');
@@ -203,6 +220,11 @@ export default function PainelEmpresa() {
     }
   };
 
+  const marcarCopiado = (key: string) => {
+    setCopiadoId(key);
+    setTimeout(() => setCopiadoId(null), 2000);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -228,6 +250,9 @@ export default function PainelEmpresa() {
   const nivel = dashboard?.nivel || 'basico';
   const pdfOk = Boolean(dashboard?.pdf_disponivel || dashboard?.plan_switch);
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
+  // Universal: todos os planos (e trial)
+  const showWppCliente = dashboard?.mostrar_whatsapp_cliente !== false;
+  const showCopiar = dashboard?.mostrar_copiar_resposta !== false;
 
   return (
     <div className="min-h-screen bg-black text-zinc-100">
@@ -237,6 +262,9 @@ export default function PainelEmpresa() {
             <h1 className="text-2xl font-bold tracking-tight text-zinc-50">{empresa.nome_empresa}</h1>
             <p className="text-sm text-zinc-500 mt-1">
               Dashboard · Plano <span className="font-semibold text-indigo-400">{planLabel}</span>
+              {dashboard?.trial_completo ? (
+                <span className="ml-2 text-emerald-400 font-medium">· Trial completo</span>
+              ) : null}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -338,7 +366,7 @@ export default function PainelEmpresa() {
         />
 
         <section className={`${card} px-6 py-6 space-y-3`}>
-          <p className={label}>WhatsApp de suporte</p>
+          <p className={label}>WhatsApp de suporte (empresa)</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="tel"
@@ -392,29 +420,86 @@ export default function PainelEmpresa() {
         <section className={`${card} overflow-hidden`}>
           <div className="px-6 py-5 border-b border-zinc-800">
             <h2 className="text-sm font-semibold text-zinc-200">Feedbacks privados</h2>
+            <p className="text-xs text-zinc-500 mt-1">
+              WhatsApp do cliente e copiar resposta disponíveis em todos os planos
+            </p>
           </div>
           {criticas.length === 0 ? (
             <div className="px-6 py-14 text-center text-sm text-zinc-500">Nenhuma crítica no momento.</div>
           ) : (
             <ul>
-              {criticas.map((r, i) => (
-                <li
-                  key={r.id}
-                  className={`px-6 py-6 ${i < criticas.length - 1 ? 'border-b border-zinc-800' : ''}`}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm font-medium text-zinc-200">{r.name}</span>
-                    <Stars n={r.rating} />
-                  </div>
-                  {r.comment && <p className="text-sm text-zinc-400">{r.comment}</p>}
-                  {r.ai_reply && (
-                    <div className="mt-3 pl-3 border-l-2 border-indigo-500/40">
-                      <p className="text-[11px] uppercase text-zinc-500 mb-1">Resposta IA</p>
-                      <p className="text-sm text-zinc-300">{r.ai_reply}</p>
+              {criticas.map((r, i) => {
+                const textoResposta =
+                  r.ai_reply ||
+                  `Olá${r.name && r.name !== 'Anônimo' ? ` ${r.name}` : ''}, obrigado pelo feedback. Vamos analisar e retornar o mais breve possível.`;
+                const keyCopy = `copy-${r.id}`;
+                const keyWa = `wa-${r.id}`;
+                return (
+                  <li
+                    key={r.id}
+                    className={`px-6 py-6 ${i < criticas.length - 1 ? 'border-b border-zinc-800' : ''}`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-sm font-medium text-zinc-200">{r.name}</span>
+                      <Stars n={r.rating} />
                     </div>
-                  )}
-                </li>
-              ))}
+                    {r.comment && <p className="text-sm text-zinc-400">{r.comment}</p>}
+
+                    {(r.ai_reply || showCopiar) && (
+                      <div className="mt-3 pl-3 border-l-2 border-indigo-500/40 space-y-2">
+                        <p className="text-[11px] uppercase text-zinc-500">
+                          {r.ai_reply ? 'Resposta IA' : 'Resposta sugerida'}
+                        </p>
+                        <p className="text-sm text-zinc-300">{textoResposta}</p>
+                        {showCopiar && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const ok = await copiarTexto(textoResposta);
+                              if (ok) marcarCopiado(keyCopy);
+                            }}
+                            className="text-xs px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700"
+                          >
+                            {copiadoId === keyCopy ? 'Copiado!' : 'Copiar resposta'}
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {showWppCliente && (
+                      <div className="mt-4 flex flex-wrap items-center gap-2">
+                        {r.client_whatsapp_url ? (
+                          <>
+                            <a
+                              href={r.client_whatsapp_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-500"
+                            >
+                              WhatsApp do cliente
+                            </a>
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const ok = await copiarTexto(r.client_whatsapp || '');
+                                if (ok) marcarCopiado(keyWa);
+                              }}
+                              className="text-xs px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700"
+                            >
+                              {copiadoId === keyWa ? 'Número copiado!' : 'Copiar número'}
+                            </button>
+                            <span className="text-xs text-zinc-500 font-mono">
+                              {r.client_whatsapp}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-zinc-600">WhatsApp do cliente não informado</span>
+                        )}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
