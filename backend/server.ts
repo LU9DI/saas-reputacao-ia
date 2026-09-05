@@ -7,8 +7,10 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 
+import { assertEnvOrExit } from './lib/env.js';
 import { initDB, getDb } from './lib/db.js';
 import { requireJwtSecret, setAuthCookie, autenticarToken } from './lib/auth.js';
+import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import { mountTrialRoutes } from './routes/trialRoutes.js';
 import { mountAuthRoutes } from './routes/authRoutes.js';
 import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
@@ -21,6 +23,7 @@ import { mountMfaRoutes } from './mfa.js';
 import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured } from './stripeBilling.js';
 
+assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
 
 const app = express();
@@ -32,7 +35,12 @@ app.use((req, res, next) => {
 app.use(cors({ origin: true, credentials: true }));
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, stripe: stripeConfigured(), time: new Date().toISOString() });
+  res.json({
+    ok: true,
+    stripe: stripeConfigured(),
+    env: process.env.NODE_ENV || 'development',
+    time: new Date().toISOString(),
+  });
 });
 
 const PORT = Number(process.env.PORT || 5000);
@@ -40,21 +48,21 @@ const PORT = Number(process.env.PORT || 5000);
 async function main() {
   await initDB();
 
-  // Domínio
   mountTrialRoutes(app);
   mountAuthRoutes(app);
   mountEmpresaRoutes(app);
   mountReviewRoutes(app);
   mountAdminListRoutes(app);
 
-  // Auth admin + MFA + resets
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
   mountAdminPasswordResetRoutes(app, getDb);
   mountMfaRoutes(app, getDb, { JWT_SECRET, setAuthCookie, autenticarToken });
   mountPasswordResetRoutes(app, getDb);
-
-  // Pagamentos
   mountStripeRoutes(app, getDb);
+
+  // Sempre por último
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF — defina STRIPE_SECRET_KEY no .env'}`);
   app.listen(PORT, () => {
