@@ -1,0 +1,361 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+const TOKEN_KEY = 'admin_saas_token';
+const apiUrl = () => (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+
+function authHeaders(): HeadersInit {
+  const h: Record<string, string> = { 'Content-Type': 'application/json' };
+  try {
+    const t = localStorage.getItem(TOKEN_KEY);
+    if (t) h.Authorization = `Bearer ${t}`;
+  } catch {
+    /* */
+  }
+  return h;
+}
+
+function fmtDt(s: string | null | undefined) {
+  if (!s) return '—';
+  try {
+    return new Date(s).toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return s;
+  }
+}
+
+function StatusPill({ ok, label }: { ok: boolean | null; label?: string }) {
+  const color =
+    ok === true
+      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+      : ok === false
+        ? 'bg-red-500/15 text-red-300 border-red-500/30'
+        : 'bg-zinc-700/40 text-zinc-400 border-zinc-600/40';
+  const text = label || (ok === true ? 'OK' : ok === false ? 'Falha' : 'Sem dados');
+  return (
+    <span className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full border ${color}`}>
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${
+          ok === true ? 'bg-emerald-400' : ok === false ? 'bg-red-400' : 'bg-zinc-500'
+        }`}
+      />
+      {text}
+    </span>
+  );
+}
+
+const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
+
+export default function AdminTecnicoPage() {
+  const router = useRouter();
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState('');
+  const [auto, setAuto] = useState(true);
+
+  const carregar = useCallback(async () => {
+    setErro('');
+    try {
+      const base = apiUrl();
+      const headers = authHeaders();
+      const me = await fetch(`${base}/api/admin/me`, { credentials: 'include', headers });
+      if (!me.ok) {
+        try {
+          localStorage.removeItem(TOKEN_KEY);
+        } catch {
+          /* */
+        }
+        router.replace('/admin/login');
+        return;
+      }
+      const res = await fetch(`${base}/api/admin/tecnico`, { credentials: 'include', headers });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error || `Erro ${res.status}`);
+      }
+      setData(await res.json());
+    } catch (e: any) {
+      setErro(e.message || 'Falha ao carregar');
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    carregar();
+  }, [carregar]);
+
+  useEffect(() => {
+    if (!auto) return;
+    const id = setInterval(carregar, 15000);
+    return () => clearInterval(id);
+  }, [auto, carregar]);
+
+  if (loading && !data) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-zinc-500 text-sm">
+        Carregando área técnica…
+      </div>
+    );
+  }
+
+  const stripe = data?.webhooks?.stripe;
+  const n8n = data?.webhooks?.n8n;
+  const criticas = data?.criticas_retidas;
+  const pdf = data?.pdf;
+  const sistema = data?.sistema;
+
+  return (
+    <div className="min-h-screen bg-black text-zinc-100">
+      <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] uppercase tracking-wide text-zinc-500">Admin · Ops</p>
+            <h1 className="text-xl font-bold tracking-tight">Área técnica</h1>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              Webhooks · Críticas retidas · PDF
+              {data?.gerado_em ? ` · atualizado ${fmtDt(data.gerado_em)}` : ''}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-xs text-zinc-400 px-2">
+              <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
+              Auto 15s
+            </label>
+            <button
+              type="button"
+              onClick={carregar}
+              className="text-sm px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800"
+            >
+              Atualizar
+            </button>
+            <Link
+              href="/admin"
+              className="text-sm px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800"
+            >
+              ← Painel
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-8 space-y-8">
+        {erro && (
+          <div className="text-sm text-red-300 bg-red-950/40 border border-red-900 rounded-xl px-4 py-3">
+            {erro}
+          </div>
+        )}
+
+        {/* Sistema flags */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {[
+            { t: 'Stripe', ok: sistema?.stripe },
+            { t: 'SMTP', ok: sistema?.smtp },
+            { t: 'Groq IA', ok: sistema?.groq },
+            { t: 'Jobs secret', ok: sistema?.jobs_secret },
+          ].map((x) => (
+            <div key={x.t} className={`${card} px-4 py-3 flex items-center justify-between`}>
+              <span className="text-sm text-zinc-400">{x.t}</span>
+              <StatusPill ok={!!x.ok} label={x.ok ? 'ON' : 'OFF'} />
+            </div>
+          ))}
+        </section>
+
+        {/* Webhooks */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className={`${card} overflow-hidden`}>
+            <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold">Webhook Stripe</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">{stripe?.detalhe}</p>
+              </div>
+              <StatusPill ok={stripe?.ok ?? null} />
+            </div>
+            <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
+              <span>24h: {stripe?.stats_24h?.ok ?? 0} ok / {stripe?.stats_24h?.errors ?? 0} erro</span>
+              <span>Último: {stripe?.last_age || '—'}</span>
+            </div>
+            <div className="max-h-64 overflow-y-auto divide-y divide-zinc-800/80">
+              {(stripe?.eventos || []).length === 0 ? (
+                <p className="px-5 py-8 text-sm text-zinc-600 text-center">Nenhum evento registrado ainda.</p>
+              ) : (
+                (stripe.eventos as any[]).map((e) => (
+                  <div key={e.id} className="px-5 py-3 text-sm flex flex-wrap gap-x-3 gap-y-1">
+                    <StatusPill
+                      ok={e.status === 'ok' ? true : e.status === 'error' ? false : null}
+                      label={e.status}
+                    />
+                    <span className="font-mono text-xs text-zinc-300">{e.event_type || '—'}</span>
+                    <span className="text-xs text-zinc-500">{e.detail}</span>
+                    <span className="text-xs text-zinc-600 ml-auto">{fmtDt(e.created_at)}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className={`${card} overflow-hidden`}>
+            <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold">Webhook n8n (Google Maps)</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">{n8n?.detalhe}</p>
+                <p className="text-[11px] text-zinc-600 mt-1 font-mono">
+                  inbound: {n8n?.inbound || '/api/webhook/n8n'}
+                  {n8n?.url_mascarada ? ` · out: ${n8n.url_mascarada}` : ''}
+                </p>
+              </div>
+              <StatusPill ok={n8n?.ok ?? null} />
+            </div>
+            <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
+              <span>24h: {n8n?.stats_24h?.ok ?? 0} ok / {n8n?.stats_24h?.errors ?? 0} erro</span>
+              <span>Último: {n8n?.last_age || '—'}</span>
+              <span>Ping: {n8n?.ping_ok === true ? 'OK' : n8n?.ping_ok === false ? 'falha' : '—'}</span>
+            </div>
+            <div className="max-h-64 overflow-y-auto divide-y divide-zinc-800/80">
+              {(n8n?.eventos || []).length === 0 ? (
+                <p className="px-5 py-8 text-sm text-zinc-600 text-center">
+                  Aguardando POST do n8n em /api/webhook/n8n
+                </p>
+              ) : (
+                (n8n.eventos as any[]).map((e) => (
+                  <div key={e.id} className="px-5 py-3 text-sm flex flex-wrap gap-x-3 gap-y-1">
+                    <StatusPill
+                      ok={e.status === 'ok' ? true : e.status === 'error' ? false : null}
+                      label={e.status}
+                    />
+                    <span className="font-mono text-xs text-zinc-300">{e.event_type || '—'}</span>
+                    <span className="text-xs text-zinc-500">{e.detail}</span>
+                    <span className="text-xs text-zinc-600 ml-auto">{fmtDt(e.created_at)}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Críticas retidas */}
+        <section className={`${card} overflow-hidden`}>
+          <div className="px-5 py-4 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">Críticas retidas (auditoria IA)</h2>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                Notas 1–3★ privadas no SQLite · {criticas?.total ?? 0} total ·{' '}
+                {criticas?.com_resposta_ia ?? 0} com IA · {criticas?.sem_resposta_ia ?? 0} sem IA
+              </p>
+            </div>
+          </div>
+          {(criticas?.items || []).length === 0 ? (
+            <p className="px-5 py-12 text-center text-sm text-zinc-600">Nenhuma crítica retida.</p>
+          ) : (
+            <ul className="divide-y divide-zinc-800 max-h-[520px] overflow-y-auto">
+              {(criticas.items as any[]).map((r) => (
+                <li key={r.id} className="px-5 py-4">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-zinc-200">{r.nome_empresa}</span>
+                    <span className="text-[10px] uppercase text-zinc-500">{r.plan}</span>
+                    <span className="text-amber-400 text-xs">{'★'.repeat(r.rating)}</span>
+                    <span className="text-xs text-zinc-600 ml-auto">{fmtDt(r.createdAt)}</span>
+                  </div>
+                  <p className="text-sm text-zinc-400">
+                    <span className="text-zinc-300">{r.name}</span>
+                    {r.comment ? ` — ${r.comment}` : ''}
+                  </p>
+                  {r.client_whatsapp && (
+                    <p className="text-xs text-emerald-400/80 mt-1">WPP cliente: {r.client_whatsapp}</p>
+                  )}
+                  {r.ai_reply ? (
+                    <div className="mt-2 pl-3 border-l-2 border-indigo-500/40">
+                      <p className="text-[10px] uppercase text-zinc-500 mb-0.5">Resposta Groq / IA</p>
+                      <p className="text-sm text-zinc-300">{r.ai_reply}</p>
+                      {!!r.ai_tags?.length && (
+                        <p className="text-[11px] text-zinc-600 mt-1">tags: {r.ai_tags.join(', ')}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-amber-600/80 mt-2">Sem resposta IA (plano sem IA ou falha)</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {/* PDF */}
+        <section className={`${card} overflow-hidden`}>
+          <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-semibold">Status relatório PDF</h2>
+              <p className="text-xs text-zinc-500 mt-0.5">{pdf?.detalhe}</p>
+            </div>
+            <StatusPill ok={pdf?.ok ?? null} />
+          </div>
+          <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
+            <span>
+              24h: {pdf?.stats_24h?.ok ?? 0} ok / {pdf?.stats_24h?.errors ?? 0} erro /{' '}
+              {pdf?.stats_24h?.forbidden ?? 0} plano bloqueado
+            </span>
+            <span>Último: {pdf?.last_age || '—'}</span>
+          </div>
+          <div className="overflow-x-auto max-h-72">
+            <table className="w-full text-sm">
+              <thead className="text-[11px] uppercase text-zinc-500">
+                <tr>
+                  <th className="px-4 py-2 text-left">Status</th>
+                  <th className="px-4 py-2 text-left">Empresa</th>
+                  <th className="px-4 py-2 text-left">Mês</th>
+                  <th className="px-4 py-2 text-left">Auth</th>
+                  <th className="px-4 py-2 text-right">ms</th>
+                  <th className="px-4 py-2 text-right">bytes</th>
+                  <th className="px-4 py-2 text-left">Erro</th>
+                  <th className="px-4 py-2 text-right">Quando</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-zinc-800">
+                {(pdf?.logs || []).length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-8 text-center text-zinc-600">
+                      Nenhuma geração registrada.
+                    </td>
+                  </tr>
+                ) : (
+                  (pdf.logs as any[]).map((l) => (
+                    <tr key={l.id}>
+                      <td className="px-4 py-2">
+                        <StatusPill
+                          ok={l.status === 'ok' ? true : l.status === 'error' ? false : null}
+                          label={l.status}
+                        />
+                      </td>
+                      <td className="px-4 py-2 text-zinc-300">{l.empresa_nome || l.empresa_id || '—'}</td>
+                      <td className="px-4 py-2 font-mono text-xs">{l.mes || '—'}</td>
+                      <td className="px-4 py-2 font-mono text-xs text-zinc-500">{l.auth_mode || '—'}</td>
+                      <td className="px-4 py-2 text-right tabular-nums text-zinc-400">
+                        {l.duration_ms ?? '—'}
+                      </td>
+                      <td className="px-4 py-2 text-right tabular-nums text-zinc-400">
+                        {l.bytes != null ? Number(l.bytes).toLocaleString('pt-BR') : '—'}
+                      </td>
+                      <td className="px-4 py-2 text-xs text-red-400/80 max-w-[180px] truncate">
+                        {l.error || ''}
+                      </td>
+                      <td className="px-4 py-2 text-right text-xs text-zinc-600">{fmtDt(l.created_at)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
