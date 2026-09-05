@@ -3,19 +3,7 @@
 import { useState } from 'react';
 import { getEnv } from '../utils/env';
 import { ComoFunciona } from './ComoFunciona';
-import { 
-  Check, 
-  X, 
-  ShieldCheck, 
-  Loader2, 
-  Sparkles, 
-  MessageCircle, 
-  FileText, 
-  BarChart3, 
-  Headset, 
-  Rocket,
-  Layers
-} from 'lucide-react';
+import { Check, X, ShieldCheck, Loader2, Sparkles } from 'lucide-react';
 
 export type PlanCard = {
   keyMensal: string;
@@ -55,7 +43,6 @@ const DEFAULT_PLANS: PlanCard[] = [
     priceAnual: 'R$ 149,90',
     features: [
       '800 feedbacks/mês',
-      'WPP Integrado',
       'Integrado com IA',
       '1 Relatório PDF/mês',
       'Dashboard com análises',
@@ -87,7 +74,6 @@ const DEFAULT_PLANS: PlanCard[] = [
     priceAnual: 'R$ 899,90',
     features: [
       '8.000 feedbacks/mês',
-      'WPP Integrado',
       'IA Ativa',
       '1 Relatório PDF/mês',
       'Dashboard Multi-unidades',
@@ -136,14 +122,16 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       try {
         data = await res.json();
       } catch {
-        throw new Error(`API respondeu sem JSON (${res.status}). Confira se o backend está em ${apiUrl}.`);
+        throw new Error(
+          `API respondeu sem JSON (${res.status}). Confira se o backend está em ${apiUrl}.`
+        );
       }
 
       if (!res.ok) {
         if (res.status === 503) {
           throw new Error(
             data.error ||
-              'Stripe não configurado. No backend/.env defina STRIPE_SECRET_KEY=sk_test_... e reinicie a API.'
+              'Pagamento não configurado. No arquivo backend/.env coloque STRIPE_SECRET_KEY=sk_test_... (chave de teste do dashboard.stripe.com), salve e reinicie a API (npm run dev).'
           );
         }
         throw new Error(data.error || `Não foi possível iniciar o pagamento (${res.status}).`);
@@ -151,7 +139,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
 
       const url = data.checkout_url || data.url;
       if (!url || typeof url !== 'string' || !url.startsWith('http')) {
-        throw new Error('URL de checkout ausente ou inválida. Verifique STRIPE_SECRET_KEY no backend.');
+        throw new Error('URL de checkout inválida. Verifique STRIPE_SECRET_KEY no backend.');
       }
 
       window.location.assign(url);
@@ -172,60 +160,45 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   const formatarFeature = (text: string, isMissing: boolean = false) => {
     if (isMissing) {
       return (
-        <span className="text-slate-400 line-through decoration-slate-400/60 font-normal mt-0.5">{text}</span>
+        <span className="text-zinc-500 line-through decoration-zinc-600 font-normal">{text}</span>
       );
     }
 
     const lower = text.toLowerCase();
+    const isHighlighted = [
+      'wpp integrado',
+      'ia',
+      'relatório pdf',
+      'dashboard multi-unidades',
+      'suporte prioritário',
+      'acesso antecipado',
+    ].some((keyword) => lower.includes(keyword));
 
-    const Badge = ({ className, icon: Icon, children }: any) => (
-      <span className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}>
-        {Icon && <Icon size={12} strokeWidth={2.5} />}
-        {children}
-      </span>
-    );
-
-    let icon = null;
-    let badgeClass = "text-indigo-700 bg-indigo-50 border-indigo-200/60";
-
-    if (lower.includes('wpp')) {
-      icon = MessageCircle;
-      badgeClass = "text-emerald-700 bg-emerald-50 border-emerald-200/60";
-    } else if (lower.includes('ia')) {
-      icon = Sparkles;
-    } else if (lower.includes('pdf')) {
-      icon = FileText;
-    } else if (lower.includes('dashboard') || lower.includes('gráficos')) {
-      icon = BarChart3;
-    } else if (lower.includes('suporte')) {
-      icon = Headset;
-    } else if (lower.includes('acesso antecipado')) {
-      icon = Rocket;
-    } else if (lower.includes('feedbacks')) {
-      icon = Layers;
+    if (isHighlighted) {
+      return (
+        <span className="font-bold text-indigo-200 bg-indigo-950 border border-indigo-800 shadow-sm px-2.5 py-0.5 rounded align-middle inline-flex items-center gap-1 mt-0.5">
+          {lower.includes('ia') && <Sparkles size={12} className="text-indigo-400" />}
+          {text}
+        </span>
+      );
     }
-
-    if (icon) {
-      return <Badge className={badgeClass} icon={icon}>{text}</Badge>;
-    }
-
-    return <span className="text-slate-600 font-medium mt-1">{text}</span>;
+    return <span className="text-zinc-300 font-medium mt-1">{text}</span>;
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8">
+    <div className="w-full max-w-7xl mx-auto space-y-8 px-2">
       <div className="text-center space-y-3">
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Deseja continuar depois do período de teste?</h2>
-        <p className="text-sm text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+        <h2 className="text-2xl font-bold text-zinc-50">Deseja continuar depois do período de testes?</h2>
+        <p className="text-sm text-zinc-400 max-w-2xl mx-auto leading-relaxed">
           Escolha o plano ideal. O pagamento é processado com segurança pelo Stripe.
         </p>
 
-        <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
+        <div className="inline-flex rounded-xl border border-zinc-700 bg-zinc-900 p-1 text-sm shadow-inner mt-4">
           <button
             type="button"
             onClick={() => setCiclo('mensal')}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              ciclo === 'mensal' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             Mensal
@@ -234,7 +207,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
             type="button"
             onClick={() => setCiclo('anual')}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              ciclo === 'anual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              ciclo === 'anual' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
             }`}
           >
             Anual
@@ -243,12 +216,16 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       </div>
 
       {erro && (
-        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-center max-w-3xl mx-auto">
+        <p className="text-sm text-red-200 bg-red-950/60 border border-red-800 rounded-xl px-4 py-3 text-center max-w-3xl mx-auto whitespace-pre-wrap">
           {erro}
         </p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
+      {/*
+        Grid: 1 col mobile, 2 tablet, 3 desktop médio, 5 no large+
+        Assim Corporativo e REI ficam na mesma linha a partir de ~1024px.
+      */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-stretch">
         {DEFAULT_PLANS.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
           const price = ciclo === 'mensal' ? p.priceMensal : p.priceAnual;
@@ -257,15 +234,15 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           return (
             <div
               key={p.label}
-              className={`rounded-2xl p-6 flex flex-col justify-between bg-white min-w-0 transition-all duration-300 ${
+              className={`rounded-2xl p-5 flex flex-col justify-between bg-zinc-900 min-w-0 transition-all duration-300 ${
                 p.highlight
-                  ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-900/20 transform md:-translate-y-2'
-                  : 'border border-slate-200 hover:border-indigo-300 shadow-sm'
+                  ? 'border-2 border-indigo-500 shadow-2xl shadow-indigo-900/40 transform md:-translate-y-1'
+                  : 'border border-zinc-700 hover:border-indigo-500/50 shadow-sm'
               }`}
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{p.label}</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">{p.label}</p>
                   {p.highlight && (
                     <span className="bg-indigo-600 text-white text-[9px] tracking-widest font-black py-1 px-2.5 rounded-full uppercase shadow-sm">
                       Popular
@@ -273,21 +250,21 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                   )}
                 </div>
 
-                <p className="text-3xl font-black text-slate-900 tracking-tight flex flex-col">
+                <p className="text-2xl xl:text-3xl font-black text-zinc-50 tracking-tight flex flex-col">
                   {price}
-                  <span className="text-xs font-semibold text-slate-400 mt-1">{period}</span>
+                  <span className="text-xs font-semibold text-zinc-500 mt-1">{period}</span>
                 </p>
 
-                <ul className="mt-6 space-y-3.5 border-t border-slate-100 pt-6">
+                <ul className="mt-5 space-y-3 border-t border-zinc-800 pt-5">
                   {p.features.map((f, i) => (
-                    <li key={i} className="text-[13px] leading-snug flex items-start gap-2.5">
-                      <Check size={16} className="text-emerald-500 shrink-0 mt-1.5" strokeWidth={3} />
+                    <li key={i} className="text-[12px] xl:text-[13px] leading-snug flex items-start gap-2">
+                      <Check size={15} className="text-emerald-400 shrink-0 mt-0.5" strokeWidth={3} />
                       {formatarFeature(f, false)}
                     </li>
                   ))}
                   {p.missingFeatures?.map((mf, i) => (
-                    <li key={`missing-${i}`} className="text-[13px] leading-snug flex items-start gap-2.5 opacity-75">
-                      <X size={16} className="text-red-400 shrink-0 mt-1" strokeWidth={2.5} />
+                    <li key={`missing-${i}`} className="text-[12px] leading-snug flex items-start gap-2 opacity-75">
+                      <X size={15} className="text-red-400 shrink-0 mt-0.5" strokeWidth={2.5} />
                       {formatarFeature(mf, true)}
                     </li>
                   ))}
@@ -298,10 +275,10 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                 type="button"
                 disabled={!!loading}
                 onClick={() => irParaCheckout(key)}
-                className={`mt-8 w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
+                className={`mt-6 w-full py-2.5 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
                   p.highlight
-                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
-                    : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
+                    ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30'
+                    : 'bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100'
                 }`}
               >
                 {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
@@ -312,13 +289,14 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         })}
       </div>
 
-      <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 shadow-sm">
+      {/* Texto fixo abaixo dos planos — sempre visível */}
+      <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 shadow-sm">
         <div className="bg-emerald-500/20 p-2.5 rounded-full shrink-0">
           <ShieldCheck className="text-emerald-400" size={26} strokeWidth={2.5} />
         </div>
-        <p className="text-sm text-emerald-900 text-center sm:text-left leading-relaxed">
-          <strong className="font-bold text-emerald-950">Cancele a qualquer momento.</strong> Sem multas. O acesso
-          permanece até o fim do período já pago.
+        <p className="text-sm text-emerald-100 text-center sm:text-left leading-relaxed">
+          <strong className="font-bold text-white">Cancele a qualquer momento.</strong> Sem multas. O acesso
+          permanece até o fim do período já pago. Upgrade ou downgrade quando quiser.
         </p>
       </div>
 
