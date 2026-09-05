@@ -1,22 +1,80 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, Star, LogOut, RefreshCw, AlertCircle, Bot } from 'lucide-react';
+import {
+  Building2,
+  Star,
+  LogOut,
+  RefreshCw,
+  AlertCircle,
+  Bot,
+  DollarSign,
+  Clock,
+  Cpu,
+  FlaskConical,
+  Workflow,
+} from 'lucide-react';
 
 interface Empresa {
   id: string;
+  slug?: string;
   cnpj: string;
   nome_empresa: string;
   status: string;
+  plan?: string;
+  billing_cycle?: string;
   google_review_url: string | null;
+  whatsapp_suporte?: string | null;
   criado_em: string;
   expira_em: string;
+  cancel_at_period_end?: boolean;
+  total_tokens?: number;
+  atrasado?: boolean;
+  mrr_estimado?: number;
+}
+
+interface Dashboard {
+  kpis: {
+    total_empresas: number;
+    clientes_ativos: number;
+    em_trial: number;
+    planos_pagos: number;
+    faturas_atrasadas: number;
+    cancelamento_pendente: number;
+    mrr_estimado_brl: number;
+    arr_estimado_brl: number;
+    tokens_mes: number;
+    reviews_mes: number;
+  };
+  top_tokens: {
+    empresa_id: string;
+    nome_empresa: string;
+    cnpj: string | null;
+    plan: string | null;
+    total_tokens: number;
+  }[];
+  faturas_atrasadas: {
+    id: string;
+    nome_empresa: string;
+    cnpj: string;
+    plan: string;
+    expira_em: string;
+    dias_atraso: number;
+  }[];
+  por_plano: Record<string, number>;
+}
+
+interface Integracoes {
+  n8n: { configurado: boolean; url_mascarada: string | null; ok: boolean | null; detalhe: string };
+  google_maps: { api_key_env: boolean; empresas_com_link_google: number; ok: boolean; detalhe: string };
+  whatsapp: { api_env: boolean; empresas_com_wpp: number; ok: boolean; detalhe: string };
 }
 
 interface Review {
   id: number;
   empresa_id: string | null;
+  nome_empresa?: string;
   name: string;
   rating: number;
   comment: string;
@@ -25,42 +83,63 @@ interface Review {
 }
 
 const TOKEN_KEY = 'admin_saas_token';
-
 const apiUrl = () => (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 function authHeaders(): HeadersInit {
-  const h: Record<string, string> = {};
+  const h: Record<string, string> = { 'Content-Type': 'application/json' };
   try {
     const t = localStorage.getItem(TOKEN_KEY);
     if (t) h.Authorization = `Bearer ${t}`;
   } catch {
-    /* ignore */
+    /* */
   }
   return h;
+}
+
+function fmtMoney(n: number) {
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function fmtDt(s: string) {
+  try {
+    return new Date(s).toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return s;
+  }
+}
+
+function StatusDot({ ok }: { ok: boolean | null }) {
+  const c =
+    ok === true ? 'bg-emerald-500' : ok === false ? 'bg-red-500' : 'bg-zinc-500';
+  return <span className={`inline-block w-2 h-2 rounded-full ${c}`} />;
 }
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [dash, setDash] = useState<Dashboard | null>(null);
+  const [integ, setInteg] = useState<Integracoes | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
+  const [msg, setMsg] = useState('');
+  const [filtro, setFiltro] = useState('');
+  const [busyId, setBusyId] = useState<string | null>(null);
 
-  useEffect(() => {
-    carregarDados();
-  }, []);
-
-  const carregarDados = async () => {
+  const carregarDados = useCallback(async () => {
     setLoading(true);
     setErro('');
     try {
       const base = apiUrl();
       const headers = authHeaders();
 
-      const meRes = await fetch(`${base}/api/admin/me`, {
-        credentials: 'include',
-        headers,
-      });
+      const meRes = await fetch(`${base}/api/admin/me`, { credentials: 'include', headers });
       if (!meRes.ok) {
         try {
           localStorage.removeItem(TOKEN_KEY);
@@ -71,29 +150,62 @@ export default function AdminDashboard() {
         return;
       }
 
-      const [resEmpresas, resReviews] = await Promise.all([
+      const [rDash, rEmp, rRev, rInt] = await Promise.all([
+        fetch(`${base}/api/admin/dashboard`, { credentials: 'include', headers }),
         fetch(`${base}/api/admin/empresas`, { credentials: 'include', headers }),
         fetch(`${base}/api/admin/reviews`, { credentials: 'include', headers }),
+        fetch(`${base}/api/admin/integracoes`, { credentials: 'include', headers }),
       ]);
 
-      if (resEmpresas.ok) {
-        setEmpresas(await resEmpresas.json());
-      } else {
-        setEmpresas([]);
-      }
-      if (resReviews.ok) {
-        setReviews(await resReviews.json());
-      } else {
-        setReviews([]);
-      }
+      if (rDash.ok) setDash(await rDash.json());
+      if (rEmp.ok) setEmpresas(await rEmp.json());
+      if (rRev.ok) setReviews(await rRev.json());
+      if (rInt.ok) setInteg(await rInt.json());
 
-      if (!resEmpresas.ok && !resReviews.ok) {
-        setErro('Sessão ok, mas rotas /api/admin/empresas ou /reviews ainda não respondem no backend.');
+      if (!rDash.ok && !rEmp.ok) {
+        setErro('Falha ao carregar dados do admin. Verifique se a API subiu com as rotas novas.');
       }
     } catch {
-      setErro(`Falha ao buscar dados. API em ${apiUrl()} está online?`);
+      setErro(`Falha de rede. API em ${apiUrl()} online?`);
     } finally {
       setLoading(false);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    carregarDados();
+  }, [carregarDados]);
+
+  const empresasFiltradas = useMemo(() => {
+    const q = filtro.trim().toLowerCase();
+    if (!q) return empresas;
+    return empresas.filter(
+      (e) =>
+        e.nome_empresa?.toLowerCase().includes(q) ||
+        e.cnpj?.includes(q) ||
+        e.plan?.toLowerCase().includes(q) ||
+        e.status?.toLowerCase().includes(q)
+    );
+  }, [empresas, filtro]);
+
+  const acao = async (id: string, path: string, body: object) => {
+    setBusyId(id);
+    setMsg('');
+    try {
+      const res = await fetch(`${apiUrl()}/api/admin/empresas/${id}/${path}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+      setMsg(data.mensagem || 'OK');
+      await carregarDados();
+    } catch (e: any) {
+      setMsg(e.message || 'Falha');
+    } finally {
+      setBusyId(null);
     }
   };
 
@@ -109,7 +221,6 @@ export default function AdminDashboard() {
     }
     try {
       localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem('token_saas_reputacao');
     } catch {
       /* */
     }
@@ -118,124 +229,301 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <RefreshCw className="animate-spin text-indigo-600" size={32} />
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <RefreshCw className="animate-spin text-indigo-500" size={32} />
       </div>
     );
   }
 
+  const k = dash?.kpis;
+
   return (
-    <div className="min-h-screen bg-slate-100 p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-black text-zinc-100 p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Painel Administrativo</h1>
-            <p className="text-sm text-slate-500">Visão geral das empresas e avaliações</p>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Painel Admin</h1>
+            <p className="text-sm text-zinc-500">Faturamento, clientes, tokens e integrações</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2">
             <button
+              type="button"
               onClick={carregarDados}
-              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors text-sm cursor-pointer"
+              className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-sm py-2 px-4 rounded-xl border border-zinc-800"
             >
-              <RefreshCw size={16} />
-              Atualizar
+              <RefreshCw size={16} /> Atualizar
             </button>
             <button
+              type="button"
               onClick={handleLogout}
-              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors text-sm cursor-pointer"
+              className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 text-sm py-2 px-4 rounded-xl border border-zinc-800"
             >
-              <LogOut size={16} />
-              Sair
+              <LogOut size={16} /> Sair
             </button>
           </div>
         </div>
 
         {erro && (
-          <div
-            className="flex items-center gap-3 bg-red-50 text-red-700 p-4 rounded-xl border border-red-100 text-sm"
-            role="alert"
-          >
-            <AlertCircle size={18} className="shrink-0" />
-            <span>{erro}</span>
+          <div className="flex items-center gap-3 bg-red-950/50 text-red-300 p-4 rounded-xl border border-red-900 text-sm">
+            <AlertCircle size={18} /> {erro}
+          </div>
+        )}
+        {msg && (
+          <div className="text-sm text-emerald-400 bg-emerald-950/30 border border-emerald-900 rounded-xl px-4 py-2">
+            {msg}
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
-              <Building2 size={16} className="text-indigo-500" />
-              Empresas
+        {/* KPIs */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[
+            { icon: Building2, label: 'Ativos', value: k?.clientes_ativos ?? '—', sub: `${k?.total_empresas ?? 0} total` },
+            { icon: FlaskConical, label: 'Em trial', value: k?.em_trial ?? '—', sub: 'período teste' },
+            { icon: DollarSign, label: 'MRR est.', value: k ? fmtMoney(k.mrr_estimado_brl) : '—', sub: k ? `ARR ${fmtMoney(k.arr_estimado_brl)}` : '' },
+            { icon: Clock, label: 'Atrasados', value: k?.faturas_atrasadas ?? '—', sub: 'vencidos' },
+            { icon: Cpu, label: 'Tokens/mês', value: k?.tokens_mes ?? '—', sub: `${k?.reviews_mes ?? 0} reviews` },
+            { icon: Star, label: 'Pagos', value: k?.planos_pagos ?? '—', sub: `${k?.cancelamento_pendente ?? 0} cancel. pend.` },
+          ].map((x) => (
+            <div key={x.label} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-zinc-500 mb-2">
+                <x.icon size={14} className="text-indigo-400" /> {x.label}
+              </div>
+              <p className="text-xl font-bold tabular-nums">{x.value}</p>
+              {x.sub && <p className="text-[11px] text-zinc-500 mt-1">{x.sub}</p>}
             </div>
-            <span className="text-2xl font-bold text-slate-900">{empresas.length}</span>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Top tokens */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden lg:col-span-2">
+            <div className="px-5 py-4 border-b border-zinc-800 flex items-center gap-2">
+              <Cpu size={16} className="text-amber-400" />
+              <h2 className="font-semibold text-sm">Top 10 — consumo de tokens IA</h2>
+            </div>
+            {!dash?.top_tokens?.length ? (
+              <p className="p-5 text-sm text-zinc-500">Sem uso de tokens registrado ainda.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="text-xs text-zinc-500 uppercase">
+                    <tr>
+                      <th className="px-4 py-2 text-left">#</th>
+                      <th className="px-4 py-2 text-left">Empresa</th>
+                      <th className="px-4 py-2 text-left">Plano</th>
+                      <th className="px-4 py-2 text-right">Tokens</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-800">
+                    {dash.top_tokens.map((t, i) => (
+                      <tr key={t.empresa_id}>
+                        <td className="px-4 py-2.5 text-zinc-500">{i + 1}</td>
+                        <td className="px-4 py-2.5">
+                          <div className="font-medium">{t.nome_empresa}</div>
+                          <div className="text-xs text-zinc-500">{t.cnpj}</div>
+                        </td>
+                        <td className="px-4 py-2.5 uppercase text-xs">{t.plan || '—'}</td>
+                        <td className="px-4 py-2.5 text-right tabular-nums font-medium text-amber-300">
+                          {t.total_tokens.toLocaleString('pt-BR')}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
-              <Star size={16} className="text-yellow-500" />
-              Avaliações
+
+          {/* Integrações n8n */}
+          <div className="bg-zinc-900/80 border border-zinc-800/80 rounded-2xl p-5 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-semibold text-zinc-400">
+              <Workflow size={16} /> Integrações
+              <span className="text-[10px] font-normal text-zinc-600">(discreto)</span>
             </div>
-            <span className="text-2xl font-bold text-slate-900">{reviews.length}</span>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-2">
-              <RefreshCw size={16} className="text-green-500" />
-              Trials Ativos
-            </div>
-            <span className="text-2xl font-bold text-slate-900">
-              {empresas.filter((e) => e.status === 'trial').length}
-            </span>
+            {integ ? (
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-start gap-2">
+                  <StatusDot ok={integ.n8n.ok} />
+                  <div>
+                    <p className="font-medium text-zinc-200">n8n</p>
+                    <p className="text-xs text-zinc-500">
+                      {integ.n8n.configurado
+                        ? `${integ.n8n.url_mascarada} · ${integ.n8n.detalhe}`
+                        : integ.n8n.detalhe}
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <StatusDot ok={integ.google_maps.ok} />
+                  <div>
+                    <p className="font-medium text-zinc-200">Google Maps / reviews</p>
+                    <p className="text-xs text-zinc-500">{integ.google_maps.detalhe}</p>
+                    <p className="text-[11px] text-zinc-600">
+                      {integ.google_maps.empresas_com_link_google} empresa(s) com link Google
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <StatusDot ok={integ.whatsapp.ok} />
+                  <div>
+                    <p className="font-medium text-zinc-200">WhatsApp</p>
+                    <p className="text-xs text-zinc-500">{integ.whatsapp.detalhe}</p>
+                  </div>
+                </li>
+              </ul>
+            ) : (
+              <p className="text-xs text-zinc-500">Sem dados de integração.</p>
+            )}
+            <p className="text-[10px] text-zinc-600 leading-relaxed">
+              Configure <code className="text-zinc-500">N8N_WEBHOOK_URL</code> no .env da API para o
+              health-check automático do n8n.
+            </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-5 border-b border-slate-200">
-            <h2 className="font-semibold text-slate-800">Empresas Registradas</h2>
+        {/* Faturas atrasadas */}
+        {!!dash?.faturas_atrasadas?.length && (
+          <div className="bg-red-950/20 border border-red-900/40 rounded-2xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-red-900/40 text-sm font-semibold text-red-300">
+              Faturas / acessos atrasados
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="text-xs text-zinc-500">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Empresa</th>
+                    <th className="px-4 py-2 text-left">CNPJ</th>
+                    <th className="px-4 py-2 text-left">Plano</th>
+                    <th className="px-4 py-2 text-left">Venceu</th>
+                    <th className="px-4 py-2 text-right">Dias</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-red-900/20">
+                  {dash.faturas_atrasadas.map((f) => (
+                    <tr key={f.id}>
+                      <td className="px-4 py-2">{f.nome_empresa}</td>
+                      <td className="px-4 py-2 text-zinc-400">{f.cnpj}</td>
+                      <td className="px-4 py-2 uppercase text-xs">{f.plan}</td>
+                      <td className="px-4 py-2 text-zinc-400">{fmtDt(f.expira_em)}</td>
+                      <td className="px-4 py-2 text-right text-red-400 font-medium">{f.dias_atraso}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          {empresas.length === 0 ? (
-            <p className="p-5 text-sm text-slate-500">Nenhuma empresa ativou o trial ainda.</p>
+        )}
+
+        {/* Empresas */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+          <div className="p-5 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-semibold text-sm">Empresas</h2>
+            <input
+              value={filtro}
+              onChange={(e) => setFiltro(e.target.value)}
+              placeholder="Buscar nome, CNPJ, plano…"
+              className="text-sm px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 w-full sm:w-64 outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          {empresasFiltradas.length === 0 ? (
+            <p className="p-5 text-sm text-zinc-500">Nenhuma empresa encontrada.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-xs">
+                <thead className="bg-zinc-950/80 text-zinc-500 uppercase tracking-wider text-[10px]">
                   <tr>
-                    <th className="px-5 py-3 text-left">Nome</th>
-                    <th className="px-5 py-3 text-left">CNPJ</th>
-                    <th className="px-5 py-3 text-left">Status</th>
-                    <th className="px-5 py-3 text-left">Google</th>
-                    <th className="px-5 py-3 text-left">Expira em</th>
+                    <th className="px-4 py-3 text-left">Empresa / CNPJ</th>
+                    <th className="px-4 py-3 text-left">Cadastro</th>
+                    <th className="px-4 py-3 text-left">Plano</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">Expira</th>
+                    <th className="px-4 py-3 text-right">Tokens</th>
+                    <th className="px-4 py-3 text-left">Maps / WPP</th>
+                    <th className="px-4 py-3 text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {empresas.map((empresa) => (
-                    <tr key={empresa.id} className="hover:bg-slate-50/50">
-                      <td className="px-5 py-4 font-medium text-slate-800">{empresa.nome_empresa}</td>
-                      <td className="px-5 py-4 text-slate-600">{empresa.cnpj}</td>
-                      <td className="px-5 py-4">
+                <tbody className="divide-y divide-zinc-800">
+                  {empresasFiltradas.map((e) => (
+                    <tr key={e.id} className="hover:bg-zinc-800/40">
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-zinc-100">{e.nome_empresa}</div>
+                        <div className="text-xs text-zinc-500 font-mono">{e.cnpj}</div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-zinc-400 whitespace-nowrap">
+                        {fmtDt(e.criado_em)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="uppercase text-xs font-semibold text-indigo-300">
+                          {e.plan || '—'}
+                        </span>
+                        <div className="text-[10px] text-zinc-600">{e.billing_cycle || 'month'}</div>
+                      </td>
+                      <td className="px-4 py-3">
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            empresa.status === 'ativo'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-amber-100 text-amber-700'
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                            e.atrasado
+                              ? 'bg-red-500/20 text-red-300'
+                              : e.status === 'ativo'
+                                ? 'bg-emerald-500/20 text-emerald-300'
+                                : e.status === 'cancelado' || e.status === 'bloqueado'
+                                  ? 'bg-zinc-700 text-zinc-400'
+                                  : 'bg-amber-500/20 text-amber-300'
                           }`}
                         >
-                          {empresa.status}
+                          {e.atrasado ? 'atrasado' : e.status}
                         </span>
-                      </td>
-                      <td className="px-5 py-4 text-slate-600">
-                        {empresa.google_review_url ? (
-                          <a
-                            href={empresa.google_review_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-indigo-600 hover:underline text-xs"
-                          >
-                            Link
-                          </a>
-                        ) : (
-                          <span className="text-slate-400">—</span>
+                        {e.cancel_at_period_end && (
+                          <div className="text-[10px] text-amber-500 mt-0.5">canc. pendente</div>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-slate-600">
-                        {new Date(empresa.expira_em).toLocaleDateString()}
+                      <td className="px-4 py-3 text-xs text-zinc-400 whitespace-nowrap">
+                        {fmtDt(e.expira_em)}
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums text-zinc-300">
+                        {(e.total_tokens || 0).toLocaleString('pt-BR')}
+                      </td>
+                      <td className="px-4 py-3 text-xs">
+                        <div className="flex flex-col gap-0.5">
+                          <span className={e.google_review_url ? 'text-emerald-400' : 'text-zinc-600'}>
+                            Maps {e.google_review_url ? '✓' : '—'}
+                          </span>
+                          <span className={e.whatsapp_suporte ? 'text-emerald-400' : 'text-zinc-600'}>
+                            WPP {e.whatsapp_suporte ? '✓' : '—'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap justify-end gap-1">
+                          <button
+                            type="button"
+                            disabled={busyId === e.id}
+                            onClick={() => acao(e.id, 'renovar', { ciclo: 'month' })}
+                            className="text-[10px] px-2 py-1 rounded-lg bg-indigo-600/80 hover:bg-indigo-500 text-white disabled:opacity-50"
+                            title="+30 dias"
+                          >
+                            +1 mês
+                          </button>
+                          <button
+                            type="button"
+                            disabled={busyId === e.id}
+                            onClick={() => acao(e.id, 'renovar', { ciclo: 'year' })}
+                            className="text-[10px] px-2 py-1 rounded-lg bg-indigo-900 hover:bg-indigo-800 text-indigo-100 disabled:opacity-50"
+                            title="+365 dias"
+                          >
+                            +1 ano
+                          </button>
+                          <button
+                            type="button"
+                            disabled={busyId === e.id}
+                            onClick={() => {
+                              if (confirm(`Cancelar plano de ${e.nome_empresa}?`))
+                                acao(e.id, 'cancelar', { imediato: true });
+                            }}
+                            className="text-[10px] px-2 py-1 rounded-lg bg-red-950 text-red-300 border border-red-900/50 hover:bg-red-900/40 disabled:opacity-50"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -245,48 +533,30 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="p-5 border-b border-slate-200">
-            <h2 className="font-semibold text-slate-800">Últimas Avaliações</h2>
+        {/* Reviews */}
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+          <div className="p-5 border-b border-zinc-800">
+            <h2 className="font-semibold text-sm">Últimas avaliações</h2>
           </div>
           {reviews.length === 0 ? (
-            <p className="p-5 text-sm text-slate-500">Nenhuma avaliação recebida ainda.</p>
+            <p className="p-5 text-sm text-zinc-500">Nenhuma avaliação.</p>
           ) : (
-            <div className="divide-y divide-slate-100">
-              {reviews.map((review) => (
-                <div key={review.id} className="p-5 space-y-2">
-                  <div className="flex items-start gap-4">
-                    <div className="flex text-yellow-400 shrink-0">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <Star
-                          key={i}
-                          size={16}
-                          fill={i < review.rating ? 'currentColor' : 'none'}
-                          strokeWidth={1.5}
-                        />
-                      ))}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="font-medium text-slate-800">{review.name}</span>
-                        <span className="text-xs text-slate-400">
-                          {new Date(review.createdAt).toLocaleString()}
-                        </span>
-                      </div>
-                      {review.comment ? (
-                        <p className="text-sm text-slate-600">{review.comment}</p>
-                      ) : (
-                        <p className="text-sm text-slate-400 italic">Sem comentário</p>
-                      )}
-                    </div>
+            <div className="divide-y divide-zinc-800 max-h-96 overflow-y-auto">
+              {reviews.slice(0, 40).map((r) => (
+                <div key={r.id} className="p-4 space-y-1">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                    <span className="text-amber-400">{'★'.repeat(r.rating)}</span>
+                    <span className="font-medium text-zinc-200">{r.name}</span>
+                    {r.nome_empresa && <span>· {r.nome_empresa}</span>}
+                    <span>· {fmtDt(r.createdAt)}</span>
                   </div>
-                  {review.ai_reply && (
-                    <div className="ml-8 mt-2 bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-sm">
-                      <div className="flex items-center gap-1.5 text-indigo-600 font-medium mb-1">
-                        <Bot size={14} />
-                        Resposta sugerida pela IA
-                      </div>
-                      <p className="text-slate-700">{review.ai_reply}</p>
+                  {r.comment && <p className="text-sm text-zinc-400">{r.comment}</p>}
+                  {r.ai_reply && (
+                    <div className="mt-2 pl-3 border-l-2 border-indigo-500/40 text-sm text-zinc-300">
+                      <span className="inline-flex items-center gap-1 text-indigo-400 text-xs mb-0.5">
+                        <Bot size={12} /> IA
+                      </span>
+                      <p>{r.ai_reply}</p>
                     </div>
                   )}
                 </div>
