@@ -1,0 +1,104 @@
+name: Deploy
+
+# Template de CD. Ative o deploy real descomentando o job e configurando secrets.
+# Opções comuns: Railway, Render, Fly.io, Vercel (frontend), Docker VPS.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Ambiente de deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  gate:
+    name: Só deploy se CI passou
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    steps:
+      - name: OK para deploy
+        run: echo "CI verde — deploy autorizado"
+
+  # ── Exemplo Railway (API) ───────────────────────────────────
+  # Precisa: RAILWAY_TOKEN (secret), service já criado no Railway
+  #
+  # deploy-api:
+  #   needs: gate
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Railway CLI
+  #       run: npm i -g @railway/cli
+  #     - name: Deploy backend
+  #       env:
+  #         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+  #       run: |
+  #         railway up --service api --detach
+
+  # ── Exemplo Vercel (frontend) ───────────────────────────────
+  # Precisa: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+  #
+  # deploy-web:
+  #   needs: gate
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: frontend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #     - name: Install Vercel CLI
+  #       run: npm i -g vercel
+  #     - name: Pull env & deploy
+  #       env:
+  #         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  #         VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  #         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  #       run: |
+  #         vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+  #         vercel build --prod --token=$VERCEL_TOKEN
+  #         vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+  # ── Exemplo Docker / VPS via SSH ────────────────────────────
+  # Precisa: VPS_HOST, VPS_USER, VPS_SSH_KEY
+  #
+  # deploy-vps:
+  #   needs: gate
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Deploy via SSH
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.VPS_HOST }}
+  #         username: ${{ secrets.VPS_USER }}
+  #         key: ${{ secrets.VPS_SSH_KEY }}
+  #         script: |
+  #           cd /opt/saas-reputacao-ia
+  #           git pull origin main
+  #           docker compose up -d --build
+
+  notify:
+    name: Placeholder deploy
+    needs: gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Instruções
+        run: |
+          echo "Deploy automático ainda em modo template."
+          echo "1. Escolha o host (Railway / Vercel / VPS)."
+          echo "2. Configure os secrets no GitHub (Settings → Secrets)."
+          echo "3. Descomente o job correspondente em .github/workflows/deploy.yml."
