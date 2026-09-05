@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
+import { DashboardCharts } from '../../components/DashboardCharts';
 
 interface Review {
   id: number;
@@ -36,13 +37,21 @@ interface PainelData {
     distribuicao?: number[];
     top_tags?: { tag: string; count: number }[];
     taxa_positiva?: number;
+    serie_14d?: {
+      dia: string;
+      total: number;
+      positivas: number;
+      negativas: number;
+      media: number;
+    }[];
   };
   dashboard?: {
     nivel: string;
     pdf_disponivel: boolean;
-    mostrar_graficos: boolean;
-    mostrar_tags: boolean;
-    mostrar_crise: boolean;
+    mostrar_graficos?: boolean;
+    mostrar_tags?: boolean;
+    mostrar_crise?: boolean;
+    mostrar_tendencia?: boolean;
   };
   links?: {
     avaliacao: string;
@@ -64,8 +73,6 @@ interface AssinaturaInfo {
   aviso_cancelamento?: string | null;
 }
 
-const STAR_COLORS = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
-
 function Stars({ n }: { n: number }) {
   return (
     <span className="text-amber-500/90 text-[13px] tracking-wide" aria-hidden>
@@ -85,67 +92,6 @@ function textoFeedback(r: Review, nomeEmpresa?: string): string {
   ]
     .filter(Boolean)
     .join('\n');
-}
-
-function BarChart({ values }: { values: number[] }) {
-  const max = Math.max(...values, 1);
-  const labels = ['1★', '2★', '3★', '4★', '5★'];
-  return (
-    <div className="flex items-end gap-3 h-40 px-2">
-      {values.map((v, i) => (
-        <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-          <span className="text-[11px] font-semibold text-slate-600 tabular-nums">{v}</span>
-          <div
-            className="w-full rounded-t-md transition-all"
-            style={{
-              height: `${Math.max((v / max) * 100, v > 0 ? 6 : 2)}%`,
-              backgroundColor: STAR_COLORS[i],
-              minHeight: v > 0 ? 8 : 2,
-            }}
-            title={`${labels[i]}: ${v}`}
-          />
-          <span className="text-[10px] text-slate-400">{labels[i]}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function Donut({ positive, negative }: { positive: number; negative: number }) {
-  const total = Math.max(positive + negative, 1);
-  const pct = Math.round((positive / total) * 100);
-  const r = 36;
-  const c = 2 * Math.PI * r;
-  const dash = (pct / 100) * c;
-  return (
-    <div className="flex items-center gap-6">
-      <svg width="100" height="100" viewBox="0 0 100 100" className="shrink-0">
-        <circle cx="50" cy="50" r={r} fill="none" stroke="#fee2e2" strokeWidth="12" />
-        <circle
-          cx="50"
-          cy="50"
-          r={r}
-          fill="none"
-          stroke="#22c55e"
-          strokeWidth="12"
-          strokeDasharray={`${dash} ${c - dash}`}
-          strokeLinecap="round"
-          transform="rotate(-90 50 50)"
-        />
-        <text x="50" y="54" textAnchor="middle" className="fill-slate-800" style={{ fontSize: 16, fontWeight: 700 }}>
-          {pct}%
-        </text>
-      </svg>
-      <div className="text-sm space-y-2">
-        <p className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-emerald-500" /> Positivas: <strong>{positive}</strong>
-        </p>
-        <p className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-red-200" /> Críticas: <strong>{negative}</strong>
-        </p>
-      </div>
-    </div>
-  );
 }
 
 export default function PainelEmpresa() {
@@ -331,7 +277,6 @@ export default function PainelEmpresa() {
   const nivel = dashboard?.nivel || 'basico';
   const pdfOk = dashboard?.pdf_disponivel;
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
-
   const cancelado = !!assinatura?.cancel_at_period_end;
   const ateFormatado =
     assinatura?.expira_em_formatado ||
@@ -388,7 +333,6 @@ export default function PainelEmpresa() {
           </div>
         )}
 
-        {/* KPIs */}
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100">
             <p className="text-[11px] uppercase tracking-wide text-slate-400">Volume</p>
@@ -408,53 +352,17 @@ export default function PainelEmpresa() {
           </div>
         </section>
 
-        {/* Gráficos — todos os planos veem básico; Pro+ mais análise */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-white rounded-2xl px-6 py-6 border border-slate-100">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-4">
-              Distribuição de notas
-            </p>
-            <BarChart values={dist} />
-          </div>
+        <DashboardCharts
+          distribuicao={dist}
+          positivas={metricas.positivas}
+          negativas={metricas.negativas}
+          serie={metricas.serie_14d || []}
+          topTags={metricas.top_tags || []}
+          nivel={nivel}
+          crises24h={metricas.crises_24h}
+          alertaCrise={Boolean(dashboard?.mostrar_crise && metricas.alerta_crise)}
+        />
 
-          <div className="bg-white rounded-2xl px-6 py-6 border border-slate-100">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-4">
-              Positivas vs críticas
-            </p>
-            <Donut positive={metricas.positivas} negative={metricas.negativas} />
-            {dashboard?.mostrar_crise && metricas.alerta_crise && (
-              <p className="mt-4 text-xs text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-                Alerta: {metricas.crises_24h} notas ≤2★ nas últimas 24h
-              </p>
-            )}
-            {(nivel === 'basico') && (
-              <p className="mt-4 text-xs text-slate-400">
-                Upgrade para Pro/Ultra libera relatório PDF e análises mais profundas.
-              </p>
-            )}
-          </div>
-        </section>
-
-        {/* Tags — Ultra / Corporativo / Rei */}
-        {dashboard?.mostrar_tags && (metricas.top_tags?.length || 0) > 0 && (
-          <section className="bg-white rounded-2xl px-6 py-6 border border-slate-100">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-4">
-              Tags mais frequentes (IA)
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {metricas.top_tags!.map((t) => (
-                <span
-                  key={t.tag}
-                  className="text-xs px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-100"
-                >
-                  {t.tag} · {t.count}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* WhatsApp */}
         <section className="bg-white rounded-2xl px-6 py-6 border border-slate-100 space-y-3">
           <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
             WhatsApp de suporte
@@ -492,7 +400,6 @@ export default function PainelEmpresa() {
           {msgWpp && <p className="text-xs text-slate-500">{msgWpp}</p>}
         </section>
 
-        {/* Link + QR */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="bg-white rounded-2xl px-6 py-6 border border-slate-100">
             <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-4">
@@ -528,7 +435,6 @@ export default function PainelEmpresa() {
           </div>
         </section>
 
-        {/* Feedbacks */}
         <section className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-100">
             <h2 className="text-sm font-semibold text-slate-900">Feedbacks privados</h2>
