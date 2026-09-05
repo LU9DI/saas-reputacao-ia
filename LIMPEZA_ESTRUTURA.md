@@ -4,7 +4,7 @@
 
 Existia um **submódulo Git** em:
 
-```
+```text
 backend/saas-reputacao-ia/
 ```
 
@@ -33,7 +33,7 @@ ls backend frontend
 
 ## Estrutura correta
 
-```
+```text
 saas-reputacao-ia/
   backend/          ← API (server.ts, rotas, etc.)
   frontend/         ← Next.js (:3000)
@@ -42,7 +42,7 @@ saas-reputacao-ia/
 
 **Errado:**
 
-```
+```text
 saas-reputacao-ia/backend/saas-reputacao-ia/frontend  ← não use
 ```
 
@@ -54,5 +54,5 @@ cd backend && npm run dev
 cd frontend && npm run dev
 ```
 
-Admin: http://localhost:3000/admin/login  
-Empresa: http://localhost:3000/login
+Admin: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)  
+Empresa: [http://localhost:3000/login](http://localhost:3000/login)

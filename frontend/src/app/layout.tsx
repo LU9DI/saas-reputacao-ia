@@ -5,7 +5,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'FILTRA.AI — Gestão de Reputação Online',
-  description: 'Sistema inteligente de contenção de crises e gestão de avaliações para comércios locais',
+  description: 'Sistema inteligente de contenção de crises e gestão de avaliações',
 };
 
 export default function RootLayout({

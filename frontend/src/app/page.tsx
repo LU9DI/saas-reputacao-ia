@@ -31,7 +31,7 @@ const traducoes = {
     labelEmail: 'E-mail de acesso',
     placeholderEmail: 'seu@email.com',
     labelSenha: 'Senha de acesso',
-    placeholderSenha: 'Ex: Senha@12 (8+, maiúscula, número, especial)',
+    placeholderSenha: 'Ex: Senha@12 (8+, maiúscula, números, especial)',
     labelGoogle: 'Link do Google Reviews (opcional)',
     placeholderGoogle: 'https://g.page/r/... ou link de avaliação',
     botao: 'Ativar Meu Período de Testes',
