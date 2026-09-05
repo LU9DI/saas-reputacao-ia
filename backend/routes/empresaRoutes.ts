@@ -1,11 +1,14 @@
 import type { Express, Request, Response } from 'express';
 import { getDb, findEmpresa } from '../lib/db.js';
+import { normalizarWhatsapp, linkWhatsapp } from '../lib/whatsapp.js';
+import { asyncHandler } from '../middleware/errorHandler.js';
 
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
 
 export function mountEmpresaRoutes(app: Express) {
-  app.get('/api/empresa/:ref/validar', async (req: Request, res: Response) => {
-    try {
+  app.get(
+    '/api/empresa/:ref/validar',
+    asyncHandler(async (req: Request, res: Response) => {
       const empresa = await findEmpresa(req.params.ref);
       if (!empresa) return res.status(404).json({ valido: false, motivo: 'not_found' });
 
@@ -25,23 +28,56 @@ export function mountEmpresaRoutes(app: Express) {
         return res.json({ valido: false, motivo: 'inactive', nome: empresa.nome_empresa });
       }
 
+      const wpp = normalizarWhatsapp(empresa.whatsapp_suporte);
       return res.json({
         valido: true,
         nome: empresa.nome_empresa,
         empresa_id: empresa.id,
         slug: empresa.slug,
         google_review_url: empresa.google_review_url || null,
+        whatsapp: wpp,
+        whatsapp_url: linkWhatsapp(wpp),
         plan: empresa.plan,
       });
-    } catch (e) {
-      console.error('validar:', e);
-      res.status(500).json({ error: 'Erro interno.' });
-    }
-  });
+    })
+  );
 
-  /** Painel do cliente (slug ou UUID) */
-  app.get('/api/empresa/:ref/painel', async (req: Request, res: Response) => {
-    try {
+  /** Atualiza WhatsApp de suporte da empresa */
+  app.patch(
+    '/api/empresa/:ref/whatsapp',
+    asyncHandler(async (req: Request, res: Response) => {
+      const empresa = await findEmpresa(req.params.ref);
+      if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+
+      const raw = String(req.body.whatsapp || req.body.whatsapp_suporte || '').trim();
+      if (!raw) {
+        await getDb().run(`UPDATE empresas SET whatsapp_suporte = NULL WHERE id = ?`, [empresa.id]);
+        return res.json({ success: true, whatsapp: null, whatsapp_url: null });
+      }
+
+      const normalizado = normalizarWhatsapp(raw);
+      if (!normalizado) {
+        return res.status(400).json({
+          error: 'WhatsApp inválido. Use DDD + número (ex: 11999998888 ou +55 11 99999-8888).',
+        });
+      }
+
+      await getDb().run(`UPDATE empresas SET whatsapp_suporte = ? WHERE id = ?`, [
+        normalizado,
+        empresa.id,
+      ]);
+
+      res.json({
+        success: true,
+        whatsapp: normalizado,
+        whatsapp_url: linkWhatsapp(normalizado),
+      });
+    })
+  );
+
+  app.get(
+    '/api/empresa/:ref/painel',
+    asyncHandler(async (req: Request, res: Response) => {
       const empresa = await findEmpresa(req.params.ref);
       if (!empresa) {
         return res.status(404).json({ error: 'Empresa não encontrada.' });
@@ -88,6 +124,7 @@ export function mountEmpresaRoutes(app: Express) {
 
       const base = APP_URL.replace(/\/$/, '');
       const ref = empresa.slug || empresa.id;
+      const wpp = normalizarWhatsapp(empresa.whatsapp_suporte);
 
       res.json({
         empresa: {
@@ -98,6 +135,8 @@ export function mountEmpresaRoutes(app: Express) {
           plan: empresa.plan,
           expira_em: empresa.expira_em,
           google_review_url: empresa.google_review_url || null,
+          whatsapp: wpp,
+          whatsapp_url: linkWhatsapp(wpp),
         },
         reviews,
         metricas: {
@@ -115,9 +154,6 @@ export function mountEmpresaRoutes(app: Express) {
           embed: `${base}/avaliacao/${ref}`,
         },
       });
-    } catch (e) {
-      console.error('painel:', e);
-      res.status(500).json({ error: 'Erro ao carregar o painel.' });
-    }
-  });
+    })
+  );
 }
