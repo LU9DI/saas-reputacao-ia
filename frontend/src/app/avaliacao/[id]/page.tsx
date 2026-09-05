@@ -13,7 +13,7 @@ export default function PaginaAvaliacao() {
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [clientWhatsapp, setClientWhatsapp] = useState('');
-  const [website, setWebsite] = useState(''); // honeypot
+  const [website, setWebsite] = useState(''); // honeypot anti-bot
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -63,6 +63,7 @@ export default function PaginaAvaliacao() {
     setRating(selectedRating);
     setErro('');
 
+    // 4–5★ → envia em background e redireciona para Google
     if (selectedRating >= 4) {
       const payload = JSON.stringify(payloadBase(selectedRating));
       const blob = new Blob([payload], { type: 'application/json' });
@@ -83,8 +84,8 @@ export default function PaginaAvaliacao() {
     if (!rating || rating > 3) return;
 
     const digits = clientWhatsapp.replace(/\D/g, '');
-    if (digits.length < 10) {
-      setErro('Informe um WhatsApp válido com DDD (ex: 11999998888).');
+    if (digits.length < 10 || digits.length > 15) {
+      setErro('Informe um WhatsApp válido com DDD (ex: 11 99999-8888).');
       return;
     }
 
@@ -103,7 +104,7 @@ export default function PaginaAvaliacao() {
         return;
       }
 
-      // Se a empresa tem WhatsApp de suporte, oferece contato imediato
+      // Empresa com WhatsApp configurado → abre conversa já com contexto
       if (whatsappUrl) {
         const texto = [
           `Olá! Acabei de enviar um feedback (${rating}★)${nomeEmpresa ? ` sobre ${nomeEmpresa}` : ''}.`,
@@ -128,7 +129,11 @@ export default function PaginaAvaliacao() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-black text-zinc-100 p-4">
         <p className="text-zinc-300 mb-4">Não foi possível verificar o acesso.</p>
-        <button onClick={validarAcesso} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold">
+        <button
+          type="button"
+          onClick={validarAcesso}
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold"
+        >
           Tentar novamente
         </button>
       </div>
@@ -137,7 +142,9 @@ export default function PaginaAvaliacao() {
 
   if (trialValido === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-zinc-400">Carregando...</div>
+      <div className="min-h-screen flex items-center justify-center bg-black text-zinc-400">
+        Carregando...
+      </div>
     );
   }
 
@@ -156,7 +163,9 @@ export default function PaginaAvaliacao() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center space-y-4">
-          <div className="text-4xl">🙏</div>
+          <div className="text-4xl" aria-hidden>
+            🙏
+          </div>
           <h2 className="text-2xl font-bold text-zinc-50">Obrigado pelo feedback!</h2>
           <p className="text-zinc-400">Sua opinião foi enviada de forma privada para a gestão.</p>
           {whatsappUrl && (
@@ -166,7 +175,7 @@ export default function PaginaAvaliacao() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl"
             >
-              Falar no WhatsApp
+              <span aria-hidden>💬</span> Falar no WhatsApp
             </a>
           )}
         </div>
@@ -183,12 +192,16 @@ export default function PaginaAvaliacao() {
         <p className="text-center text-sm text-zinc-500 mb-6">Sua opinião nos ajuda a melhorar.</p>
 
         {erro && (
-          <div className="mb-4 bg-red-950/60 text-red-300 border border-red-900 p-3 rounded-xl text-sm" role="alert">
+          <div
+            className="mb-4 bg-red-950/60 text-red-300 border border-red-900 p-3 rounded-xl text-sm"
+            role="alert"
+          >
             {erro}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Honeypot — invisível para humanos */}
           <div
             aria-hidden="true"
             style={{
@@ -243,13 +256,18 @@ export default function PaginaAvaliacao() {
                 </button>
               ))}
             </div>
+            {!rating && (
+              <p className="mt-3 text-xs text-zinc-500">
+                Toque em 1–3★ para enviar feedback privado com seu WhatsApp.
+              </p>
+            )}
           </div>
 
-          {rating && rating <= 3 && (
-            <div className="space-y-3">
+          {rating !== null && rating <= 3 && (
+            <div className="space-y-4 rounded-xl border border-emerald-900/50 bg-zinc-950/80 p-4">
               <div>
                 <label htmlFor="comentario" className="block text-sm font-medium text-red-400 mb-1">
-                  Conte o que aconteceu (privado):
+                  Conte o que aconteceu (privado)
                 </label>
                 <textarea
                   id="comentario"
@@ -263,7 +281,10 @@ export default function PaginaAvaliacao() {
               </div>
 
               <div>
-                <label htmlFor="client-wpp" className="block text-sm font-medium text-emerald-400 mb-1">
+                <label
+                  htmlFor="client-wpp"
+                  className="block text-sm font-medium text-emerald-400 mb-1"
+                >
                   Seu WhatsApp (obrigatório)
                 </label>
                 <input
@@ -271,12 +292,13 @@ export default function PaginaAvaliacao() {
                   type="tel"
                   required
                   inputMode="tel"
+                  autoComplete="tel"
                   value={clientWhatsapp}
                   onChange={(e) => setClientWhatsapp(e.target.value.slice(0, 20))}
                   placeholder="11 99999-8888"
-                  className="w-full px-4 py-2 border border-emerald-800/60 bg-zinc-950 text-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full px-4 py-2.5 border border-emerald-700/70 bg-zinc-950 text-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
                 />
-                <p className="text-[11px] text-zinc-500 mt-1">
+                <p className="text-[11px] text-zinc-500 mt-1.5">
                   A empresa usa este número apenas para retornar sobre o feedback.
                 </p>
               </div>
@@ -284,16 +306,20 @@ export default function PaginaAvaliacao() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3.5 px-4 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2 text-base shadow-lg shadow-emerald-900/30"
               >
-                {loading
-                  ? 'Enviando...'
-                  : whatsappUrl
-                    ? 'Enviar e falar no WhatsApp'
-                    : 'Enviar crítica privada'}
+                {loading ? (
+                  'Enviando...'
+                ) : whatsappUrl ? (
+                  <>
+                    <span aria-hidden>💬</span> Enviar e falar no WhatsApp
+                  </>
+                ) : (
+                  'Enviar crítica privada'
+                )}
               </button>
 
-              {whatsappUrl && (
+              {whatsappUrl ? (
                 <a
                   href={whatsappUrl}
                   target="_blank"
@@ -302,6 +328,10 @@ export default function PaginaAvaliacao() {
                 >
                   Ou abrir WhatsApp da empresa agora
                 </a>
+              ) : (
+                <p className="text-center text-[11px] text-zinc-600">
+                  A empresa ainda não configurou o WhatsApp de suporte neste link.
+                </p>
               )}
             </div>
           )}
