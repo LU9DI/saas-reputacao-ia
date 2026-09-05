@@ -214,8 +214,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8">
       <div className="text-center space-y-3">
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Deseja continuar depois do período de teste?</h2>
-        <p className="text-sm text-slate-600 max-w-2xl mx-auto font-medium leading-relaxed">
+        <h2 className="text-2xl font-whir text-white tracking-tight">Deseja continuar depois do período de teste?</h2>
+        <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed"></p>
+        <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
           Escolha o plano ideal. O pagamento é processado com segurança pelo Stripe.
         </p>
 
