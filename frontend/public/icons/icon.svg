@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Filtra.IA">
+  <rect width="512" height="512" rx="96" fill="#4f46e5"/>
+  <path fill="#ffffff" d="M128 160h256v48H192v48h160v48H192v48h192v48H128V160z"/>
+  <circle cx="400" cy="384" r="40" fill="#a5b4fc"/>
+</svg>
