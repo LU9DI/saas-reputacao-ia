@@ -21,6 +21,7 @@ import { mountAdminListRoutes } from './routes/adminListRoutes.js';
 import { mountRelatorioRoutes } from './routes/relatorioRoutes.js';
 import { mountPlanSwitchRoutes } from './routes/planSwitchRoutes.js';
 import { mountWebAuthnRoutes } from './routes/webauthnRoutes.js';
+import { mountPushRoutes } from './routes/pushRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
@@ -30,6 +31,7 @@ import { stripeConfigured } from './stripeBilling.js';
 import { aiConfigured, listAiProviders, getAiLoadStats } from './groqService.js';
 import { ensureUnidadesSchema } from './relatorioPdf.js';
 import { ensureWebAuthnSchema, webauthnConfig } from './lib/webauthn.js';
+import { ensurePushSchema, pushConfigured, initWebPush } from './lib/push.js';
 import { allowPlanSwitch } from './lib/plans.js';
 import {
   backfillSentiment,
@@ -59,6 +61,7 @@ app.get('/api/health', (_req, res) => {
     plan_switch: allowPlanSwitch(),
     jwt: jwtRotationStatus(),
     webauthn: webauthnConfig(),
+    push: pushConfigured(),
     ai_latency: {
       groq: ai.stats.groq.latency,
       gemini: ai.stats.gemini.latency,
@@ -117,6 +120,12 @@ async function main() {
   } catch (e) {
     console.warn('ensureWebAuthnSchema:', e);
   }
+  try {
+    await ensurePushSchema(getDb());
+    initWebPush();
+  } catch (e) {
+    console.warn('ensurePushSchema:', e);
+  }
 
   await runSentimentBackfillOnBoot();
 
@@ -128,6 +137,7 @@ async function main() {
   mountRelatorioRoutes(app);
   mountPlanSwitchRoutes(app);
   mountWebAuthnRoutes(app);
+  mountPushRoutes(app);
 
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
   mountAdminPasswordResetRoutes(app, getDb);
@@ -150,6 +160,7 @@ async function main() {
   console.log(
     `👆 WebAuthn rp=${webauthnConfig().rpId} origin=${webauthnConfig().origin}`
   );
+  console.log(`🔔 Push: ${pushConfigured() ? 'ON (VAPID)' : 'OFF — npx web-push generate-vapid-keys'}`);
   console.log(
     `🧪 Troca de plano (teste): ${allowPlanSwitch() ? 'ON' : 'OFF'} — ALLOW_PLAN_SWITCH`
   );
