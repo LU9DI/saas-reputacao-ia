@@ -12,6 +12,7 @@ export default function PaginaAvaliacao() {
   const [name, setName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
+  const [clientWhatsapp, setClientWhatsapp] = useState('');
   const [website, setWebsite] = useState(''); // honeypot
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,6 +47,7 @@ export default function PaginaAvaliacao() {
 
   useEffect(() => {
     validarAcesso();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaId]);
 
   const payloadBase = (selectedRating: number) => ({
@@ -53,7 +55,8 @@ export default function PaginaAvaliacao() {
     rating: selectedRating,
     comment: selectedRating <= 3 ? comment : '',
     empresa_id: empresaId,
-    website, // honeypot — humanos deixam vazio
+    website,
+    client_whatsapp: selectedRating <= 3 ? clientWhatsapp.trim() : undefined,
   });
 
   const handleStarClick = (selectedRating: number) => {
@@ -79,6 +82,12 @@ export default function PaginaAvaliacao() {
     e.preventDefault();
     if (!rating || rating > 3) return;
 
+    const digits = clientWhatsapp.replace(/\D/g, '');
+    if (digits.length < 10) {
+      setErro('Informe um WhatsApp válido com DDD (ex: 11999998888).');
+      return;
+    }
+
     setLoading(true);
     setErro('');
 
@@ -94,10 +103,12 @@ export default function PaginaAvaliacao() {
         return;
       }
 
+      // Se a empresa tem WhatsApp de suporte, oferece contato imediato
       if (whatsappUrl) {
         const texto = [
           `Olá! Acabei de enviar um feedback (${rating}★)${nomeEmpresa ? ` sobre ${nomeEmpresa}` : ''}.`,
           comment.trim() ? `\nResumo: ${comment.trim().slice(0, 280)}` : '',
+          `\nMeu WhatsApp: ${clientWhatsapp.trim()}`,
           `\n— ${name.trim() || 'Cliente'}`,
         ].join('');
         const sep = whatsappUrl.includes('?') ? '&' : '?';
@@ -144,10 +155,20 @@ export default function PaginaAvaliacao() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center">
-          <div className="text-4xl mb-4">🙏</div>
-          <h2 className="text-2xl font-bold text-zinc-50 mb-2">Obrigado pelo feedback!</h2>
+        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center space-y-4">
+          <div className="text-4xl">🙏</div>
+          <h2 className="text-2xl font-bold text-zinc-50">Obrigado pelo feedback!</h2>
           <p className="text-zinc-400">Sua opinião foi enviada de forma privada para a gestão.</p>
+          {whatsappUrl && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl"
+            >
+              Falar no WhatsApp
+            </a>
+          )}
         </div>
       </div>
     );
@@ -168,7 +189,6 @@ export default function PaginaAvaliacao() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Honeypot — escondido de humanos */}
           <div
             aria-hidden="true"
             style={{
@@ -226,23 +246,45 @@ export default function PaginaAvaliacao() {
           </div>
 
           {rating && rating <= 3 && (
-            <div className="space-y-2">
-              <label htmlFor="comentario" className="block text-sm font-medium text-red-400">
-                Conte o que aconteceu (privado):
-              </label>
-              <textarea
-                id="comentario"
-                required
-                value={comment}
-                onChange={(e) => setComment(e.target.value.slice(0, 500))}
-                placeholder="Sua crítica fica só com a empresa..."
-                rows={4}
-                className="w-full px-4 py-2 border border-red-900 bg-zinc-950 text-zinc-100 rounded-xl focus:ring-2 focus:ring-red-500 outline-none"
-              />
+            <div className="space-y-3">
+              <div>
+                <label htmlFor="comentario" className="block text-sm font-medium text-red-400 mb-1">
+                  Conte o que aconteceu (privado):
+                </label>
+                <textarea
+                  id="comentario"
+                  required
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value.slice(0, 500))}
+                  placeholder="Sua crítica fica só com a empresa..."
+                  rows={4}
+                  className="w-full px-4 py-2 border border-red-900 bg-zinc-950 text-zinc-100 rounded-xl focus:ring-2 focus:ring-red-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="client-wpp" className="block text-sm font-medium text-emerald-400 mb-1">
+                  Seu WhatsApp (obrigatório)
+                </label>
+                <input
+                  id="client-wpp"
+                  type="tel"
+                  required
+                  inputMode="tel"
+                  value={clientWhatsapp}
+                  onChange={(e) => setClientWhatsapp(e.target.value.slice(0, 20))}
+                  placeholder="11 99999-8888"
+                  className="w-full px-4 py-2 border border-emerald-800/60 bg-zinc-950 text-zinc-100 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+                <p className="text-[11px] text-zinc-500 mt-1">
+                  A empresa usa este número apenas para retornar sobre o feedback.
+                </p>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-red-600 hover:bg-red-500 text-white font-semibold py-3 px-4 rounded-xl transition disabled:opacity-50"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading
                   ? 'Enviando...'
@@ -250,6 +292,17 @@ export default function PaginaAvaliacao() {
                     ? 'Enviar e falar no WhatsApp'
                     : 'Enviar crítica privada'}
               </button>
+
+              {whatsappUrl && (
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full text-center text-sm text-emerald-400 hover:text-emerald-300 underline py-1"
+                >
+                  Ou abrir WhatsApp da empresa agora
+                </a>
+              )}
             </div>
           )}
         </form>
