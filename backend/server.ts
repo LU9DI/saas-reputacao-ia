@@ -12,6 +12,7 @@ import { requireJwtSecret, setAuthCookie, autenticarToken } from './lib/auth.js'
 import { jwtRotationStatus } from './lib/jwtKeys.js';
 import { buildCorsOptions } from './lib/cors.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
+import { requestIdMiddleware, securityHeaders } from './middleware/security.js';
 import { latencyMiddleware, getHttpMetrics } from './lib/metrics.js';
 import { mountTrialRoutes } from './routes/trialRoutes.js';
 import { mountAuthRoutes } from './routes/authRoutes.js';
@@ -43,6 +44,8 @@ const JWT_SECRET = requireJwtSecret();
 
 const app = express();
 app.set('trust proxy', 1);
+app.use(requestIdMiddleware);
+app.use(securityHeaders);
 app.use(cookieParser());
 app.use(latencyMiddleware as any);
 app.use((req, res, next) => {
