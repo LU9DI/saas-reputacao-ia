@@ -19,6 +19,7 @@ import { mountAuthRoutes } from './routes/authRoutes.js';
 import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
 import { mountReviewRoutes } from './routes/reviewRoutes.js';
 import { mountAdminDashboardRoutes } from './routes/adminDashboardRoutes.js';
+import { mountAdminTecnicoRoutes } from './routes/adminTecnicoRoutes.js';
 import { mountTokenMetricsRoutes } from './routes/tokenMetricsRoutes.js';
 import { mountRelatorioRoutes } from './routes/relatorioRoutes.js';
 import { mountPlanSwitchRoutes } from './routes/planSwitchRoutes.js';
@@ -38,6 +39,7 @@ import { ensureUnidadesSchema } from './relatorioPdf.js';
 import { ensureWebAuthnSchema, webauthnConfig } from './lib/webauthn.js';
 import { ensurePushSchema, pushConfigured, initWebPush } from './lib/push.js';
 import { ensureAiUsageSchema } from './lib/aiUsage.js';
+import { ensureOpsTables } from './lib/opsLog.js';
 import { allowPlanSwitch } from './lib/plans.js';
 import { smtpConfigured } from './lib/mailer.js';
 import {
@@ -142,6 +144,11 @@ async function main() {
   } catch (e) {
     console.warn('ensureAiUsageSchema:', e);
   }
+  try {
+    await ensureOpsTables(getDb());
+  } catch (e) {
+    console.warn('ensureOpsTables:', e);
+  }
 
   await runSentimentBackfillOnBoot();
 
@@ -150,6 +157,7 @@ async function main() {
   mountEmpresaRoutes(app);
   mountReviewRoutes(app);
   mountAdminDashboardRoutes(app);
+  mountAdminTecnicoRoutes(app);
   mountTokenMetricsRoutes(app);
   mountRelatorioRoutes(app);
   mountPlanSwitchRoutes(app);
