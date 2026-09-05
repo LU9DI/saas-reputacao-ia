@@ -102,7 +102,11 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     }
     setLoading(planoKey);
     try {
-      const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
+      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+
       const res = await fetch(`${apiUrl}/api/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -110,13 +114,43 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           plano: planoKey,
           empresa_id: empresaId || undefined,
         }),
+        signal: controller.signal,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Não foi possível iniciar o pagamento.');
-      if (!data.checkout_url) throw new Error('URL de checkout ausente.');
-      window.location.href = data.checkout_url;
+      clearTimeout(timeout);
+
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`API respondeu sem JSON (${res.status}). Confira se o backend está em ${apiUrl}.`);
+      }
+
+      if (!res.ok) {
+        if (res.status === 503) {
+          throw new Error(
+            data.error ||
+              'Stripe não configurado. No backend/.env defina STRIPE_SECRET_KEY=sk_test_... e reinicie a API.'
+          );
+        }
+        throw new Error(data.error || `Não foi possível iniciar o pagamento (${res.status}).`);
+      }
+
+      const url = data.checkout_url || data.url;
+      if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+        throw new Error('URL de checkout ausente ou inválida. Verifique STRIPE_SECRET_KEY no backend.');
+      }
+
+      window.location.assign(url);
     } catch (e: any) {
-      setErro(e.message || 'Erro ao abrir checkout');
+      if (e?.name === 'AbortError') {
+        setErro('Tempo esgotado ao falar com a API. Backend está rodando na porta 5000?');
+      } else if (String(e?.message || '').includes('Failed to fetch')) {
+        setErro(
+          'Não conectou na API. Suba o backend (cd backend && npm run dev) e confira NEXT_PUBLIC_API_URL.'
+        );
+      } else {
+        setErro(e.message || 'Erro ao abrir checkout');
+      }
       setLoading(null);
     }
   };
@@ -124,9 +158,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   const formatarFeature = (text: string, isMissing: boolean = false) => {
     if (isMissing) {
       return (
-        <span className="text-slate-400 line-through decoration-slate-400/60 font-normal">
-          {text}
-        </span>
+        <span className="text-slate-400 line-through decoration-slate-400/60 font-normal">{text}</span>
       );
     }
 
@@ -156,10 +188,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       <div className="text-center space-y-3">
         <h2 className="text-2xl font-bold text-slate-100">Deseja continuar depois do período de testes?</h2>
         <p className="text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          Escolha o plano ideal para garantir continuidade e transformar feedbacks em crescimento com total segurança via Stripe.
+          Escolha o plano ideal. O pagamento é processado com segurança pelo Stripe.
         </p>
 
-        {/* TOGGLE MENSAL / ANUAL */}
         <div className="inline-flex rounded-xl border border-slate-700 bg-slate-900 p-1 text-sm shadow-inner mt-4">
           <button
             type="button"
@@ -173,8 +204,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           <button
             type="button"
             onClick={() => setCiclo('anual')}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              ciclo === 'anual' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${\n              ciclo === 'anual' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             Anual
@@ -183,7 +213,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       </div>
 
       {erro && (
-        <p className="text-sm text-red-300 bg-red-950/50 border border-red-900/50 rounded-xl px-4 py-3 text-center max-w-3xl mx-auto">
+        <p className="text-sm text-red-200 bg-red-950/60 border border-red-800 rounded-xl px-4 py-3 text-center max-w-3xl mx-auto">
           {erro}
         </p>
       )}
@@ -197,8 +227,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           return (
             <div
               key={p.label}
-              className={`rounded-2xl p-6 flex flex-col justify-between bg-white min-w-0 transition-all duration-300 ${
-                p.highlight
+              className={`rounded-2xl p-6 flex flex-col justify-between bg-white min-w-0 transition-all duration-300 ${\n                p.highlight
                   ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-900/20 transform md:-translate-y-2'
                   : 'border border-slate-200 hover:border-indigo-300 shadow-sm'
               }`}
@@ -212,7 +241,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                     </span>
                   )}
                 </div>
-                
+
                 <p className="text-3xl font-black text-slate-900 tracking-tight flex flex-col">
                   {price}
                   <span className="text-xs font-semibold text-slate-400 mt-1">{period}</span>
@@ -225,7 +254,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                       {formatarFeature(f, false)}
                     </li>
                   ))}
-
                   {p.missingFeatures?.map((mf, i) => (
                     <li key={`missing-${i}`} className="text-[13px] leading-snug flex items-start gap-2.5 opacity-75">
                       <X size={16} className="text-red-400 shrink-0 mt-1" strokeWidth={2.5} />
@@ -239,8 +267,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                 type="button"
                 disabled={!!loading}
                 onClick={() => irParaCheckout(key)}
-                className={`mt-8 w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
-                  p.highlight
+                className={`mt-8 w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${\n                  p.highlight
                     ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
                     : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
                 }`}
@@ -258,7 +285,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           <ShieldCheck className="text-emerald-400" size={26} strokeWidth={2.5} />
         </div>
         <p className="text-sm text-emerald-100 text-center sm:text-left leading-relaxed">
-          <strong className="font-bold text-white">Cancele a qualquer momento.</strong> Sem multas, sem fidelidade ou letras miúdas. Caso cancele sua assinatura antes da renovação, você continuará com acesso total até o último dia pago.
+          <strong className="font-bold text-white">Cancele a qualquer momento.</strong> Sem multas. O acesso
+          permanece até o fim do período já pago.
         </p>
       </div>
 
