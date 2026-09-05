@@ -1,6 +1,5 @@
 /**
- * Smoke de integração — sobe app mínimo se possível, senão valida módulos críticos.
- * Roda com: npm test
+ * Smoke de integração — valida módulos críticos.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -26,9 +25,9 @@ describe('smoke — módulos críticos exportam', () => {
   });
 
   it('password policy', async () => {
-    const { validatePassword } = await import('../lib/passwordPolicy.js');
-    assert.equal(validatePassword('abc').ok, false);
-    assert.equal(validatePassword('Abcdef1!').ok, true);
+    const { validarSenhaEmpresa } = await import('../lib/passwordPolicy.js');
+    assert.equal(validarSenhaEmpresa('abc').ok, false);
+    assert.equal(validarSenhaEmpresa('Abcdef1!').ok, true);
   });
 
   it('jwt sign/verify com secret de teste', async () => {
