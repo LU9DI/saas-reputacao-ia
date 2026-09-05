@@ -1,6 +1,5 @@
 /* stylelint-disable at-rule-no-unknown */
 @tailwind base;
-/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind components;
 @tailwind utilities;
 /* stylelint-enable at-rule-no-unknown */
@@ -12,7 +11,14 @@ body {
 
 body {
   /* stylelint-disable-next-line at-rule-no-unknown */
-  @apply bg-slate-950 text-slate-100 antialiased;
+  @apply bg-black text-zinc-100 antialiased;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Formulários escuros por padrão */
+input,
+textarea,
+select {
+  color-scheme: dark;
 }
