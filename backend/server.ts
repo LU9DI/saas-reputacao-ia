@@ -10,6 +10,7 @@ import { assertEnvOrExit } from './lib/env.js';
 import { initDB, getDb } from './lib/db.js';
 import { requireJwtSecret, setAuthCookie, autenticarToken } from './lib/auth.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
+import { latencyMiddleware, getHttpMetrics } from './lib/metrics.js';
 import { mountTrialRoutes } from './routes/trialRoutes.js';
 import { mountAuthRoutes } from './routes/authRoutes.js';
 import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
@@ -28,6 +29,7 @@ const JWT_SECRET = requireJwtSecret();
 
 const app = express();
 app.use(cookieParser());
+app.use(latencyMiddleware as any);
 app.use((req, res, next) => {
   if (req.originalUrl?.startsWith('/api/webhook/stripe')) return next();
   return express.json({ limit: '20kb' })(req, res, next);
@@ -35,14 +37,28 @@ app.use((req, res, next) => {
 app.use(cors({ origin: true, credentials: true }));
 
 app.get('/api/health', (_req, res) => {
+  const ai = getAiLoadStats();
   res.json({
     ok: true,
     stripe: stripeConfigured(),
     ai: aiConfigured(),
     ai_providers: listAiProviders(),
-    ai_load: getAiLoadStats(),
+    ai_latency: {
+      groq: ai.stats.groq.latency,
+      gemini: ai.stats.gemini.latency,
+    },
+    http_latency: getHttpMetrics().global,
     env: process.env.NODE_ENV || 'development',
     time: new Date().toISOString(),
+  });
+});
+
+/** Métricas detalhadas (HTTP por rota + IA) */
+app.get('/api/metrics', (_req, res) => {
+  res.json({
+    time: new Date().toISOString(),
+    http: getHttpMetrics(),
+    ai: getAiLoadStats(),
   });
 });
 
@@ -74,7 +90,8 @@ async function main() {
   console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF — defina STRIPE_SECRET_KEY no .env'}`);
   app.listen(PORT, () => {
     console.log(`🚀 API Filtra.IA em http://localhost:${PORT}`);
-    console.log(`   Health: http://localhost:${PORT}/api/health`);
+    console.log(`   Health:  http://localhost:${PORT}/api/health`);
+    console.log(`   Metrics: http://localhost:${PORT}/api/metrics`);
   });
 }
 

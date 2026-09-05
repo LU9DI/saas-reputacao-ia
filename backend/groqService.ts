@@ -1,23 +1,8 @@
 /**
- * Camada de IA com balanceamento + failover.
+ * Camada de IA com balanceamento + failover + métricas de latência.
  *
- * Estratégias (AI_LOAD_BALANCE):
- *   round_robin  — alterna entre providers (padrão com 2+ keys)
- *   weighted     — sorteio por peso (AI_WEIGHT_GROQ / AI_WEIGHT_GEMINI)
- *   failover     — sempre o primeiro da lista; só troca se falhar
- *
- * Circuit breaker: após falhas seguidas, o provider “esfria” por N segundos
- * e o tráfego vai para o outro automaticamente.
- *
- * Env:
- *   GROQ_API_KEY, GROQ_MODEL
- *   GEMINI_API_KEY, GEMINI_MODEL
- *   AI_PROVIDER_ORDER=groq,gemini
- *   AI_LOAD_BALANCE=round_robin|weighted|failover
- *   AI_WEIGHT_GROQ=70
- *   AI_WEIGHT_GEMINI=30
- *   AI_CB_FAILURES=3          # falhas seguidas para abrir o circuito
- *   AI_CB_COOLDOWN_MS=60000   # tempo de cooldown
+ * AI_LOAD_BALANCE: round_robin | weighted | failover
+ * Circuit breaker: AI_CB_FAILURES / AI_CB_COOLDOWN_MS
  */
 
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -25,15 +10,17 @@ const GEMINI_BASE =
   process.env.GEMINI_API_BASE ||
   'https://generativelanguage.googleapis.com/v1beta';
 
+const LATENCY_WINDOW = Math.max(50, Number(process.env.METRICS_WINDOW || 200));
+
 export type AiProvider = 'groq' | 'gemini';
 export type LoadBalanceMode = 'round_robin' | 'weighted' | 'failover';
 
 export type AiCallResult = {
   text: string;
   provider: AiProvider;
+  latency_ms: number;
 };
 
-// ── Estado em memória (processo) ─────────────────────────────
 let rrIndex = 0;
 
 type ProviderStats = {
@@ -43,11 +30,28 @@ type ProviderStats = {
   cooldownUntil: number;
   lastError?: string;
   lastUsedAt?: number;
+  /** amostras de latência (ms) — sucesso e falha */
+  latencySamples: number[];
+  latencySum: number;
+  latencyCount: number;
+  lastLatencyMs?: number;
 };
 
+function emptyStats(): ProviderStats {
+  return {
+    success: 0,
+    fail: 0,
+    consecutiveFails: 0,
+    cooldownUntil: 0,
+    latencySamples: [],
+    latencySum: 0,
+    latencyCount: 0,
+  };
+}
+
 const stats: Record<AiProvider, ProviderStats> = {
-  groq: { success: 0, fail: 0, consecutiveFails: 0, cooldownUntil: 0 },
-  gemini: { success: 0, fail: 0, consecutiveFails: 0, cooldownUntil: 0 },
+  groq: emptyStats(),
+  gemini: emptyStats(),
 };
 
 function cbFailures(): number {
@@ -57,20 +61,56 @@ function cbCooldownMs(): number {
   return Math.max(1000, Number(process.env.AI_CB_COOLDOWN_MS || 60_000));
 }
 
-function markSuccess(p: AiProvider) {
+function recordLatency(p: AiProvider, ms: number) {
+  const s = stats[p];
+  s.latencySamples.push(ms);
+  if (s.latencySamples.length > LATENCY_WINDOW) s.latencySamples.shift();
+  s.latencySum += ms;
+  s.latencyCount += 1;
+  s.lastLatencyMs = ms;
+}
+
+function pct(samples: number[], p: number): number | null {
+  if (!samples.length) return null;
+  const sorted = [...samples].sort((a, b) => a - b);
+  const idx = Math.min(
+    sorted.length - 1,
+    Math.max(0, Math.ceil((p / 100) * sorted.length) - 1)
+  );
+  return sorted[idx];
+}
+
+function latencySummary(s: ProviderStats) {
+  const samples = s.latencySamples;
+  const sorted = [...samples].sort((a, b) => a - b);
+  return {
+    count: s.latencyCount,
+    window: samples.length,
+    avg_ms: s.latencyCount ? Math.round(s.latencySum / s.latencyCount) : null,
+    last_ms: s.lastLatencyMs ?? null,
+    min_ms: sorted.length ? sorted[0] : null,
+    max_ms: sorted.length ? sorted[sorted.length - 1] : null,
+    p50_ms: pct(samples, 50),
+    p95_ms: pct(samples, 95),
+  };
+}
+
+function markSuccess(p: AiProvider, ms: number) {
   const s = stats[p];
   s.success += 1;
   s.consecutiveFails = 0;
   s.cooldownUntil = 0;
   s.lastUsedAt = Date.now();
+  recordLatency(p, ms);
 }
 
-function markFail(p: AiProvider, err: any) {
+function markFail(p: AiProvider, err: any, ms: number) {
   const s = stats[p];
   s.fail += 1;
   s.consecutiveFails += 1;
   s.lastError = String(err?.message || err).slice(0, 200);
   s.lastUsedAt = Date.now();
+  recordLatency(p, ms);
   if (s.consecutiveFails >= cbFailures()) {
     s.cooldownUntil = Date.now() + cbCooldownMs();
     console.warn(
@@ -85,20 +125,22 @@ function isCoolingDown(p: AiProvider): boolean {
 
 export function getAiLoadStats() {
   const now = Date.now();
+  const pack = (p: AiProvider) => ({
+    success: stats[p].success,
+    fail: stats[p].fail,
+    consecutiveFails: stats[p].consecutiveFails,
+    lastError: stats[p].lastError,
+    lastUsedAt: stats[p].lastUsedAt,
+    cooling: isCoolingDown(p),
+    cooldown_remaining_ms: Math.max(0, stats[p].cooldownUntil - now),
+    latency: latencySummary(stats[p]),
+  });
   return {
     mode: getLoadBalanceMode(),
     providers: listAiProviders(),
     stats: {
-      groq: {
-        ...stats.groq,
-        cooling: isCoolingDown('groq'),
-        cooldown_remaining_ms: Math.max(0, stats.groq.cooldownUntil - now),
-      },
-      gemini: {
-        ...stats.gemini,
-        cooling: isCoolingDown('gemini'),
-        cooldown_remaining_ms: Math.max(0, stats.gemini.cooldownUntil - now),
-      },
+      groq: pack('groq'),
+      gemini: pack('gemini'),
     },
   };
 }
@@ -131,7 +173,6 @@ export function aiConfigured(): boolean {
 function getLoadBalanceMode(): LoadBalanceMode {
   const m = (process.env.AI_LOAD_BALANCE || '').toLowerCase();
   if (m === 'weighted' || m === 'failover' || m === 'round_robin') return m;
-  // padrão: round_robin se 2 providers, senão failover
   return listAiProviders().length > 1 ? 'round_robin' : 'failover';
 }
 
@@ -140,12 +181,8 @@ function weightOf(p: AiProvider): number {
   return Math.max(0, Number(process.env.AI_WEIGHT_GEMINI || 50));
 }
 
-/**
- * Monta a fila de tentativa: primário (balanceado) + demais como fallback.
- */
 function buildAttemptOrder(): AiProvider[] {
   const all = listAiProviders().filter((p) => !isCoolingDown(p));
-  // Se todos em cooldown, tenta mesmo assim (melhor que falhar seco)
   const pool = all.length ? all : listAiProviders();
   if (!pool.length) return [];
 
@@ -166,13 +203,11 @@ function buildAttemptOrder(): AiProvider[] {
       }
     }
   } else {
-    // round_robin
     primary = pool[rrIndex % pool.length];
     rrIndex = (rrIndex + 1) % 1_000_000;
   }
 
   const rest = pool.filter((p) => p !== primary);
-  // Também coloca providers em cooldown no fim (último recurso)
   const cooling = listAiProviders().filter((p) => !pool.includes(p));
   return [primary, ...rest, ...cooling];
 }
@@ -289,9 +324,6 @@ async function invokeProvider(
     : callGemini(system, user, maxTokens, temperature);
 }
 
-/**
- * Escolhe provider via balanceamento; em falha tenta os demais.
- */
 export async function callAI(
   system: string,
   user: string,
@@ -309,19 +341,24 @@ export async function callAI(
 
   for (let i = 0; i < order.length; i++) {
     const provider = order[i];
+    const t0 = process.hrtime.bigint();
     try {
       const text = await invokeProvider(provider, system, user, maxTokens, temperature);
-      markSuccess(provider);
+      const ms = Math.round(Number(process.hrtime.bigint() - t0) / 1e6);
+      markSuccess(provider, ms);
       if (i > 0) {
-        console.warn(`[IA] Fallback: ${provider} (após falha do primário)`);
+        console.warn(`[IA] Fallback: ${provider} (${ms}ms)`);
+      } else if (process.env.AI_LOG_LATENCY === '1') {
+        console.log(`[IA] ${provider} ok ${ms}ms`);
       }
-      return { text, provider };
+      return { text, provider, latency_ms: ms };
     } catch (e: any) {
-      markFail(provider, e);
+      const ms = Math.round(Number(process.hrtime.bigint() - t0) / 1e6);
+      markFail(provider, e, ms);
       lastError = e;
       if (i < order.length - 1) {
         console.warn(
-          `[IA] ${provider} falhou (${e?.status || e?.message}) → próximo...`
+          `[IA] ${provider} falhou em ${ms}ms (${e?.status || e?.message}) → próximo...`
         );
         continue;
       }
