@@ -10,7 +10,42 @@ function nivelDashboard(plan: string): 'basico' | 'pro' | 'ultra' | 'executivo' 
   if (p === 'rei' || p === 'corporativo') return 'executivo';
   if (p === 'ultra') return 'ultra';
   if (p === 'pro') return 'pro';
-  return 'basico'; // trial, inicial
+  return 'basico';
+}
+
+function serieUltimosDias(
+  reviews: { rating: number; createdAt: string }[],
+  dias = 14
+): { dia: string; total: number; positivas: number; negativas: number; media: number }[] {
+  const map = new Map<string, { total: number; pos: number; neg: number; soma: number }>();
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  for (let i = dias - 1; i >= 0; i--) {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    map.set(key, { total: 0, pos: 0, neg: 0, soma: 0 });
+  }
+
+  for (const r of reviews) {
+    const key = String(r.createdAt || '').slice(0, 10);
+    const bucket = map.get(key);
+    if (!bucket) continue;
+    const rating = Number(r.rating) || 0;
+    bucket.total += 1;
+    bucket.soma += rating;
+    if (rating >= 4) bucket.pos += 1;
+    if (rating <= 3) bucket.neg += 1;
+  }
+
+  return [...map.entries()].map(([dia, b]) => ({
+    dia,
+    total: b.total,
+    positivas: b.pos,
+    negativas: b.neg,
+    media: b.total ? Math.round((b.soma / b.total) * 10) / 10 : 0,
+  }));
 }
 
 export function mountEmpresaRoutes(app: Express) {
@@ -93,7 +128,7 @@ export function mountEmpresaRoutes(app: Express) {
       const db = getDb();
       const rows = await db.all(
         `SELECT id, name, rating, comment, ai_reply, ai_tags, createdAt
-         FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 200`,
+         FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 500`,
         [empresa.id]
       );
 
@@ -135,7 +170,6 @@ export function mountEmpresaRoutes(app: Express) {
         (r: any) => r.rating <= 2 && new Date(r.createdAt).getTime() >= ha24h
       ).length;
 
-      // tags mais frequentes (planos com análise)
       const tagCount: Record<string, number> = {};
       for (const r of reviews) {
         for (const t of r.ai_tags || []) {
@@ -147,6 +181,8 @@ export function mountEmpresaRoutes(app: Express) {
         .sort((a, b) => b[1] - a[1])
         .slice(0, 8)
         .map(([tag, count]) => ({ tag, count }));
+
+      const serie_14d = serieUltimosDias(reviews, 14);
 
       const plan = String(empresa.plan || 'trial').toLowerCase();
       const nivel = nivelDashboard(plan);
@@ -168,7 +204,7 @@ export function mountEmpresaRoutes(app: Express) {
           whatsapp: wpp,
           whatsapp_url: linkWhatsapp(wpp),
         },
-        reviews,
+        reviews: reviews.slice(0, 200),
         metricas: {
           total,
           media,
@@ -179,11 +215,13 @@ export function mountEmpresaRoutes(app: Express) {
           distribuicao: dist,
           top_tags,
           taxa_positiva: total ? Math.round((positivas / total) * 100) : 0,
+          serie_14d,
         },
         dashboard: {
           nivel,
           pdf_disponivel,
-          mostrar_graficos: nivel !== 'basico' || total > 0,
+          mostrar_graficos: true,
+          mostrar_tendencia: nivel !== 'basico',
           mostrar_tags: nivel === 'ultra' || nivel === 'executivo',
           mostrar_crise: nivel !== 'basico',
         },
@@ -192,9 +230,7 @@ export function mountEmpresaRoutes(app: Express) {
           painel: `${base}/painel/${ref}`,
           widget: `${base}/widget/${ref}`,
           embed: `${base}/avaliacao/${ref}`,
-          relatorio_pdf: pdf_disponivel
-            ? `/api/empresa/${ref}/relatorio.pdf`
-            : null,
+          relatorio_pdf: pdf_disponivel ? `/api/empresa/${ref}/relatorio.pdf` : null,
         },
       });
     })
