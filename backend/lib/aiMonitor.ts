@@ -4,36 +4,13 @@
 import type { Database } from 'sqlite';
 import { getDb } from './db.js';
 import { getAiLoadStats } from '../groqService.js';
+import { getRateLimitHits } from './rateLimitHits.js';
 
-const rateLimitHits: { at: number; provider: string; detail: string }[] = [];
-const MAX_HITS = 100;
-
-export function recordRateLimitHit(provider: string, detail: string) {
-  rateLimitHits.unshift({
-    at: Date.now(),
-    provider: String(provider).slice(0, 20),
-    detail: String(detail).slice(0, 300),
-  });
-  if (rateLimitHits.length > MAX_HITS) rateLimitHits.length = MAX_HITS;
-}
-
-export function isRateLimitError(err: any): boolean {
-  const status = Number(err?.status || 0);
-  if (status === 429) return true;
-  const b = String(err?.body || err?.message || '').toLowerCase();
-  return (
-    b.includes('rate limit') ||
-    b.includes('rate_limit') ||
-    b.includes('too many requests') ||
-    b.includes('tokens per minute') ||
-    b.includes('requests per minute') ||
-    b.includes('tpm') ||
-    b.includes('rpm')
-  );
-}
+export { recordRateLimitHit, isRateLimitError } from './rateLimitHits.js';
 
 export async function getAiMonitorSnapshot(db: Database = getDb()) {
   const load = getAiLoadStats();
+  const rateLimitHits = getRateLimitHits();
 
   const hoje = await db.get(
     `SELECT COUNT(*) as reqs, COALESCE(SUM(tokens),0) as tokens
@@ -53,14 +30,12 @@ export async function getAiMonitorSnapshot(db: Database = getDb()) {
   const last15min = rateLimitHits.filter((h) => Date.now() - h.at < 15 * 60 * 1000);
   const last24h = rateLimitHits.filter((h) => Date.now() - h.at < 24 * 60 * 60 * 1000);
 
-  const groqCooling = load.stats.groq.cooling;
-  const groqFail = load.stats.groq.fail;
   const lastErr = load.stats.groq.lastError || '';
   const rateLimitAlert =
     last15min.length > 0 ||
-    (lastErr.toLowerCase().includes('429') ||
-      lastErr.toLowerCase().includes('rate limit') ||
-      lastErr.toLowerCase().includes('rate_limit'));
+    lastErr.toLowerCase().includes('429') ||
+    lastErr.toLowerCase().includes('rate limit') ||
+    lastErr.toLowerCase().includes('rate_limit');
 
   return {
     gerado_em: new Date().toISOString(),
