@@ -23,6 +23,7 @@ import { mountRelatorioRoutes } from './routes/relatorioRoutes.js';
 import { mountPlanSwitchRoutes } from './routes/planSwitchRoutes.js';
 import { mountWebAuthnRoutes } from './routes/webauthnRoutes.js';
 import { mountPushRoutes } from './routes/pushRoutes.js';
+import { mountJobsRoutes } from './routes/jobsRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
@@ -34,6 +35,7 @@ import { ensureUnidadesSchema } from './relatorioPdf.js';
 import { ensureWebAuthnSchema, webauthnConfig } from './lib/webauthn.js';
 import { ensurePushSchema, pushConfigured, initWebPush } from './lib/push.js';
 import { allowPlanSwitch } from './lib/plans.js';
+import { smtpConfigured } from './lib/mailer.js';
 import {
   backfillSentiment,
   countMissingSentiment,
@@ -65,6 +67,7 @@ app.get('/api/health', (_req, res) => {
     jwt: jwtRotationStatus(),
     webauthn: webauthnConfig(),
     push: pushConfigured(),
+    smtp: smtpConfigured(),
     ai_latency: {
       groq: ai.stats.groq.latency,
       gemini: ai.stats.gemini.latency,
@@ -141,6 +144,7 @@ async function main() {
   mountPlanSwitchRoutes(app);
   mountWebAuthnRoutes(app);
   mountPushRoutes(app);
+  mountJobsRoutes(app);
 
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
   mountAdminPasswordResetRoutes(app, getDb);
@@ -164,6 +168,7 @@ async function main() {
     `👆 WebAuthn rp=${webauthnConfig().rpId} origin=${webauthnConfig().origin}`
   );
   console.log(`🔔 Push: ${pushConfigured() ? 'ON (VAPID)' : 'OFF — npx web-push generate-vapid-keys'}`);
+  console.log(`📧 SMTP: ${smtpConfigured() ? 'ON' : 'OFF — e-mails vão para o console em dev'}`);
   console.log(
     `🧪 Troca de plano (teste): ${allowPlanSwitch() ? 'ON' : 'OFF'} — ALLOW_PLAN_SWITCH`
   );
