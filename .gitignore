@@ -8,13 +8,15 @@ node_modules/
 *.db-shm
 *.db-wal
 data/
-backend/prisma/*.db
-backend/prisma/dev.db
+backend/prisma/
+backend/prisma/**
 .next/
 dist/
 build/
 coverage/
 .aider*
+.aider.tags.cache.v4/
 *.log
 .DS_Store
 *.tsbuildinfo
+Saas.txt

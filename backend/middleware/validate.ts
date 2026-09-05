@@ -3,7 +3,7 @@
  */
 import type { Request, Response, NextFunction } from 'express';
 import { normalizarCnpj, cnpjValido } from '../lib/cnpj.js';
-import { validarSenhaEmpresa } from '../passwordPolicy.js';
+import { validarSenhaEmpresa } from '../lib/passwordPolicy.js';
 
 export type FieldRule = {
   required?: boolean;
