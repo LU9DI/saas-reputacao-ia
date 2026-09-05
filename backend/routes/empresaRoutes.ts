@@ -1,24 +1,29 @@
 import type { Express, Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { getDb, findEmpresa } from '../lib/db.js';
 import { normalizarWhatsapp, linkWhatsapp } from '../lib/whatsapp.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { ensureReviewFraudColumns } from '../lib/reviewFraud.js';
 import { planTemPdf, allowPlanSwitch, PLANOS_OFICIAIS, planLabel, isTrialPlan } from '../lib/plans.js';
 import { planTemIA } from '../lib/quota.js';
+import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
 
-/**
- * Níveis de UI do painel.
- * Trial / teste = executivo (tudo incluso nos 7 dias).
- */
+const whatsappPatchLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Muitas alterações de WhatsApp. Aguarde.' },
+});
+
 function nivelDashboard(plan: string): 'basico' | 'pro' | 'ultra' | 'executivo' {
   const p = String(plan || 'trial').toLowerCase();
   if (isTrialPlan(p)) return 'executivo';
   if (p === 'rei' || p === 'corporativo') return 'executivo';
   if (p === 'ultra') return 'ultra';
   if (p === 'pro') return 'pro';
-  // inicial
   return 'basico';
 }
 
@@ -55,6 +60,12 @@ function serieUltimosDias(
     negativas: b.neg,
     media: b.total ? Math.round((b.soma / b.total) * 10) / 10 : 0,
   }));
+}
+
+/** Dono da empresa ou admin. */
+function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
+  if (isAdminUser(req.user)) return true;
+  return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
 }
 
 export function mountEmpresaRoutes(app: Express) {
@@ -96,9 +107,15 @@ export function mountEmpresaRoutes(app: Express) {
 
   app.patch(
     '/api/empresa/:ref/whatsapp',
-    asyncHandler(async (req: Request, res: Response) => {
+    whatsappPatchLimiter,
+    autenticarToken,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
       const empresa = await findEmpresa(req.params.ref);
       if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+
+      if (!podeGerirEmpresa(req, empresa.id)) {
+        return res.status(403).json({ error: 'Sem permissão para alterar o WhatsApp desta empresa.' });
+      }
 
       const raw = String(req.body.whatsapp || req.body.whatsapp_suporte || '').trim();
       if (!raw) {
@@ -239,7 +256,6 @@ export function mountEmpresaRoutes(app: Express) {
       const trial = isTrialPlan(plan);
       const nivel = nivelDashboard(plan);
       const pdf_disponivel = planTemPdf(plan);
-      // Trial tem IA; planos pagos seguem planTemIA
       const tem_ia = trial || planTemIA(plan);
 
       const base = APP_URL.replace(/\/$/, '');
@@ -284,15 +300,13 @@ export function mountEmpresaRoutes(app: Express) {
           planos_teste: allowPlanSwitch()
             ? PLANOS_OFICIAIS.map((p) => ({ key: p, label: planLabel(p) }))
             : [],
-          // Gráficos / tendência / tags: trial e planos superiores
           mostrar_graficos: true,
           mostrar_tendencia:
             trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
           mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo'),
-          mostrar_crise: true, // alerta de crise disponível em todos
+          mostrar_crise: true,
           mostrar_sentimento: true,
           mostrar_ia_respostas: tem_ia,
-          // Universal em TODOS os planos (incl. inicial/pro e trial):
           mostrar_whatsapp_cliente: true,
           mostrar_copiar_resposta: true,
           whatsapp_crise: true,
