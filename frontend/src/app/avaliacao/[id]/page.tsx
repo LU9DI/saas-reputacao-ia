@@ -12,6 +12,7 @@ export default function PaginaAvaliacao() {
   const [name, setName] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
+  const [website, setWebsite] = useState(''); // honeypot
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -47,18 +48,20 @@ export default function PaginaAvaliacao() {
     validarAcesso();
   }, [empresaId]);
 
+  const payloadBase = (selectedRating: number) => ({
+    name: name || 'Anônimo',
+    rating: selectedRating,
+    comment: selectedRating <= 3 ? comment : '',
+    empresa_id: empresaId,
+    website, // honeypot — humanos deixam vazio
+  });
+
   const handleStarClick = (selectedRating: number) => {
     setRating(selectedRating);
     setErro('');
 
     if (selectedRating >= 4) {
-      const payload = JSON.stringify({
-        name: name || 'Anônimo',
-        rating: selectedRating,
-        comment: '',
-        empresa_id: empresaId,
-      });
-
+      const payload = JSON.stringify(payloadBase(selectedRating));
       const blob = new Blob([payload], { type: 'application/json' });
       if (!navigator.sendBeacon(`${apiUrl()}/api/reviews`, blob)) {
         fetch(`${apiUrl()}/api/reviews`, {
@@ -68,7 +71,6 @@ export default function PaginaAvaliacao() {
           keepalive: true,
         }).catch(() => {});
       }
-
       window.location.href = googleReviewUrl || 'https://www.google.com/maps';
     }
   };
@@ -84,12 +86,7 @@ export default function PaginaAvaliacao() {
       const response = await fetch(`${apiUrl()}/api/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name || 'Anônimo',
-          rating,
-          comment,
-          empresa_id: empresaId,
-        }),
+        body: JSON.stringify(payloadBase(rating)),
       });
 
       if (!response.ok) {
@@ -97,7 +94,6 @@ export default function PaginaAvaliacao() {
         return;
       }
 
-      // Após crítica privada → WhatsApp da empresa (se cadastrado)
       if (whatsappUrl) {
         const texto = [
           `Olá! Acabei de enviar um feedback (${rating}★)${nomeEmpresa ? ` sobre ${nomeEmpresa}` : ''}.`,
@@ -120,7 +116,7 @@ export default function PaginaAvaliacao() {
   if (erroValidacao) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-black text-zinc-100 p-4">
-        <p className="text-zinc-300 mb-4">Não foi possível verificar o acesso. Verifique se a API está online.</p>
+        <p className="text-zinc-300 mb-4">Não foi possível verificar o acesso.</p>
         <button onClick={validarAcesso} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold">
           Tentar novamente
         </button>
@@ -138,7 +134,6 @@ export default function PaginaAvaliacao() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-white p-4">
         <h1 className="text-2xl font-bold mb-4">Acesso encerrado</h1>
-        <p className="text-zinc-400 mb-6">O período de testes ou a assinatura não está ativo.</p>
         <a href="/" className="bg-indigo-600 px-6 py-3 rounded-xl font-semibold">
           Ver planos
         </a>
@@ -149,7 +144,7 @@ export default function PaginaAvaliacao() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-md max-w-md w-full text-center">
+        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center">
           <div className="text-4xl mb-4">🙏</div>
           <h2 className="text-2xl font-bold text-zinc-50 mb-2">Obrigado pelo feedback!</h2>
           <p className="text-zinc-400">Sua opinião foi enviada de forma privada para a gestão.</p>
@@ -173,6 +168,30 @@ export default function PaginaAvaliacao() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Honeypot — escondido de humanos */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: 'absolute',
+              left: '-10000px',
+              top: 'auto',
+              width: 1,
+              height: 1,
+              overflow: 'hidden',
+            }}
+          >
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
+
           <div>
             <label htmlFor="nome" className="block text-sm font-medium text-zinc-400 mb-1">
               Seu nome (opcional)
@@ -231,11 +250,6 @@ export default function PaginaAvaliacao() {
                     ? 'Enviar e falar no WhatsApp'
                     : 'Enviar crítica privada'}
               </button>
-              {whatsappUrl && (
-                <p className="text-[11px] text-zinc-500 text-center">
-                  Após enviar, você será direcionado ao WhatsApp da empresa para conversar.
-                </p>
-              )}
             </div>
           )}
         </form>
