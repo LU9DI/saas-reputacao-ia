@@ -5,6 +5,10 @@ import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
 import { DashboardCharts } from '../../components/DashboardCharts';
+import {
+  currentMonthYYYYMM,
+  validateReportMonth,
+} from '../../utils/dateValidation';
 
 interface Review {
   id: number;
@@ -46,7 +50,6 @@ interface PainelData {
       negativas: number;
       media: number;
     }[];
-    sentimento_mix?: { positivo: number; neutro: number; negativo: number };
   };
   dashboard?: {
     nivel: string;
@@ -76,20 +79,12 @@ interface AssinaturaInfo {
   aviso_cancelamento?: string | null;
 }
 
-function mesAtualYYYYMM(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-}
-
-/** Últimos N meses no formato YYYY-MM (incluindo o atual) */
-function listarMesesOpcoes(qtd = 12): string[] {
+function listarMesesOpcoes(qtd = 18): string[] {
   const out: string[] = [];
   const d = new Date();
   d.setDate(1);
   for (let i = 0; i < qtd; i++) {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    out.push(`${y}-${m}`);
+    out.push(currentMonthYYYYMM(d));
     d.setMonth(d.getMonth() - 1);
   }
   return out;
@@ -143,15 +138,26 @@ export default function PainelEmpresa() {
   const [msgWpp, setMsgWpp] = useState('');
   const [baixandoPdf, setBaixandoPdf] = useState(false);
   const [msgPdf, setMsgPdf] = useState('');
-  const [mesPdf, setMesPdf] = useState(mesAtualYYYYMM);
+  const [mesPdf, setMesPdf] = useState(currentMonthYYYYMM);
 
   const mesesOpcoes = useMemo(() => listarMesesOpcoes(18), []);
+  const mesMax = currentMonthYYYYMM();
 
   const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
     typeof window !== 'undefined' ? window.location.origin : getEnv('NEXT_PUBLIC_APP_URL');
 
   const linkAvaliacao = data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
+
+  const setMesValidado = (raw: string) => {
+    const v = validateReportMonth(raw, { maxMonth: mesMax, minYear: 2020 });
+    if (v.ok) {
+      setMesPdf(v.value);
+      setMsgPdf('');
+    } else {
+      setMsgPdf(v.error);
+    }
+  };
 
   const carregar = async () => {
     if (!empresaId) {
@@ -254,11 +260,17 @@ export default function PainelEmpresa() {
   };
 
   const baixarPdf = async () => {
+    const check = validateReportMonth(mesPdf, { maxMonth: mesMax, minYear: 2020 });
+    if (!check.ok) {
+      setMsgPdf(check.error);
+      return;
+    }
+
     setBaixandoPdf(true);
     setMsgPdf('');
     try {
-      const mes = /^\d{4}-\d{2}$/.test(mesPdf) ? mesPdf : mesAtualYYYYMM();
-      const res = await fetch(`${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${mes}`);
+      const mes = check.value;
+      const res = await fetch(`${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${encodeURIComponent(mes)}`);
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.error || `Erro ${res.status}`);
@@ -342,9 +354,8 @@ export default function PainelEmpresa() {
                 <select
                   id="mes-pdf"
                   value={mesPdf}
-                  onChange={(e) => setMesPdf(e.target.value)}
+                  onChange={(e) => setMesValidado(e.target.value)}
                   className="text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
-                  title="Mês do relatório PDF"
                 >
                   {mesesOpcoes.map((m) => (
                     <option key={m} value={m}>
@@ -355,13 +366,13 @@ export default function PainelEmpresa() {
                 <input
                   type="month"
                   value={mesPdf}
-                  max={mesAtualYYYYMM()}
+                  min="2020-01"
+                  max={mesMax}
                   onChange={(e) => {
-                    if (e.target.value) setMesPdf(e.target.value);
+                    if (e.target.value) setMesValidado(e.target.value);
                   }}
                   className="text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
-                  aria-label="Escolher mês (calendário)"
-                  title="Ou escolha no calendário"
+                  aria-label="Escolher mês"
                 />
                 <button
                   type="button"
@@ -387,7 +398,12 @@ export default function PainelEmpresa() {
           </div>
         </div>
         {msgPdf && (
-          <p className="text-center text-xs text-slate-500 pb-3" role="status">
+          <p
+            className={`text-center text-xs pb-3 ${
+              msgPdf.includes('baixado') ? 'text-emerald-600' : 'text-red-600'
+            }`}
+            role="status"
+          >
             {msgPdf}
           </p>
         )}
@@ -408,13 +424,13 @@ export default function PainelEmpresa() {
                 Relatório mensal
               </p>
               <p className="text-sm text-slate-600 mt-1">
-                Baixe o PDF de <strong>{labelMes(mesPdf)}</strong> conforme seu plano ({planLabel}).
+                Baixe o PDF de <strong>{labelMes(mesPdf)}</strong> (máx. {labelMes(mesMax)}).
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <select
                 value={mesPdf}
-                onChange={(e) => setMesPdf(e.target.value)}
+                onChange={(e) => setMesValidado(e.target.value)}
                 className="text-sm px-3 py-2.5 rounded-xl border border-slate-200 bg-white"
               >
                 {mesesOpcoes.map((m) => (
