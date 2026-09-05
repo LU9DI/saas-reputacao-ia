@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { getDb, findEmpresa } from '../lib/db.js';
+import { validateBody, schemaReview } from '../middleware/validate.js';
 
 const reviewsLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -9,39 +10,37 @@ const reviewsLimiter = rateLimit({
 });
 
 export function mountReviewRoutes(app: Express) {
-  app.post('/api/reviews', reviewsLimiter, async (req: Request, res: Response) => {
-    try {
-      const db = getDb();
-      const name = String(req.body.name ?? '').trim().slice(0, 100);
-      const comment = String(req.body.comment ?? '').trim().slice(0, 500);
-      const rating = Number(req.body.rating);
-      const empresaRef = String(req.body.empresa_id || req.body.empresa_ref || '').slice(0, 100);
+  app.post(
+    '/api/reviews',
+    reviewsLimiter,
+    validateBody(schemaReview),
+    async (req: Request, res: Response) => {
+      try {
+        const db = getDb();
+        const name = req.body.name ? String(req.body.name) : '';
+        const comment = req.body.comment ? String(req.body.comment) : '';
+        const rating = Number(req.body.rating);
+        const empresaRef = String(req.body.empresa_id || req.body.empresa_ref || '').slice(0, 100);
 
-      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-        return res.status(400).json({ error: 'Rating deve ser inteiro entre 1 e 5.' });
+        let empresaId: string | null = null;
+        if (empresaRef) {
+          const emp = await findEmpresa(empresaRef);
+          if (!emp) return res.status(404).json({ error: 'Empresa não encontrada.' });
+          empresaId = emp.id;
+        }
+
+        const result = await db.run(
+          `INSERT INTO reviews (empresa_id, name, rating, comment) VALUES (?, ?, ?, ?)`,
+          [empresaId, name || 'Anônimo', rating, comment || null]
+        );
+
+        res.status(201).json({ success: true, id: result.lastID });
+      } catch (e) {
+        console.error('reviews:', e);
+        res.status(500).json({ error: 'Erro interno.' });
       }
-      if (rating <= 3 && !comment) {
-        return res.status(400).json({ error: 'Comentário obrigatório para notas ≤ 3.' });
-      }
-
-      let empresaId: string | null = null;
-      if (empresaRef) {
-        const emp = await findEmpresa(empresaRef);
-        if (!emp) return res.status(404).json({ error: 'Empresa não encontrada.' });
-        empresaId = emp.id;
-      }
-
-      const result = await db.run(
-        `INSERT INTO reviews (empresa_id, name, rating, comment) VALUES (?, ?, ?, ?)`,
-        [empresaId, name || 'Anônimo', rating, comment || null]
-      );
-
-      res.status(201).json({ success: true, id: result.lastID });
-    } catch (e) {
-      console.error('reviews:', e);
-      res.status(500).json({ error: 'Erro interno.' });
     }
-  });
+  );
 
   app.get('/api/reviews/:ref', async (req: Request, res: Response) => {
     try {
