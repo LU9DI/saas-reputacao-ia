@@ -1,10 +1,20 @@
 /**
- * Regras de negócio de avaliações (reviews).
+ * Regras de negócio de avaliações (reviews) + anti-fraude.
  */
 import type { Database } from 'sqlite';
 import { getDb, findEmpresa } from '../lib/db.js';
 import { gerarRespostaReview, gerarTagsSemanticas, aiConfigured } from '../groqService.js';
 import { planTemIA, getFeedbackLimit, contarReviewsMes } from '../lib/quota.js';
+import {
+  assertNotHoneypot,
+  checkDbRateByIp,
+  checkDuplicateComment,
+  checkMemoryRate,
+  ensureReviewFraudColumns,
+  hashIp,
+  softFraudFlags,
+  ReviewFraudError,
+} from '../lib/reviewFraud.js';
 
 export type ReviewInput = {
   name?: string;
@@ -12,12 +22,18 @@ export type ReviewInput = {
   rating: number;
   empresa_id?: string;
   empresa_ref?: string;
+  /** Campo honeypot (bots preenchem) */
+  website?: string;
+  /** Avaliação de teste do painel — não entra em métricas */
+  is_test?: boolean;
+  ip?: string;
 };
 
 export type ReviewResult = {
   success: true;
   id: number | undefined;
   ai: boolean;
+  is_test?: boolean;
 };
 
 export class ReviewNotFoundError extends Error {
@@ -36,14 +52,23 @@ export class ReviewQuotaError extends Error {
   }
 }
 
+export { ReviewFraudError };
+
 export async function criarReview(
   input: ReviewInput,
   db: Database = getDb()
 ): Promise<ReviewResult> {
-  const name = input.name ? String(input.name) : '';
-  const comment = input.comment ? String(input.comment) : '';
+  await ensureReviewFraudColumns(db);
+
+  assertNotHoneypot(input.website);
+
+  const name = input.name ? String(input.name).slice(0, 100) : '';
+  const comment = input.comment ? String(input.comment).slice(0, 500) : '';
   const rating = Number(input.rating);
   const empresaRef = String(input.empresa_id || input.empresa_ref || '').slice(0, 100);
+  const isTest = Boolean(input.is_test);
+  const ip = input.ip || '0.0.0.0';
+  const ipHash = hashIp(ip);
 
   let empresaId: string | null = null;
   let nomeEmpresa: string | undefined;
@@ -56,19 +81,29 @@ export async function criarReview(
     nomeEmpresa = emp.nome_empresa;
     plan = String(emp.plan || emp.status || 'trial').toLowerCase();
 
-    const usadas = await contarReviewsMes(empresaId);
-    const limite = getFeedbackLimit(plan);
-    if (usadas >= limite) {
-      throw new ReviewQuotaError(
-        `Limite mensal de avaliações atingido (${limite}). Faça upgrade do plano.`
-      );
+    if (!isTest) {
+      checkMemoryRate(ip, empresaId);
+      await checkDbRateByIp(db, empresaId, ipHash);
+      if (comment) await checkDuplicateComment(db, empresaId, comment);
+
+      const usadas = await contarReviewsMes(empresaId);
+      const limite = getFeedbackLimit(plan);
+      if (usadas >= limite) {
+        throw new ReviewQuotaError(
+          `Limite mensal de avaliações atingido (${limite}). Faça upgrade do plano.`
+        );
+      }
     }
   }
+
+  const flags = isTest
+    ? ['teste_painel']
+    : softFraudFlags({ name: name || 'Anônimo', comment, rating });
 
   let aiReply: string | null = null;
   let aiTags: string | null = null;
 
-  if (rating <= 3 && comment && planTemIA(plan) && aiConfigured()) {
+  if (!isTest && rating <= 3 && comment && planTemIA(plan) && aiConfigured()) {
     try {
       const [resposta, tags] = await Promise.all([
         gerarRespostaReview(name || 'Anônimo', rating, comment, nomeEmpresa),
@@ -79,28 +114,42 @@ export async function criarReview(
     } catch (e: any) {
       console.warn('IA review (não bloqueia envio):', e?.message || e);
     }
-  } else if (rating <= 3 && comment) {
+  } else if (!isTest && rating <= 3 && comment) {
     aiTags = JSON.stringify(rating <= 2 ? ['#ExperienciaNegativa'] : ['#Neutro']);
   }
 
   const result = await db.run(
-    `INSERT INTO reviews (empresa_id, name, rating, comment, ai_reply, ai_tags)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [empresaId, name || 'Anônimo', rating, comment || null, aiReply, aiTags]
+    `INSERT INTO reviews (empresa_id, name, rating, comment, ai_reply, ai_tags, is_test, ip_hash, fraud_flags, origin)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      empresaId,
+      name || 'Anônimo',
+      rating,
+      comment || null,
+      aiReply,
+      aiTags,
+      isTest ? 1 : 0,
+      isTest ? null : ipHash,
+      flags.length ? JSON.stringify(flags) : null,
+      isTest ? 'painel_teste' : 'publico',
+    ]
   );
 
   return {
     success: true,
     id: result.lastID,
     ai: Boolean(aiReply),
+    is_test: isTest,
   };
 }
 
 export async function listarReviews(ref: string, db: Database = getDb()) {
   const emp = await findEmpresa(ref);
   if (!emp) throw new ReviewNotFoundError();
+  await ensureReviewFraudColumns(db);
   return db.all(
-    `SELECT id, name, rating, comment, ai_reply, ai_tags, createdAt
+    `SELECT id, name, rating, comment, ai_reply, ai_tags, createdAt,
+            IFNULL(is_test,0) as is_test, fraud_flags, origin
      FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 100`,
     [emp.id]
   );
