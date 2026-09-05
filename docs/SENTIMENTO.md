@@ -2,36 +2,47 @@
 
 ## Como funciona
 
-1. **Heurística (sempre)** — nota + dicionário PT-BR de palavras positivas/negativas  
-2. **IA (opcional)** — planos com IA (`trial`, `ultra`, `corporativo`, `rei`) e comentário ≥ 8 chars → refino via Groq/Gemini  
-3. Persistido em `reviews.sentiment`, `sentiment_score` (-1…+1), `sentiment_source`
+1. **Heurística (sempre)** — nota + dicionário PT-BR  
+2. **IA (opcional)** — planos com IA + comentário ≥ 8 chars  
+3. Campos: `sentiment`, `sentiment_score` (-1…+1), `sentiment_source`
 
-## Labels
+## Backfill (avaliações antigas)
 
-| Label | Score típico |
-|-------|----------------|
-| `positivo` | ≥ 0,2 |
-| `neutro` | entre -0,2 e 0,2 |
-| `negativo` | ≤ -0,2 |
+Na subida do servidor, se houver reviews **sem** `sentiment`, o backfill roda automaticamente (heurística, até 2000 por boot).
+
+### Desligar / limitar
+
+```env
+BACKFILL_SENTIMENT=0          # não roda no boot
+BACKFILL_SENTIMENT_LIMIT=500  # tamanho do lote no boot
+BACKFILL_SENTIMENT_AI=1       # usa IA no boot (não recomendado em prod sem necessidade)
+```
+
+### Script manual
+
+```bash
+cd backend
+
+# heurística (recomendado)
+npm run backfill:sentiment
+
+# com opções
+npx tsx scripts/backfillSentiment.ts --limit=10000
+npx tsx scripts/backfillSentiment.ts --force          # reprocessa tudo
+npx tsx scripts/backfillSentiment.ts --empresa=UUID
+npx tsx scripts/backfillSentiment.ts --ai --limit=200 # refino com LLM
+```
+
+Se ainda restarem pendentes, rode de novo (processa em lotes).
 
 ## API do painel
 
-Cada review pode trazer:
-
 ```json
 {
-  "sentiment": "negativo",
-  "sentiment_score": -0.72,
-  "sentiment_source": "heuristica"
-}
-```
-
-Agregados em `metricas`:
-
-```json
-{
-  "sentimento_mix": { "positivo": 12, "neutro": 3, "negativo": 5 },
-  "sentimento_score_medio": 0.18
+  "metricas": {
+    "sentimento_mix": { "positivo": 12, "neutro": 3, "negativo": 5 },
+    "sentimento_score_medio": 0.18
+  }
 }
 ```
 
