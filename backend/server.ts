@@ -18,6 +18,7 @@ import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
 import { mountReviewRoutes } from './routes/reviewRoutes.js';
 import { mountAdminListRoutes } from './routes/adminListRoutes.js';
 import { mountRelatorioRoutes } from './routes/relatorioRoutes.js';
+import { mountPlanSwitchRoutes } from './routes/planSwitchRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
@@ -26,6 +27,7 @@ import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured } from './stripeBilling.js';
 import { aiConfigured, listAiProviders, getAiLoadStats } from './groqService.js';
 import { ensureUnidadesSchema } from './relatorioPdf.js';
+import { allowPlanSwitch } from './lib/plans.js';
 import {
   backfillSentiment,
   countMissingSentiment,
@@ -51,6 +53,7 @@ app.get('/api/health', (_req, res) => {
     stripe: stripeConfigured(),
     ai: aiConfigured(),
     ai_providers: listAiProviders(),
+    plan_switch: allowPlanSwitch(),
     ai_latency: {
       groq: ai.stats.groq.latency,
       gemini: ai.stats.gemini.latency,
@@ -72,7 +75,6 @@ app.get('/api/metrics', (_req, res) => {
 const PORT = Number(process.env.PORT || 5000);
 
 async function runSentimentBackfillOnBoot() {
-  // BACKFILL_SENTIMENT=0 desliga; default = ligado (heurística, lote 2000)
   if (process.env.BACKFILL_SENTIMENT === '0') {
     console.log('⏭️  Backfill de sentimento desligado (BACKFILL_SENTIMENT=0)');
     return;
@@ -114,6 +116,7 @@ async function main() {
   mountReviewRoutes(app);
   mountAdminListRoutes(app);
   mountRelatorioRoutes(app);
+  mountPlanSwitchRoutes(app);
 
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
   mountAdminPasswordResetRoutes(app, getDb);
@@ -128,6 +131,9 @@ async function main() {
   const load = getAiLoadStats();
   console.log(
     `🤖 IA: ${providers.length ? providers.join(' + ') : 'OFF'} | balance=${load.mode}`
+  );
+  console.log(
+    `🧪 Troca de plano (teste): ${allowPlanSwitch() ? 'ON' : 'OFF'} — ALLOW_PLAN_SWITCH`
   );
   console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF — defina STRIPE_SECRET_KEY no .env'}`);
   app.listen(PORT, () => {
