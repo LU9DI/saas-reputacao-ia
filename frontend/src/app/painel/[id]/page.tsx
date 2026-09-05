@@ -7,6 +7,7 @@ import { getEnv } from '../../utils/env';
 import { DashboardCharts } from '../../components/DashboardCharts';
 import { currentMonthYYYYMM, validateReportMonth } from '../../utils/dateValidation';
 import { PlanSwitcher } from '../../components/PlanSwitcher';
+import { PushEnable } from '../../components/PushEnable';
 
 interface Review {
   id: number;
@@ -271,6 +272,8 @@ export default function PainelEmpresa() {
           enabled={Boolean(dashboard?.plan_switch)}
           onChanged={carregar}
         />
+
+        <PushEnable />
 
         {pdfOk && (
           <section className="bg-white rounded-2xl px-6 py-5 border border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
