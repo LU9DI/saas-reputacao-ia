@@ -1,5 +1,5 @@
 /**
- * Regras de negócio de avaliações (reviews) + anti-fraude + sentimento + push.
+ * Regras de negócio de avaliações (reviews) + anti-fraude + sentimento + push + e-mail.
  */
 import type { Database } from 'sqlite';
 import { getDb, findEmpresa } from '../lib/db.js';
@@ -22,6 +22,7 @@ import {
 } from '../lib/reviewFraud.js';
 import { notifyCrisisReview } from '../lib/push.js';
 import { normalizarWhatsapp } from '../lib/whatsapp.js';
+import { notificarCriticaPrivada, notificarAlertaCrise } from '../lib/notifications.js';
 
 export type ReviewInput = {
   name?: string;
@@ -86,6 +87,14 @@ async function ensureSentimentColumns(db: Database) {
   }
 }
 
+async function emailDaEmpresa(db: Database, empresaId: string): Promise<string | null> {
+  const row = await db.get(
+    `SELECT email FROM usuarios WHERE empresa_id = ? AND email IS NOT NULL AND email != '' LIMIT 1`,
+    [empresaId]
+  );
+  return row?.email ? String(row.email) : null;
+}
+
 export async function criarReview(
   input: ReviewInput,
   db: Database = getDb()
@@ -148,7 +157,6 @@ export async function criarReview(
   let aiReply: string | null = null;
   let aiTags: string | null = null;
 
-  // IA só se o plano permitir (Inicial/Pro nunca)
   const useAi = !isTest && planTemIA(plan) && aiConfigured();
   const useAiSentiment = useAi && Boolean(comment?.trim());
   const sentiment = await analisarSentimento(rating, comment || '', useAiSentiment);
@@ -199,6 +207,41 @@ export async function criarReview(
       name: name || undefined,
       slugOrId,
     }).catch((e) => console.warn('push crise:', e?.message || e));
+
+    // E-mail ao empresário (não bloqueia a resposta HTTP)
+    emailDaEmpresa(db, empresaId)
+      .then(async (email) => {
+        if (!email) return;
+        await notificarCriticaPrivada({
+          email,
+          nomeEmpresa: nomeEmpresa || 'Empresa',
+          nomeCliente: name || undefined,
+          rating,
+          comment,
+          aiReply,
+          clientWhatsapp: clientWpp,
+          slug: slugOrId,
+          empresaId,
+        });
+
+        const ha24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const row = await db.get(
+          `SELECT COUNT(*) as n FROM reviews
+           WHERE empresa_id = ? AND rating <= 2 AND IFNULL(is_test,0) = 0 AND createdAt >= ?`,
+          [empresaId, ha24h]
+        );
+        const n = Number(row?.n || 0);
+        if (n >= 3) {
+          await notificarAlertaCrise({
+            email,
+            nomeEmpresa: nomeEmpresa || 'Empresa',
+            quantidade: n,
+            slug: slugOrId,
+            empresaId,
+          });
+        }
+      })
+      .catch((e) => console.warn('e-mail crítica:', e?.message || e));
   }
 
   return {
