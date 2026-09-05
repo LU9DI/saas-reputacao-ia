@@ -40,7 +40,21 @@ export function mountRelatorioRoutes(app: Express) {
       const db = getDb();
       await ensureUnidadesSchema(db);
 
-      const pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno);
+      const precisaNormalize = ['inicial', 'trial', 'teste'].includes(plan);
+      const planOriginal = empresa.plan;
+      if (precisaNormalize) {
+        await db.run(`UPDATE empresas SET plan = 'pro' WHERE id = ?`, [empresa.id]);
+      }
+
+      let pdf: Buffer;
+      try {
+        pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno);
+      } finally {
+        if (precisaNormalize) {
+          await db.run(`UPDATE empresas SET plan = ? WHERE id = ?`, [planOriginal, empresa.id]);
+        }
+      }
+
       const slug = empresa.slug || empresa.id.slice(0, 8);
       const filename = `relatorio-${slug}-${mesAno}.pdf`;
 
