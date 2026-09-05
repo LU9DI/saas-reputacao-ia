@@ -15,6 +15,7 @@ import {
   FlaskConical,
   Workflow,
   Download,
+  Settings2,
 } from 'lucide-react';
 
 interface Empresa {
@@ -247,6 +248,12 @@ export default function AdminDashboard() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/admin/negocio"
+              className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 text-white text-sm py-2 px-4 rounded-xl border border-emerald-600"
+            >
+              <Settings2 size={16} /> Preços / IA / WPP
+            </Link>
+            <Link
               href="/admin/tecnico"
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm py-2 px-4 rounded-xl border border-indigo-500"
             >
@@ -396,8 +403,11 @@ export default function AdminDashboard() {
             ) : (
               <p className="text-xs text-zinc-500">Sem dados.</p>
             )}
-            <Link href="/admin/tecnico" className="block text-sm text-indigo-400 hover:underline pt-2">
-              Abrir área técnica (webhooks, PDF, críticas) →
+            <Link href="/admin/negocio" className="block text-sm text-emerald-400 hover:underline pt-2">
+              Gestão de preços, IA e WhatsApp →
+            </Link>
+            <Link href="/admin/tecnico" className="block text-sm text-indigo-400 hover:underline">
+              Área técnica (webhooks, PDF) →
             </Link>
           </div>
         </div>
