@@ -66,18 +66,24 @@ function listarMesesOpcoes(qtd = 18): string[] {
 function labelMes(yyyyMm: string): string {
   const [y, m] = yyyyMm.split('-').map(Number);
   if (!y || !m) return yyyyMm;
-  const nome = new Date(y, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  const nome = new Date(y, m - 1, 1).toLocaleDateString('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+  });
   return nome.charAt(0).toUpperCase() + nome.slice(1);
 }
 
 function Stars({ n }: { n: number }) {
   return (
-    <span className="text-amber-500 text-[13px]" aria-hidden>
+    <span className="text-amber-400 text-[13px]" aria-hidden>
       {'★'.repeat(Math.min(5, Math.max(0, n)))}
-      <span className="text-slate-200">{'★'.repeat(Math.max(0, 5 - n))}</span>
+      <span className="text-zinc-700">{'★'.repeat(Math.max(0, 5 - n))}</span>
     </span>
   );
 }
+
+const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
+const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
 export default function PainelEmpresa() {
   const params = useParams();
@@ -136,7 +142,11 @@ export default function PainelEmpresa() {
       setQrUrl(null);
       return;
     }
-    QRCode.toDataURL(linkAvaliacao, { width: 220, margin: 2 })
+    QRCode.toDataURL(linkAvaliacao, {
+      width: 220,
+      margin: 2,
+      color: { dark: '#e4e4e7', light: '#18181b' },
+    })
       .then(setQrUrl)
       .catch(() => setQrUrl(null));
   }, [linkAvaliacao, data]);
@@ -195,17 +205,17 @@ export default function PainelEmpresa() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7f7f8] flex items-center justify-center">
-        <p className="text-sm text-slate-400">Carregando…</p>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <p className="text-sm text-zinc-500">Carregando…</p>
       </div>
     );
   }
 
   if (erro || !data) {
     return (
-      <div className="min-h-screen bg-[#f7f7f8] flex flex-col items-center justify-center gap-4 px-6">
-        <p className="text-slate-600 text-sm">{erro || 'Painel indisponível.'}</p>
-        <button type="button" onClick={carregar} className="text-sm underline">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 px-6">
+        <p className="text-zinc-400 text-sm">{erro || 'Painel indisponível.'}</p>
+        <button type="button" onClick={carregar} className="text-sm underline text-indigo-400">
           Tentar novamente
         </button>
       </div>
@@ -220,13 +230,13 @@ export default function PainelEmpresa() {
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#f7f7f8] text-slate-800">
-      <header className="bg-white border-b border-slate-200/60">
+    <div className="min-h-screen bg-black text-zinc-100">
+      <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur">
         <div className="max-w-5xl mx-auto px-6 md:px-10 py-7 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">{empresa.nome_empresa}</h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Dashboard · Plano <span className="font-semibold">{planLabel}</span>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-50">{empresa.nome_empresa}</h1>
+            <p className="text-sm text-zinc-500 mt-1">
+              Dashboard · Plano <span className="font-semibold text-indigo-400">{planLabel}</span>
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -235,7 +245,7 @@ export default function PainelEmpresa() {
                 <select
                   value={mesPdf}
                   onChange={(e) => setMesPdf(e.target.value)}
-                  className="text-sm px-3 py-2 rounded-xl border border-slate-200 bg-white"
+                  className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-100"
                 >
                   {mesesOpcoes.map((m) => (
                     <option key={m} value={m}>
@@ -247,19 +257,27 @@ export default function PainelEmpresa() {
                   type="button"
                   disabled={baixandoPdf}
                   onClick={baixarPdf}
-                  className="text-sm px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium disabled:opacity-50"
+                  className="text-sm px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 disabled:opacity-50"
                 >
                   {baixandoPdf ? 'Gerando PDF…' : 'Baixar PDF'}
                 </button>
               </>
             )}
-            <button type="button" onClick={carregar} className="text-sm text-slate-500 px-3 py-2">
+            <button
+              type="button"
+              onClick={carregar}
+              className="text-sm text-zinc-400 hover:text-zinc-100 px-3 py-2"
+            >
               Atualizar
             </button>
           </div>
         </div>
         {msgPdf && (
-          <p className={`text-center text-xs pb-3 ${msgPdf.includes('baixado') ? 'text-emerald-600' : 'text-red-600'}`}>
+          <p
+            className={`text-center text-xs pb-3 ${
+              msgPdf.includes('baixado') ? 'text-emerald-400' : 'text-red-400'
+            }`}
+          >
             {msgPdf}
           </p>
         )}
@@ -276,18 +294,18 @@ export default function PainelEmpresa() {
         <PushEnable />
 
         {pdfOk && (
-          <section className="bg-white rounded-2xl px-6 py-5 border border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <section className={`${card} px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}>
             <div>
-              <p className="text-[11px] uppercase tracking-wide text-slate-400">Relatório mensal</p>
-              <p className="text-sm text-slate-600 mt-1">
-                PDF do plano <strong>{planLabel}</strong> — {labelMes(mesPdf)}
+              <p className={label}>Relatório mensal</p>
+              <p className="text-sm text-zinc-400 mt-1">
+                PDF do plano <strong className="text-zinc-200">{planLabel}</strong> — {labelMes(mesPdf)}
               </p>
             </div>
             <button
               type="button"
               disabled={baixandoPdf}
               onClick={baixarPdf}
-              className="text-sm px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium disabled:opacity-50"
+              className="text-sm px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 disabled:opacity-50"
             >
               {baixandoPdf ? 'Gerando…' : 'Baixar relatório PDF'}
             </button>
@@ -295,22 +313,17 @@ export default function PainelEmpresa() {
         )}
 
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100">
-            <p className="text-[11px] uppercase text-slate-400">Volume</p>
-            <p className="mt-2 text-3xl font-bold">{metricas.total}</p>
-          </div>
-          <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100">
-            <p className="text-[11px] uppercase text-slate-400">Média</p>
-            <p className="mt-2 text-3xl font-bold">{metricas.media || '—'}</p>
-          </div>
-          <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100">
-            <p className="text-[11px] uppercase text-slate-400">Positivas</p>
-            <p className="mt-2 text-3xl font-bold text-emerald-600">{metricas.positivas}</p>
-          </div>
-          <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100">
-            <p className="text-[11px] uppercase text-slate-400">Críticas</p>
-            <p className="mt-2 text-3xl font-bold text-red-600">{metricas.negativas}</p>
-          </div>
+          {[
+            { t: 'Volume', v: metricas.total, c: '' },
+            { t: 'Média', v: metricas.media || '—', c: '' },
+            { t: 'Positivas', v: metricas.positivas, c: 'text-emerald-400' },
+            { t: 'Críticas', v: metricas.negativas, c: 'text-red-400' },
+          ].map((k) => (
+            <div key={k.t} className={`${card} px-5 py-5`}>
+              <p className={label}>{k.t}</p>
+              <p className={`mt-2 text-3xl font-bold tabular-nums ${k.c}`}>{k.v}</p>
+            </div>
+          ))}
         </section>
 
         <DashboardCharts
@@ -324,33 +337,33 @@ export default function PainelEmpresa() {
           alertaCrise={Boolean(dashboard?.mostrar_crise && metricas.alerta_crise)}
         />
 
-        <section className="bg-white rounded-2xl px-6 py-6 border border-slate-100 space-y-3">
-          <p className="text-[11px] uppercase text-slate-400">WhatsApp de suporte</p>
+        <section className={`${card} px-6 py-6 space-y-3`}>
+          <p className={label}>WhatsApp de suporte</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="tel"
               value={whatsappInput}
               onChange={(e) => setWhatsappInput(e.target.value)}
               placeholder="11999998888"
-              className="flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm"
+              className="flex-1 rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none focus:ring-2 focus:ring-indigo-500"
             />
             <button
               type="button"
               disabled={salvandoWpp}
               onClick={salvarWhatsapp}
-              className="px-5 py-3 rounded-xl bg-emerald-600 text-white text-sm font-medium disabled:opacity-50"
+              className="px-5 py-3 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-500 disabled:opacity-50"
             >
               {salvandoWpp ? 'Salvando…' : 'Salvar'}
             </button>
           </div>
-          {msgWpp && <p className="text-xs text-slate-500">{msgWpp}</p>}
+          {msgWpp && <p className="text-xs text-zinc-500">{msgWpp}</p>}
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="bg-white rounded-2xl px-6 py-6 border border-slate-100">
-            <p className="text-[11px] uppercase text-slate-400 mb-4">Link de avaliação</p>
+          <div className={`${card} px-6 py-6`}>
+            <p className={`${label} mb-4`}>Link de avaliação</p>
             <div className="flex gap-3">
-              <div className="flex-1 rounded-xl bg-slate-50 border px-4 py-3 text-sm font-mono break-all">
+              <div className="flex-1 rounded-xl bg-zinc-950 border border-zinc-800 px-4 py-3 text-sm font-mono break-all text-zinc-400">
                 {linkAvaliacao}
               </div>
               <button
@@ -360,41 +373,44 @@ export default function PainelEmpresa() {
                   setCopiado(true);
                   setTimeout(() => setCopiado(false), 2000);
                 }}
-                className="px-5 py-3 rounded-xl bg-slate-900 text-white text-sm"
+                className="px-5 py-3 rounded-xl bg-zinc-100 text-zinc-900 text-sm font-medium"
               >
                 {copiado ? 'Copiado' : 'Copiar'}
               </button>
             </div>
           </div>
-          <div className="bg-white rounded-2xl px-6 py-6 border border-slate-100 flex flex-col items-center">
-            <p className="text-[11px] uppercase text-slate-400 mb-4 self-start">QR Code</p>
+          <div className={`${card} px-6 py-6 flex flex-col items-center`}>
+            <p className={`${label} mb-4 self-start`}>QR Code</p>
             {qrUrl ? (
-              <img src={qrUrl} alt="QR" className="w-40 h-40" />
+              <img src={qrUrl} alt="QR" className="w-40 h-40 rounded-xl" />
             ) : (
-              <p className="text-sm text-slate-400">Gerando…</p>
+              <p className="text-sm text-zinc-500">Gerando…</p>
             )}
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
-          <div className="px-6 py-5 border-b border-slate-100">
-            <h2 className="text-sm font-semibold">Feedbacks privados</h2>
+        <section className={`${card} overflow-hidden`}>
+          <div className="px-6 py-5 border-b border-zinc-800">
+            <h2 className="text-sm font-semibold text-zinc-200">Feedbacks privados</h2>
           </div>
           {criticas.length === 0 ? (
-            <div className="px-6 py-14 text-center text-sm text-slate-500">Nenhuma crítica no momento.</div>
+            <div className="px-6 py-14 text-center text-sm text-zinc-500">Nenhuma crítica no momento.</div>
           ) : (
             <ul>
               {criticas.map((r, i) => (
-                <li key={r.id} className={`px-6 py-6 ${i < criticas.length - 1 ? 'border-b border-slate-100' : ''}`}>
+                <li
+                  key={r.id}
+                  className={`px-6 py-6 ${i < criticas.length - 1 ? 'border-b border-zinc-800' : ''}`}
+                >
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm font-medium">{r.name}</span>
+                    <span className="text-sm font-medium text-zinc-200">{r.name}</span>
                     <Stars n={r.rating} />
                   </div>
-                  {r.comment && <p className="text-sm text-slate-600">{r.comment}</p>}
+                  {r.comment && <p className="text-sm text-zinc-400">{r.comment}</p>}
                   {r.ai_reply && (
-                    <div className="mt-3 pl-3 border-l-2 border-slate-200">
-                      <p className="text-[11px] uppercase text-slate-400 mb-1">Resposta IA</p>
-                      <p className="text-sm text-slate-600">{r.ai_reply}</p>
+                    <div className="mt-3 pl-3 border-l-2 border-indigo-500/40">
+                      <p className="text-[11px] uppercase text-zinc-500 mb-1">Resposta IA</p>
+                      <p className="text-sm text-zinc-300">{r.ai_reply}</p>
                     </div>
                   )}
                 </li>

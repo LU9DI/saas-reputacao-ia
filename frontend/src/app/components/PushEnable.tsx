@@ -16,21 +16,21 @@ export function PushEnable() {
   if (!token) return null;
 
   return (
-    <div className="rounded-2xl border border-zinc-700 bg-zinc-900/80 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
+    <div className="rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
       <div className="flex-1">
         <p className="text-sm font-medium text-zinc-100 flex items-center gap-2">
-          <Bell size={16} /> Alertas no celular/PC
+          <Bell size={16} className="text-indigo-400" /> Alertas no celular/PC
         </p>
-        <p className="text-xs text-zinc-400 mt-0.5">
+        <p className="text-xs text-zinc-500 mt-0.5">
           Receba aviso quando entrar avaliação crítica (1–3★).
         </p>
-        {msg && <p className="text-xs text-zinc-300 mt-1">{msg}</p>}
+        {msg && <p className="text-xs text-zinc-400 mt-1">{msg}</p>}
       </div>
       <div className="flex gap-2">
         <button
           type="button"
           disabled={loading}
-          className="text-sm px-3 py-2 rounded-xl bg-indigo-600 text-white disabled:opacity-50"
+          className="text-sm px-3 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-50"
           onClick={async () => {
             setLoading(true);
             setMsg('');
@@ -44,7 +44,7 @@ export function PushEnable() {
         <button
           type="button"
           disabled={loading}
-          className="text-sm px-3 py-2 rounded-xl border border-zinc-600 text-zinc-200 disabled:opacity-50"
+          className="text-sm px-3 py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800 disabled:opacity-50"
           onClick={async () => {
             setLoading(true);
             setMsg('');
