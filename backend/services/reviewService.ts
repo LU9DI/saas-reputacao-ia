@@ -21,6 +21,7 @@ import {
   ReviewFraudError,
 } from '../lib/reviewFraud.js';
 import { notifyCrisisReview } from '../lib/push.js';
+import { normalizarWhatsapp } from '../lib/whatsapp.js';
 
 export type ReviewInput = {
   name?: string;
@@ -31,6 +32,8 @@ export type ReviewInput = {
   website?: string;
   is_test?: boolean;
   ip?: string;
+  /** WhatsApp do cliente (obrigatório em nota ≤ 3) para o empresário contatar. */
+  client_whatsapp?: string;
 };
 
 export type ReviewResult = {
@@ -57,6 +60,14 @@ export class ReviewQuotaError extends Error {
   }
 }
 
+export class ReviewValidationError extends Error {
+  status = 400;
+  constructor(message: string) {
+    super(message);
+    this.name = 'ReviewValidationError';
+  }
+}
+
 export { ReviewFraudError };
 
 async function ensureSentimentColumns(db: Database) {
@@ -69,6 +80,9 @@ async function ensureSentimentColumns(db: Database) {
   }
   if (!cols.includes('sentiment_source')) {
     await db.exec(`ALTER TABLE reviews ADD COLUMN sentiment_source TEXT`);
+  }
+  if (!cols.includes('client_whatsapp')) {
+    await db.exec(`ALTER TABLE reviews ADD COLUMN client_whatsapp TEXT`);
   }
 }
 
@@ -88,6 +102,16 @@ export async function criarReview(
   const isTest = Boolean(input.is_test);
   const ip = input.ip || '0.0.0.0';
   const ipHash = hashIp(ip);
+
+  let clientWpp: string | null = null;
+  if (!isTest && rating <= 3) {
+    clientWpp = normalizarWhatsapp(input.client_whatsapp);
+    if (!clientWpp) {
+      throw new ReviewValidationError(
+        'Informe seu WhatsApp (DDD + número) para a empresa poder retornar o contato.'
+      );
+    }
+  }
 
   let empresaId: string | null = null;
   let nomeEmpresa: string | undefined;
@@ -124,10 +148,12 @@ export async function criarReview(
   let aiReply: string | null = null;
   let aiTags: string | null = null;
 
-  const useAiSentiment = !isTest && planTemIA(plan) && Boolean(comment?.trim());
+  // IA só se o plano permitir (Inicial/Pro nunca)
+  const useAi = !isTest && planTemIA(plan) && aiConfigured();
+  const useAiSentiment = useAi && Boolean(comment?.trim());
   const sentiment = await analisarSentimento(rating, comment || '', useAiSentiment);
 
-  if (!isTest && rating <= 3 && comment && planTemIA(plan) && aiConfigured()) {
+  if (useAi && rating <= 3 && comment) {
     try {
       const [resposta, tags] = await Promise.all([
         gerarRespostaReview(name || 'Anônimo', rating, comment, nomeEmpresa),
@@ -146,8 +172,8 @@ export async function criarReview(
     `INSERT INTO reviews (
       empresa_id, name, rating, comment, ai_reply, ai_tags,
       is_test, ip_hash, fraud_flags, origin,
-      sentiment, sentiment_score, sentiment_source
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      sentiment, sentiment_score, sentiment_source, client_whatsapp
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       empresaId,
       name || 'Anônimo',
@@ -162,10 +188,10 @@ export async function criarReview(
       sentiment.label,
       sentiment.score,
       sentiment.source,
+      clientWpp,
     ]
   );
 
-  // Push em avaliação crítica (não bloqueia resposta)
   if (!isTest && empresaId && rating <= 3) {
     notifyCrisisReview(db, {
       empresaId,
@@ -192,7 +218,7 @@ export async function listarReviews(ref: string, db: Database = getDb()) {
   return db.all(
     `SELECT id, name, rating, comment, ai_reply, ai_tags, createdAt,
             IFNULL(is_test,0) as is_test, fraud_flags, origin,
-            sentiment, sentiment_score, sentiment_source
+            sentiment, sentiment_score, sentiment_source, client_whatsapp
      FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 100`,
     [emp.id]
   );
