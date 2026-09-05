@@ -91,12 +91,11 @@ export default function PainelEmpresa() {
       if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
       setData(json);
 
-      // Status de assinatura / cancelamento (não bloqueia o painel se falhar)
       try {
         const r2 = await fetch(`${api}/api/empresa/${empresaId}/assinatura`);
         if (r2.ok) setAssinatura(await r2.json());
       } catch {
-        /* opcional */
+
       }
     } catch (e: any) {
       setErro(

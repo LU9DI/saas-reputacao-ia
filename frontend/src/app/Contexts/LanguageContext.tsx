@@ -6,11 +6,10 @@ import en from "../dictionaries/en.json";
 
 type Language = "pt" | "en";
 type Dictionary = typeof pt;
-
 interface LanguageContextData {
   language: Language;
   setLanguage: (lang: Language) => void;
-  translations: Dictionary;   // <-- alterado de t para translations
+  translations: Dictionary;  
 }
 
 const LanguageContext = createContext<LanguageContextData>({} as LanguageContextData);
