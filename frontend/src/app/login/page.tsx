@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { Building2, Lock, AlertCircle } from 'lucide-react';
 import { getEnv } from '../utils/env';
 import { PlanCards } from '../components/PlanCards';
+import { readApiError } from '../utils/apiError';
+
+const inputCls =
+  'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
 
 export default function LoginPage() {
   const [cnpj, setCnpj] = useState('');
@@ -17,8 +21,10 @@ export default function LoginPage() {
     let mascarado = apenasNumeros;
     if (mascarado.length > 2) mascarado = `${mascarado.substring(0, 2)}.${mascarado.substring(2)}`;
     if (mascarado.length > 6) mascarado = `${mascarado.substring(0, 6)}.${mascarado.substring(6)}`;
-    if (mascarado.length > 10) mascarado = `${mascarado.substring(0, 10)}/${mascarado.substring(10)}`;
-    if (mascarado.length > 15) mascarado = `${mascarado.substring(0, 15)}-${mascarado.substring(15)}`;
+    if (mascarado.length > 10)
+      mascarado = `${mascarado.substring(0, 10)}/${mascarado.substring(10)}`;
+    if (mascarado.length > 15)
+      mascarado = `${mascarado.substring(0, 15)}-${mascarado.substring(15)}`;
     setCnpj(mascarado);
   };
 
@@ -38,9 +44,16 @@ export default function LoginPage() {
           senha,
         }),
       });
+      if (!res.ok) throw new Error(await readApiError(res, 'Falha no login'));
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Falha no login');
       setOk('Login realizado com sucesso.');
+      if (data.token) {
+        try {
+          localStorage.setItem('filtra_token', data.token);
+        } catch {
+          /* ignore */
+        }
+      }
       const empresaId = data.tokenPayload?.empresa_id;
       if (empresaId) {
         window.location.href = `/painel/${empresaId}`;
@@ -53,27 +66,27 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 gap-10 py-12">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8 space-y-6">
+    <div className="min-h-screen bg-black flex flex-col items-center p-4 font-sans text-zinc-100 gap-10 py-12">
+      <div className="w-full max-w-md bg-zinc-900 rounded-2xl shadow-xl border border-zinc-800 p-8 space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Acesso à empresa</h1>
-          <p className="text-sm text-slate-500 leading-relaxed">
-            Informe o CNPJ e a senha cadastrados para acessar o painel. Caso ainda não possua
-            conta, ative o período de testes na página inicial.
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Acesso à empresa</h1>
+          <p className="text-sm text-zinc-400 leading-relaxed">
+            Informe o CNPJ e a senha cadastrados para acessar o painel. Caso ainda não possua conta,
+            ative o período de testes na página inicial.
           </p>
         </div>
 
         {erro && (
           <div
             role="alert"
-            className="flex items-center gap-3 bg-red-50 text-red-700 p-3.5 rounded-xl border border-red-100 text-sm"
+            className="flex items-center gap-3 bg-red-950/50 text-red-300 p-3.5 rounded-xl border border-red-900 text-sm"
           >
             <AlertCircle size={18} className="shrink-0" />
             <span>{erro}</span>
           </div>
         )}
         {ok && (
-          <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+          <p className="text-sm text-emerald-300 bg-emerald-950/40 border border-emerald-800 rounded-xl px-3 py-2">
             {ok}
           </p>
         )}
@@ -82,7 +95,7 @@ export default function LoginPage() {
           <div className="space-y-1.5">
             <label
               htmlFor="login-cnpj"
-              className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+              className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
             >
               <Building2 size={14} /> CNPJ
             </label>
@@ -94,14 +107,14 @@ export default function LoginPage() {
               value={cnpj}
               onChange={(e) => aplicarMascaraCnpj(e.target.value)}
               placeholder="00.000.000/0000-00"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
+              className={inputCls}
             />
           </div>
 
           <div className="space-y-1.5">
             <label
               htmlFor="login-senha"
-              className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1.5"
+              className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
             >
               <Lock size={14} /> Senha
             </label>
@@ -111,35 +124,32 @@ export default function LoginPage() {
               required
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
+              className={inputCls}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition-colors text-sm shadow-md shadow-indigo-100 disabled:opacity-50"
+            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition-colors text-sm disabled:opacity-50"
           >
             {loading ? 'Entrando…' : 'Entrar'}
           </button>
 
-          <p className="text-center text-xs text-slate-500 space-x-3">
-            <a href="/recuperar-senha" className="underline hover:text-indigo-600">
+          <p className="text-center text-xs text-zinc-500 space-x-3">
+            <a href="/recuperar-senha" className="underline hover:text-indigo-400">
               Esqueci a senha
             </a>
-            <span className="text-slate-300">|</span>
-            <a href="/" className="underline hover:text-indigo-600">
+            <span className="text-zinc-600">|</span>
+            <a href="/" className="underline hover:text-indigo-400">
               Ativar 7 dias grátis
             </a>
           </p>
         </form>
       </div>
 
-      {/* Planos + texto "Como funciona" abaixo */}
       <div className="w-full px-2 pb-10">
-        <p className="text-center text-sm font-medium text-slate-600 mb-4">
-          Planos disponíveis para assinatura
-        </p>
+        <p className="text-center text-sm font-medium text-zinc-400 mb-4">Planos disponíveis</p>
         <PlanCards requireEmpresa={false} />
       </div>
     </div>
