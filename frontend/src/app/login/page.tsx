@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Building2, Lock, AlertCircle } from 'lucide-react';
+import { Building2, Lock, AlertCircle, Fingerprint } from 'lucide-react';
 import { getEnv } from '../utils/env';
 import { PlanCards } from '../components/PlanCards';
 import { readApiError } from '../utils/apiError';
+import { loginWithPasskey, webauthnSupported } from '../utils/webauthnClient';
 
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [cnpj, setCnpj] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingBio, setLoadingBio] = useState(false);
   const [erro, setErro] = useState('');
   const [ok, setOk] = useState('');
 
@@ -26,6 +28,19 @@ export default function LoginPage() {
     if (mascarado.length > 15)
       mascarado = `${mascarado.substring(0, 15)}-${mascarado.substring(15)}`;
     setCnpj(mascarado);
+  };
+
+  const afterLogin = (data: any) => {
+    setOk('Login realizado com sucesso.');
+    if (data.token) {
+      try {
+        localStorage.setItem('filtra_token', data.token);
+      } catch {
+        /* ignore */
+      }
+    }
+    const empresaId = data.tokenPayload?.empresa_id;
+    if (empresaId) window.location.href = `/painel/${empresaId}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,22 +61,35 @@ export default function LoginPage() {
       });
       if (!res.ok) throw new Error(await readApiError(res, 'Falha no login'));
       const data = await res.json();
-      setOk('Login realizado com sucesso.');
-      if (data.token) {
-        try {
-          localStorage.setItem('filtra_token', data.token);
-        } catch {
-          /* ignore */
-        }
-      }
-      const empresaId = data.tokenPayload?.empresa_id;
-      if (empresaId) {
-        window.location.href = `/painel/${empresaId}`;
-      }
+      afterLogin(data);
     } catch (err: any) {
       setErro(err.message || 'Erro ao entrar');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDigital = async () => {
+    setErro('');
+    setOk('');
+    if (!webauthnSupported()) {
+      setErro('Este navegador não suporta login por digital (WebAuthn).');
+      return;
+    }
+    const nums = cnpj.replace(/\D/g, '');
+    if (nums.length < 11) {
+      setErro('Informe o CNPJ antes de usar a digital.');
+      return;
+    }
+    setLoadingBio(true);
+    try {
+      const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
+      const data = await loginWithPasskey(apiUrl, nums);
+      afterLogin(data);
+    } catch (err: any) {
+      setErro(err.message || 'Falha na biometria');
+    } finally {
+      setLoadingBio(false);
     }
   };
 
@@ -71,8 +99,7 @@ export default function LoginPage() {
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Acesso à empresa</h1>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            Informe o CNPJ e a senha cadastrados para acessar o painel. Caso ainda não possua conta,
-            ative o período de testes na página inicial.
+            CNPJ + senha, ou digital já cadastrada no dispositivo.
           </p>
         </div>
 
@@ -133,8 +160,23 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition-colors text-sm disabled:opacity-50"
           >
-            {loading ? 'Entrando…' : 'Entrar'}
+            {loading ? 'Entrando…' : 'Entrar com senha'}
           </button>
+
+          <button
+            type="button"
+            disabled={loadingBio}
+            onClick={handleDigital}
+            className="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <Fingerprint size={18} />
+            {loadingBio ? 'Aguardando digital…' : 'Entrar com digital'}
+          </button>
+
+          <p className="text-[11px] text-zinc-500 text-center leading-relaxed">
+            A biometria fica só no seu aparelho (WebAuthn). Cadastre a digital após o primeiro login
+            por senha (console do navegador ou endpoint de registro autenticado).
+          </p>
 
           <p className="text-center text-xs text-zinc-500 space-x-3">
             <a href="/recuperar-senha" className="underline hover:text-indigo-400">

@@ -9,6 +9,7 @@ import 'dotenv/config';
 import { assertEnvOrExit } from './lib/env.js';
 import { initDB, getDb } from './lib/db.js';
 import { requireJwtSecret, setAuthCookie, autenticarToken } from './lib/auth.js';
+import { jwtRotationStatus } from './lib/jwtKeys.js';
 import { buildCorsOptions } from './lib/cors.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import { latencyMiddleware, getHttpMetrics } from './lib/metrics.js';
@@ -19,6 +20,7 @@ import { mountReviewRoutes } from './routes/reviewRoutes.js';
 import { mountAdminListRoutes } from './routes/adminListRoutes.js';
 import { mountRelatorioRoutes } from './routes/relatorioRoutes.js';
 import { mountPlanSwitchRoutes } from './routes/planSwitchRoutes.js';
+import { mountWebAuthnRoutes } from './routes/webauthnRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
@@ -27,6 +29,7 @@ import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured } from './stripeBilling.js';
 import { aiConfigured, listAiProviders, getAiLoadStats } from './groqService.js';
 import { ensureUnidadesSchema } from './relatorioPdf.js';
+import { ensureWebAuthnSchema, webauthnConfig } from './lib/webauthn.js';
 import { allowPlanSwitch } from './lib/plans.js';
 import {
   backfillSentiment,
@@ -54,6 +57,8 @@ app.get('/api/health', (_req, res) => {
     ai: aiConfigured(),
     ai_providers: listAiProviders(),
     plan_switch: allowPlanSwitch(),
+    jwt: jwtRotationStatus(),
+    webauthn: webauthnConfig(),
     ai_latency: {
       groq: ai.stats.groq.latency,
       gemini: ai.stats.gemini.latency,
@@ -107,6 +112,11 @@ async function main() {
   } catch (e) {
     console.warn('ensureUnidadesSchema:', e);
   }
+  try {
+    await ensureWebAuthnSchema(getDb());
+  } catch (e) {
+    console.warn('ensureWebAuthnSchema:', e);
+  }
 
   await runSentimentBackfillOnBoot();
 
@@ -117,6 +127,7 @@ async function main() {
   mountAdminListRoutes(app);
   mountRelatorioRoutes(app);
   mountPlanSwitchRoutes(app);
+  mountWebAuthnRoutes(app);
 
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
   mountAdminPasswordResetRoutes(app, getDb);
@@ -129,8 +140,15 @@ async function main() {
 
   const providers = listAiProviders();
   const load = getAiLoadStats();
+  const jwtStat = jwtRotationStatus();
   console.log(
     `🤖 IA: ${providers.length ? providers.join(' + ') : 'OFF'} | balance=${load.mode}`
+  );
+  console.log(
+    `🔐 JWT kid=${jwtStat.kid} keys_verify=${jwtStat.keys_for_verify} previous=${jwtStat.has_previous}`
+  );
+  console.log(
+    `👆 WebAuthn rp=${webauthnConfig().rpId} origin=${webauthnConfig().origin}`
   );
   console.log(
     `🧪 Troca de plano (teste): ${allowPlanSwitch() ? 'ON' : 'OFF'} — ALLOW_PLAN_SWITCH`
