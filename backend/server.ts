@@ -19,6 +19,7 @@ import { mountAuthRoutes } from './routes/authRoutes.js';
 import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
 import { mountReviewRoutes } from './routes/reviewRoutes.js';
 import { mountAdminDashboardRoutes } from './routes/adminDashboardRoutes.js';
+import { mountTokenMetricsRoutes } from './routes/tokenMetricsRoutes.js';
 import { mountRelatorioRoutes } from './routes/relatorioRoutes.js';
 import { mountPlanSwitchRoutes } from './routes/planSwitchRoutes.js';
 import { mountWebAuthnRoutes } from './routes/webauthnRoutes.js';
@@ -149,6 +150,7 @@ async function main() {
   mountEmpresaRoutes(app);
   mountReviewRoutes(app);
   mountAdminDashboardRoutes(app);
+  mountTokenMetricsRoutes(app);
   mountRelatorioRoutes(app);
   mountPlanSwitchRoutes(app);
   mountWebAuthnRoutes(app);
