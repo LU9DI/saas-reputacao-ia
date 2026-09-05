@@ -1,5 +1,5 @@
 /**
- * Checkout + Webhook PayPal (ativação automática de plano).
+ * Checkout + Webhook PayPal (ativação automática + retry).
  */
 import type { Express, Request, Response } from 'express';
 import type { Database } from 'sqlite';
@@ -17,6 +17,7 @@ import {
 } from '../lib/paypal.js';
 import { resolvePlano } from '../stripeBilling.js';
 import { activatePlan, blockEmpresa } from '../services/billingService.js';
+import { enqueueRetry } from '../lib/retryQueue.js';
 
 async function ensurePaypalTables(db: Database) {
   await db.exec(`
@@ -144,49 +145,63 @@ export function mountPayPalRoutes(app: Express) {
       const db = getDb();
       await ensurePaypalTables(db);
 
-      const cap = await capturePayPalOrder(orderId);
-      const st = String(cap.status).toUpperCase();
-      if (st !== 'COMPLETED' && st !== 'APPROVED') {
-        return res.status(402).json({
-          error: `Pagamento não concluído (${cap.status}).`,
-          capture: cap,
+      try {
+        const cap = await capturePayPalOrder(orderId);
+        const st = String(cap.status).toUpperCase();
+        if (st !== 'COMPLETED' && st !== 'APPROVED') {
+          await enqueueRetry({
+            jobType: 'capture_paypal',
+            dedupeKey: `capture:${orderId}`,
+            payload: { order_id: orderId, empresa_id: empresaId, plano: planoKey },
+            delayMs: 15_000,
+          });
+          return res.status(402).json({
+            error: `Pagamento não concluído (${cap.status}). Reagendado para retry.`,
+            capture: cap,
+            retry: true,
+          });
+        }
+
+        const parsed = parseCustomId(cap.customId);
+        if (!empresaId) empresaId = parsed.empresaId;
+        if (!planoKey) planoKey = parsed.planoKey || parsePlanoFromInvoiceId(cap.invoiceId) || '';
+
+        if (!empresaId) {
+          return res.json({
+            success: true,
+            payment: cap,
+            aviso: 'Pagamento capturado; empresa_id ausente — ative no admin ou aguarde webhook.',
+          });
+        }
+
+        const result = await activateFromPayment(db, {
+          empresaId,
+          planoKey: planoKey || 'pro',
+          captureId: cap.captureId,
+          orderId,
         });
-      }
 
-      const parsed = parseCustomId(cap.customId);
-      if (!empresaId) empresaId = parsed.empresaId;
-      if (!planoKey) planoKey = parsed.planoKey || parsePlanoFromInvoiceId(cap.invoiceId) || '';
-
-      if (!empresaId) {
-        return res.json({
+        res.json({
           success: true,
+          gateway: 'paypal',
           payment: cap,
-          aviso: 'Pagamento capturado; empresa_id ausente — ative no admin ou aguarde webhook.',
+          ...result,
+        });
+      } catch (e: any) {
+        await enqueueRetry({
+          jobType: 'capture_paypal',
+          dedupeKey: `capture:${orderId}`,
+          payload: { order_id: orderId, empresa_id: empresaId, plano: planoKey },
+          delayMs: 20_000,
+        });
+        res.status(502).json({
+          error: e?.message || 'Falha no capture — retry enfileirado',
+          retry: true,
         });
       }
-
-      const result = await activateFromPayment(db, {
-        empresaId,
-        planoKey: planoKey || 'pro',
-        captureId: cap.captureId,
-        orderId,
-      });
-
-      res.json({
-        success: true,
-        gateway: 'paypal',
-        payment: cap,
-        ...result,
-      });
     })
   );
 
-  /**
-   * Webhook PayPal — configure no Developer Dashboard:
-   * URL: https://SEU_DOMINIO/api/webhook/paypal
-   * Eventos: PAYMENT.CAPTURE.COMPLETED, PAYMENT.CAPTURE.REFUNDED,
-   *          CHECKOUT.ORDER.APPROVED, CHECKOUT.ORDER.COMPLETED
-   */
   app.post(
     '/api/webhook/paypal',
     asyncHandler(async (req: Request, res: Response) => {
@@ -221,21 +236,16 @@ export function mountPayPalRoutes(app: Express) {
       const resource = event.resource || {};
 
       try {
-        // Captura concluída (fonte principal de automação)
         if (eventType === 'PAYMENT.CAPTURE.COMPLETED') {
           let customId =
             resource.custom_id ||
             resource.custom ||
             resource.supplementary_data?.related_ids?.custom_id ||
             null;
-          let orderId =
-            resource.supplementary_data?.related_ids?.order_id ||
-            resource.supplementary_data?.related_ids?.order_id ||
-            null;
+          let orderId = resource.supplementary_data?.related_ids?.order_id || null;
           let invoiceId = resource.invoice_id || null;
           const captureId = resource.id || null;
 
-          // se só temos order_id, busca detalhes
           if (orderId && (!customId || !invoiceId)) {
             try {
               const order = await getPayPalOrderSummary(String(orderId));
@@ -243,20 +253,29 @@ export function mountPayPalRoutes(app: Express) {
               invoiceId = invoiceId || order.invoiceId;
             } catch (e: any) {
               console.warn('[paypal webhook] get order:', e?.message);
+              await enqueueRetry({
+                jobType: 'paypal_webhook',
+                dedupeKey: eventId ? `pp:${eventId}` : undefined,
+                payload: { event_type: eventType, resource, event_id: eventId },
+                delayMs: 30_000,
+              });
+              return res.json({ ok: true, action: 'retry_enqueued' });
             }
           }
 
           const parsed = parseCustomId(customId);
           const planoKey =
-            parsed.planoKey || parsePlanoFromInvoiceId(invoiceId) || resource.custom_id || null;
+            parsed.planoKey || parsePlanoFromInvoiceId(invoiceId) || null;
           const empresaId = parsed.empresaId;
 
           if (!empresaId) {
-            await markProcessed(db, eventId, eventType, 'no_empresa', JSON.stringify({
-              captureId,
-              orderId,
-              customId,
-            }));
+            await markProcessed(
+              db,
+              eventId,
+              eventType,
+              'no_empresa',
+              JSON.stringify({ captureId, orderId, customId })
+            );
             return res.json({ ok: true, action: 'no_empresa' });
           }
 
@@ -267,18 +286,11 @@ export function mountPayPalRoutes(app: Express) {
             orderId: orderId ? String(orderId) : null,
           });
 
-          await markProcessed(
-            db,
-            eventId,
-            eventType,
-            'activate',
-            `${empresaId} ${result.plan}`
-          );
+          await markProcessed(db, eventId, eventType, 'activate', `${empresaId} ${result.plan}`);
           console.log(`[paypal webhook] ativado empresa=${empresaId} plan=${result.plan}`);
           return res.json({ ok: true, action: 'activate', ...result });
         }
 
-        // Order aprovado — tenta capturar automaticamente se ainda não capturado
         if (
           eventType === 'CHECKOUT.ORDER.APPROVED' ||
           eventType === 'CHECKOUT.ORDER.COMPLETED'
@@ -308,15 +320,20 @@ export function mountPayPalRoutes(app: Express) {
               }
             } catch (e: any) {
               console.warn('[paypal webhook] auto-capture:', e?.message || e);
-              await markProcessed(db, eventId, eventType, 'capture_failed', e?.message);
-              return res.json({ ok: true, action: 'capture_failed' });
+              await enqueueRetry({
+                jobType: 'paypal_webhook',
+                dedupeKey: eventId ? `pp:${eventId}` : `pp-order:${orderId}`,
+                payload: { event_type: eventType, resource, event_id: eventId },
+                delayMs: 20_000,
+              });
+              await markProcessed(db, eventId, eventType, 'capture_failed_retry', e?.message);
+              return res.json({ ok: true, action: 'retry_enqueued' });
             }
           }
           await markProcessed(db, eventId, eventType, 'ignore');
           return res.json({ ok: true, action: 'ignore' });
         }
 
-        // Reembolso — bloqueia acesso
         if (
           eventType === 'PAYMENT.CAPTURE.REFUNDED' ||
           eventType === 'PAYMENT.CAPTURE.REVERSED'
@@ -325,7 +342,6 @@ export function mountPayPalRoutes(app: Express) {
           const parsed = parseCustomId(customId);
           let empresaId = parsed.empresaId;
 
-          // tenta achar por subscription/stripe id paypal:captureId
           if (!empresaId && resource.id) {
             const row = await db.get(
               `SELECT id FROM empresas WHERE stripe_subscription_id = ?`,
@@ -347,8 +363,21 @@ export function mountPayPalRoutes(app: Express) {
         return res.json({ ok: true, action: 'ignore', event_type: eventType });
       } catch (e: any) {
         console.error('[paypal webhook] process:', e?.message || e);
-        // 200 evita retry infinito em bug nosso; log para investigação
-        return res.status(200).json({ ok: false, error: e?.message || 'process error' });
+        try {
+          await enqueueRetry({
+            jobType: 'paypal_webhook',
+            dedupeKey: eventId ? `pp:${eventId}` : undefined,
+            payload: {
+              event_type: eventType,
+              resource,
+              event_id: eventId,
+            },
+            delayMs: 30_000,
+          });
+        } catch (qe: any) {
+          console.error('[paypal webhook] enqueue falhou:', qe?.message);
+        }
+        return res.status(200).json({ ok: false, error: e?.message || 'process error', retry: true });
       }
     })
   );
