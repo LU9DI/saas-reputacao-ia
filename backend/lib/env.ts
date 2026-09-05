@@ -1,6 +1,5 @@
 /**
  * Validação de variáveis de ambiente na subida.
- * Falha cedo com mensagem clara em vez de erro misterioso depois.
  */
 
 export type EnvReport = {
@@ -31,8 +30,18 @@ export function validateEnv(): EnvReport {
     );
   }
 
-  if (!process.env.GROQ_API_KEY) {
-    warnings.push('GROQ_API_KEY ausente — recursos de IA ficarão indisponíveis.');
+  const hasGroq = Boolean(process.env.GROQ_API_KEY?.trim());
+  const hasGemini = Boolean(
+    process.env.GEMINI_API_KEY?.trim() || process.env.GOOGLE_API_KEY?.trim()
+  );
+  if (!hasGroq && !hasGemini) {
+    warnings.push(
+      'Nenhuma IA configurada (GROQ_API_KEY / GEMINI_API_KEY) — respostas automáticas desligadas.'
+    );
+  } else if (!hasGroq) {
+    warnings.push('Só Gemini ativo — defina GROQ_API_KEY para usar Groq como primário.');
+  } else if (!hasGemini) {
+    warnings.push('Só Groq ativo — defina GEMINI_API_KEY para failover quando a cota acabar.');
   }
 
   if (!process.env.SMTP_HOST) {

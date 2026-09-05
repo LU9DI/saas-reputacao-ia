@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { getDb, findEmpresa } from '../lib/db.js';
 import { validateBody, schemaReview } from '../middleware/validate.js';
-import { gerarRespostaReview, gerarTagsSemanticas } from '../groqService.js';
+import { gerarRespostaReview, gerarTagsSemanticas, aiConfigured } from '../groqService.js';
 import { planTemIA, getFeedbackLimit, contarReviewsMes } from '../quota.js';
 
 const reviewsLimiter = rateLimit({
@@ -47,8 +47,8 @@ export function mountReviewRoutes(app: Express) {
         let aiReply: string | null = null;
         let aiTags: string | null = null;
 
-        // Notas baixas + plano com IA + comentário → sugestão interna (não pública)
-        if (rating <= 3 && comment && planTemIA(plan) && process.env.GROQ_API_KEY) {
+        // Notas baixas + plano com IA + qualquer provider (Groq e/ou Gemini)
+        if (rating <= 3 && comment && planTemIA(plan) && aiConfigured()) {
           try {
             const [resposta, tags] = await Promise.all([
               gerarRespostaReview(name || 'Anônimo', rating, comment, nomeEmpresa),
@@ -60,7 +60,6 @@ export function mountReviewRoutes(app: Express) {
             console.warn('IA review (não bloqueia envio):', e?.message || e);
           }
         } else if (rating <= 3 && comment) {
-          // tags simples sem API
           aiTags = JSON.stringify(
             rating <= 2 ? ['#ExperienciaNegativa'] : ['#Neutro']
           );
@@ -76,7 +75,6 @@ export function mountReviewRoutes(app: Express) {
           success: true,
           id: result.lastID,
           ai: Boolean(aiReply),
-          // não devolve ai_reply ao cliente final (uso interno no painel)
         });
       } catch (e) {
         console.error('reviews:', e);

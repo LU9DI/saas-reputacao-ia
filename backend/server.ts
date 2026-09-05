@@ -1,6 +1,5 @@
 /**
  * Filtra.IA — bootstrap da API
- * Rotas de domínio ficam em routes/ e lib/.
  */
 import express from 'express';
 import cors from 'cors';
@@ -22,6 +21,7 @@ import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
 import { mountMfaRoutes } from './mfa.js';
 import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured } from './stripeBilling.js';
+import { aiConfigured, listAiProviders } from './groqService.js';
 
 assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
@@ -38,6 +38,8 @@ app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
     stripe: stripeConfigured(),
+    ai: aiConfigured(),
+    ai_providers: listAiProviders(),
     env: process.env.NODE_ENV || 'development',
     time: new Date().toISOString(),
   });
@@ -60,10 +62,13 @@ async function main() {
   mountPasswordResetRoutes(app, getDb);
   mountStripeRoutes(app, getDb);
 
-  // Sempre por último
   app.use(notFoundHandler);
   app.use(errorHandler);
 
+  const providers = listAiProviders();
+  console.log(
+    `🤖 IA: ${providers.length ? providers.join(' → ') : 'OFF — GROQ_API_KEY e/ou GEMINI_API_KEY'}`
+  );
   console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF — defina STRIPE_SECRET_KEY no .env'}`);
   app.listen(PORT, () => {
     console.log(`🚀 API Filtra.IA em http://localhost:${PORT}`);
