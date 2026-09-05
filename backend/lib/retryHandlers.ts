@@ -11,7 +11,7 @@ import {
 } from './paypal.js';
 import { resolvePlano } from '../stripeBilling.js';
 import { activatePlan, blockEmpresa } from '../services/billingService.js';
-import { sendMail } from './mailer.js';
+import { enviarEmail } from './mailer.js';
 
 async function activatePayPal(
   empresaId: string,
@@ -105,8 +105,6 @@ export function registerAllRetryHandlers() {
       await blockEmpresa(getDb(), empresaId, { notify: true, tipo: 'assinatura' });
       return;
     }
-
-    // tipos desconhecidos no retry = sucesso (não insiste)
   });
 
   registerRetryHandler('capture_paypal', async (payload) => {
@@ -127,13 +125,15 @@ export function registerAllRetryHandlers() {
   registerRetryHandler('email', async (payload) => {
     const to = String(payload.to || '');
     const subject = String(payload.subject || '');
-    const html = String(payload.html || payload.text || '');
+    const text = String(payload.text || payload.html || '');
     if (!to || !subject) throw new Error('email inválido');
-    const r = await sendMail({ to, subject, html });
-    if (!r?.ok && r?.ok !== undefined && !r) {
-      throw new Error('sendMail falhou');
-    }
-    // sendMail pode só logar em dev — considera ok se não lançar
+    const r = await enviarEmail({
+      to,
+      subject,
+      text,
+      html: payload.html ? String(payload.html) : undefined,
+    });
+    if (!r.ok) throw new Error('enviarEmail retornou ok=false');
   });
 
   registerRetryHandler('generic', async (payload) => {
