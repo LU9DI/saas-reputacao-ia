@@ -8,6 +8,7 @@ import { DashboardCharts } from '../../components/DashboardCharts';
 import { currentMonthYYYYMM, validateReportMonth } from '../../utils/dateValidation';
 import { PlanSwitcher } from '../../components/PlanSwitcher';
 import { PushEnable } from '../../components/PushEnable';
+import { UsageBars } from '../../components/UsageBars';
 
 interface Review {
   id: number;
@@ -49,6 +50,11 @@ interface PainelData {
     distribuicao?: number[];
     top_tags?: { tag: string; count: number }[];
     serie_14d?: any[];
+    feedback_usados?: number;
+    feedback_limite?: number;
+    tokens_usados?: number;
+    tokens_limite?: number;
+    tokens_pct?: number;
   };
   dashboard?: {
     nivel: string;
@@ -61,6 +67,8 @@ interface PainelData {
     mostrar_copiar_resposta?: boolean;
     mostrar_ia_respostas?: boolean;
     mostrar_tratar?: boolean;
+    mostrar_tendencia?: boolean;
+    mostrar_tags?: boolean;
   };
   links?: { avaliacao: string; relatorio_pdf?: string | null; login?: string };
 }
@@ -374,11 +382,7 @@ export default function PainelEmpresa() {
                 </button>
               </>
             )}
-            <button
-              type="button"
-              onClick={carregar}
-              className="text-sm text-zinc-400 hover:text-zinc-100 px-3 py-2"
-            >
+            <button type="button" onClick={carregar} className="text-sm text-zinc-400 hover:text-zinc-100 px-3 py-2">
               Atualizar
             </button>
           </div>
@@ -407,14 +411,12 @@ export default function PainelEmpresa() {
         <PushEnable />
 
         {pdfOk && (
-          <section
-            className={`${card} px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}
-          >
+          <section className={`${card} px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}>
             <div>
               <p className={label}>Relatório mensal</p>
               <p className="text-sm text-zinc-400 mt-1">
-                PDF do plano <strong className="text-zinc-200">{planLabel}</strong> —{' '}
-                {labelMes(mesPdf)}. Pode baixar quantas vezes quiser — sem gastar tokens de IA.
+                PDF do plano <strong className="text-zinc-200">{planLabel}</strong> — {labelMes(mesPdf)}.
+                Pode baixar quantas vezes quiser — sem gastar tokens de IA.
               </p>
             </div>
             <button
@@ -447,6 +449,14 @@ export default function PainelEmpresa() {
           ))}
         </section>
 
+        <UsageBars
+          feedbackUsados={metricas.feedback_usados}
+          feedbackLimite={metricas.feedback_limite}
+          tokensUsados={metricas.tokens_usados}
+          tokensLimite={metricas.tokens_limite}
+          temIa={Boolean(dashboard?.tem_ia)}
+        />
+
         <DashboardCharts
           distribuicao={dist}
           positivas={metricas.positivas}
@@ -456,6 +466,8 @@ export default function PainelEmpresa() {
           nivel={nivel}
           crises24h={metricas.crises_24h}
           alertaCrise={Boolean(dashboard?.mostrar_crise && metricas.alerta_crise)}
+          mostrarTendencia={dashboard?.mostrar_tendencia}
+          mostrarTags={dashboard?.mostrar_tags}
         />
 
         <section className={`${card} px-6 py-6 space-y-3`}>
@@ -531,9 +543,7 @@ export default function PainelEmpresa() {
             </p>
           </div>
           {criticas.length === 0 ? (
-            <div className="px-6 py-14 text-center text-sm text-zinc-500">
-              Nenhuma crítica no momento.
-            </div>
+            <div className="px-6 py-14 text-center text-sm text-zinc-500">Nenhuma crítica no momento.</div>
           ) : (
             <ul>
               {criticas.map((r, i) => {
@@ -569,9 +579,7 @@ export default function PainelEmpresa() {
                         </p>
                         <textarea
                           value={draft}
-                          onChange={(e) =>
-                            setDrafts((prev) => ({ ...prev, [r.id]: e.target.value }))
-                          }
+                          onChange={(e) => setDrafts((prev) => ({ ...prev, [r.id]: e.target.value }))}
                           rows={3}
                           className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none focus:ring-2 focus:ring-indigo-500"
                         />
@@ -612,14 +620,10 @@ export default function PainelEmpresa() {
                             >
                               {copiadoId === keyWa ? 'Número copiado!' : 'Copiar número'}
                             </button>
-                            <span className="text-xs text-zinc-500 font-mono">
-                              {r.client_whatsapp}
-                            </span>
+                            <span className="text-xs text-zinc-500 font-mono">{r.client_whatsapp}</span>
                           </>
                         ) : r.client_whatsapp_anon ? (
-                          <span className="text-xs text-zinc-500">
-                            WhatsApp anonimizado (LGPD)
-                          </span>
+                          <span className="text-xs text-zinc-500">WhatsApp anonimizado (LGPD)</span>
                         ) : (
                           <span className="text-xs text-amber-600/80">
                             WhatsApp do cliente não informado neste feedback
