@@ -1,10 +1,8 @@
 /**
  * Área técnica do admin:
- * - Status webhooks Stripe / n8n / PayPal
- * - Auditoria de críticas retidas (1–3★) + resposta IA
- * - Status de geração de relatórios PDF (auth JWT)
- * - Fila de retry
- * - Webhook inbound n8n (captação Google Maps)
+ * - Status webhooks Stripe / n8n / PayPal / Mercado Pago (Pix)
+ * - Auditoria de críticas retidas
+ * - Status PDF + fila de retry
  */
 import type { Express, Request, Response } from 'express';
 import { getDb } from '../lib/db.js';
@@ -18,6 +16,7 @@ import {
 } from '../lib/opsLog.js';
 import { stripeConfigured } from '../stripeBilling.js';
 import { paypalConfigured, paypalWebhookConfigured } from '../lib/paypal.js';
+import { mpConfigured } from '../lib/mercadopago.js';
 import { smtpConfigured } from '../lib/mailer.js';
 import { retryQueueStats } from '../lib/retryQueue.js';
 
@@ -94,9 +93,10 @@ export function mountAdminTecnicoRoutes(app: Express) {
       const stripeHealth = await webhookHealth(db, 'stripe', 24);
       const n8nHealth = await webhookHealth(db, 'n8n', 24);
       const paypalHealth = await webhookHealth(db, 'paypal', 24);
+      const mpHealth = await webhookHealth(db, 'mercadopago', 24);
 
       const allEvents = await db.all(
-        `SELECT * FROM webhook_events ORDER BY id DESC LIMIT 60`
+        `SELECT * FROM webhook_events ORDER BY id DESC LIMIT 80`
       );
 
       const n8nUrl =
@@ -127,15 +127,13 @@ export function mountAdminTecnicoRoutes(app: Express) {
       }
 
       const stripeLast24hOk =
-        stripeHealth.total === 0
-          ? null
-          : stripeHealth.errors === 0 && stripeHealth.ok > 0;
+        stripeHealth.total === 0 ? null : stripeHealth.errors === 0 && stripeHealth.ok > 0;
       const n8nLast24hOk =
         n8nHealth.total === 0 ? null : n8nHealth.errors === 0 && n8nHealth.ok > 0;
       const paypalLast24hOk =
-        paypalHealth.total === 0
-          ? null
-          : paypalHealth.errors === 0 && paypalHealth.ok > 0;
+        paypalHealth.total === 0 ? null : paypalHealth.errors === 0 && paypalHealth.ok > 0;
+      const mpLast24hOk =
+        mpHealth.total === 0 ? null : mpHealth.errors === 0 && mpHealth.ok > 0;
 
       const cols = (await db.all(`PRAGMA table_info(reviews)`)).map((c: any) => c.name);
       if (!cols.includes('client_whatsapp')) {
@@ -251,9 +249,7 @@ export function mountAdminTecnicoRoutes(app: Express) {
           paypal: {
             configurado: paypalConfigured(),
             webhook_id: paypalWebhookConfigured(),
-            ok: !paypalConfigured()
-              ? false
-              : paypalLast24hOk,
+            ok: !paypalConfigured() ? false : paypalLast24hOk,
             detalhe: !paypalConfigured()
               ? 'PAYPAL_CLIENT_ID/SECRET ausentes'
               : !paypalWebhookConfigured()
@@ -265,6 +261,22 @@ export function mountAdminTecnicoRoutes(app: Express) {
             last_age: ageLabel(paypalHealth.last_at),
             stats_24h: paypalHealth,
             eventos: (allEvents || []).filter((e: any) => e.source === 'paypal').slice(0, 20),
+          },
+          mercadopago: {
+            configurado: mpConfigured(),
+            inbound: '/api/webhook/mercadopago',
+            ok: !mpConfigured() ? false : mpLast24hOk,
+            detalhe: !mpConfigured()
+              ? 'MP_ACCESS_TOKEN ausente'
+              : mpHealth.total === 0
+                ? 'Nenhum evento Pix/MP em 24h'
+                : `${mpHealth.ok} ok / ${mpHealth.errors} erro(s) em 24h`,
+            last_at: mpHealth.last_at,
+            last_age: ageLabel(mpHealth.last_at),
+            stats_24h: mpHealth,
+            eventos: (allEvents || [])
+              .filter((e: any) => e.source === 'mercadopago')
+              .slice(0, 20),
           },
         },
         criticas_retidas: {
@@ -295,8 +307,11 @@ export function mountAdminTecnicoRoutes(app: Express) {
           smtp: smtpConfigured(),
           stripe: stripeConfigured(),
           paypal: paypalConfigured(),
+          pix: mpConfigured(),
           groq: Boolean(process.env.GROQ_API_KEY?.trim()),
-          gemini: Boolean(process.env.GEMINI_API_KEY?.trim() || process.env.GOOGLE_AI_API_KEY?.trim()),
+          gemini: Boolean(
+            process.env.GEMINI_API_KEY?.trim() || process.env.GOOGLE_AI_API_KEY?.trim()
+          ),
           jobs_secret: Boolean(process.env.JOBS_SECRET?.trim()),
         },
       });
