@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
-import { clearAuthCookie, autenticarToken, type AuthRequest } from '../lib/auth.js';
+import { clearAuthCookie, extrairToken, verifyAccessToken } from '../lib/auth.js';
 import { validateBody, schemaLoginEmpresa } from '../middleware/validate.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { loginEmpresa, AuthUnauthorizedError } from '../services/authService.js';
@@ -39,21 +39,23 @@ export function mountAuthRoutes(app: Express) {
 
   app.post(
     '/api/auth/logout',
-    asyncHandler(async (req: AuthRequest, res: Response) => {
-      // tenta identificar ator se houver cookie/token
+    asyncHandler(async (req: Request, res: Response) => {
+      let actor: { id?: string; empresa_id?: string } = {};
       try {
-        await new Promise<void>((resolve) => {
-          autenticarToken(req, res, () => resolve());
-        });
+        const token = extrairToken(req);
+        if (token) {
+          const p = verifyAccessToken(token);
+          actor = { id: p.id, empresa_id: p.empresa_id };
+        }
       } catch {
-        /* sem token */
+        /* token inválido — logout mesmo assim */
       }
       try {
         await writeAuditFromReq(getDb(), req, {
           action: 'auth.logout',
-          actor_user_id: req.user?.id,
-          empresa_id: req.user?.empresa_id,
-          actor_role: req.user?.empresa_id === 'admin' ? 'admin' : 'empresa',
+          actor_user_id: actor.id,
+          empresa_id: actor.empresa_id,
+          actor_role: actor.empresa_id === 'admin' ? 'admin' : 'empresa',
           result: 'ok',
         });
       } catch {

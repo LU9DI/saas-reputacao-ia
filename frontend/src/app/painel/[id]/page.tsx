@@ -241,13 +241,14 @@ export default function PainelEmpresa() {
   const pdfOk = Boolean(dashboard?.pdf_disponivel || dashboard?.plan_switch);
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
   const status = empresa.status_acesso || String(empresa.status || '').toUpperCase();
+  const nomeEmpresa = empresa.nome_empresa || 'Empresa';
 
   return (
     <div className="min-h-screen bg-black text-zinc-100">
       <header className="border-b border-zinc-800 bg-zinc-950/80">
         <div className="max-w-5xl mx-auto px-6 md:px-10 py-7 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-50">{empresa.nome_empresa}</h1>
+            <h1 className="text-2xl font-bold text-zinc-50">{nomeEmpresa}</h1>
             <p className="text-sm text-zinc-500 mt-1">
               Plano <span className="text-indigo-400 font-semibold">{planLabel}</span>
               <span
@@ -431,10 +432,18 @@ export default function PainelEmpresa() {
           {msgGoogle && <p className="text-xs text-zinc-500">{msgGoogle}</p>}
         </section>
 
-        <section className={`${card} px-6 py-6`}>
-          <p className={label}>Link de avaliação</p>
-          <p className="mt-2 text-sm font-mono break-all text-zinc-400">{linkAvaliacao}</p>
-          {qrUrl && <img src={qrUrl} alt="QR" className="mt-4 w-36 h-36 rounded-lg" />}
+        <section className={`${card} px-6 py-6 space-y-4`}>
+          <p className={label}>Link e QR Code de avaliação</p>
+          <p className="text-sm font-mono break-all text-zinc-400">{linkAvaliacao}</p>
+          {qrUrl && (
+            <div className="flex flex-col items-center gap-3 pt-2">
+              <p className="text-base font-semibold text-zinc-100 text-center">{nomeEmpresa}</p>
+              <img src={qrUrl} alt={`QR Code — ${nomeEmpresa}`} className="w-40 h-40 rounded-lg border border-zinc-700" />
+              <p className="text-xs text-zinc-500 text-center max-w-xs">
+                Imprima ou mostre este QR. O cliente verá o nome <strong className="text-zinc-300">{nomeEmpresa}</strong> no topo da página de avaliação.
+              </p>
+            </div>
+          )}
         </section>
       </main>
     </div>
