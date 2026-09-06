@@ -7,6 +7,7 @@ import { ensureReviewFraudColumns } from '../lib/reviewFraud.js';
 import { planTemPdf, allowPlanSwitch, PLANOS_OFICIAIS, planLabel, isTrialPlan } from '../lib/plans.js';
 import { planTemIA } from '../lib/quota.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
+import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
 
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -143,30 +144,38 @@ export function mountEmpresaRoutes(app: Express) {
     })
   );
 
+  /** Painel privado — exige JWT da empresa ou admin. */
   app.get(
     '/api/empresa/:ref/painel',
-    asyncHandler(async (req: Request, res: Response) => {
+    autenticarToken,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
       const empresa = await findEmpresa(req.params.ref);
       if (!empresa) {
         return res.status(404).json({ error: 'Empresa não encontrada.' });
       }
 
+      if (!podeGerirEmpresa(req, empresa.id)) {
+        return res.status(403).json({
+          error: 'Sem permissão. Faça login com a conta desta empresa.',
+          code: 'FORBIDDEN_PAINEL',
+        });
+      }
+
       const db = getDb();
       await ensureReviewFraudColumns(db);
+      await ensureReviewTreatmentColumns(db);
       const cols = (await db.all(`PRAGMA table_info(reviews)`)).map((c: any) => c.name);
       if (!cols.includes('sentiment')) await db.exec(`ALTER TABLE reviews ADD COLUMN sentiment TEXT`);
       if (!cols.includes('sentiment_score'))
         await db.exec(`ALTER TABLE reviews ADD COLUMN sentiment_score REAL`);
       if (!cols.includes('sentiment_source'))
         await db.exec(`ALTER TABLE reviews ADD COLUMN sentiment_source TEXT`);
-      if (!cols.includes('client_whatsapp'))
-        await db.exec(`ALTER TABLE reviews ADD COLUMN client_whatsapp TEXT`);
 
       const rows = await db.all(
         `SELECT id, name, rating, comment, ai_reply, ai_tags, createdAt,
                 IFNULL(is_test,0) as is_test, fraud_flags, origin,
                 sentiment, sentiment_score, sentiment_source,
-                client_whatsapp
+                client_whatsapp, treated_at, treated_note
          FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 500`,
         [empresa.id]
       );
@@ -181,7 +190,10 @@ export function mountEmpresaRoutes(app: Express) {
             tags = [];
           }
         }
-        const clientWpp = normalizarWhatsapp(r.client_whatsapp);
+        const clientWpp =
+          r.client_whatsapp === '[anonimizado]'
+            ? null
+            : normalizarWhatsapp(r.client_whatsapp);
         return {
           id: r.id,
           name: r.name,
@@ -198,6 +210,10 @@ export function mountEmpresaRoutes(app: Express) {
           sentiment_source: r.sentiment_source || null,
           client_whatsapp: clientWpp,
           client_whatsapp_url: linkWhatsapp(clientWpp),
+          client_whatsapp_anon: r.client_whatsapp === '[anonimizado]',
+          treated_at: r.treated_at || null,
+          treated_note: r.treated_note || null,
+          treated: Boolean(r.treated_at),
         };
       });
 
@@ -207,6 +223,7 @@ export function mountEmpresaRoutes(app: Express) {
       const media = total ? Math.round((soma / total) * 10) / 10 : 0;
       const negativas = reais.filter((r: any) => r.rating <= 3).length;
       const positivas = reais.filter((r: any) => r.rating >= 4).length;
+      const tratadas = reais.filter((r: any) => r.treated && r.rating <= 3).length;
 
       const dist = [0, 0, 0, 0, 0];
       for (const r of reais) {
@@ -280,6 +297,8 @@ export function mountEmpresaRoutes(app: Express) {
           media,
           negativas,
           positivas,
+          tratadas,
+          pendentes_tratamento: Math.max(0, negativas - tratadas),
           alerta_crise: crises_24h >= 3,
           crises_24h,
           distribuicao: dist,
@@ -309,6 +328,7 @@ export function mountEmpresaRoutes(app: Express) {
           mostrar_ia_respostas: tem_ia,
           mostrar_whatsapp_cliente: true,
           mostrar_copiar_resposta: true,
+          mostrar_tratar: true,
           whatsapp_crise: true,
         },
         links: {
@@ -317,6 +337,7 @@ export function mountEmpresaRoutes(app: Express) {
           widget: `${base}/widget/${ref}`,
           embed: `${base}/avaliacao/${ref}`,
           relatorio_pdf: pdf_disponivel ? `/api/empresa/${ref}/relatorio.pdf` : null,
+          login: `${base}/login`,
         },
       });
     })
