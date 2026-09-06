@@ -1,24 +1,62 @@
-/* stylelint-disable at-rule-no-unknown */
+/*
+ * Estilos globais mínimos.
+ * Layout e cores ficam nos componentes (Tailwind).
+ * Evite regras amplas em input/button — quebram cards claros (PlanCards).
+ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* stylelint-enable at-rule-no-unknown */
 
-html,
-body {
-  min-height: 100%;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    min-height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    margin: 0;
+    /* fundo/texto também no layout.tsx — aqui só fallback se faltar classe */
+    background-color: #000;
+    color: #f4f4f5;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Links não herdam cor estranha */
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  /* Imagens fluidas sem estourar layout */
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Botões herdam fonte */
+  button {
+    font-family: inherit;
+  }
 }
 
-body {
-  /* stylelint-disable-next-line at-rule-no-unknown */
-  @apply bg-black text-zinc-100 antialiased;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
-/* Formulários escuros por padrão */
-input,
-textarea,
-select {
-  color-scheme: dark;
+/* Utilitário opcional: formulários em área escura (use className="form-dark" no container) */
+@layer components {
+  .form-dark input,
+  .form-dark textarea,
+  .form-dark select {
+    color-scheme: dark;
+  }
 }

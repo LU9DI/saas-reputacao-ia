@@ -43,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="dark">
-      <body className="min-h-screen bg-black text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
+    <html lang="pt-BR" className="h-full">
+      <body className="min-h-full bg-black text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
         {children}
         <PwaRegister />
       </body>

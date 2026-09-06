@@ -5,6 +5,8 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // darkMode desligado por padrão — o app usa classes explícitas (bg-black, text-zinc-*)
+  // evita conflito com className="dark" no html forçando variantes não usadas
   theme: {
     extend: {
       colors: {
