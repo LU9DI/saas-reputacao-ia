@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+// @ts-expect-error Next.js processes global CSS imports without TypeScript declarations.
 import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
 

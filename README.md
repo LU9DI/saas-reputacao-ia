@@ -49,7 +49,7 @@ Deve retornar `checkout_url`.
 
 ## Admin
 
-- http://localhost:3000/admin/login
+- <http://localhost:3000/admin/login>
 - E-mail: `admin@seusaas.com` (ou `ADMIN_EMAIL`)
 - Senha: `ADMIN_PASSWORD` no `.env` (padrão `MudeEstaSenha123!`)
 
@@ -61,12 +61,10 @@ cd backend && npm test
 
 ## Estrutura
 
-```
 backend/          API Express + SQLite
   server.ts       bootstrap + trial/login/reviews
   stripeRoutes.ts checkout + webhook
   adminLoginRoute.ts / mfa.ts / passwordReset*
 frontend/         Next.js 14
-```
 
 Veja também `SETUP.md`.

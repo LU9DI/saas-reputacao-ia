@@ -76,7 +76,6 @@ Já configurado no código (`SameSite=None` + `Secure` em prod + `trust proxy`).
 ## Se algo falhar
 
 | Sintoma | Causa comum |
-|---------|-------------|
 | CORS no browser | `CORS_ORIGINS` sem a URL exata do Vercel |
 | Login não gruda | Cookie sem HTTPS ou `SameSite` |
 | Checkout 503 | `STRIPE_SECRET_KEY` ausente |

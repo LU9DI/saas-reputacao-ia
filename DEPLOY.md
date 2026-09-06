@@ -2,10 +2,10 @@
 
 Arquitetura recomendada:
 
-| Parte | Host | Motivo |
-|-------|------|--------|
-| Frontend (Next.js) | **Vercel** | Nativo para Next, HTTPS, CDN |
-| API (Express) | **Railway** | Docker fácil, volume para SQLite, healthcheck |
+| Parte              | Host       | Motivo                                         |
+| ------------------ | ---------- | ---------------------------------------------- |
+| Frontend (Next.js) | **Vercel** | Nativo para Next, HTTPS, CDN                   |
+| API (Express)      | **Railway**| Docker fácil, volume para SQLite, healthcheck  |
 
 ---
 
@@ -31,9 +31,9 @@ ADMIN_PASSWORD=SenhaForte@123
 
 Opcionais depois: `GROQ_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, SMTP.
 
-5. **Volume**: Add Volume montado em `/data` (persistência do SQLite).
-6. **Networking**: Generate Domain → anote a URL da API (`https://xxx.up.railway.app`).
-7. Healthcheck: path `/api/health` (já no `railway.toml`).
+. **Volume**: Add Volume montado em `/data` (persistência do SQLite).
+. **Networking**: Generate Domain → anote a URL da API (`https://xxx.up.railway.app`).
+. Healthcheck: path `/api/health` (já no `railway.toml`).
 
 ### Token para GitHub Actions
 
@@ -57,7 +57,7 @@ NEXT_PUBLIC_API_URL=https://SUA-API.up.railway.app
 NEXT_PUBLIC_APP_URL=https://SEU-PROJETO.vercel.app
 ```
 
-5. Deploy.
+. Deploy.
 
 ### Secrets para GitHub Actions (deploy automático)
 
@@ -67,7 +67,6 @@ Account/Team → Settings → Tokens
 No GitHub (**Settings → Secrets**):
 
 | Secret | Onde pegar |
-|--------|------------|
 | `VERCEL_TOKEN` | Vercel → Account → Tokens |
 | `VERCEL_ORG_ID` | `vercel link` local ou Team ID nas settings |
 | `VERCEL_PROJECT_ID` | Project Settings → General |
@@ -114,10 +113,8 @@ Se o login falhar só em produção, ajuste `backend/lib/auth.ts` para cookies c
 
 ## 6. Fluxo automático
 
-```
 push main → CI (testes + build) → se verde → Deploy workflow
                                       ├─ Railway API (se RAILWAY_TOKEN)
                                       └─ Vercel web (se secrets Vercel)
-```
 
 Sem secrets, o job **pula** com aviso (não quebra o pipeline).
