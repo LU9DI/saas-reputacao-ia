@@ -41,14 +41,12 @@ function serieUltimosDias(
   const map = new Map<string, { total: number; pos: number; neg: number; soma: number }>();
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
-
   for (let i = dias - 1; i >= 0; i--) {
     const d = new Date(hoje);
     d.setDate(d.getDate() - i);
     const key = d.toISOString().slice(0, 10);
     map.set(key, { total: 0, pos: 0, neg: 0, soma: 0 });
   }
-
   for (const r of reviews) {
     const key = String(r.createdAt || '').slice(0, 10);
     const bucket = map.get(key);
@@ -59,7 +57,6 @@ function serieUltimosDias(
     if (rating >= 4) bucket.pos += 1;
     if (rating <= 3) bucket.neg += 1;
   }
-
   return [...map.entries()].map(([dia, b]) => ({
     dia,
     total: b.total,
@@ -80,10 +77,8 @@ export function mountEmpresaRoutes(app: Express) {
     asyncHandler(async (req: Request, res: Response) => {
       const empresa = await findEmpresa(req.params.ref);
       if (!empresa) return res.status(404).json({ valido: false, motivo: 'not_found' });
-
       const agora = new Date();
       const expira = new Date(empresa.expira_em);
-
       if ((empresa.status === 'trial' || empresa.status === 'teste') && agora > expira) {
         return res.json({
           valido: false,
@@ -96,7 +91,6 @@ export function mountEmpresaRoutes(app: Express) {
       if (empresa.status === 'bloqueado') {
         return res.json({ valido: false, motivo: 'inactive', nome: empresa.nome_empresa });
       }
-
       const wpp = normalizarWhatsapp(empresa.whatsapp_suporte);
       return res.json({
         valido: true,
@@ -118,29 +112,24 @@ export function mountEmpresaRoutes(app: Express) {
     asyncHandler(async (req: AuthRequest, res: Response) => {
       const empresa = await findEmpresa(req.params.ref);
       if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
-
       if (!podeGerirEmpresa(req, empresa.id)) {
         return res.status(403).json({ error: 'Sem permissão para alterar o WhatsApp desta empresa.' });
       }
-
       const raw = String(req.body.whatsapp || req.body.whatsapp_suporte || '').trim();
       if (!raw) {
         await getDb().run(`UPDATE empresas SET whatsapp_suporte = NULL WHERE id = ?`, [empresa.id]);
         return res.json({ success: true, whatsapp: null, whatsapp_url: null });
       }
-
       const normalizado = normalizarWhatsapp(raw);
       if (!normalizado) {
         return res.status(400).json({
           error: 'WhatsApp inválido. Use DDD + número (ex: 11999998888 ou +55 11 99999-8888).',
         });
       }
-
       await getDb().run(`UPDATE empresas SET whatsapp_suporte = ? WHERE id = ?`, [
         normalizado,
         empresa.id,
       ]);
-
       res.json({
         success: true,
         whatsapp: normalizado,
@@ -157,7 +146,6 @@ export function mountEmpresaRoutes(app: Express) {
       if (!empresa) {
         return res.status(404).json({ error: 'Empresa não encontrada.' });
       }
-
       if (!podeGerirEmpresa(req, empresa.id)) {
         return res.status(403).json({
           error: 'Sem permissão. Faça login com a conta desta empresa.',
@@ -296,6 +284,7 @@ export function mountEmpresaRoutes(app: Express) {
           status: empresa.status,
           plan: empresa.plan,
           expira_em: empresa.expira_em,
+          cancel_at_period_end: Number(empresa.cancel_at_period_end) === 1,
           google_review_url: empresa.google_review_url || null,
           whatsapp: wpp,
           whatsapp_url: linkWhatsapp(wpp),
