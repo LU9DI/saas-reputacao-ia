@@ -4,9 +4,10 @@
  * Env:
  *   MP_ACCESS_TOKEN=APP_USR-...   (ou TEST-...)
  *   MP_WEBHOOK_SECRET=           (opcional — x-signature)
- *   MP_NOTIFICATION_URL=         (opcional; padrão APP_URL API + /api/webhook/mercadopago)
+ *   MP_NOTIFICATION_URL=         (opcional)
  */
 
+import crypto from 'crypto';
 import { resolvePlano, type PlanoDef } from '../stripeBilling.js';
 
 const MP_API = 'https://api.mercadopago.com';
@@ -31,7 +32,6 @@ function appUrl(): string {
 }
 
 function apiPublicUrl(): string {
-  // URL pública da API para webhooks (produção). Em dev use ngrok e defina MP_NOTIFICATION_URL.
   return (
     process.env.MP_NOTIFICATION_URL?.replace(/\/api\/webhook\/mercadopago\/?$/, '') ||
     process.env.API_PUBLIC_URL ||
@@ -85,7 +85,6 @@ export function buildExternalRef(opts: {
   planoKey: string;
   kind: PixKind;
 }): string {
-  // limite ~256; formato estável para webhook
   return `filtra|${opts.kind}|${opts.planoKey}|${opts.empresaId || 'none'}|${Date.now()}`
     .slice(0, 200);
 }
@@ -106,9 +105,6 @@ export function parseExternalRef(ref: string | null | undefined): {
   return { kind, planoKey, empresaId };
 }
 
-/**
- * Pix avulso — gera QR Code + copia-e-cola (point_of_interaction).
- */
 export async function createPixAvulso(opts: {
   planoKey: string;
   empresaId?: string | null;
@@ -182,16 +178,10 @@ export async function createPixAvulso(opts: {
   };
 }
 
-/**
- * Pix agendado — cria cobrança com data futura (date_of_expiration + status pending).
- * Na prática MP gera Pix válido até a data; para agendar de verdade use recorrente.
- * Aqui: Pix com vencimento customizado (ex.: pagar no dia X).
- */
 export async function createPixAgendado(opts: {
   planoKey: string;
   empresaId?: string | null;
   email?: string | null;
-  /** ISO date — vencimento do QR (máx. regras MP) */
   venceEmIso: string;
   nomePagador?: string | null;
 }): Promise<{
@@ -217,7 +207,6 @@ export async function createPixAgendado(opts: {
 
   const vence = new Date(opts.venceEmIso);
   if (Number.isNaN(vence.getTime())) throw new Error('Data de vencimento inválida');
-  // MP: date_of_expiration no futuro, tipicamente até 30 dias para Pix
   const max = new Date(Date.now() + 29 * 24 * 60 * 60 * 1000);
   if (vence.getTime() > max.getTime()) {
     throw new Error('Vencimento do Pix agendado deve ser em até 29 dias');
@@ -266,10 +255,6 @@ export async function createPixAgendado(opts: {
   };
 }
 
-/**
- * Pix recorrente / assinatura (preapproval Mercado Pago).
- * Gera link de autorização; cobranças seguintes são automáticas no ciclo.
- */
 export async function createPixRecorrente(opts: {
   planoKey: string;
   empresaId?: string | null;
@@ -318,7 +303,6 @@ export async function createPixRecorrente(opts: {
     },
   };
 
-  // endpoint clássico de assinaturas
   const data = await mpFetch('/preapproval', {
     method: 'POST',
     body: JSON.stringify(body),
@@ -351,10 +335,6 @@ export async function getPreapproval(id: string): Promise<any> {
   return mpFetch(`/preapproval/${id}`, { method: 'GET' });
 }
 
-/**
- * Validação simples de webhook MP (x-signature).
- * Se MP_WEBHOOK_SECRET não estiver definido, em dev aceita; em prod exige.
- */
 export function verifyMpWebhookSignature(opts: {
   xSignature?: string | null;
   xRequestId?: string | null;
@@ -368,8 +348,6 @@ export function verifyMpWebhookSignature(opts: {
     }
     return true;
   }
-  // Template MP: ts=...,v1=hash(manifest)
-  // Manifest: id:[data.id];request-id:[x-request-id];ts:[ts];
   const sig = opts.xSignature || '';
   const parts: Record<string, string> = {};
   for (const p of sig.split(',')) {
@@ -380,7 +358,6 @@ export function verifyMpWebhookSignature(opts: {
   const v1 = parts.v1;
   if (!ts || !v1 || !opts.dataId || !opts.xRequestId) return false;
 
-  const crypto = require('crypto') as typeof import('crypto');
   const manifest = `id:${opts.dataId};request-id:${opts.xRequestId};ts:${ts};`;
   const expected = crypto.createHmac('sha256', secret).update(manifest).digest('hex');
   try {
