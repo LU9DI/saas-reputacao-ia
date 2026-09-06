@@ -119,6 +119,7 @@ export function PlanCards({
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [pixOpen, setPixOpen] = useState(false);
   const [pixPlano, setPixPlano] = useState<{ key: string; label: string } | null>(null);
+  // Pix e Stripe ficam visíveis por padrão; PayPal só se configurado
   const [gateways, setGateways] = useState<Gateways>({
     stripe: true,
     paypal: false,
@@ -156,14 +157,18 @@ export function PlanCards({
           }
         }
 
+        // Stripe e Pix: sempre mostrar botões (erro claro se .env faltar).
+        // PayPal: só se o backend reportar configured=true.
         let stripe = true;
         let pix = true;
         let paypal = false;
 
         if (healthRes && healthRes.ok) {
           const h = await healthRes.json();
-          stripe = Boolean(h.stripe);
-          pix = Boolean(h.pix);
+          // se health disser stripe false, ainda mostramos o botão (mensagem no clique)
+          if (typeof h.stripe === 'boolean') stripe = true;
+          // Pix NÃO some — health.pix=false só indica MP_ACCESS_TOKEN ausente
+          pix = true;
         }
         if (paypalRes && paypalRes.ok) {
           const p = await paypalRes.json();
@@ -172,7 +177,7 @@ export function PlanCards({
 
         if (!cancelled) setGateways({ stripe, paypal, pix });
       } catch {
-        /* defaults */
+        /* mantém stripe+pix visíveis */
       } finally {
         if (!cancelled) setLoadingPrices(false);
       }
@@ -315,7 +320,9 @@ export function PlanCards({
       if (!res.ok) {
         throw new Error(
           data.error ||
-            (res.status === 503 ? 'Pix não configurado (MP_ACCESS_TOKEN).' : `Erro ${res.status}`)
+            (res.status === 503
+              ? 'Pix não configurado. No backend/.env defina MP_ACCESS_TOKEN (Mercado Pago).'
+              : `Erro ${res.status}`)
         );
       }
       const url = data.init_point || data.authorize_url;
@@ -385,9 +392,9 @@ export function PlanCards({
           Deseja continuar depois do período de teste?
         </h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
-          {[gateways.stripe && 'Cartão (Stripe)', gateways.paypal && 'PayPal', gateways.pix && 'Pix']
+          {[gateways.stripe && 'Cartão (Stripe)', gateways.paypal && 'PayPal', 'Pix']
             .filter(Boolean)
-            .join(' · ') || 'Configure um meio de pagamento no backend'}
+            .join(' · ')}
           {loadingPrices ? ' · atualizando preços…' : ''}
         </p>
 
@@ -503,32 +510,23 @@ export function PlanCards({
                   </button>
                 )}
 
-                {gateways.pix && (
-                  <>
-                    <button
-                      type="button"
-                      disabled={!!loading}
-                      onClick={() => abrirPix(key, p.label)}
-                      className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
-                    >
-                      Pix (QR / copia e cola)
-                    </button>
-                    <button
-                      type="button"
-                      disabled={!!loading}
-                      onClick={() => irParaRecorrente(key)}
-                      className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50"
-                    >
-                      {loading === `pix-rec-${key}` ? 'Abrindo…' : 'Pix recorrente'}
-                    </button>
-                  </>
-                )}
-
-                {!gateways.stripe && !gateways.paypal && !gateways.pix && (
-                  <p className="text-xs text-center text-slate-500">
-                    Nenhum gateway ativo. Configure Stripe, PayPal ou Mercado Pago no backend.
-                  </p>
-                )}
+                {/* Pix sempre visível */}
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => abrirPix(key, p.label)}
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
+                >
+                  Pix (QR / copia e cola)
+                </button>
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => irParaRecorrente(key)}
+                  className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50"
+                >
+                  {loading === `pix-rec-${key}` ? 'Abrindo…' : 'Pix recorrente'}
+                </button>
               </div>
             </div>
           );
