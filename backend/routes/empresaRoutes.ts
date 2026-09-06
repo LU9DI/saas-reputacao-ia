@@ -5,7 +5,13 @@ import { normalizarWhatsapp, linkWhatsapp } from '../lib/whatsapp.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { ensureReviewFraudColumns } from '../lib/reviewFraud.js';
 import { planTemPdf, allowPlanSwitch, PLANOS_OFICIAIS, planLabel, isTrialPlan } from '../lib/plans.js';
-import { planTemIA } from '../lib/quota.js';
+import {
+  planTemIA,
+  getFeedbackLimit,
+  getTokenLimit,
+  tokensUsadosMes,
+  contarReviewsMes,
+} from '../lib/quota.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
 
@@ -63,7 +69,6 @@ function serieUltimosDias(
   }));
 }
 
-/** Dono da empresa ou admin. */
 function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
@@ -144,7 +149,6 @@ export function mountEmpresaRoutes(app: Express) {
     })
   );
 
-  /** Painel privado — exige JWT da empresa ou admin. */
   app.get(
     '/api/empresa/:ref/painel',
     autenticarToken,
@@ -275,6 +279,11 @@ export function mountEmpresaRoutes(app: Express) {
       const pdf_disponivel = planTemPdf(plan);
       const tem_ia = trial || planTemIA(plan);
 
+      const feedback_limite = getFeedbackLimit(plan);
+      const feedback_usados = await contarReviewsMes(empresa.id);
+      const token_limite = getTokenLimit(plan);
+      const token_usados = tem_ia ? await tokensUsadosMes(empresa.id) : 0;
+
       const base = APP_URL.replace(/\/$/, '');
       const ref = empresa.slug || empresa.id;
       const wpp = normalizarWhatsapp(empresa.whatsapp_suporte);
@@ -309,6 +318,14 @@ export function mountEmpresaRoutes(app: Express) {
           sentimento_mix,
           sentimento_score_medio:
             scoreN > 0 ? Math.round((scoreSum / scoreN) * 100) / 100 : null,
+          feedback_usados,
+          feedback_limite,
+          tokens_usados: token_usados,
+          tokens_limite: token_limite,
+          tokens_pct:
+            token_limite > 0
+              ? Math.min(100, Math.round((token_usados / token_limite) * 100))
+              : 0,
         },
         dashboard: {
           nivel,
