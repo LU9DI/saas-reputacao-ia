@@ -97,6 +97,8 @@ const DEFAULT_PLANS: PlanCard[] = [
   },
 ];
 
+type Gateways = { stripe: boolean; paypal: boolean; pix: boolean };
+
 type Props = {
   empresaId?: string | null;
   requireEmpresa?: boolean;
@@ -117,41 +119,66 @@ export function PlanCards({
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [pixOpen, setPixOpen] = useState(false);
   const [pixPlano, setPixPlano] = useState<{ key: string; label: string } | null>(null);
+  const [gateways, setGateways] = useState<Gateways>({
+    stripe: true,
+    paypal: false,
+    pix: true,
+  });
 
-  // Preços vindos do admin (SQLite via /api/planos)
   useEffect(() => {
     let cancelled = false;
     const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
 
     const carregar = async () => {
       try {
-        const res = await fetch(`${apiUrl}/api/planos`, { cache: 'no-store' });
-        if (!res.ok) return;
-        const data = await res.json();
-        const list = Array.isArray(data.planos) ? data.planos : [];
-        if (!list.length || cancelled) return;
+        const [planosRes, healthRes, paypalRes] = await Promise.all([
+          fetch(`${apiUrl}/api/planos`, { cache: 'no-store' }),
+          fetch(`${apiUrl}/api/health`, { cache: 'no-store' }).catch(() => null),
+          fetch(`${apiUrl}/api/paypal/status`, { cache: 'no-store' }).catch(() => null),
+        ]);
 
-        const mapped: PlanCard[] = list.map((p: any) => ({
-          keyMensal: p.keyMensal || p.plan,
-          keyAnual: p.keyAnual || `${p.plan}-anual`,
-          label: p.label || p.plan,
-          priceMensal: p.priceMensal,
-          priceAnual: p.priceAnual,
-          features: Array.isArray(p.features) ? p.features : [],
-          missingFeatures: Array.isArray(p.missingFeatures) ? p.missingFeatures : [],
-          highlight: Boolean(p.highlight),
-        }));
+        if (planosRes.ok) {
+          const data = await planosRes.json();
+          const list = Array.isArray(data.planos) ? data.planos : [];
+          if (list.length && !cancelled) {
+            setPlans(
+              list.map((p: any) => ({
+                keyMensal: p.keyMensal || p.plan,
+                keyAnual: p.keyAnual || `${p.plan}-anual`,
+                label: p.label || p.plan,
+                priceMensal: p.priceMensal,
+                priceAnual: p.priceAnual,
+                features: Array.isArray(p.features) ? p.features : [],
+                missingFeatures: Array.isArray(p.missingFeatures) ? p.missingFeatures : [],
+                highlight: Boolean(p.highlight),
+              }))
+            );
+          }
+        }
 
-        if (mapped.length) setPlans(mapped);
+        let stripe = true;
+        let pix = true;
+        let paypal = false;
+
+        if (healthRes && healthRes.ok) {
+          const h = await healthRes.json();
+          stripe = Boolean(h.stripe);
+          pix = Boolean(h.pix);
+        }
+        if (paypalRes && paypalRes.ok) {
+          const p = await paypalRes.json();
+          paypal = Boolean(p.configured);
+        }
+
+        if (!cancelled) setGateways({ stripe, paypal, pix });
       } catch {
-        /* mantém DEFAULT_PLANS offline */
+        /* defaults */
       } finally {
         if (!cancelled) setLoadingPrices(false);
       }
     };
 
     carregar();
-    // Recarrega a cada 45s se o admin mudar o preço com a home aberta
     const id = window.setInterval(carregar, 45_000);
     return () => {
       cancelled = true;
@@ -168,7 +195,6 @@ export function PlanCards({
     setLoading(planoKey);
     try {
       const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
-
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 20000);
 
@@ -187,16 +213,14 @@ export function PlanCards({
       try {
         data = await res.json();
       } catch {
-        throw new Error(
-          `API respondeu sem JSON (${res.status}). Confira se o backend está em ${apiUrl}.`
-        );
+        throw new Error(`API respondeu sem JSON (${res.status}).`);
       }
 
       if (!res.ok) {
         if (res.status === 503) {
           throw new Error(
             data.error ||
-              'Stripe não configurado. No backend/.env defina STRIPE_SECRET_KEY=sk_test_... e reinicie a API.'
+              'Stripe não configurado. Defina STRIPE_SECRET_KEY no backend/.env.'
           );
         }
         throw new Error(data.error || `Não foi possível iniciar o pagamento (${res.status}).`);
@@ -204,20 +228,53 @@ export function PlanCards({
 
       const url = data.checkout_url || data.url;
       if (!url || typeof url !== 'string' || !url.startsWith('http')) {
-        throw new Error('URL de checkout ausente ou inválida. Verifique STRIPE_SECRET_KEY no backend.');
+        throw new Error('URL de checkout inválida.');
       }
-
       window.location.assign(url);
     } catch (e: any) {
       if (e?.name === 'AbortError') {
-        setErro('Tempo esgotado ao falar com a API. Backend está rodando na porta 5000?');
+        setErro('Tempo esgotado. Backend na porta 5000?');
       } else if (String(e?.message || '').includes('Failed to fetch')) {
-        setErro(
-          'Não conectou na API. Suba o backend (cd backend && npm run dev) e confira NEXT_PUBLIC_API_URL.'
-        );
+        setErro('Não conectou na API. Suba o backend.');
       } else {
         setErro(e.message || 'Erro ao abrir checkout');
       }
+      setLoading(null);
+    }
+  };
+
+  const irParaPayPal = async (planoKey: string) => {
+    setErro('');
+    if (requireEmpresa && !empresaId) {
+      setErro('Ative o período de testes acima antes de assinar um plano.');
+      return;
+    }
+    setLoading(`paypal-${planoKey}`);
+    try {
+      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
+      const res = await fetch(`${apiUrl}/api/paypal/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plano: planoKey,
+          empresa_id: empresaId || undefined,
+          email: email || undefined,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          data.error ||
+            (res.status === 503
+              ? 'PayPal não configurado (PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET).'
+              : `Erro PayPal ${res.status}`)
+        );
+      }
+      const url = data.approve_url || data.approveUrl;
+      if (!url) throw new Error('PayPal não retornou link de pagamento.');
+      window.location.assign(url);
+    } catch (e: any) {
+      setErro(e.message || 'Erro no PayPal');
       setLoading(null);
     }
   };
@@ -239,7 +296,7 @@ export function PlanCards({
       return;
     }
     if (!email) {
-      setErro('Informe o e-mail no cadastro do trial para assinatura Pix recorrente.');
+      setErro('Informe o e-mail no cadastro do trial para Pix recorrente.');
       return;
     }
     setLoading(`pix-rec-${planoKey}`);
@@ -258,9 +315,7 @@ export function PlanCards({
       if (!res.ok) {
         throw new Error(
           data.error ||
-            (res.status === 503
-              ? 'Pix não configurado (MP_ACCESS_TOKEN).'
-              : `Erro ${res.status}`)
+            (res.status === 503 ? 'Pix não configurado (MP_ACCESS_TOKEN).' : `Erro ${res.status}`)
         );
       }
       const url = data.init_point || data.authorize_url;
@@ -330,8 +385,10 @@ export function PlanCards({
           Deseja continuar depois do período de teste?
         </h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
-          Cartão (Stripe) ou Pix (QR / copia e cola / recorrente).
-          {loadingPrices ? ' Carregando preços…' : ''}
+          {[gateways.stripe && 'Cartão (Stripe)', gateways.paypal && 'PayPal', gateways.pix && 'Pix']
+            .filter(Boolean)
+            .join(' · ') || 'Configure um meio de pagamento no backend'}
+          {loadingPrices ? ' · atualizando preços…' : ''}
         </p>
 
         <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
@@ -416,35 +473,62 @@ export function PlanCards({
               </div>
 
               <div className="mt-8 space-y-2">
-                <button
-                  type="button"
-                  disabled={!!loading}
-                  onClick={() => irParaCheckout(key)}
-                  className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
-                    p.highlight
-                      ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
-                      : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
-                  }`}
-                >
-                  {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
-                  {loading === key ? 'Redirecionando…' : 'Cartão (Stripe)'}
-                </button>
-                <button
-                  type="button"
-                  disabled={!!loading}
-                  onClick={() => abrirPix(key, p.label)}
-                  className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
-                >
-                  Pix (QR / copia e cola)
-                </button>
-                <button
-                  type="button"
-                  disabled={!!loading}
-                  onClick={() => irParaRecorrente(key)}
-                  className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50"
-                >
-                  {loading === `pix-rec-${key}` ? 'Abrindo…' : 'Pix recorrente'}
-                </button>
+                {gateways.stripe && (
+                  <button
+                    type="button"
+                    disabled={!!loading}
+                    onClick={() => irParaCheckout(key)}
+                    className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
+                      p.highlight
+                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
+                        : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
+                    }`}
+                  >
+                    {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
+                    {loading === key ? 'Redirecionando…' : 'Cartão (Stripe)'}
+                  </button>
+                )}
+
+                {gateways.paypal && (
+                  <button
+                    type="button"
+                    disabled={!!loading}
+                    onClick={() => irParaPayPal(key)}
+                    className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loading === `paypal-${key}` ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : null}
+                    {loading === `paypal-${key}` ? 'Abrindo PayPal…' : 'PayPal'}
+                  </button>
+                )}
+
+                {gateways.pix && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={!!loading}
+                      onClick={() => abrirPix(key, p.label)}
+                      className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
+                    >
+                      Pix (QR / copia e cola)
+                    </button>
+                    <button
+                      type="button"
+ecessarily                      disabled={!!loading}
+                      onClick={() => irParaRecorrente(key)}
+                      className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50"
+                    >
+                      {loading === `pix-rec-${key}` ? 'Abrindo…' : 'Pix recorrente'}
+                    </button>
+                  </>
+                )}
+
+                {!gateways.stripe && !gateways.paypal && !gateways.pix && (
+                  <p className="text-xs text-center text-slate-500">
+                    Nenhum gateway ativo. Configure Stripe, PayPal ou Mercado Pago no backend.
+                  </p>
+                )}
               </div>
             </div>
           );
