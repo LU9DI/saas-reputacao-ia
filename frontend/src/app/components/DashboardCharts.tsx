@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 const STAR_COLORS = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
 
 export type SerieDia = {
-  dia: string; // YYYY-MM-DD
+  dia: string;
   total: number;
   positivas: number;
   negativas: number;
@@ -21,6 +21,9 @@ type Props = {
   nivel: string;
   crises24h?: number;
   alertaCrise?: boolean;
+  /** Overrides vindos do backend (dashboard.mostrar_*) */
+  mostrarTendencia?: boolean;
+  mostrarTags?: boolean;
 };
 
 function formatDia(iso: string) {
@@ -28,7 +31,9 @@ function formatDia(iso: string) {
   return `${d}/${m}`;
 }
 
-/** Barras 1–5★ com hover */
+const card = 'bg-zinc-900 rounded-2xl px-5 py-5 border border-zinc-800';
+const title = 'text-[11px] font-medium uppercase tracking-wide text-zinc-500 mb-3';
+
 function BarDist({ values }: { values: number[] }) {
   const max = Math.max(...values, 1);
   const labels = ['1★', '2★', '3★', '4★', '5★'];
@@ -51,7 +56,7 @@ function BarDist({ values }: { values: number[] }) {
             >
               <span
                 className={`text-[11px] font-semibold tabular-nums transition-opacity ${
-                  hover === i ? 'opacity-100 text-slate-800' : 'opacity-70 text-slate-500'
+                  hover === i ? 'opacity-100 text-zinc-100' : 'opacity-70 text-zinc-500'
                 }`}
               >
                 {v}
@@ -62,24 +67,23 @@ function BarDist({ values }: { values: number[] }) {
                   height: `${h}%`,
                   backgroundColor: STAR_COLORS[i],
                   minHeight: v > 0 ? 10 : 3,
-                  boxShadow: hover === i ? `0 0 0 2px ${STAR_COLORS[i]}33` : undefined,
+                  boxShadow: hover === i ? `0 0 0 2px ${STAR_COLORS[i]}55` : undefined,
                 }}
               />
-              <span className="text-[10px] text-slate-400">{labels[i]}</span>
+              <span className="text-[10px] text-zinc-500">{labels[i]}</span>
             </button>
           );
         })}
       </div>
       {hover != null && (
-        <p className="mt-2 text-center text-xs text-slate-500">
-          {labels[hover]}: <strong className="text-slate-800">{values[hover]}</strong> avaliações
+        <p className="mt-2 text-center text-xs text-zinc-500">
+          {labels[hover]}: <strong className="text-zinc-200">{values[hover]}</strong> avaliações
         </p>
       )}
     </div>
   );
 }
 
-/** Donut interativo */
 function DonutMix({ positive, negative }: { positive: number; negative: number }) {
   const total = Math.max(positive + negative, 1);
   const pct = Math.round((positive / total) * 100);
@@ -96,7 +100,7 @@ function DonutMix({ positive, negative }: { positive: number; negative: number }
           cy="50"
           r={r}
           fill="none"
-          stroke="#fecaca"
+          stroke="#7f1d1d"
           strokeWidth="14"
           className="cursor-pointer"
           onMouseEnter={() => setTip('neg')}
@@ -121,23 +125,23 @@ function DonutMix({ positive, negative }: { positive: number; negative: number }
           y="52"
           textAnchor="middle"
           dominantBaseline="middle"
-          fill="#0f172a"
+          fill="#f4f4f5"
           style={{ fontSize: 15, fontWeight: 700 }}
         >
           {pct}%
         </text>
       </svg>
-      <div className="text-sm space-y-2">
-        <p className={`flex items-center gap-2 ${tip === 'pos' ? 'font-semibold' : ''}`}>
+      <div className="text-sm space-y-2 text-zinc-300">
+        <p className={`flex items-center gap-2 ${tip === 'pos' ? 'font-semibold text-zinc-50' : ''}`}>
           <span className="w-3 h-3 rounded-full bg-emerald-500" />
           Positivas (4–5): <strong>{positive}</strong>
         </p>
-        <p className={`flex items-center gap-2 ${tip === 'neg' ? 'font-semibold' : ''}`}>
-          <span className="w-3 h-3 rounded-full bg-red-300" />
+        <p className={`flex items-center gap-2 ${tip === 'neg' ? 'font-semibold text-zinc-50' : ''}`}>
+          <span className="w-3 h-3 rounded-full bg-red-800" />
           Críticas (1–3): <strong>{negative}</strong>
         </p>
         {tip && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-zinc-500">
             {tip === 'pos'
               ? `${pct}% do volume é nota alta`
               : `${100 - pct}% do volume é crítica retida`}
@@ -148,7 +152,6 @@ function DonutMix({ positive, negative }: { positive: number; negative: number }
   );
 }
 
-/** Linha de tendência (14 dias) */
 function TrendLine({ serie }: { serie: SerieDia[] }) {
   const [hover, setHover] = useState<number | null>(null);
   const w = 320;
@@ -175,14 +178,14 @@ function TrendLine({ serie }: { serie: SerieDia[] }) {
     <div className="w-full overflow-x-auto">
       <svg viewBox={`0 0 ${w} ${h + 24}`} className="w-full max-w-full h-auto" role="img">
         <defs>
-          <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6366f1" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#6366f1" stopOpacity="0.02" />
+          <linearGradient id="trendFillDark" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#818cf8" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#818cf8" stopOpacity="0.02" />
           </linearGradient>
         </defs>
-        {area && <path d={area} fill="url(#trendFill)" />}
+        {area && <path d={area} fill="url(#trendFillDark)" />}
         {path && (
-          <path d={path} fill="none" stroke="#4f46e5" strokeWidth="2.5" strokeLinejoin="round" />
+          <path d={path} fill="none" stroke="#818cf8" strokeWidth="2.5" strokeLinejoin="round" />
         )}
         {points.map((p, i) => (
           <g key={p.dia}>
@@ -190,13 +193,13 @@ function TrendLine({ serie }: { serie: SerieDia[] }) {
               cx={p.x}
               cy={p.y}
               r={hover === i ? 5 : 3}
-              fill={hover === i ? '#312e81' : '#6366f1'}
+              fill={hover === i ? '#c7d2fe' : '#6366f1'}
               className="cursor-pointer"
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(null)}
             />
             {(i === 0 || i === points.length - 1 || i % 3 === 0) && (
-              <text x={p.x} y={h + 14} textAnchor="middle" fill="#94a3b8" style={{ fontSize: 9 }}>
+              <text x={p.x} y={h + 14} textAnchor="middle" fill="#71717a" style={{ fontSize: 9 }}>
                 {formatDia(p.dia)}
               </text>
             )}
@@ -204,37 +207,36 @@ function TrendLine({ serie }: { serie: SerieDia[] }) {
         ))}
       </svg>
       {hover != null && points[hover] && (
-        <p className="text-xs text-slate-600 text-center mt-1">
-          {formatDia(points[hover].dia)}: <strong>{points[hover].total}</strong> eval · média{' '}
-          <strong>{points[hover].media || '—'}</strong> · +{points[hover].positivas} / −
-          {points[hover].negativas}
+        <p className="text-xs text-zinc-400 text-center mt-1">
+          {formatDia(points[hover].dia)}: <strong className="text-zinc-200">{points[hover].total}</strong>{' '}
+          eval · média <strong className="text-zinc-200">{points[hover].media || '—'}</strong> · +
+          {points[hover].positivas} / −{points[hover].negativas}
         </p>
       )}
       {!serie.some((s) => s.total > 0) && (
-        <p className="text-xs text-slate-400 text-center">Sem avaliações nos últimos 14 dias.</p>
+        <p className="text-xs text-zinc-500 text-center">Sem avaliações nos últimos 14 dias.</p>
       )}
-      <p className="text-[10px] text-slate-400 text-center mt-1">Escala máx. no período: {maxY}</p>
+      <p className="text-[10px] text-zinc-600 text-center mt-1">Escala máx. no período: {maxY}</p>
     </div>
   );
 }
 
-/** Barras horizontais de tags */
 function TagBars({ tags }: { tags: { tag: string; count: number }[] }) {
   const max = Math.max(...tags.map((t) => t.count), 1);
   return (
     <ul className="space-y-2.5">
       {tags.map((t) => (
         <li key={t.tag} className="flex items-center gap-3 text-sm">
-          <span className="w-28 sm:w-36 truncate text-slate-600 text-xs" title={t.tag}>
+          <span className="w-28 sm:w-36 truncate text-zinc-400 text-xs" title={t.tag}>
             {t.tag}
           </span>
-          <div className="flex-1 h-2.5 rounded-full bg-slate-100 overflow-hidden">
+          <div className="flex-1 h-2.5 rounded-full bg-zinc-800 overflow-hidden">
             <div
               className="h-full rounded-full bg-indigo-500 transition-all duration-500"
               style={{ width: `${(t.count / max) * 100}%` }}
             />
           </div>
-          <span className="text-xs font-semibold text-slate-700 tabular-nums w-6 text-right">
+          <span className="text-xs font-semibold text-zinc-300 tabular-nums w-6 text-right">
             {t.count}
           </span>
         </li>
@@ -252,55 +254,57 @@ export function DashboardCharts({
   nivel,
   crises24h = 0,
   alertaCrise = false,
+  mostrarTendencia,
+  mostrarTags,
 }: Props) {
-  const showTrend = nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo';
-  const showTags = (nivel === 'ultra' || nivel === 'executivo') && topTags.length > 0;
+  const showTrend =
+    mostrarTendencia ??
+    (nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo');
+  const showTags =
+    (mostrarTags ?? (nivel === 'ultra' || nivel === 'executivo')) && topTags.length > 0;
+  const showDonut = nivel !== 'basico' || true; // inicial: barras + donut simples
 
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100 shadow-sm">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-3">
-            Distribuição de notas
-          </p>
+        <div className={card}>
+          <p className={title}>Distribuição de notas</p>
           <BarDist values={distribuicao} />
         </div>
 
-        <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100 shadow-sm">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-3">
-            Positivas vs críticas
-          </p>
-          <DonutMix positive={positivas} negative={negativas} />
-          {alertaCrise && (
-            <p className="mt-4 text-xs text-red-700 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
-              Alerta: {crises24h} notas ≤2★ nas últimas 24h
-            </p>
-          )}
-        </div>
+        {showDonut && (
+          <div className={card}>
+            <p className={title}>Positivas vs críticas</p>
+            <DonutMix positive={positivas} negative={negativas} />
+            {alertaCrise && (
+              <p className="mt-4 text-xs text-red-300 bg-red-950/50 border border-red-900 rounded-lg px-3 py-2">
+                Alerta: {crises24h} notas ≤2★ nas últimas 24h
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {showTrend && (
-        <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100 shadow-sm">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-1">
+        <div className={card}>
+          <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500 mb-1">
             Tendência · últimos 14 dias
           </p>
-          <p className="text-xs text-slate-400 mb-3">Volume diário de avaliações (hover nos pontos)</p>
+          <p className="text-xs text-zinc-600 mb-3">Volume diário (hover nos pontos) · Pro+</p>
           <TrendLine serie={serie} />
         </div>
       )}
 
       {showTags && (
-        <div className="bg-white rounded-2xl px-5 py-5 border border-slate-100 shadow-sm">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400 mb-4">
-            Temas mais citados (IA)
-          </p>
+        <div className={card}>
+          <p className={title}>Temas mais citados (IA) · Ultra+</p>
           <TagBars tags={topTags} />
         </div>
       )}
 
       {nivel === 'basico' && (
-        <p className="text-xs text-slate-400 text-center">
-          Plano Pro+ libera tendência de 14 dias e relatório PDF. Ultra+ mostra tags da IA.
+        <p className="text-xs text-zinc-600 text-center">
+          Plano Inicial: gráficos básicos. Pro libera tendência 14 dias e PDF. Ultra+ tags da IA.
         </p>
       )}
     </div>
