@@ -206,7 +206,11 @@ export async function criarCheckoutSession(opts: {
   const plano = resolvePlano(opts.planoKey);
   if (!plano) throw new Error('Plano inválido');
 
-  const success = `${appUrl()}/?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
+  const empresaQ = opts.empresaId
+    ? `&empresa_id=${encodeURIComponent(opts.empresaId)}`
+    : '';
+  const planoQ = `&plano=${encodeURIComponent(plano.planDb)}`;
+  const success = `${appUrl()}/pagamento-ok?checkout=success&session_id={CHECKOUT_SESSION_ID}${empresaQ}${planoQ}`;
   const cancel = `${appUrl()}/?checkout=cancel`;
 
   const params: Record<string, string> = {
@@ -341,10 +345,15 @@ export function listPlanosPublicos() {
     const p = PLANOS[k];
     return {
       key: p.key,
+      planDb: p.planDb,
       label: p.label,
       valueMonthly: p.displayMonthly,
       interval: p.interval,
       reviewLimit: p.reviewLimit,
+      priceLabel:
+        p.interval === 'month'
+          ? `R$ ${p.displayMonthly.toFixed(2).replace('.', ',')}`
+          : `R$ ${p.displayMonthly.toFixed(2).replace('.', ',')}/mês (anual)`,
     };
   });
 }
