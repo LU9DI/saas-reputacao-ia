@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getEnv } from '../utils/env';
 import { ComoFunciona } from './ComoFunciona';
 import { PixCheckoutModal } from './PixCheckoutModal';
@@ -110,11 +110,54 @@ export function PlanCards({
   showComoFunciona = true,
   email,
 }: Props) {
+  const [plans, setPlans] = useState<PlanCard[]>(DEFAULT_PLANS);
+  const [loadingPrices, setLoadingPrices] = useState(true);
   const [loading, setLoading] = useState<string | null>(null);
   const [erro, setErro] = useState('');
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [pixOpen, setPixOpen] = useState(false);
   const [pixPlano, setPixPlano] = useState<{ key: string; label: string } | null>(null);
+
+  // Preços vindos do admin (SQLite via /api/planos)
+  useEffect(() => {
+    let cancelled = false;
+    const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
+
+    const carregar = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/api/planos`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const list = Array.isArray(data.planos) ? data.planos : [];
+        if (!list.length || cancelled) return;
+
+        const mapped: PlanCard[] = list.map((p: any) => ({
+          keyMensal: p.keyMensal || p.plan,
+          keyAnual: p.keyAnual || `${p.plan}-anual`,
+          label: p.label || p.plan,
+          priceMensal: p.priceMensal,
+          priceAnual: p.priceAnual,
+          features: Array.isArray(p.features) ? p.features : [],
+          missingFeatures: Array.isArray(p.missingFeatures) ? p.missingFeatures : [],
+          highlight: Boolean(p.highlight),
+        }));
+
+        if (mapped.length) setPlans(mapped);
+      } catch {
+        /* mantém DEFAULT_PLANS offline */
+      } finally {
+        if (!cancelled) setLoadingPrices(false);
+      }
+    };
+
+    carregar();
+    // Recarrega a cada 45s se o admin mudar o preço com a home aberta
+    const id = window.setInterval(carregar, 45_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, []);
 
   const irParaCheckout = async (planoKey: string) => {
     setErro('');
@@ -288,6 +331,7 @@ export function PlanCards({
         </h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
           Cartão (Stripe) ou Pix (QR / copia e cola / recorrente).
+          {loadingPrices ? ' Carregando preços…' : ''}
         </p>
 
         <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
@@ -323,7 +367,7 @@ export function PlanCards({
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
-        {DEFAULT_PLANS.map((p) => {
+        {plans.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
           const price = ciclo === 'mensal' ? p.priceMensal : p.priceAnual;
           const period = ciclo === 'mensal' ? '/mês' : 'cobrança anual';
