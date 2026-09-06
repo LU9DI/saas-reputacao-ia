@@ -1,0 +1,9 @@
+# Quando o Root Directory for a raiz do monorepo
+[phases.install]
+cmds = ["npm install --prefix backend"]
+
+[phases.build]
+cmds = ["echo ok"]
+
+[start]
+cmd = "npm start --prefix backend"
