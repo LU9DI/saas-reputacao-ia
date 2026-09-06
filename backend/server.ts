@@ -29,6 +29,8 @@ import { mountPushRoutes } from './routes/pushRoutes.js';
 import { mountJobsRoutes } from './routes/jobsRoutes.js';
 import { mountPayPalRoutes } from './routes/paypalRoutes.js';
 import { mountPixRoutes } from './routes/pixRoutes.js';
+import { mountSubscriptionRoutes } from './routes/subscriptionRoutes.js';
+import { mountUnidadeRoutes } from './routes/unidadeRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
@@ -38,7 +40,7 @@ import { stripeConfigured, refreshPlanPricesFromDb } from './stripeBilling.js';
 import { paypalConfigured } from './lib/paypal.js';
 import { mpConfigured } from './lib/mercadopago.js';
 import { aiConfigured, listAiProviders, getAiLoadStats } from './groqService.js';
-import { ensureUnidadesSchema } from './relatorioPdf.js';
+import { ensureUnidadesSchema } from './lib/unidades.js';
 import { ensureWebAuthnSchema, webauthnConfig } from './lib/webauthn.js';
 import { ensurePushSchema, pushConfigured, initWebPush } from './lib/push.js';
 import { ensureAiUsageSchema } from './lib/aiUsage.js';
@@ -211,6 +213,8 @@ async function main() {
   mountJobsRoutes(app);
   mountPayPalRoutes(app);
   mountPixRoutes(app);
+  mountSubscriptionRoutes(app);
+  mountUnidadeRoutes(app);
 
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
   mountAdminPasswordResetRoutes(app, getDb);
