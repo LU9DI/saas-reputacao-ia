@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@paypal/react-paypal-js": "^10.4.0",
     "axios": "^1.7.9",
     "lucide-react": "^1.38.0",
     "next": "^14.2.3",

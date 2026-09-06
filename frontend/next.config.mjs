@@ -2,7 +2,18 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  // Headers úteis para PWA / SW
+
+  // 🔌 PROXY PARA MANDAR REQUISIÇÕES DO FRONT DIRETO PRO SEU BACKEND NODE/EXPRESS
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5000/api/:path*', // Destino do seu backend dividido
+      },
+    ];
+  },
+
+  // Headers úteis para PWA / SW que você configurou perfeitamente
   async headers() {
     return [
       {
@@ -24,3 +35,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
