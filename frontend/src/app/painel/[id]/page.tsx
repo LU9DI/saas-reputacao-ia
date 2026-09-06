@@ -9,6 +9,8 @@ import { currentMonthYYYYMM, validateReportMonth } from '../../utils/dateValidat
 import { PlanSwitcher } from '../../components/PlanSwitcher';
 import { PushEnable } from '../../components/PushEnable';
 import { UsageBars } from '../../components/UsageBars';
+import { SubscriptionActions } from '../../components/SubscriptionActions';
+import { UnidadesPanel } from '../../components/UnidadesPanel';
 
 interface Review {
   id: number;
@@ -36,6 +38,7 @@ interface PainelData {
     expira_em: string;
     whatsapp?: string | null;
     whatsapp_url?: string | null;
+    cancel_at_period_end?: boolean | number;
   };
   reviews: Review[];
   metricas: {
@@ -410,6 +413,52 @@ export default function PainelEmpresa() {
 
         <PushEnable />
 
+        <SubscriptionActions
+          empresaRef={empresaId}
+          cancelAtPeriodEnd={Boolean(empresa.cancel_at_period_end)}
+          expiraEm={empresa.expira_em}
+          status={empresa.status}
+        />
+
+        <UnidadesPanel
+          empresaRef={empresaId}
+          enabled={
+            Boolean(dashboard?.trial_completo) ||
+            ['corporativo', 'rei'].includes(String(empresa.plan || '').toLowerCase())
+          }
+        />
+
+        <section className={`${card} px-6 py-4 flex flex-wrap items-center justify-between gap-3`}>
+          <div>
+            <p className={label}>Exportar críticas</p>
+            <p className="text-xs text-zinc-500 mt-1">CSV das notas 1–3★ (sem gastar tokens).</p>
+          </div>
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                const res = await fetch(`${api}/api/empresa/${empresaId}/criticas.csv`, {
+                  credentials: 'include',
+                  headers: authHeaders(false),
+                });
+                if (!res.ok) throw new Error('Falha no export');
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `criticas-${empresaId}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch (err: any) {
+                alert(err.message || 'Erro ao baixar CSV');
+              }
+            }}
+            className="text-sm px-4 py-2 rounded-xl border border-zinc-700 text-zinc-200 hover:bg-zinc-800"
+          >
+            Baixar CSV
+          </button>
+        </section>
+
         {pdfOk && (
           <section className={`${card} px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}>
             <div>
@@ -537,119 +586,84 @@ export default function PainelEmpresa() {
 
         <section className={`${card} overflow-hidden`}>
           <div className="px-6 py-5 border-b border-zinc-800">
-            <h2 className="text-sm font-semibold text-zinc-200">Feedbacks privados</h2>
-            <p className="text-xs text-zinc-500 mt-1">
-              Edite a resposta da IA, copie e marque como tratada após responder no WhatsApp
-            </p>
+            <h2 className="text-sm font-semibold text-zinc-200">
+              Críticas retidas ({criticas.length})
+            </h2>
+            <p className="text-xs text-zinc-500 mt-1">Notas 1–3★ — privadas · use WhatsApp e marque como tratada</p>
           </div>
           {criticas.length === 0 ? (
-            <div className="px-6 py-14 text-center text-sm text-zinc-500">Nenhuma crítica no momento.</div>
+            <p className="px-6 py-10 text-sm text-zinc-600 text-center">Nenhuma crítica no momento.</p>
           ) : (
-            <ul>
-              {criticas.map((r, i) => {
-                const keyCopy = `copy-${r.id}`;
-                const keyWa = `wa-${r.id}`;
-                const waCliente = r.client_whatsapp_url;
-                const draft =
-                  drafts[r.id] ??
-                  r.ai_reply ??
-                  `Olá${r.name && r.name !== 'Anônimo' ? ` ${r.name}` : ''}, obrigado pelo feedback.`;
+            <ul className="divide-y divide-zinc-800">
+              {criticas.map((r) => {
+                const draft = drafts[r.id] || '';
                 return (
-                  <li
-                    key={r.id}
-                    className={`px-6 py-6 ${i < criticas.length - 1 ? 'border-b border-zinc-800' : ''} ${
-                      r.treated ? 'opacity-75' : ''
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      <span className="text-sm font-medium text-zinc-200">{r.name}</span>
+                  <li key={r.id} className="px-6 py-5 space-y-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium text-zinc-100">{r.name}</span>
                       <Stars n={r.rating} />
+                      <span className="text-xs text-zinc-600">{r.createdAt}</span>
                       {r.treated && (
-                        <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                          Tratada
+                        <span className="text-[10px] uppercase text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full">
+                          tratada
                         </span>
                       )}
                     </div>
                     {r.comment && <p className="text-sm text-zinc-400">{r.comment}</p>}
-
-                    {(r.ai_reply || showCopiar) && (
-                      <div className="mt-3 pl-3 border-l-2 border-indigo-500/40 space-y-2">
-                        <p className="text-[11px] uppercase text-zinc-500">
-                          {r.ai_reply ? 'Resposta IA (editável)' : 'Resposta sugerida (editável)'}
-                        </p>
-                        <textarea
-                          value={draft}
-                          onChange={(e) => setDrafts((prev) => ({ ...prev, [r.id]: e.target.value }))}
-                          rows={3}
-                          className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        {showCopiar && (
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              const ok = await copiarTexto(draft);
-                              if (ok) marcarCopiado(keyCopy);
-                            }}
-                            className="text-xs px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700"
-                          >
-                            {copiadoId === keyCopy ? 'Copiado!' : 'Copiar resposta'}
-                          </button>
-                        )}
-                      </div>
+                    {dashboard?.mostrar_ia_respostas !== false && (
+                      <textarea
+                        value={draft}
+                        onChange={(e) => setDrafts((d) => ({ ...d, [r.id]: e.target.value }))}
+                        rows={3}
+                        className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200"
+                        placeholder="Rascunho de resposta…"
+                      />
                     )}
-
-                    {showWppCliente && (
-                      <div className="mt-4 flex flex-wrap items-center gap-2">
-                        {waCliente ? (
-                          <>
-                            <a
-                              href={waCliente}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium hover:bg-emerald-500"
-                            >
-                              WhatsApp do cliente
-                            </a>
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                const ok = await copiarTexto(r.client_whatsapp || '');
-                                if (ok) marcarCopiado(keyWa);
-                              }}
-                              className="text-xs px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700"
-                            >
-                              {copiadoId === keyWa ? 'Número copiado!' : 'Copiar número'}
-                            </button>
-                            <span className="text-xs text-zinc-500 font-mono">{r.client_whatsapp}</span>
-                          </>
-                        ) : r.client_whatsapp_anon ? (
-                          <span className="text-xs text-zinc-500">WhatsApp anonimizado (LGPD)</span>
-                        ) : (
-                          <span className="text-xs text-amber-600/80">
-                            WhatsApp do cliente não informado neste feedback
-                          </span>
-                        )}
-
-                        {showTratar && (
-                          <button
-                            type="button"
-                            disabled={tratandoId === r.id}
-                            onClick={() => marcarTratada(r.id, Boolean(r.treated))}
-                            className={`text-xs px-3 py-1.5 rounded-lg font-medium border ${
-                              r.treated
-                                ? 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:bg-zinc-800'
-                                : 'bg-indigo-600 text-white border-indigo-500 hover:bg-indigo-500'
-                            } disabled:opacity-50`}
-                          >
-                            {tratandoId === r.id
-                              ? '…'
-                              : r.treated
-                                ? 'Desfazer tratada'
-                                : 'Marcar como tratada'}
-                          </button>
-                        )}
-                      </div>
-                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {showCopiar && draft && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const ok = await copiarTexto(draft);
+                            if (ok) marcarCopiado(`c-${r.id}`);
+                          }}
+                          className="text-xs px-3 py-1.5 rounded-lg border border-zinc-700 text-zinc-300"
+                        >
+                          {copiadoId === `c-${r.id}` ? 'Copiado' : 'Copiar resposta'}
+                        </button>
+                      )}
+                      {showWppCliente && r.client_whatsapp_url && (
+                        <a
+                          href={r.client_whatsapp_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-medium"
+                        >
+                          WhatsApp do cliente
+                        </a>
+                      )}
+                      {showWppCliente && !r.client_whatsapp_url && !r.client_whatsapp_anon && (
+                        <span className="text-xs text-zinc-600">WhatsApp do cliente não informado</span>
+                      )}
+                      {showTratar && (
+                        <button
+                          type="button"
+                          disabled={tratandoId === r.id}
+                          onClick={() => marcarTratada(r.id, Boolean(r.treated))}
+                          className={`text-xs px-3 py-1.5 rounded-lg font-medium border ${
+                            r.treated
+                              ? 'bg-zinc-900 text-zinc-400 border-zinc-700'
+                              : 'bg-indigo-600 text-white border-indigo-500'
+                          } disabled:opacity-50`}
+                        >
+                          {tratandoId === r.id
+                            ? '…'
+                            : r.treated
+                              ? 'Desfazer tratada'
+                              : 'Marcar como tratada'}
+                        </button>
+                      )}
+                    </div>
                   </li>
                 );
               })}
