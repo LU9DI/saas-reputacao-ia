@@ -49,11 +49,19 @@ async function ensurePixTables(db: Database) {
   if (!cols.includes('mp_preapproval_id')) {
     await db.exec(`ALTER TABLE empresas ADD COLUMN mp_preapproval_id TEXT`);
   }
+  if (!cols.includes('billing_cycle')) {
+    await db.exec(`ALTER TABLE empresas ADD COLUMN billing_cycle TEXT`);
+  }
 }
 
 async function activateFromPix(
   db: Database,
-  opts: { empresaId: string; planoKey: string | null; paymentId?: string | null; preapprovalId?: string | null }
+  opts: {
+    empresaId: string;
+    planoKey: string | null;
+    paymentId?: string | null;
+    preapprovalId?: string | null;
+  }
 ) {
   const plano = resolvePlano(opts.planoKey || 'pro');
   const days = plano?.interval === 'year' ? 365 : 30;
@@ -96,7 +104,6 @@ export function mountPixRoutes(app: Express) {
     });
   });
 
-  /** Pix avulso — QR + copia e cola */
   app.post(
     '/api/pix/avulso',
     asyncHandler(async (req: Request, res: Response) => {
@@ -164,7 +171,6 @@ export function mountPixRoutes(app: Express) {
     })
   );
 
-  /** Pix agendado — QR com vencimento futuro */
   app.post(
     '/api/pix/agendado',
     asyncHandler(async (req: Request, res: Response) => {
@@ -230,7 +236,6 @@ export function mountPixRoutes(app: Express) {
     })
   );
 
-  /** Pix recorrente — assinatura MP (preapproval) */
   app.post(
     '/api/pix/recorrente',
     asyncHandler(async (req: Request, res: Response) => {
@@ -290,7 +295,6 @@ export function mountPixRoutes(app: Express) {
     })
   );
 
-  /** Consulta status do pagamento Pix */
   app.get(
     '/api/pix/payment/:id',
     asyncHandler(async (req: Request, res: Response) => {
@@ -305,7 +309,6 @@ export function mountPixRoutes(app: Express) {
       try {
         remote = await getPayment(id);
       } catch {
-        // pode ser preapproval id
         try {
           remote = await getPreapproval(id);
           return res.json({
@@ -322,8 +325,7 @@ export function mountPixRoutes(app: Express) {
 
       const status = String(remote.status || '');
       const parsed = parseExternalRef(remote.external_reference);
-      const empresaId =
-        remote.metadata?.empresa_id || parsed.empresaId || null;
+      const empresaId = remote.metadata?.empresa_id || parsed.empresaId || null;
       const planoKey = remote.metadata?.plano || parsed.planoKey || null;
 
       await db.run(
@@ -335,7 +337,7 @@ export function mountPixRoutes(app: Express) {
         const emp = await db.get(`SELECT id, status, plan FROM empresas WHERE id = ?`, [empresaId]);
         if (emp && emp.status !== 'ativo') {
           await activateFromPix(db, {
-            empresaId,
+            empresaId: String(empresaId),
             planoKey,
             paymentId: id,
           });
@@ -357,7 +359,6 @@ export function mountPixRoutes(app: Express) {
     })
   );
 
-  /** Webhook Mercado Pago */
   app.post(
     '/api/webhook/mercadopago',
     asyncHandler(async (req: Request, res: Response) => {
@@ -366,26 +367,31 @@ export function mountPixRoutes(app: Express) {
 
       const body = req.body || {};
       const type = String(body.type || body.action || body.topic || '');
-      const dataId = String(body.data?.id || body.id || body['data.id'] || '').trim();
+      const dataId = String(
+        body.data?.id || body.id || (body as any)['data.id'] || ''
+      ).trim();
 
       const xSig = (req.headers['x-signature'] as string) || '';
       const xReq = (req.headers['x-request-id'] as string) || '';
-      const okSig = verifyMpWebhookSignature({
-        xSignature: xSig,
-        xRequestId: xReq,
-        dataId: dataId || null,
-      });
-      if (!okSig) {
-        await logWebhookEvent(db, {
-          source: 'mercadopago',
-          event_type: type || 'unknown',
-          status: 'error',
-          detail: 'assinatura inválida',
+
+      // Só valida assinatura se houver secret E headers de assinatura
+      if (process.env.MP_WEBHOOK_SECRET?.trim() && xSig) {
+        const okSig = verifyMpWebhookSignature({
+          xSignature: xSig,
+          xRequestId: xReq,
+          dataId: dataId || null,
         });
-        return res.status(401).json({ error: 'Assinatura inválida' });
+        if (!okSig) {
+          await logWebhookEvent(db, {
+            source: 'mercadopago',
+            event_type: type || 'unknown',
+            status: 'error',
+            detail: 'assinatura inválida',
+          });
+          return res.status(401).json({ error: 'Assinatura inválida' });
+        }
       }
 
-      // Notificações IPN antigas: topic=payment&id=
       const topic = String(req.query.topic || body.topic || type || '');
       const qid = String(req.query.id || dataId || '').trim();
 
@@ -404,8 +410,7 @@ export function mountPixRoutes(app: Express) {
           const remote = await getPayment(paymentId);
           const status = String(remote.status || '');
           const parsed = parseExternalRef(remote.external_reference);
-          const empresaId =
-            remote.metadata?.empresa_id || parsed.empresaId || null;
+          const empresaId = remote.metadata?.empresa_id || parsed.empresaId || null;
           const planoKey = remote.metadata?.plano || parsed.planoKey || null;
 
           await db.run(
@@ -428,8 +433,10 @@ export function mountPixRoutes(app: Express) {
             return res.json({ ok: true, action: 'activate', ...result });
           }
 
-          if (['cancelled', 'rejected', 'refunded', 'charged_back'].includes(status) && empresaId) {
-            // refunded → bloqueia; pending/rejected não
+          if (
+            ['cancelled', 'rejected', 'refunded', 'charged_back'].includes(status) &&
+            empresaId
+          ) {
             if (status === 'refunded' || status === 'charged_back') {
               await blockEmpresa(db, String(empresaId), { notify: true, tipo: 'assinatura' });
               await logWebhookEvent(db, {
@@ -451,14 +458,17 @@ export function mountPixRoutes(app: Express) {
           return res.json({ ok: true, action: 'status', status });
         }
 
-        if (topic.includes('subscription') || type.includes('subscription_preapproval') || type.includes('preapproval')) {
+        if (
+          topic.includes('subscription') ||
+          type.includes('subscription_preapproval') ||
+          type.includes('preapproval')
+        ) {
           const preId = qid || dataId;
           if (!preId) return res.json({ ok: true, action: 'no_preapproval_id' });
           const remote = await getPreapproval(preId);
           const status = String(remote.status || '');
           const parsed = parseExternalRef(remote.external_reference);
-          const empresaId =
-            remote.metadata?.empresa_id || parsed.empresaId || null;
+          const empresaId = remote.metadata?.empresa_id || parsed.empresaId || null;
           const planoKey = remote.metadata?.plano || parsed.planoKey || null;
 
           if ((status === 'authorized' || status === 'active') && empresaId) {
@@ -497,7 +507,7 @@ export function mountPixRoutes(app: Express) {
           await enqueueRetry({
             jobType: 'mp_webhook',
             dedupeKey: dataId ? `mp:${dataId}` : undefined,
-            payload: { body, query: req.query },
+            payload: { body, query: req.query as Record<string, unknown> },
             delayMs: 20_000,
           });
         } catch {
@@ -509,7 +519,6 @@ export function mountPixRoutes(app: Express) {
           status: 'error',
           detail: e?.message || 'webhook error',
         });
-        // 200 evita storm de retries agressivos do MP; job interno retenta
         return res.status(200).json({ ok: false, retry: true, error: e?.message });
       }
     })
