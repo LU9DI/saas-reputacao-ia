@@ -31,10 +31,8 @@ function bufferToB64url(buf: ArrayBuffer): string {
   return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-/** Extrai publicKey SPKI em base64url a partir do attestation (simplificado via getPublicKey se disponível). */
 async function extractPublicKeyB64(credential: PublicKeyCredential): Promise<string> {
   const response = credential.response as AuthenticatorAttestationResponse;
-  // Chrome/Edge: getPublicKey()
   if (typeof (response as any).getPublicKey === 'function') {
     const spki = (response as any).getPublicKey() as ArrayBuffer;
     if (spki) return bufferToB64url(spki);
@@ -47,16 +45,17 @@ async function extractPublicKeyB64(credential: PublicKeyCredential): Promise<str
 export function WebAuthnSetup() {
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
-  const api = getEnv('NEXT_PUBLIC_API_URL');
-  const token =
-    typeof window !== 'undefined' ? localStorage.getItem('filtra_token') || '' : '';
+  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
 
-  if (!token) return null;
-  if (typeof window !== 'undefined' && !window.PublicKeyCredential) {
+  const supported =
+    typeof window === 'undefined' ? true : Boolean(window.PublicKeyCredential);
+
+  if (!supported) {
     return (
       <section className="rounded-2xl border border-zinc-800 bg-zinc-900 px-5 py-4">
-        <p className="text-sm text-zinc-400">
-          Este dispositivo/navegador não suporta login por digital (WebAuthn).
+        <p className="text-sm font-medium text-zinc-100">Login por digital / Face ID</p>
+        <p className="text-xs text-zinc-500 mt-1">
+          Este navegador não suporta WebAuthn. Use Chrome, Edge ou Safari recente.
         </p>
       </section>
     );
@@ -73,11 +72,17 @@ export function WebAuthnSetup() {
         body: JSON.stringify({}),
       });
       const opt = await optRes.json().catch(() => ({}));
+      if (optRes.status === 401) {
+        throw new Error('Faça login de novo (/login) antes de cadastrar a digital.');
+      }
       if (!optRes.ok) throw new Error(opt.error || 'Falha ao iniciar registro da digital');
 
-      const publicKey = opt.publicKey;
+      const publicKey = { ...opt.publicKey };
       publicKey.challenge = b64urlToBuffer(publicKey.challenge);
-      publicKey.user.id = b64urlToBuffer(publicKey.user.id);
+      publicKey.user = {
+        ...publicKey.user,
+        id: b64urlToBuffer(publicKey.user.id),
+      };
       if (publicKey.excludeCredentials) {
         publicKey.excludeCredentials = publicKey.excludeCredentials.map((c: any) => ({
           ...c,
@@ -94,7 +99,7 @@ export function WebAuthnSetup() {
       const att = cred.response as AuthenticatorAttestationResponse;
       const publicKeyB64 = await extractPublicKeyB64(cred);
 
-      const finish = await fetch(`${api}/api/webauthn/register/finish`, {
+      const finish = await fetch(`${api}/api/webauthn/register/verify`, {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(),
@@ -122,7 +127,7 @@ export function WebAuthnSetup() {
       <div className="flex-1">
         <p className="text-sm font-medium text-zinc-100">Login por digital / Face ID</p>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Cadastre a biometria deste dispositivo após entrar com senha. Em localhost ou HTTPS.
+          Cadastre a biometria deste dispositivo após entrar com senha (localhost ou HTTPS).
         </p>
         {msg && (
           <p
