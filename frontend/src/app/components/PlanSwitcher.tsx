@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { getEnv } from '../utils/env';
 
 const PLANOS = [
+  { key: 'trial', label: 'Trial' },
   { key: 'inicial', label: 'Inicial' },
   { key: 'pro', label: 'Pro' },
   { key: 'ultra', label: 'Ultra' },
@@ -18,10 +19,21 @@ type Props = {
   onChanged?: () => void;
 };
 
+function authHeaders(): HeadersInit {
+  const h: Record<string, string> = { 'Content-Type': 'application/json' };
+  try {
+    const t = localStorage.getItem('filtra_token');
+    if (t) h.Authorization = `Bearer ${t}`;
+  } catch {
+    /* */
+  }
+  return h;
+}
+
 export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Props) {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
-  const [plan, setPlan] = useState(String(planAtual || 'inicial').toLowerCase());
+  const [plan, setPlan] = useState(String(planAtual || 'trial').toLowerCase());
   const api = getEnv('NEXT_PUBLIC_API_URL');
 
   if (!enabled) return null;
@@ -31,12 +43,24 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
     setMsg('');
     setPlan(novo);
     try {
+      const token =
+        typeof window !== 'undefined' ? localStorage.getItem('filtra_token') : null;
+      if (!token) {
+        throw new Error('Faça login em /login antes de trocar o plano (token ausente).');
+      }
       const res = await fetch(`${api}/api/empresa/${empresaRef}/plano`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        headers: authHeaders(),
         body: JSON.stringify({ plan: novo }),
       });
       const data = await res.json().catch(() => ({}));
+      if (res.status === 401 || res.status === 403) {
+        throw new Error(
+          data.error ||
+            'Sessão inválida. Entre em /login com CNPJ e senha da empresa e tente de novo.'
+        );
+      }
       if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
       setMsg(data.mensagem || `Plano ${novo} ativo (teste).`);
       onChanged?.();
@@ -54,7 +78,7 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
           Modo teste — alternar plano
         </p>
         <p className="text-sm text-zinc-400 mt-1">
-          Sem cobrança Stripe. Use para validar PDF e recursos de cada plano.
+          Sem cobrança Stripe. Use para validar PDF e recursos. É preciso estar logado.
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -74,7 +98,15 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
           </button>
         ))}
       </div>
-      {msg && <p className="text-xs text-zinc-400">{msg}</p>}
+      {msg && (
+        <p
+          className={`text-xs ${
+            msg.includes('ativo') || msg.includes('teste') ? 'text-emerald-400' : 'text-red-400'
+          }`}
+        >
+          {msg}
+        </p>
+      )}
     </section>
   );
 }
