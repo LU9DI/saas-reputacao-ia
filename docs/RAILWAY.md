@@ -1,41 +1,40 @@
 # Deploy backend no Railway
 
-## Configuração correta
+## Erro: `Cannot find module '/app/server.ts'`
 
-1. **New Project** → Deploy from GitHub → `saas-reputacao-ia`
-2. **Root Directory**: `backend` (Settings → Root Directory)
-3. **Custom Start Command**: deixe **vazio** (usa `npm start` do package.json)
-   - Se precisar forçar: `npm start`
-   - **Errado**: `node server.js`, `npm run build && node dist/...`, caminhos da raiz do monorepo
+O Railway está na **raiz** do repo (`/app`), e o `server.ts` fica em `/app/backend/server.ts`.
+
+### Opção A (recomendada) — Root Directory = backend
+
+1. Settings → **Root Directory** = `backend`
+2. **Custom Start Command** = vazio (ou `npm start`)
+3. Redeploy
+
+### Opção B — raiz do monorepo
+
+1. **Root Directory** = vazio
+2. **Custom Start Command** =
+   ```bash
+   npm start --prefix backend
+   ```
+3. **Build Command** (se tiver campo):
+   ```bash
+   npm install --prefix backend
+   ```
+
+O arquivo `railway.toml` na raiz já define esses comandos.
 
 ## Variables obrigatórias
 
-| Nome | Exemplo |
+| Nome | Valor |
 |------|--------|
-| `JWT_SECRET` | string **≥ 32 caracteres** (sem isso o processo morre na subida) |
+| `JWT_SECRET` | **≥ 32 caracteres** |
 | `NODE_ENV` | `production` |
-| `APP_URL` | URL do frontend Vercel |
-| `FRONTEND_URL` | mesma URL do front |
+| `APP_URL` | URL do front Vercel |
+| `FRONTEND_URL` | mesma do front |
 
-Opcional: `DATABASE_URL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ALLOW_PLAN_SWITCH=0`
-
-> **PORT**: não fixe `5000` se o Railway injetar `PORT`. O código já usa `process.env.PORT`.
-
-## Crash mais comum
-
-```
-JWT_SECRET é obrigatório
-```
-ou
-```
-tsx: not found
-```
-
-Solução:
-1. `JWT_SECRET` com 32+ caracteres nas Variables
-2. Root Directory = `backend`
-3. Redeploy após o fix do `package.json` (tsx em dependencies)
+Opcional: `DATABASE_URL`, Stripe, etc.
 
 ## Healthcheck
 
-Após subir: `GET https://sua-api.up.railway.app/api/health`
+`GET https://sua-api.up.railway.app/api/health`

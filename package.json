@@ -7,8 +7,14 @@
     "dev": "concurrently -n api,web -c blue,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:api": "npm run dev --prefix backend",
     "dev:web": "npm run dev --prefix frontend",
+    "start": "npm install --prefix backend && npm start --prefix backend",
+    "start:api": "npm start --prefix backend",
+    "build": "npm install --prefix backend",
     "test": "npm run test --prefix backend",
     "typecheck": "npm run build --prefix backend"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "devDependencies": {
     "@types/stripe": "^8.0.416",
