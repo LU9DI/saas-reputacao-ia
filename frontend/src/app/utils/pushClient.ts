@@ -26,9 +26,11 @@ export async function enablePush(apiUrl: string, token: string): Promise<{ ok: b
   const reg = await navigator.serviceWorker.ready;
   let sub = await reg.pushManager.getSubscription();
   if (!sub) {
+    // Cast: DOM lib tipa applicationServerKey de forma incompatível com Uint8Array genérico no TS 5.x
+    const key = urlBase64ToUint8Array(String(keyJson.publicKey)) as unknown as BufferSource;
     sub = await reg.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(keyJson.publicKey),
+      applicationServerKey: key,
     });
   }
 
