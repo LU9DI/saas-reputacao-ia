@@ -515,7 +515,7 @@ export function PlanCards({
                     </button>
                     <button
                       type="button"
-ecessarily                      disabled={!!loading}
+                      disabled={!!loading}
                       onClick={() => irParaRecorrente(key)}
                       className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50"
                     >
