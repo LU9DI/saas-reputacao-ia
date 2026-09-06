@@ -10,6 +10,17 @@ import { loginWithPasskey, webauthnSupported } from '../utils/webauthnClient';
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
 
+function nextPath(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const n = new URLSearchParams(window.location.search).get('next');
+    if (n && n.startsWith('/') && !n.startsWith('//')) return n;
+  } catch {
+    /* */
+  }
+  return null;
+}
+
 export default function LoginPage() {
   const [cnpj, setCnpj] = useState('');
   const [senha, setSenha] = useState('');
@@ -38,6 +49,11 @@ export default function LoginPage() {
       } catch {
         /* ignore */
       }
+    }
+    const dest = nextPath();
+    if (dest) {
+      window.location.href = dest;
+      return;
     }
     const empresaId = data.tokenPayload?.empresa_id;
     if (empresaId) window.location.href = `/painel/${empresaId}`;
