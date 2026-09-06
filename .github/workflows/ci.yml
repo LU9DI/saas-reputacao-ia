@@ -42,7 +42,7 @@ jobs:
       - name: Unit tests
         run: npm run test:unit
 
-      - name: Integration tests
+      - name: Integration tests (trial + Stripe E2E)
         run: npm run test:integration
 
       - name: Typecheck

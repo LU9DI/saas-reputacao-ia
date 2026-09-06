@@ -13,7 +13,7 @@ export default function PaginaAvaliacao() {
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [clientWhatsapp, setClientWhatsapp] = useState('');
-  const [website, setWebsite] = useState(''); // honeypot anti-bot
+  const [website, setWebsite] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -63,7 +63,6 @@ export default function PaginaAvaliacao() {
     setRating(selectedRating);
     setErro('');
 
-    // 4–5★ → envia em background e redireciona para Google
     if (selectedRating >= 4) {
       const payload = JSON.stringify(payloadBase(selectedRating));
       const blob = new Blob([payload], { type: 'application/json' });
@@ -104,7 +103,6 @@ export default function PaginaAvaliacao() {
         return;
       }
 
-      // Empresa com WhatsApp configurado → abre conversa já com contexto
       if (whatsappUrl) {
         const texto = [
           `Olá! Acabei de enviar um feedback (${rating}★)${nomeEmpresa ? ` sobre ${nomeEmpresa}` : ''}.`,
@@ -124,6 +122,14 @@ export default function PaginaAvaliacao() {
       setLoading(false);
     }
   };
+
+  const HeaderEmpresa = () =>
+    nomeEmpresa ? (
+      <div className="text-center mb-6 space-y-1">
+        <p className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">Avaliação</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{nomeEmpresa}</h1>
+      </div>
+    ) : null;
 
   if (erroValidacao) {
     return (
@@ -151,6 +157,9 @@ export default function PaginaAvaliacao() {
   if (!trialValido) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-white p-4">
+        {nomeEmpresa && (
+          <p className="text-lg font-semibold text-zinc-300 mb-2">{nomeEmpresa}</p>
+        )}
         <h1 className="text-2xl font-bold mb-4">Acesso encerrado</h1>
         <a href="/" className="bg-indigo-600 px-6 py-3 rounded-xl font-semibold">
           Ver planos
@@ -163,6 +172,9 @@ export default function PaginaAvaliacao() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center space-y-4">
+          {nomeEmpresa && (
+            <p className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">{nomeEmpresa}</p>
+          )}
           <div className="text-4xl" aria-hidden>
             🙏
           </div>
@@ -186,8 +198,10 @@ export default function PaginaAvaliacao() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-md max-w-md w-full">
-        <h2 className="text-2xl font-bold text-center text-zinc-50 mb-2">
-          Como foi sua experiência{nomeEmpresa ? ` no ${nomeEmpresa}` : ' conosco'}?
+        <HeaderEmpresa />
+
+        <h2 className="text-xl font-semibold text-center text-zinc-100 mb-2">
+          Como foi sua experiência conosco?
         </h2>
         <p className="text-center text-sm text-zinc-500 mb-6">Sua opinião nos ajuda a melhorar.</p>
 
@@ -201,7 +215,6 @@ export default function PaginaAvaliacao() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Honeypot — invisível para humanos */}
           <div
             aria-hidden="true"
             style={{

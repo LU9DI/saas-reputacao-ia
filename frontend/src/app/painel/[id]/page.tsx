@@ -12,6 +12,7 @@ import { UsageBars } from '../../components/UsageBars';
 import { SubscriptionActions } from '../../components/SubscriptionActions';
 import { UnidadesPanel } from '../../components/UnidadesPanel';
 import { WebAuthnSetup } from '../../components/WebAuthnSetup';
+import { ReviewsList } from '../../components/ReviewsList';
 
 function authHeaders(json = true): HeadersInit {
   const h: Record<string, string> = {};
@@ -241,6 +242,7 @@ export default function PainelEmpresa() {
   const pdfOk = Boolean(dashboard?.pdf_disponivel || dashboard?.plan_switch);
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
   const status = empresa.status_acesso || String(empresa.status || '').toUpperCase();
+  const reviews = Array.isArray(data.reviews) ? data.reviews : [];
 
   return (
     <div className="min-h-screen bg-black text-zinc-100">
@@ -384,6 +386,15 @@ export default function PainelEmpresa() {
           alertaCrise={Boolean(dashboard?.mostrar_crise && metricas.alerta_crise)}
           mostrarTendencia={dashboard?.mostrar_tendencia}
           mostrarTags={dashboard?.mostrar_tags}
+        />
+
+        <ReviewsList
+          reviews={reviews}
+          showCopiar={Boolean(dashboard?.mostrar_copiar_resposta ?? true)}
+          showTratar={Boolean(dashboard?.mostrar_tratar ?? true)}
+          apiBase={api}
+          authHeaders={authHeaders}
+          onRefresh={carregar}
         />
 
         <section className={`${card} px-6 py-6 space-y-3`}>

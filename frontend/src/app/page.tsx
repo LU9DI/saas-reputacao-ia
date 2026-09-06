@@ -20,6 +20,7 @@ import { getEnv } from './utils/env';
 import { PlanCards } from './components/PlanCards';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from './utils/passwordPolicy';
 import { readApiError } from './utils/apiError';
+import { persistFiltraToken } from './utils/persistToken';
 
 const traducoes = {
   pt: {
@@ -142,6 +143,7 @@ export default function Home() {
     link_painel?: string;
     empresa_id?: string;
     slug?: string;
+    token?: string;
   } | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
@@ -231,6 +233,7 @@ export default function Home() {
       const response = await fetch(`${apiUrl}/api/trial/ativar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           cnpj: cnpj.replace(/\D/g, ''),
           nome_empresa: nomeEmpresa.trim(),
@@ -245,10 +248,13 @@ export default function Home() {
         throw new Error(await readApiError(response, 'Erro ao processar ativação.'));
       }
       const data = await response.json();
+      // Token JWT: cookie (credentials) + localStorage para o painel
+      persistFiltraToken(data.token);
       // Preferir paths relativos no mesmo host do front (evita APP_URL errado no backend)
       const slugOrId = data.slug || data.empresa_id;
       setSucessoData({
         ...data,
+        token: data.token,
         link_acesso:
           typeof window !== 'undefined' && slugOrId
             ? `${window.location.origin}/avaliacao/${slugOrId}`
@@ -480,6 +486,16 @@ export default function Home() {
               {sucessoData.link_painel && (
                 <a
                   href={sucessoData.link_painel}
+                  onClick={() => {
+                    try {
+                      const tok = localStorage.getItem('filtra_token');
+                      if (!tok && sucessoData.token) {
+                        persistFiltraToken(sucessoData.token);
+                      }
+                    } catch {
+                      /* */
+                    }
+                  }}
                   className="w-full bg-emerald-950 hover:bg-emerald-900 text-emerald-200 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 border border-emerald-800"
                 >
                   <LayoutDashboard size={16} /> {t.abrirPainel}
