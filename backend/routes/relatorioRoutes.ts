@@ -1,5 +1,7 @@
 /**
  * Relatório PDF mensal.
+ * Geração local (PDFKit) — NÃO consome tokens de IA.
+ * Pode ser baixado quantas vezes quiser; só precisa de autenticação.
  */
 import type { Express, Request, Response } from 'express';
 import { getDb, findEmpresa } from '../lib/db.js';
@@ -8,25 +10,24 @@ import { asyncHandler } from '../middleware/errorHandler.js';
 import { validateReportMonth } from '../lib/dateValidation.js';
 import { planTemPdf } from '../lib/plans.js';
 import { logPdfGeneration } from '../lib/opsLog.js';
-import { extrairToken, verifyAccessToken } from '../lib/auth.js';
+import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 
-function detectAuthMode(req: Request): string {
-  try {
-    const token = extrairToken(req);
-    if (!token) return 'publico';
-    const payload = verifyAccessToken(token);
-    if (payload?.empresa_id === 'admin' || payload?.role === 'admin') return 'jwt_admin';
-    if (payload?.empresa_id) return 'jwt_cliente';
-    return 'jwt';
-  } catch {
-    return 'token_invalido';
-  }
+function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
+  if (isAdminUser(req.user)) return true;
+  return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
+}
+
+function detectAuthMode(req: AuthRequest): string {
+  if (isAdminUser(req.user)) return 'jwt_admin';
+  if (req.user?.empresa_id) return 'jwt_cliente';
+  return 'jwt';
 }
 
 export function mountRelatorioRoutes(app: Express) {
   app.get(
     '/api/empresa/:ref/relatorio.pdf',
-    asyncHandler(async (req: Request, res: Response) => {
+    autenticarToken,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
       const t0 = Date.now();
       const auth_mode = detectAuthMode(req);
       const db = getDb();
@@ -40,6 +41,18 @@ export function mountRelatorioRoutes(app: Express) {
           duration_ms: Date.now() - t0,
         });
         return res.status(404).json({ error: 'Empresa não encontrada.' });
+      }
+
+      if (!podeGerirEmpresa(req, empresa.id)) {
+        await logPdfGeneration(db, {
+          empresa_id: empresa.id,
+          empresa_nome: empresa.nome_empresa,
+          status: 'forbidden',
+          error: 'Sem permissão',
+          auth_mode,
+          duration_ms: Date.now() - t0,
+        });
+        return res.status(403).json({ error: 'Sem permissão para baixar o relatório desta empresa.' });
       }
 
       const plan = String(empresa.plan || '').toLowerCase();
@@ -82,12 +95,7 @@ export function mountRelatorioRoutes(app: Express) {
 
       await ensureUnidadesSchema(db);
 
-      const precisaNormalize = ['inicial', 'trial', 'teste'].includes(plan);
-      const planOriginal = empresa.plan;
-      if (precisaNormalize) {
-        await db.run(`UPDATE empresas SET plan = 'pro' WHERE id = ?`, [empresa.id]);
-      }
-
+      // Sem callGroq → 0 tokens de IA. Re-downloads livres.
       let pdf: Buffer;
       try {
         pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno);
@@ -101,14 +109,7 @@ export function mountRelatorioRoutes(app: Express) {
           auth_mode,
           duration_ms: Date.now() - t0,
         });
-        if (precisaNormalize) {
-          await db.run(`UPDATE empresas SET plan = ? WHERE id = ?`, [planOriginal, empresa.id]);
-        }
         throw e;
-      } finally {
-        if (precisaNormalize) {
-          await db.run(`UPDATE empresas SET plan = ? WHERE id = ?`, [planOriginal, empresa.id]);
-        }
       }
 
       await logPdfGeneration(db, {
@@ -126,6 +127,8 @@ export function mountRelatorioRoutes(app: Express) {
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Cache-Control', 'private, no-store');
+      res.setHeader('X-Filtra-Pdf-Tokens', '0');
       res.send(pdf);
     })
   );

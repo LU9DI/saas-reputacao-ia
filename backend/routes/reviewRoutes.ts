@@ -11,6 +11,8 @@ import {
   ReviewValidationError,
 } from '../services/reviewService.js';
 import { clientIp } from '../lib/reviewFraud.js';
+import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
+import { findEmpresa } from '../lib/db.js';
 
 const reviewsLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -67,10 +69,19 @@ export function mountReviewRoutes(app: Express) {
     })
   );
 
+  /** Lista reviews — apenas dono da empresa ou admin. */
   app.get(
     '/api/reviews/:ref',
-    asyncHandler(async (req: Request, res: Response) => {
+    autenticarToken,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
       try {
+        const emp = await findEmpresa(String(req.params.ref));
+        if (!emp) return res.status(404).json({ error: 'Empresa não encontrada.' });
+        const ok =
+          isAdminUser(req.user) ||
+          (req.user?.empresa_id && req.user.empresa_id === emp.id);
+        if (!ok) return res.status(403).json({ error: 'Sem permissão.' });
+
         const rows = await listarReviews(String(req.params.ref));
         res.json(rows);
       } catch (e: any) {
