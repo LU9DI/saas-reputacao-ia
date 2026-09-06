@@ -28,6 +28,7 @@ import { mountWebAuthnRoutes } from './routes/webauthnRoutes.js';
 import { mountPushRoutes } from './routes/pushRoutes.js';
 import { mountJobsRoutes } from './routes/jobsRoutes.js';
 import { mountPayPalRoutes } from './routes/paypalRoutes.js';
+import { mountPixRoutes } from './routes/pixRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
@@ -35,6 +36,7 @@ import { mountMfaRoutes } from './mfa.js';
 import { mountStripeRoutes } from './stripeRoutes.js';
 import { stripeConfigured, refreshPlanPricesFromDb } from './stripeBilling.js';
 import { paypalConfigured } from './lib/paypal.js';
+import { mpConfigured } from './lib/mercadopago.js';
 import { aiConfigured, listAiProviders, getAiLoadStats } from './groqService.js';
 import { ensureUnidadesSchema } from './relatorioPdf.js';
 import { ensureWebAuthnSchema, webauthnConfig } from './lib/webauthn.js';
@@ -76,6 +78,7 @@ app.get('/api/health', (_req, res) => {
     ok: true,
     stripe: stripeConfigured(),
     paypal: paypalConfigured(),
+    pix: mpConfigured(),
     ai: aiConfigured(),
     ai_providers: listAiProviders(),
     plan_switch: allowPlanSwitch(),
@@ -207,6 +210,7 @@ async function main() {
   mountPushRoutes(app);
   mountJobsRoutes(app);
   mountPayPalRoutes(app);
+  mountPixRoutes(app);
 
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
   mountAdminPasswordResetRoutes(app, getDb);
@@ -237,6 +241,9 @@ async function main() {
   console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF'}`);
   console.log(
     `💳 PayPal: ${paypalConfigured() ? 'ok (' + (process.env.PAYPAL_MODE || 'sandbox') + ')' : 'OFF — PAYPAL_CLIENT_ID/SECRET'}`
+  );
+  console.log(
+    `💠 Pix (MP): ${mpConfigured() ? 'ok' : 'OFF — MP_ACCESS_TOKEN'}`
   );
   app.listen(PORT, () => {
     console.log(`🚀 API Filtra.IA em http://localhost:${PORT}`);
