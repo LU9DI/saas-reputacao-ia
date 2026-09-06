@@ -3,18 +3,19 @@
 import { useState } from 'react';
 import { getEnv } from '../utils/env';
 import { ComoFunciona } from './ComoFunciona';
-import { 
-  Check, 
-  X, 
-  ShieldCheck, 
-  Loader2, 
-  Sparkles, 
-  MessageCircle, 
-  FileText, 
-  BarChart3, 
-  Headset, 
+import { PixCheckoutModal } from './PixCheckoutModal';
+import {
+  Check,
+  X,
+  ShieldCheck,
+  Loader2,
+  Sparkles,
+  MessageCircle,
+  FileText,
+  BarChart3,
+  Headset,
   Rocket,
-  Layers
+  Layers,
 } from 'lucide-react';
 
 export type PlanCard = {
@@ -100,12 +101,20 @@ type Props = {
   empresaId?: string | null;
   requireEmpresa?: boolean;
   showComoFunciona?: boolean;
+  email?: string | null;
 };
 
-export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona = true }: Props) {
+export function PlanCards({
+  empresaId,
+  requireEmpresa = false,
+  showComoFunciona = true,
+  email,
+}: Props) {
   const [loading, setLoading] = useState<string | null>(null);
   const [erro, setErro] = useState('');
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
+  const [pixOpen, setPixOpen] = useState(false);
+  const [pixPlano, setPixPlano] = useState<{ key: string; label: string } | null>(null);
 
   const irParaCheckout = async (planoKey: string) => {
     setErro('');
@@ -135,7 +144,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       try {
         data = await res.json();
       } catch {
-        throw new Error(`API respondeu sem JSON (${res.status}). Confira se o backend está em ${apiUrl}.`);
+        throw new Error(
+          `API respondeu sem JSON (${res.status}). Confira se o backend está em ${apiUrl}.`
+        );
       }
 
       if (!res.ok) {
@@ -168,28 +179,82 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     }
   };
 
+  const abrirPix = (planoKey: string, label: string) => {
+    setErro('');
+    if (requireEmpresa && !empresaId) {
+      setErro('Ative o período de testes acima antes de assinar um plano.');
+      return;
+    }
+    setPixPlano({ key: planoKey, label });
+    setPixOpen(true);
+  };
+
+  const irParaRecorrente = async (planoKey: string) => {
+    setErro('');
+    if (requireEmpresa && !empresaId) {
+      setErro('Ative o período de testes acima antes de assinar um plano.');
+      return;
+    }
+    if (!email) {
+      setErro('Informe o e-mail no cadastro do trial para assinatura Pix recorrente.');
+      return;
+    }
+    setLoading(`pix-rec-${planoKey}`);
+    try {
+      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
+      const res = await fetch(`${apiUrl}/api/pix/recorrente`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plano: planoKey,
+          empresa_id: empresaId || undefined,
+          email,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          data.error ||
+            (res.status === 503
+              ? 'Pix não configurado (MP_ACCESS_TOKEN).'
+              : `Erro ${res.status}`)
+        );
+      }
+      const url = data.init_point || data.authorize_url;
+      if (!url) throw new Error('Link de assinatura Pix ausente');
+      window.location.assign(url);
+    } catch (e: any) {
+      setErro(e.message || 'Erro no Pix recorrente');
+      setLoading(null);
+    }
+  };
+
   const formatarFeature = (text: string, isMissing: boolean = false) => {
     if (isMissing) {
       return (
-        <span className="text-slate-400 line-through decoration-slate-400/60 font-normal mt-0.5">{text}</span>
+        <span className="text-slate-400 line-through decoration-slate-400/60 font-normal mt-0.5">
+          {text}
+        </span>
       );
     }
 
     const lower = text.toLowerCase();
 
     const Badge = ({ className, icon: Icon, children }: any) => (
-      <span className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}>
+      <span
+        className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}
+      >
         {Icon && <Icon size={12} strokeWidth={2.5} />}
         {children}
       </span>
     );
 
     let icon = null;
-    let badgeClass = "text-indigo-700 bg-indigo-50 border-indigo-200/60";
+    let badgeClass = 'text-indigo-700 bg-indigo-50 border-indigo-200/60';
 
     if (lower.includes('wpp')) {
       icon = MessageCircle;
-      badgeClass = "text-emerald-700 bg-emerald-50 border-emerald-200/60";
+      badgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
     } else if (lower.includes('ia')) {
       icon = Sparkles;
     } else if (lower.includes('pdf')) {
@@ -205,7 +270,11 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     }
 
     if (icon) {
-      return <Badge className={badgeClass} icon={icon}>{text}</Badge>;
+      return (
+        <Badge className={badgeClass} icon={icon}>
+          {text}
+        </Badge>
+      );
     }
 
     return <span className="text-slate-600 font-medium mt-1">{text}</span>;
@@ -214,10 +283,11 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8">
       <div className="text-center space-y-3">
-        <h2 className="text-2xl font-whir text-white tracking-tight">Deseja continuar depois do período de teste?</h2>
-        <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed"></p>
+        <h2 className="text-2xl font-whir text-white tracking-tight">
+          Deseja continuar depois do período de teste?
+        </h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
-          Escolha o plano ideal. O pagamento é processado com segurança pelo Stripe.
+          Cartão (Stripe) ou Pix (QR / copia e cola / recorrente).
         </p>
 
         <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
@@ -225,7 +295,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
             type="button"
             onClick={() => setCiclo('mensal')}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              ciclo === 'mensal'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Mensal
@@ -234,7 +306,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
             type="button"
             onClick={() => setCiclo('anual')}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              ciclo === 'anual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+              ciclo === 'anual'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Anual
@@ -286,7 +360,10 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                     </li>
                   ))}
                   {p.missingFeatures?.map((mf, i) => (
-                    <li key={`missing-${i}`} className="text-[13px] leading-snug flex items-start gap-2.5 opacity-75">
+                    <li
+                      key={`missing-${i}`}
+                      className="text-[13px] leading-snug flex items-start gap-2.5 opacity-75"
+                    >
                       <X size={16} className="text-red-400 shrink-0 mt-1" strokeWidth={2.5} />
                       {formatarFeature(mf, true)}
                     </li>
@@ -294,19 +371,37 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                 </ul>
               </div>
 
-              <button
-                type="button"
-                disabled={!!loading}
-                onClick={() => irParaCheckout(key)}
-                className={`mt-8 w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
-                  p.highlight
-                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
-                    : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
-                }`}
-              >
-                {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
-                {loading === key ? 'Redirecionando…' : 'Assinar plano'}
-              </button>
+              <div className="mt-8 space-y-2">
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => irParaCheckout(key)}
+                  className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
+                    p.highlight
+                      ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
+                      : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
+                  }`}
+                >
+                  {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
+                  {loading === key ? 'Redirecionando…' : 'Cartão (Stripe)'}
+                </button>
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => abrirPix(key, p.label)}
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
+                >
+                  Pix (QR / copia e cola)
+                </button>
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => irParaRecorrente(key)}
+                  className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50"
+                >
+                  {loading === `pix-rec-${key}` ? 'Abrindo…' : 'Pix recorrente'}
+                </button>
+              </div>
             </div>
           );
         })}
@@ -317,8 +412,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           <ShieldCheck className="text-emerald-400" size={26} strokeWidth={2.5} />
         </div>
         <p className="text-sm text-white text-center sm:text-left leading-relaxed">
-          <strong className="font-bold text-white">Cancele a qualquer momento.</strong> Sem multas. O acesso
-          permanece até o fim do período já pago.
+          <strong className="font-bold text-white">Cancele a qualquer momento.</strong> Sem multas. O
+          acesso permanece até o fim do período já pago.
         </p>
       </div>
 
@@ -327,6 +422,15 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           <ComoFunciona />
         </div>
       )}
+
+      <PixCheckoutModal
+        open={pixOpen}
+        onClose={() => setPixOpen(false)}
+        planoKey={pixPlano?.key || ''}
+        planoLabel={pixPlano?.label}
+        empresaId={empresaId}
+        email={email}
+      />
     </div>
   );
 }
