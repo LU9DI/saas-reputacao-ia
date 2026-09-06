@@ -1,80 +1,57 @@
-# Migração SQLite → Postgres
+# Postgres em produção (Filtra.IA)
 
-O projeto hoje usa **SQLite** (`sqlite` + `sqlite3`) via `backend/lib/db.ts`.  
-Para produção com vários clientes concorrentes, Postgres é o próximo passo natural.
+## Comportamento atual do código
 
-## Estratégia recomendada (sem big-bang)
+`backend/lib/db.ts` escolhe o motor assim:
 
-1. Manter a interface `getDb()` / queries SQL simples.  
-2. Introduzir um driver Postgres (`pg`) atrás da mesma API.  
-3. Trocar `?` placeholders por `$1, $2…` no adapter Postgres.  
-4. Rodar schema em `docs/schema.postgres.sql`.  
-5. Migrar dados uma vez (export SQLite → import Postgres).
+| Ambiente | `DATABASE_URL` | Resultado |
+|----------|----------------|-----------|
+| development / test | ausente | **SQLite** |
+| qualquer | `postgresql://...` | **Postgres** (`lib/db.pg.ts`) |
+| production | ausente | SQLite + **aviso** (use `SQLITE_ALLOW_PROD=1` para silenciar) |
 
-## Quando migrar
+## Subir em produção (Railway / Neon / Supabase)
 
-- [ ] Mais de ~50 empresas ativas  
-- [ ] Picos de escrita em reviews  
-- [ ] Necessidade de réplicas / backups gerenciados (Railway Postgres, Neon, Supabase)
+1. Crie um Postgres e copie a URL.
 
-## Passos técnicos
+2. No painel da API:
 
-### 1. Provisionar Postgres
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB?sslmode=require
+JWT_SECRET=...
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+APP_URL=https://seu-frontend
+FRONTEND_URL=https://seu-frontend
+```
 
-Railway → New → Database → PostgreSQL  
-Copie `DATABASE_URL`.
-
-### 2. Aplicar schema
+3. Aplique o schema base (primeira vez):
 
 ```bash
 psql "$DATABASE_URL" -f docs/schema.postgres.sql
 ```
 
-### 3. Dependências
+O `initDB()` também tenta `CREATE TABLE IF NOT EXISTS` via adapter.
 
-```bash
-cd backend
-npm install pg
-npm install -D @types/pg
+4. Reinicie a API. No log deve aparecer:
+
+```text
+🐘 Postgres conectado (DATABASE_URL)
 ```
 
-### 4. Adapter (esqueleto)
+## Adapter (`lib/db.pg.ts`)
 
-Criar `backend/lib/db.pg.ts` que exporta:
+- API compatível: `get / run / all / exec`
+- `?` → `$1, $2…`
+- `PRAGMA table_info` → `information_schema.columns`
+- `datetime('now')` → `NOW()`
+- `IFNULL` → `COALESCE`
+- `INSERT OR IGNORE` → `ON CONFLICT DO NOTHING`
 
-- `initDB()` → conecta com `DATABASE_URL`
-- `getDb().run / get / all` com conversão de `?` → `$n`
+**Limitação:** SQL muito específico do SQLite em scripts legados pode precisar de ajuste pontual. O caminho feliz (empresas, usuários, reviews, billing) está coberto.
 
-Em `lib/db.ts`:
+## Dev local continua em SQLite
 
-```ts
-if (process.env.DATABASE_URL?.startsWith('postgres')) {
-  // delegar para db.pg
-} else {
-  // SQLite atual
-}
-```
-
-### 5. Diffs SQL importantes
-
-| SQLite | Postgres |
-|--------|----------|
-| `INTEGER PRIMARY KEY AUTOINCREMENT` | `SERIAL PRIMARY KEY` |
-| `DATETIME` | `TIMESTAMPTZ` |
-| `INSERT OR IGNORE` | `ON CONFLICT DO NOTHING` |
-| `PRAGMA table_info` | `information_schema.columns` |
-
-As migrations `ALTER TABLE … ADD COLUMN` do código atual precisam virar checks no catalog do Postgres (já esboçados no schema).
-
-### 6. Cutover
-
-1. Manter SQLite em produção.  
-2. Subir Postgres e migrar dados offline.  
-3. Apontar `DATABASE_URL` e reiniciar API.  
-4. Validar `/api/health` + trial + login.  
-5. Desligar volume SQLite.
-
-## Ainda não implementado no código
-
-O adapter Postgres completo **não** está ligado neste commit — só o schema e o plano.  
-Peça “implementar adapter Postgres” quando for a hora; o trabalho principal é o wrapper de placeholders + trocar `ensure*Columns`.
+Não defina `DATABASE_URL` no `.env` de desenvolvimento.  
+Testes de integração usam arquivo temporário em `/tmp`.
