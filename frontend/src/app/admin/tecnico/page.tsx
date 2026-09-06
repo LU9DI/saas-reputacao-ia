@@ -19,7 +19,7 @@ function authHeaders(): HeadersInit {
 }
 
 function fmtDt(s: string | null | undefined) {
-  if (!s) return '\u2014';
+  if (!s) return '—';
   try {
     return new Date(s).toLocaleString('pt-BR', {
       day: '2-digit',
@@ -67,7 +67,7 @@ function EventList({ eventos }: { eventos: any[] }) {
             ok={e.status === 'ok' ? true : e.status === 'error' ? false : null}
             label={e.status}
           />
-          <span className="font-mono text-xs text-zinc-300">{e.event_type || '\u2014'}</span>
+          <span className="font-mono text-xs text-zinc-300">{e.event_type || '—'}</span>
           <span className="text-xs text-zinc-500">{e.detail}</span>
           <span className="text-xs text-zinc-600 ml-auto">{fmtDt(e.created_at)}</span>
         </div>
@@ -124,7 +124,7 @@ export default function AdminTecnicoPage() {
   if (loading && !data) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center text-zinc-500 text-sm">
-        Carregando área técnica\u2026
+        Carregando área técnica…
       </div>
     );
   }
@@ -132,6 +132,7 @@ export default function AdminTecnicoPage() {
   const stripe = data?.webhooks?.stripe;
   const n8n = data?.webhooks?.n8n;
   const paypal = data?.webhooks?.paypal;
+  const mp = data?.webhooks?.mercadopago;
   const criticas = data?.criticas_retidas;
   const pdf = data?.pdf;
   const sistema = data?.sistema;
@@ -142,11 +143,11 @@ export default function AdminTecnicoPage() {
       <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-[11px] uppercase tracking-wide text-zinc-500">Admin \u00b7 Ops</p>
+            <p className="text-[11px] uppercase tracking-wide text-zinc-500">Admin · Ops</p>
             <h1 className="text-xl font-bold tracking-tight">Área técnica</h1>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Webhooks \u00b7 Críticas retidas \u00b7 PDF \u00b7 Retry
-              {data?.gerado_em ? ` \u00b7 atualizado ${fmtDt(data.gerado_em)}` : ''}
+              Webhooks · Pix · Críticas · PDF · Retry
+              {data?.gerado_em ? ` · atualizado ${fmtDt(data.gerado_em)}` : ''}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -165,7 +166,7 @@ export default function AdminTecnicoPage() {
               href="/admin"
               className="text-sm px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800"
             >
-              \u2190 Painel
+              ← Painel
             </Link>
           </div>
         </div>
@@ -178,10 +179,11 @@ export default function AdminTecnicoPage() {
           </div>
         )}
 
-        <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
             { t: 'Stripe', ok: sistema?.stripe },
             { t: 'PayPal', ok: sistema?.paypal },
+            { t: 'Pix (MP)', ok: sistema?.pix },
             { t: 'SMTP', ok: sistema?.smtp },
             { t: 'Groq IA', ok: sistema?.groq },
             { t: 'Jobs secret', ok: sistema?.jobs_secret },
@@ -193,7 +195,7 @@ export default function AdminTecnicoPage() {
           ))}
         </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div className={`${card} overflow-hidden`}>
             <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
               <div>
@@ -206,9 +208,29 @@ export default function AdminTecnicoPage() {
               <span>
                 24h: {stripe?.stats_24h?.ok ?? 0} ok / {stripe?.stats_24h?.errors ?? 0} erro
               </span>
-              <span>\u00daltimo: {stripe?.last_age || '\u2014'}</span>
+              <span>Último: {stripe?.last_age || '—'}</span>
             </div>
             <EventList eventos={stripe?.eventos || []} />
+          </div>
+
+          <div className={`${card} overflow-hidden`}>
+            <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm font-semibold">Webhook Pix (Mercado Pago)</h2>
+                <p className="text-xs text-zinc-500 mt-0.5">{mp?.detalhe || 'Configure MP_ACCESS_TOKEN'}</p>
+                <p className="text-[11px] text-zinc-600 mt-1 font-mono">
+                  {mp?.inbound || '/api/webhook/mercadopago'}
+                </p>
+              </div>
+              <StatusPill ok={mp?.ok ?? null} />
+            </div>
+            <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
+              <span>
+                24h: {mp?.stats_24h?.ok ?? 0} ok / {mp?.stats_24h?.errors ?? 0} erro
+              </span>
+              <span>Último: {mp?.last_age || '—'}</span>
+            </div>
+            <EventList eventos={mp?.eventos || []} />
           </div>
 
           <div className={`${card} overflow-hidden`}>
@@ -226,7 +248,7 @@ export default function AdminTecnicoPage() {
               <span>
                 24h: {n8n?.stats_24h?.ok ?? 0} ok / {n8n?.stats_24h?.errors ?? 0} erro
               </span>
-              <span>Ping: {n8n?.ping_ok === true ? 'OK' : n8n?.ping_ok === false ? 'falha' : '\u2014'}</span>
+              <span>Ping: {n8n?.ping_ok === true ? 'OK' : n8n?.ping_ok === false ? 'falha' : '—'}</span>
             </div>
             <EventList eventos={n8n?.eventos || []} />
           </div>
@@ -244,7 +266,7 @@ export default function AdminTecnicoPage() {
               <span>
                 24h: {paypal?.stats_24h?.ok ?? 0} ok / {paypal?.stats_24h?.errors ?? 0} erro
               </span>
-              <span>Webhook ID: {paypal?.webhook_id ? 'sim' : 'n\u00e3o'}</span>
+              <span>Webhook ID: {paypal?.webhook_id ? 'sim' : 'não'}</span>
             </div>
             <EventList eventos={paypal?.eventos || []} />
           </div>
@@ -256,7 +278,7 @@ export default function AdminTecnicoPage() {
               <div>
                 <h2 className="text-sm font-semibold">Fila de retry</h2>
                 <p className="text-xs text-zinc-500 mt-0.5">
-                  Jobs pendentes / falhos (webhooks, capture, e-mail)
+                  Jobs pendentes (PayPal, Pix MP, e-mail)
                 </p>
               </div>
               <StatusPill
@@ -283,14 +305,14 @@ export default function AdminTecnicoPage() {
 
         <section className={`${card} overflow-hidden`}>
           <div className="px-5 py-4 border-b border-zinc-800">
-            <h2 className="text-sm font-semibold">Cr\u00edticas retidas (auditoria IA)</h2>
+            <h2 className="text-sm font-semibold">Críticas retidas (auditoria IA)</h2>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Notas 1\u20133\u2605 no SQLite \u00b7 {criticas?.total ?? 0} total \u00b7{' '}
-              {criticas?.com_resposta_ia ?? 0} com IA \u00b7 {criticas?.sem_resposta_ia ?? 0} sem IA
+              Notas 1–3★ · {criticas?.total ?? 0} total · {criticas?.com_resposta_ia ?? 0} com IA ·{' '}
+              {criticas?.sem_resposta_ia ?? 0} sem IA
             </p>
           </div>
           {(criticas?.items || []).length === 0 ? (
-            <p className="px-5 py-12 text-center text-sm text-zinc-600">Nenhuma cr\u00edtica retida.</p>
+            <p className="px-5 py-12 text-center text-sm text-zinc-600">Nenhuma crítica retida.</p>
           ) : (
             <ul className="divide-y divide-zinc-800 max-h-[520px] overflow-y-auto">
               {(criticas.items as any[]).map((r) => (
@@ -298,12 +320,12 @@ export default function AdminTecnicoPage() {
                   <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="text-sm font-medium text-zinc-200">{r.nome_empresa}</span>
                     <span className="text-[10px] uppercase text-zinc-500">{r.plan}</span>
-                    <span className="text-amber-400 text-xs">{'\u2605'.repeat(r.rating)}</span>
+                    <span className="text-amber-400 text-xs">{'★'.repeat(r.rating)}</span>
                     <span className="text-xs text-zinc-600 ml-auto">{fmtDt(r.createdAt)}</span>
                   </div>
                   <p className="text-sm text-zinc-400">
                     <span className="text-zinc-300">{r.name}</span>
-                    {r.comment ? ` \u2014 ${r.comment}` : ''}
+                    {r.comment ? ` — ${r.comment}` : ''}
                   </p>
                   {r.ai_reply ? (
                     <div className="mt-2 pl-3 border-l-2 border-indigo-500/40">
@@ -322,11 +344,8 @@ export default function AdminTecnicoPage() {
         <section className={`${card} overflow-hidden`}>
           <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
             <div>
-              <h2 className="text-sm font-semibold">Status relat\u00f3rio PDF</h2>
+              <h2 className="text-sm font-semibold">Status relatório PDF</h2>
               <p className="text-xs text-zinc-500 mt-0.5">{pdf?.detalhe}</p>
-              <p className="text-[11px] text-zinc-600 mt-1">
-                Coluna Auth mostra jwt_cliente / jwt_admin / publico \u2014 gera\u00e7\u00e3o com token JWT
-              </p>
             </div>
             <StatusPill ok={pdf?.ok ?? null} />
           </div>
@@ -335,7 +354,7 @@ export default function AdminTecnicoPage() {
               24h: {pdf?.stats_24h?.ok ?? 0} ok / {pdf?.stats_24h?.errors ?? 0} erro /{' '}
               {pdf?.stats_24h?.forbidden ?? 0} plano / JWT: {pdf?.stats_24h?.jwt ?? 0}
             </span>
-            <span>\u00daltimo: {pdf?.last_age || '\u2014'}</span>
+            <span>Último: {pdf?.last_age || '—'}</span>
           </div>
           <div className="overflow-x-auto max-h-72">
             <table className="w-full text-sm">
@@ -343,7 +362,7 @@ export default function AdminTecnicoPage() {
                 <tr>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Empresa</th>
-                  <th className="px-4 py-2 text-left">M\u00eas</th>
+                  <th className="px-4 py-2 text-left">Mês</th>
                   <th className="px-4 py-2 text-left">Auth</th>
                   <th className="px-4 py-2 text-right">ms</th>
                   <th className="px-4 py-2 text-left">Erro</th>
@@ -354,7 +373,7 @@ export default function AdminTecnicoPage() {
                 {(pdf?.logs || []).length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-4 py-8 text-center text-zinc-600">
-                      Nenhuma gera\u00e7\u00e3o registrada.
+                      Nenhuma geração registrada.
                     </td>
                   </tr>
                 ) : (
@@ -366,11 +385,11 @@ export default function AdminTecnicoPage() {
                           label={l.status}
                         />
                       </td>
-                      <td className="px-4 py-2 text-zinc-300">{l.empresa_nome || l.empresa_id || '\u2014'}</td>
-                      <td className="px-4 py-2 font-mono text-xs">{l.mes || '\u2014'}</td>
-                      <td className="px-4 py-2 font-mono text-xs text-zinc-500">{l.auth_mode || '\u2014'}</td>
+                      <td className="px-4 py-2 text-zinc-300">{l.empresa_nome || l.empresa_id || '—'}</td>
+                      <td className="px-4 py-2 font-mono text-xs">{l.mes || '—'}</td>
+                      <td className="px-4 py-2 font-mono text-xs text-zinc-500">{l.auth_mode || '—'}</td>
                       <td className="px-4 py-2 text-right tabular-nums text-zinc-400">
-                        {l.duration_ms ?? '\u2014'}
+                        {l.duration_ms ?? '—'}
                       </td>
                       <td className="px-4 py-2 text-xs text-red-400/80 max-w-[180px] truncate">
                         {l.error || ''}
