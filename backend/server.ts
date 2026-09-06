@@ -47,6 +47,10 @@ import { ensurePlanPricingSchema } from './lib/planPricing.js';
 import { allowPlanSwitch } from './lib/plans.js';
 import { smtpConfigured } from './lib/mailer.js';
 import {
+  anonymizeOldClientWhatsapp,
+  ensureReviewTreatmentColumns,
+} from './lib/lgpd.js';
+import {
   backfillSentiment,
   countMissingSentiment,
 } from './services/sentimentBackfill.js';
@@ -125,6 +129,20 @@ async function runSentimentBackfillOnBoot() {
   }
 }
 
+async function runLgpdSweepOnBoot() {
+  if (process.env.LGPD_SWEEP === '0') return;
+  try {
+    const db = getDb();
+    await ensureReviewTreatmentColumns(db);
+    const r = await anonymizeOldClientWhatsapp(db, { limit: 1000 });
+    if (r.anonymized > 0) {
+      console.log(`🔒 LGPD: ${r.anonymized} WhatsApp(s) de cliente anonimizado(s)`);
+    }
+  } catch (e: any) {
+    console.warn('LGPD sweep (não bloqueia boot):', e?.message || e);
+  }
+}
+
 async function main() {
   await initDB();
   try {
@@ -166,8 +184,14 @@ async function main() {
   } catch (e) {
     console.warn('retry queue:', e);
   }
+  try {
+    await ensureReviewTreatmentColumns(getDb());
+  } catch (e) {
+    console.warn('treatment columns:', e);
+  }
 
   await runSentimentBackfillOnBoot();
+  await runLgpdSweepOnBoot();
 
   mountTrialRoutes(app);
   mountAuthRoutes(app);

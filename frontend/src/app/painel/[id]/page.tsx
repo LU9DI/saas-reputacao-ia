@@ -21,6 +21,9 @@ interface Review {
   is_test?: boolean;
   client_whatsapp?: string | null;
   client_whatsapp_url?: string | null;
+  client_whatsapp_anon?: boolean;
+  treated?: boolean;
+  treated_at?: string | null;
 }
 
 interface PainelData {
@@ -39,6 +42,8 @@ interface PainelData {
     media: number;
     negativas: number;
     positivas: number;
+    tratadas?: number;
+    pendentes_tratamento?: number;
     alerta_crise: boolean;
     crises_24h: number;
     distribuicao?: number[];
@@ -55,8 +60,9 @@ interface PainelData {
     mostrar_whatsapp_cliente?: boolean;
     mostrar_copiar_resposta?: boolean;
     mostrar_ia_respostas?: boolean;
+    mostrar_tratar?: boolean;
   };
-  links?: { avaliacao: string; relatorio_pdf?: string | null };
+  links?: { avaliacao: string; relatorio_pdf?: string | null; login?: string };
 }
 
 function listarMesesOpcoes(qtd = 18): string[] {
@@ -98,8 +104,9 @@ async function copiarTexto(texto: string): Promise<boolean> {
   }
 }
 
-function authHeaders(): HeadersInit {
-  const h: Record<string, string> = { 'Content-Type': 'application/json' };
+function authHeaders(json = true): HeadersInit {
+  const h: Record<string, string> = {};
+  if (json) h['Content-Type'] = 'application/json';
   try {
     const t = localStorage.getItem('filtra_token');
     if (t) h.Authorization = `Bearer ${t}`;
@@ -118,6 +125,7 @@ export default function PainelEmpresa() {
   const [data, setData] = useState<PainelData | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
+  const [precisaLogin, setPrecisaLogin] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [copiadoId, setCopiadoId] = useState<string | null>(null);
@@ -127,12 +135,15 @@ export default function PainelEmpresa() {
   const [baixandoPdf, setBaixandoPdf] = useState(false);
   const [msgPdf, setMsgPdf] = useState('');
   const [mesPdf, setMesPdf] = useState(currentMonthYYYYMM);
+  const [drafts, setDrafts] = useState<Record<number, string>>({});
+  const [tratandoId, setTratandoId] = useState<number | null>(null);
   const mesesOpcoes = useMemo(() => listarMesesOpcoes(18), []);
   const mesMax = currentMonthYYYYMM();
   const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
     typeof window !== 'undefined' ? window.location.origin : getEnv('NEXT_PUBLIC_APP_URL');
   const linkAvaliacao = data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
+  const loginUrl = data?.links?.login || `${appOrigin}/login`;
 
   const carregar = async () => {
     if (!empresaId) {
@@ -142,12 +153,31 @@ export default function PainelEmpresa() {
     }
     setLoading(true);
     setErro('');
+    setPrecisaLogin(false);
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaId}/painel`);
+      const res = await fetch(`${api}/api/empresa/${empresaId}/painel`, {
+        credentials: 'include',
+        headers: authHeaders(false),
+      });
       const json = await res.json().catch(() => ({}));
+      if (res.status === 401 || res.status === 403) {
+        setPrecisaLogin(true);
+        throw new Error(
+          json.error || 'Faça login com a conta da empresa para acessar o painel.'
+        );
+      }
       if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
       setData(json);
       setWhatsappInput(json.empresa?.whatsapp || '');
+      const nextDrafts: Record<number, string> = {};
+      for (const r of json.reviews || []) {
+        if (r.rating <= 3) {
+          nextDrafts[r.id] =
+            r.ai_reply ||
+            `Olá${r.name && r.name !== 'Anônimo' ? ` ${r.name}` : ''}, obrigado pelo feedback. Vamos analisar e retornar o mais breve possível.`;
+        }
+      }
+      setDrafts(nextDrafts);
     } catch (e: any) {
       setErro(
         e.message === 'Failed to fetch'
@@ -190,8 +220,12 @@ export default function PainelEmpresa() {
     try {
       const mes = check.value;
       const res = await fetch(
-        `${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${encodeURIComponent(mes)}`
+        `${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${encodeURIComponent(mes)}`,
+        { credentials: 'include', headers: authHeaders(false) }
       );
+      if (res.status === 401 || res.status === 403) {
+        throw new Error('Faça login para baixar o PDF.');
+      }
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.error || `Erro ${res.status}`);
@@ -203,7 +237,12 @@ export default function PainelEmpresa() {
       a.download = `relatorio-${mes}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-      setMsgPdf(`PDF de ${labelMes(mes)} baixado.`);
+      const cache = res.headers.get('X-PDF-Cache');
+      setMsgPdf(
+        cache === 'HIT'
+          ? `PDF de ${labelMes(mes)} baixado (cache — sem tokens).`
+          : `PDF de ${labelMes(mes)} gerado e baixado (sem tokens de IA).`
+      );
     } catch (e: any) {
       setMsgPdf(e.message || 'Não foi possível baixar o PDF');
     } finally {
@@ -237,6 +276,25 @@ export default function PainelEmpresa() {
     }
   };
 
+  const marcarTratada = async (id: number, undo = false) => {
+    setTratandoId(id);
+    try {
+      const res = await fetch(`${api}/api/reviews/${id}/tratar`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: authHeaders(),
+        body: JSON.stringify({ undo }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || 'Falha ao atualizar');
+      await carregar();
+    } catch (e: any) {
+      alert(e.message || 'Erro ao marcar como tratada');
+    } finally {
+      setTratandoId(null);
+    }
+  };
+
   const marcarCopiado = (key: string) => {
     setCopiadoId(key);
     setTimeout(() => setCopiadoId(null), 2000);
@@ -253,7 +311,15 @@ export default function PainelEmpresa() {
   if (erro || !data) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 px-6">
-        <p className="text-zinc-400 text-sm">{erro || 'Painel indisponível.'}</p>
+        <p className="text-zinc-400 text-sm text-center max-w-md">{erro || 'Painel indisponível.'}</p>
+        {precisaLogin && (
+          <a
+            href={`/login?next=${encodeURIComponent(`/painel/${empresaId}`)}`}
+            className="text-sm px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500"
+          >
+            Ir para login
+          </a>
+        )}
         <button type="button" onClick={carregar} className="text-sm underline text-indigo-400">
           Tentar novamente
         </button>
@@ -269,6 +335,7 @@ export default function PainelEmpresa() {
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
   const showWppCliente = dashboard?.mostrar_whatsapp_cliente !== false;
   const showCopiar = dashboard?.mostrar_copiar_resposta !== false;
+  const showTratar = dashboard?.mostrar_tratar !== false;
 
   return (
     <div className="min-h-screen bg-black text-zinc-100">
@@ -319,7 +386,9 @@ export default function PainelEmpresa() {
         {msgPdf && (
           <p
             className={`text-center text-xs pb-3 ${
-              msgPdf.includes('baixado') ? 'text-emerald-400' : 'text-red-400'
+              msgPdf.includes('baixado') || msgPdf.includes('gerado')
+                ? 'text-emerald-400'
+                : 'text-red-400'
             }`}
           >
             {msgPdf}
@@ -338,11 +407,14 @@ export default function PainelEmpresa() {
         <PushEnable />
 
         {pdfOk && (
-          <section className={`${card} px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}>
+          <section
+            className={`${card} px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4`}
+          >
             <div>
               <p className={label}>Relatório mensal</p>
               <p className="text-sm text-zinc-400 mt-1">
-                PDF do plano <strong className="text-zinc-200">{planLabel}</strong> — {labelMes(mesPdf)}
+                PDF do plano <strong className="text-zinc-200">{planLabel}</strong> —{' '}
+                {labelMes(mesPdf)}. Pode baixar quantas vezes quiser — sem gastar tokens de IA.
               </p>
             </div>
             <button
@@ -356,12 +428,17 @@ export default function PainelEmpresa() {
           </section>
         )}
 
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <section className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {[
             { t: 'Volume', v: metricas.total, c: '' },
             { t: 'Média', v: metricas.media || '—', c: '' },
             { t: 'Positivas', v: metricas.positivas, c: 'text-emerald-400' },
             { t: 'Críticas', v: metricas.negativas, c: 'text-red-400' },
+            {
+              t: 'Pendentes',
+              v: metricas.pendentes_tratamento ?? metricas.negativas,
+              c: 'text-amber-400',
+            },
           ].map((k) => (
             <div key={k.t} className={`${card} px-5 py-5`}>
               <p className={label}>{k.t}</p>
@@ -384,8 +461,7 @@ export default function PainelEmpresa() {
         <section className={`${card} px-6 py-6 space-y-3`}>
           <p className={label}>WhatsApp de suporte (empresa)</p>
           <p className="text-xs text-zinc-500">
-            Número que aparece no formulário público de feedback (botão "falar no WhatsApp").
-            É preciso estar logado em /login para salvar.
+            Número que aparece no formulário público de feedback (botão &quot;falar no WhatsApp&quot;).
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
@@ -451,42 +527,59 @@ export default function PainelEmpresa() {
           <div className="px-6 py-5 border-b border-zinc-800">
             <h2 className="text-sm font-semibold text-zinc-200">Feedbacks privados</h2>
             <p className="text-xs text-zinc-500 mt-1">
-              WhatsApp do cliente (quando informado) e botão de contato em cada crítica
+              Edite a resposta da IA, copie e marque como tratada após responder no WhatsApp
             </p>
           </div>
           {criticas.length === 0 ? (
-            <div className="px-6 py-14 text-center text-sm text-zinc-500">Nenhuma crítica no momento.</div>
+            <div className="px-6 py-14 text-center text-sm text-zinc-500">
+              Nenhuma crítica no momento.
+            </div>
           ) : (
             <ul>
               {criticas.map((r, i) => {
-                const textoResposta =
-                  r.ai_reply ||
-                  `Olá${r.name && r.name !== 'Anônimo' ? ` ${r.name}` : ''}, obrigado pelo feedback. Vamos analisar e retornar o mais breve possível.`;
                 const keyCopy = `copy-${r.id}`;
                 const keyWa = `wa-${r.id}`;
                 const waCliente = r.client_whatsapp_url;
+                const draft =
+                  drafts[r.id] ??
+                  r.ai_reply ??
+                  `Olá${r.name && r.name !== 'Anônimo' ? ` ${r.name}` : ''}, obrigado pelo feedback.`;
                 return (
                   <li
                     key={r.id}
-                    className={`px-6 py-6 ${i < criticas.length - 1 ? 'border-b border-zinc-800' : ''}`}
+                    className={`px-6 py-6 ${i < criticas.length - 1 ? 'border-b border-zinc-800' : ''} ${
+                      r.treated ? 'opacity-75' : ''
+                    }`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
                       <span className="text-sm font-medium text-zinc-200">{r.name}</span>
                       <Stars n={r.rating} />
+                      {r.treated && (
+                        <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                          Tratada
+                        </span>
+                      )}
                     </div>
                     {r.comment && <p className="text-sm text-zinc-400">{r.comment}</p>}
 
                     {(r.ai_reply || showCopiar) && (
                       <div className="mt-3 pl-3 border-l-2 border-indigo-500/40 space-y-2">
                         <p className="text-[11px] uppercase text-zinc-500">
-                          {r.ai_reply ? 'Resposta IA' : 'Resposta sugerida'}
+                          {r.ai_reply ? 'Resposta IA (editável)' : 'Resposta sugerida (editável)'}
                         </p>
-                        <p className="text-sm text-zinc-300">{textoResposta}</p>
+                        <textarea
+                          value={draft}
+                          onChange={(e) =>
+                            setDrafts((prev) => ({ ...prev, [r.id]: e.target.value }))
+                          }
+                          rows={3}
+                          className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-200 outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
                         {showCopiar && (
                           <button
                             type="button"
                             onClick={async () => {
-                              const ok = await copiarTexto(textoResposta);
+                              const ok = await copiarTexto(draft);
                               if (ok) marcarCopiado(keyCopy);
                             }}
                             className="text-xs px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700"
@@ -519,12 +612,37 @@ export default function PainelEmpresa() {
                             >
                               {copiadoId === keyWa ? 'Número copiado!' : 'Copiar número'}
                             </button>
-                            <span className="text-xs text-zinc-500 font-mono">{r.client_whatsapp}</span>
+                            <span className="text-xs text-zinc-500 font-mono">
+                              {r.client_whatsapp}
+                            </span>
                           </>
+                        ) : r.client_whatsapp_anon ? (
+                          <span className="text-xs text-zinc-500">
+                            WhatsApp anonimizado (LGPD)
+                          </span>
                         ) : (
                           <span className="text-xs text-amber-600/80">
                             WhatsApp do cliente não informado neste feedback
                           </span>
+                        )}
+
+                        {showTratar && (
+                          <button
+                            type="button"
+                            disabled={tratandoId === r.id}
+                            onClick={() => marcarTratada(r.id, Boolean(r.treated))}
+                            className={`text-xs px-3 py-1.5 rounded-lg font-medium border ${
+                              r.treated
+                                ? 'bg-zinc-900 text-zinc-400 border-zinc-700 hover:bg-zinc-800'
+                                : 'bg-indigo-600 text-white border-indigo-500 hover:bg-indigo-500'
+                            } disabled:opacity-50`}
+                          >
+                            {tratandoId === r.id
+                              ? '…'
+                              : r.treated
+                                ? 'Desfazer tratada'
+                                : 'Marcar como tratada'}
+                          </button>
                         )}
                       </div>
                     )}
@@ -534,6 +652,13 @@ export default function PainelEmpresa() {
             </ul>
           )}
         </section>
+
+        <p className="text-center text-[11px] text-zinc-600">
+          Sessão protegida ·{' '}
+          <a href={loginUrl} className="underline hover:text-zinc-400">
+            trocar conta
+          </a>
+        </p>
       </main>
     </div>
   );
