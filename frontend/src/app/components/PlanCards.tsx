@@ -106,6 +106,14 @@ type Props = {
   email?: string | null;
 };
 
+/** Evita quebra "R$" / valor em cards estreitos (corporativo, rei). */
+function formatPriceDisplay(price: string): string {
+  return String(price || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/R\$\s+/g, 'R$\u00a0')
+    .trim();
+}
+
 export function PlanCards({
   empresaId,
   requireEmpresa = false,
@@ -359,7 +367,7 @@ export function PlanCards({
       icon = Sparkles;
     } else if (lower.includes('pdf')) {
       icon = FileText;
-    } else if (lower.includes('dashboard') || lower.includes('gráficos')) {
+    } else if (lower.includes('dashboard') || lower.includes('gráficos') || lower.includes('graficos')) {
       icon = BarChart3;
     } else if (lower.includes('suporte')) {
       icon = Headset;
@@ -428,7 +436,9 @@ export function PlanCards({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
         {plans.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
-          const price = ciclo === 'mensal' ? p.priceMensal : p.priceAnual;
+          const price = formatPriceDisplay(
+            ciclo === 'mensal' ? p.priceMensal : p.priceAnual
+          );
           const period = ciclo === 'mensal' ? '/mês' : 'cobrança anual';
 
           return (
@@ -450,10 +460,13 @@ export function PlanCards({
                   )}
                 </div>
 
-                <p className="text-3xl font-black text-slate-900 tracking-tight flex flex-col">
-                  {price}
-                  <span className="text-xs font-semibold text-slate-400 mt-1">{period}</span>
-                </p>
+                {/* Preço em linha única: R$ + valor lado a lado (não empilha) */}
+                <div className="mb-1">
+                  <p className="text-2xl xl:text-3xl font-black text-slate-900 tracking-tight whitespace-nowrap leading-none">
+                    {price}
+                  </p>
+                  <span className="text-xs font-semibold text-slate-400 mt-1.5 block">{period}</span>
+                </div>
 
                 <ul className="mt-6 space-y-3.5 border-t border-slate-100 pt-6">
                   {p.features.map((f, i) => (
