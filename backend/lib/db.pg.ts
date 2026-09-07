@@ -18,7 +18,6 @@ function convertPlaceholders(sql: string): string {
 function adaptSql(sql: string): string {
   let s = sql;
 
-  // INSERT OR IGNORE → ON CONFLICT DO NOTHING (quando não há cláusula já)
   if (/INSERT\s+OR\s+IGNORE/i.test(s) && !/ON\s+CONFLICT/i.test(s)) {
     s = s.replace(/INSERT\s+OR\s+IGNORE/i, 'INSERT');
     if (!/ON\s+CONFLICT/i.test(s)) {
@@ -26,16 +25,14 @@ function adaptSql(sql: string): string {
     }
   }
 
-  // Tipos SQLite que não existem no Postgres
-  s = s.replace(/\bDATETIME\b/gi, 'TIMESTAMPTZ');
+  // Tipos SQLite → Postgres (sem depender só de word-boundary)
+  s = s.replace(/DATETIME/gi, 'TIMESTAMPTZ');
   s = s.replace(/\bREAL\b/gi, 'DOUBLE PRECISION');
-  // Boolean-ish defaults comuns no legado
-  s = s.replace(/\bINTEGER\s+DEFAULT\s+0\b/gi, 'INTEGER DEFAULT 0');
+  s = s.replace(/INTEGER\s+PRIMARY\s+KEY\s+AUTOINCREMENT/gi, 'SERIAL PRIMARY KEY');
 
-  s = s.replace(/datetime\('now'\)/gi, 'NOW()');
+  s = s.replace(/datetime\s*\(\s*'now'\s*\)/gi, 'NOW()');
   s = s.replace(/CURRENT_TIMESTAMP/gi, 'NOW()');
   s = s.replace(/IFNULL\s*\(/gi, 'COALESCE(');
-  s = s.replace(/INTEGER\s+PRIMARY\s+KEY\s+AUTOINCREMENT/gi, 'SERIAL PRIMARY KEY');
 
   return s;
 }
@@ -93,7 +90,8 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
 
   const db: PgDatabase = {
     async exec(sql: string) {
-      const statements = adaptSql(sql)
+      const adapted = adaptSql(sql);
+      const statements = adapted
         .split(';')
         .map((x) => x.trim())
         .filter(Boolean);
@@ -101,7 +99,14 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
       try {
         for (const st of statements) {
           if (/^PRAGMA/i.test(st)) continue;
-          await c.query(st);
+          try {
+            await c.query(st);
+          } catch (e: any) {
+            // Log SQL adaptado ajuda a depurar tipos inválidos no Render
+            console.error('pg.exec falhou:', e?.message || e);
+            console.error('SQL:', st.slice(0, 400));
+            throw e;
+          }
         }
       } finally {
         c.release();
@@ -168,7 +173,6 @@ export function isPostgresUrl(url?: string | null): boolean {
   return /^postgres(ql)?:\/\//i.test(url.trim());
 }
 
-/** Type cast helper — runtime is PgDatabase, callers tipam como sqlite Database. */
 export function asSqliteDb(db: PgDatabase): Database {
   return db as unknown as Database;
 }
