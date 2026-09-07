@@ -1,7 +1,20 @@
+# Dependências e Builds
 node_modules/
+.next/
+dist/
+build/
+coverage/
+.vercel/
+*.tsbuildinfo
+
+# Variáveis de Ambiente e Chaves
 .env
 .env.local
 .env.*.local
+*.pem
+*.key
+
+# Bancos de Dados Locais e Backups
 *.sqlite
 *.db
 *.db-journal
@@ -9,20 +22,14 @@ node_modules/
 *.db-wal
 data/
 backend/data/
-backend/prisma/
-backend/prisma/**
 backend/backups/
-.next/
-dist/
-build/
-coverage/
+backend/prisma/*.db
+backend/prisma/*.sqlite
+
+# Logs e Ferramentas
+*.log
+.DS_Store
 .aider*
 .aider.tags.cache.v4/
 .aider.tags.cache.v4/**
-*.log
-.DS_Store
-*.tsbuildinfo
 Saas.txt
-.vercel/
-*.pem
-*.key
