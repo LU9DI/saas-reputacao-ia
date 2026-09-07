@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { getEnv } from '../utils/env';
 import { ComoFunciona } from './ComoFunciona';
-import { PixCheckoutModal } from './PixCheckoutModal';
 import { MpTransparentCheckout } from './MpTransparentCheckout';
 import { useLanguage } from '../Contexts/LanguageContext';
 import {
@@ -73,9 +72,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   const [loading, setLoading] = useState<string | null>(null);
   const [erro, setErro] = useState('');
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
-  const [pixOpen, setPixOpen] = useState(false);
   const [mpOpen, setMpOpen] = useState(false);
-  const [pixPlano, setPixPlano] = useState<{ key: string; label: string } | null>(null);
+  const [mpPlano, setMpPlano] = useState<{ key: string; label: string } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,45 +114,23 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     };
   }, []);
 
-  const irParaCheckout = async (planoKey: string) => {
-    setErro('');
-    if (requireEmpresa && !empresaId) {
-      setErro(t.trial_title);
-      return;
-    }
-    setLoading(planoKey);
-    try {
-      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 20000);
-      const res = await fetch(`${apiUrl}/api/checkout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plano: planoKey, empresa_id: empresaId || undefined }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
-      const url = data.checkout_url || data.url;
-      if (!url || !String(url).startsWith('http')) throw new Error('Invalid checkout URL');
-      window.location.assign(url);
-    } catch (e: any) {
-      setErro(e.message || 'Checkout error');
-      setLoading(null);
-    }
-  };
-
   const irParaPayPal = async (planoKey: string) => {
     setErro('');
-    if (requireEmpresa && !empresaId) return;
+    if (requireEmpresa && !empresaId) {
+      setErro(t.trial_title || 'Ative o trial antes de assinar.');
+      return;
+    }
     setLoading(`paypal-${planoKey}`);
     try {
       const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
       const res = await fetch(`${apiUrl}/api/paypal/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plano: planoKey, empresa_id: empresaId || undefined, email: email || undefined }),
+        body: JSON.stringify({
+          plano: planoKey,
+          empresa_id: empresaId || undefined,
+          email: email || undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `PayPal ${res.status}`);
@@ -167,93 +143,29 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     }
   };
 
-  /** WeChat Pay — OFF até WECHAT_* no Render (mesmo padrão Stripe). */
-  const irParaWechat = async (planoKey: string) => {
-    setErro('');
-    if (requireEmpresa && !empresaId) return;
-    setLoading(`wechat-${planoKey}`);
-    try {
-      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
-      const res = await fetch(`${apiUrl}/api/wechat/create-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plano: planoKey,
-          empresa_id: empresaId || undefined,
-          email: email || undefined,
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(
-          data.error ||
-            (res.status === 503
-              ? 'WeChat Pay OFF — configure WECHAT_APP_ID / WECHAT_MCH_ID / WECHAT_API_KEY no Render.'
-              : `WeChat ${res.status}`)
-        );
-      }
-      if (data.codeUrl) {
-        window.open(data.codeUrl, '_blank');
-      } else {
-        setErro('WeChat: pedido criado, mas sem code_url (integração incompleta).');
-      }
-    } catch (e: any) {
-      setErro(e.message || 'WeChat Pay indisponível');
-    } finally {
-      setLoading(null);
-    }
-  };
-
   const abrirMp = (planoKey: string, label: string) => {
     setErro('');
     if (requireEmpresa && !empresaId) {
-      setErro('Ative o trial antes de assinar.');
+      setErro(t.trial_title || 'Ative o trial antes de assinar.');
       return;
     }
-    setPixPlano({ key: planoKey, label });
+    setMpPlano({ key: planoKey, label });
     setMpOpen(true);
-  };
-
-  const abrirPix = (planoKey: string, label: string) => {
-    setErro('');
-    if (requireEmpresa && !empresaId) return;
-    setPixPlano({ key: planoKey, label });
-    setPixOpen(true);
-  };
-
-  const irParaRecorrente = async (planoKey: string) => {
-    setErro('');
-    if (requireEmpresa && !empresaId) return;
-    if (!email) {
-      setErro('Email required');
-      return;
-    }
-    setLoading(`pix-rec-${planoKey}`);
-    try {
-      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
-      const res = await fetch(`${apiUrl}/api/pix/recorrente`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plano: planoKey, empresa_id: empresaId || undefined, email }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `Pix ${res.status}`);
-      const url = data.init_point || data.authorize_url;
-      if (!url) throw new Error('Pix URL missing');
-      window.location.assign(url);
-    } catch (e: any) {
-      setErro(e.message || 'Pix error');
-      setLoading(null);
-    }
   };
 
   const formatarFeature = (text: string, isMissing = false) => {
     if (isMissing) {
-      return <span className="text-slate-400 line-through decoration-slate-400/60 font-normal mt-0.5">{text}</span>;
+      return (
+        <span className="text-slate-400 line-through decoration-slate-400/60 font-normal mt-0.5">
+          {text}
+        </span>
+      );
     }
     const lower = String(text).toLowerCase();
     const Badge = ({ className, icon: Icon, children }: any) => (
-      <span className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}>
+      <span
+        className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}
+      >
         {Icon && <Icon size={12} strokeWidth={2.5} />}
         {children}
       </span>
@@ -265,11 +177,17 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       badgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
     } else if (lower.includes('ia') || lower.includes('ai')) icon = Sparkles;
     else if (lower.includes('pdf')) icon = FileText;
-    else if (lower.includes('dashboard') || lower.includes('chart') || lower.includes('graf')) icon = BarChart3;
+    else if (lower.includes('dashboard') || lower.includes('chart') || lower.includes('graf'))
+      icon = BarChart3;
     else if (lower.includes('suporte') || lower.includes('support')) icon = Headset;
     else if (lower.includes('early') || lower.includes('antecip')) icon = Rocket;
     else if (lower.includes('feedback')) icon = Layers;
-    if (icon) return <Badge className={badgeClass} icon={icon}>{text}</Badge>;
+    if (icon)
+      return (
+        <Badge className={badgeClass} icon={icon}>
+          {text}
+        </Badge>
+      );
     return <span className="text-slate-600 font-medium mt-1">{text}</span>;
   };
 
@@ -278,16 +196,40 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       <div className="text-center space-y-3">
         <h2 className="text-2xl font-whir text-white tracking-tight">{t.plans_title}</h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
-          {[t.pay_stripe, t.pay_paypal, 'Mercado Pago', t.pay_pix, 'WeChat'].join(' · ')}
+          {[t.pay_paypal || 'PayPal', 'Mercado Pago'].join(' · ')}
           {loadingPrices ? ` · ${t.updating_prices}` : ''}
         </p>
         <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
-          <button type="button" onClick={() => setCiclo('mensal')} className={`px-6 py-2 rounded-lg font-medium transition-colors ${ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>{t.monthly}</button>
-          <button type="button" onClick={() => setCiclo('anual')} className={`px-6 py-2 rounded-lg font-medium transition-colors ${ciclo === 'anual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>{t.yearly}</button>
+          <button
+            type="button"
+            onClick={() => setCiclo('mensal')}
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              ciclo === 'mensal'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t.monthly}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCiclo('anual')}
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              ciclo === 'anual'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t.yearly}
+          </button>
         </div>
       </div>
 
-      {erro && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-center max-w-3xl mx-auto">{erro}</p>}
+      {erro && (
+        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-center max-w-3xl mx-auto">
+          {erro}
+        </p>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
         {plans.map((p) => {
@@ -297,19 +239,34 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           const planBase = String(p.keyMensal || '').replace(/-anual$/, '');
           const limit =
             p.reviewLimit ||
-            ({ inicial: 100, pro: 300, ultra: 800, corporativo: 2500, rei: 8000 } as any)[planBase] ||
+            ({ inicial: 100, pro: 300, ultra: 800, corporativo: 2500, rei: 8000 } as any)[
+              planBase
+            ] ||
             100;
           const localized = featuresForPlan(planBase, limit, t);
 
           return (
-            <div key={p.label} className={`rounded-2xl p-6 flex flex-col justify-between bg-white min-w-0 transition-all duration-300 ${p.highlight ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-900/20 transform md:-translate-y-2' : 'border border-slate-200 hover:border-indigo-300 shadow-sm'}`}>
+            <div
+              key={p.label}
+              className={`rounded-2xl p-6 flex flex-col justify-between bg-white min-w-0 transition-all duration-300 ${
+                p.highlight
+                  ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-900/20 transform md:-translate-y-2'
+                  : 'border border-slate-200 hover:border-indigo-300 shadow-sm'
+              }`}
+            >
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{p.label}</p>
-                  {p.highlight && <span className="bg-indigo-600 text-white text-[9px] tracking-widest font-black py-1 px-2.5 rounded-full uppercase shadow-sm">{t.popular}</span>}
+                  {p.highlight && (
+                    <span className="bg-indigo-600 text-white text-[9px] tracking-widest font-black py-1 px-2.5 rounded-full uppercase shadow-sm">
+                      {t.popular}
+                    </span>
+                  )}
                 </div>
                 <div className="mb-1">
-                  <p className="text-2xl xl:text-3xl font-black text-slate-900 tracking-tight whitespace-nowrap leading-none">{price}</p>
+                  <p className="text-2xl xl:text-3xl font-black text-slate-900 tracking-tight whitespace-nowrap leading-none">
+                    {price}
+                  </p>
                   <span className="text-xs font-semibold text-slate-400 mt-1.5 block">{period}</span>
                 </div>
                 <ul className="mt-6 space-y-3.5 border-t border-slate-100 pt-6">
@@ -328,37 +285,26 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                 </ul>
               </div>
               <div className="mt-8 space-y-2">
-                <button type="button" disabled={!!loading} onClick={() => irParaCheckout(key)} className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${p.highlight ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'}`}>
-                  {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
-                  {loading === key ? t.redirecting : t.pay_stripe}
-                </button>
-                <button type="button" disabled={!!loading} onClick={() => irParaPayPal(key)} className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2">
-                  {loading === `paypal-${key}` ? <Loader2 size={16} className="animate-spin" /> : null}
-                  {loading === `paypal-${key}` ? t.redirecting : t.pay_paypal}
-                </button>
                 <button
                   type="button"
                   disabled={!!loading}
                   onClick={() => abrirMp(key, p.label)}
-                  className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#009ee3] hover:bg-[#0088c6] text-white disabled:opacity-50"
+                  className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 ${
+                    p.highlight
+                      ? 'bg-[#009ee3] hover:bg-[#0088c6] text-white shadow-lg shadow-sky-600/20'
+                      : 'bg-[#009ee3] hover:bg-[#0088c6] text-white'
+                  }`}
                 >
                   Mercado Pago
-                </button>
-                <button type="button" disabled={!!loading} onClick={() => abrirPix(key, p.label)} className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50">
-                  {t.pay_pix}
-                </button>
-                <button type="button" disabled={!!loading} onClick={() => irParaRecorrente(key)} className="w-full py-2 rounded-xl text-xs font-medium border border-slate-200 text-slate-600 bg-slate-50 hover:bg-slate-100 disabled:opacity-50">
-                  {loading === `pix-rec-${key}` ? t.redirecting : t.pay_pix_recurring}
                 </button>
                 <button
                   type="button"
                   disabled={!!loading}
-                  onClick={() => irParaWechat(key)}
-                  className="w-full py-2 rounded-xl text-xs font-medium border border-green-200 text-green-800 bg-green-50 hover:bg-green-100 disabled:opacity-50 flex items-center justify-center gap-2"
-                  title="WeChat Pay — OFF até configurar no Render"
+                  onClick={() => irParaPayPal(key)}
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {loading === `wechat-${key}` ? <Loader2 size={14} className="animate-spin" /> : null}
-                  WeChat Pay
+                  {loading === `paypal-${key}` ? <Loader2 size={16} className="animate-spin" /> : null}
+                  {loading === `paypal-${key}` ? t.redirecting : t.pay_paypal || 'PayPal'}
                 </button>
               </div>
             </div>
@@ -384,12 +330,11 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       <MpTransparentCheckout
         open={mpOpen}
         onClose={() => setMpOpen(false)}
-        planoKey={pixPlano?.key || ''}
-        planoLabel={pixPlano?.label}
+        planoKey={mpPlano?.key || ''}
+        planoLabel={mpPlano?.label}
         empresaId={empresaId}
         email={email}
       />
-      <PixCheckoutModal open={pixOpen} onClose={() => setPixOpen(false)} planoKey={pixPlano?.key || ''} planoLabel={pixPlano?.label} empresaId={empresaId} email={email} />
     </div>
   );
 }
