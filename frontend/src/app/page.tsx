@@ -16,11 +16,11 @@ import {
   Lock,
 } from 'lucide-react';
 import QRCode from 'qrcode';
-import { getEnv } from './utils/env';
 import { PlanCards } from './components/PlanCards';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from './utils/passwordPolicy';
 import { readApiError } from './utils/apiError';
 import { persistFiltraToken } from './utils/persistToken';
+import { apiFetch, restoreStickyFromSession } from './utils/apiFailover';
 
 const traducoes = {
   pt: {
@@ -150,6 +150,7 @@ export default function Home() {
   const [checkoutMsg, setCheckoutMsg] = useState('');
 
   useEffect(() => {
+    restoreStickyFromSession();
     if (typeof window !== 'undefined') {
       const langs = navigator.languages || [navigator.language || (navigator as any).userLanguage];
       const lang = langs.find((l) => l.startsWith('en') || l.startsWith('es') || l.startsWith('pt'));
@@ -226,14 +227,13 @@ export default function Home() {
     setLoading(true);
     setErro('');
     setSucessoData(null);
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
-      const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
-      const response = await fetch(`${apiUrl}/api/trial/ativar`, {
+      // Failover automático: Render → backup (Oracle etc.)
+      const response = await apiFetch('/api/trial/ativar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        timeoutMs: 15000,
         body: JSON.stringify({
           cnpj: cnpj.replace(/\D/g, ''),
           nome_empresa: nomeEmpresa.trim(),
@@ -241,16 +241,12 @@ export default function Home() {
           email: email.trim().toLowerCase(),
           senha,
         }),
-        signal: controller.signal,
       });
-      clearTimeout(timeout);
       if (!response.ok) {
         throw new Error(await readApiError(response, 'Erro ao processar ativação.'));
       }
       const data = await response.json();
-      // Token JWT: cookie (credentials) + localStorage para o painel
       persistFiltraToken(data.token);
-      // Preferir paths relativos no mesmo host do front (evita APP_URL errado no backend)
       const slugOrId = data.slug || data.empresa_id;
       setSucessoData({
         ...data,
@@ -266,14 +262,15 @@ export default function Home() {
       });
     } catch (err: any) {
       if (err.name === 'AbortError') setErro('Tempo de conexão esgotado. Tente novamente.');
+      else if (err.name === 'ApiFailoverError')
+        setErro('Servidores indisponíveis no momento. Tente novamente em instantes.');
       else
         setErro(
           err.message === 'Failed to fetch'
-            ? 'Não foi possível conectar ao servidor. Verifique se a API está online (porta 5000).'
+            ? 'Não foi possível conectar ao servidor. Verifique se a API está online.'
             : err.message
         );
     } finally {
-      clearTimeout(timeout);
       setLoading(false);
     }
   };
@@ -465,7 +462,7 @@ export default function Home() {
                 onClick={copiarParaTransferencia}
                 className="w-full bg-zinc-100 hover:bg-white text-black font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2"
               >
-                <Copy size={16} /> {t.copiarLink}
+                <Copy size={16} /> {copiado ? t.linkCopiado : t.copiarLink}
               </button>
               {qrDataUrl && (
                 <button
@@ -485,32 +482,25 @@ export default function Home() {
               </a>
               {sucessoData.link_painel && (
                 <a
-                  href={sucessoData.link_painel}
-                  onClick={() => {
-                    try {
-                      const tok = localStorage.getItem('filtra_token');
-                      if (!tok && sucessoData.token) {
-                        persistFiltraToken(sucessoData.token);
-                      }
-                    } catch {
-                      /* */
-                    }
-                  }}
-                  className="w-full bg-emerald-950 hover:bg-emerald-900 text-emerald-200 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 border border-emerald-800"
+                  href={
+                    sucessoData.token
+                      ? `${sucessoData.link_painel}${sucessoData.link_painel.includes('?') ? '&' : '?'}token=${encodeURIComponent(sucessoData.token)}`
+                      : sucessoData.link_painel
+                  }
+                  className="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2"
                 >
                   <LayoutDashboard size={16} /> {t.abrirPainel}
                 </a>
               )}
             </div>
-            {copiado && <p className="text-xs text-emerald-400 font-semibold">{t.linkCopiado}</p>}
-            <p className="text-xs text-zinc-500 italic pt-2">{t.avisoExpiracao}</p>
+            <p className="text-xs text-zinc-500 pt-2">{t.avisoExpiracao}</p>
           </div>
         )}
       </div>
 
-      <div className="w-full px-2 pb-10">
-        <p className="text-center text-sm font-medium text-zinc-400 mb-4">{t.planosTitulo}</p>
-        <PlanCards empresaId={sucessoData?.empresa_id} requireEmpresa={false} />
+      <div className="w-full max-w-5xl space-y-4">
+        <h2 className="text-center text-lg font-semibold text-zinc-200">{t.planosTitulo}</h2>
+        <PlanCards />
       </div>
     </div>
   );
