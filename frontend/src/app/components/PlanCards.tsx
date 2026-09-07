@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { getEnv } from '../utils/env';
 import { ComoFunciona } from './ComoFunciona';
 import { PixCheckoutModal } from './PixCheckoutModal';
+import { MpTransparentCheckout } from './MpTransparentCheckout';
 import { useLanguage } from '../Contexts/LanguageContext';
 import {
   Check,
@@ -73,6 +74,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   const [erro, setErro] = useState('');
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [pixOpen, setPixOpen] = useState(false);
+  const [mpOpen, setMpOpen] = useState(false);
   const [pixPlano, setPixPlano] = useState<{ key: string; label: string } | null>(null);
 
   useEffect(() => {
@@ -165,6 +167,16 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     }
   };
 
+  const abrirMp = (planoKey: string, label: string) => {
+    setErro('');
+    if (requireEmpresa && !empresaId) {
+      setErro('Ative o trial antes de assinar.');
+      return;
+    }
+    setPixPlano({ key: planoKey, label });
+    setMpOpen(true);
+  };
+
   const abrirPix = (planoKey: string, label: string) => {
     setErro('');
     if (requireEmpresa && !empresaId) return;
@@ -229,7 +241,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       <div className="text-center space-y-3">
         <h2 className="text-2xl font-whir text-white tracking-tight">{t.plans_title}</h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
-          {[t.pay_stripe, t.pay_paypal, t.pay_pix].join(' · ')}
+          {[t.pay_stripe, t.pay_paypal, 'Mercado Pago', t.pay_pix].join(' · ')}
           {loadingPrices ? ` · ${t.updating_prices}` : ''}
         </p>
         <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
@@ -287,8 +299,18 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                   {loading === `paypal-${key}` ? <Loader2 size={16} className="animate-spin" /> : null}
                   {loading === `paypal-${key}` ? t.redirecting : t.pay_paypal}
                 </button>
-                <button type="button" disabled={!!loading} onClick={() => abrirPix(key, p.label)} className="w-full py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50">{t.pay_pix}</button>
-                <button type="button" disabled={!!loading} onClick={() => irParaRecorrente(key)} className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50">
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => abrirMp(key, p.label)}
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#009ee3] hover:bg-[#0088c6] text-white disabled:opacity-50"
+                >
+                  Mercado Pago
+                </button>
+                <button type="button" disabled={!!loading} onClick={() => abrirPix(key, p.label)} className="w-full py-2 rounded-xl text-xs font-medium border border-emerald-200 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50">
+                  {t.pay_pix}
+                </button>
+                <button type="button" disabled={!!loading} onClick={() => irParaRecorrente(key)} className="w-full py-2 rounded-xl text-xs font-medium border border-slate-200 text-slate-600 bg-slate-50 hover:bg-slate-100 disabled:opacity-50">
                   {loading === `pix-rec-${key}` ? t.redirecting : t.pay_pix_recurring}
                 </button>
               </div>
@@ -312,6 +334,14 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
         </div>
       )}
 
+      <MpTransparentCheckout
+        open={mpOpen}
+        onClose={() => setMpOpen(false)}
+        planoKey={pixPlano?.key || ''}
+        planoLabel={pixPlano?.label}
+        empresaId={empresaId}
+        email={email}
+      />
       <PixCheckoutModal open={pixOpen} onClose={() => setPixOpen(false)} planoKey={pixPlano?.key || ''} planoLabel={pixPlano?.label} empresaId={empresaId} email={email} />
     </div>
   );
