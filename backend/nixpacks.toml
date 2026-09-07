@@ -1,9 +1,6 @@
-# Railway/Nixpacks — NÃO usar npm ci (lock pode estar defasado no monorepo)
+# Força npm install quando o builder for Nixpacks/Railpack
 [phases.install]
 cmds = ["npm install"]
-
-[phases.build]
-cmds = ["echo skip-tsc"]
 
 [start]
 cmd = "npm start"

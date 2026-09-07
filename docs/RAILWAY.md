@@ -1,40 +1,34 @@
 # Deploy backend no Railway
 
-## Erro: `Cannot find module '/app/server.ts'`
+## Se o build falhar com `npm ci` / package-lock
 
-O Railway está na **raiz** do repo (`/app`), e o `server.ts` fica em `/app/backend/server.ts`.
+O `package-lock.json` foi removido de propósito para o Railpack não usar `npm ci`.
 
-### Opção A (recomendada) — Root Directory = backend
+**Root Directory:** `backend`  
+**Build Command (se pedir):** `npm install`  
+**Start Command:** `npm start`
 
-1. Settings → **Root Directory** = `backend`
-2. **Custom Start Command** = vazio (ou `npm start`)
-3. Redeploy
-
-### Opção B — raiz do monorepo
-
-1. **Root Directory** = vazio
-2. **Custom Start Command** =
-   ```bash
-   npm start --prefix backend
-   ```
-3. **Build Command** (se tiver campo):
-   ```bash
-   npm install --prefix backend
-   ```
-
-O arquivo `railway.toml` na raiz já define esses comandos.
+Ou use o **Dockerfile** em `backend/Dockerfile` (Settings → Builder → Dockerfile).
 
 ## Variables obrigatórias
 
 | Nome | Valor |
 |------|--------|
-| `JWT_SECRET` | **≥ 32 caracteres** |
+| `JWT_SECRET` | ≥ 32 caracteres |
 | `NODE_ENV` | `production` |
 | `APP_URL` | URL do front Vercel |
 | `FRONTEND_URL` | mesma do front |
 
-Opcional: `DATABASE_URL`, Stripe, etc.
-
 ## Healthcheck
 
 `GET https://sua-api.up.railway.app/api/health`
+
+## Regenerar lock localmente (opcional)
+
+```bash
+cd backend
+npm install
+git add package-lock.json
+git commit -m "chore: package-lock"
+git push
+```
