@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
+import { Providers } from './Providers';
 
 export const metadata: Metadata = {
-  title: 'FILTRA.AI — Gestão de Reputação Online',
+  title: 'FILTRA.AI — Online Reputation Management',
   description:
-    'Sistema inteligente de contenção de crises e gestão de avaliações para comércios locais',
+    'Smart crisis containment and review management for local businesses',
   applicationName: 'Filtra.IA',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
@@ -43,10 +44,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="h-full">
+    <html lang="pt-BR" className="h-full" suppressHydrationWarning>
       <body className="min-h-full bg-black text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
-        {children}
-        <PwaRegister />
+        <Providers>
+          {children}
+          <PwaRegister />
+        </Providers>
       </body>
     </html>
   );
