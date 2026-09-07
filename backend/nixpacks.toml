@@ -1,4 +1,6 @@
-# Força npm install quando o builder for Nixpacks/Railpack
+[phases.setup]
+nixPkgs = ["python3", "gcc", "gnumake"]
+
 [phases.install]
 cmds = ["npm install"]
 
