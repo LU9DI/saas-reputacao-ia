@@ -26,6 +26,12 @@ function adaptSql(sql: string): string {
     }
   }
 
+  // Tipos SQLite que não existem no Postgres
+  s = s.replace(/\bDATETIME\b/gi, 'TIMESTAMPTZ');
+  s = s.replace(/\bREAL\b/gi, 'DOUBLE PRECISION');
+  // Boolean-ish defaults comuns no legado
+  s = s.replace(/\bINTEGER\s+DEFAULT\s+0\b/gi, 'INTEGER DEFAULT 0');
+
   s = s.replace(/datetime\('now'\)/gi, 'NOW()');
   s = s.replace(/CURRENT_TIMESTAMP/gi, 'NOW()');
   s = s.replace(/IFNULL\s*\(/gi, 'COALESCE(');
@@ -46,10 +52,12 @@ async function handlePragma(client: pg.PoolClient, sql: string): Promise<any[]> 
               SELECT kcu.column_name FROM information_schema.table_constraints tc
               JOIN information_schema.key_column_usage kcu
                 ON tc.constraint_name = kcu.constraint_name
-              WHERE tc.table_name = $1 AND tc.constraint_type = 'PRIMARY KEY'
+               AND tc.table_schema = kcu.table_schema
+              WHERE tc.table_name = $1 AND tc.table_schema = 'public'
+                AND tc.constraint_type = 'PRIMARY KEY'
             ) THEN 1 ELSE 0 END as pk
      FROM information_schema.columns
-     WHERE table_name = $1
+     WHERE table_schema = 'public' AND table_name = $1
      ORDER BY ordinal_position`,
     [table]
   );
@@ -67,11 +75,15 @@ export type PgDatabase = {
 export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
   pool = new Pool({
     connectionString: databaseUrl,
-    ssl: process.env.PGSSL === '0' ? false : databaseUrl.includes('localhost') ? false : { rejectUnauthorized: false },
+    ssl:
+      process.env.PGSSL === '0'
+        ? false
+        : databaseUrl.includes('localhost')
+          ? false
+          : { rejectUnauthorized: false },
     max: Number(process.env.PG_POOL_MAX || 10),
   });
 
-  // ping
   const client = await pool.connect();
   try {
     await client.query('SELECT 1');
