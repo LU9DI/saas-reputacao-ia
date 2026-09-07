@@ -97,8 +97,6 @@ const DEFAULT_PLANS: PlanCard[] = [
   },
 ];
 
-type Gateways = { stripe: boolean; paypal: boolean; pix: boolean };
-
 type Props = {
   empresaId?: string | null;
   requireEmpresa?: boolean;
@@ -106,7 +104,6 @@ type Props = {
   email?: string | null;
 };
 
-/** Evita quebra "R$" / valor em cards estreitos (corporativo, rei). */
 function formatPriceDisplay(price: string): string {
   return String(price || '')
     .replace(/\u00a0/g, ' ')
@@ -127,11 +124,6 @@ export function PlanCards({
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [pixOpen, setPixOpen] = useState(false);
   const [pixPlano, setPixPlano] = useState<{ key: string; label: string } | null>(null);
-  const [gateways, setGateways] = useState<Gateways>({
-    stripe: true,
-    paypal: false,
-    pix: true,
-  });
 
   useEffect(() => {
     let cancelled = false;
@@ -139,12 +131,7 @@ export function PlanCards({
 
     const carregar = async () => {
       try {
-        const [planosRes, healthRes, paypalRes] = await Promise.all([
-          fetch(`${apiUrl}/api/planos`, { cache: 'no-store' }),
-          fetch(`${apiUrl}/api/health`, { cache: 'no-store' }).catch(() => null),
-          fetch(`${apiUrl}/api/paypal/status`, { cache: 'no-store' }).catch(() => null),
-        ]);
-
+        const planosRes = await fetch(`${apiUrl}/api/planos`, { cache: 'no-store' });
         if (planosRes.ok) {
           const data = await planosRes.json();
           const list = Array.isArray(data.planos) ? data.planos : [];
@@ -163,24 +150,8 @@ export function PlanCards({
             );
           }
         }
-
-        let stripe = true;
-        let pix = true;
-        let paypal = false;
-
-        if (healthRes && healthRes.ok) {
-          const h = await healthRes.json();
-          if (typeof h.stripe === 'boolean') stripe = true;
-          pix = true;
-        }
-        if (paypalRes && paypalRes.ok) {
-          const p = await paypalRes.json();
-          paypal = Boolean(p.configured);
-        }
-
-        if (!cancelled) setGateways({ stripe, paypal, pix });
       } catch {
-        /* mantém stripe+pix visíveis */
+        /* mantém defaults */
       } finally {
         if (!cancelled) setLoadingPrices(false);
       }
@@ -205,48 +176,37 @@ export function PlanCards({
       const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 20000);
-
       const res = await fetch(`${apiUrl}/api/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plano: planoKey,
-          empresa_id: empresaId || undefined,
-        }),
+        body: JSON.stringify({ plano: planoKey, empresa_id: empresaId || undefined }),
         signal: controller.signal,
       });
       clearTimeout(timeout);
-
       let data: any = {};
       try {
         data = await res.json();
       } catch {
         throw new Error(`API respondeu sem JSON (${res.status}).`);
       }
-
       if (!res.ok) {
         if (res.status === 503) {
           throw new Error(
-            data.error ||
-              'Stripe não configurado. Defina STRIPE_SECRET_KEY no backend/.env.'
+            data.error || 'Stripe não configurado. Defina STRIPE_SECRET_KEY no backend/.env.'
           );
         }
         throw new Error(data.error || `Não foi possível iniciar o pagamento (${res.status}).`);
       }
-
       const url = data.checkout_url || data.url;
       if (!url || typeof url !== 'string' || !url.startsWith('http')) {
         throw new Error('URL de checkout inválida.');
       }
       window.location.assign(url);
     } catch (e: any) {
-      if (e?.name === 'AbortError') {
-        setErro('Tempo esgotado. Backend na porta 5000?');
-      } else if (String(e?.message || '').includes('Failed to fetch')) {
+      if (e?.name === 'AbortError') setErro('Tempo esgotado. Backend na porta 5000?');
+      else if (String(e?.message || '').includes('Failed to fetch'))
         setErro('Não conectou na API. Suba o backend.');
-      } else {
-        setErro(e.message || 'Erro ao abrir checkout');
-      }
+      else setErro(e.message || 'Erro ao abrir checkout');
       setLoading(null);
     }
   };
@@ -345,9 +305,7 @@ export function PlanCards({
         </span>
       );
     }
-
     const lower = text.toLowerCase();
-
     const Badge = ({ className, icon: Icon, children }: any) => (
       <span
         className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}
@@ -356,27 +314,18 @@ export function PlanCards({
         {children}
       </span>
     );
-
     let icon = null;
     let badgeClass = 'text-indigo-700 bg-indigo-50 border-indigo-200/60';
-
     if (lower.includes('wpp')) {
       icon = MessageCircle;
       badgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
-    } else if (lower.includes('ia')) {
-      icon = Sparkles;
-    } else if (lower.includes('pdf')) {
-      icon = FileText;
-    } else if (lower.includes('dashboard') || lower.includes('gráficos') || lower.includes('graficos')) {
+    } else if (lower.includes('ia')) icon = Sparkles;
+    else if (lower.includes('pdf')) icon = FileText;
+    else if (lower.includes('dashboard') || lower.includes('gráficos') || lower.includes('graficos'))
       icon = BarChart3;
-    } else if (lower.includes('suporte')) {
-      icon = Headset;
-    } else if (lower.includes('acesso antecipado')) {
-      icon = Rocket;
-    } else if (lower.includes('feedbacks')) {
-      icon = Layers;
-    }
-
+    else if (lower.includes('suporte')) icon = Headset;
+    else if (lower.includes('acesso antecipado')) icon = Rocket;
+    else if (lower.includes('feedbacks')) icon = Layers;
     if (icon) {
       return (
         <Badge className={badgeClass} icon={icon}>
@@ -384,7 +333,6 @@ export function PlanCards({
         </Badge>
       );
     }
-
     return <span className="text-slate-600 font-medium mt-1">{text}</span>;
   };
 
@@ -395,9 +343,7 @@ export function PlanCards({
           Deseja continuar depois do período de teste?
         </h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
-          {[gateways.stripe && 'Cartão (Stripe)', gateways.paypal && 'PayPal', 'Pix']
-            .filter(Boolean)
-            .join(' · ')}
+          {['Cartão (Stripe)', 'PayPal', 'Pix'].join(' · ')}
           {loadingPrices ? ' · atualizando preços…' : ''}
         </p>
 
@@ -436,9 +382,7 @@ export function PlanCards({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 items-stretch">
         {plans.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
-          const price = formatPriceDisplay(
-            ciclo === 'mensal' ? p.priceMensal : p.priceAnual
-          );
+          const price = formatPriceDisplay(ciclo === 'mensal' ? p.priceMensal : p.priceAnual);
           const period = ciclo === 'mensal' ? '/mês' : 'cobrança anual';
 
           return (
@@ -460,7 +404,6 @@ export function PlanCards({
                   )}
                 </div>
 
-                {/* Preço em linha única: R$ + valor lado a lado (não empilha) */}
                 <div className="mb-1">
                   <p className="text-2xl xl:text-3xl font-black text-slate-900 tracking-tight whitespace-nowrap leading-none">
                     {price}
@@ -488,35 +431,29 @@ export function PlanCards({
               </div>
 
               <div className="mt-8 space-y-2">
-                {gateways.stripe && (
-                  <button
-                    type="button"
-                    disabled={!!loading}
-                    onClick={() => irParaCheckout(key)}
-                    className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
-                      p.highlight
-                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
-                        : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
-                    }`}
-                  >
-                    {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
-                    {loading === key ? 'Redirecionando…' : 'Cartão (Stripe)'}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => irParaCheckout(key)}
+                  className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
+                    p.highlight
+                      ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/30'
+                      : 'bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-900'
+                  }`}
+                >
+                  {loading === key ? <Loader2 size={16} className="animate-spin" /> : null}
+                  {loading === key ? 'Redirecionando…' : 'Cartão (Stripe)'}
+                </button>
 
-                {gateways.paypal && (
-                  <button
-                    type="button"
-                    disabled={!!loading}
-                    onClick={() => irParaPayPal(key)}
-                    className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {loading === `paypal-${key}` ? (
-                      <Loader2 size={16} className="animate-spin" />
-                    ) : null}
-                    {loading === `paypal-${key}` ? 'Abrindo PayPal…' : 'PayPal'}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => irParaPayPal(key)}
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {loading === `paypal-${key}` ? <Loader2 size={16} className="animate-spin" /> : null}
+                  {loading === `paypal-${key}` ? 'Abrindo PayPal…' : 'PayPal'}
+                </button>
 
                 <button
                   type="button"
