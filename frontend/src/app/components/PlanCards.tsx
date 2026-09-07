@@ -167,6 +167,43 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     }
   };
 
+  /** WeChat Pay — OFF até WECHAT_* no Render (mesmo padrão Stripe). */
+  const irParaWechat = async (planoKey: string) => {
+    setErro('');
+    if (requireEmpresa && !empresaId) return;
+    setLoading(`wechat-${planoKey}`);
+    try {
+      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
+      const res = await fetch(`${apiUrl}/api/wechat/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plano: planoKey,
+          empresa_id: empresaId || undefined,
+          email: email || undefined,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          data.error ||
+            (res.status === 503
+              ? 'WeChat Pay OFF — configure WECHAT_APP_ID / WECHAT_MCH_ID / WECHAT_API_KEY no Render.'
+              : `WeChat ${res.status}`)
+        );
+      }
+      if (data.codeUrl) {
+        window.open(data.codeUrl, '_blank');
+      } else {
+        setErro('WeChat: pedido criado, mas sem code_url (integração incompleta).');
+      }
+    } catch (e: any) {
+      setErro(e.message || 'WeChat Pay indisponível');
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const abrirMp = (planoKey: string, label: string) => {
     setErro('');
     if (requireEmpresa && !empresaId) {
@@ -241,7 +278,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       <div className="text-center space-y-3">
         <h2 className="text-2xl font-whir text-white tracking-tight">{t.plans_title}</h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
-          {[t.pay_stripe, t.pay_paypal, 'Mercado Pago', t.pay_pix].join(' · ')}
+          {[t.pay_stripe, t.pay_paypal, 'Mercado Pago', t.pay_pix, 'WeChat'].join(' · ')}
           {loadingPrices ? ` · ${t.updating_prices}` : ''}
         </p>
         <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
@@ -312,6 +349,16 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                 </button>
                 <button type="button" disabled={!!loading} onClick={() => irParaRecorrente(key)} className="w-full py-2 rounded-xl text-xs font-medium border border-slate-200 text-slate-600 bg-slate-50 hover:bg-slate-100 disabled:opacity-50">
                   {loading === `pix-rec-${key}` ? t.redirecting : t.pay_pix_recurring}
+                </button>
+                <button
+                  type="button"
+                  disabled={!!loading}
+                  onClick={() => irParaWechat(key)}
+                  className="w-full py-2 rounded-xl text-xs font-medium border border-green-200 text-green-800 bg-green-50 hover:bg-green-100 disabled:opacity-50 flex items-center justify-center gap-2"
+                  title="WeChat Pay — OFF até configurar no Render"
+                >
+                  {loading === `wechat-${key}` ? <Loader2 size={14} className="animate-spin" /> : null}
+                  WeChat Pay
                 </button>
               </div>
             </div>
