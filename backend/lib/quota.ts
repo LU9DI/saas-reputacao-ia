@@ -51,15 +51,21 @@ export async function tokensUsadosMes(empresaId: string): Promise<number> {
   const mes = getCurrentMonth();
   const row = await db.get(
     `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage
-     WHERE empresa_id = ? AND substr(criado_em, 1, 7) = ?`,
+     WHERE empresa_id = ? AND substr(criado_em::text, 1, 7) = ?`,
     [empresaId, mes]
-  );
+  ).catch(async () => {
+    // SQLite sem ::text
+    return getDb().get(
+      `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage
+       WHERE empresa_id = ? AND substr(criado_em, 1, 7) = ?`,
+      [empresaId, mes]
+    );
+  });
   return Number(row?.t || 0);
 }
 
 /**
  * Bloqueia chamada de IA se a empresa estourou o teto mensal de tokens do plano.
- * Retorna { ok, used, limit }.
  */
 export async function assertEmpresaTokenQuota(
   empresaId: string | null | undefined,
@@ -95,10 +101,19 @@ export async function checkQuota(plan: string, type: 'tags' | 'respostas'): Prom
 export async function contarReviewsMes(empresaId: string): Promise<number> {
   const db = getDb();
   const mes = getCurrentMonth();
-  const row = await db.get(
-    `SELECT COUNT(*) as c FROM reviews
-     WHERE empresa_id = ? AND substr(createdAt, 1, 7) = ?`,
-    [empresaId, mes]
-  );
-  return Number(row?.c || 0);
+  try {
+    const row = await db.get(
+      `SELECT COUNT(*) as c FROM reviews
+       WHERE empresa_id = ? AND substr(CAST(createdAt AS TEXT), 1, 7) = ?`,
+      [empresaId, mes]
+    );
+    return Number(row?.c || 0);
+  } catch {
+    const row = await db.get(
+      `SELECT COUNT(*) as c FROM reviews
+       WHERE empresa_id = ? AND substr(createdAt, 1, 7) = ?`,
+      [empresaId, mes]
+    );
+    return Number(row?.c || 0);
+  }
 }
