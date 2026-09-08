@@ -15,7 +15,6 @@ import { fileURLToPath } from 'url';
 import { ensureAuthColumns } from '../passwordResetRoutes.js';
 import { ensureMfaColumns } from '../mfa.js';
 import { initPgDatabase, isPostgresUrl, asSqliteDb } from './db.pg.js';
-import { ensureRuntimeSchema } from './schemaEnsure.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,10 +81,7 @@ export async function initDB(): Promise<Database> {
     _db = await initSqlite();
   }
 
-  const timestampType = _engine === 'postgres' ? 'TIMESTAMPTZ' : 'DATETIME';
-  const autoIncrementId =
-    _engine === 'postgres' ? 'BIGSERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
-
+  // TIMESTAMPTZ funciona no Postgres; no SQLite vira afinidade e aceita ISO
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS empresas (
       id TEXT PRIMARY KEY,
@@ -94,13 +90,8 @@ export async function initDB(): Promise<Database> {
       slug TEXT UNIQUE,
       status TEXT DEFAULT 'trial',
       plan TEXT DEFAULT 'trial',
-<<<<<<< HEAD
       criado_em TIMESTAMPTZ NOT NULL,
       expira_em TIMESTAMPTZ NOT NULL,
-=======
-      criado_em ${timestampType} NOT NULL,
-      expira_em ${timestampType} NOT NULL,
->>>>>>> 4d10efc0aeb52dab05eae3aedaeceb6534ada2d5
       google_review_url TEXT,
       voice_style TEXT,
       empresa_pai_id TEXT,
@@ -118,34 +109,24 @@ export async function initDB(): Promise<Database> {
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS reviews (
-      id ${autoIncrementId},
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       empresa_id TEXT,
       name TEXT,
       rating INTEGER,
       comment TEXT,
       ai_reply TEXT,
       ai_tags TEXT,
-<<<<<<< HEAD
       createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     )
-=======
-      createdAt ${timestampType} DEFAULT CURRENT_TIMESTAMP
-    );
->>>>>>> 4d10efc0aeb52dab05eae3aedaeceb6534ada2d5
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS ai_usage (
-      id ${autoIncrementId},
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       empresa_id TEXT,
       tipo TEXT NOT NULL,
       tokens INTEGER NOT NULL DEFAULT 0,
-<<<<<<< HEAD
       criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
     )
-=======
-      criado_em ${timestampType} DEFAULT CURRENT_TIMESTAMP
-    );
->>>>>>> 4d10efc0aeb52dab05eae3aedaeceb6534ada2d5
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS usage (
@@ -167,7 +148,6 @@ export async function initDB(): Promise<Database> {
 
   await ensureAuthColumns(_db);
   await ensureMfaColumns(_db);
-  await ensureRuntimeSchema(_db);
 
   const adminMail = (process.env.ADMIN_EMAIL || 'admin@seusaas.com').trim().toLowerCase();
   const adminExiste = await _db.get('SELECT * FROM usuarios WHERE email = ?', [adminMail]);
@@ -210,7 +190,7 @@ export function slugify(texto: string): string {
 
 export async function slugUnico(base: string): Promise<string> {
   const db = getDb();
-  let slug = base || 'empresa';
+  let slug = base;
   let n = 0;
   while (true) {
     const existe = await db.get('SELECT id FROM empresas WHERE slug = ?', [slug]);
