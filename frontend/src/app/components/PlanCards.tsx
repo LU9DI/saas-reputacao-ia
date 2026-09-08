@@ -31,12 +31,62 @@ export type PlanCard = {
   reviewLimit?: number;
 };
 
+/** Limites oficiais do produto (fonte da verdade no front se a API estiver legada). */
+const OFFICIAL_LIMITS: Record<string, number> = {
+  inicial: 100,
+  pro: 300,
+  ultra: 800,
+  corporativo: 2500,
+  rei: 8000,
+};
+
 const DEFAULT_PLANS: PlanCard[] = [
-  { keyMensal: 'inicial', keyAnual: 'inicial-anual', label: 'Inicial', priceMensal: 'R$ 69,90', priceAnual: 'R$ 49,90', features: [], reviewLimit: 100 },
-  { keyMensal: 'pro', keyAnual: 'pro-anual', label: 'Pro', priceMensal: 'R$ 109,90', priceAnual: 'R$ 99,90', features: [], reviewLimit: 300 },
-  { keyMensal: 'ultra', keyAnual: 'ultra-anual', label: 'Ultra', priceMensal: 'R$ 199,90', priceAnual: 'R$ 149,90', features: [], highlight: true, reviewLimit: 800 },
-  { keyMensal: 'corporativo', keyAnual: 'corporativo-anual', label: 'Corporativo', priceMensal: 'R$ 499,90', priceAnual: 'R$ 429,90', features: [], reviewLimit: 2500 },
-  { keyMensal: 'rei', keyAnual: 'rei-anual', label: 'REI', priceMensal: 'R$ 999,90', priceAnual: 'R$ 899,90', features: [], reviewLimit: 8000 },
+  {
+    keyMensal: 'inicial',
+    keyAnual: 'inicial-anual',
+    label: 'Inicial',
+    priceMensal: 'R$\u00a069,90',
+    priceAnual: 'R$\u00a049,90',
+    features: [],
+    reviewLimit: 100,
+  },
+  {
+    keyMensal: 'pro',
+    keyAnual: 'pro-anual',
+    label: 'Pro',
+    priceMensal: 'R$\u00a0109,90',
+    priceAnual: 'R$\u00a099,90',
+    features: [],
+    reviewLimit: 300,
+  },
+  {
+    keyMensal: 'ultra',
+    keyAnual: 'ultra-anual',
+    label: 'Ultra',
+    priceMensal: 'R$\u00a0199,90',
+    priceAnual: 'R$\u00a0149,90',
+    features: [],
+    highlight: true,
+    reviewLimit: 800,
+  },
+  {
+    keyMensal: 'corporativo',
+    keyAnual: 'corporativo-anual',
+    label: 'Corporativo',
+    priceMensal: 'R$\u00a0499,90',
+    priceAnual: 'R$\u00a0429,90',
+    features: [],
+    reviewLimit: 2500,
+  },
+  {
+    keyMensal: 'rei',
+    keyAnual: 'rei-anual',
+    label: 'REI',
+    priceMensal: 'R$\u00a0999,90',
+    priceAnual: 'R$\u00a0899,90',
+    features: [],
+    reviewLimit: 8000,
+  },
 ];
 
 type Props = {
@@ -53,14 +103,31 @@ function formatPriceDisplay(price: string): string {
     .trim();
 }
 
+function resolveLimit(plan: string, fromApi?: number): number {
+  const official = OFFICIAL_LIMITS[plan];
+  if (official != null) return official;
+  if (fromApi && fromApi > 0) return fromApi;
+  return 100;
+}
+
 function featuresForPlan(plan: string, limit: number, t: any): { features: string[]; missing?: string[] } {
-  const fb = String(t.feat_feedbacks || '{n} feedbacks/mês').replace('{n}', limit.toLocaleString(undefined));
+  const fb = String(t.feat_feedbacks || '{n} feedbacks/mês').replace(
+    '{n}',
+    limit.toLocaleString(undefined)
+  );
   const map: Record<string, { features: string[]; missing?: string[] }> = {
     inicial: { features: [fb, t.feat_wpp, t.feat_basic_charts], missing: [t.feat_ai_missing] },
-    pro: { features: [fb, t.feat_wpp, t.feat_basic_charts, t.feat_pdf], missing: [t.feat_ai_missing] },
+    pro: {
+      features: [fb, t.feat_wpp, t.feat_basic_charts, t.feat_pdf],
+      missing: [t.feat_ai_missing],
+    },
     ultra: { features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_dashboard] },
-    corporativo: { features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_multi, t.feat_support, t.feat_early] },
-    rei: { features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_multi, t.feat_support, t.feat_early] },
+    corporativo: {
+      features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_multi, t.feat_support, t.feat_early],
+    },
+    rei: {
+      features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_multi, t.feat_support, t.feat_early],
+    },
   };
   return map[plan] || { features: [fb] };
 }
@@ -80,23 +147,29 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
     const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
     const carregar = async () => {
       try {
-        const planosRes = await fetch(`${apiUrl}/api/planos`, { cache: 'no-store' });
+        const planosRes = await fetch(`${apiUrl}/api/planos`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' },
+        });
         if (planosRes.ok) {
           const data = await planosRes.json();
           const list = Array.isArray(data.planos) ? data.planos : [];
           if (list.length && !cancelled) {
             setPlans(
-              list.map((p: any) => ({
-                keyMensal: p.keyMensal || p.plan,
-                keyAnual: p.keyAnual || `${p.plan}-anual`,
-                label: p.label || p.plan,
-                priceMensal: p.priceMensal,
-                priceAnual: p.priceAnual,
-                features: Array.isArray(p.features) ? p.features : [],
-                missingFeatures: Array.isArray(p.missingFeatures) ? p.missingFeatures : [],
-                highlight: Boolean(p.highlight),
-                reviewLimit: Number(p.review_limit) || undefined,
-              }))
+              list.map((p: any) => {
+                const plan = String(p.plan || p.keyMensal || '').replace(/-anual$/, '');
+                return {
+                  keyMensal: p.keyMensal || plan,
+                  keyAnual: p.keyAnual || `${plan}-anual`,
+                  label: p.label || plan,
+                  priceMensal: p.priceMensal,
+                  priceAnual: p.priceAnual,
+                  features: [],
+                  missingFeatures: [],
+                  highlight: Boolean(p.highlight),
+                  reviewLimit: resolveLimit(plan, Number(p.review_limit)),
+                };
+              })
             );
           }
         }
@@ -107,7 +180,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       }
     };
     carregar();
-    const id = window.setInterval(carregar, 45_000);
+    const id = window.setInterval(carregar, 60_000);
     return () => {
       cancelled = true;
       window.clearInterval(id);
@@ -194,7 +267,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8">
       <div className="text-center space-y-3">
-        <h2 className="text-2xl font-whir text-white tracking-tight">{t.plans_title}</h2>
+        <h2 className="text-2xl font-semibold text-white tracking-tight">{t.plans_title}</h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
           {[t.pay_paypal || 'PayPal', 'Mercado Pago'].join(' · ')}
           {loadingPrices ? ` · ${t.updating_prices}` : ''}
@@ -237,12 +310,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           const price = formatPriceDisplay(ciclo === 'mensal' ? p.priceMensal : p.priceAnual);
           const period = ciclo === 'mensal' ? t.per_month : t.annual_billing;
           const planBase = String(p.keyMensal || '').replace(/-anual$/, '');
-          const limit =
-            p.reviewLimit ||
-            ({ inicial: 100, pro: 300, ultra: 800, corporativo: 2500, rei: 8000 } as any)[
-              planBase
-            ] ||
-            100;
+          const limit = resolveLimit(planBase, p.reviewLimit);
           const localized = featuresForPlan(planBase, limit, t);
 
           return (
@@ -289,11 +357,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
                   type="button"
                   disabled={!!loading}
                   onClick={() => abrirMp(key, p.label)}
-                  className={`w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 ${
-                    p.highlight
-                      ? 'bg-[#009ee3] hover:bg-[#0088c6] text-white shadow-lg shadow-sky-600/20'
-                      : 'bg-[#009ee3] hover:bg-[#0088c6] text-white'
-                  }`}
+                  className="w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 bg-[#009ee3] hover:bg-[#0088c6] text-white"
                 >
                   Mercado Pago
                 </button>
