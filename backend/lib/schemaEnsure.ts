@@ -33,7 +33,6 @@ async function addColumnIfMissing(
 
 /** Colunas usadas pelo trial, painel e billing. */
 export async function ensureRuntimeSchema(db: Database) {
-  // empresas
   await addColumnIfMissing(db, 'empresas', 'slug', 'TEXT');
   await addColumnIfMissing(db, 'empresas', 'google_review_url', 'TEXT');
   await addColumnIfMissing(db, 'empresas', 'whatsapp_suporte', 'TEXT');
@@ -45,8 +44,6 @@ export async function ensureRuntimeSchema(db: Database) {
   await addColumnIfMissing(db, 'empresas', 'cancel_at_period_end', 'INTEGER DEFAULT 0');
   await addColumnIfMissing(db, 'empresas', 'stripe_customer_id', 'TEXT');
   await addColumnIfMissing(db, 'empresas', 'stripe_subscription_id', 'TEXT');
-
-  // usuarios
   await addColumnIfMissing(db, 'usuarios', 'email', 'TEXT');
 
   try {

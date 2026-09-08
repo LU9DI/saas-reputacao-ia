@@ -1,42 +1,36 @@
 /**
  * Rotas n8n:
- *  GET  /api/n8n/status
- *  POST /api/n8n/inbound/lead     — captação (Maps / formulário / lista)
- *  POST /api/n8n/inbound/review   — avaliação vinda do n8n
- *  POST /api/n8n/ping             — testa saída (admin secret opcional)
- *
- * Header obrigatório em produção: X-Filtra-Secret: <N8N_INBOUND_SECRET>
+ *   GET  /api/n8n/status
+ *   POST /api/n8n/ping          — testa webhook de saída
+ *   POST /api/n8n/inbound/lead  — n8n envia lead captado (Maps etc.)
+ *   POST /api/n8n/inbound/review — n8n envia avaliação externa
  */
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import crypto from 'crypto';
+import { getDb } from '../lib/db.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { getDb, slugify, slugUnico } from '../lib/db.js';
 import {
+  n8nConfigured,
   n8nStatus,
-  n8nEnabled,
+  notifyN8n,
   verifyInboundSecret,
-  dispatchN8nEvent,
-  pingN8n,
 } from '../lib/n8n.js';
-import { criarReview } from '../services/reviewService.js';
-import { normalizarWhatsapp } from '../lib/whatsapp.js';
+import { ensureRuntimeSchema } from '../lib/schemaEnsure.js';
 
-const inboundLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 60,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Rate limit n8n inbound.' },
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 120,
+  message: { error: 'Rate limit n8n.' },
 });
 
-function requireN8nSecret(req: Request, res: Response): boolean {
+function requireInbound(req: Request, res: Response): boolean {
   const secret =
     (req.headers['x-filtra-secret'] as string) ||
     (req.headers['x-n8n-secret'] as string) ||
     '';
   if (!verifyInboundSecret(secret)) {
-    res.status(401).json({ error: 'Segredo n8n inválido ou ausente (X-Filtra-Secret).' });
+    res.status(401).json({ error: 'Secret n8n inválido ou ausente.' });
     return false;
   }
   return true;
@@ -48,165 +42,145 @@ export function mountN8nRoutes(app: Express) {
       ...n8nStatus(),
       endpoints: {
         status: 'GET /api/n8n/status',
+        ping: 'POST /api/n8n/ping',
         inbound_lead: 'POST /api/n8n/inbound/lead',
         inbound_review: 'POST /api/n8n/inbound/review',
-        ping: 'POST /api/n8n/ping',
       },
-      hint: n8nEnabled()
-        ? 'Integração pronta. Configure workflows no n8n apontando para estes endpoints.'
-        : 'Defina N8N_WEBHOOK_URL e N8N_WEBHOOK_SECRET (ou N8N_ENABLED=1) no Render.',
+      hint: n8nConfigured()
+        ? 'Webhook de saída configurado.'
+        : 'Defina N8N_WEBHOOK_URL no Render para ligar a saída.',
     });
   });
 
   app.post(
     '/api/n8n/ping',
-    inboundLimiter,
-    asyncHandler(async (req: Request, res: Response) => {
-      if (!requireN8nSecret(req, res)) return;
-      const r = await pingN8n();
-      res.status(r.ok ? 200 : 503).json(r);
+    limiter,
+    asyncHandler(async (_req: Request, res: Response) => {
+      if (!n8nConfigured()) {
+        return res.status(503).json({
+          error: 'N8N_WEBHOOK_URL não configurado.',
+          configured: false,
+        });
+      }
+      const ok = await notifyN8n('ping', { message: 'Filtra.AI connectivity check' });
+      res.json({ success: ok, configured: true });
     })
   );
 
-  /**
-   * Captação de lead (Google Maps / listas / formulário).
-   * Body sugerido:
-   * {
-   *   "nome_empresa": "Padaria X",
-   *   "telefone": "11999998888",
-   *   "email": "contato@x.com",
-   *   "cidade": "São Paulo",
-   *   "fonte": "google_maps",
-   *   "maps_url": "https://...",
-   *   "notas": "opcional"
-   * }
-   *
-   * NÃO envia mensagem automática — só registra e devolve id.
-   * O workflow n8n decide se/quando contatar (anti-spam).
-   */
+  /** Lead captado pelo n8n (Google Maps / formulário / etc.) */
   app.post(
     '/api/n8n/inbound/lead',
-    inboundLimiter,
+    limiter,
     asyncHandler(async (req: Request, res: Response) => {
-      if (!requireN8nSecret(req, res)) return;
+      if (!requireInbound(req, res)) return;
 
       const body = req.body || {};
-      const nome = String(body.nome_empresa || body.nome || body.name || '').trim();
-      if (!nome || nome.length < 2) {
-        return res.status(400).json({ error: 'nome_empresa obrigatório.' });
+      const nome = String(body.nome_empresa || body.name || body.nome || '').trim();
+      const email = String(body.email || '').trim().toLowerCase();
+      const telefone = String(body.telefone || body.phone || body.whatsapp || '').trim();
+      const fonte = String(body.fonte || body.source || 'n8n').trim();
+      const mapsUrl = String(body.google_maps_url || body.maps_url || '').trim();
+
+      if (!nome && !email && !telefone) {
+        return res.status(400).json({
+          error: 'Informe ao menos nome_empresa, email ou telefone.',
+        });
       }
 
-      const telefone = normalizarWhatsapp(body.telefone || body.whatsapp || body.phone || null);
-      const email = body.email ? String(body.email).trim().toLowerCase() : null;
-      const fonte = String(body.fonte || body.source || 'n8n').slice(0, 64);
-      const cidade = body.cidade ? String(body.cidade).slice(0, 80) : null;
-      const mapsUrl = body.maps_url || body.google_maps_url || body.url || null;
-      const notas = body.notas || body.notes || null;
-
       const db = getDb();
-      await ensureLeadsTable(db);
+      await ensureRuntimeSchema(db);
+
+      // Tabela simples de leads (idempotente)
+      await db.exec(`
+        CREATE TABLE IF NOT EXISTS leads (
+          id TEXT PRIMARY KEY,
+          nome_empresa TEXT,
+          email TEXT,
+          telefone TEXT,
+          fonte TEXT,
+          maps_url TEXT,
+          raw_json TEXT,
+          criado_em TEXT NOT NULL
+        )
+      `);
 
       const id = crypto.randomUUID();
       const now = new Date().toISOString();
       await db.run(
-        `INSERT INTO n8n_leads
-          (id, nome_empresa, telefone, email, cidade, fonte, maps_url, notas, status, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'novo', ?)`,
+        `INSERT INTO leads (id, nome_empresa, email, telefone, fonte, maps_url, raw_json, criado_em)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
-          nome.slice(0, 160),
-          telefone,
-          email,
-          cidade,
+          nome || null,
+          email || null,
+          telefone || null,
           fonte,
-          mapsUrl ? String(mapsUrl).slice(0, 500) : null,
-          notas ? String(notas).slice(0, 1000) : null,
+          mapsUrl || null,
+          JSON.stringify(body).slice(0, 4000),
           now,
         ]
       );
 
-      // Eco opcional de volta ao n8n (outro fluxo) — sem WPP automático
-      dispatchN8nEvent(
-        'lead.captured',
-        {
-          lead_id: id,
-          nome_empresa: nome,
-          telefone,
-          email,
-          cidade,
-          fonte,
-          maps_url: mapsUrl,
-        },
-        {}
-      ).catch(() => null);
-
-      res.status(201).json({
-        success: true,
+      // Eco opcional de volta ao workflow (não bloqueia)
+      notifyN8n('lead.captured', {
         lead_id: id,
-        status: 'novo',
-        message:
-          'Lead registrado. Contato comercial deve ser feito pelo workflow n8n (sem spam automático na API).',
-      });
+        nome_empresa: nome,
+        email,
+        telefone,
+        fonte,
+      }).catch(() => undefined);
+
+      res.status(201).json({ success: true, lead_id: id });
     })
   );
 
-  /**
-   * Review vinda do n8n (ex.: sincronização manual / import).
-   * Reusa criarReview com as mesmas regras de quota/fraude.
-   */
+  /** Review vinda do n8n (scraping / outro canal) */
   app.post(
     '/api/n8n/inbound/review',
-    inboundLimiter,
+    limiter,
     asyncHandler(async (req: Request, res: Response) => {
-      if (!requireN8nSecret(req, res)) return;
+      if (!requireInbound(req, res)) return;
 
       const body = req.body || {};
-      const empresaRef = String(body.empresa_id || body.empresa_ref || body.slug || '').trim();
+      const empresaRef = String(body.empresa_id || body.slug || body.empresa_ref || '').trim();
+      const rating = Number(body.rating);
+      const comment = String(body.comment || body.comentario || '').trim();
+      const name = String(body.name || body.nome || 'Cliente').trim().slice(0, 100);
+
       if (!empresaRef) {
         return res.status(400).json({ error: 'empresa_id ou slug obrigatório.' });
       }
-
-      try {
-        const result = await criarReview({
-          name: body.name ? String(body.name) : body.nome ? String(body.nome) : undefined,
-          comment: body.comment ? String(body.comment) : body.comentario ? String(body.comentario) : undefined,
-          rating: Number(body.rating),
-          empresa_ref: empresaRef,
-          empresa_id: body.empresa_id ? String(body.empresa_id) : undefined,
-          client_whatsapp: body.client_whatsapp || body.whatsapp || undefined,
-          locale: body.locale ? String(body.locale) : undefined,
-          is_test: Boolean(body.is_test),
-          ip: 'n8n',
-        });
-        res.status(201).json({ success: true, ...result, source: 'n8n' });
-      } catch (e: any) {
-        const status = e?.status || 500;
-        res.status(status >= 400 && status < 600 ? status : 500).json({
-          error: e?.message || 'Falha ao criar review',
-        });
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: 'rating deve ser 1–5.' });
       }
+
+      const db = getDb();
+      const empresa =
+        (await db.get(`SELECT * FROM empresas WHERE id = ?`, [empresaRef])) ||
+        (await db.get(`SELECT * FROM empresas WHERE slug = ?`, [empresaRef]));
+
+      if (!empresa) {
+        return res.status(404).json({ error: 'Empresa não encontrada.' });
+      }
+
+      await db.run(
+        `INSERT INTO reviews (empresa_id, name, rating, comment, createdAt)
+         VALUES (?, ?, ?, ?, datetime('now'))`,
+        [empresa.id, name, rating, comment || null]
+      );
+
+      if (rating <= 3) {
+        notifyN8n('review.critical', {
+          empresa_id: empresa.id,
+          slug: empresa.slug,
+          nome_empresa: empresa.nome_empresa,
+          rating,
+          name,
+          comment: comment.slice(0, 500),
+        }).catch(() => undefined);
+      }
+
+      res.status(201).json({ success: true, empresa_id: empresa.id });
     })
   );
-}
-
-async function ensureLeadsTable(db: any) {
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS n8n_leads (
-      id TEXT PRIMARY KEY,
-      nome_empresa TEXT NOT NULL,
-      telefone TEXT,
-      email TEXT,
-      cidade TEXT,
-      fonte TEXT,
-      maps_url TEXT,
-      notas TEXT,
-      status TEXT DEFAULT 'novo',
-      created_at TEXT NOT NULL
-    )
-  `);
-  try {
-    await db.exec(`CREATE INDEX IF NOT EXISTS idx_n8n_leads_created ON n8n_leads(created_at)`);
-  } catch {
-    /* */
-  }
 }
