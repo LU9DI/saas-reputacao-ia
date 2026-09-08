@@ -12,6 +12,7 @@ import { notificarTrialAtivado } from '../lib/notifications.js';
 import { setAuthCookie, signAccessToken } from '../lib/auth.js';
 import { normalizarCnpj } from '../lib/cnpj.js';
 import { ensureRuntimeSchema } from '../lib/schemaEnsure.js';
+import { notifyN8n } from '../lib/n8n.js';
 
 const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
   /\/$/,
@@ -74,7 +75,6 @@ export async function ativarTrial(
   db: Database = getDb(),
   res?: Response
 ): Promise<TrialResult> {
-  // Schema legado no Render: garante colunas antes de qualquer INSERT
   await ensureRuntimeSchema(db);
 
   const cnpj = normalizarCnpj(String(input.cnpj));
@@ -123,7 +123,6 @@ export async function ativarTrial(
     if (isUniqueViolation(e)) {
       throw new TrialConflictError();
     }
-    // Fallback mínimo se alguma coluna extra falhar em schema muito antigo
     try {
       await db.run(
         `INSERT INTO empresas (id, cnpj, nome_empresa, status, plan, criado_em, expira_em)
@@ -202,6 +201,17 @@ export async function ativarTrial(
     expiraEm,
     locale: input.locale,
   }).catch((e) => console.warn('e-mail trial:', e?.message || e));
+
+  notifyN8n('trial.activated', {
+    empresa_id: id,
+    slug,
+    nome_empresa: nome,
+    email,
+    cnpj,
+    expira_em: expiraEm,
+    link_painel: `${APP_URL}/painel/${slug}`,
+    link_avaliacao: `${APP_URL}/avaliacao/${slug}`,
+  }).catch(() => undefined);
 
   return {
     success: true,
