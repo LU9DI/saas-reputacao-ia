@@ -1,7 +1,5 @@
 /**
- * Inicialização e acesso ao banco.
- * - Produção: Postgres obrigatório (DATABASE_URL)
- * - Dev: SQLite opcional
+ * Banco: Postgres (Supabase recomendado) em produção.
  */
 import path from 'path';
 import fs from 'fs';
@@ -11,7 +9,12 @@ import type { Database } from 'sqlite';
 import { fileURLToPath } from 'url';
 import { ensureAuthColumns } from '../passwordResetRoutes.js';
 import { ensureMfaColumns } from '../mfa.js';
-import { initPgDatabase, isPostgresUrl, asSqliteDb } from './db.pg.js';
+import {
+  initPgDatabase,
+  isPostgresUrl,
+  asSqliteDb,
+  postgresHostLabel,
+} from './db.pg.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,7 +32,10 @@ export function dbEngine(): 'sqlite' | 'postgres' {
   return _engine;
 }
 
-/** Ping leve para /api/ready e /api/health */
+export function dbHostLabel(): string {
+  return _engine === 'postgres' ? postgresHostLabel() : 'sqlite';
+}
+
 export async function pingDb(): Promise<{ ok: boolean; engine: string; error?: string }> {
   if (!_db) {
     return { ok: false, engine: _engine || 'unknown', error: 'db not initialized' };
@@ -46,6 +52,16 @@ export async function pingDb(): Promise<{ ok: boolean; engine: string; error?: s
   }
 }
 
+function resolvePgUrl(): string | undefined {
+  const u = (
+    process.env.DATABASE_URL ||
+    process.env.SUPABASE_DB_URL ||
+    process.env.SUPABASE_DATABASE_URL ||
+    ''
+  ).trim();
+  return u || undefined;
+}
+
 async function initSqlite(): Promise<Database> {
   let sqlite3: any;
   let open: any;
@@ -54,8 +70,7 @@ async function initSqlite(): Promise<Database> {
     open = (await import('sqlite')).open;
   } catch {
     throw new Error(
-      'SQLite não instalado. Em produção use DATABASE_URL=postgresql://... ' +
-        'Em dev: npm i -D sqlite sqlite3'
+      'SQLite não instalado. Em produção use DATABASE_URL (Supabase). Em dev: npm i -D sqlite sqlite3'
     );
   }
 
@@ -71,21 +86,19 @@ async function initSqlite(): Promise<Database> {
 }
 
 async function initPostgres(): Promise<Database> {
-  const url = process.env.DATABASE_URL!.trim();
-  const pg = await initPgDatabase(url);
+  const pg = await initPgDatabase();
   _engine = 'postgres';
-  console.log('🐘 Postgres conectado (DATABASE_URL)');
   return asSqliteDb(pg);
 }
 
 export async function initDB(): Promise<Database> {
-  const url = process.env.DATABASE_URL?.trim();
+  const url = resolvePgUrl();
 
   if (isPostgresUrl(url)) {
     _db = await initPostgres();
   } else if (isProd) {
     throw new Error(
-      'PRODUÇÃO exige DATABASE_URL Postgres. SQLite não é permitido em produção.'
+      'PRODUÇÃO exige DATABASE_URL ou SUPABASE_DB_URL (Postgres). Veja SUPABASE_SETUP.md.'
     );
   } else {
     _db = await initSqlite();
@@ -171,7 +184,7 @@ export async function initDB(): Promise<Database> {
       }
     }
   } else if (isProd && !adminMail) {
-    console.warn('⚠️  ADMIN_EMAIL não definido — crie o admin manualmente se ainda não existir.');
+    console.warn('⚠️  ADMIN_EMAIL não definido.');
   }
 
   return _db;
