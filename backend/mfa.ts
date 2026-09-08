@@ -1,6 +1,7 @@
 /**
  * Autenticação multifator (TOTP) — painel admin Filtra.IA
- * Implementação RFC 6238 em Node puro.
+ * Assinatura compatível com server.ts da main:
+ *   mountMfaRoutes(app, getDb, { JWT_SECRET, setAuthCookie, autenticarToken })
  */
 import type { Express, Request, Response, NextFunction } from 'express';
 import type { Database } from 'sqlite';
@@ -112,8 +113,10 @@ export async function ensureMfaColumns(db: Database): Promise<void> {
 }
 
 function isAdminUser(u: any): boolean {
-  const adminMail = (process.env.ADMIN_EMAIL || 'admin@seusaas.com').trim().toLowerCase();
-  return u?.empresa_id === 'admin' || String(u?.email || '').toLowerCase() === adminMail;
+  const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  if (u?.empresa_id === 'admin') return true;
+  if (adminMail && String(u?.email || '').toLowerCase() === adminMail) return true;
+  return false;
 }
 
 const mfaLimiter = rateLimit({
@@ -125,11 +128,13 @@ const mfaLimiter = rateLimit({
 export function mountMfaRoutes(
   app: Express,
   getDb: () => Database,
-  JWT_SECRET: string,
-  setAuthCookie: (res: Response, token: string) => void,
-  autenticarToken: (req: any, res: Response, next: NextFunction) => void
+  opts: {
+    JWT_SECRET: string;
+    setAuthCookie: (res: Response, token: string) => void;
+    autenticarToken: (req: any, res: Response, next: NextFunction) => void;
+  }
 ) {
-  app.post('/api/admin/mfa/setup', autenticarToken, mfaLimiter, async (req: any, res: Response) => {
+  app.post('/api/admin/mfa/setup', opts.autenticarToken, mfaLimiter, async (req: any, res: Response) => {
     try {
       const db = getDb();
       await ensureMfaColumns(db);
@@ -159,7 +164,7 @@ export function mountMfaRoutes(
     }
   });
 
-  app.post('/api/admin/mfa/confirm', autenticarToken, mfaLimiter, async (req: any, res: Response) => {
+  app.post('/api/admin/mfa/confirm', opts.autenticarToken, mfaLimiter, async (req: any, res: Response) => {
     try {
       const code = String(req.body.code || req.body.token || '').trim();
       const db = getDb();
@@ -191,7 +196,7 @@ export function mountMfaRoutes(
     }
   });
 
-  app.get('/api/admin/mfa/status', autenticarToken, async (req: any, res: Response) => {
+  app.get('/api/admin/mfa/status', opts.autenticarToken, async (req: any, res: Response) => {
     try {
       const db = getDb();
       await ensureMfaColumns(db);
@@ -202,7 +207,7 @@ export function mountMfaRoutes(
     }
   });
 
-  app.post('/api/admin/mfa/disable', autenticarToken, mfaLimiter, async (req: any, res: Response) => {
+  app.post('/api/admin/mfa/disable', opts.autenticarToken, mfaLimiter, async (req: any, res: Response) => {
     try {
       const code = String(req.body.code || '').trim();
       const db = getDb();
@@ -255,7 +260,7 @@ export function mountMfaRoutes(
 
       let payload: any;
       try {
-        payload = jwt.verify(mfaToken, JWT_SECRET) as any;
+        payload = jwt.verify(mfaToken, opts.JWT_SECRET) as any;
       } catch {
         return res.status(401).json({ error: 'Sessão MFA expirada. Faça login novamente.' });
       }
@@ -304,10 +309,10 @@ export function mountMfaRoutes(
           role: 'admin',
           mfa: true,
         },
-        JWT_SECRET,
+        opts.JWT_SECRET,
         { expiresIn: '1d' }
       );
-      setAuthCookie(res, session);
+      opts.setAuthCookie(res, session);
 
       return res.json({
         success: true,
@@ -343,4 +348,3 @@ export async function userHasMfa(db: Database, usuarioId: string): Promise<boole
   const u = await db.get('SELECT mfa_enabled FROM usuarios WHERE id = ?', [usuarioId]);
   return !!(u && u.mfa_enabled);
 }
-
