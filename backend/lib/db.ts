@@ -1,7 +1,7 @@
 /**
  * Inicialização e acesso ao banco.
  * - Produção: Postgres obrigatório (DATABASE_URL)
- * - Dev: SQLite opcional (pacotes em devDependencies)
+ * - Dev: SQLite opcional
  */
 import path from 'path';
 import fs from 'fs';
@@ -29,8 +29,24 @@ export function dbEngine(): 'sqlite' | 'postgres' {
   return _engine;
 }
 
+/** Ping leve para /api/ready e /api/health */
+export async function pingDb(): Promise<{ ok: boolean; engine: string; error?: string }> {
+  if (!_db) {
+    return { ok: false, engine: _engine || 'unknown', error: 'db not initialized' };
+  }
+  try {
+    await _db.get('SELECT 1 as ok');
+    return { ok: true, engine: _engine };
+  } catch (e: any) {
+    return {
+      ok: false,
+      engine: _engine,
+      error: String(e?.message || e).slice(0, 200),
+    };
+  }
+}
+
 async function initSqlite(): Promise<Database> {
-  // Import dinâmico — sqlite3 NÃO vai no bundle de produção (só devDependency)
   let sqlite3: any;
   let open: any;
   try {
@@ -138,7 +154,6 @@ export async function initDB(): Promise<Database> {
   await ensureAuthColumns(_db);
   await ensureMfaColumns(_db);
 
-  // Admin seed: só se ADMIN_EMAIL + ADMIN_PASSWORD definidos (sem senha padrão fraca)
   const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
   const adminPass = process.env.ADMIN_PASSWORD || '';
   if (adminMail && adminPass.length >= 12) {
