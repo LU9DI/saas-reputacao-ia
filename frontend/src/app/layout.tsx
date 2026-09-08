@@ -4,15 +4,18 @@ import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 
 export const metadata: Metadata = {
-  title: 'FILTRA.AI — Online Reputation Management',
+  title: {
+    default: 'FILTRA.AI — Online Reputation Management',
+    template: '%s · FILTRA.AI',
+  },
   description:
     'Smart crisis containment and review management for local businesses',
-  applicationName: 'Filtra.IA',
+  applicationName: 'FILTRA.AI',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Filtra.IA',
+    title: 'FILTRA.AI',
   },
   formatDetection: {
     telephone: false,
