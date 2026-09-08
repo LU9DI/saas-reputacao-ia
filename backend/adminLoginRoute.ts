@@ -1,32 +1,50 @@
 /**
- * Login do painel administrativo (e-mail + senha [+ MFA se ativo]).
- * JWT com rotação de chave (signAccessToken / verifyAccessToken).
+ * Login do painel administrativo — rate limit + lockout.
+ * Assinatura compatível com server.ts da main:
+ *   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET })
  */
 import type { Express, Request, Response } from 'express';
 import type { Database } from 'sqlite';
 import bcrypt from 'bcrypt';
 import rateLimit from 'express-rate-limit';
 import { ensureMfaColumns, issueMfaChallenge } from './mfa.js';
-import { signAccessToken, verifyAccessToken, setAuthCookie } from './lib/auth.js';
+import { signAccessToken, verifyAccessToken } from './lib/auth.js';
+import {
+  assertNotLocked,
+  recordLoginFail,
+  recordLoginSuccess,
+  failDelayMs,
+} from './lib/loginGuard.js';
 
 const adminLoginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 30,
+  max: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { error: 'Muitas tentativas de login. Tente novamente mais tarde.' },
 });
 
 function isAdminUser(usuario: any): boolean {
-  const adminMail = (process.env.ADMIN_EMAIL || 'admin@seusaas.com').trim().toLowerCase();
-  return (
-    usuario.empresa_id === 'admin' ||
-    String(usuario.email || '').toLowerCase() === adminMail
-  );
+  const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  if (usuario.empresa_id === 'admin') return true;
+  if (adminMail && String(usuario.email || '').toLowerCase() === adminMail) return true;
+  return false;
+}
+
+function clientIp(req: Request): string {
+  const xf = String(req.headers['x-forwarded-for'] || '')
+    .split(',')[0]
+    .trim();
+  return xf || req.ip || 'unknown';
 }
 
 export function mountAdminLoginRoute(
   app: Express,
   getDb: () => Database,
-  JWT_SECRET: string
+  opts: {
+    setAuthCookie: (res: Response, token: string) => void;
+    JWT_SECRET: string;
+  }
 ) {
   app.post('/api/admin/login', adminLoginLimiter, async (req: Request, res: Response) => {
     try {
@@ -34,33 +52,42 @@ export function mountAdminLoginRoute(
         .trim()
         .toLowerCase();
       const senha = String(req.body.senha || '');
+      const ip = clientIp(req);
+      const identity = `admin:${email}`;
 
       if (!email || !senha) {
         return res.status(400).json({ error: 'E-mail e senha são obrigatórios.' });
+      }
+
+      try {
+        assertNotLocked(identity, ip);
+      } catch (e: any) {
+        return res.status(429).json({ error: e.message || 'Bloqueado temporariamente.' });
       }
 
       const db = getDb();
       await ensureMfaColumns(db);
       const usuario = await db.get('SELECT * FROM usuarios WHERE email = ?', [email]);
 
-      if (!usuario || !usuario.senha_hash) {
+      if (!usuario || !usuario.senha_hash || !isAdminUser(usuario)) {
+        recordLoginFail(identity, ip);
+        const delay = failDelayMs(identity);
+        if (delay > 0) await new Promise((r) => setTimeout(r, delay));
         return res.status(401).json({ error: 'Credenciais inválidas.' });
-      }
-
-      if (!isAdminUser(usuario)) {
-        return res.status(403).json({
-          error:
-            'Acesso restrito ao painel administrativo. Use /login com CNPJ para o painel da empresa.',
-        });
       }
 
       const ok = await bcrypt.compare(senha, usuario.senha_hash);
       if (!ok) {
+        recordLoginFail(identity, ip);
+        const delay = failDelayMs(identity);
+        if (delay > 0) await new Promise((r) => setTimeout(r, delay));
         return res.status(401).json({ error: 'Credenciais inválidas.' });
       }
 
+      recordLoginSuccess(identity, ip);
+
       if (usuario.mfa_enabled) {
-        const challenge = issueMfaChallenge(usuario, JWT_SECRET);
+        const challenge = issueMfaChallenge(usuario, opts.JWT_SECRET);
         return res.json({
           success: true,
           ...challenge,
@@ -75,7 +102,7 @@ export function mountAdminLoginRoute(
         role: 'admin',
       });
 
-      setAuthCookie(res, token);
+      opts.setAuthCookie(res, token);
 
       return res.json({
         success: true,
@@ -89,8 +116,8 @@ export function mountAdminLoginRoute(
         },
       });
     } catch (e) {
-      console.error('Erro no admin login:', e);
-      return res.status(500).json({ error: 'Erro interno do servidor.' });
+      console.error('Erro no admin login');
+      return res.status(500).json({ error: 'Erro ao processar a solicitação.' });
     }
   });
 
