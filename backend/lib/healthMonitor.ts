@@ -1,13 +1,8 @@
 /**
- * Health checks estruturados para Render, UptimeRobot, Better Stack, etc.
- *
- * Endpoints:
- *   GET /api/live   — processo vivo (sempre 200 se o Node respondeu)
- *   GET /api/ready  — pronto para tráfego (DB ok)
- *   GET /api/health — detalhado (deps + build)
+ * Health: /api/live, /api/ready, /api/health
  */
 import type { Express, Request, Response } from 'express';
-import { getDb, dbEngine, pingDb } from './db.js';
+import { dbEngine, pingDb, dbHostLabel } from './db.js';
 import { getBuildInfo } from './buildInfo.js';
 import { stripeConfigured } from '../stripeBilling.js';
 import { paypalConfigured } from './paypal.js';
@@ -35,11 +30,12 @@ async function checkDatabase(): Promise<CheckResult> {
   const t0 = Date.now();
   try {
     const r = await pingDb();
+    const host = dbHostLabel();
     return {
       name: 'database',
       ok: r.ok,
       latency_ms: Date.now() - t0,
-      detail: r.ok ? r.engine : r.error || 'db fail',
+      detail: r.ok ? `${r.engine}:${host}` : r.error || 'db fail',
     };
   } catch (e: any) {
     return {
@@ -63,29 +59,25 @@ async function checkMemory(): Promise<CheckResult> {
   };
 }
 
-/** Alerta opcional via webhook (n8n / Discord / Slack). */
 export async function maybeAlertUnhealthy(checks: CheckResult[]) {
   const url = process.env.HEALTH_ALERT_WEBHOOK_URL?.trim();
   if (!url) return;
-
   const failed = checks.filter((c) => !c.ok);
   if (failed.length === 0) return;
   if (Date.now() - lastAlertAt < ALERT_COOLDOWN_MS) return;
   lastAlertAt = Date.now();
 
-  const body = {
-    text: `Filtra.AI health FAIL: ${failed.map((f) => f.name).join(', ')}`,
-    source: 'filtra-ai',
-    time: new Date().toISOString(),
-    build: getBuildInfo(),
-    failed,
-  };
-
   try {
     await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        text: `Filtra.AI health FAIL: ${failed.map((f) => f.name).join(', ')}`,
+        source: 'filtra-ai',
+        time: new Date().toISOString(),
+        build: getBuildInfo(),
+        failed,
+      }),
     });
   } catch (e: any) {
     console.warn('[health-alert]', e?.message || e);
@@ -112,7 +104,10 @@ export async function runFullHealth(): Promise<{
   else if (!memOk) status = 'degraded';
 
   const ai = getAiLoadStats();
+  const host = dbHostLabel();
   const deps = {
+    db_host: host,
+    supabase: /supabase/i.test(host),
     stripe: stripeConfigured(),
     paypal: paypalConfigured(),
     mercadopago: mpConfigured(),
@@ -140,7 +135,6 @@ export async function runFullHealth(): Promise<{
 }
 
 export function mountHealthRoutes(app: Express) {
-  /** Liveness — Kubernetes/Render: processo respondendo */
   app.get('/api/live', (_req: Request, res: Response) => {
     res.status(200).json({
       ok: true,
@@ -150,7 +144,6 @@ export function mountHealthRoutes(app: Express) {
     });
   });
 
-  /** Readiness — só 200 se DB ok */
   app.get('/api/ready', async (_req: Request, res: Response) => {
     const r = await runReadyChecks();
     res.status(r.ok ? 200 : 503).json({
@@ -162,7 +155,6 @@ export function mountHealthRoutes(app: Express) {
     });
   });
 
-  /** Health detalhado — monitoramento e debug */
   app.get('/api/health', async (_req: Request, res: Response) => {
     try {
       const full = await runFullHealth();
