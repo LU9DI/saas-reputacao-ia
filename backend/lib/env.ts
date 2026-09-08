@@ -1,6 +1,6 @@
 /**
  * Validação de variáveis de ambiente na subida.
- * Em produção: JWT forte + DATABASE_URL Postgres (exceto SQLITE_ALLOW_PROD=1).
+ * NÃO coloque secrets aqui — só process.env (Render Environment / .env).
  */
 
 export type EnvReport = {
@@ -9,55 +9,38 @@ export type EnvReport = {
   warnings: string[];
 };
 
+function stripeWanted(): boolean {
+  const flag = String(process.env.STRIPE_ENABLED || '1').trim().toLowerCase();
+  return !(flag === '0' || flag === 'false' || flag === 'off' || flag === 'no');
+}
+
 export function validateEnv(): EnvReport {
   const errors: string[] = [];
   const warnings: string[] = [];
-  const isProd = process.env.NODE_ENV === 'production';
 
   const jwt = process.env.JWT_SECRET || '';
   if (!jwt) {
     errors.push('JWT_SECRET é obrigatório (mín. 32 caracteres).');
   } else if (jwt.length < 32) {
     errors.push('JWT_SECRET deve ter pelo menos 32 caracteres.');
-  } else if (isProd && /^(secret|change|troque|test|dev)/i.test(jwt)) {
-    errors.push('JWT_SECRET em produção parece placeholder — use um valor aleatório forte.');
   }
 
-  const dbUrl = process.env.DATABASE_URL?.trim() || '';
-  const allowSqliteProd = process.env.SQLITE_ALLOW_PROD === '1';
-  if (isProd && !allowSqliteProd) {
-    if (!dbUrl) {
-      errors.push(
-        'DATABASE_URL (PostgreSQL) é obrigatório em produção. ' +
-          'No Render, ligue filtra-ia-db ou defina SQLITE_ALLOW_PROD=1 (não recomendado).'
-      );
-    } else if (!/^postgres(ql)?:\/\//i.test(dbUrl)) {
-      errors.push('DATABASE_URL deve ser uma URL postgres:// ou postgresql://.');
-    }
-  }
-
-  if (isProd) {
-    const cors =
-      (process.env.CORS_ORIGINS || '').trim() ||
-      process.env.APP_URL ||
-      process.env.FRONTEND_URL;
-    if (!cors) {
-      warnings.push(
-        'CORS_ORIGINS / APP_URL / FRONTEND_URL vazios em produção — browsers de outros domínios serão bloqueados.'
-      );
-    }
-  }
-
-  if (!process.env.STRIPE_SECRET_KEY) {
-    warnings.push('STRIPE_SECRET_KEY ausente — checkout cartão retornará 503 até configurar.');
+  if (stripeWanted() && !process.env.STRIPE_SECRET_KEY?.trim()) {
+    warnings.push(
+      'STRIPE_SECRET_KEY ausente — cartão Stripe OFF. Use Pix (MP) ou PayPal, ou defina STRIPE_ENABLED=0.'
+    );
+  } else if (!stripeWanted()) {
+    warnings.push('Stripe desligado (STRIPE_ENABLED=0) — pagamentos via Pix/PayPal.');
   }
 
   if (!process.env.MP_ACCESS_TOKEN?.trim()) {
-    warnings.push('MP_ACCESS_TOKEN ausente — Pix desligado.');
+    warnings.push('MP_ACCESS_TOKEN ausente — Pix (QR/copia-cola/recorrente) desligado.');
   }
 
-  if (!process.env.PAYPAL_CLIENT_ID?.trim()) {
-    warnings.push('PAYPAL_CLIENT_ID ausente — PayPal desligado.');
+  if (!process.env.PAYPAL_CLIENT_ID?.trim() || !process.env.PAYPAL_CLIENT_SECRET?.trim()) {
+    warnings.push(
+      'PayPal incompleto — precisa PAYPAL_CLIENT_ID e PAYPAL_CLIENT_SECRET (sandbox ou live).'
+    );
   }
 
   const recovery = process.env.ADMIN_RECOVERY_SECRET || '';
@@ -76,9 +59,9 @@ export function validateEnv(): EnvReport {
       'Nenhuma IA configurada (GROQ_API_KEY / GEMINI_API_KEY) — respostas automáticas desligadas.'
     );
   } else if (!hasGroq) {
-    warnings.push('Só Gemini ativo — defina GROQ_API_KEY para primário.');
+    warnings.push('Só Gemini ativo — defina GROQ_API_KEY para usar Groq como primário.');
   } else if (!hasGemini) {
-    warnings.push('Só Groq ativo — defina GEMINI_API_KEY para failover de cota.');
+    warnings.push('Só Groq ativo — defina GEMINI_API_KEY para failover quando a cota acabar.');
   }
 
   if (!process.env.SMTP_HOST) {

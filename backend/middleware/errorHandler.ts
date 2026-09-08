@@ -15,33 +15,36 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
 
   const rawMsg = String(err?.message || 'Erro na requisição.');
 
-  // Sempre loga — senão o Render fica mudo
+  // Log interno completo — nunca enviar stack ao cliente em produção
   console.error('[error]', {
     status,
     message: rawMsg,
-    body: err?.body || undefined,
-    stack: err?.stack?.split('\n').slice(0, 6),
+    code: err?.code,
+    stack: process.env.NODE_ENV === 'production' ? undefined : err?.stack?.split('\n').slice(0, 8),
   });
 
-  // Em pagamento / validação, devolve a mensagem real (não esconde 502/401 do MP)
   const isPaymentish =
-    /mercado\s*pago|mp_|pix|paypal|stripe|credencial|access token|public key/i.test(
+    /mercado\s*pago|mp_|pix|paypal|stripe|credencial|access token|public key|unauthorized/i.test(
       rawMsg
     ) ||
     status === 401 ||
     status === 403 ||
     status === 502;
 
+  // Cliente: genérico em 5xx (exceto pagamentos que precisam de mensagem acionável)
   const message =
-    status >= 500 && !isPaymentish ? 'Erro interno do servidor.' : rawMsg;
+    status >= 500 && !isPaymentish
+      ? 'Erro ao processar a solicitação.'
+      : status >= 500 && isPaymentish
+        ? rawMsg
+        : rawMsg;
 
   res.status(status).json({
     error: message,
-    ...(status >= 500 && isPaymentish ? { provider: 'mercadopago' } : {}),
+    ...(isPaymentish && status >= 400 ? { provider: 'payment' } : {}),
   });
 }
 
-/** Envolve handlers async para não precisar try/catch em todo lugar. */
 export function asyncHandler(
   fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
 ) {

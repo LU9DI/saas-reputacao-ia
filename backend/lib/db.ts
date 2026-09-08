@@ -1,16 +1,13 @@
 /**
  * Inicialização e acesso ao banco.
- * - Dev / testes: SQLite (padrão)
- * - Produção: Postgres obrigatório (DATABASE_URL), salvo SQLITE_ALLOW_PROD=1
- *
- * Tipos de data: TIMESTAMPTZ (Postgres) — SQLite aceita o literal e ISO strings.
+ * - Produção: Postgres obrigatório (DATABASE_URL)
+ * - Dev: SQLite opcional (pacotes em devDependencies)
  */
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import sqlite3 from 'sqlite3';
-import { open, type Database } from 'sqlite';
+import type { Database } from 'sqlite';
 import { fileURLToPath } from 'url';
 import { ensureAuthColumns } from '../passwordResetRoutes.js';
 import { ensureMfaColumns } from '../mfa.js';
@@ -32,29 +29,29 @@ export function dbEngine(): 'sqlite' | 'postgres' {
   return _engine;
 }
 
-/** Health real: SELECT 1. */
-export async function pingDb(): Promise<{ ok: boolean; engine: string; error?: string }> {
-  try {
-    const db = getDb();
-    await db.get('SELECT 1 AS ok');
-    return { ok: true, engine: _engine };
-  } catch (e: any) {
-    return { ok: false, engine: _engine, error: String(e?.message || e) };
-  }
-}
-
 async function initSqlite(): Promise<Database> {
+  // Import dinâmico — sqlite3 NÃO vai no bundle de produção (só devDependency)
+  let sqlite3: any;
+  let open: any;
+  try {
+    sqlite3 = (await import('sqlite3')).default;
+    open = (await import('sqlite')).open;
+  } catch {
+    throw new Error(
+      'SQLite não instalado. Em produção use DATABASE_URL=postgresql://... ' +
+        'Em dev: npm i -D sqlite sqlite3'
+    );
+  }
+
   const dbPath =
     process.env.SQLITE_DB_PATH ||
-    (isProd
-      ? '/data/database.sqlite'
-      : path.resolve(__dirname, '..', '..', 'data', 'database.sqlite'));
+    path.resolve(__dirname, '..', '..', 'data', 'database.sqlite');
 
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   const db = await open({ filename: dbPath, driver: sqlite3.Database });
   _engine = 'sqlite';
   console.log(`💾 SQLite: ${dbPath}`);
-  return db;
+  return db as Database;
 }
 
 async function initPostgres(): Promise<Database> {
@@ -70,18 +67,18 @@ export async function initDB(): Promise<Database> {
 
   if (isPostgresUrl(url)) {
     _db = await initPostgres();
-  } else if (isProd && process.env.SQLITE_ALLOW_PROD !== '1') {
+  } else if (isProd) {
     throw new Error(
-      'Produção exige DATABASE_URL Postgres. Defina no Render (filtra-ia-db) ou SQLITE_ALLOW_PROD=1.'
+      'PRODUÇÃO exige DATABASE_URL Postgres. SQLite não é permitido em produção.'
     );
   } else {
-    if (isProd) {
-      console.warn('⚠️  SQLITE_ALLOW_PROD=1 — dados no disco efêmero do Render podem sumir.');
-    }
     _db = await initSqlite();
   }
 
-  // TIMESTAMPTZ funciona no Postgres; no SQLite vira afinidade e aceita ISO
+  const timestampType = _engine === 'postgres' ? 'TIMESTAMPTZ' : 'DATETIME';
+  const autoIncrementId =
+    _engine === 'postgres' ? 'BIGSERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS empresas (
       id TEXT PRIMARY KEY,
@@ -90,13 +87,13 @@ export async function initDB(): Promise<Database> {
       slug TEXT UNIQUE,
       status TEXT DEFAULT 'trial',
       plan TEXT DEFAULT 'trial',
-      criado_em TIMESTAMPTZ NOT NULL,
-      expira_em TIMESTAMPTZ NOT NULL,
+      criado_em ${timestampType} NOT NULL,
+      expira_em ${timestampType} NOT NULL,
       google_review_url TEXT,
       voice_style TEXT,
       empresa_pai_id TEXT,
       whatsapp_suporte TEXT
-    )
+    );
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS usuarios (
@@ -105,28 +102,28 @@ export async function initDB(): Promise<Database> {
       nome_funcionario TEXT NOT NULL,
       empresa_id TEXT NOT NULL,
       senha_hash TEXT NOT NULL
-    )
+    );
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS reviews (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${autoIncrementId},
       empresa_id TEXT,
       name TEXT,
       rating INTEGER,
       comment TEXT,
       ai_reply TEXT,
       ai_tags TEXT,
-      createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-    )
+      createdAt ${timestampType} DEFAULT CURRENT_TIMESTAMP
+    );
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS ai_usage (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${autoIncrementId},
       empresa_id TEXT,
       tipo TEXT NOT NULL,
       tokens INTEGER NOT NULL DEFAULT 0,
-      criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-    )
+      criado_em ${timestampType} DEFAULT CURRENT_TIMESTAMP
+    );
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS usage (
@@ -135,34 +132,31 @@ export async function initDB(): Promise<Database> {
       tags INTEGER DEFAULT 0,
       respostas INTEGER DEFAULT 0,
       PRIMARY KEY (plan, month)
-    )
+    );
   `);
-
-  try {
-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_reviews_empresa ON reviews(empresa_id)`);
-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_cnpj ON empresas(cnpj)`);
-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_slug ON empresas(slug)`);
-  } catch {
-    /* ok */
-  }
 
   await ensureAuthColumns(_db);
   await ensureMfaColumns(_db);
 
-  const adminMail = (process.env.ADMIN_EMAIL || 'admin@seusaas.com').trim().toLowerCase();
-  const adminExiste = await _db.get('SELECT * FROM usuarios WHERE email = ?', [adminMail]);
-  if (!adminExiste) {
-    const senhaPadrao = process.env.ADMIN_PASSWORD || 'MudeEstaSenha123!';
-    const hash = await bcrypt.hash(senhaPadrao, 12);
-    try {
-      await _db.run(
-        'INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email) VALUES (?, ?, ?, ?, ?, ?)',
-        [crypto.randomUUID(), '00000000000000', 'Admin', 'admin', hash, adminMail]
-      );
-      console.log(`🔑 Admin criado: ${adminMail}`);
-    } catch (e: any) {
-      console.warn('Admin seed:', e?.message || e);
+  // Admin seed: só se ADMIN_EMAIL + ADMIN_PASSWORD definidos (sem senha padrão fraca)
+  const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  const adminPass = process.env.ADMIN_PASSWORD || '';
+  if (adminMail && adminPass.length >= 12) {
+    const adminExiste = await _db.get('SELECT id FROM usuarios WHERE email = ?', [adminMail]);
+    if (!adminExiste) {
+      const hash = await bcrypt.hash(adminPass, 12);
+      try {
+        await _db.run(
+          'INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email) VALUES (?, ?, ?, ?, ?, ?)',
+          [crypto.randomUUID(), '00000000000000', 'Admin', 'admin', hash, adminMail]
+        );
+        console.log(`🔑 Admin criado: ${adminMail}`);
+      } catch (e: any) {
+        console.warn('Admin seed:', e?.message || e);
+      }
     }
+  } else if (isProd && !adminMail) {
+    console.warn('⚠️  ADMIN_EMAIL não definido — crie o admin manualmente se ainda não existir.');
   }
 
   return _db;

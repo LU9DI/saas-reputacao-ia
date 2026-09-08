@@ -218,6 +218,7 @@ export const schemaReview: Schema = {
       return null;
     },
   },
+  /** WhatsApp do cliente — obrigatório em nota ≤ 3 (schema + serviço). */
   client_whatsapp: {
     required: false,
     type: 'string',
@@ -226,8 +227,8 @@ export const schemaReview: Schema = {
       const rating = Number(body.rating);
       if (rating > 3) return null;
       const w = String(v ?? body.whatsapp ?? '').replace(/\D/g, '');
-      if (w.length < 8) {
-        return 'WhatsApp/telefone do cliente é obrigatório para notas ≤ 3.';
+      if (w.length < 10) {
+        return 'WhatsApp do cliente é obrigatório para notas ≤ 3 (DDD + número).';
       }
       return null;
     },
@@ -235,18 +236,9 @@ export const schemaReview: Schema = {
   whatsapp: { required: false, type: 'string', max: 20 },
   empresa_id: { required: false, type: 'string', max: 100 },
   empresa_ref: { required: false, type: 'string', max: 100 },
+  /** Honeypot — deve ficar vazio */
   website: { required: false, type: 'string', max: 200 },
   is_test: { required: false, type: 'boolean' },
-  locale: {
-    required: false,
-    type: 'string',
-    max: 8,
-    transform: (v) => String(v ?? '').toLowerCase().slice(0, 2),
-    custom: (v) => {
-      if (!v) return null;
-      return ['pt', 'en', 'es', 'zh'].includes(String(v)) ? null : 'locale inválido (pt|en|es|zh).';
-    },
-  },
 };
 
 export const schemaCheckout: Schema = {

@@ -60,7 +60,6 @@ export function mountReviewRoutes(app: Express) {
             : req.body.whatsapp
               ? String(req.body.whatsapp)
               : undefined,
-          locale: req.body.locale ? String(req.body.locale) : undefined,
           ip: clientIp(req as any),
         });
         res.status(201).json(result);
@@ -79,6 +78,7 @@ export function mountReviewRoutes(app: Express) {
     })
   );
 
+  /** Lista reviews — apenas dono da empresa ou admin. */
   app.get(
     '/api/reviews/:ref',
     autenticarToken,
@@ -102,6 +102,10 @@ export function mountReviewRoutes(app: Express) {
     })
   );
 
+  /**
+   * Marca crítica como tratada (respondeu no WhatsApp / resolvido).
+   * PATCH /api/reviews/:id/tratar
+   */
   app.patch(
     '/api/reviews/:id/tratar',
     treatLimiter,

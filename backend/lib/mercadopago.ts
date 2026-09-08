@@ -1,11 +1,12 @@
 /**
- * Mercado Pago — Pix + Checkout Transparente.
+ * Mercado Pago — Pix avulso, agendado e assinatura recorrente.
  *
  * Env:
- *   MP_ACCESS_TOKEN=APP_USR-... ou TEST-...  (Access Token do servidor)
- *   MP_PUBLIC_KEY=...                        (Public Key — front)
- *   MP_WEBHOOK_SECRET=                       (opcional)
+ *   MP_ACCESS_TOKEN=APP_USR-...   (produção) ou TEST-... (sandbox)
+ *   MP_WEBHOOK_SECRET=           (opcional)
  *   API_PUBLIC_URL=https://filtra-ia-api.onrender.com
+ *
+ * NÃO use Public Key no backend — só Access Token.
  */
 
 import crypto from 'crypto';
@@ -13,37 +14,29 @@ import { resolvePlano, type PlanoDef } from '../stripeBilling.js';
 
 const MP_API = 'https://api.mercadopago.com';
 
-export type PixKind = 'avulso' | 'agendado' | 'recorrente' | 'transparente';
+export type PixKind = 'avulso' | 'agendado' | 'recorrente';
 
 export function mpConfigured(): boolean {
   return Boolean(process.env.MP_ACCESS_TOKEN?.trim());
 }
 
-export function mpTokenMode(): 'test' | 'live' | 'unknown' {
+export function mpTokenMode(): 'live' | 'test' | 'unknown' {
   const t = process.env.MP_ACCESS_TOKEN?.trim() || '';
-  if (t.startsWith('TEST-')) return 'test';
+  if (t.startsWith('TEST-') || t.startsWith('TEST')) return 'test';
   if (t.startsWith('APP_USR-')) return 'live';
-  return t ? 'unknown' : 'unknown';
-}
-
-export function mpPublicKey(): string {
-  return (
-    process.env.MP_PUBLIC_KEY?.trim() ||
-    process.env.NEXT_PUBLIC_MP_PUBLIC_KEY?.trim() ||
-    ''
-  );
-}
-
-export function mpTransparentReady(): boolean {
-  return mpConfigured() && Boolean(mpPublicKey());
+  return 'unknown';
 }
 
 function token(): string {
   const t = process.env.MP_ACCESS_TOKEN?.trim();
   if (!t) throw new Error('MP_ACCESS_TOKEN não configurado');
-  // Public Key no backend é o erro mais comum
-  if (/^APP_USR-[a-f0-9-]{36}$/i.test(t) && t.length < 80) {
-    console.warn('[mp] MP_ACCESS_TOKEN parece Public Key curta — use o Access Token completo');
+  if (/public/i.test(t)) {
+    throw Object.assign(
+      new Error(
+        'MP_ACCESS_TOKEN parece Public Key. Use o Access Token em Credenciais → Access Token.'
+      ),
+      { status: 502 }
+    );
   }
   return t;
 }
@@ -70,13 +63,16 @@ function notificationUrl(): string {
   }
   const base = apiPublicUrl();
   if (base) return `${base}/api/webhook/mercadopago`;
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://filtra-ia-api.onrender.com/api/webhook/mercadopago';
+  }
   return '';
 }
 
 export function planoAmountReais(plano: PlanoDef): number {
   const n = Number((Number(plano.unitAmount) / 100).toFixed(2));
   if (!Number.isFinite(n) || n <= 0) {
-    throw new Error(`Valor do plano inválido: ${plano.key} unitAmount=${plano.unitAmount}`);
+    throw Object.assign(new Error(`Valor do plano inválido: ${plano.key}`), { status: 400 });
   }
   return n;
 }
@@ -88,8 +84,32 @@ function normalizePayerEmail(email?: string | null): string {
   if (e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && !e.endsWith('@filtra.ia')) {
     return e;
   }
-  // MP rejeita domínios inventados tipo filtra.ia
   return 'pagador.filtra@gmail.com';
+}
+
+function humanizeMpError(data: any, status: number): string {
+  const raw =
+    data?.message ||
+    data?.error ||
+    data?.cause?.[0]?.description ||
+    data?.cause?.[0]?.message ||
+    `Mercado Pago ${status}`;
+  const msg = String(raw);
+
+  if (/unauthorized use of live credentials/i.test(msg)) {
+    return (
+      'Mercado Pago recusou as credenciais (live). ' +
+      'Token de PRODUÇÃO inválido, misturado com teste, ou Public Key no lugar do Access Token. ' +
+      'Use Credenciais de produção → Access Token (APP_USR-...) ou TEST- para sandbox.'
+    );
+  }
+  if (/unauthorized|invalid.*token|invalid_token/i.test(msg) || status === 401) {
+    return (
+      'Access Token do Mercado Pago inválido ou expirado. ' +
+      'Gere um novo Access Token e atualize MP_ACCESS_TOKEN no Render.'
+    );
+  }
+  return msg;
 }
 
 async function mpFetch(path: string, init: RequestInit = {}): Promise<any> {
@@ -106,31 +126,9 @@ async function mpFetch(path: string, init: RequestInit = {}): Promise<any> {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const cause = Array.isArray(data?.cause)
-      ? data.cause.map((c: any) => c?.description || c?.code || c).join('; ')
-      : '';
-    const msg =
-      data?.message ||
-      data?.error ||
-      cause ||
-      `Mercado Pago HTTP ${res.status}`;
-
-    console.error('[mp] API error', {
-      path,
-      status: res.status,
-      message: msg,
-      cause: data?.cause || null,
-      token_mode: mpTokenMode(),
-    });
-
-    let friendly = String(msg);
-    if (res.status === 401 || res.status === 403) {
-      friendly =
-        `Mercado Pago recusou as credenciais (${mpTokenMode()}). ` +
-        'Use Access Token (não Public Key). Produção=APP_USR-... Teste=TEST-...';
-    }
-
-    const err = new Error(friendly) as Error & { status?: number; body?: any };
+    const msg = humanizeMpError(data, res.status);
+    console.error('[mp] API error', { path, status: res.status, message: msg, data });
+    const err = new Error(msg) as Error & { status?: number; body?: any };
     err.status = res.status >= 400 && res.status < 600 ? res.status : 502;
     err.body = data;
     throw err;
@@ -157,10 +155,11 @@ export function parseExternalRef(ref: string | null | undefined): {
   if (parts[0] !== 'filtra' || parts.length < 4) {
     return { kind: null, planoKey: null, empresaId: null };
   }
-  const kind = parts[1] as PixKind;
-  const planoKey = parts[2] || null;
-  const empresaId = parts[3] && parts[3] !== 'none' ? parts[3] : null;
-  return { kind, planoKey, empresaId };
+  return {
+    kind: parts[1] as PixKind,
+    planoKey: parts[2] || null,
+    empresaId: parts[3] && parts[3] !== 'none' ? parts[3] : null,
+  };
 }
 
 export async function createPixAvulso(opts: {
@@ -169,19 +168,9 @@ export async function createPixAvulso(opts: {
   email?: string | null;
   nomePagador?: string | null;
   cpf?: string | null;
-}): Promise<{
-  paymentId: string;
-  status: string;
-  qrCode: string | null;
-  qrCodeBase64: string | null;
-  ticketUrl: string | null;
-  amount: number;
-  planoLabel: string;
-  expiresAt: string | null;
-  externalReference: string;
-}> {
+}) {
   const plano = resolvePlano(opts.planoKey);
-  if (!plano) throw new Error('Plano inválido');
+  if (!plano) throw Object.assign(new Error('Plano inválido'), { status: 400 });
 
   const amount = planoAmountReais(plano);
   const external_reference = buildExternalRef({
@@ -221,7 +210,6 @@ export async function createPixAvulso(opts: {
     plano: plano.key,
     amount,
     token_mode: mpTokenMode(),
-    has_notif: Boolean(notif),
   });
 
   const data = await mpFetch('/v1/payments', {
@@ -249,19 +237,9 @@ export async function createPixAgendado(opts: {
   email?: string | null;
   venceEmIso: string;
   nomePagador?: string | null;
-}): Promise<{
-  paymentId: string;
-  status: string;
-  qrCode: string | null;
-  qrCodeBase64: string | null;
-  ticketUrl: string | null;
-  amount: number;
-  planoLabel: string;
-  expiresAt: string | null;
-  externalReference: string;
-}> {
+}) {
   const plano = resolvePlano(opts.planoKey);
-  if (!plano) throw new Error('Plano inválido');
+  if (!plano) throw Object.assign(new Error('Plano inválido'), { status: 400 });
 
   const amount = planoAmountReais(plano);
   const external_reference = buildExternalRef({
@@ -271,13 +249,17 @@ export async function createPixAgendado(opts: {
   });
 
   const vence = new Date(opts.venceEmIso);
-  if (Number.isNaN(vence.getTime())) throw new Error('Data de vencimento inválida');
+  if (Number.isNaN(vence.getTime())) {
+    throw Object.assign(new Error('Data de vencimento inválida'), { status: 400 });
+  }
   const max = new Date(Date.now() + 29 * 24 * 60 * 60 * 1000);
   if (vence.getTime() > max.getTime()) {
-    throw new Error('Vencimento do Pix agendado deve ser em até 29 dias');
+    throw Object.assign(new Error('Vencimento do Pix agendado deve ser em até 29 dias'), {
+      status: 400,
+    });
   }
   if (vence.getTime() < Date.now() + 60_000) {
-    throw new Error('Vencimento deve ser no futuro');
+    throw Object.assign(new Error('Vencimento deve ser no futuro'), { status: 400 });
   }
 
   const body: any = {
@@ -325,18 +307,9 @@ export async function createPixRecorrente(opts: {
   empresaId?: string | null;
   email?: string | null;
   reason?: string;
-}): Promise<{
-  preapprovalId: string;
-  initPoint: string;
-  status: string;
-  amount: number;
-  planoLabel: string;
-  frequency: number;
-  frequencyType: string;
-  externalReference: string;
-}> {
+}) {
   const plano = resolvePlano(opts.planoKey);
-  if (!plano) throw new Error('Plano inválido');
+  if (!plano) throw Object.assign(new Error('Plano inválido'), { status: 400 });
 
   const amount = planoAmountReais(plano);
   const external_reference = buildExternalRef({
@@ -374,10 +347,7 @@ export async function createPixRecorrente(opts: {
   });
 
   const init =
-    data.init_point ||
-    data.sandbox_init_point ||
-    data.auto_recurring?.init_point ||
-    null;
+    data.init_point || data.sandbox_init_point || data.auto_recurring?.init_point || null;
   if (!init) throw new Error('Mercado Pago não retornou init_point da assinatura');
 
   return {
@@ -388,84 +358,6 @@ export async function createPixRecorrente(opts: {
     planoLabel: plano.label,
     frequency,
     frequencyType: frequency_type,
-    externalReference: external_reference,
-  };
-}
-
-export async function createTransparentPayment(opts: {
-  planoKey: string;
-  empresaId?: string | null;
-  formData: any;
-}): Promise<{
-  paymentId: string;
-  status: string;
-  statusDetail: string | null;
-  amount: number;
-  planoLabel: string;
-  paymentMethodId: string | null;
-  qrCode: string | null;
-  qrCodeBase64: string | null;
-  ticketUrl: string | null;
-  externalReference: string;
-}> {
-  const plano = resolvePlano(opts.planoKey);
-  if (!plano) throw new Error('Plano inválido');
-
-  const amount = planoAmountReais(plano);
-  const fd = opts.formData || {};
-  const external_reference = buildExternalRef({
-    empresaId: opts.empresaId,
-    planoKey: plano.key,
-    kind: 'transparente',
-  });
-
-  const body: any = {
-    transaction_amount: amount,
-    description: `Filtra.IA — ${plano.label}`.slice(0, 250),
-    payment_method_id: fd.payment_method_id || fd.paymentMethodId,
-    installments: Number(fd.installments || 1),
-    external_reference,
-    metadata: {
-      empresa_id: opts.empresaId || '',
-      plano: plano.key,
-      plan_db: plano.planDb,
-      kind: 'transparente',
-    },
-    payer: {
-      email: normalizePayerEmail(fd.payer?.email || fd.email),
-    },
-  };
-
-  if (fd.token) body.token = fd.token;
-  if (fd.issuer_id || fd.issuerId) body.issuer_id = fd.issuer_id || fd.issuerId;
-  if (fd.payer?.identification) body.payer.identification = fd.payer.identification;
-  if (fd.payment_method_id === 'pix' || body.payment_method_id === 'pix') {
-    body.payment_method_id = 'pix';
-  }
-
-  const notif = notificationUrl();
-  if (notif) body.notification_url = notif;
-
-  if (!body.payment_method_id && !body.token) {
-    throw new Error('Dados de pagamento incompletos (token ou payment_method_id).');
-  }
-
-  const data = await mpFetch('/v1/payments', {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
-
-  const poi = data.point_of_interaction?.transaction_data || {};
-  return {
-    paymentId: String(data.id),
-    status: String(data.status || 'pending'),
-    statusDetail: data.status_detail ? String(data.status_detail) : null,
-    amount,
-    planoLabel: plano.label,
-    paymentMethodId: data.payment_method_id ? String(data.payment_method_id) : null,
-    qrCode: poi.qr_code || null,
-    qrCodeBase64: poi.qr_code_base64 || null,
-    ticketUrl: poi.ticket_url || null,
     externalReference: external_reference,
   };
 }
