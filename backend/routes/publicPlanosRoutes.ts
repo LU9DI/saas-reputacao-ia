@@ -1,12 +1,23 @@
 /**
  * Preços públicos dos planos (mesmos valores editados no admin).
+<<<<<<< HEAD
  * GET /api/planos — sem auth.
+=======
+ * GET /api/planos — sem auth, para a landing.
+ * Pagamentos: Pix (Mercado Pago) e PayPal — Stripe desligado.
+>>>>>>> 4d10efc0aeb52dab05eae3aedaeceb6534ada2d5
  */
 import type { Express, Request, Response } from 'express';
 import { getDb } from '../lib/db.js';
 import { listPlanPrices, ensurePlanPricingSchema } from '../lib/planPricing.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+<<<<<<< HEAD
 import { listPlanosPublicos, refreshPlanPricesFromDb } from '../stripeBilling.js';
+=======
+import { refreshPlanPricesFromDb, stripeConfigured } from '../stripeBilling.js';
+import { paypalConfigured } from '../lib/paypal.js';
+import { mpConfigured, mpTokenMode } from '../lib/mercadopago.js';
+>>>>>>> 4d10efc0aeb52dab05eae3aedaeceb6534ada2d5
 
 const LABELS: Record<string, string> = {
   inicial: 'Inicial',
@@ -114,18 +125,42 @@ export function mountPublicPlanosRoutes(app: Express) {
           features,
           missingFeatures: feat.missingFeatures || [],
           highlight: Boolean(feat.highlight),
+<<<<<<< HEAD
           pagamento: ['mercadopago', 'paypal'],
+=======
+          // métodos de pagamento deste plano (sem Stripe)
+          pagamento: ['pix', 'paypal'],
+>>>>>>> 4d10efc0aeb52dab05eae3aedaeceb6534ada2d5
         };
       });
 
       const order = ['inicial', 'pro', 'ultra', 'corporativo', 'rei'];
       cards.sort((a, b) => order.indexOf(a.plan) - order.indexOf(b.plan));
 
+<<<<<<< HEAD
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+=======
+      const pagamentos = {
+        stripe: false,
+        paypal: paypalConfigured(),
+        pix: mpConfigured(),
+        pix_token_mode: mpConfigured() ? mpTokenMode() : null,
+        preferidos: ['pix', 'paypal'].filter((m) =>
+          m === 'pix' ? mpConfigured() : paypalConfigured()
+        ),
+        endpoints: {
+          pix_avulso: 'POST /api/pix/avulso',
+          pix_recorrente: 'POST /api/pix/recorrente',
+          paypal: '/api/paypal/...',
+        },
+      };
+
+      res.setHeader('Cache-Control', 'public, max-age=30');
+>>>>>>> 4d10efc0aeb52dab05eae3aedaeceb6534ada2d5
       res.json({
         planos: cards,
         annual_discount_pct,
-        stripe_planos: listPlanosPublicos(),
+        pagamentos,
         updated_at: new Date().toISOString(),
       });
     })
