@@ -13,6 +13,7 @@ import { SubscriptionActions } from '../../components/SubscriptionActions';
 import { UnidadesPanel } from '../../components/UnidadesPanel';
 import { WebAuthnSetup } from '../../components/WebAuthnSetup';
 import { ReviewsList } from '../../components/ReviewsList';
+import { BrandMark } from '../../components/BrandMark';
 
 function authHeaders(json = true): HeadersInit {
   const h: Record<string, string> = {};
@@ -211,8 +212,9 @@ export default function PainelEmpresa() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-zinc-500 text-sm">
-        Carregando…
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 text-zinc-500 text-sm">
+        <BrandMark size="sm" href="/" />
+        <span>Carregando…</span>
       </div>
     );
   }
@@ -220,6 +222,7 @@ export default function PainelEmpresa() {
   if (erro || !data) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 px-6">
+        <BrandMark size="sm" href="/" />
         <p className="text-zinc-400 text-sm text-center max-w-md">{erro || 'Painel indisponível.'}</p>
         {precisaLogin && (
           <a
@@ -247,7 +250,10 @@ export default function PainelEmpresa() {
   return (
     <div className="min-h-screen bg-black text-zinc-100">
       <header className="border-b border-zinc-800 bg-zinc-950/80">
-        <div className="max-w-5xl mx-auto px-6 md:px-10 py-7 flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto px-6 md:px-10 pt-5 pb-2">
+          <BrandMark size="sm" href="/" />
+        </div>
+        <div className="max-w-5xl mx-auto px-6 md:px-10 py-5 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-zinc-50">{empresa.nome_empresa}</h1>
             <p className="text-sm text-zinc-500 mt-1">
@@ -448,6 +454,13 @@ export default function PainelEmpresa() {
           {qrUrl && <img src={qrUrl} alt="QR" className="mt-4 w-36 h-36 rounded-lg" />}
         </section>
       </main>
+
+      <footer className="border-t border-zinc-900 py-8 text-center">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-zinc-600">
+          <span className="text-zinc-400">FILTRA</span>
+          <span className="text-indigo-500/80">.AI</span>
+        </p>
+      </footer>
     </div>
   );
 }
