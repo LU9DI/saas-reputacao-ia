@@ -17,6 +17,7 @@ import {
 import QRCode from 'qrcode';
 import { PlanCards } from './components/PlanCards';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { BrandMark } from './components/BrandMark';
 import { useLanguage } from './Contexts/LanguageContext';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from './utils/passwordPolicy';
 import { readApiError } from './utils/apiError';
@@ -197,9 +198,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col justify-center items-center p-4 font-sans text-zinc-100 gap-10">
-      <div className="absolute top-4 right-4">
+      <header className="w-full max-w-5xl flex items-center justify-between px-1 pt-2">
+        <BrandMark size="md" subtitle="Reputation" href="/" />
         <LanguageSwitcher />
-      </div>
+      </header>
 
       {checkoutMsg && (
         <div className="w-full max-w-md bg-emerald-950/50 border border-emerald-800 text-emerald-200 text-sm rounded-xl px-4 py-3 text-center">
@@ -314,6 +316,13 @@ export default function Home() {
         <h2 className="text-center text-lg font-semibold text-zinc-200">{t.plans_title}</h2>
         <PlanCards />
       </div>
+
+      <footer className="pb-8 text-center">
+        <p className="text-[11px] tracking-[0.2em] uppercase text-zinc-600">
+          <span className="text-zinc-400">FILTRA</span>
+          <span className="text-indigo-500/80">.AI</span>
+        </p>
+      </footer>
     </div>
   );
 }
