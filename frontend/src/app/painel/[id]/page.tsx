@@ -323,27 +323,6 @@ export default function PainelEmpresa() {
         <WebAuthnSetup />
         <PushEnable />
 
-        {data.integracoes && (
-          <section className={`${card} px-5 py-4 text-xs text-zinc-500 space-y-1`}>
-            <p className="text-[11px] uppercase tracking-wide font-medium text-zinc-500">Integrações</p>
-            <p>
-              Push:{' '}
-              {data.integracoes.push
-                ? '✓ VAPID ok'
-                : '✗ Defina VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY no backend/.env'}
-            </p>
-            <p>n8n: {data.integracoes.n8n ? '✓' : '○ opcional (N8N_WEBHOOK_URL)'}</p>
-            <p>
-              Stripe:{' '}
-              {data.integracoes.stripe ? '✓' : '○ use troca de plano acima para testar sem Stripe'}
-            </p>
-            <p>
-              Google:{' '}
-              {data.integracoes.google_review ? '✓ cadastrado' : '✗ cole o link abaixo'}
-            </p>
-          </section>
-        )}
-
         <SubscriptionActions
           empresaRef={empresaId}
           cancelAtPeriodEnd={Boolean(empresa.cancel_at_period_end)}
@@ -427,7 +406,7 @@ export default function PainelEmpresa() {
         <section className={`${card} px-6 py-6 space-y-3`}>
           <p className={label}>Link Google Maps / Reviews</p>
           <p className="text-xs text-zinc-500">
-            Notas 4–5★ redirecionam para este link. Não precisa de API key do Google.
+            Notas 4–5★ redirecionam para este link.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
