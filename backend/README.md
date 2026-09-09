@@ -1,46 +1,45 @@
-# Filtra.IA — API
+# Filtra.AI — API
 
-Backend Express + Postgres (produção) / SQLite (dev).
+Express + **Postgres** (produção, preferir Supabase) / SQLite (dev).
 
-## Rodar local
+## Local
 
 ```bash
-cp .env.example .env   # preencha JWT_SECRET, etc.
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-## Produção (Render / Docker)
-
-Obrigatório:
+## Produção (Render)
 
 | Variável | Uso |
 |----------|-----|
 | `JWT_SECRET` | ≥ 32 chars |
-| `DATABASE_URL` | Postgres (Supabase/Neon/Render) |
-| `ADMIN_EMAIL` + `ADMIN_PASSWORD` | seed do admin (≥ 12 chars) |
-| `APP_URL` / `FRONTEND_URL` | links de e-mail e CORS |
+| `DATABASE_URL` ou `SUPABASE_DB_URL` | Postgres |
+| `ADMIN_EMAIL` + `ADMIN_PASSWORD` | admin (≥ 12) |
+| `APP_URL` / `FRONTEND_URL` / `CORS_ORIGINS` | front |
 
-Pagamentos / IA (opcional conforme produto):
+Opcional: `MP_ACCESS_TOKEN`, PayPal, `GROQ_API_KEY` / `GEMINI_API_KEY`, SMTP, n8n, VAPID.
 
-- Pix: `MP_ACCESS_TOKEN`
-- PayPal: `PAYPAL_CLIENT_ID` + `PAYPAL_CLIENT_SECRET` + `PAYPAL_MODE=sandbox\|live`
-- Stripe: `STRIPE_ENABLED=0` para desligar
-- IA: `GROQ_API_KEY` e/ou `GEMINI_API_KEY`
-- E-mail: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
+- Root Directory: **`backend`**
+- Branch: **`main`**
+- Build: `npm install && npm run build`
+- Start: `npm start`
 
-Start: `npm start` (tsx server.ts).
+## Saúde / keep-alive
 
-## Rotas críticas
+| Rota | Uso |
+|------|-----|
+| `GET /api/live` | UptimeRobot (acordar Render) |
+| `GET /api/ready` | DB ok |
+| `GET /api/health` | detalhado |
 
-| Método | Rota | Função |
-|--------|------|--------|
-| POST | `/api/trial/ativar` | Trial 7 dias |
-| POST | `/api/auth/login` | Login cliente (CNPJ + senha) |
-| POST | `/api/admin/login` | Login admin (e-mail + senha) |
-| POST | `/api/pix/avulso` | Pix Mercado Pago |
-| GET | `/api/health` | Saúde |
+## Docs úteis (só o essencial)
 
-## Documentação extra
-
-Detalhes pontuais ficam em `.env.example` e, se necessário, em `SUPABASE_SETUP.md` / `DEPLOY_CHECKLIST.md`.
+- `.env.example` — variáveis
+- `DEPLOY.md` — deploy
+- `SUPABASE_SETUP.md` — banco
+- `UPTIMEROBOT.md` — não dormir
+- `MONITORING.md` — health
+- `SECURITY.md` — segurança
+- `RESET_ADMIN.md` — reset admin
