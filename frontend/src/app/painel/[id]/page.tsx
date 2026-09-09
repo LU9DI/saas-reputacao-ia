@@ -449,17 +449,29 @@ export default function PainelEmpresa() {
         </section>
 
         <section className={`${card} px-6 py-6`}>
-          <p className={label}>Link de avaliação</p>
-          <p className="mt-2 text-sm font-mono break-all text-zinc-400">{linkAvaliacao}</p>
-          {qrUrl && <img src={qrUrl} alt="QR" className="mt-4 w-36 h-36 rounded-lg" />}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <BrandMark size="sm" href="/" subtitle="Online Reputation" />
+              <p className={`${label} mt-4`}>Link de avaliação</p>
+              <p className="mt-2 text-sm font-mono break-all text-zinc-400">{linkAvaliacao}</p>
+            </div>
+            {qrUrl && (
+              <div className="flex flex-col items-center gap-2 shrink-0">
+                <BrandMark size="sm" href={null} iconOnly subtitle={null} />
+                <img
+                  src={qrUrl}
+                  alt="QR code — link de avaliação FILTRA.AI"
+                  className="w-36 h-36 rounded-lg border border-zinc-700"
+                />
+                <p className="text-[10px] uppercase tracking-wider text-zinc-600">Escaneie para avaliar</p>
+              </div>
+            )}
+          </div>
         </section>
       </main>
 
       <footer className="border-t border-zinc-900 py-8 text-center">
-        <p className="text-[11px] tracking-[0.2em] uppercase text-zinc-600">
-          <span className="text-zinc-400">FILTRA</span>
-          <span className="text-indigo-500/80">.AI</span>
-        </p>
+        <BrandMark size="sm" href="/" centered subtitle="Online Reputation" className="opacity-80" />
       </footer>
     </div>
   );
