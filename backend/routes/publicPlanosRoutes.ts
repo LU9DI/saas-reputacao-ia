@@ -1,14 +1,12 @@
 /**
- * GET /api/planos — preços públicos.
- * Pagamentos: Mercado Pago + PayPal.
+ * Preços públicos dos planos (mesmos valores editados no admin).
+ * GET /api/planos — sem auth, para a landing em localhost:3000.
  */
 import type { Express, Request, Response } from 'express';
 import { getDb } from '../lib/db.js';
 import { listPlanPrices, ensurePlanPricingSchema } from '../lib/planPricing.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { refreshPlanPricesFromDb } from '../stripeBilling.js';
-import { paypalConfigured } from '../lib/paypal.js';
-import { mpConfigured, mpTokenMode } from '../lib/mercadopago.js';
+import { listPlanosPublicos, refreshPlanPricesFromDb } from '../stripeBilling.js';
 
 const LABELS: Record<string, string> = {
   inicial: 'Inicial',
@@ -16,14 +14,6 @@ const LABELS: Record<string, string> = {
   ultra: 'Ultra',
   corporativo: 'Corporativo',
   rei: 'REI',
-};
-
-const OFFICIAL_LIMITS: Record<string, number> = {
-  inicial: 100,
-  pro: 300,
-  ultra: 800,
-  corporativo: 2500,
-  rei: 8000,
 };
 
 const FEATURES: Record<
@@ -72,6 +62,7 @@ const FEATURES: Record<
   },
 };
 
+/** Espaço não-quebrável entre R$ e o valor (evita R$ em uma linha e 499,90 embaixo). */
 function fmtBrl(n: number): string {
   const num = Number(n).toFixed(2).replace('.', ',');
   return `R$\u00a0${num}`;
@@ -93,7 +84,7 @@ export function mountPublicPlanosRoutes(app: Express) {
 
       const cards = planos.map((p: any) => {
         const plan = String(p.plan);
-        const limit = OFFICIAL_LIMITS[plan] ?? (Number(p.review_limit) || 0);
+        const limit = Number(p.review_limit) || 0;
         const feat = FEATURES[plan] || { features: [] };
         const features = (feat.features || []).map((f) =>
           /feedbacks\/mês/i.test(f)
@@ -115,23 +106,17 @@ export function mountPublicPlanosRoutes(app: Express) {
           features,
           missingFeatures: feat.missingFeatures || [],
           highlight: Boolean(feat.highlight),
-          pagamento: ['mercadopago', 'paypal'],
         };
       });
 
       const order = ['inicial', 'pro', 'ultra', 'corporativo', 'rei'];
       cards.sort((a, b) => order.indexOf(a.plan) - order.indexOf(b.plan));
 
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+      res.setHeader('Cache-Control', 'public, max-age=30');
       res.json({
         planos: cards,
         annual_discount_pct,
-        pagamentos: {
-          stripe: false,
-          paypal: paypalConfigured(),
-          mercadopago: mpConfigured(),
-          pix_token_mode: mpConfigured() ? mpTokenMode() : null,
-        },
+        stripe_planos: listPlanosPublicos(),
         updated_at: new Date().toISOString(),
       });
     })

@@ -1,6 +1,5 @@
 /**
- * Política de senha da empresa.
- * Mín. 8 caracteres, maiúscula, número e caractere especial.
+ * Política de senha para contas de EMPRESA (trial / reset).
  */
 const ESPECIAL = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/;
 
@@ -24,13 +23,5 @@ export function validarSenhaEmpresa(senha: string): { ok: true } | { ok: false; 
   return { ok: true };
 }
 
-export function validateStrongPassword(password: string): {
-  ok: boolean;
-  error?: string;
-} {
-  const r = validarSenhaEmpresa(password);
-  return r.ok ? { ok: true } : { ok: false, error: r.error };
-}
-
 export const SENHA_EMPRESA_HINT =
-  'Mín. 8 caracteres, 1 maiúscula, 1 número e 1 símbolo (!@#$%)';
+  'Mín. 8 caracteres, 1 maiúscula, 1 número e 1 especial (!@#$%)';
