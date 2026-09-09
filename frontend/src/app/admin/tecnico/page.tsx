@@ -129,7 +129,6 @@ export default function AdminTecnicoPage() {
     );
   }
 
-  const stripe = data?.webhooks?.stripe;
   const n8n = data?.webhooks?.n8n;
   const paypal = data?.webhooks?.paypal;
   const mp = data?.webhooks?.mercadopago;
@@ -146,7 +145,7 @@ export default function AdminTecnicoPage() {
             <p className="text-[11px] uppercase tracking-wide text-zinc-500">Admin · Ops</p>
             <h1 className="text-xl font-bold tracking-tight">Área técnica</h1>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Webhooks · Pix · Críticas · PDF · Retry
+              Webhooks · Pix · PayPal · Críticas · PDF · Retry
               {data?.gerado_em ? ` · atualizado ${fmtDt(data.gerado_em)}` : ''}
             </p>
           </div>
@@ -179,9 +178,8 @@ export default function AdminTecnicoPage() {
           </div>
         )}
 
-        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {[
-            { t: 'Stripe', ok: sistema?.stripe },
             { t: 'PayPal', ok: sistema?.paypal },
             { t: 'Pix (MP)', ok: sistema?.pix },
             { t: 'SMTP', ok: sistema?.smtp },
@@ -196,23 +194,6 @@ export default function AdminTecnicoPage() {
         </section>
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className={`${card} overflow-hidden`}>
-            <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
-              <div>
-                <h2 className="text-sm font-semibold">Webhook Stripe</h2>
-                <p className="text-xs text-zinc-500 mt-0.5">{stripe?.detalhe}</p>
-              </div>
-              <StatusPill ok={stripe?.ok ?? null} />
-            </div>
-            <div className="px-5 py-3 text-xs text-zinc-500 flex flex-wrap gap-4">
-              <span>
-                24h: {stripe?.stats_24h?.ok ?? 0} ok / {stripe?.stats_24h?.errors ?? 0} erro
-              </span>
-              <span>Último: {stripe?.last_age || '—'}</span>
-            </div>
-            <EventList eventos={stripe?.eventos || []} />
-          </div>
-
           <div className={`${card} overflow-hidden`}>
             <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between gap-2">
               <div>
