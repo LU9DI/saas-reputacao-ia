@@ -1,5 +1,6 @@
 /**
- * Banco: Postgres (Supabase recomendado) em produção.
+ * Banco: Postgres em produção (obrigatório).
+ * SQLite só em dev (import dinâmico — não quebra Docker sem sqlite3).
  */
 import path from 'path';
 import fs from 'fs';
@@ -9,12 +10,7 @@ import type { Database } from 'sqlite';
 import { fileURLToPath } from 'url';
 import { ensureAuthColumns } from '../passwordResetRoutes.js';
 import { ensureMfaColumns } from '../mfa.js';
-import {
-  initPgDatabase,
-  isPostgresUrl,
-  asSqliteDb,
-  postgresHostLabel,
-} from './db.pg.js';
+import { initPgDatabase, isPostgresUrl, asSqliteDb } from './db.pg.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,38 +28,14 @@ export function dbEngine(): 'sqlite' | 'postgres' {
   return _engine;
 }
 
-export function dbHostLabel(): string {
-  return _engine === 'postgres' ? postgresHostLabel() : 'sqlite';
-}
-
-/**
- * Verifica se o banco está respondendo.
- * Retorna objeto indicando ok, engine usado e eventual erro.
- */
 export async function pingDb(): Promise<{ ok: boolean; engine: string; error?: string }> {
-  if (!_db) {
-    return { ok: false, engine: _engine || 'unknown', error: 'db not initialized' };
-  }
   try {
-    await _db.get('SELECT 1 as ok');
+    const db = getDb();
+    await db.get('SELECT 1 AS ok');
     return { ok: true, engine: _engine };
   } catch (e: any) {
-    return {
-      ok: false,
-      engine: _engine,
-      error: String(e?.message || e).slice(0, 200),
-    };
+    return { ok: false, engine: _engine, error: String(e?.message || e) };
   }
-}
-
-function resolvePgUrl(): string | undefined {
-  const u = (
-    process.env.DATABASE_URL ||
-    process.env.SUPABASE_DB_URL ||
-    process.env.SUPABASE_DATABASE_URL ||
-    ''
-  ).trim();
-  return u || undefined;
 }
 
 async function initSqlite(): Promise<Database> {
@@ -74,7 +46,7 @@ async function initSqlite(): Promise<Database> {
     open = (await import('sqlite')).open;
   } catch {
     throw new Error(
-      'SQLite não instalado. Em produção use DATABASE_URL (Supabase). Em dev: npm i -D sqlite sqlite3'
+      'SQLite não instalado. Use DATABASE_URL=postgresql://... ou npm i -D sqlite sqlite3'
     );
   }
 
@@ -90,27 +62,28 @@ async function initSqlite(): Promise<Database> {
 }
 
 async function initPostgres(): Promise<Database> {
-  const pg = await initPgDatabase();
+  const url = process.env.DATABASE_URL!.trim();
+  const pg = await initPgDatabase(url);
   _engine = 'postgres';
+  console.log('🐘 Postgres conectado (DATABASE_URL)');
   return asSqliteDb(pg);
 }
 
 export async function initDB(): Promise<Database> {
-  const url = resolvePgUrl();
+  const url = process.env.DATABASE_URL?.trim();
 
   if (isPostgresUrl(url)) {
     _db = await initPostgres();
-  } else if (isProd) {
+  } else if (isProd && process.env.SQLITE_ALLOW_PROD !== '1') {
     throw new Error(
-      'PRODUÇÃO exige DATABASE_URL ou SUPABASE_DB_URL (Postgres). Veja SUPABASE_SETUP.md.'
+      'Produção exige DATABASE_URL Postgres. Defina no Render ou SQLITE_ALLOW_PROD=1.'
     );
   } else {
+    if (isProd) {
+      console.warn('⚠️  SQLITE_ALLOW_PROD=1 — disco efêmero pode apagar dados.');
+    }
     _db = await initSqlite();
   }
-
-  const timestampType = _engine === 'postgres' ? 'TIMESTAMPTZ' : 'DATETIME';
-  const autoIncrementId =
-    _engine === 'postgres' ? 'BIGSERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
 
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS empresas (
@@ -120,13 +93,13 @@ export async function initDB(): Promise<Database> {
       slug TEXT UNIQUE,
       status TEXT DEFAULT 'trial',
       plan TEXT DEFAULT 'trial',
-      criado_em ${timestampType} NOT NULL,
-      expira_em ${timestampType} NOT NULL,
+      criado_em TIMESTAMPTZ NOT NULL,
+      expira_em TIMESTAMPTZ NOT NULL,
       google_review_url TEXT,
       voice_style TEXT,
       empresa_pai_id TEXT,
       whatsapp_suporte TEXT
-    );
+    )
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS usuarios (
@@ -135,28 +108,28 @@ export async function initDB(): Promise<Database> {
       nome_funcionario TEXT NOT NULL,
       empresa_id TEXT NOT NULL,
       senha_hash TEXT NOT NULL
-    );
+    )
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS reviews (
-      id ${autoIncrementId},
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       empresa_id TEXT,
       name TEXT,
       rating INTEGER,
       comment TEXT,
       ai_reply TEXT,
       ai_tags TEXT,
-      createdAt ${timestampType} DEFAULT CURRENT_TIMESTAMP
-    );
+      createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    )
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS ai_usage (
-      id ${autoIncrementId},
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
       empresa_id TEXT,
       tipo TEXT NOT NULL,
       tokens INTEGER NOT NULL DEFAULT 0,
-      criado_em ${timestampType} DEFAULT CURRENT_TIMESTAMP
-    );
+      criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    )
   `);
   await _db.exec(`
     CREATE TABLE IF NOT EXISTS usage (
@@ -165,8 +138,16 @@ export async function initDB(): Promise<Database> {
       tags INTEGER DEFAULT 0,
       respostas INTEGER DEFAULT 0,
       PRIMARY KEY (plan, month)
-    );
+    )
   `);
+
+  try {
+    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_reviews_empresa ON reviews(empresa_id)`);
+    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_cnpj ON empresas(cnpj)`);
+    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_slug ON empresas(slug)`);
+  } catch {
+    /* ok */
+  }
 
   await ensureAuthColumns(_db);
   await ensureMfaColumns(_db);
@@ -187,8 +168,6 @@ export async function initDB(): Promise<Database> {
         console.warn('Admin seed:', e?.message || e);
       }
     }
-  } else if (isProd && !adminMail) {
-    console.warn('⚠️  ADMIN_EMAIL não definido.');
   }
 
   return _db;

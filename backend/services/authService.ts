@@ -1,5 +1,5 @@
 /**
- * Login de clientes (empresa) — CNPJ + senha.
+ * Regras de autenticação de clientes (empresa).
  */
 import bcrypt from 'bcrypt';
 import type { Database } from 'sqlite';
@@ -8,7 +8,10 @@ import { getDb } from '../lib/db.js';
 import { setAuthCookie, signAccessToken } from '../lib/auth.js';
 import { writeAudit, clientIp } from '../lib/auditLog.js';
 
-export type LoginInput = { cnpj: string; senha: string };
+export type LoginInput = {
+  cnpj: string;
+  senha: string;
+};
 
 export type LoginResult = {
   success: true;
@@ -34,22 +37,17 @@ export async function loginEmpresa(
   db: Database = getDb(),
   req?: Request
 ): Promise<LoginResult> {
-  const cnpj = String(input.cnpj || '').replace(/\D/g, '');
-  const senha = String(input.senha || '');
+  const cnpj = String(input.cnpj);
+  const senha = String(input.senha);
   const ip = req ? clientIp(req) : null;
   const ua = req ? String(req.headers['user-agent'] || '').slice(0, 200) : null;
 
-  if (cnpj.length !== 14 || !senha) {
-    throw new AuthUnauthorizedError();
-  }
-
   const usuario = await db.get('SELECT * FROM usuarios WHERE cnpj = ?', [cnpj]);
-
   if (!usuario?.senha_hash) {
     await writeAudit(db, {
       action: 'auth.login_failed',
       result: 'denied',
-      target: cnpj,
+      target: cnpj.slice(0, 14),
       ip,
       user_agent: ua,
       detail: 'usuário não encontrado',
@@ -64,7 +62,7 @@ export async function loginEmpresa(
       actor_user_id: usuario.id,
       empresa_id: usuario.empresa_id,
       result: 'denied',
-      target: cnpj,
+      target: cnpj.slice(0, 14),
       ip,
       user_agent: ua,
       detail: 'senha inválida',

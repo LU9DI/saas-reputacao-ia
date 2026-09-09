@@ -1,5 +1,5 @@
 /**
- * Headers de segurança + request id.
+ * Headers de segurança + request id (sem dependência helmet pesada).
  */
 import type { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
@@ -17,22 +17,13 @@ export function securityHeaders(_req: Request, res: Response, next: NextFunction
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-DNS-Prefetch-Control', 'off');
-  res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
-  res.setHeader('Cross-Origin-Resource-Policy', 'same-site');
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   res.setHeader(
     'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()'
+    'camera=(), microphone=(), geolocation=(), interest-cohort=()'
   );
-  // API não serve HTML; CSP defensiva
-  res.setHeader('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
+  // API JSON — CSP restritiva no próprio browser do client é do Next; aqui só API
   if (process.env.NODE_ENV === 'production') {
-    res.setHeader(
-      'Strict-Transport-Security',
-      'max-age=31536000; includeSubDomains; preload'
-    );
+    res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
   }
-  // não expor stack via Server
-  res.removeHeader('X-Powered-By');
   next();
 }
