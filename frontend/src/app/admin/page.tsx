@@ -449,7 +449,7 @@ export default function AdminDashboard() {
                   <th className="px-4 py-2 text-left">Empresa</th>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Plano</th>
-                  <th className="px-4 py-2 text-left">Cadastro</th>
+                  <th className="px-4 py-2 text-left">Cadastro / Vence</th>
                   <th className="px-4 py-2 text-right">Tokens</th>
                   <th className="px-4 py-2 text-right">Ações</th>
                 </tr>
@@ -470,32 +470,47 @@ export default function AdminDashboard() {
                       )}
                     </td>
                     <td className="px-4 py-3 uppercase text-xs">{e.plan || '—'}</td>
-                    <td className="px-4 py-3 text-xs text-zinc-500">{fmtDt(e.criado_em)}</td>
+                    <td className="px-4 py-3 text-xs text-zinc-500">
+                      <div>{fmtDt(e.criado_em)}</div>
+                      <div className="text-zinc-400">vence {fmtDt(e.expira_em)}</div>
+                    </td>
                     <td className="px-4 py-3 text-right tabular-nums text-zinc-400">
                       {(e.total_tokens || 0).toLocaleString('pt-BR')}
                     </td>
-                    <td className="px-4 py-3 text-right space-x-1">
-                      {e.painel_path && (
-                        <Link href={e.painel_path} className="text-indigo-400 text-xs hover:underline">
-                          painel
-                        </Link>
-                      )}
-                      <button
-                        type="button"
-                        disabled={busyId === e.id}
-                        onClick={() => acao(e.id, 'renovar', { ciclo: 'month' })}
-                        className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700"
-                      >
-                        +30d
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busyId === e.id}
-                        onClick={() => acao(e.id, 'cancelar', { imediato: true })}
-                        className="text-xs px-2 py-1 rounded-lg bg-red-950/50 text-red-300 hover:bg-red-900/40"
-                      >
-                        cancelar
-                      </button>
+                    <td className="px-4 py-3 text-right">
+                      <div className="inline-flex flex-wrap items-center justify-end gap-1">
+                        {e.painel_path && (
+                          <Link href={e.painel_path} className="text-indigo-400 text-xs hover:underline px-1">
+                            painel
+                          </Link>
+                        )}
+                        <button
+                          type="button"
+                          disabled={busyId === e.id}
+                          onClick={() => acao(e.id, 'renovar', { ciclo: 'month', dias: 30 })}
+                          className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50"
+                          title="Estender 1 mês (+30 dias)"
+                        >
+                          1 mês
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === e.id}
+                          onClick={() => acao(e.id, 'renovar', { ciclo: 'year', dias: 365 })}
+                          className="text-xs px-2 py-1 rounded-lg bg-indigo-950/60 text-indigo-300 hover:bg-indigo-900/50 disabled:opacity-50"
+                          title="Estender 1 ano (+365 dias)"
+                        >
+                          1 ano
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === e.id}
+                          onClick={() => acao(e.id, 'cancelar', { imediato: true })}
+                          className="text-xs px-2 py-1 rounded-lg bg-red-950/50 text-red-300 hover:bg-red-900/40 disabled:opacity-50"
+                        >
+                          cancelar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
