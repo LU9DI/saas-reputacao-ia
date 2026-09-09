@@ -6,6 +6,7 @@ import { getEnv } from '../../utils/env';
 import { readApiError } from '../../utils/apiError';
 import { useLanguage } from '../../Contexts/LanguageContext';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { BrandMark } from '../../components/BrandMark';
 
 export default function PaginaAvaliacao() {
   const params = useParams();
@@ -107,18 +108,23 @@ export default function PaginaAvaliacao() {
         return;
       }
 
+      const data = await response.json().catch(() => ({}));
+      // Preferir link montado pelo backend (mensagem simples de insatisfação)
+      const wppFromApi = data.whatsapp_empresa_url as string | undefined;
+      if (wppFromApi) {
+        window.location.href = wppFromApi;
+        return;
+      }
+
       if (whatsappUrl) {
         const texto = [
           language === 'en'
-            ? `Hi! I just left feedback (${rating}★)${nomeEmpresa ? ` about ${nomeEmpresa}` : ''}.`
+            ? `Hi${nomeEmpresa ? `, ${nomeEmpresa}` : ''}! I wasn't satisfied with the service and left private feedback.`
             : language === 'es'
-              ? `¡Hola! Acabo de enviar un feedback (${rating}★)${nomeEmpresa ? ` sobre ${nomeEmpresa}` : ''}.`
-              : language === 'zh'
-                ? `您好！我刚提交了反馈（${rating}★）${nomeEmpresa ? `，关于 ${nomeEmpresa}` : ''}。`
-                : `Olá! Acabei de enviar um feedback (${rating}★)${nomeEmpresa ? ` sobre ${nomeEmpresa}` : ''}.`,
+              ? `¡Hola${nomeEmpresa ? `, ${nomeEmpresa}` : ''}! No quedé satisfecho con la atención y registré un feedback privado.`
+              : `Olá${nomeEmpresa ? `, ${nomeEmpresa}` : ''}! Não fiquei satisfeito com o atendimento e registrei um feedback privado.`,
           comment.trim() ? `\n${comment.trim().slice(0, 280)}` : '',
-          `\n${clientWhatsapp.trim()}`,
-          `\n— ${name.trim() || (language === 'zh' ? '客户' : language === 'es' ? 'Cliente' : language === 'en' ? 'Customer' : 'Cliente')}`,
+          `\n— ${name.trim() || 'Cliente'}`,
         ].join('');
         const sep = whatsappUrl.includes('?') ? '&' : '?';
         window.location.href = `${whatsappUrl}${sep}text=${encodeURIComponent(texto)}`;
@@ -132,6 +138,12 @@ export default function PaginaAvaliacao() {
       setLoading(false);
     }
   };
+
+  const BrandTop = ({ className = '' }: { className?: string }) => (
+    <div className={`flex justify-center mb-6 ${className}`}>
+      <BrandMark href="/" size="sm" centered subtitle="Online Reputation" />
+    </div>
+  );
 
   const HeaderEmpresa = () =>
     nomeEmpresa ? (
@@ -151,6 +163,7 @@ export default function PaginaAvaliacao() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-black text-zinc-100 p-4">
         <LangBar />
+        <BrandTop />
         <p className="text-zinc-300 mb-4">{t.access_error}</p>
         <button
           type="button"
@@ -165,9 +178,10 @@ export default function PaginaAvaliacao() {
 
   if (trialValido === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-zinc-400">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-zinc-400 gap-4">
         <LangBar />
-        {t.loading}
+        <BrandMark href={null} size="sm" centered />
+        <span>{t.loading}</span>
       </div>
     );
   }
@@ -176,6 +190,7 @@ export default function PaginaAvaliacao() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 text-white p-4">
         <LangBar />
+        <BrandTop />
         {nomeEmpresa && (
           <p className="text-lg font-semibold text-zinc-300 mb-2">{nomeEmpresa}</p>
         )}
@@ -192,6 +207,7 @@ export default function PaginaAvaliacao() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <LangBar />
         <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center space-y-4">
+          <BrandMark href="/" size="sm" centered subtitle="Online Reputation" className="mb-2" />
           {nomeEmpresa && (
             <p className="text-sm font-semibold text-zinc-400 uppercase tracking-wide">{nomeEmpresa}</p>
           )}
@@ -219,6 +235,7 @@ export default function PaginaAvaliacao() {
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <LangBar />
       <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl shadow-md max-w-md w-full">
+        <BrandTop />
         <HeaderEmpresa />
 
         <h2 className="text-xl font-semibold text-center text-zinc-100 mb-2">{t.subtitle}</h2>
