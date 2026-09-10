@@ -57,7 +57,11 @@ function RecuperarForm() {
       );
       if (data.smtp === false) {
         setAvisoSmtp(
-          'O servidor ainda não tem SMTP configurado. O e-mail não será enviado até você definir SMTP_HOST, SMTP_USER, SMTP_PASS e SMTP_FROM no Render.'
+          'O servidor ainda não tem SMTP completo. Defina SMTP_HOST, SMTP_USER, SMTP_PASS e SMTP_FROM no Render e faça redeploy.'
+        );
+      } else if (data.delivered === false) {
+        setAvisoSmtp(
+          'O servidor tentou enviar, mas o SMTP recusou (senha de app, bloqueio do Gmail ou FROM inválido). Veja os logs do Render procurando por "[mail] FALHA" ou "forgot-password".'
         );
       }
     } catch (err: any) {
@@ -103,7 +107,7 @@ function RecuperarForm() {
         <h1 className="text-xl font-bold text-zinc-50 text-center">Recuperação de senha</h1>
         <p className="text-sm text-zinc-400 text-center">
           {modo === 'pedir'
-            ? 'Informe o e-mail cadastrado na conta da empresa. Enviaremos um link seguro (válido por 1 hora).'
+            ? 'Use o mesmo e-mail do cadastro da empresa. Link válido por 1 hora.'
             : 'Defina uma nova senha forte para a conta da empresa.'}
         </p>
 
