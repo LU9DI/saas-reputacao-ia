@@ -1,5 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Filtra.IA">
-  <rect width="512" height="512" rx="96" fill="#4f46e5"/>
-  <path fill="#ffffff" d="M128 160h256v48H192v48h160v48H192v48h192v48H128V160z"/>
-  <circle cx="400" cy="384" r="40" fill="#a5b4fc"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Filtra.AI">
+  <defs>
+    <linearGradient id="ring" x1="48" y1="32" x2="464" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e0e7ff"/>
+      <stop offset="0.4" stop-color="#a5b4fc"/>
+      <stop offset="0.75" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="core" x1="144" y1="96" x2="368" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c7d2fe"/>
+      <stop offset="0.5" stop-color="#818cf8"/>
+      <stop offset="1" stop-color="#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="320" y1="64" x2="448" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fef3c7"/>
+      <stop offset="0.5" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0c0c0f"/>
+  <rect x="12" y="12" width="488" height="488" rx="100" fill="none" stroke="url(#ring)" stroke-width="10"/>
+  <path d="M256 96c52 27 108 35 152 39v120c0 81-54 147-152 175-98-28-152-94-152-175V135c44-4 100-12 152-39Z" fill="rgba(99,102,241,0.18)" stroke="url(#core)" stroke-width="12" stroke-linejoin="round"/>
+  <path d="M176 192h160l-54 69v66l-52-26v-40L176 192Z" fill="url(#core)"/>
+  <path d="M386 113l8.4 17.2 18.8 2.7-13.6 13.3 3.2 18.7-16.8-8.8-16.8 8.8 3.2-18.7-13.6-13.3 18.8-2.7L386 113Z" fill="url(#gold)"/>
+  <circle cx="256" cy="400" r="14" fill="#a5b4fc"/>
 </svg>
