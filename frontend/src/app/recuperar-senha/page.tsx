@@ -4,6 +4,10 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getEnv } from '../utils/env';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from '../utils/passwordPolicy';
+import { BrandMark } from '../components/BrandMark';
+
+const inputClass =
+  'mt-1.5 w-full px-4 py-3 rounded-xl border border-zinc-600 bg-zinc-950 text-zinc-100 text-base placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
 
 function RecuperarForm() {
   const search = useSearchParams();
@@ -15,6 +19,7 @@ function RecuperarForm() {
   const [novaSenha, setNovaSenha] = useState('');
   const [msg, setMsg] = useState('');
   const [erro, setErro] = useState('');
+  const [avisoSmtp, setAvisoSmtp] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -31,6 +36,7 @@ function RecuperarForm() {
     setLoading(true);
     setErro('');
     setMsg('');
+    setAvisoSmtp('');
     const emailTrim = email.trim().toLowerCase();
     if (!emailTrim || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
       setErro('Informe um e-mail válido.');
@@ -45,7 +51,15 @@ function RecuperarForm() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Falha na solicitação');
-      setMsg(data.message || 'Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.');
+      setMsg(
+        data.message ||
+          'Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.'
+      );
+      if (data.smtp === false) {
+        setAvisoSmtp(
+          'O servidor ainda não tem SMTP configurado. O e-mail não será enviado até você definir SMTP_HOST, SMTP_USER, SMTP_PASS e SMTP_FROM no Render.'
+        );
+      }
     } catch (err: any) {
       setErro(err.message || 'Erro');
     } finally {
@@ -81,93 +95,122 @@ function RecuperarForm() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border border-slate-100 p-8 space-y-5">
-        <h1 className="text-xl font-bold text-slate-900 text-center">Recuperação de senha</h1>
-        <p className="text-sm text-slate-500 text-center">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-8 space-y-5">
+        <div className="flex justify-center">
+          <BrandMark href="/" size="sm" centered subtitle="Online Reputation" />
+        </div>
+        <h1 className="text-xl font-bold text-zinc-50 text-center">Recuperação de senha</h1>
+        <p className="text-sm text-zinc-400 text-center">
           {modo === 'pedir'
-            ? 'Informe o e-mail cadastrado. Enviaremos um link seguro para redefinir a senha.'
+            ? 'Informe o e-mail cadastrado na conta da empresa. Enviaremos um link seguro (válido por 1 hora).'
             : 'Defina uma nova senha forte para a conta da empresa.'}
         </p>
 
         {erro && (
-          <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">{erro}</p>
+          <p className="text-sm text-red-300 bg-red-950/50 border border-red-900 rounded-xl px-3 py-2">
+            {erro}
+          </p>
         )}
         {msg && (
-          <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+          <p className="text-sm text-emerald-300 bg-emerald-950/40 border border-emerald-900 rounded-xl px-3 py-2">
             {msg}
+          </p>
+        )}
+        {avisoSmtp && (
+          <p className="text-sm text-amber-200 bg-amber-950/40 border border-amber-800 rounded-xl px-3 py-2">
+            {avisoSmtp}
           </p>
         )}
 
         {modo === 'pedir' ? (
-          <form onSubmit={pedirLink} className="space-y-3">
+          <form onSubmit={pedirLink} className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-slate-600 uppercase">E-mail</label>
+              <label htmlFor="email-recup" className="block text-sm font-medium text-zinc-300">
+                E-mail da empresa
+              </label>
               <input
+                id="email-recup"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm"
+                className={inputClass}
                 placeholder="seu@email.com"
                 autoComplete="email"
+                autoFocus
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-sm font-medium disabled:opacity-50"
+              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl text-sm font-semibold disabled:opacity-50"
             >
               {loading ? 'Enviando…' : 'Enviar link por e-mail'}
             </button>
             <button
               type="button"
-              className="w-full text-sm text-slate-500 underline"
+              className="w-full text-sm text-zinc-400 hover:text-zinc-200 underline"
               onClick={() => setModo('redefinir')}
             >
-              Já tenho o token do e-mail
+              Já tenho o link / token do e-mail
             </button>
           </form>
         ) : (
-          <form onSubmit={redefinir} className="space-y-3">
+          <form onSubmit={redefinir} className="space-y-4">
             <div>
-              <label className="text-xs font-semibold text-slate-600 uppercase">Token</label>
+              <label htmlFor="token-recup" className="block text-sm font-medium text-zinc-300">
+                Token (do e-mail)
+              </label>
               <input
+                id="token-recup"
                 type="text"
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
-                className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-mono"
+                className={`${inputClass} font-mono text-sm`}
                 required
+                placeholder="Cole o token se não abriu pelo link"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-600 uppercase">Nova senha</label>
+              <label htmlFor="nova-senha" className="block text-sm font-medium text-zinc-300">
+                Nova senha
+              </label>
               <input
+                id="nova-senha"
                 type="password"
                 value={novaSenha}
                 onChange={(e) => setNovaSenha(e.target.value)}
                 minLength={8}
-                className="mt-1 w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm"
+                className={inputClass}
                 required
+                autoComplete="new-password"
               />
-              <p className="mt-1 text-[11px] text-slate-400">{SENHA_EMPRESA_HINT}</p>
+              <p className="mt-1.5 text-xs text-zinc-500">{SENHA_EMPRESA_HINT}</p>
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl text-sm font-medium disabled:opacity-50"
+              className="w-full bg-zinc-100 hover:bg-white text-zinc-900 py-3 rounded-xl text-sm font-semibold disabled:opacity-50"
             >
               {loading ? 'Salvando…' : 'Salvar nova senha'}
+            </button>
+            <button
+              type="button"
+              className="w-full text-sm text-zinc-400 hover:text-zinc-200 underline"
+              onClick={() => setModo('pedir')}
+            >
+              Pedir novo link por e-mail
             </button>
           </form>
         )}
 
-        <p className="text-center text-xs text-slate-400">
-          <a href="/login" className="underline">
+        <p className="text-center text-xs text-zinc-500">
+          <a href="/login" className="underline hover:text-zinc-300">
             Voltar ao login
           </a>
           {' · '}
-          <a href="/" className="underline">
+          <a href="/" className="underline hover:text-zinc-300">
             Início
           </a>
         </p>
@@ -180,7 +223,9 @@ export default function RecuperarSenhaPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center text-sm text-slate-500">Carregando…</div>
+        <div className="min-h-screen bg-black flex items-center justify-center text-sm text-zinc-500">
+          Carregando…
+        </div>
       }
     >
       <RecuperarForm />
