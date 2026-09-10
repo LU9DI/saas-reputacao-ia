@@ -9,6 +9,7 @@
     "build": "node -e \"console.log('Filtra.IA build ok')\"",
     "start": "tsx server.ts",
     "start:prod": "tsx server.ts",
+    "smtp:test": "tsx scripts/smtp-connectivity-test.ts",
     "test": "tsx --test tests/**/*.test.ts",
     "audit": "npm audit --omit=dev"
   },
