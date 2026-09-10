@@ -90,9 +90,9 @@ export default function QrCodesPage() {
   return (
     <div className="min-h-screen bg-slate-100 p-6">
       <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
-        <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-5">
+        <div className="flex items-center justify-between gap-4 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 px-5 py-4 shadow-lg">
           <BrandMark href="/admin" size="md" subtitle="QR Codes" />
-          <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
+          <div className="w-10 h-10 bg-white/10 border border-white/10 rounded-xl flex items-center justify-center text-cyan-300">
             <QrCode size={22} />
           </div>
         </div>
@@ -152,7 +152,9 @@ export default function QrCodesPage() {
 
         {qrCodeUrl && (
           <div className="text-center space-y-4 pt-4 border-t border-slate-200">
-            <BrandMark href={null} size="sm" centered subtitle="Avalie. Filtre. Evolua." />
+            <div className="rounded-2xl bg-slate-950 px-4 py-4">
+              <BrandMark href={null} size="sm" centered subtitle="Avalie. Filtre. Evolua." />
+            </div>
             <h3 className="font-semibold text-slate-800">QR Code - Mesa {tableNumber}</h3>
             <img src={qrCodeUrl} alt={`QR Code para mesa ${tableNumber}`} className="mx-auto rounded-lg border-4 border-white shadow-md" />
             <button
