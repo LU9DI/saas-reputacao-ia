@@ -9,13 +9,63 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return out;
 }
 
-export async function enablePush(apiUrl: string, token: string): Promise<{ ok: boolean; error?: string }> {
-  if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) {
-    return { ok: false, error: 'Push não suportado neste navegador.' };
+async function ensureServiceWorker(): Promise<ServiceWorkerRegistration> {
+  if (!('serviceWorker' in navigator)) {
+    throw new Error('Service Worker não suportado neste navegador.');
+  }
+  let reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) {
+    reg = await navigator.serviceWorker.register('/sw.js');
+  }
+  // espera ativo (senão getSubscription/subscribe falha em silêncio em alguns browsers)
+  if (reg.installing) {
+    await new Promise<void>((resolve) => {
+      reg!.installing!.addEventListener('statechange', () => {
+        if (reg!.installing?.state === 'installed' || reg!.active) resolve();
+      });
+      setTimeout(() => resolve(), 4000);
+    });
+  }
+  return navigator.serviceWorker.ready;
+}
+
+function authHeaders(token: string): HeadersInit {
+  const h: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) h.Authorization = `Bearer ${token}`;
+  return h;
+}
+
+export async function enablePush(
+  apiUrl: string,
+  token: string
+): Promise<{ ok: boolean; error?: string; already?: boolean }> {
+  if (typeof window === 'undefined') {
+    return { ok: false, error: 'Ambiente inválido.' };
+  }
+  if (!('PushManager' in window) || !('serviceWorker' in navigator)) {
+    return {
+      ok: false,
+      error:
+        'Push não suportado. Use Chrome/Edge no PC ou Android. No iPhone: Adicionar à Tela de Início (PWA).',
+    };
+  }
+  if (!window.isSecureContext && location.hostname !== 'localhost') {
+    return { ok: false, error: 'Push exige HTTPS (ou localhost).' };
   }
 
-  const perm = await Notification.requestPermission();
-  if (perm !== 'granted') return { ok: false, error: 'Permissão de notificação negada.' };
+  let perm = Notification.permission;
+  if (perm === 'default') {
+    perm = await Notification.requestPermission();
+  }
+  if (perm !== 'granted') {
+    return {
+      ok: false,
+      error:
+        perm === 'denied'
+          ? 'Notificações bloqueadas no navegador. Libere em configurações do site e tente de novo.'
+          : 'Permissão de notificação não concedida.',
+    };
+  }
 
   const keyRes = await fetch(`${apiUrl}/api/push/vapid-public-key`);
   const keyJson = await keyRes.json().catch(() => ({}));
@@ -23,38 +73,56 @@ export async function enablePush(apiUrl: string, token: string): Promise<{ ok: b
     return { ok: false, error: keyJson.error || 'VAPID não configurado no servidor.' };
   }
 
-  const reg = await navigator.serviceWorker.ready;
+  let reg: ServiceWorkerRegistration;
+  try {
+    reg = await ensureServiceWorker();
+  } catch (e: any) {
+    return { ok: false, error: e?.message || 'Falha ao registrar service worker.' };
+  }
+
+  let already = false;
   let sub = await reg.pushManager.getSubscription();
-  if (!sub) {
-    // Cast: DOM lib tipa applicationServerKey de forma incompatível com Uint8Array genérico no TS 5.x
-    const key = urlBase64ToUint8Array(String(keyJson.publicKey)) as unknown as BufferSource;
-    sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: key,
-    });
+  if (sub) {
+    already = true;
+  } else {
+    try {
+      const key = urlBase64ToUint8Array(String(keyJson.publicKey)) as unknown as BufferSource;
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: key,
+      });
+    } catch (e: any) {
+      return {
+        ok: false,
+        error: e?.message || 'Falha ao criar subscription push no navegador.',
+      };
+    }
   }
 
   const res = await fetch(`${apiUrl}/api/push/subscribe`, {
     method: 'POST',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers: authHeaders(token),
     body: JSON.stringify({ subscription: sub.toJSON() }),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) return { ok: false, error: data.error || 'Falha ao registrar push' };
-  return { ok: true };
+  if (res.status === 401) {
+    return { ok: false, error: 'Sessão expirada. Faça login de novo e clique em Ativar.' };
+  }
+  if (!res.ok) {
+    return { ok: false, error: data.error || 'Falha ao registrar push no servidor.' };
+  }
+  return { ok: true, already };
 }
 
 export async function sendTestPush(apiUrl: string, token: string) {
   const res = await fetch(`${apiUrl}/api/push/test`, {
     method: 'POST',
     credentials: 'include',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: authHeaders(token),
   });
   const data = await res.json().catch(() => ({}));
+  if (res.status === 401) throw new Error('Sessão expirada. Faça login de novo.');
   if (!res.ok) throw new Error(data.error || 'Falha no teste de push');
-  return data;
+  return data as { success?: boolean; sent?: number; subscriptions?: number; errors?: number };
 }
