@@ -1,7 +1,7 @@
-'use client'; 
+'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Lock, Mail, AlertCircle, Loader2, Shield, KeyRound } from 'lucide-react';
 
 type Step = 'senha' | 'mfa' | 'recuperar' | 'redefinir';
@@ -13,7 +13,6 @@ function apiBase() {
 }
 
 function AdminLoginForm() {
-  const router = useRouter();
   const search = useSearchParams();
   const tokenFromUrl = search.get('token') || '';
 
@@ -29,7 +28,7 @@ function AdminLoginForm() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
   const [msg, setMsg] = useState('');
-  const [devLink, setDevLink] = useState('');
+  const [recoveryLink, setRecoveryLink] = useState('');
 
   useEffect(() => {
     if (tokenFromUrl) {
@@ -63,6 +62,7 @@ function AdminLoginForm() {
     e.preventDefault();
     setErro('');
     setMsg('');
+    setRecoveryLink('');
     setLoading(true);
 
     const controller = new AbortController();
@@ -131,7 +131,12 @@ function AdminLoginForm() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Falha na solicitação');
         setMsg(data.message || 'Se os dados estiverem corretos, enviaremos o link.');
-        if (data.dev_link) setDevLink(data.dev_link);
+        // Link devolvido quando e-mail falha (admin já autenticado pela chave)
+        const link = data.recovery_link || data.dev_link || '';
+        if (link) {
+          setRecoveryLink(link);
+          if (data.token) setToken(data.token);
+        }
         return;
       }
 
@@ -174,7 +179,7 @@ function AdminLoginForm() {
     setStep('senha');
     setErro('');
     setMsg('');
-    setDevLink('');
+    setRecoveryLink('');
     setMfaToken('');
     setMfaCode('');
     setChave('');
@@ -202,13 +207,26 @@ function AdminLoginForm() {
             {msg}
           </p>
         )}
-        {devLink && (
-          <p className="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 break-all">
-            Dev (SMTP off):{' '}
-            <a href={devLink} className="underline font-medium">
-              abrir link de redefinição
+        {recoveryLink && (
+          <div className="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-3 py-3 space-y-2">
+            <p className="font-medium">Link de redefinição (e-mail não saiu):</p>
+            <a
+              href={recoveryLink}
+              className="block underline break-all text-indigo-700 font-medium"
+              onClick={() => {
+                setStep('redefinir');
+              }}
+            >
+              {recoveryLink}
             </a>
-          </p>
+            <button
+              type="button"
+              className="text-xs underline text-slate-600"
+              onClick={() => setStep('redefinir')}
+            >
+              Já tenho o token — definir nova senha
+            </button>
+          </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -232,7 +250,7 @@ function AdminLoginForm() {
                     setErro('');
                   }}
                   placeholder="admin@seusaas.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900"
                 />
               </div>
 
@@ -254,7 +272,7 @@ function AdminLoginForm() {
                     setErro('');
                   }}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900"
                 />
               </div>
             </>
@@ -281,7 +299,7 @@ function AdminLoginForm() {
                   setErro('');
                 }}
                 placeholder="000 000"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 tracking-widest text-center font-mono text-lg"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 tracking-widest text-center font-mono text-lg text-slate-900"
               />
             </div>
           )}
@@ -298,7 +316,7 @@ function AdminLoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@seusaas.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
                 />
               </div>
               <div className="space-y-1.5">
@@ -310,8 +328,8 @@ function AdminLoginForm() {
                   required
                   value={chave}
                   onChange={(e) => setChave(e.target.value)}
-                  placeholder="ADMIN_RECOVERY_SECRET do .env"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
+                  placeholder="ADMIN_RECOVERY_SECRET do Render"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
                   autoComplete="off"
                 />
               </div>
@@ -327,7 +345,7 @@ function AdminLoginForm() {
                   required
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-mono bg-slate-50/50"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-mono bg-slate-50/50 text-slate-900"
                 />
               </div>
               <div className="space-y-1.5">
@@ -340,7 +358,7 @@ function AdminLoginForm() {
                   minLength={10}
                   value={novaSenha}
                   onChange={(e) => setNovaSenha(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
                 />
               </div>
               <div className="space-y-1.5">
@@ -351,7 +369,7 @@ function AdminLoginForm() {
                   minLength={10}
                   value={confirma}
                   onChange={(e) => setConfirma(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
                 />
               </div>
             </>
@@ -418,5 +436,3 @@ export default function AdminLoginPage() {
     </Suspense>
   );
 }
-
-
