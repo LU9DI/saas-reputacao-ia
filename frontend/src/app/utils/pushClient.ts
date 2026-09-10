@@ -9,6 +9,13 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return out;
 }
 
+function sameKey(a: ArrayBuffer | null | undefined, b: Uint8Array): boolean {
+  if (!a) return false;
+  const bytes = new Uint8Array(a);
+  if (bytes.length !== b.length) return false;
+  return bytes.every((value, index) => value === b[index]);
+}
+
 async function ensureServiceWorker(): Promise<ServiceWorkerRegistration> {
   if (!('serviceWorker' in navigator)) {
     throw new Error('Service Worker não suportado neste navegador.');
@@ -17,7 +24,6 @@ async function ensureServiceWorker(): Promise<ServiceWorkerRegistration> {
   if (!reg) {
     reg = await navigator.serviceWorker.register('/sw.js');
   }
-  // espera ativo (senão getSubscription/subscribe falha em silêncio em alguns browsers)
   if (reg.installing) {
     await new Promise<void>((resolve) => {
       reg!.installing!.addEventListener('statechange', () => {
@@ -27,6 +33,37 @@ async function ensureServiceWorker(): Promise<ServiceWorkerRegistration> {
     });
   }
   return navigator.serviceWorker.ready;
+}
+
+async function createSubscription(
+  reg: ServiceWorkerRegistration,
+  publicKey: Uint8Array
+): Promise<PushSubscription> {
+  try {
+    return await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: publicKey as unknown as BufferSource,
+    });
+  } catch (firstError: any) {
+    // Alguns browsers mantêm um Service Worker/subscription antigo e retornam
+    // apenas "Registration failed - push service error". Recriar o registro
+    // resolve esse estado sem exigir intervenção do usuário.
+    const message = String(firstError?.message || '').toLowerCase();
+    if (!message.includes('push service error') && !message.includes('registration failed')) {
+      throw firstError;
+    }
+    try {
+      await reg.unregister();
+      const fresh = await navigator.serviceWorker.register('/sw.js');
+      await navigator.serviceWorker.ready;
+      return await fresh.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: publicKey as unknown as BufferSource,
+      });
+    } catch {
+      throw firstError;
+    }
+  }
 }
 
 function authHeaders(token: string): HeadersInit {
@@ -73,6 +110,16 @@ export async function enablePush(
     return { ok: false, error: keyJson.error || 'VAPID não configurado no servidor.' };
   }
 
+  let publicKey: Uint8Array;
+  try {
+    publicKey = urlBase64ToUint8Array(String(keyJson.publicKey));
+    if (publicKey.length !== 65) {
+      return { ok: false, error: 'Chave VAPID pública inválida no servidor. Gere um novo par de chaves VAPID.' };
+    }
+  } catch {
+    return { ok: false, error: 'Chave VAPID pública inválida no servidor.' };
+  }
+
   let reg: ServiceWorkerRegistration;
   try {
     reg = await ensureServiceWorker();
@@ -82,20 +129,30 @@ export async function enablePush(
 
   let already = false;
   let sub = await reg.pushManager.getSubscription();
+
+  // Se a subscription foi criada com outra chave VAPID, ela não pode ser
+  // reutilizada com a chave atual. Remove e cria uma nova.
+  if (sub && !sameKey(sub.options.applicationServerKey, publicKey)) {
+    try {
+      await sub.unsubscribe();
+    } catch {
+      /* segue para uma nova tentativa */
+    }
+    sub = null;
+  }
+
   if (sub) {
     already = true;
   } else {
     try {
-      const key = urlBase64ToUint8Array(String(keyJson.publicKey)) as unknown as BufferSource;
-      sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: key,
-      });
+      sub = await createSubscription(reg, publicKey);
     } catch (e: any) {
-      return {
-        ok: false,
-        error: e?.message || 'Falha ao criar subscription push no navegador.',
-      };
+      const message = String(e?.message || '').toLowerCase();
+      const hint =
+        message.includes('push service error') || message.includes('registration failed')
+          ? 'O navegador recusou o serviço de notificações. No iPhone, adicione o Filtra.AI à Tela de Início; no PC/Android, confirme que o site tem permissão para notificações e tente novamente.'
+          : e?.message || 'Falha ao criar subscription push no navegador.';
+      return { ok: false, error: hint };
     }
   }
 
