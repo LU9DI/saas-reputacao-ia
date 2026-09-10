@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import QRCode from 'qrcode';
 import { Building2, QrCode, RefreshCw, AlertCircle } from 'lucide-react';
 import { getEnv } from '../../utils/env';
+import { BrandMark } from '../../components/BrandMark';
 
 interface Empresa {
   id: string;
@@ -20,7 +21,6 @@ export default function QrCodesPage() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
 
-  // Verifica token e carrega empresas
   useEffect(() => {
     const token = localStorage.getItem('token_saas_reputacao');
     if (!token) {
@@ -37,9 +37,7 @@ export default function QrCodesPage() {
         if (!response.ok) throw new Error();
         const dados = await response.json();
         setEmpresas(dados);
-        if (dados.length > 0) {
-          setEmpresaSelecionada(dados[0].id);
-        }
+        if (dados.length > 0) setEmpresaSelecionada(dados[0].id);
       } catch {
         setErro('Não foi possível carregar as empresas. Verifique sua conexão.');
       }
@@ -66,16 +64,11 @@ export default function QrCodesPage() {
     try {
       const baseUrl = getEnv('NEXT_PUBLIC_APP_URL');
       const link = `${baseUrl}/avaliacao/${empresaSelecionada}?mesa=${tableNumber}`;
-
       const url = await QRCode.toDataURL(link, {
         width: 350,
         margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#ffffff',
-        },
+        color: { dark: '#000000', light: '#ffffff' },
       });
-
       setQrCodeUrl(url);
     } catch {
       setErro('Erro ao gerar QR Code. Tente novamente.');
@@ -97,14 +90,16 @@ export default function QrCodesPage() {
   return (
     <div className="min-h-screen bg-slate-100 p-6">
       <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-5">
+          <BrandMark href="/admin" size="md" subtitle="QR Codes" />
           <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
             <QrCode size={22} />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Gerador de QR Codes</h1>
-            <p className="text-sm text-slate-500">Crie códigos para colar nas mesas do estabelecimento</p>
-          </div>
+        </div>
+
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Gerador de QR Codes</h1>
+          <p className="text-sm text-slate-500">Crie códigos para colar nas mesas do estabelecimento</p>
         </div>
 
         {erro && (
@@ -126,17 +121,13 @@ export default function QrCodesPage() {
               className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
             >
               {empresas.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.nome_empresa}
-                </option>
+                <option key={emp.id} value={emp.id}>{emp.nome_empresa}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="mesa" className="text-xs font-semibold uppercase tracking-wider text-slate-600">
-              Nº da Mesa
-            </label>
+            <label htmlFor="mesa" className="text-xs font-semibold uppercase tracking-wider text-slate-600">Nº da Mesa</label>
             <input
               id="mesa"
               type="number"
@@ -158,14 +149,12 @@ export default function QrCodesPage() {
           {loading ? <RefreshCw size={16} className="animate-spin" /> : <QrCode size={16} />}
           {loading ? 'Gerando...' : 'Gerar QR Code'}
         </button>
+
         {qrCodeUrl && (
           <div className="text-center space-y-4 pt-4 border-t border-slate-200">
+            <BrandMark href={null} size="sm" centered subtitle="Avalie. Filtre. Evolua." />
             <h3 className="font-semibold text-slate-800">QR Code - Mesa {tableNumber}</h3>
-            <img
-              src={qrCodeUrl}
-              alt={`QR Code para mesa ${tableNumber}`}
-              className="mx-auto rounded-lg border-4 border-white shadow-md"
-            />
+            <img src={qrCodeUrl} alt={`QR Code para mesa ${tableNumber}`} className="mx-auto rounded-lg border-4 border-white shadow-md" />
             <button
               onClick={handleDownload}
               className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-6 rounded-xl transition-colors text-sm cursor-pointer"
