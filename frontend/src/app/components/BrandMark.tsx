@@ -1,6 +1,6 @@
 /**
- * Marca Filtra.AI — símbolo + tipografia premium.
- * Uma única implementação: homepage, painéis, avaliação, QR, e-mails de layout.
+ * Marca Filtra.AI — F em gradiente + wordmark (estilo oficial).
+ * Usado em homepage, painéis, avaliação, QR, login, admin.
  */
 import Link from 'next/link';
 
@@ -14,14 +14,29 @@ type Props = {
 };
 
 const sizes = {
-  sm: { word: 'text-lg sm:text-xl', icon: 32, sub: 'text-[8px] tracking-[0.28em]', gap: 'gap-2.5' },
-  md: { word: 'text-2xl sm:text-[28px]', icon: 40, sub: 'text-[9px] tracking-[0.3em]', gap: 'gap-3' },
-  lg: { word: 'text-3xl sm:text-4xl md:text-[44px]', icon: 52, sub: 'text-[10px] tracking-[0.32em]', gap: 'gap-3.5' },
+  sm: {
+    word: 'text-[17px] sm:text-lg',
+    icon: 28,
+    sub: 'text-[7px] tracking-[0.26em]',
+    gap: 'gap-2',
+  },
+  md: {
+    word: 'text-xl sm:text-2xl',
+    icon: 36,
+    sub: 'text-[8px] tracking-[0.28em]',
+    gap: 'gap-2.5',
+  },
+  lg: {
+    word: 'text-3xl sm:text-4xl md:text-[42px]',
+    icon: 48,
+    sub: 'text-[9px] tracking-[0.3em]',
+    gap: 'gap-3',
+  },
 };
 
-/** Emblema: escudo de reputação + funil de filtro + estrela */
+/** Símbolo F — curvas em gradiente azul → roxo (como o mock) */
 function FiltraIcon({ size }: { size: number }) {
-  const uid = `fg${size}`;
+  const uid = `fmark${size}`;
   return (
     <svg
       width={size}
@@ -30,79 +45,40 @@ function FiltraIcon({ size }: { size: number }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
-      className="shrink-0 drop-shadow-[0_2px_8px_rgba(99,102,241,0.35)]"
+      className="shrink-0"
+      style={{
+        filter: 'drop-shadow(0 0 10px rgba(59,130,246,0.45)) drop-shadow(0 0 18px rgba(99,102,241,0.25))',
+      }}
     >
       <defs>
-        <linearGradient id={`${uid}-ring`} x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#e0e7ff" />
-          <stop offset="0.35" stopColor="#a5b4fc" />
-          <stop offset="0.7" stopColor="#6366f1" />
-          <stop offset="1" stopColor="#4338ca" />
+        <linearGradient id={`${uid}-g`} x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#60a5fa" />
+          <stop offset="0.45" stopColor="#3b82f6" />
+          <stop offset="0.75" stopColor="#6366f1" />
+          <stop offset="1" stopColor="#7c3aed" />
         </linearGradient>
-        <linearGradient id={`${uid}-core`} x1="18" y1="12" x2="46" y2="52" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#c7d2fe" />
-          <stop offset="0.5" stopColor="#818cf8" />
+        <linearGradient id={`${uid}-g2`} x1="20" y1="20" x2="50" y2="52" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#93c5fd" />
+          <stop offset="0.5" stopColor="#6366f1" />
           <stop offset="1" stopColor="#4f46e5" />
         </linearGradient>
-        <linearGradient id={`${uid}-gold`} x1="40" y1="8" x2="56" y2="24" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#fef3c7" />
-          <stop offset="0.5" stopColor="#fbbf24" />
-          <stop offset="1" stopColor="#d97706" />
-        </linearGradient>
-        <filter id={`${uid}-glow`} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.2" result="b" />
-          <feMerge>
-            <feMergeNode in="b" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
-
-      {/* Base escura premium */}
-      <rect x="2" y="2" width="60" height="60" rx="16" fill="#0c0c0f" />
-      <rect
-        x="2.75"
-        y="2.75"
-        width="58.5"
-        height="58.5"
-        rx="15.25"
-        stroke={`url(#${uid}-ring)`}
-        strokeWidth="1.5"
-        fill="none"
-      />
-
-      {/* Escudo / reputação */}
+      {/* Forma superior do F (barra curva) */}
       <path
-        d="M32 12.5c6.2 3.2 12.8 4.2 18 4.6v14.2c0 9.6-6.4 17.4-18 20.7-11.6-3.3-18-11.1-18-20.7V17.1c5.2-.4 11.8-1.4 18-4.6Z"
-        fill="rgba(99,102,241,0.14)"
-        stroke={`url(#${uid}-core)`}
-        strokeWidth="1.8"
-        strokeLinejoin="round"
+        d="M14 16c0-4.4 3.6-8 8-8h22c3.3 0 5.2 3.8 3.2 6.4L36 28.5c-1.2 1.6-3.1 2.5-5.1 2.5H22c-4.4 0-8-3.6-8-8V16Z"
+        fill={`url(#${uid}-g)`}
       />
-
-      {/* Funil de filtro (marca) */}
+      {/* Haste / perna do F (curva descendente) */}
       <path
-        d="M22 24h20l-6.8 8.6v8.2l-6.4-3.2v-5L22 24Z"
-        fill={`url(#${uid}-core)`}
-        fillOpacity="0.92"
-        filter={`url(#${uid}-glow)`}
+        d="M14 28h14c2.4 0 4.5 1.4 5.5 3.5l12.8 26.2c1.4 2.9-0.7 6.3-3.9 6.3h-8.2c-1.5 0-2.9-0.8-3.6-2.1L18.2 36.2C15.6 31.2 14 28.8 14 28Z"
+        fill={`url(#${uid}-g2)`}
       />
+      {/* Barra média sutil do F */}
       <path
-        d="M22 24h20l-6.8 8.6v8.2l-6.4-3.2v-5L22 24Z"
-        fill="none"
-        stroke="#e0e7ff"
-        strokeOpacity="0.35"
-        strokeWidth="0.8"
+        d="M22 34h14c1.7 0 3.1 1.1 3.6 2.7l1.2 3.8c0.4 1.3-0.6 2.5-1.9 2.5H26c-2.2 0-4-1.8-4-4v-5Z"
+        fill={`url(#${uid}-g)`}
+        opacity="0.92"
       />
-
-      {/* Estrela de qualidade */}
-      <path
-        d="M48.2 14.2l1.05 2.15 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34 1.05-2.15Z"
-        fill={`url(#${uid}-gold)`}
-      />
-
-      {/* Ponto de precisão */}
-      <circle cx="32" cy="49.5" r="1.8" fill="#a5b4fc" opacity="0.9" />
     </svg>
   );
 }
@@ -116,7 +92,8 @@ export function BrandMark({
   iconOnly = false,
 }: Props) {
   const s = sizes[size];
-  const sub = subtitle === null ? null : subtitle === undefined ? 'Online Reputation' : subtitle;
+  // subtitle null = sem tagline; undefined = padrão discreto
+  const sub = subtitle === null ? null : subtitle === undefined ? null : subtitle;
 
   const mark = (
     <div
@@ -126,11 +103,14 @@ export function BrandMark({
         <FiltraIcon size={s.icon} />
         {!iconOnly && (
           <span
-            className={`font-semibold ${s.word} leading-none select-none tracking-[-0.03em]`}
-            style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif' }}
+            className={`font-semibold ${s.word} leading-none select-none tracking-[-0.02em]`}
+            style={{
+              fontFamily:
+                'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+            }}
           >
-            <span className="text-zinc-50">FILTRA</span>
-            <span className="bg-gradient-to-r from-indigo-300 via-indigo-400 to-indigo-500 bg-clip-text text-transparent">
+            <span className="text-white">Filtra</span>
+            <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
               .AI
             </span>
           </span>
@@ -138,11 +118,11 @@ export function BrandMark({
       </span>
       {sub && !iconOnly && (
         <span
-          className={`mt-2 ${s.sub} uppercase text-zinc-500 font-medium ${centered ? '' : ''}`}
+          className={`mt-1.5 ${s.sub} uppercase text-zinc-500 font-medium`}
           style={
             centered
               ? undefined
-              : { paddingLeft: s.icon + (size === 'lg' ? 14 : size === 'md' ? 12 : 10) }
+              : { paddingLeft: s.icon + (size === 'lg' ? 12 : size === 'md' ? 10 : 8) }
           }
         >
           {sub}
@@ -156,11 +136,11 @@ export function BrandMark({
       <Link
         href={href}
         className="inline-block hover:opacity-95 transition-opacity duration-200"
-        aria-label="FILTRA.AI — Online Reputation"
+        aria-label="Filtra.AI"
       >
         {mark}
       </Link>
     );
   }
-  return <div aria-label="FILTRA.AI — Online Reputation">{mark}</div>;
+  return <div aria-label="Filtra.AI">{mark}</div>;
 }
