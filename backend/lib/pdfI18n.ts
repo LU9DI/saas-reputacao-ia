@@ -262,7 +262,7 @@ export function t(lang: PdfLang, key: string, vars?: Record<string, string | num
   let s = DICT[lang]?.[key] ?? DICT.pt[key] ?? key;
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {
-      s = s.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), String(v));
+      s = s.split('{{' + k + '}}').join(String(v));
     }
   }
   return s;
