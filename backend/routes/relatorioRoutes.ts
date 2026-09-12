@@ -1,11 +1,11 @@
 /**
  * Relatório PDF mensal — autenticado, cache em disco, SEM tokens de IA.
- * Pode baixar quantas vezes quiser: cache evita regenerar e nunca chama Groq/Gemini.
+ * Suporta ?lang=pt|en|es|zh e diferencia conteúdo por plano (v7).
  */
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { getDb, findEmpresa } from '../lib/db.js';
-import { gerarRelatorioMensalPDF, ensureUnidadesSchema } from '../relatorioPdf.js';
+import { gerarRelatorioMensalPDF, ensureUnidadesSchema, PDF_LAYOUT_VERSION } from '../relatorioPdf.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { validateReportMonth } from '../lib/dateValidation.js';
 import { planTemPdf } from '../lib/plans.js';
@@ -17,7 +17,6 @@ import {
 } from '../lib/auth.js';
 import { readPdfCache, writePdfCache } from '../lib/pdfCache.js';
 
-/** Limite anti-abuso (não impede uso normal — 120/h por IP). */
 const pdfLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 120,
@@ -35,6 +34,14 @@ function authModeOf(req: AuthRequest): string {
   if (isAdminUser(req.user)) return 'jwt_admin';
   if (req.user?.empresa_id) return 'jwt_cliente';
   return 'jwt';
+}
+
+function normalizeLang(raw: unknown): string {
+  const s = String(raw || '').toLowerCase().trim();
+  if (s.startsWith('en')) return 'en';
+  if (s.startsWith('es')) return 'es';
+  if (s.startsWith('zh') || s.startsWith('cn')) return 'zh';
+  return 'pt';
 }
 
 export function mountRelatorioRoutes(app: Express) {
@@ -108,8 +115,12 @@ export function mountRelatorioRoutes(app: Express) {
       }
       const mesAno = mesCheck.value;
 
-      // Cache: redownload ilimitado sem CPU e SEM tokens
-      const cached = readPdfCache(empresa.id, mesAno, plan);
+      const lang = normalizeLang(
+        req.query.lang || (empresa as any).locale || (empresa as any).idioma || (empresa as any).language
+      );
+      const version = PDF_LAYOUT_VERSION || 'v7';
+
+      const cached = readPdfCache(empresa.id, mesAno, plan, lang, version);
       if (cached) {
         await logPdfGeneration(db, {
           empresa_id: empresa.id,
@@ -120,22 +131,23 @@ export function mountRelatorioRoutes(app: Express) {
           auth_mode: auth_mode + '_cache',
           duration_ms: Date.now() - t0,
         });
-        const slug = empresa.slug || empresa.id.slice(0, 8);
+        const slug = (empresa as any).slug || empresa.id.slice(0, 8);
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader(
           'Content-Disposition',
-          `attachment; filename="relatorio-${slug}-${mesAno}.pdf"`
+          `attachment; filename="relatorio-${slug}-${mesAno}-${lang}.pdf"`
         );
         res.setHeader('X-PDF-Cache', 'HIT');
+        res.setHeader('X-PDF-Lang', lang);
+        res.setHeader('X-PDF-Version', version);
         return res.send(cached);
       }
 
       await ensureUnidadesSchema(db);
 
-      // Nunca passa callGroq → zero tokens de IA no PDF
       let pdf: Buffer;
       try {
-        pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno /* sem callGroq */);
+        pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno, undefined, lang);
       } catch (e: any) {
         await logPdfGeneration(db, {
           empresa_id: empresa.id,
@@ -146,10 +158,11 @@ export function mountRelatorioRoutes(app: Express) {
           auth_mode,
           duration_ms: Date.now() - t0,
         });
+        console.error('[pdf] generation error:', e?.message || e, e?.stack);
         throw e;
       }
 
-      writePdfCache(empresa.id, mesAno, plan, pdf);
+      writePdfCache(empresa.id, mesAno, plan, pdf, lang, version);
 
       await logPdfGeneration(db, {
         empresa_id: empresa.id,
@@ -161,12 +174,14 @@ export function mountRelatorioRoutes(app: Express) {
         duration_ms: Date.now() - t0,
       });
 
-      const slug = empresa.slug || empresa.id.slice(0, 8);
-      const filename = `relatorio-${slug}-${mesAno}.pdf`;
+      const slug = (empresa as any).slug || empresa.id.slice(0, 8);
+      const filename = `relatorio-${slug}-${mesAno}-${lang}.pdf`;
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
       res.setHeader('X-PDF-Cache', 'MISS');
+      res.setHeader('X-PDF-Lang', lang);
+      res.setHeader('X-PDF-Version', version);
       res.send(pdf);
     })
   );
