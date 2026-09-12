@@ -26,12 +26,18 @@
     ]
   },
   "include": [
-    "**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "next.config.mjs"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "e2e",
+    "playwright.config.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "scripts"
   ]
 }
