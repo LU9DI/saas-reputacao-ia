@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Building2, Lock, AlertCircle, Fingerprint } from 'lucide-react';
 import { getEnv } from '../utils/env';
 import { PlanCards } from '../components/PlanCards';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { BrandMark } from '../components/BrandMark';
 import { readApiError } from '../utils/apiError';
 import { loginWithPasskey, webauthnSupported } from '../utils/webauthnClient';
 
@@ -111,6 +113,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col items-center p-4 font-sans text-zinc-100 gap-10 py-12">
+      <header className="w-full max-w-md flex items-center justify-between">
+        <BrandMark size="sm" href="/" />
+        <LanguageSwitcher compact />
+      </header>
+
       <div className="w-full max-w-md bg-zinc-900 rounded-2xl shadow-xl border border-zinc-800 p-8 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Acesso à empresa</h1>
@@ -191,7 +198,7 @@ export default function LoginPage() {
 
           <p className="text-[11px] text-zinc-500 text-center leading-relaxed">
             A biometria fica só no seu aparelho (WebAuthn). Cadastre a digital após o primeiro login
-            por senha (console do navegador ou endpoint de registro autenticado).
+            por senha.
           </p>
 
           <p className="text-center text-xs text-zinc-500 space-x-3">
