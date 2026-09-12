@@ -8,6 +8,7 @@ import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { BrandMark } from '../components/BrandMark';
 import { readApiError } from '../utils/apiError';
 import { loginWithPasskey, webauthnSupported } from '../utils/webauthnClient';
+import { useLanguage } from '../Contexts/LanguageContext';
 
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
@@ -28,6 +29,7 @@ function isEmail(v: string): boolean {
 }
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   const [identificador, setIdentificador] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,7 +38,7 @@ export default function LoginPage() {
   const [ok, setOk] = useState('');
 
   const afterLogin = (data: any) => {
-    setOk('Login realizado com sucesso.');
+    setOk(t.login_success || 'Login realizado com sucesso.');
     if (data.token) {
       try {
         localStorage.setItem('filtra_token', data.token);
@@ -71,11 +73,11 @@ export default function LoginPage() {
         credentials: 'include',
         body: JSON.stringify(body),
       });
-      if (!res.ok) throw new Error(await readApiError(res, 'Falha no login'));
+      if (!res.ok) throw new Error(await readApiError(res, t.login_fail || 'Falha no login'));
       const data = await res.json();
       afterLogin(data);
     } catch (err: any) {
-      setErro(err.message || 'Erro ao entrar');
+      setErro(err.message || t.login_error || 'Erro ao entrar');
     } finally {
       setLoading(false);
     }
@@ -85,17 +87,17 @@ export default function LoginPage() {
     setErro('');
     setOk('');
     if (!webauthnSupported()) {
-      setErro('Este navegador não suporta login por digital (WebAuthn).');
+      setErro(t.login_bio_unsupported || 'Este navegador não suporta login por digital (WebAuthn).');
       return;
     }
     const id = identificador.trim();
     if (isEmail(id)) {
-      setErro('Para biometria, use o Tax ID / CNPJ cadastrado (não o e-mail).');
+      setErro(t.login_bio_use_tax || 'Para biometria, use o Tax ID / CNPJ cadastrado (não o e-mail).');
       return;
     }
     const tax = id.replace(/[^A-Za-z0-9]/g, '');
     if (tax.length < 5) {
-      setErro('Informe o CNPJ ou Tax ID antes de usar a digital.');
+      setErro(t.login_bio_need_tax || 'Informe o CNPJ ou Tax ID antes de usar a digital.');
       return;
     }
     setLoadingBio(true);
@@ -104,7 +106,7 @@ export default function LoginPage() {
       const data = await loginWithPasskey(apiUrl, tax);
       afterLogin(data);
     } catch (err: any) {
-      setErro(err.message || 'Falha na biometria');
+      setErro(err.message || t.login_bio_fail || 'Falha na biometria');
     } finally {
       setLoadingBio(false);
     }
@@ -121,9 +123,12 @@ export default function LoginPage() {
           <div className="flex justify-center pt-1">
             <BrandMark size="lg" href="/" centered subtitle="Online Reputation" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Login</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">
+            {t.login_title || t.login || 'Login'}
+          </h1>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            CNPJ / Tax ID ou e-mail + senha. Também dá para entrar com digital.
+            {t.login_subtitle ||
+              'CNPJ / Tax ID ou e-mail + senha. Também dá para entrar com digital.'}
           </p>
         </div>
 
@@ -148,7 +153,7 @@ export default function LoginPage() {
               htmlFor="login-id"
               className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
             >
-              <Building2 size={14} /> CNPJ / Tax ID ou e-mail
+              <Building2 size={14} /> {t.login_id_label || 'CNPJ / Tax ID ou e-mail'}
             </label>
             <input
               id="login-id"
@@ -157,7 +162,7 @@ export default function LoginPage() {
               autoComplete="username"
               value={identificador}
               onChange={(e) => setIdentificador(e.target.value)}
-              placeholder="CNPJ, Tax ID ou e-mail"
+              placeholder={t.login_id_placeholder || 'CNPJ, Tax ID ou e-mail'}
               className={inputCls}
             />
           </div>
@@ -167,7 +172,7 @@ export default function LoginPage() {
               htmlFor="login-senha"
               className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
             >
-              <Lock size={14} /> Senha
+              <Lock size={14} /> {t.login_password || t.label_password || 'Senha'}
             </label>
             <input
               id="login-senha"
@@ -185,7 +190,9 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition-colors text-sm disabled:opacity-50"
           >
-            {loading ? 'Entrando…' : 'Entrar com senha'}
+            {loading
+              ? t.login_submitting || 'Entrando…'
+              : t.login_submit || 'Entrar com senha'}
           </button>
 
           <button
@@ -195,28 +202,32 @@ export default function LoginPage() {
             className="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Fingerprint size={18} />
-            {loadingBio ? 'Aguardando digital…' : 'Entrar com digital'}
+            {loadingBio
+              ? t.login_bio_waiting || 'Aguardando digital…'
+              : t.login_bio || 'Entrar com digital'}
           </button>
 
           <p className="text-[11px] text-zinc-500 text-center leading-relaxed">
-            A biometria fica só no seu aparelho (WebAuthn). Cadastre a digital após o primeiro login
-            por senha.
+            {t.login_bio_hint ||
+              'A biometria fica só no seu aparelho (WebAuthn). Cadastre a digital após o primeiro login por senha.'}
           </p>
 
           <p className="text-center text-xs text-zinc-500 space-x-3">
             <a href="/recuperar-senha" className="underline hover:text-indigo-400">
-              Esqueci a senha
+              {t.login_forgot || t.forgot_password || 'Esqueci a senha'}
             </a>
             <span className="text-zinc-600">|</span>
             <a href="/" className="underline hover:text-indigo-400">
-              Ativar 7 dias grátis
+              {t.login_trial || t.trial_cta || 'Ativar 7 dias grátis'}
             </a>
           </p>
         </form>
       </div>
 
       <div className="w-full px-2 pb-10">
-        <p className="text-center text-sm font-medium text-zinc-400 mb-4">Planos disponíveis</p>
+        <p className="text-center text-sm font-medium text-zinc-400 mb-4">
+          {t.login_plans || t.plans || 'Planos disponíveis'}
+        </p>
         <PlanCards requireEmpresa={false} />
       </div>
     </div>
