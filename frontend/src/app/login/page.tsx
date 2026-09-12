@@ -23,25 +23,17 @@ function nextPath(): string | null {
   return null;
 }
 
+function isEmail(v: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+}
+
 export default function LoginPage() {
-  const [cnpj, setCnpj] = useState('');
+  const [identificador, setIdentificador] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingBio, setLoadingBio] = useState(false);
   const [erro, setErro] = useState('');
   const [ok, setOk] = useState('');
-
-  const aplicarMascaraCnpj = (valor: string) => {
-    const apenasNumeros = valor.replace(/\D/g, '').substring(0, 14);
-    let mascarado = apenasNumeros;
-    if (mascarado.length > 2) mascarado = `${mascarado.substring(0, 2)}.${mascarado.substring(2)}`;
-    if (mascarado.length > 6) mascarado = `${mascarado.substring(0, 6)}.${mascarado.substring(6)}`;
-    if (mascarado.length > 10)
-      mascarado = `${mascarado.substring(0, 10)}/${mascarado.substring(10)}`;
-    if (mascarado.length > 15)
-      mascarado = `${mascarado.substring(0, 15)}-${mascarado.substring(15)}`;
-    setCnpj(mascarado);
-  };
 
   const afterLogin = (data: any) => {
     setOk('Login realizado com sucesso.');
@@ -68,14 +60,16 @@ export default function LoginPage() {
     setOk('');
     try {
       const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
+      const id = identificador.trim();
+      const body: Record<string, string> = { senha };
+      if (isEmail(id)) body.email = id.toLowerCase();
+      else body.cnpj = id;
+
       const res = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          cnpj: cnpj.replace(/\D/g, ''),
-          senha,
-        }),
+        body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error(await readApiError(res, 'Falha no login'));
       const data = await res.json();
@@ -94,15 +88,20 @@ export default function LoginPage() {
       setErro('Este navegador não suporta login por digital (WebAuthn).');
       return;
     }
-    const nums = cnpj.replace(/\D/g, '');
-    if (nums.length < 11) {
-      setErro('Informe o CNPJ antes de usar a digital.');
+    const id = identificador.trim();
+    if (isEmail(id)) {
+      setErro('Para biometria, use o Tax ID / CNPJ cadastrado (não o e-mail).');
+      return;
+    }
+    const tax = id.replace(/[^A-Za-z0-9]/g, '');
+    if (tax.length < 5) {
+      setErro('Informe o CNPJ ou Tax ID antes de usar a digital.');
       return;
     }
     setLoadingBio(true);
     try {
       const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
-      const data = await loginWithPasskey(apiUrl, nums);
+      const data = await loginWithPasskey(apiUrl, tax);
       afterLogin(data);
     } catch (err: any) {
       setErro(err.message || 'Falha na biometria');
@@ -124,7 +123,7 @@ export default function LoginPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-50">Login</h1>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            CNPJ + senha, ou digital já cadastrada no dispositivo.
+            CNPJ / Tax ID ou e-mail + senha. Também dá para entrar com digital.
           </p>
         </div>
 
@@ -146,19 +145,19 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <label
-              htmlFor="login-cnpj"
+              htmlFor="login-id"
               className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
             >
-              <Building2 size={14} /> CNPJ
+              <Building2 size={14} /> CNPJ / Tax ID ou e-mail
             </label>
             <input
-              id="login-cnpj"
+              id="login-id"
               type="text"
               required
-              inputMode="numeric"
-              value={cnpj}
-              onChange={(e) => aplicarMascaraCnpj(e.target.value)}
-              placeholder="00.000.000/0000-00"
+              autoComplete="username"
+              value={identificador}
+              onChange={(e) => setIdentificador(e.target.value)}
+              placeholder="CNPJ, Tax ID ou e-mail"
               className={inputCls}
             />
           </div>
@@ -174,6 +173,7 @@ export default function LoginPage() {
               id="login-senha"
               type="password"
               required
+              autoComplete="current-password"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               className={inputCls}
