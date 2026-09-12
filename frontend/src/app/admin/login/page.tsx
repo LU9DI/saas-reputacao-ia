@@ -131,7 +131,6 @@ function AdminLoginForm() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Falha na solicitação');
         setMsg(data.message || 'Se os dados estiverem corretos, enviaremos o link.');
-        // Link devolvido quando e-mail falha (admin já autenticado pela chave)
         const link = data.recovery_link || data.dev_link || '';
         if (link) {
           setRecoveryLink(link);
@@ -184,6 +183,9 @@ function AdminLoginForm() {
     setMfaCode('');
     setChave('');
   };
+
+  const inputCls =
+    'w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900';
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
@@ -249,8 +251,8 @@ function AdminLoginForm() {
                     setEmail(e.target.value);
                     setErro('');
                   }}
-                  placeholder="admin@seusaas.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900"
+                  placeholder=""
+                  className={inputCls}
                 />
               </div>
 
@@ -271,8 +273,8 @@ function AdminLoginForm() {
                     setSenha(e.target.value);
                     setErro('');
                   }}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900"
+                  placeholder=""
+                  className={inputCls}
                 />
               </div>
             </>
@@ -298,8 +300,8 @@ function AdminLoginForm() {
                   setMfaCode(e.target.value);
                   setErro('');
                 }}
-                placeholder="000 000"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 tracking-widest text-center font-mono text-lg text-slate-900"
+                placeholder=""
+                className={`${inputCls} tracking-widest text-center font-mono text-lg`}
               />
             </div>
           )}
@@ -315,8 +317,8 @@ function AdminLoginForm() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@seusaas.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
+                  placeholder=""
+                  className={inputCls}
                 />
               </div>
               <div className="space-y-1.5">
@@ -328,8 +330,8 @@ function AdminLoginForm() {
                   required
                   value={chave}
                   onChange={(e) => setChave(e.target.value)}
-                  placeholder="ADMIN_RECOVERY_SECRET do Render"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
+                  placeholder=""
+                  className={inputCls}
                   autoComplete="off"
                 />
               </div>
@@ -345,7 +347,8 @@ function AdminLoginForm() {
                   required
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-mono bg-slate-50/50 text-slate-900"
+                  placeholder=""
+                  className={`${inputCls} font-mono`}
                 />
               </div>
               <div className="space-y-1.5">
@@ -358,7 +361,8 @@ function AdminLoginForm() {
                   minLength={10}
                   value={novaSenha}
                   onChange={(e) => setNovaSenha(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
+                  placeholder=""
+                  className={inputCls}
                 />
               </div>
               <div className="space-y-1.5">
@@ -369,7 +373,8 @@ function AdminLoginForm() {
                   minLength={10}
                   value={confirma}
                   onChange={(e) => setConfirma(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50 text-slate-900"
+                  placeholder=""
+                  className={inputCls}
                 />
               </div>
             </>
