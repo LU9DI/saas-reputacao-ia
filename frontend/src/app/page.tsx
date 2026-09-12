@@ -313,7 +313,9 @@ export default function Home() {
       </div>
 
       <div className="w-full max-w-5xl space-y-4">
-        <h2 className="text-center text-lg font-semibold text-zinc-200">{t.plans_title}</h2>
+        <h2 className="text-center text-sm font-medium text-zinc-400">
+          {t.login_plans || t.plans || 'Planos disponíveis'}
+        </h2>
         <PlanCards />
       </div>
 
