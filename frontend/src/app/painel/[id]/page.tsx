@@ -14,6 +14,8 @@ import { UnidadesPanel } from '../../components/UnidadesPanel';
 import { WebAuthnSetup } from '../../components/WebAuthnSetup';
 import { ReviewsList } from '../../components/ReviewsList';
 import { BrandMark } from '../../components/BrandMark';
+import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { useLanguage } from '../../Contexts/LanguageContext';
 
 function authHeaders(json = true): HeadersInit {
   const h: Record<string, string> = {};
@@ -38,10 +40,15 @@ function listarMesesOpcoes(qtd = 18): string[] {
   return out;
 }
 
-function labelMes(yyyyMm: string): string {
+function labelMes(yyyyMm: string, lang: string): string {
   const [y, m] = yyyyMm.split('-').map(Number);
   if (!y || !m) return yyyyMm;
-  const nome = new Date(y, m - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  const locale =
+    lang === 'en' ? 'en-US' : lang === 'es' ? 'es-ES' : lang === 'zh' ? 'zh-CN' : 'pt-BR';
+  const nome = new Date(y, m - 1, 1).toLocaleDateString(locale, {
+    month: 'long',
+    year: 'numeric',
+  });
   return nome.charAt(0).toUpperCase() + nome.slice(1);
 }
 
@@ -61,6 +68,7 @@ const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
 export default function PainelEmpresa() {
   const params = useParams();
+  const { language, t } = useLanguage();
   const empresaId = String(params?.id || '');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -74,12 +82,17 @@ export default function PainelEmpresa() {
   const [msgPdf, setMsgPdf] = useState('');
   const [baixandoPdf, setBaixandoPdf] = useState(false);
   const [mesPdf, setMesPdf] = useState(currentMonthYYYYMM);
+  const [langPdf, setLangPdf] = useState(language);
   const mesesOpcoes = useMemo(() => listarMesesOpcoes(18), []);
   const mesMax = currentMonthYYYYMM();
   const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
     typeof window !== 'undefined' ? window.location.origin : getEnv('NEXT_PUBLIC_APP_URL');
   const linkAvaliacao = data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
+
+  useEffect(() => {
+    setLangPdf(language);
+  }, [language]);
 
   const carregar = async () => {
     if (!empresaId) {
@@ -159,8 +172,9 @@ export default function PainelEmpresa() {
     setMsgPdf('');
     try {
       const mes = check.value;
+      const lang = langPdf || language || 'pt';
       const res = await fetch(
-        `${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${encodeURIComponent(mes)}`,
+        `${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${encodeURIComponent(mes)}&lang=${encodeURIComponent(lang)}`,
         { credentials: 'include', headers: authHeaders(false) }
       );
       if (res.status === 401) {
@@ -179,10 +193,10 @@ export default function PainelEmpresa() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `relatorio-${mes}.pdf`;
+      a.download = `relatorio-${mes}-${lang}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-      setMsgPdf(`PDF de ${labelMes(mes)} baixado.`);
+      setMsgPdf(`PDF ${labelMes(mes, lang)} (${lang.toUpperCase()}) baixado.`);
     } catch (e: any) {
       setMsgPdf(e.message || 'Falha no PDF');
     } finally {
@@ -266,8 +280,9 @@ export default function PainelEmpresa() {
   return (
     <div className="min-h-screen bg-black text-zinc-100">
       <header className="border-b border-zinc-800 bg-zinc-950/80">
-        <div className="max-w-5xl mx-auto px-6 md:px-10 pt-5 pb-2">
+        <div className="max-w-5xl mx-auto px-6 md:px-10 pt-5 pb-2 flex items-center justify-between gap-3">
           <BrandMark size="sm" href="/" />
+          <LanguageSwitcher compact />
         </div>
         <div className="max-w-5xl mx-auto px-6 md:px-10 py-5 flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -292,12 +307,25 @@ export default function PainelEmpresa() {
                   value={mesPdf}
                   onChange={(e) => setMesPdf(e.target.value)}
                   className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-900"
+                  aria-label="Mês do relatório"
                 >
                   {mesesOpcoes.map((m) => (
                     <option key={m} value={m}>
-                      {labelMes(m)}
+                      {labelMes(m, language)}
                     </option>
                   ))}
+                </select>
+                <select
+                  value={langPdf}
+                  onChange={(e) => setLangPdf(e.target.value as typeof language)}
+                  className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-900"
+                  aria-label={t.language || 'Idioma do PDF'}
+                  title="Idioma do PDF"
+                >
+                  <option value="pt">🇧🇷 PT</option>
+                  <option value="en">🇬🇧 EN</option>
+                  <option value="es">🇪🇸 ES</option>
+                  <option value="zh">🇨🇳 ZH</option>
                 </select>
                 <button
                   type="button"
@@ -305,7 +333,7 @@ export default function PainelEmpresa() {
                   onClick={baixarPdf}
                   className="text-sm px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium disabled:opacity-50"
                 >
-                  {baixandoPdf ? 'Gerando…' : 'Baixar PDF'}
+                  {baixandoPdf ? '…' : 'PDF'}
                 </button>
               </>
             )}
@@ -325,7 +353,11 @@ export default function PainelEmpresa() {
           </div>
         </div>
         {msgPdf && (
-          <p className={`text-center text-xs pb-3 ${msgPdf.includes('baixado') ? 'text-emerald-400' : 'text-red-400'}`}>
+          <p
+            className={`text-center text-xs pb-3 ${
+              msgPdf.includes('baixado') ? 'text-emerald-400' : 'text-red-400'
+            }`}
+          >
             {msgPdf}
           </p>
         )}
@@ -424,9 +456,7 @@ export default function PainelEmpresa() {
 
         <section className={`${card} px-6 py-6 space-y-3`}>
           <p className={label}>Link Google Maps / Reviews</p>
-          <p className="text-xs text-zinc-500">
-            Notas 4–5★ redirecionam para este link.
-          </p>
+          <p className="text-xs text-zinc-500">Notas 4–5★ redirecionam para este link.</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="url"
