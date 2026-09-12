@@ -45,6 +45,17 @@ function labelMes(yyyyMm: string): string {
   return nome.charAt(0).toUpperCase() + nome.slice(1);
 }
 
+function planAllowsPdf(plan?: string, status?: string, dashboard?: any): boolean {
+  if (dashboard?.pdf_disponivel) return true;
+  if (dashboard?.trial_completo) return true;
+  const p = String(plan || '').toLowerCase();
+  const s = String(status || '').toLowerCase();
+  if (p === 'trial' || p === 'teste' || p === 'test') return true;
+  if (s === 'trial' || s === 'teste') return true;
+  if (['pro', 'ultra', 'corporativo', 'rei'].includes(p)) return true;
+  return false;
+}
+
 const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
 const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
@@ -152,14 +163,19 @@ export default function PainelEmpresa() {
         `${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${encodeURIComponent(mes)}`,
         { credentials: 'include', headers: authHeaders(false) }
       );
-      if (res.status === 401 || res.status === 403) {
-        throw new Error('Faça login e use um plano com PDF (trial/pro+).');
+      if (res.status === 401) {
+        throw new Error('Faça login novamente para baixar o PDF.');
       }
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        throw new Error(j.error || `Erro ${res.status}`);
+        throw new Error(j.error || j.detail || `Erro ${res.status}`);
       }
       const blob = await res.blob();
+      if (blob.type && blob.type.includes('json')) {
+        const text = await blob.text();
+        const j = JSON.parse(text);
+        throw new Error(j.error || 'Falha no PDF');
+      }
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -242,7 +258,7 @@ export default function PainelEmpresa() {
   const { empresa, metricas, dashboard } = data;
   const dist = metricas.distribuicao || [0, 0, 0, 0, 0];
   const nivel = dashboard?.nivel || 'basico';
-  const pdfOk = Boolean(dashboard?.pdf_disponivel || dashboard?.plan_switch);
+  const pdfOk = planAllowsPdf(empresa.plan, empresa.status, dashboard);
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
   const status = empresa.status_acesso || String(empresa.status || '').toUpperCase();
   const reviews = Array.isArray(data.reviews) ? data.reviews : [];
@@ -292,6 +308,9 @@ export default function PainelEmpresa() {
                   {baixandoPdf ? 'Gerando…' : 'Baixar PDF'}
                 </button>
               </>
+            )}
+            {!pdfOk && (
+              <span className="text-xs text-zinc-500">PDF nos planos Trial e Pro+</span>
             )}
             <button type="button" onClick={carregar} className="text-sm text-zinc-400 px-3 py-2">
               Atualizar
