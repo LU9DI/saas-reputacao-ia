@@ -23,8 +23,15 @@ export const SUPPORTED_LANGUAGES: { code: Language; label: string; flag: string 
   { code: "zh", label: "中文", flag: "🇨🇳" },
 ];
 
-const dictionaries = { pt, en, es, zh } as const;
-export type Dictionary = typeof pt;
+/** Chaves de tradução — strings livres (evita conflito entre pt/en/es/zh no build). */
+export type Dictionary = Record<string, string>;
+
+const dictionaries: Record<Language, Dictionary> = {
+  pt: pt as Dictionary,
+  en: en as Dictionary,
+  es: es as Dictionary,
+  zh: zh as Dictionary,
+};
 
 const STORAGE_KEY = "filtra_lang";
 
