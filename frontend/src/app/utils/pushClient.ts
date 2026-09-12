@@ -1,38 +1,117 @@
 /** Cliente Web Push no browser. */
 
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+function cleanVapidKey(raw: string): string {
+  return String(raw || '')
+    .trim()
+    .replace(/^['"]|['"]$/g, '')
+    .replace(/\s+/g, '');
+}
+
+/** Converte VAPID public key (URL-safe base64) em ArrayBuffer isolado (Chrome exige isso). */
+function urlBase64ToArrayBuffer(base64String: string): ArrayBuffer {
+  const cleaned = cleanVapidKey(base64String);
+  const padding = '='.repeat((4 - (cleaned.length % 4)) % 4);
+  const base64 = (cleaned + padding).replace(/-/g, '+').replace(/_/g, '/');
   const raw = atob(base64);
   const out = new Uint8Array(raw.length);
   for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
-  return out;
+  // slice cria ArrayBuffer "limpo" — evita "Registration failed - push service error"
+  return out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength);
 }
 
 async function ensureServiceWorker(): Promise<ServiceWorkerRegistration> {
   if (!('serviceWorker' in navigator)) {
     throw new Error('Service Worker não suportado neste navegador.');
   }
-  let reg = await navigator.serviceWorker.getRegistration();
+
+  // registra de forma explícita no scope raiz
+  let reg = await navigator.serviceWorker.getRegistration('/');
   if (!reg) {
-    reg = await navigator.serviceWorker.register('/sw.js');
+    reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
   }
-  // espera ativo (senão getSubscription/subscribe falha em silêncio em alguns browsers)
+
+  // espera controller/active
   if (reg.installing) {
     await new Promise<void>((resolve) => {
-      reg!.installing!.addEventListener('statechange', () => {
-        if (reg!.installing?.state === 'installed' || reg!.active) resolve();
+      const sw = reg!.installing!;
+      sw.addEventListener('statechange', () => {
+        if (sw.state === 'activated' || sw.state === 'installed') resolve();
       });
-      setTimeout(() => resolve(), 4000);
+      setTimeout(() => resolve(), 5000);
     });
   }
-  return navigator.serviceWorker.ready;
+
+  reg = await navigator.serviceWorker.ready;
+
+  // se a página ainda não está controlada, tenta claim via reload suave não forçado
+  if (!navigator.serviceWorker.controller && reg.active) {
+    // ok em primeiro load; subscribe ainda funciona com registration.ready
+  }
+
+  return reg;
 }
 
 function authHeaders(token: string): HeadersInit {
   const h: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) h.Authorization = `Bearer ${token}`;
   return h;
+}
+
+function mapPushError(e: any): string {
+  const msg = String(e?.message || e || '');
+  if (/push service error|Registration failed/i.test(msg)) {
+    return (
+      'Falha no serviço de push do navegador. ' +
+      'Tente: 1) recarregar a página 2) permitir notificações 3) em Chrome: ' +
+      'configurações do site → redefinir permissões. ' +
+      'Se mudou a chave VAPID no servidor, limpamos a subscription antiga automaticamente — clique Ativar de novo.'
+    );
+  }
+  if (/permission/i.test(msg)) {
+    return 'Permissão de notificação negada ou bloqueada.';
+  }
+  return msg || 'Falha ao criar subscription push.';
+}
+
+async function subscribeWithKey(
+  reg: ServiceWorkerRegistration,
+  publicKey: string
+): Promise<PushSubscription> {
+  const applicationServerKey = urlBase64ToArrayBuffer(publicKey);
+
+  // Se já existe sub com outra chave VAPID, Chrome costuma falhar — remove e recria
+  const existing = await reg.pushManager.getSubscription();
+  if (existing) {
+    try {
+      await existing.unsubscribe();
+    } catch {
+      /* ignore */
+    }
+  }
+
+  try {
+    return await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey,
+    });
+  } catch (e1: any) {
+    // retry uma vez após unsubscribe agressivo
+    try {
+      const again = await reg.pushManager.getSubscription();
+      if (again) await again.unsubscribe();
+    } catch {
+      /* ignore */
+    }
+    await new Promise((r) => setTimeout(r, 400));
+    try {
+      return await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey,
+      });
+    } catch (e2: any) {
+      throw new Error(mapPushError(e2?.message ? e2 : e1));
+    }
+  }
 }
 
 export async function enablePush(
@@ -67,10 +146,20 @@ export async function enablePush(
     };
   }
 
-  const keyRes = await fetch(`${apiUrl}/api/push/vapid-public-key`);
+  const keyRes = await fetch(`${apiUrl}/api/push/vapid-public-key`, {
+    credentials: 'include',
+  });
   const keyJson = await keyRes.json().catch(() => ({}));
   if (!keyRes.ok || !keyJson.publicKey) {
     return { ok: false, error: keyJson.error || 'VAPID não configurado no servidor.' };
+  }
+
+  const publicKey = cleanVapidKey(String(keyJson.publicKey));
+  if (publicKey.length < 80) {
+    return {
+      ok: false,
+      error: 'VAPID_PUBLIC_KEY inválida no servidor (muito curta). Regenere com: npx web-push generate-vapid-keys',
+    };
   }
 
   let reg: ServiceWorkerRegistration;
@@ -80,23 +169,11 @@ export async function enablePush(
     return { ok: false, error: e?.message || 'Falha ao registrar service worker.' };
   }
 
-  let already = false;
-  let sub = await reg.pushManager.getSubscription();
-  if (sub) {
-    already = true;
-  } else {
-    try {
-      const key = urlBase64ToUint8Array(String(keyJson.publicKey)) as unknown as BufferSource;
-      sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: key,
-      });
-    } catch (e: any) {
-      return {
-        ok: false,
-        error: e?.message || 'Falha ao criar subscription push no navegador.',
-      };
-    }
+  let sub: PushSubscription;
+  try {
+    sub = await subscribeWithKey(reg, publicKey);
+  } catch (e: any) {
+    return { ok: false, error: mapPushError(e) };
   }
 
   const res = await fetch(`${apiUrl}/api/push/subscribe`, {
@@ -112,7 +189,7 @@ export async function enablePush(
   if (!res.ok) {
     return { ok: false, error: data.error || 'Falha ao registrar push no servidor.' };
   }
-  return { ok: true, already };
+  return { ok: true, already: false };
 }
 
 export async function sendTestPush(apiUrl: string, token: string) {
