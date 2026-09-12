@@ -1,19 +1,24 @@
 /** @type {import('next').NextConfig} */
+const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000').replace(/\/+$/, '');
+
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
-  // 🔌 PROXY PARA MANDAR REQUISIÇÕES DO FRONT DIRETO PRO SEU BACKEND NODE/EXPRESS
+  // Proxy para chamadas relativas /api/*.
+  // Em produção, usa NEXT_PUBLIC_API_URL (Render), nunca localhost.
+  // Em desenvolvimento, o script do frontend define NEXT_PUBLIC_API_URL
+  // para o backend local.
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*', // Destino do seu backend dividido
+        destination: `${apiBase}/api/:path*`,
       },
     ];
   },
 
-  // Headers úteis para PWA / SW que você configurou perfeitamente
+  // Headers úteis para PWA / SW.
   async headers() {
     return [
       {
@@ -35,4 +40,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
