@@ -64,6 +64,17 @@ export default function PaginaAvaliacao() {
     locale: language,
   });
 
+  const mensagemClienteParaEmpresa = () => {
+    const empresa = nomeEmpresa.trim() || (language === 'en' ? 'your company' : language === 'es' ? 'su empresa' : 'vocês');
+    const cliente = name.trim();
+    const texto = language === 'en'
+      ? `Hi, ${empresa}!\n\nI just submitted feedback through the evaluation link and wasn't satisfied with the service.${comment.trim() ? `\n\nWhat happened: ${comment.trim().slice(0, 280)}` : ''}\n\nI'd like to talk and try to resolve this.${cliente ? `\n\n— ${cliente}` : ''}`
+      : language === 'es'
+        ? `¡Hola, ${empresa}!\n\nAcabo de registrar un feedback por el enlace de evaluación y no quedé satisfecho con la atención.${comment.trim() ? `\n\nLo que ocurrió: ${comment.trim().slice(0, 280)}` : ''}\n\nMe gustaría conversar para intentar resolverlo.${cliente ? `\n\n— ${cliente}` : ''}`
+        : `Olá, ${empresa}!\n\nAcabei de registrar um feedback pelo link de avaliação e não fiquei satisfeito com o atendimento.${comment.trim() ? `\n\nO que aconteceu: ${comment.trim().slice(0, 280)}` : ''}\n\nGostaria de conversar para resolver isso.${cliente ? `\n\n— ${cliente}` : ''}`;
+    return texto;
+  };
+
   const handleStarClick = (selectedRating: number) => {
     setRating(selectedRating);
     setErro('');
@@ -108,26 +119,11 @@ export default function PaginaAvaliacao() {
         return;
       }
 
-      const data = await response.json().catch(() => ({}));
-      // Preferir link montado pelo backend (mensagem simples de insatisfação)
-      const wppFromApi = data.whatsapp_empresa_url as string | undefined;
-      if (wppFromApi) {
-        window.location.href = wppFromApi;
-        return;
-      }
-
+      // O WhatsApp do cliente -> empresa é montado exclusivamente a partir
+      // dos dados do próprio cliente. Nunca reutilizar resposta da IA/empresa.
       if (whatsappUrl) {
-        const texto = [
-          language === 'en'
-            ? `Hi${nomeEmpresa ? `, ${nomeEmpresa}` : ''}! I wasn't satisfied with the service and left private feedback.`
-            : language === 'es'
-              ? `¡Hola${nomeEmpresa ? `, ${nomeEmpresa}` : ''}! No quedé satisfecho con la atención y registré un feedback privado.`
-              : `Olá${nomeEmpresa ? `, ${nomeEmpresa}` : ''}! Não fiquei satisfeito com o atendimento e registrei um feedback privado.`,
-          comment.trim() ? `\n${comment.trim().slice(0, 280)}` : '',
-          `\n— ${name.trim() || 'Cliente'}`,
-        ].join('');
         const sep = whatsappUrl.includes('?') ? '&' : '?';
-        window.location.href = `${whatsappUrl}${sep}text=${encodeURIComponent(texto)}`;
+        window.location.href = `${whatsappUrl}${sep}text=${encodeURIComponent(mensagemClienteParaEmpresa())}`;
         return;
       }
 
