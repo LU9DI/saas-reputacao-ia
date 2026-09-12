@@ -5,11 +5,14 @@ import { useSearchParams } from 'next/navigation';
 import { getEnv } from '../utils/env';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from '../utils/passwordPolicy';
 import { BrandMark } from '../components/BrandMark';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { useLanguage } from '../Contexts/LanguageContext';
 
 const inputClass =
   'mt-1.5 w-full px-4 py-3 rounded-xl border border-zinc-600 bg-zinc-950 text-zinc-100 text-base placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
 
 function RecuperarForm() {
+  const { t } = useLanguage();
   const search = useSearchParams();
   const tokenFromUrl = search.get('token') || '';
 
@@ -39,7 +42,7 @@ function RecuperarForm() {
     setAvisoSmtp('');
     const emailTrim = email.trim().toLowerCase();
     if (!emailTrim || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
-      setErro('Informe um e-mail válido.');
+      setErro(t.recovery_email_invalid || 'Informe um e-mail válido.');
       setLoading(false);
       return;
     }
@@ -50,22 +53,25 @@ function RecuperarForm() {
         body: JSON.stringify({ email: emailTrim }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Falha na solicitação');
+      if (!res.ok) throw new Error(data.error || t.recovery_fail || 'Falha na solicitação');
       setMsg(
         data.message ||
+          t.recovery_default_msg ||
           'Se o e-mail estiver cadastrado, enviaremos um link para redefinir a senha.'
       );
       if (data.smtp === false) {
         setAvisoSmtp(
-          'O servidor ainda não tem SMTP completo. Defina SMTP_HOST, SMTP_USER, SMTP_PASS e SMTP_FROM no Render e faça redeploy.'
+          t.recovery_smtp_missing ||
+            'O servidor ainda não tem SMTP completo. Defina SMTP_HOST, SMTP_USER, SMTP_PASS e SMTP_FROM no Render e faça redeploy.'
         );
       } else if (data.delivered === false) {
         setAvisoSmtp(
-          'O servidor tentou enviar, mas o SMTP recusou (senha de app, bloqueio do Gmail ou FROM inválido). Veja os logs do Render procurando por "[mail] FALHA" ou "forgot-password".'
+          t.recovery_smtp_fail ||
+            'O servidor tentou enviar, mas o SMTP recusou. Veja os logs do Render.'
         );
       }
     } catch (err: any) {
-      setErro(err.message || 'Erro');
+      setErro(err.message || t.recovery_error || 'Erro');
     } finally {
       setLoading(false);
     }
@@ -89,26 +95,33 @@ function RecuperarForm() {
         body: JSON.stringify({ token, nova_senha: novaSenha }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Falha ao redefinir');
-      setMsg(data.message || 'Senha atualizada. Você já pode entrar.');
+      if (!res.ok) throw new Error(data.error || t.recovery_reset_fail || 'Falha ao redefinir');
+      setMsg(data.message || t.recovery_reset_ok || 'Senha atualizada. Você já pode entrar.');
     } catch (err: any) {
-      setErro(err.message || 'Erro');
+      setErro(err.message || t.recovery_error || 'Erro');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4 gap-4">
+      <div className="w-full max-w-md flex justify-end">
+        <LanguageSwitcher compact />
+      </div>
       <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-2xl shadow-xl p-8 space-y-5">
         <div className="flex justify-center">
           <BrandMark href="/" size="sm" centered subtitle="Online Reputation" />
         </div>
-        <h1 className="text-xl font-bold text-zinc-50 text-center">Recuperação de senha</h1>
+        <h1 className="text-xl font-bold text-zinc-50 text-center">
+          {t.recovery_title || 'Recuperação de senha'}
+        </h1>
         <p className="text-sm text-zinc-400 text-center">
           {modo === 'pedir'
-            ? 'Use o mesmo e-mail do cadastro da empresa. Link válido por 1 hora.'
-            : 'Defina uma nova senha forte para a conta da empresa.'}
+            ? t.recovery_subtitle_request ||
+              'Use o mesmo e-mail do cadastro da empresa. Link válido por 1 hora.'
+            : t.recovery_subtitle_reset ||
+              'Defina uma nova senha forte para a conta da empresa.'}
         </p>
 
         {erro && (
@@ -131,7 +144,7 @@ function RecuperarForm() {
           <form onSubmit={pedirLink} className="space-y-4">
             <div>
               <label htmlFor="email-recup" className="block text-sm font-medium text-zinc-300">
-                E-mail da empresa
+                {t.recovery_email_label || 'E-mail da empresa'}
               </label>
               <input
                 id="email-recup"
@@ -140,7 +153,7 @@ function RecuperarForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={inputClass}
-                placeholder="seu@email.com"
+                placeholder={t.recovery_email_placeholder || t.ph_email || 'seu@email.com'}
                 autoComplete="email"
                 autoFocus
               />
@@ -150,21 +163,23 @@ function RecuperarForm() {
               disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl text-sm font-semibold disabled:opacity-50"
             >
-              {loading ? 'Enviando…' : 'Enviar link por e-mail'}
+              {loading
+                ? t.recovery_sending || 'Enviando…'
+                : t.recovery_send_link || 'Enviar link por e-mail'}
             </button>
             <button
               type="button"
               className="w-full text-sm text-zinc-400 hover:text-zinc-200 underline"
               onClick={() => setModo('redefinir')}
             >
-              Já tenho o link / token do e-mail
+              {t.recovery_have_token || 'Já tenho o link / token do e-mail'}
             </button>
           </form>
         ) : (
           <form onSubmit={redefinir} className="space-y-4">
             <div>
               <label htmlFor="token-recup" className="block text-sm font-medium text-zinc-300">
-                Token (do e-mail)
+                {t.recovery_token_label || 'Token (do e-mail)'}
               </label>
               <input
                 id="token-recup"
@@ -173,12 +188,14 @@ function RecuperarForm() {
                 onChange={(e) => setToken(e.target.value)}
                 className={`${inputClass} font-mono text-sm`}
                 required
-                placeholder="Cole o token se não abriu pelo link"
+                placeholder={
+                  t.recovery_token_placeholder || 'Cole o token se não abriu pelo link'
+                }
               />
             </div>
             <div>
               <label htmlFor="nova-senha" className="block text-sm font-medium text-zinc-300">
-                Nova senha
+                {t.recovery_new_password || 'Nova senha'}
               </label>
               <input
                 id="nova-senha"
@@ -197,25 +214,27 @@ function RecuperarForm() {
               disabled={loading}
               className="w-full bg-zinc-100 hover:bg-white text-zinc-900 py-3 rounded-xl text-sm font-semibold disabled:opacity-50"
             >
-              {loading ? 'Salvando…' : 'Salvar nova senha'}
+              {loading
+                ? t.recovery_saving || 'Salvando…'
+                : t.recovery_save || 'Salvar nova senha'}
             </button>
             <button
               type="button"
               className="w-full text-sm text-zinc-400 hover:text-zinc-200 underline"
               onClick={() => setModo('pedir')}
             >
-              Pedir novo link por e-mail
+              {t.recovery_request_again || 'Pedir novo link por e-mail'}
             </button>
           </form>
         )}
 
         <p className="text-center text-xs text-zinc-500">
           <a href="/login" className="underline hover:text-zinc-300">
-            Voltar ao login
+            {t.recovery_back_login || 'Voltar ao login'}
           </a>
           {' · '}
           <a href="/" className="underline hover:text-zinc-300">
-            Início
+            {t.recovery_home || 'Início'}
           </a>
         </p>
       </div>
@@ -228,7 +247,7 @@ export default function RecuperarSenhaPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-black flex items-center justify-center text-sm text-zinc-500">
-          Carregando…
+          …
         </div>
       }
     >
