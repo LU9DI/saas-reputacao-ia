@@ -1,4 +1,6 @@
-/** Planos oficiais do produto + flags de recurso. */
+/**
+ * Planos oficiais do produto + flags de recurso.
+ */
 
 export const PLANOS_OFICIAIS = ['inicial', 'pro', 'ultra', 'corporativo', 'rei'] as const;
 export type PlanoOficial = (typeof PLANOS_OFICIAIS)[number];
@@ -17,25 +19,33 @@ export function allowPlanSwitch(): boolean {
 /** Trial / teste de 7 dias — tudo incluso (IA, PDF, dashboard completo). */
 export function isTrialPlan(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
-  return p === 'trial' || p === 'teste';
+  return p === 'trial' || p === 'teste' || p === 'trialing' || p.startsWith('trial');
 }
 
 /** PDF mensal: Pro e acima + trial (tudo incluso nos 7 dias). Inicial pago não tem PDF. */
 export function planTemPdf(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
   if (isTrialPlan(p)) return true;
-  if (['pro', 'ultra', 'corporativo', 'rei'].includes(p)) return true;
+  if (['pro', 'ultra', 'corporativo', 'corp', 'rei'].includes(p)) return true;
   return false;
+}
+
+/** Alias usado por alguns módulos legados */
+export function empresaTemPdf(empresa: { plan?: string; status?: string } | null): boolean {
+  if (!empresa) return false;
+  return planTemPdf(empresa.plan || empresa.status);
 }
 
 export function planLabel(plan: string): string {
   const map: Record<string, string> = {
     trial: 'Trial',
     teste: 'Teste',
+    trialing: 'Trial',
     inicial: 'Inicial',
     pro: 'Pro',
     ultra: 'Ultra',
     corporativo: 'Corporativo',
+    corp: 'Corporativo',
     rei: 'Rei',
   };
   return map[String(plan || '').toLowerCase()] || String(plan || '—');

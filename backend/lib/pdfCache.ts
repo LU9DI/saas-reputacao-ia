@@ -1,5 +1,6 @@
 /**
  * Cache de PDF em disco — redownload ilimitado sem regenerar e sem tokens de IA.
+ * Chave inclui plan + lang + versão de layout para invalidar quando muda o template.
  */
 import fs from 'fs';
 import path from 'path';
@@ -17,10 +18,16 @@ function cacheDir(): string {
   return base;
 }
 
-function keyPath(empresaId: string, mesAno: string, plan: string): string {
+function keyPath(
+  empresaId: string,
+  mesAno: string,
+  plan: string,
+  lang = 'pt',
+  version = 'v7'
+): string {
   const h = crypto
     .createHash('sha256')
-    .update(`${empresaId}|${mesAno}|${plan}`)
+    .update(`${empresaId}|${mesAno}|${plan}|${lang}|${version}`)
     .digest('hex')
     .slice(0, 24);
   return path.join(cacheDir(), `${h}.pdf`);
@@ -29,10 +36,12 @@ function keyPath(empresaId: string, mesAno: string, plan: string): string {
 export function readPdfCache(
   empresaId: string,
   mesAno: string,
-  plan: string
+  plan: string,
+  lang = 'pt',
+  version = 'v7'
 ): Buffer | null {
   try {
-    const p = keyPath(empresaId, mesAno, plan);
+    const p = keyPath(empresaId, mesAno, plan, lang, version);
     if (!fs.existsSync(p)) return null;
     return fs.readFileSync(p);
   } catch {
@@ -44,10 +53,12 @@ export function writePdfCache(
   empresaId: string,
   mesAno: string,
   plan: string,
-  buf: Buffer
+  buf: Buffer,
+  lang = 'pt',
+  version = 'v7'
 ): void {
   try {
-    const p = keyPath(empresaId, mesAno, plan);
+    const p = keyPath(empresaId, mesAno, plan, lang, version);
     fs.writeFileSync(p, buf);
   } catch (e) {
     console.warn('pdfCache write:', (e as Error)?.message || e);
@@ -61,8 +72,6 @@ export function invalidatePdfCacheForEmpresa(empresaId: string): number {
   try {
     for (const f of fs.readdirSync(dir)) {
       if (!f.endsWith('.pdf')) continue;
-      // hashes não incluem id legível — limpeza total do dir é ok em volume baixo
-      // para invalidação fina, regeneramos sob demanda; aqui só helper opcional
       void f;
     }
   } catch {
