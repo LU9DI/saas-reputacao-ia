@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Building2, Lock, AlertCircle, Fingerprint } from 'lucide-react';
+import { Mail, Lock, AlertCircle, Fingerprint } from 'lucide-react';
 import { getEnv } from '../utils/env';
 import { PlanCards } from '../components/PlanCards';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
@@ -65,7 +65,7 @@ export default function LoginPage() {
       const id = identificador.trim();
       const body: Record<string, string> = { senha };
       if (isEmail(id)) body.email = id.toLowerCase();
-      else body.cnpj = id;
+      else body.tax_id = id;
 
       const res = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
@@ -92,12 +92,15 @@ export default function LoginPage() {
     }
     const id = identificador.trim();
     if (isEmail(id)) {
-      setErro(t.login_bio_use_tax || 'Para biometria, use o Tax ID / CNPJ cadastrado (não o e-mail).');
+      setErro(
+        t.login_bio_use_tax ||
+          'Para biometria, use o Tax ID / CNPJ cadastrado (não o e-mail).'
+      );
       return;
     }
     const tax = id.replace(/[^A-Za-z0-9]/g, '');
     if (tax.length < 5) {
-      setErro(t.login_bio_need_tax || 'Informe o CNPJ ou Tax ID antes de usar a digital.');
+      setErro(t.login_bio_need_tax || 'Informe o Tax ID ou CNPJ antes de usar a digital.');
       return;
     }
     setLoadingBio(true);
@@ -128,7 +131,7 @@ export default function LoginPage() {
           </h1>
           <p className="text-sm text-zinc-400 leading-relaxed">
             {t.login_subtitle ||
-              'CNPJ / Tax ID ou e-mail + senha. Também dá para entrar com digital.'}
+              'Entre com e-mail e senha. Tax ID / CNPJ também funciona, se você cadastrou.'}
           </p>
         </div>
 
@@ -153,7 +156,7 @@ export default function LoginPage() {
               htmlFor="login-id"
               className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
             >
-              <Building2 size={14} /> {t.login_id_label || 'CNPJ / Tax ID ou e-mail'}
+              <Mail size={14} /> {t.login_id_label || 'E-mail ou Tax ID'}
             </label>
             <input
               id="login-id"
@@ -162,7 +165,7 @@ export default function LoginPage() {
               autoComplete="username"
               value={identificador}
               onChange={(e) => setIdentificador(e.target.value)}
-              placeholder={t.login_id_placeholder || 'CNPJ, Tax ID ou e-mail'}
+              placeholder={t.login_id_placeholder || 'seu@email.com'}
               className={inputCls}
             />
           </div>
