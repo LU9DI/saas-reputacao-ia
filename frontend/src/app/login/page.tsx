@@ -72,7 +72,6 @@ export default function LoginPage() {
       if (isEmail(id)) body.email = id.toLowerCase();
       else body.tax_id = id;
 
-      // apiFetch: failover + sticky + timeout (evita ficar preso no cold start)
       const res = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -113,7 +112,6 @@ export default function LoginPage() {
     }
     setLoadingBio(true);
     try {
-      // loginWithPasskey usa a base ativa; warmup já deve ter acordado a API
       const { getApiBase } = await import('../utils/apiFailover');
       const data = await loginWithPasskey(getApiBase(), tax);
       afterLogin(data);
@@ -139,8 +137,7 @@ export default function LoginPage() {
             {t.login_title || t.login || 'Login'}
           </h1>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            {t.login_subtitle ||
-              'Entre com o e-mail e a senha do cadastro. CNPJ / Tax ID é opcional (só se você cadastrou).'}
+            {t.login_subtitle || 'Entrar com e-mail e senha.'}
           </p>
         </div>
 
@@ -223,11 +220,6 @@ export default function LoginPage() {
               ? t.login_bio_waiting || 'Aguardando digital…'
               : t.login_bio || 'Entrar com digital'}
           </button>
-
-          <p className="text-[11px] text-zinc-500 text-center leading-relaxed">
-            {t.login_bio_hint ||
-              'Biometria: informe o Tax ID/CNPJ no campo acima (não o e-mail). Cadastre a digital após o primeiro login por senha.'}
-          </p>
 
           <p className="text-center text-xs text-zinc-500 space-x-3">
             <a href="/recuperar-senha" className="underline hover:text-indigo-400">
