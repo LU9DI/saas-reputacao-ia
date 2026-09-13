@@ -18,6 +18,7 @@ import QRCode from 'qrcode';
 import { PlanCards } from './components/PlanCards';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { BrandMark } from './components/BrandMark';
+import { ComoFunciona } from './components/ComoFunciona';
 import { useLanguage } from './Contexts/LanguageContext';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from './utils/passwordPolicy';
 import { readApiError } from './utils/apiError';
@@ -44,7 +45,7 @@ function cnpjValido(cnpj: string): boolean {
 /** Aceita vazio (opcional), CNPJ BR válido, ou Tax ID internacional ≥5 chars. */
 function taxIdAceito(raw: string, isPt: boolean): boolean {
   const s = String(raw || '').trim();
-  if (!s) return true; // opcional — estrangeiros / quem não quiser informar
+  if (!s) return true;
   if (isPt) {
     const nums = s.replace(/\D/g, '');
     if (nums.length === 14) return cnpjValido(nums);
@@ -342,6 +343,10 @@ export default function Home() {
           {t.login_plans || t.plans || 'Planos disponíveis'}
         </h2>
         <PlanCards />
+      </div>
+
+      <div className="w-full max-w-5xl px-1">
+        <ComoFunciona />
       </div>
 
       <footer className="pb-8 text-center">
