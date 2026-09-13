@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { getEnv } from '../utils/env';
-import { ComoFunciona } from './ComoFunciona';
 import { MpTransparentCheckout } from './MpTransparentCheckout';
 import { useLanguage } from '../Contexts/LanguageContext';
 import {
@@ -92,7 +91,6 @@ const DEFAULT_PLANS: PlanCard[] = [
 type Props = {
   empresaId?: string | null;
   requireEmpresa?: boolean;
-  showComoFunciona?: boolean;
   email?: string | null;
 };
 
@@ -110,29 +108,37 @@ function resolveLimit(plan: string, fromApi?: number): number {
   return 100;
 }
 
+function textOrFallback(value: unknown, fallback: string): string {
+  const text = String(value ?? '').trim();
+  return text || fallback;
+}
+
 function featuresForPlan(plan: string, limit: number, t: any): { features: string[]; missing?: string[] } {
-  const fb = String(t.feat_feedbacks || '{n} feedbacks/mês').replace(
+  const fb = textOrFallback(t.feat_feedbacks, '{n} feedbacks/mês').replace(
     '{n}',
     limit.toLocaleString(undefined)
   );
+  const wpp = textOrFallback(t.feat_wpp, 'WhatsApp integrado');
+  const dashboard = textOrFallback(t.feat_basic_charts, 'Dashboard');
+  const ai = textOrFallback(t.feat_ai, 'IA ativa');
+  const report = textOrFallback(t.feat_report, 'Relatório inteligente');
+  const aiMissing = textOrFallback(t.feat_ai_missing, 'Relatório inteligente');
+  const analytics = textOrFallback(t.feat_dashboard, 'Dashboard com análises');
+  const multi = textOrFallback(t.feat_multi, 'Dashboard Multi-unidades');
+  const support = textOrFallback(t.feat_support, 'Suporte Prioritário');
+  const early = textOrFallback(t.feat_early, 'Acesso antecipado a novas funções');
+
   const map: Record<string, { features: string[]; missing?: string[] }> = {
-    inicial: { features: [fb, t.feat_wpp, t.feat_basic_charts], missing: [t.feat_ai_missing] },
-    pro: {
-      features: [fb, t.feat_wpp, t.feat_basic_charts, t.feat_pdf],
-      missing: [t.feat_ai_missing],
-    },
-    ultra: { features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_dashboard] },
-    corporativo: {
-      features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_multi, t.feat_support, t.feat_early],
-    },
-    rei: {
-      features: [fb, t.feat_wpp, t.feat_ai, t.feat_pdf, t.feat_multi, t.feat_support, t.feat_early],
-    },
+    inicial: { features: [fb, wpp, dashboard], missing: [aiMissing] },
+    pro: { features: [fb, wpp, dashboard, report], missing: [aiMissing] },
+    ultra: { features: [fb, wpp, ai, report, analytics] },
+    corporativo: { features: [fb, wpp, ai, report, multi, support, early] },
+    rei: { features: [fb, wpp, ai, report, multi, support, early] },
   };
   return map[plan] || { features: [fb] };
 }
 
-export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona = true, email }: Props) {
+export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const { t } = useLanguage();
   const [plans, setPlans] = useState<PlanCard[]>(DEFAULT_PLANS);
   const [loadingPrices, setLoadingPrices] = useState(true);
@@ -157,7 +163,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           if (list.length && !cancelled) {
             setPlans(
               list.map((p: any) => {
-                const plan = String(p.plan || p.keyMensal || '').replace(/-anual$/, '');
+                const plan = String(p.plan || p.keyMensal || '')
+                  .replace(/-anual$/, '')
+                  .toLowerCase();
                 return {
                   keyMensal: p.keyMensal || plan,
                   keyAnual: p.keyAnual || `${plan}-anual`,
@@ -249,7 +257,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
       icon = MessageCircle;
       badgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
     } else if (lower.includes('ia') || lower.includes('ai')) icon = Sparkles;
-    else if (lower.includes('pdf')) icon = FileText;
+    else if (lower.includes('relatório') || lower.includes('report') || lower.includes('informe')) icon = FileText;
     else if (lower.includes('dashboard') || lower.includes('chart') || lower.includes('graf'))
       icon = BarChart3;
     else if (lower.includes('suporte') || lower.includes('support')) icon = Headset;
@@ -309,7 +317,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
           const price = formatPriceDisplay(ciclo === 'mensal' ? p.priceMensal : p.priceAnual);
           const period = ciclo === 'mensal' ? t.per_month : t.annual_billing;
-          const planBase = String(p.keyMensal || '').replace(/-anual$/, '');
+          const planBase = String(p.keyMensal || '')
+            .replace(/-anual$/, '')
+            .toLowerCase();
           const limit = resolveLimit(planBase, p.reviewLimit);
           const localized = featuresForPlan(planBase, limit, t);
 
@@ -381,15 +391,12 @@ export function PlanCards({ empresaId, requireEmpresa = false, showComoFunciona 
           <ShieldCheck className="text-emerald-400" size={26} strokeWidth={2.5} />
         </div>
         <p className="text-sm text-white text-center sm:text-left leading-relaxed">
-          <strong className="font-bold text-white">{t.cancel_anytime}</strong> {t.cancel_detail}
+          <strong className="font-bold text-white">
+            {textOrFallback(t.cancel_anytime, 'Cancele a qualquer momento. Sem multas.')}
+          </strong>{' '}
+          {textOrFallback(t.cancel_detail, 'O acesso permanece até o fim do período já pago.')}
         </p>
       </div>
-
-      {showComoFunciona && (
-        <div className="pt-10">
-          <ComoFunciona />
-        </div>
-      )}
 
       <MpTransparentCheckout
         open={mpOpen}
