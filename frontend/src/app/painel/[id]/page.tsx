@@ -52,7 +52,8 @@ function labelMes(yyyyMm: string, lang: string): string {
   return nome.charAt(0).toUpperCase() + nome.slice(1);
 }
 
-function planAllowsPdf(plan?: string, status?: string, dashboard?: any): boolean {
+/** Relatório inteligente disponível em Trial e Pro+ (não no Inicial pago). */
+function planAllowsReport(plan?: string, status?: string, dashboard?: any): boolean {
   if (dashboard?.pdf_disponivel) return true;
   if (dashboard?.trial_completo) return true;
   const p = String(plan || '').toLowerCase();
@@ -79,10 +80,10 @@ export default function PainelEmpresa() {
   const [googleInput, setGoogleInput] = useState('');
   const [msgWpp, setMsgWpp] = useState('');
   const [msgGoogle, setMsgGoogle] = useState('');
-  const [msgPdf, setMsgPdf] = useState('');
-  const [baixandoPdf, setBaixandoPdf] = useState(false);
-  const [mesPdf, setMesPdf] = useState(currentMonthYYYYMM);
-  const [langPdf, setLangPdf] = useState(language);
+  const [msgReport, setMsgReport] = useState('');
+  const [gerandoReport, setGerandoReport] = useState(false);
+  const [mesReport, setMesReport] = useState(currentMonthYYYYMM);
+  const [langReport, setLangReport] = useState(language);
   const mesesOpcoes = useMemo(() => listarMesesOpcoes(18), []);
   const mesMax = currentMonthYYYYMM();
   const api = getEnv('NEXT_PUBLIC_API_URL');
@@ -91,7 +92,7 @@ export default function PainelEmpresa() {
   const linkAvaliacao = data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
 
   useEffect(() => {
-    setLangPdf(language);
+    setLangReport(language);
   }, [language]);
 
   const carregar = async () => {
@@ -162,23 +163,23 @@ export default function PainelEmpresa() {
     window.location.href = '/login';
   };
 
-  const baixarPdf = async () => {
-    const check = validateReportMonth(mesPdf, { maxMonth: mesMax, minYear: 2020 });
+  const baixarRelatorio = async () => {
+    const check = validateReportMonth(mesReport, { maxMonth: mesMax, minYear: 2020 });
     if (!check.ok) {
-      setMsgPdf(check.error);
+      setMsgReport(check.error);
       return;
     }
-    setBaixandoPdf(true);
-    setMsgPdf('');
+    setGerandoReport(true);
+    setMsgReport('');
     try {
       const mes = check.value;
-      const lang = langPdf || language || 'pt';
+      const lang = langReport || language || 'pt';
       const res = await fetch(
         `${api}/api/empresa/${empresaId}/relatorio.pdf?mes=${encodeURIComponent(mes)}&lang=${encodeURIComponent(lang)}`,
         { credentials: 'include', headers: authHeaders(false) }
       );
       if (res.status === 401) {
-        throw new Error('Faça login novamente para baixar o PDF.');
+        throw new Error('Faça login novamente para gerar o relatório.');
       }
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -188,19 +189,21 @@ export default function PainelEmpresa() {
       if (blob.type && blob.type.includes('json')) {
         const text = await blob.text();
         const j = JSON.parse(text);
-        throw new Error(j.error || 'Falha no PDF');
+        throw new Error(j.error || 'Falha no relatório');
       }
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `relatorio-${mes}-${lang}.pdf`;
+      a.download = `relatorio-inteligente-${mes}-${lang}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-      setMsgPdf(`PDF ${labelMes(mes, lang)} (${lang.toUpperCase()}) baixado.`);
+      setMsgReport(
+        `${t.panel_report_btn || 'Relatório inteligente'} ${labelMes(mes, lang)} (${lang.toUpperCase()}) pronto.`
+      );
     } catch (e: any) {
-      setMsgPdf(e.message || 'Falha no PDF');
+      setMsgReport(e.message || 'Falha no relatório');
     } finally {
-      setBaixandoPdf(false);
+      setGerandoReport(false);
     }
   };
 
@@ -272,7 +275,7 @@ export default function PainelEmpresa() {
   const { empresa, metricas, dashboard } = data;
   const dist = metricas.distribuicao || [0, 0, 0, 0, 0];
   const nivel = dashboard?.nivel || 'basico';
-  const pdfOk = planAllowsPdf(empresa.plan, empresa.status, dashboard);
+  const reportOk = planAllowsReport(empresa.plan, empresa.status, dashboard);
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
   const status = empresa.status_acesso || String(empresa.status || '').toUpperCase();
   const reviews = Array.isArray(data.reviews) ? data.reviews : [];
@@ -301,11 +304,11 @@ export default function PainelEmpresa() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {pdfOk && (
+            {reportOk && (
               <>
                 <select
-                  value={mesPdf}
-                  onChange={(e) => setMesPdf(e.target.value)}
+                  value={mesReport}
+                  onChange={(e) => setMesReport(e.target.value)}
                   className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-900"
                   aria-label="Mês do relatório"
                 >
@@ -316,11 +319,11 @@ export default function PainelEmpresa() {
                   ))}
                 </select>
                 <select
-                  value={langPdf}
-                  onChange={(e) => setLangPdf(e.target.value as typeof language)}
+                  value={langReport}
+                  onChange={(e) => setLangReport(e.target.value as typeof language)}
                   className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-900"
-                  aria-label={t.language || 'Idioma do PDF'}
-                  title="Idioma do PDF"
+                  aria-label={t.panel_report_lang || t.language || 'Idioma do relatório'}
+                  title={t.panel_report_lang || 'Idioma do relatório'}
                 >
                   <option value="pt">🇧🇷 PT</option>
                   <option value="en">🇬🇧 EN</option>
@@ -329,16 +332,20 @@ export default function PainelEmpresa() {
                 </select>
                 <button
                   type="button"
-                  disabled={baixandoPdf}
-                  onClick={baixarPdf}
+                  disabled={gerandoReport}
+                  onClick={baixarRelatorio}
                   className="text-sm px-4 py-2 rounded-xl bg-indigo-600 text-white font-medium disabled:opacity-50"
                 >
-                  {baixandoPdf ? '…' : 'PDF'}
+                  {gerandoReport
+                    ? t.panel_report_loading || 'Gerando…'
+                    : t.panel_report_btn || 'Relatório inteligente'}
                 </button>
               </>
             )}
-            {!pdfOk && (
-              <span className="text-xs text-zinc-500">PDF nos planos Trial e Pro+</span>
+            {!reportOk && (
+              <span className="text-xs text-zinc-500">
+                {t.panel_report_unavailable || 'Relatório inteligente nos planos Trial e Pro+'}
+              </span>
             )}
             <button type="button" onClick={carregar} className="text-sm text-zinc-400 px-3 py-2">
               Atualizar
@@ -352,13 +359,15 @@ export default function PainelEmpresa() {
             </button>
           </div>
         </div>
-        {msgPdf && (
+        {msgReport && (
           <p
             className={`text-center text-xs pb-3 ${
-              msgPdf.includes('baixado') ? 'text-emerald-400' : 'text-red-400'
+              msgReport.includes('pronto') || msgReport.toLowerCase().includes('ok')
+                ? 'text-emerald-400'
+                : 'text-red-400'
             }`}
           >
-            {msgPdf}
+            {msgReport}
           </p>
         )}
       </header>
