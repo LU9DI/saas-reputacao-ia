@@ -31,8 +31,9 @@ export function SubscriptionActions({
   const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const normalizedStatus = String(status || '').trim().toLowerCase();
 
-  if (status !== 'ativo' && status !== 'trial') return null;
+  if (normalizedStatus !== 'ativo' && normalizedStatus !== 'trial') return null;
 
   const cancelar = async () => {
     if (
