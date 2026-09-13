@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Building2,
-  FileText,
   CheckCircle2,
   AlertCircle,
   ExternalLink,
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import { PlanCards } from './components/PlanCards';
+import { ComoFunciona } from './components/ComoFunciona';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { BrandMark } from './components/BrandMark';
 import { useLanguage } from './Contexts/LanguageContext';
@@ -24,30 +24,12 @@ import { readApiError } from './utils/apiError';
 import { persistFiltraToken } from './utils/persistToken';
 import { apiFetch, restoreStickyFromSession } from './utils/apiFailover';
 
-function cnpjValido(cnpj: string): boolean {
-  if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
-  const calcularDigito = (base: string, pesoInicial: number): number => {
-    let soma = 0;
-    let peso = pesoInicial;
-    for (let i = 0; i < base.length; i++) {
-      soma += parseInt(base[i]) * peso;
-      peso = peso === 2 ? 9 : peso - 1;
-    }
-    const resto = soma % 11;
-    return resto < 2 ? 0 : 11 - resto;
-  };
-  const digito1 = calcularDigito(cnpj.slice(0, 12), 5);
-  const digito2 = calcularDigito(cnpj.slice(0, 12) + digito1, 6);
-  return parseInt(cnpj[12]) === digito1 && parseInt(cnpj[13]) === digito2;
-}
-
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
 
 export default function Home() {
-  const { language: idioma, t } = useLanguage();
+  const { t } = useLanguage();
   const [nomeEmpresa, setNomeEmpresa] = useState('');
-  const [cnpj, setCnpj] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [googleUrl, setGoogleUrl] = useState('');
@@ -89,34 +71,8 @@ export default function Home() {
       .catch(() => setQrDataUrl(null));
   }, [sucessoData]);
 
-  const aplicarMascaraCnpj = (valor: string) => {
-    if (idioma !== 'pt') {
-      setCnpj(valor);
-      return;
-    }
-    const apenasNumeros = valor.replace(/\D/g, '').substring(0, 14);
-    let mascarado = apenasNumeros;
-    if (mascarado.length > 2) mascarado = `${mascarado.substring(0, 2)}.${mascarado.substring(2)}`;
-    if (mascarado.length > 6) mascarado = `${mascarado.substring(0, 6)}.${mascarado.substring(6)}`;
-    if (mascarado.length > 10)
-      mascarado = `${mascarado.substring(0, 10)}/${mascarado.substring(10)}`;
-    if (mascarado.length > 15)
-      mascarado = `${mascarado.substring(0, 15)}-${mascarado.substring(15)}`;
-    setCnpj(mascarado);
-  };
-
-  const validarCnpjInput = (valor: string): boolean => {
-    const numeros = valor.replace(/\D/g, '');
-    if (idioma === 'pt') return cnpjValido(numeros);
-    return numeros.length >= 5;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validarCnpjInput(cnpj)) {
-      setErro(t.tax_id_invalid);
-      return;
-    }
     if (!email.trim() || !email.includes('@')) {
       setErro('Informe um e-mail válido.');
       return;
@@ -137,7 +93,6 @@ export default function Home() {
         credentials: 'include',
         timeoutMs: 15000,
         body: JSON.stringify({
-          cnpj: cnpj.replace(/\D/g, ''),
           nome_empresa: nomeEmpresa.trim(),
           google_review_url: googleUrl.trim() || undefined,
           email: email.trim().toLowerCase(),
@@ -234,12 +189,6 @@ export default function Home() {
               <input id="nome-empresa" type="text" required value={nomeEmpresa} onChange={(e) => setNomeEmpresa(e.target.value)} placeholder={t.ph_company} className={inputCls} />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="cnpj" className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                <FileText size={14} aria-hidden="true" /> {t.label_tax_id}
-              </label>
-              <input id="cnpj" type="text" required inputMode={idioma === 'pt' ? 'numeric' : 'text'} value={cnpj} onChange={(e) => aplicarMascaraCnpj(e.target.value)} placeholder={t.ph_tax_id} className={inputCls} />
-            </div>
-            <div className="space-y-1.5">
               <label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                 <Mail size={14} aria-hidden="true" /> {t.label_email}
               </label>
@@ -317,6 +266,7 @@ export default function Home() {
           {t.login_plans || t.plans || 'Planos disponíveis'}
         </h2>
         <PlanCards />
+        <ComoFunciona />
       </div>
 
       <footer className="pb-8 text-center">
