@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { Mail, Lock, AlertCircle, Fingerprint } from 'lucide-react';
-import { getEnv } from '../utils/env';
 import { PlanCards } from '../components/PlanCards';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { BrandMark } from '../components/BrandMark';
 import { readApiError } from '../utils/apiError';
 import { loginWithPasskey, webauthnSupported } from '../utils/webauthnClient';
 import { useLanguage } from '../Contexts/LanguageContext';
+import { apiFetch } from '../utils/apiFailover';
 
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
@@ -48,20 +48,20 @@ export default function LoginPage() {
     }
     const dest = nextPath();
     if (dest) {
-      window.location.href = dest;
+      window.location.assign(dest);
       return;
     }
     const empresaId = data.tokenPayload?.empresa_id;
-    if (empresaId) window.location.href = `/painel/${empresaId}`;
+    if (empresaId) window.location.assign(`/painel/${empresaId}`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setErro('');
     setOk('');
     try {
-      const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
       const id = identificador.trim();
       if (!id) {
         setErro(t.login_id_required || 'Informe o e-mail de acesso.');
@@ -69,15 +69,16 @@ export default function LoginPage() {
         return;
       }
       const body: Record<string, string> = { senha };
-      // Preferência: e-mail. Tax ID/CNPJ só se não for e-mail.
       if (isEmail(id)) body.email = id.toLowerCase();
       else body.tax_id = id;
 
-      const res = await fetch(`${apiUrl}/api/auth/login`, {
+      // apiFetch: failover + sticky + timeout (evita ficar preso no cold start)
+      const res = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify(body),
+        timeoutMs: 20_000,
       });
       if (!res.ok) throw new Error(await readApiError(res, t.login_fail || 'Falha no login'));
       const data = await res.json();
@@ -90,6 +91,7 @@ export default function LoginPage() {
   };
 
   const handleDigital = async () => {
+    if (loadingBio) return;
     setErro('');
     setOk('');
     if (!webauthnSupported()) {
@@ -111,8 +113,9 @@ export default function LoginPage() {
     }
     setLoadingBio(true);
     try {
-      const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
-      const data = await loginWithPasskey(apiUrl, tax);
+      // loginWithPasskey usa a base ativa; warmup já deve ter acordado a API
+      const { getApiBase } = await import('../utils/apiFailover');
+      const data = await loginWithPasskey(getApiBase(), tax);
       afterLogin(data);
     } catch (err: any) {
       setErro(err.message || t.login_bio_fail || 'Falha na biometria');
@@ -202,7 +205,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition-colors text-sm disabled:opacity-50"
+            className="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-medium py-3 rounded-xl transition-all text-sm disabled:opacity-50"
           >
             {loading
               ? t.login_submitting || 'Entrando…'
@@ -213,7 +216,7 @@ export default function LoginPage() {
             type="button"
             disabled={loadingBio}
             onClick={handleDigital}
-            className="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full bg-zinc-800 hover:bg-zinc-700 active:scale-[0.99] border border-zinc-600 text-zinc-100 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
           >
             <Fingerprint size={18} />
             {loadingBio
