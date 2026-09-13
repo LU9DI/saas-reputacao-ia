@@ -77,7 +77,7 @@ const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
 export default function PainelEmpresa() {
   const params = useParams();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const empresaId = String(params?.id || '');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -102,7 +102,7 @@ export default function PainelEmpresa() {
 
   const carregar = async () => {
     if (!empresaId) {
-      setErro('Identificador inválido.');
+      setErro(t.panel_invalid_id || 'Identificador inválido.');
       setLoading(false);
       return;
     }
@@ -117,14 +117,18 @@ export default function PainelEmpresa() {
       const json = await res.json().catch(() => ({}));
       if (res.status === 401 || res.status === 403) {
         setPrecisaLogin(true);
-        throw new Error(json.error || 'Faça login com a conta da empresa.');
+        throw new Error(json.error || t.panel_need_login || 'Faça login com a conta da empresa.');
       }
       if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
       setData(json);
       setWhatsappInput(json.empresa?.whatsapp || '');
       setGoogleInput(json.empresa?.google_review_url || '');
     } catch (e: any) {
-      setErro(e.message === 'Failed to fetch' ? 'Não foi possível conectar ao servidor.' : e.message);
+      setErro(
+        e.message === 'Failed to fetch'
+          ? t.panel_offline || 'Não foi possível conectar ao servidor.'
+          : e.message
+      );
       setData(null);
     } finally {
       setLoading(false);
@@ -179,7 +183,7 @@ export default function PainelEmpresa() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || 'Falha');
-      setMsgWpp('WhatsApp salvo.');
+      setMsgWpp(t.panel_wpp_saved || 'WhatsApp salvo.');
       await carregar();
     } catch (e: any) {
       setMsgWpp(e.message || 'Erro');
@@ -197,7 +201,7 @@ export default function PainelEmpresa() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || 'Falha');
-      setMsgGoogle('Link Google salvo.');
+      setMsgGoogle(t.panel_google_saved || 'Link Google salvo.');
       await carregar();
     } catch (e: any) {
       setMsgGoogle(e.message || 'Erro');
@@ -208,7 +212,7 @@ export default function PainelEmpresa() {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 text-zinc-500 text-sm">
         <BrandMark size="sm" href="/" />
-        <span>Carregando…</span>
+        <span>{t.loading || 'Carregando…'}</span>
       </div>
     );
   }
@@ -217,17 +221,19 @@ export default function PainelEmpresa() {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 px-6">
         <BrandMark size="sm" href="/" />
-        <p className="text-zinc-400 text-sm text-center max-w-md">{erro || 'Painel indisponível.'}</p>
+        <p className="text-zinc-400 text-sm text-center max-w-md">
+          {erro || t.panel_unavailable || 'Painel indisponível.'}
+        </p>
         {precisaLogin && (
           <a
             href={`/login?next=${encodeURIComponent(`/painel/${empresaId}`)}`}
             className="text-sm px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium"
           >
-            Ir para login
+            {t.panel_go_login || 'Ir para login'}
           </a>
         )}
         <button type="button" onClick={carregar} className="text-sm underline text-indigo-400">
-          Tentar novamente
+          {t.panel_retry || 'Tentar novamente'}
         </button>
       </div>
     );
@@ -252,7 +258,8 @@ export default function PainelEmpresa() {
           <div>
             <h1 className="text-2xl font-bold text-zinc-50">{empresa.nome_empresa}</h1>
             <p className="text-sm text-zinc-500 mt-1">
-              Plano <span className="text-indigo-400 font-semibold">{planLabel}</span>
+              {t.panel_plan || 'Plano'}{' '}
+              <span className="text-indigo-400 font-semibold">{planLabel}</span>
               <span
                 className={`ml-2 text-xs px-2 py-0.5 rounded-full font-semibold ${
                   status === 'ATIVO' || status === 'TRIAL'
@@ -267,18 +274,18 @@ export default function PainelEmpresa() {
           <div className="flex flex-wrap items-center gap-2">
             {!reportOk && (
               <span className="text-xs text-zinc-500">
-                Relatório inteligente nos planos Trial e Pro+
+                {t.panel_report_unavailable || 'Relatório inteligente nos planos Trial e Pro+'}
               </span>
             )}
             <button type="button" onClick={carregar} className="text-sm text-zinc-400 px-3 py-2">
-              Atualizar
+              {t.panel_refresh || 'Atualizar'}
             </button>
             <button
               type="button"
               onClick={sair}
               className="text-sm px-3 py-2 rounded-xl border border-zinc-700 text-zinc-300"
             >
-              Sair
+              {t.panel_logout || 'Sair'}
             </button>
           </div>
         </div>
@@ -327,10 +334,10 @@ export default function PainelEmpresa() {
 
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { t: 'Volume', v: metricas.total },
-            { t: 'Média', v: metricas.media || '—' },
-            { t: 'Positivas', v: metricas.positivas },
-            { t: 'Críticas', v: metricas.negativas },
+            { t: t.kpi_volume || 'Volume', v: metricas.total },
+            { t: t.kpi_avg || 'Média', v: metricas.media || '—' },
+            { t: t.kpi_positive || 'Positivas', v: metricas.positivas },
+            { t: t.kpi_critical || 'Críticas', v: metricas.negativas },
           ].map((k) => (
             <div key={k.t} className={`${card} px-5 py-5`}>
               <p className={label}>{k.t}</p>
@@ -370,7 +377,7 @@ export default function PainelEmpresa() {
         />
 
         <section className={`${card} px-6 py-6 space-y-3`}>
-          <p className={label}>WhatsApp da empresa</p>
+          <p className={label}>{t.panel_wpp_label || 'WhatsApp da empresa'}</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="tel"
@@ -384,14 +391,14 @@ export default function PainelEmpresa() {
               onClick={salvarWhatsapp}
               className="px-5 py-3 rounded-xl bg-emerald-600 text-white text-sm font-medium"
             >
-              Salvar WhatsApp
+              {t.panel_wpp_save || 'Salvar WhatsApp'}
             </button>
           </div>
           {msgWpp && <p className="text-xs text-zinc-500">{msgWpp}</p>}
         </section>
 
         <section className={`${card} px-6 py-6 space-y-3`}>
-          <p className={label}>Link Google Maps / Reviews</p>
+          <p className={label}>{t.panel_google_label || 'Link Google Maps / Reviews'}</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="url"
@@ -405,7 +412,7 @@ export default function PainelEmpresa() {
               onClick={salvarGoogle}
               className="px-5 py-3 rounded-xl bg-indigo-600 text-white text-sm font-medium"
             >
-              Salvar Google
+              {t.panel_google_save || 'Salvar Google'}
             </button>
           </div>
           {msgGoogle && <p className="text-xs text-zinc-500">{msgGoogle}</p>}
@@ -415,7 +422,7 @@ export default function PainelEmpresa() {
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div className="min-w-0 flex-1">
               <BrandMark size="sm" href="/" subtitle="Online Reputation" />
-              <p className={`${label} mt-4`}>Link de avaliação</p>
+              <p className={`${label} mt-4`}>{t.panel_review_link || 'Link de avaliação'}</p>
               <p className="mt-2 text-sm font-mono break-all text-zinc-400">{linkAvaliacao}</p>
             </div>
             {qrUrl && (
@@ -423,10 +430,12 @@ export default function PainelEmpresa() {
                 <BrandMark size="sm" href={null} iconOnly subtitle={null} />
                 <img
                   src={qrUrl}
-                  alt="QR code — link de avaliação FILTRA.AI"
+                  alt="QR code — Filtra.AI"
                   className="w-36 h-36 rounded-lg border border-zinc-700"
                 />
-                <p className="text-[10px] uppercase tracking-wider text-zinc-600">Escaneie para avaliar</p>
+                <p className="text-[10px] uppercase tracking-wider text-zinc-600">
+                  {t.panel_qr_hint || 'Escaneie para avaliar'}
+                </p>
               </div>
             )}
           </div>

@@ -13,10 +13,12 @@ export function LanguageSwitcher({ className = '', compact = false }: Props) {
   return (
     <div className={`inline-flex items-center gap-1.5 ${className}`}>
       {!compact && (
-        <span className="text-xs text-zinc-500 hidden sm:inline">{t.language}</span>
+        <span className="text-xs text-zinc-500 hidden sm:inline">
+          {t.language || 'Idioma'}
+        </span>
       )}
       <select
-        aria-label={t.language}
+        aria-label={t.language || 'Idioma'}
         value={language}
         onChange={(e) => setLanguage(e.target.value as Language)}
         className="bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
