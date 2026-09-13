@@ -18,6 +18,8 @@ import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { RelatorioInteligentePanel } from '../../components/RelatorioInteligentePanel';
 import { useLanguage } from '../../Contexts/LanguageContext';
 
+type LangCode = 'pt' | 'en' | 'es' | 'zh';
+
 function authHeaders(json = true): HeadersInit {
   const h: Record<string, string> = {};
   if (json) h['Content-Type'] = 'application/json';
@@ -53,6 +55,11 @@ function labelMes(yyyyMm: string, lang: string): string {
   return nome.charAt(0).toUpperCase() + nome.slice(1);
 }
 
+function asLang(v: string): LangCode {
+  if (v === 'en' || v === 'es' || v === 'zh' || v === 'pt') return v;
+  return 'pt';
+}
+
 /** Relatório inteligente: Trial e Pro+ (não no Inicial pago). */
 function planAllowsReport(plan?: string, status?: string, dashboard?: any): boolean {
   if (dashboard?.pdf_disponivel || dashboard?.relatorio_disponivel) return true;
@@ -82,7 +89,7 @@ export default function PainelEmpresa() {
   const [msgWpp, setMsgWpp] = useState('');
   const [msgGoogle, setMsgGoogle] = useState('');
   const [mesReport, setMesReport] = useState(currentMonthYYYYMM);
-  const [langReport, setLangReport] = useState(language);
+  const [langReport, setLangReport] = useState<LangCode>(asLang(language));
   const mesesOpcoes = useMemo(() => listarMesesOpcoes(18), []);
   const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
@@ -90,7 +97,7 @@ export default function PainelEmpresa() {
   const linkAvaliacao = data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
 
   useEffect(() => {
-    setLangReport(language);
+    setLangReport(asLang(language));
   }, [language]);
 
   const carregar = async () => {
@@ -288,7 +295,7 @@ export default function PainelEmpresa() {
             mesesOpcoes={mesesOpcoes}
             labelMes={(m) => labelMes(m, language)}
             onMesChange={setMesReport}
-            onLangChange={setLangReport}
+            onLangChange={(l) => setLangReport(asLang(l))}
             language={language}
           />
         )}
@@ -385,7 +392,6 @@ export default function PainelEmpresa() {
 
         <section className={`${card} px-6 py-6 space-y-3`}>
           <p className={label}>Link Google Maps / Reviews</p>
-          <p className="text-xs text-zinc-500">Notas 4–5★ redirecionam para este link.</p>
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="url"
