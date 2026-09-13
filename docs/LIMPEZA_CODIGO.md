@@ -9,42 +9,39 @@ saas-reputacao-ia/     ← File → Open Folder aqui
   backend/
   frontend/
   docs/
+  .vscode/
 ```
 
-Não abra `backend/` ou `frontend/` isolados (quebra imports e paths).
+Não abra `backend/` ou `frontend/` isolados.
 
 ## 2. Atualizar e remover cópia aninhada
-
-No terminal integrado (raiz):
 
 ```bash
 git pull origin main
 
-# se ainda existir submódulo/cópia:
 rm -rf backend/saas-reputacao-ia
 git submodule deinit -f backend/saas-reputacao-ia 2>/dev/null || true
 git rm -f backend/saas-reputacao-ia 2>/dev/null || true
 ```
 
-## 3. Limpar lixo local (não versionado)
+## 3. Limpar lixo local
 
 ```bash
-# caches e builds
-rm -rf frontend/.next backend/dist node_modules frontend/node_modules backend/node_modules
-
-# reinstalar
-cd backend && npm install && cd ../frontend && npm install
+rm -rf frontend/.next backend/dist
+# se precisar reinstalar:
+# rm -rf frontend/node_modules backend/node_modules
+# cd backend && npm install && cd ../frontend && npm install
 ```
 
 Não commitar: `.env`, `*.sqlite`, `.aider*`, `node_modules/`.
 
-## 4. Explorer do VS Code
+## 4. Explorer
 
-Com `.vscode/settings.json` o explorer exclui ruído (`node_modules`, `.next`, `*.sqlite`).
+`.vscode/settings.json` oculta `node_modules`, `.next`, `*.sqlite`.
 
-Recomendado: extensão **ESLint** + **Prettier** (ver `.vscode/extensions.json`).
+Extensões: ESLint + Prettier (`.vscode/extensions.json`).
 
-## 5. Onde editar o quê
+## 5. Onde editar
 
 | Objetivo | Arquivo |
 |----------|---------|
@@ -54,6 +51,19 @@ Recomendado: extensão **ESLint** + **Prettier** (ver `.vscode/extensions.json`)
 | Textos / idiomas | `frontend/src/app/dictionaries/*.json` |
 | Login | `frontend/src/app/login/page.tsx` |
 
-## 6. Marca
+## 6. Legado (não expandir)
 
-Sempre **Filtra.AI** (ponto + AI maiúsculo).
+- PDF: `backend/relatorioPdf.ts` + `RELATORIO_PDF.md`
+- Re-exports: `backend/mailer.ts`, `authMiddleware.ts` → use `lib/` e `middleware/`
+
+## 7. Marca
+
+Sempre **Filtra.AI**.
+
+## Feito nesta limpeza
+
+- [x] README / STRUCTURE / docs com Filtra.AI
+- [x] `.vscode` settings + extensions
+- [x] `next.config` rewrite só em dev
+- [x] Dicionários PT/EN/ES/ZH com chaves do painel
+- [x] PDF documentado como legado

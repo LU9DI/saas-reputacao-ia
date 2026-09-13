@@ -1,49 +1,19 @@
-# Relatórios PDF por plano
+# Relatório PDF (legado)
 
-## O que mudou
+> **Status:** legado. O painel atual usa **relatório inteligente em texto**, enviado por WhatsApp, SMS, e-mail ou WeChat (`RelatorioInteligentePanel` + rotas de destinatários/envio).
 
-Os PDFs deixam de ser só caixas de KPI e passam a ter **gráficos nativos (PDFKit)** e, nos planos multi-unidade, **quebra de página por filial**.
+O gerador PDF (`relatorioPdf.ts`, rota `GET /api/empresa/:ref/relatorio.pdf`) permanece no código para compatibilidade e testes internos. **Não expanda** essa rota no produto principal.
 
-| Plano | Gráficos | Filiais |
+## Se precisar do PDF de novo
 
-| **Pro / Ultra** | Barras de distribuição 1★–5★ + bloco IA simples | Não |
-| **Corporativo** | Distribuição + **ranking de unidades** + **1 página por filial** (KPIs + barras) | Sim |
-| **Rei** | Tudo do Corporativo + **donut** positivas/críticas + **barras horizontais de gargalos** + donut também em cada filial | Sim |
+- Layout: `backend/relatorioPdf.ts`
+- i18n labels: `backend/lib/pdfI18n.ts`
+- Cache: `backend/lib/pdfCache.js`
+- Planos com PDF: `planTemPdf` em `lib/plans.ts`
 
-## Arquivos
+## Fluxo atual (recomendado)
 
-- `backend/relatorioPdf.ts` — geração completa
-- `ensureUnidadesSchema(db)` — cria tabela `unidades` e colunas `reviews.unidade_id` / `reviews.origin`
-
-## Como ligar no server.ts
-
-```ts
-import { gerarRelatorioMensalPDF, ensureUnidadesSchema } from './relatorioPdf.js';
-
-// dentro de initDB(), após criar tabelas:
-await ensureUnidadesSchema(db);
-
-// substituir a função antiga gerarRelatorioMensalPDF por:
-// (ou no endpoint /api/relatorio/mensal)
-const pdf = await gerarRelatorioMensalPDF(db, empresaId, mesAno, callGroq);
-res.type('application/pdf').send(pdf);
-```
-
-Remova a implementação antiga inline em `server.ts` para evitar conflito de nomes.
-
-## Cadastro de filiais (Corporativo / Rei)
-
-```sql
-INSERT INTO unidades (id, empresa_id, nome, slug, ativo)
-VALUES ('uuid-aqui', 'empresa_id', 'Filial Centro', 'filial-centro', 1);
-```
-
-Nas avaliações, grave `unidade_id` (ou `origin` como fallback de canal/unidade).
-
-Se não houver filiais cadastradas, o relatório Corporativo/Rei ainda gera a página **Matriz / Geral** com os dados agregados e o ranking com uma linha.
-
-## Elegibilidade
-
-`pro`, `ultra`, `corporativo`, `rei`.
-
-(Inicial e teste continuam sem PDF mensal.)
+1. Cliente escolhe canais e destinos no painel
+2. `PUT /api/empresa/:id/relatorio/destinatarios`
+3. `POST /api/empresa/:id/relatorio/enviar` com `{ mes, lang, destinatarios }`
+4. Backend monta texto (0 tokens de IA) e despacha via n8n / SMTP / etc.
