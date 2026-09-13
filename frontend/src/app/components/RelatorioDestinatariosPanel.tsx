@@ -18,7 +18,7 @@ function authHeaders(): HeadersInit {
     const t = localStorage.getItem('filtra_token');
     if (t) h.Authorization = `Bearer ${t}`;
   } catch {
-    /* */
+    /* noop */
   }
   return h;
 }
@@ -117,54 +117,91 @@ export function RelatorioDestinatariosPanel({ empresaRef }: { empresaRef: string
       <div>
         <p className="text-[11px] uppercase tracking-wide text-zinc-500">Destinatários do relatório mensal</p>
         <p className="text-sm text-zinc-400 mt-1">
-          O mesmo relatório pode ser enviado para até 20 destinatários por WhatsApp, SMS, WeChat e e-mail.
+          Escolha a via de recebimento e adicione quantos destinatários precisar, até o limite de 20.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr_160px_auto] gap-3">
-        <select
-          value={canal}
-          onChange={(e) => setCanal(e.target.value as Canal)}
-          className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm"
-          aria-label="Canal"
-        >
-          {canais.map((item) => (
-            <option key={item.value} value={item.value}>{item.label}</option>
-          ))}
-        </select>
-        <input
-          value={destino}
-          onChange={(e) => setDestino(e.target.value)}
-          placeholder={canalAtual.placeholder}
-          className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm"
-          aria-label="Destino"
-        />
-        <input
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          placeholder="Nome (opcional)"
-          maxLength={100}
-          className="rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm"
-          aria-label="Nome"
-        />
+      <div className="space-y-2">
+        <p className="text-xs text-zinc-500">Como deseja receber?</p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          {canais.map((item) => {
+            const ativo = canal === item.value;
+            return (
+              <button
+                key={item.value}
+                type="button"
+                onClick={() => {
+                  setCanal(item.value);
+                  setDestino('');
+                  setMessage('');
+                }}
+                aria-pressed={ativo}
+                className={`rounded-xl border px-4 py-3 text-sm font-medium transition ${
+                  ativo
+                    ? 'border-indigo-500 bg-indigo-600 text-white'
+                    : 'border-zinc-700 bg-zinc-950 text-zinc-300 hover:border-zinc-500'
+                }`}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px_auto] gap-3 items-end">
+        <div>
+          <label htmlFor="relatorio-destino" className="block text-xs text-zinc-500 mb-2">
+            {canal === 'email' ? 'E-mail' : canal === 'wechat' ? 'ID do WeChat' : 'Número'}
+          </label>
+          <input
+            id="relatorio-destino"
+            value={destino}
+            onChange={(e) => setDestino(e.target.value)}
+            placeholder={canalAtual.placeholder}
+            type={canal === 'email' ? 'email' : 'text'}
+            inputMode={canal === 'email' ? 'email' : canal === 'wechat' ? 'text' : 'tel'}
+            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm"
+          />
+        </div>
+        <div>
+          <label htmlFor="relatorio-nome" className="block text-xs text-zinc-500 mb-2">Nome</label>
+          <input
+            id="relatorio-nome"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            placeholder="Opcional"
+            maxLength={100}
+            className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm"
+          />
+        </div>
         <button
           type="button"
           onClick={adicionar}
           disabled={saving || !destino.trim()}
           className="px-5 py-3 rounded-xl bg-indigo-600 text-white text-sm font-medium disabled:opacity-50"
         >
-          {saving ? '…' : 'Adicionar'}
+          {saving ? 'Adicionando…' : 'Adicionar'}
         </button>
       </div>
 
-      {destinatarios.length > 0 && (
-        <div className="space-y-2">
-          {destinatarios.map((item) => (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-zinc-500">Destinatários adicionados</p>
+          <span className="text-xs text-zinc-600">{destinatarios.length}/20</span>
+        </div>
+
+        {destinatarios.length === 0 ? (
+          <p className="text-sm text-zinc-500 rounded-xl border border-dashed border-zinc-800 px-4 py-4">
+            Nenhum destinatário adicionado ainda.
+          </p>
+        ) : (
+          destinatarios.map((item) => (
             <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3">
               <div className="min-w-0">
                 <p className="text-sm text-zinc-200">
                   {item.nome || item.destino}
-                  <span className="ml-2 text-xs text-zinc-500 uppercase">{item.canal}</span>
+                  <span className="ml-2 text-xs text-zinc-500">{canais.find((c) => c.value === item.canal)?.label}</span>
                 </p>
                 {item.nome && <p className="text-xs text-zinc-500 break-all">{item.destino}</p>}
               </div>
@@ -176,9 +213,9 @@ export function RelatorioDestinatariosPanel({ empresaRef }: { empresaRef: string
                 Remover
               </button>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
 
       {message && <p className="text-xs text-zinc-500">{message}</p>}
     </section>
