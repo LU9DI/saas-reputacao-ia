@@ -1,5 +1,5 @@
 /**
- * Filtra.IA — bootstrap da API (produção-ready)
+ * Filtra.AI — bootstrap da API (produção-ready)
  */
 import express from 'express';
 import cors from 'cors';
@@ -71,8 +71,8 @@ assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
 
 const BUILD = {
-  version: '1.1.2',
-  marker: 'smtp-test-and-mailer-fix',
+  version: '1.1.3',
+  marker: 'cleanup-filtra-ai',
   started_at: new Date().toISOString(),
 };
 
@@ -314,7 +314,7 @@ async function main() {
   }
 
   server = app.listen(PORT, () => {
-    console.log(`🚀 API Filtra.IA em http://localhost:${PORT}`);
+    console.log(`🚀 API Filtra.AI em http://localhost:${PORT}`);
   });
   server.keepAliveTimeout = 65_000;
   server.headersTimeout = 66_000;
