@@ -1,29 +1,30 @@
-# Estrutura do projeto — Filtra.IA
+# Estrutura do projeto — Filtra.AI
 
 ```text
 saas-reputacao-ia/
 ├── backend/                 # API Express (porta 5000)
 │   ├── server.ts            # Bootstrap: middlewares, health, monta rotas
 │   ├── routes/              # Rotas HTTP (uma área por arquivo)
-│   ├── services/            # Regras de negócio (trial, auth, review, billing)
+│   ├── services/            # Regras de negócio
 │   ├── lib/                 # Utilitários (db, auth, mailer, planos, IA…)
 │   ├── middleware/          # validate, security, errorHandler
-│   ├── tests/               # Unit + integration
-│   ├── scripts/             # Jobs manuais (backfill etc.)
-│   ├── *.md                 # Guias pontuais (Stripe, Pix, MFA…)
+│   ├── tests/
 │   └── .env.example
 ├── frontend/                # Next.js (porta 3000)
 │   └── src/app/
 │       ├── page.tsx         # Landing + trial
-│       ├── login/           # Login empresa
-│       ├── admin/           # Painel admin
+│       ├── login/
+│       ├── admin/
 │       ├── painel/[id]/    # Painel do cliente
 │       ├── avaliacao/[id]/ # Formulário público
-│       ├── components/      # UI reutilizável
+│       ├── components/
+│       ├── dictionaries/    # pt / en / es / zh
+│       ├── Contexts/
 │       └── utils/
-├── docs/                    # Índice da documentação
-├── DEPLOY.md / GO_LIVE.md   # Produção
-└── STRUCTURE.md             # Este arquivo
+├── docs/
+├── .vscode/
+├── DEPLOY.md / GO_LIVE.md
+└── STRUCTURE.md
 ```
 
 ## Onde colocar código novo
@@ -35,13 +36,15 @@ saas-reputacao-ia/
 | Helper compartilhado | `backend/lib/` |
 | Página Next | `frontend/src/app/...` |
 | Componente React | `frontend/src/app/components/` |
+| Textos i18n | `frontend/src/app/dictionaries/` |
 
 ## Não usar
 
 - Subpasta `backend/saas-reputacao-ia/` (cópia aninhada — ver `LIMPEZA_ESTRUTURA.md`)
-- Arquivos `finishBootstrap.ts` / stubs `@deprecated` na raiz do backend (legado)
+- Editar regra de negócio em `server.ts` — só bootstrap
 - Commitar `.env`, `*.sqlite`, `.aider*`
 
-## Docs rápidos
+## Legado (ainda no repo, evitar expandir)
 
-Veja `docs/README.md`.
+- `backend/relatorioPdf.ts` + rota PDF — relatório do painel hoje é texto via canais (WPP/SMS/e-mail/WeChat)
+- Re-exports na raiz do backend (`mailer.ts`, `authMiddleware.ts`) → preferir `lib/` e `middleware/`

@@ -3,17 +3,19 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
-  // 🔌 PROXY PARA MANDAR REQUISIÇÕES DO FRONT DIRETO PRO SEU BACKEND NODE/EXPRESS
+  // Em dev: proxy /api → backend local.
+  // Em produção (Vercel): o front chama NEXT_PUBLIC_API_URL (Render) direto — sem rewrite.
   async rewrites() {
+    if (process.env.NODE_ENV === 'production') return [];
+    const backend = (process.env.BACKEND_URL || 'http://127.0.0.1:5000').replace(/\/+$/, '');
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*', // Destino do seu backend dividido
+        destination: `${backend}/api/:path*`,
       },
     ];
   },
 
-  // Headers úteis para PWA / SW que você configurou perfeitamente
   async headers() {
     return [
       {
@@ -35,4 +37,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-

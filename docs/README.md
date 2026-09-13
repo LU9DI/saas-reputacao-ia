@@ -1,4 +1,4 @@
-# Documentação — Filtra.IA
+# Documentação — Filtra.AI
 
 ## Começar
 
@@ -8,9 +8,9 @@
 | [../SETUP.md](../SETUP.md) | Setup detalhado |
 | [../STRUCTURE.md](../STRUCTURE.md) | Onde fica cada coisa |
 | [../GO_LIVE.md](../GO_LIVE.md) | Checklist de produção |
-| [../DEPLOY.md](../DEPLOY.md) | Railway + Vercel |
+| [../DEPLOY.md](../DEPLOY.md) | Render + Vercel |
 
-## Backend (guias na pasta `backend/`)
+## Backend (guias em `backend/`)
 
 | Doc | Conteúdo |
 |------|----------|
@@ -20,10 +20,11 @@
 | `MFA.md` | MFA admin |
 | `SECURITY.md` | Headers, JWT |
 | `SECURITY_JWT_WEBAUTHN.md` | WebAuthn |
-| `RELATORIO_PDF.md` | PDFs |
 | `DEPLOY.md` | Env + webhooks + cron |
 | `PASSWORD_WIRE.md` | Reset de senha |
-| `RESET_ADMIN.md` | Resetar admin no SQLite |
+| `RESET_ADMIN.md` | Resetar admin |
+
+> `RELATORIO_PDF.md` descreve o gerador PDF legado. O painel atual envia **relatório em texto** pelos canais escolhidos.
 
 ## Limpeza
 
@@ -31,11 +32,13 @@
 |------|----------|
 | [../LIMPEZA_ESTRUTURA.md](../LIMPEZA_ESTRUTURA.md) | Pasta duplicada / submódulo |
 | [../LIMPEZA_GIT.md](../LIMPEZA_GIT.md) | Bancos no Git |
+| [LIMPEZA_CODIGO.md](LIMPEZA_CODIGO.md) | Organização no VS Code |
 
-## Convenções de código
+## Convenções
 
 1. Rotas finas → lógica em `services/` ou `lib/`
 2. Validação via `middleware/validate.ts`
 3. Erros via `asyncHandler` + `errorHandler`
-4. Auth: cookie `saas_auth_token` + `Authorization: Bearer` + `filtra_token` no front
+4. Auth: cookie + `Authorization: Bearer` + `filtra_token` no front
 5. Não editar `server.ts` para regra de negócio — só montar rotas
+6. Marca: **Filtra.AI** (não Filtra.IA)

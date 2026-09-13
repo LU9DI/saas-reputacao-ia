@@ -1,6 +1,6 @@
 /**
- * Helper exportado — montado via patch em empresaRoutes seria ideal;
- * este módulo expõe o handler para import opcional.
- * Preferimos rotas embutidas em reviewRoutes/export.
+ * @deprecated Stub vazio — não importar.
+ * Export CSV está em exportRoutes / admin dashboard.
+ * Mantido só para não quebrar imports antigos acidentais.
  */
 export {};
