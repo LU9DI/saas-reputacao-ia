@@ -63,7 +63,13 @@ export default function LoginPage() {
     try {
       const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
       const id = identificador.trim();
+      if (!id) {
+        setErro(t.login_id_required || 'Informe o e-mail de acesso.');
+        setLoading(false);
+        return;
+      }
       const body: Record<string, string> = { senha };
+      // Preferência: e-mail. Tax ID/CNPJ só se não for e-mail.
       if (isEmail(id)) body.email = id.toLowerCase();
       else body.tax_id = id;
 
@@ -131,7 +137,7 @@ export default function LoginPage() {
           </h1>
           <p className="text-sm text-zinc-400 leading-relaxed">
             {t.login_subtitle ||
-              'Entre com e-mail e senha. Tax ID / CNPJ também funciona, se você cadastrou.'}
+              'Entre com o e-mail e a senha do cadastro. CNPJ / Tax ID é opcional (só se você cadastrou).'}
           </p>
         </div>
 
@@ -156,11 +162,12 @@ export default function LoginPage() {
               htmlFor="login-id"
               className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
             >
-              <Mail size={14} /> {t.login_id_label || 'E-mail ou Tax ID'}
+              <Mail size={14} /> {t.login_id_label || 'E-mail'}
             </label>
             <input
               id="login-id"
               type="text"
+              inputMode="email"
               required
               autoComplete="username"
               value={identificador}
@@ -168,6 +175,10 @@ export default function LoginPage() {
               placeholder={t.login_id_placeholder || 'seu@email.com'}
               className={inputCls}
             />
+            <p className="text-[11px] text-zinc-500">
+              {t.login_id_hint ||
+                'Use o e-mail do trial. Se preferir, pode entrar com CNPJ ou Tax ID cadastrado.'}
+            </p>
           </div>
 
           <div className="space-y-1.5">
@@ -212,7 +223,7 @@ export default function LoginPage() {
 
           <p className="text-[11px] text-zinc-500 text-center leading-relaxed">
             {t.login_bio_hint ||
-              'A biometria fica só no seu aparelho (WebAuthn). Cadastre a digital após o primeiro login por senha.'}
+              'Biometria: informe o Tax ID/CNPJ no campo acima (não o e-mail). Cadastre a digital após o primeiro login por senha.'}
           </p>
 
           <p className="text-center text-xs text-zinc-500 space-x-3">
