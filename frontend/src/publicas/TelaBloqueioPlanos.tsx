@@ -10,7 +10,7 @@ type Props = {
 
 /**
  * Tela quando trial/assinatura expirou.
- * Usa o mesmo checkout Stripe do PlanCards (não é mais TODO).
+ * Checkout via Mercado Pago / PayPal (PlanCards).
  */
 export default function TelaBloqueioPlanos({ empresaId = null }: Props) {
   return (
@@ -24,12 +24,12 @@ export default function TelaBloqueioPlanos({ empresaId = null }: Props) {
             Período de testes encerrado
           </h1>
           <p className="text-base text-zinc-400 leading-relaxed">
-            Escolha um plano para reativar o QR Code e continuar recebendo avaliações. Pagamento
-            seguro via Stripe.
+            Escolha um plano para reativar o QR Code e continuar recebendo avaliações.
+            Pagamento seguro via Mercado Pago ou PayPal.
           </p>
         </div>
 
-        <PlanCards empresaId={empresaId} requireEmpresa={Boolean(empresaId)} showComoFunciona={false} />
+        <PlanCards empresaId={empresaId} requireEmpresa={Boolean(empresaId)} />
       </div>
     </div>
   );
