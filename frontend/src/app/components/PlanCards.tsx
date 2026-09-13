@@ -17,7 +17,7 @@ const DEFAULT_PLANS: PlanCard[] = [
   { keyMensal: 'rei', keyAnual: 'rei-anual', label: 'REI', priceMensal: 'R$\u00a0999,90', priceAnual: 'R$\u00a0899,90', features: [], reviewLimit: 8000 },
 ];
 
-type Props = { empresaId?: string | null; requireEmpresa?: boolean; email?: string | null };
+type Props = { empresaId?: string | null; requireEmpresa?: boolean; showComoFunciona?: boolean; email?: string | null };
 function formatPriceDisplay(price: string): string { return String(price || '').replace(/\u00a0/g, ' ').replace(/R\$\s+/g, 'R$\u00a0').trim(); }
 function resolveLimit(plan: string, fromApi?: number): number { return OFFICIAL_LIMITS[plan] ?? (fromApi && fromApi > 0 ? fromApi : 100); }
 function textOrFallback(value: unknown, fallback: string): string { const text = String(value ?? '').trim(); return text || fallback; }
