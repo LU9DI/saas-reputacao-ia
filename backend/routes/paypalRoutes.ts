@@ -31,13 +31,13 @@ async function ensurePaypalTables(db: Database) {
     );
   `);
   try {
-    const cols = (await db.all(`PRAGMA table_info(empresas)`)).map((c: any) => c.name);
-    if (!cols.includes('payment_gateway')) {
-      await db.exec(`ALTER TABLE empresas ADD COLUMN payment_gateway TEXT`);
-    }
+    await db.exec(`ALTER TABLE empresas ADD COLUMN IF NOT EXISTS payment_gateway TEXT`);
   } catch {
     try {
-      await db.exec(`ALTER TABLE empresas ADD COLUMN IF NOT EXISTS payment_gateway TEXT`);
+      const cols = (await db.all(`PRAGMA table_info(empresas)`)).map((c: any) => c.name);
+      if (!cols.includes('payment_gateway')) {
+        await db.exec(`ALTER TABLE empresas ADD COLUMN payment_gateway TEXT`);
+      }
     } catch {
       /* ok */
     }
@@ -88,28 +88,31 @@ async function activateFromPayment(
     exp.toISOString()
   );
 
-  await db.run(`UPDATE empresas SET payment_gateway = 'paypal', billing_cycle = ? WHERE id = ?`, [
-    plano?.interval === 'year' ? 'year' : 'month',
-    opts.empresaId,
-  ]);
+  try {
+    await db.run(`UPDATE empresas SET payment_gateway = 'paypal', billing_cycle = ? WHERE id = ?`, [
+      plano?.interval === 'year' ? 'year' : 'month',
+      opts.empresaId,
+    ]);
+  } catch {
+    await db.run(`UPDATE empresas SET payment_gateway = 'paypal' WHERE id = ?`, [opts.empresaId]);
+  }
 
   return { plan: plano?.planDb, expira_em: exp.toISOString() };
 }
 
 export function mountPayPalRoutes(app: Express) {
   app.get('/api/paypal/status', (_req, res) => {
-    const cid = process.env.PAYPAL_CLIENT_ID?.trim() || '';
+    const cid = String(process.env.PAYPAL_CLIENT_ID || '').trim().replace(/^['"]|['"]$/g, '');
     res.json({
       configured: paypalConfigured(),
       webhook: paypalWebhookConfigured(),
-      mode: process.env.PAYPAL_MODE || 'sandbox',
+      mode: (process.env.PAYPAL_MODE || 'sandbox').toLowerCase(),
       webhook_url: 'https://filtra-ia-api.onrender.com/api/webhook/paypal',
-      client_id_prefix: cid ? `${cid.slice(0, 6)}…` : null,
-      code_version: 'paypal-debug-v2',
+      client_id_prefix: cid ? `${cid.slice(0, 8)}…` : null,
+      code_version: 'paypal-fix-v3',
     });
   });
 
-  /** Testa só o OAuth — sem criar pedido. Útil para achar credencial errada. */
   app.get(
     '/api/paypal/debug-oauth',
     asyncHandler(async (_req: Request, res: Response) => {
@@ -123,12 +126,14 @@ export function mountPayPalRoutes(app: Express) {
           mode: process.env.PAYPAL_MODE || 'sandbox',
           token_len: token.length,
           message: 'OAuth PayPal OK',
+          code_version: 'paypal-fix-v3',
         });
       } catch (e: any) {
         res.status(502).json({
           ok: false,
           mode: process.env.PAYPAL_MODE || 'sandbox',
           error: e?.message || String(e),
+          code_version: 'paypal-fix-v3',
         });
       }
     })
@@ -148,8 +153,12 @@ export function mountPayPalRoutes(app: Express) {
       }
       const empresaId = req.body?.empresa_id ? String(req.body.empresa_id) : null;
       if (empresaId) {
-        const emp = await getDb().get(`SELECT id FROM empresas WHERE id = ?`, [empresaId]);
-        if (!emp) return res.status(404).json({ error: 'Empresa não encontrada.' });
+        try {
+          const emp = await getDb().get(`SELECT id FROM empresas WHERE id = ?`, [empresaId]);
+          if (!emp) return res.status(404).json({ error: 'Empresa não encontrada.' });
+        } catch (dbErr: any) {
+          console.warn('[paypal create-order] db check:', dbErr?.message);
+        }
       }
 
       try {
@@ -173,6 +182,7 @@ export function mountPayPalRoutes(app: Express) {
           error: e?.message || 'Falha ao criar pedido PayPal',
           gateway: 'paypal',
           mode: process.env.PAYPAL_MODE || 'sandbox',
+          code_version: 'paypal-fix-v3',
         });
       }
     })

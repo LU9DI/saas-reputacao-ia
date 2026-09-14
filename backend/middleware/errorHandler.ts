@@ -15,7 +15,6 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
 
   const rawMsg = String(err?.message || 'Erro na requisição.');
 
-  // Sempre loga — senão o Render fica mudo
   console.error('[error]', {
     status,
     message: rawMsg,
@@ -23,9 +22,9 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
     stack: err?.stack?.split('\n').slice(0, 6),
   });
 
-  // Pagamentos: sempre devolve a mensagem real (PayPal / MP / Stripe / Pix)
+  // Qualquer falha de gateway de pagamento: devolve mensagem real
   const isPaymentish =
-    /mercado\s*pago|mp_|pix|paypal|stripe|credencial|access token|public key|oauth|client.?id|BRL|currency/i.test(
+    /mercado\s*pago|mp_|pix|paypal|stripe|credencial|access.?token|public.?key|oauth|client.?id|client.?authentication|invalid_client|BRL|currency|create order|capture/i.test(
       rawMsg
     ) ||
     status === 401 ||
@@ -41,7 +40,6 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
   });
 }
 
-/** Envolve handlers async para não precisar try/catch em todo lugar. */
 export function asyncHandler(
   fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
 ) {

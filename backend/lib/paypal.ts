@@ -9,52 +9,87 @@
  */
 import { resolvePlano, type PlanoDef } from '../stripeBilling.js';
 
+/** Remove aspas acidentais e espaços das env vars do Render. */
+function envTrim(key: string): string {
+  let v = String(process.env[key] || '').trim();
+  if (
+    (v.startsWith('"') && v.endsWith('"')) ||
+    (v.startsWith("'") && v.endsWith("'"))
+  ) {
+    v = v.slice(1, -1).trim();
+  }
+  // Render às vezes cola \n no final do secret
+  return v.replace(/[\r\n]+/g, '');
+}
+
+function paypalMode(): 'live' | 'sandbox' {
+  const m = envTrim('PAYPAL_MODE').toLowerCase();
+  return m === 'live' || m === 'production' || m === 'prod' ? 'live' : 'sandbox';
+}
+
 function baseUrl(): string {
-  const mode = (process.env.PAYPAL_MODE || 'sandbox').toLowerCase();
-  return mode === 'live'
+  return paypalMode() === 'live'
     ? 'https://api-m.paypal.com'
     : 'https://api-m.sandbox.paypal.com';
 }
 
 export function paypalConfigured(): boolean {
-  return Boolean(
-    process.env.PAYPAL_CLIENT_ID?.trim() && process.env.PAYPAL_CLIENT_SECRET?.trim()
-  );
+  return Boolean(envTrim('PAYPAL_CLIENT_ID') && envTrim('PAYPAL_CLIENT_SECRET'));
 }
 
 export function paypalWebhookConfigured(): boolean {
-  return paypalConfigured() && Boolean(process.env.PAYPAL_WEBHOOK_ID?.trim());
+  return paypalConfigured() && Boolean(envTrim('PAYPAL_WEBHOOK_ID'));
 }
 
 export async function accessToken(): Promise<string> {
-  const id = process.env.PAYPAL_CLIENT_ID!.trim();
-  const secret = process.env.PAYPAL_CLIENT_SECRET!.trim();
+  const id = envTrim('PAYPAL_CLIENT_ID');
+  const secret = envTrim('PAYPAL_CLIENT_SECRET');
+  if (!id || !secret) {
+    throw new Error('PayPal: PAYPAL_CLIENT_ID ou PAYPAL_CLIENT_SECRET ausentes');
+  }
+
+  const mode = paypalMode();
   const auth = Buffer.from(`${id}:${secret}`).toString('base64');
-  const res = await fetch(`${baseUrl()}/v1/oauth2/token`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${auth}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: 'grant_type=client_credentials',
-  });
-  const data = await res.json().catch(() => ({}));
+  const url = `${baseUrl()}/v1/oauth2/token`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+      },
+      body: 'grant_type=client_credentials',
+    });
+  } catch (net: any) {
+    throw new Error(`PayPal OAuth rede (${mode}): ${net?.message || net}`);
+  }
+
+  const data = await res.json().catch(() => ({} as any));
   if (!res.ok || !data.access_token) {
     const detail =
       data?.error_description ||
       data?.error ||
       data?.message ||
       `HTTP ${res.status}`;
-    throw new Error(`PayPal OAuth falhou (${process.env.PAYPAL_MODE || 'sandbox'}): ${detail}`);
+    // Dica comum: credencial sandbox com MODE=live (ou o contrário)
+    const hint =
+      /client.?authentication|invalid_client|unauthorized/i.test(String(detail))
+        ? ` — confira se CLIENT_ID/SECRET são do ambiente ${mode} (Developer Dashboard → ${mode === 'live' ? 'Live' : 'Sandbox'})`
+        : '';
+    throw new Error(`PayPal OAuth falhou (${mode}): ${detail}${hint}`);
   }
   return data.access_token as string;
 }
 
 function appUrl(): string {
-  return (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
-    /\/$/,
-    ''
-  );
+  return (
+    envTrim('APP_URL') ||
+    envTrim('FRONTEND_URL') ||
+    'https://filtra-ai.vercel.app'
+  ).replace(/\/$/, '');
 }
 
 export function planoAmountBrl(plano: PlanoDef): string {
@@ -100,10 +135,11 @@ export async function createPayPalOrder(opts: {
 
   const token = await accessToken();
   const value = planoAmountBrl(plano);
-  const returnUrl = `${appUrl()}/?paypal=success&empresa_id=${encodeURIComponent(opts.empresaId || '')}&plano=${encodeURIComponent(plano.key)}&order_id=`;
-  const cancelUrl = `${appUrl()}/?paypal=cancel`;
+  const base = appUrl();
+  const returnUrl = `${base}/?paypal=success&empresa_id=${encodeURIComponent(opts.empresaId || '')}&plano=${encodeURIComponent(plano.key)}`;
+  const cancelUrl = `${base}/?paypal=cancel`;
 
-  const body = {
+  const body: Record<string, unknown> = {
     intent: 'CAPTURE',
     purchase_units: [
       {
@@ -122,25 +158,34 @@ export async function createPayPalOrder(opts: {
       user_action: 'PAY_NOW',
       return_url: returnUrl,
       cancel_url: cancelUrl,
+      shipping_preference: 'NO_SHIPPING',
     },
   };
+
+  if (opts.email) {
+    (body as any).payer = { email_address: String(opts.email).slice(0, 254) };
+  }
 
   const res = await fetch(`${baseUrl()}/v2/checkout/orders`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Prefer: 'return=representation',
     },
     body: JSON.stringify(body),
   });
-  const data = await res.json().catch(() => ({}));
+  const data = await res.json().catch(() => ({} as any));
   if (!res.ok) {
     const detail =
       data?.details?.[0]?.description ||
+      data?.details?.[0]?.issue ||
       data?.message ||
       data?.name ||
       `HTTP ${res.status}`;
-    throw new Error(`PayPal create order falhou: ${detail}`);
+    const issue = data?.details?.[0]?.issue ? ` [${data.details[0].issue}]` : '';
+    throw new Error(`PayPal create order falhou: ${detail}${issue}`);
   }
 
   const approve = (data.links || []).find((l: any) => l.rel === 'approve');
@@ -169,9 +214,10 @@ export async function capturePayPalOrder(orderId: string): Promise<{
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
   });
-  const data = await res.json().catch(() => ({}));
+  const data = await res.json().catch(() => ({} as any));
   if (!res.ok) {
     if (res.status === 422 || String(data?.name || '').includes('ORDER_ALREADY_CAPTURED')) {
       return getPayPalOrderSummary(orderId);
@@ -196,10 +242,10 @@ export async function capturePayPalOrder(orderId: string): Promise<{
 export async function getPayPalOrderSummary(orderId: string) {
   const token = await accessToken();
   const res = await fetch(`${baseUrl()}/v2/checkout/orders/${orderId}`, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
   });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.message || `GET order ${res.status}`);
+  const data = await res.json().catch(() => ({} as any));
+  if (!res.ok) throw new Error(`PayPal GET order: ${data?.message || res.status}`);
   const unit = data?.purchase_units?.[0];
   const cap = unit?.payments?.captures?.[0];
   return {
@@ -217,10 +263,10 @@ export async function verifyPayPalWebhook(opts: {
   headers: Record<string, string | string[] | undefined>;
   webhookEvent: any;
 }): Promise<boolean> {
-  const webhookId = process.env.PAYPAL_WEBHOOK_ID?.trim();
+  const webhookId = envTrim('PAYPAL_WEBHOOK_ID');
   if (!webhookId) {
     if (process.env.NODE_ENV === 'production') {
-      throw new Error('PAYPAL_WEBHOOK_ID obrigatório em produção');
+      throw new Error('PayPal: PAYPAL_WEBHOOK_ID obrigatório em produção');
     }
     console.warn('[paypal webhook] PAYPAL_WEBHOOK_ID ausente — skip verify (dev)');
     return true;
@@ -239,7 +285,7 @@ export async function verifyPayPalWebhook(opts: {
   const transmission_sig = get('paypal-transmission-sig');
 
   if (!transmission_id || !transmission_time || !cert_url || !auth_algo || !transmission_sig) {
-    throw new Error('Headers PayPal incompletos');
+    throw new Error('PayPal: Headers PayPal incompletos');
   }
 
   const token = await accessToken();
@@ -248,6 +294,7 @@ export async function verifyPayPalWebhook(opts: {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
     body: JSON.stringify({
       transmission_id,
@@ -259,7 +306,7 @@ export async function verifyPayPalWebhook(opts: {
       webhook_event: opts.webhookEvent,
     }),
   });
-  const data = await res.json().catch(() => ({}));
+  const data = await res.json().catch(() => ({} as any));
   if (!res.ok) {
     console.error('[paypal verify]', data);
     return false;
