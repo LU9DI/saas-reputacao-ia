@@ -23,9 +23,9 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
     stack: err?.stack?.split('\n').slice(0, 6),
   });
 
-  // Em pagamento / validação, devolve a mensagem real (não esconde 502/401 do MP)
+  // Pagamentos: sempre devolve a mensagem real (PayPal / MP / Stripe / Pix)
   const isPaymentish =
-    /mercado\s*pago|mp_|pix|paypal|stripe|credencial|access token|public key/i.test(
+    /mercado\s*pago|mp_|pix|paypal|stripe|credencial|access token|public key|oauth|client.?id|BRL|currency/i.test(
       rawMsg
     ) ||
     status === 401 ||
@@ -37,7 +37,7 @@ export function errorHandler(err: any, _req: Request, res: Response, _next: Next
 
   res.status(status).json({
     error: message,
-    ...(status >= 500 && isPaymentish ? { provider: 'mercadopago' } : {}),
+    ...(isPaymentish ? { gateway_hint: true } : {}),
   });
 }
 

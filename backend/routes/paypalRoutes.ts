@@ -14,6 +14,7 @@ import {
   parseCustomId,
   parsePlanoFromInvoiceId,
   getPayPalOrderSummary,
+  accessToken,
 } from '../lib/paypal.js';
 import { resolvePlano } from '../stripeBilling.js';
 import { activatePlan, blockEmpresa } from '../services/billingService.js';
@@ -97,13 +98,41 @@ async function activateFromPayment(
 
 export function mountPayPalRoutes(app: Express) {
   app.get('/api/paypal/status', (_req, res) => {
+    const cid = process.env.PAYPAL_CLIENT_ID?.trim() || '';
     res.json({
       configured: paypalConfigured(),
       webhook: paypalWebhookConfigured(),
       mode: process.env.PAYPAL_MODE || 'sandbox',
       webhook_url: 'https://filtra-ia-api.onrender.com/api/webhook/paypal',
+      client_id_prefix: cid ? `${cid.slice(0, 6)}…` : null,
+      code_version: 'paypal-debug-v2',
     });
   });
+
+  /** Testa só o OAuth — sem criar pedido. Útil para achar credencial errada. */
+  app.get(
+    '/api/paypal/debug-oauth',
+    asyncHandler(async (_req: Request, res: Response) => {
+      if (!paypalConfigured()) {
+        return res.status(503).json({ ok: false, error: 'PAYPAL_CLIENT_ID/SECRET ausentes' });
+      }
+      try {
+        const token = await accessToken();
+        res.json({
+          ok: true,
+          mode: process.env.PAYPAL_MODE || 'sandbox',
+          token_len: token.length,
+          message: 'OAuth PayPal OK',
+        });
+      } catch (e: any) {
+        res.status(502).json({
+          ok: false,
+          mode: process.env.PAYPAL_MODE || 'sandbox',
+          error: e?.message || String(e),
+        });
+      }
+    })
+  );
 
   app.post(
     '/api/paypal/create-order',
@@ -140,7 +169,6 @@ export function mountPayPalRoutes(app: Express) {
         });
       } catch (e: any) {
         console.error('[paypal create-order]', e?.message || e);
-        // 502 = falha no gateway (credenciais, moeda, conta)
         return res.status(502).json({
           error: e?.message || 'Falha ao criar pedido PayPal',
           gateway: 'paypal',

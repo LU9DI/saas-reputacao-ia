@@ -26,7 +26,7 @@ export function paypalWebhookConfigured(): boolean {
   return paypalConfigured() && Boolean(process.env.PAYPAL_WEBHOOK_ID?.trim());
 }
 
-async function accessToken(): Promise<string> {
+export async function accessToken(): Promise<string> {
   const id = process.env.PAYPAL_CLIENT_ID!.trim();
   const secret = process.env.PAYPAL_CLIENT_SECRET!.trim();
   const auth = Buffer.from(`${id}:${secret}`).toString('base64');
@@ -38,9 +38,14 @@ async function accessToken(): Promise<string> {
     },
     body: 'grant_type=client_credentials',
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok || !data.access_token) {
-    throw new Error(data?.error_description || data?.error || 'PayPal OAuth falhou');
+    const detail =
+      data?.error_description ||
+      data?.error ||
+      data?.message ||
+      `HTTP ${res.status}`;
+    throw new Error(`PayPal OAuth falhou (${process.env.PAYPAL_MODE || 'sandbox'}): ${detail}`);
   }
   return data.access_token as string;
 }
@@ -75,13 +80,11 @@ export function parseCustomId(customId: string | null | undefined): {
       planoKey: parts.slice(1).join('|') || null,
     };
   }
-  // só empresa id (legado)
   return { empresaId: String(customId), planoKey: null };
 }
 
 export function parsePlanoFromInvoiceId(invoiceId: string | null | undefined): string | null {
   if (!invoiceId) return null;
-  // filtra-{planoKey}-{timestamp}
   const m = String(invoiceId).match(/^filtra-([a-z0-9-]+)-\d+$/i);
   return m ? m[1] : null;
 }
@@ -108,13 +111,13 @@ export async function createPayPalOrder(opts: {
           currency_code: 'BRL',
           value,
         },
-        description: `Filtra.IA — ${plano.label}`.slice(0, 127),
+        description: `Filtra.AI — ${plano.label}`.slice(0, 127),
         custom_id: buildCustomId(opts.empresaId, plano.key),
         invoice_id: `filtra-${plano.key}-${Date.now()}`.slice(0, 127),
       },
     ],
     application_context: {
-      brand_name: 'Filtra.IA',
+      brand_name: 'Filtra.AI',
       landing_page: 'NO_PREFERENCE',
       user_action: 'PAY_NOW',
       return_url: returnUrl,
@@ -130,9 +133,14 @@ export async function createPayPalOrder(opts: {
     },
     body: JSON.stringify(body),
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data?.message || data?.details?.[0]?.description || `PayPal ${res.status}`);
+    const detail =
+      data?.details?.[0]?.description ||
+      data?.message ||
+      data?.name ||
+      `HTTP ${res.status}`;
+    throw new Error(`PayPal create order falhou: ${detail}`);
   }
 
   const approve = (data.links || []).find((l: any) => l.rel === 'approve');
@@ -163,13 +171,14 @@ export async function capturePayPalOrder(orderId: string): Promise<{
       'Content-Type': 'application/json',
     },
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    // já capturado — tenta GET
     if (res.status === 422 || String(data?.name || '').includes('ORDER_ALREADY_CAPTURED')) {
       return getPayPalOrderSummary(orderId);
     }
-    throw new Error(data?.message || data?.details?.[0]?.description || `Capture ${res.status}`);
+    const detail =
+      data?.details?.[0]?.description || data?.message || `Capture ${res.status}`;
+    throw new Error(`PayPal capture falhou: ${detail}`);
   }
 
   const unit = data?.purchase_units?.[0];
@@ -189,7 +198,7 @@ export async function getPayPalOrderSummary(orderId: string) {
   const res = await fetch(`${baseUrl()}/v2/checkout/orders/${orderId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data?.message || `GET order ${res.status}`);
   const unit = data?.purchase_units?.[0];
   const cap = unit?.payments?.captures?.[0];
@@ -210,7 +219,6 @@ export async function verifyPayPalWebhook(opts: {
 }): Promise<boolean> {
   const webhookId = process.env.PAYPAL_WEBHOOK_ID?.trim();
   if (!webhookId) {
-    // em dev sem webhook id, aceita se não for production
     if (process.env.NODE_ENV === 'production') {
       throw new Error('PAYPAL_WEBHOOK_ID obrigatório em produção');
     }
@@ -251,7 +259,7 @@ export async function verifyPayPalWebhook(opts: {
       webhook_event: opts.webhookEvent,
     }),
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     console.error('[paypal verify]', data);
     return false;
