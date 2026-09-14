@@ -127,6 +127,121 @@ async function ensurePainelColumns(db: any) {
   }
 }
 
+async function loadReviewsSafe(db: any, empresaId: string): Promise<any[]> {
+  const queries = [
+    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC NULLS LAST LIMIT 500`,
+    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY "createdAt" DESC LIMIT 500`,
+    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY id DESC LIMIT 500`,
+    `SELECT * FROM reviews WHERE empresa_id = ? LIMIT 500`,
+  ];
+  for (const q of queries) {
+    try {
+      const rows = await db.all(q, [empresaId]);
+      return Array.isArray(rows) ? rows : [];
+    } catch (e: any) {
+      console.warn('painel reviews query fail:', e?.message || e, q.slice(0, 80));
+    }
+  }
+  return [];
+}
+
+function emptyPainelPayload(empresa: any, reason?: string) {
+  const base = APP_URL.replace(/\/$/, '');
+  const ref = empresa.slug || empresa.id;
+  const plan = String(empresa.plan || 'trial').toLowerCase();
+  const trial = isTrialPlan(plan);
+  const nivel = nivelDashboard(plan);
+  const pdf_disponivel = planTemPdf(plan);
+  const tem_ia = trial || planTemIA(plan);
+  const wpp = normalizarWhatsapp(empresa.whatsapp_suporte);
+  const statusAcesso =
+    empresa.status === 'bloqueado'
+      ? 'BLOQUEADO'
+      : trial
+        ? 'TRIAL'
+        : empresa.status === 'ativo'
+          ? 'ATIVO'
+          : String(empresa.status || '—').toUpperCase();
+
+  return {
+    empresa: {
+      id: empresa.id,
+      slug: empresa.slug,
+      nome_empresa: empresa.nome_empresa,
+      status: empresa.status,
+      status_acesso: statusAcesso,
+      plan: empresa.plan,
+      expira_em: empresa.expira_em,
+      cancel_at_period_end: Number(empresa.cancel_at_period_end) === 1,
+      google_review_url: empresa.google_review_url || null,
+      whatsapp: wpp,
+      whatsapp_url: linkWhatsapp(wpp),
+      locale: empresa.locale || 'pt',
+    },
+    reviews: [],
+    metricas: {
+      total: 0,
+      media: 0,
+      negativas: 0,
+      positivas: 0,
+      tratadas: 0,
+      pendentes_tratamento: 0,
+      alerta_crise: false,
+      crises_24h: 0,
+      distribuicao: [0, 0, 0, 0, 0],
+      top_tags: [],
+      taxa_positiva: 0,
+      serie_14d: serieUltimosDias([], 14),
+      testes_excluidos: 0,
+      sentimento_mix: { positivo: 0, neutro: 0, negativo: 0 },
+      sentimento_score_medio: null,
+      feedback_usados: 0,
+      feedback_limite: getFeedbackLimit(plan),
+      tokens_usados: 0,
+      tokens_limite: getTokenLimit(plan),
+      tokens_pct: 0,
+    },
+    dashboard: {
+      nivel,
+      pdf_disponivel,
+      tem_ia,
+      trial_completo: trial,
+      plan_switch: allowPlanSwitch(),
+      planos_teste: allowPlanSwitch()
+        ? PLANOS_OFICIAIS.map((p) => ({ key: p, label: planLabel(p) }))
+        : [],
+      mostrar_graficos: true,
+      mostrar_tendencia: trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
+      mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo),
+      mostrar_crise: true,
+      mostrar_sentimento: true,
+      mostrar_ia_respostas: tem_ia,
+      mostrar_whatsapp_cliente: true,
+      mostrar_copiar_resposta: true,
+      mostrar_tratar: true,
+      whatsapp_crise: true,
+    },
+    integracoes: {
+      push: Boolean(
+        process.env.VAPID_PUBLIC_KEY?.trim() && process.env.VAPID_PRIVATE_KEY?.trim()
+      ),
+      n8n: Boolean(process.env.N8N_WEBHOOK_URL?.trim()),
+      stripe: Boolean(process.env.STRIPE_SECRET_KEY?.trim()),
+      smtp: Boolean(process.env.SMTP_HOST?.trim() && process.env.SMTP_FROM?.trim()),
+      google_review: Boolean(empresa.google_review_url),
+    },
+    links: {
+      avaliacao: `${base}/avaliacao/${ref}`,
+      painel: `${base}/painel/${ref}`,
+      widget: `${base}/widget/${ref}`,
+      embed: `${base}/avaliacao/${ref}`,
+      relatorio_pdf: pdf_disponivel ? `/api/empresa/${ref}/relatorio.pdf` : null,
+      login: `${base}/login`,
+    },
+    ...(reason ? { _degraded: true, _reason: String(reason).slice(0, 200) } : {}),
+  };
+}
+
 export function mountEmpresaRoutes(app: Express) {
   app.get(
     '/api/empresa/:ref/validar',
@@ -282,235 +397,240 @@ export function mountEmpresaRoutes(app: Express) {
         });
       }
 
-      const db = getDb();
-      await ensurePainelColumns(db);
-
-      let rows: any[] = [];
+      // Nunca derrubar o painel com 500 — fallback degradado
       try {
-        rows = await db.all(
-          `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY id DESC LIMIT 500`,
-          [empresa.id]
-        );
-      } catch (e: any) {
-        console.error('painel reviews:', e?.message || e);
-        rows = [];
-      }
-
-      const reviews = (rows || []).map((r: any) => {
-        let tags: string[] = [];
-        if (r.ai_tags) {
-          try {
-            const parsed = JSON.parse(r.ai_tags);
-            if (Array.isArray(parsed)) tags = parsed.map(String);
-          } catch {
-            tags = [];
-          }
+        const db = getDb();
+        try {
+          await ensurePainelColumns(db);
+        } catch (e: any) {
+          console.warn('ensurePainelColumns:', e?.message || e);
         }
-        const createdAt = rowCreatedAt(r);
-        const clientWpp =
-          r.client_whatsapp === '[anonimizado]'
-            ? null
-            : normalizarWhatsapp(r.client_whatsapp);
 
-        // Mensagem da EMPRESA → cliente (contato sobre crítica), não “pedir desculpas à empresa”
-        const textoWpp = mensagemEmpresaParaCliente({
-          nomeEmpresa: empresa.nome_empresa,
-          nomeCliente: r.name,
-          rating: Number(r.rating),
-          comment: r.comment ? String(r.comment) : undefined,
+        const rows = await loadReviewsSafe(db, empresa.id);
+
+        const reviews = (rows || []).map((r: any) => {
+          let tags: string[] = [];
+          if (r.ai_tags) {
+            try {
+              const parsed = JSON.parse(r.ai_tags);
+              if (Array.isArray(parsed)) tags = parsed.map(String);
+            } catch {
+              tags = [];
+            }
+          }
+          const createdAt = rowCreatedAt(r);
+          const clientWpp =
+            r.client_whatsapp === '[anonimizado]'
+              ? null
+              : normalizarWhatsapp(r.client_whatsapp);
+
+          let textoWpp = '';
+          try {
+            textoWpp = mensagemEmpresaParaCliente({
+              nomeEmpresa: empresa.nome_empresa,
+              nomeCliente: r.name,
+              rating: Number(r.rating),
+              comment: r.comment ? String(r.comment) : undefined,
+            });
+          } catch {
+            textoWpp = '';
+          }
+
+          return {
+            id: r.id,
+            name: r.name,
+            rating: r.rating,
+            comment: r.comment,
+            ai_reply: r.ai_reply,
+            ai_tags: tags,
+            createdAt,
+            is_test: Number(r.is_test) === 1,
+            fraud_flags: r.fraud_flags || null,
+            origin: r.origin || 'publico',
+            sentiment: r.sentiment || null,
+            sentiment_score: r.sentiment_score != null ? Number(r.sentiment_score) : null,
+            sentiment_source: r.sentiment_source || null,
+            client_whatsapp: clientWpp,
+            client_whatsapp_url: linkWhatsapp(clientWpp, textoWpp),
+            client_whatsapp_anon: r.client_whatsapp === '[anonimizado]',
+            treated_at: r.treated_at || null,
+            treated_note: r.treated_note || null,
+            treated: Boolean(r.treated_at),
+          };
         });
 
-        return {
-          id: r.id,
-          name: r.name,
-          rating: r.rating,
-          comment: r.comment,
-          ai_reply: r.ai_reply,
-          ai_tags: tags,
-          createdAt,
-          is_test: Number(r.is_test) === 1,
-          fraud_flags: r.fraud_flags || null,
-          origin: r.origin || 'publico',
-          sentiment: r.sentiment || null,
-          sentiment_score: r.sentiment_score != null ? Number(r.sentiment_score) : null,
-          sentiment_source: r.sentiment_source || null,
-          client_whatsapp: clientWpp,
-          client_whatsapp_url: linkWhatsapp(clientWpp, textoWpp),
-          client_whatsapp_anon: r.client_whatsapp === '[anonimizado]',
-          treated_at: r.treated_at || null,
-          treated_note: r.treated_note || null,
-          treated: Boolean(r.treated_at),
-        };
-      });
+        const reais = reviews.filter((r) => !r.is_test);
+        const total = reais.length;
+        const soma = reais.reduce((s: number, r: any) => s + Number(r.rating || 0), 0);
+        const media = total ? Math.round((soma / total) * 10) / 10 : 0;
+        const negativas = reais.filter((r: any) => r.rating <= 3).length;
+        const positivas = reais.filter((r: any) => r.rating >= 4).length;
+        const tratadas = reais.filter((r: any) => r.treated && r.rating <= 3).length;
 
-      const reais = reviews.filter((r) => !r.is_test);
-      const total = reais.length;
-      const soma = reais.reduce((s: number, r: any) => s + Number(r.rating || 0), 0);
-      const media = total ? Math.round((soma / total) * 10) / 10 : 0;
-      const negativas = reais.filter((r: any) => r.rating <= 3).length;
-      const positivas = reais.filter((r: any) => r.rating >= 4).length;
-      const tratadas = reais.filter((r: any) => r.treated && r.rating <= 3).length;
-
-      const dist = [0, 0, 0, 0, 0];
-      for (const r of reais) {
-        const n = Number(r.rating);
-        if (n >= 1 && n <= 5) dist[n - 1] += 1;
-      }
-
-      const sentimento_mix = { positivo: 0, neutro: 0, negativo: 0 };
-      let scoreSum = 0;
-      let scoreN = 0;
-      for (const r of reais) {
-        const lab = String(r.sentiment || '').toLowerCase();
-        if (lab === 'positivo') sentimento_mix.positivo += 1;
-        else if (lab === 'negativo') sentimento_mix.negativo += 1;
-        else if (lab === 'neutro') sentimento_mix.neutro += 1;
-        else {
-          if (r.rating >= 4) sentimento_mix.positivo += 1;
-          else if (r.rating <= 2) sentimento_mix.negativo += 1;
-          else sentimento_mix.neutro += 1;
+        const dist = [0, 0, 0, 0, 0];
+        for (const r of reais) {
+          const n = Number(r.rating);
+          if (n >= 1 && n <= 5) dist[n - 1] += 1;
         }
-        if (r.sentiment_score != null && Number.isFinite(r.sentiment_score)) {
-          scoreSum += Number(r.sentiment_score);
-          scoreN += 1;
+
+        const sentimento_mix = { positivo: 0, neutro: 0, negativo: 0 };
+        let scoreSum = 0;
+        let scoreN = 0;
+        for (const r of reais) {
+          const lab = String(r.sentiment || '').toLowerCase();
+          if (lab === 'positivo') sentimento_mix.positivo += 1;
+          else if (lab === 'negativo') sentimento_mix.negativo += 1;
+          else if (lab === 'neutro') sentimento_mix.neutro += 1;
+          else {
+            if (r.rating >= 4) sentimento_mix.positivo += 1;
+            else if (r.rating <= 2) sentimento_mix.negativo += 1;
+            else sentimento_mix.neutro += 1;
+          }
+          if (r.sentiment_score != null && Number.isFinite(r.sentiment_score)) {
+            scoreSum += Number(r.sentiment_score);
+            scoreN += 1;
+          }
         }
-      }
 
-      const ha24h = Date.now() - 24 * 60 * 60 * 1000;
-      const crises_24h = reais.filter(
-        (r: any) => r.rating <= 2 && new Date(r.createdAt).getTime() >= ha24h
-      ).length;
+        const ha24h = Date.now() - 24 * 60 * 60 * 1000;
+        const crises_24h = reais.filter(
+          (r: any) => r.rating <= 2 && new Date(r.createdAt).getTime() >= ha24h
+        ).length;
 
-      const tagCount: Record<string, number> = {};
-      for (const r of reais) {
-        for (const t of r.ai_tags || []) {
-          const k = String(t);
-          tagCount[k] = (tagCount[k] || 0) + 1;
+        const tagCount: Record<string, number> = {};
+        for (const r of reais) {
+          for (const t of r.ai_tags || []) {
+            const k = String(t);
+            tagCount[k] = (tagCount[k] || 0) + 1;
+          }
         }
+        const top_tags = Object.entries(tagCount)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 8)
+          .map(([tag, count]) => ({ tag, count }));
+
+        const serie_14d = serieUltimosDias(reais, 14);
+
+        const plan = String(empresa.plan || 'trial').toLowerCase();
+        const trial = isTrialPlan(plan);
+        const nivel = nivelDashboard(plan);
+        const pdf_disponivel = planTemPdf(plan);
+        const tem_ia = trial || planTemIA(plan);
+
+        let feedback_usados = 0;
+        let token_usados = 0;
+        try {
+          feedback_usados = await contarReviewsMes(empresa.id);
+        } catch {
+          feedback_usados = total;
+        }
+        try {
+          token_usados = tem_ia ? await tokensUsadosMes(empresa.id) : 0;
+        } catch {
+          token_usados = 0;
+        }
+
+        const feedback_limite = getFeedbackLimit(plan);
+        const token_limite = getTokenLimit(plan);
+
+        const base = APP_URL.replace(/\/$/, '');
+        const ref = empresa.slug || empresa.id;
+        const wpp = normalizarWhatsapp(empresa.whatsapp_suporte);
+
+        const statusAcesso =
+          empresa.status === 'bloqueado'
+            ? 'BLOQUEADO'
+            : trial
+              ? 'TRIAL'
+              : empresa.status === 'ativo'
+                ? 'ATIVO'
+                : String(empresa.status || '—').toUpperCase();
+
+        return res.json({
+          empresa: {
+            id: empresa.id,
+            slug: empresa.slug,
+            nome_empresa: empresa.nome_empresa,
+            status: empresa.status,
+            status_acesso: statusAcesso,
+            plan: empresa.plan,
+            expira_em: empresa.expira_em,
+            cancel_at_period_end: Number(empresa.cancel_at_period_end) === 1,
+            google_review_url: empresa.google_review_url || null,
+            whatsapp: wpp,
+            whatsapp_url: linkWhatsapp(wpp),
+            locale: empresa.locale || 'pt',
+          },
+          reviews: reviews.slice(0, 200),
+          metricas: {
+            total,
+            media,
+            negativas,
+            positivas,
+            tratadas,
+            pendentes_tratamento: Math.max(0, negativas - tratadas),
+            alerta_crise: crises_24h >= 3,
+            crises_24h,
+            distribuicao: dist,
+            top_tags: tem_ia ? top_tags : [],
+            taxa_positiva: total ? Math.round((positivas / total) * 100) : 0,
+            serie_14d,
+            testes_excluidos: reviews.filter((r) => r.is_test).length,
+            sentimento_mix,
+            sentimento_score_medio:
+              scoreN > 0 ? Math.round((scoreSum / scoreN) * 100) / 100 : null,
+            feedback_usados,
+            feedback_limite,
+            tokens_usados: token_usados,
+            tokens_limite: token_limite,
+            tokens_pct:
+              token_limite > 0
+                ? Math.min(100, Math.round((token_usados / token_limite) * 100))
+                : 0,
+          },
+          dashboard: {
+            nivel,
+            pdf_disponivel,
+            tem_ia,
+            trial_completo: trial,
+            plan_switch: allowPlanSwitch(),
+            planos_teste: allowPlanSwitch()
+              ? PLANOS_OFICIAIS.map((p) => ({ key: p, label: planLabel(p) }))
+              : [],
+            mostrar_graficos: true,
+            mostrar_tendencia:
+              trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
+            mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo),
+            mostrar_crise: true,
+            mostrar_sentimento: true,
+            mostrar_ia_respostas: tem_ia,
+            mostrar_whatsapp_cliente: true,
+            mostrar_copiar_resposta: true,
+            mostrar_tratar: true,
+            whatsapp_crise: true,
+          },
+          integracoes: {
+            push: Boolean(
+              process.env.VAPID_PUBLIC_KEY?.trim() && process.env.VAPID_PRIVATE_KEY?.trim()
+            ),
+            n8n: Boolean(process.env.N8N_WEBHOOK_URL?.trim()),
+            stripe: Boolean(process.env.STRIPE_SECRET_KEY?.trim()),
+            smtp: Boolean(process.env.SMTP_HOST?.trim() && process.env.SMTP_FROM?.trim()),
+            google_review: Boolean(empresa.google_review_url),
+          },
+          links: {
+            avaliacao: `${base}/avaliacao/${ref}`,
+            painel: `${base}/painel/${ref}`,
+            widget: `${base}/widget/${ref}`,
+            embed: `${base}/avaliacao/${ref}`,
+            relatorio_pdf: pdf_disponivel ? `/api/empresa/${ref}/relatorio.pdf` : null,
+            login: `${base}/login`,
+          },
+        });
+      } catch (e: any) {
+        console.error('[painel] CRITICAL fallback:', e?.message || e, e?.stack?.split('\n').slice(0, 8));
+        return res.status(200).json(emptyPainelPayload(empresa, e?.message || 'fallback'));
       }
-      const top_tags = Object.entries(tagCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 8)
-        .map(([tag, count]) => ({ tag, count }));
-
-      const serie_14d = serieUltimosDias(reais, 14);
-
-      const plan = String(empresa.plan || 'trial').toLowerCase();
-      const trial = isTrialPlan(plan);
-      const nivel = nivelDashboard(plan);
-      const pdf_disponivel = planTemPdf(plan);
-      const tem_ia = trial || planTemIA(plan);
-
-      let feedback_usados = 0;
-      let token_usados = 0;
-      try {
-        feedback_usados = await contarReviewsMes(empresa.id);
-      } catch {
-        feedback_usados = total;
-      }
-      try {
-        token_usados = tem_ia ? await tokensUsadosMes(empresa.id) : 0;
-      } catch {
-        token_usados = 0;
-      }
-
-      const feedback_limite = getFeedbackLimit(plan);
-      const token_limite = getTokenLimit(plan);
-
-      const base = APP_URL.replace(/\/$/, '');
-      const ref = empresa.slug || empresa.id;
-      const wpp = normalizarWhatsapp(empresa.whatsapp_suporte);
-
-      const statusAcesso =
-        empresa.status === 'bloqueado'
-          ? 'BLOQUEADO'
-          : trial
-            ? 'TRIAL'
-            : empresa.status === 'ativo'
-              ? 'ATIVO'
-              : String(empresa.status || '—').toUpperCase();
-
-      res.json({
-        empresa: {
-          id: empresa.id,
-          slug: empresa.slug,
-          nome_empresa: empresa.nome_empresa,
-          status: empresa.status,
-          status_acesso: statusAcesso,
-          plan: empresa.plan,
-          expira_em: empresa.expira_em,
-          cancel_at_period_end: Number(empresa.cancel_at_period_end) === 1,
-          google_review_url: empresa.google_review_url || null,
-          whatsapp: wpp,
-          whatsapp_url: linkWhatsapp(wpp),
-          locale: empresa.locale || 'pt',
-        },
-        reviews: reviews.slice(0, 200),
-        metricas: {
-          total,
-          media,
-          negativas,
-          positivas,
-          tratadas,
-          pendentes_tratamento: Math.max(0, negativas - tratadas),
-          alerta_crise: crises_24h >= 3,
-          crises_24h,
-          distribuicao: dist,
-          top_tags: tem_ia ? top_tags : [],
-          taxa_positiva: total ? Math.round((positivas / total) * 100) : 0,
-          serie_14d,
-          testes_excluidos: reviews.filter((r) => r.is_test).length,
-          sentimento_mix,
-          sentimento_score_medio:
-            scoreN > 0 ? Math.round((scoreSum / scoreN) * 100) / 100 : null,
-          feedback_usados,
-          feedback_limite,
-          tokens_usados: token_usados,
-          tokens_limite: token_limite,
-          tokens_pct:
-            token_limite > 0
-              ? Math.min(100, Math.round((token_usados / token_limite) * 100))
-              : 0,
-        },
-        dashboard: {
-          nivel,
-          pdf_disponivel,
-          tem_ia,
-          trial_completo: trial,
-          plan_switch: allowPlanSwitch(),
-          planos_teste: allowPlanSwitch()
-            ? PLANOS_OFICIAIS.map((p) => ({ key: p, label: planLabel(p) }))
-            : [],
-          mostrar_graficos: true,
-          mostrar_tendencia:
-            trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
-          mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo'),
-          mostrar_crise: true,
-          mostrar_sentimento: true,
-          mostrar_ia_respostas: tem_ia,
-          mostrar_whatsapp_cliente: true,
-          mostrar_copiar_resposta: true,
-          mostrar_tratar: true,
-          whatsapp_crise: true,
-        },
-        integracoes: {
-          push: Boolean(
-            process.env.VAPID_PUBLIC_KEY?.trim() && process.env.VAPID_PRIVATE_KEY?.trim()
-          ),
-          n8n: Boolean(process.env.N8N_WEBHOOK_URL?.trim()),
-          stripe: Boolean(process.env.STRIPE_SECRET_KEY?.trim()),
-          smtp: Boolean(process.env.SMTP_HOST?.trim() && process.env.SMTP_FROM?.trim()),
-          google_review: Boolean(empresa.google_review_url),
-        },
-        links: {
-          avaliacao: `${base}/avaliacao/${ref}`,
-          painel: `${base}/painel/${ref}`,
-          widget: `${base}/widget/${ref}`,
-          embed: `${base}/avaliacao/${ref}`,
-          relatorio_pdf: pdf_disponivel ? `/api/empresa/${ref}/relatorio.pdf` : null,
-          login: `${base}/login`,
-        },
-      });
     })
   );
 }
