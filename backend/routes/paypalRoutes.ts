@@ -29,9 +29,17 @@ async function ensurePaypalTables(db: Database) {
       payload_summary TEXT
     );
   `);
-  const cols = (await db.all(`PRAGMA table_info(empresas)`)).map((c: any) => c.name);
-  if (!cols.includes('payment_gateway')) {
-    await db.exec(`ALTER TABLE empresas ADD COLUMN payment_gateway TEXT`);
+  try {
+    const cols = (await db.all(`PRAGMA table_info(empresas)`)).map((c: any) => c.name);
+    if (!cols.includes('payment_gateway')) {
+      await db.exec(`ALTER TABLE empresas ADD COLUMN payment_gateway TEXT`);
+    }
+  } catch {
+    try {
+      await db.exec(`ALTER TABLE empresas ADD COLUMN IF NOT EXISTS payment_gateway TEXT`);
+    } catch {
+      /* ok */
+    }
   }
 }
 
@@ -93,6 +101,7 @@ export function mountPayPalRoutes(app: Express) {
       configured: paypalConfigured(),
       webhook: paypalWebhookConfigured(),
       mode: process.env.PAYPAL_MODE || 'sandbox',
+      webhook_url: 'https://filtra-ia-api.onrender.com/api/webhook/paypal',
     });
   });
 
@@ -114,20 +123,30 @@ export function mountPayPalRoutes(app: Express) {
         if (!emp) return res.status(404).json({ error: 'Empresa não encontrada.' });
       }
 
-      const order = await createPayPalOrder({
-        planoKey: plano,
-        empresaId,
-        email: req.body?.email ? String(req.body.email) : null,
-      });
+      try {
+        const order = await createPayPalOrder({
+          planoKey: plano,
+          empresaId,
+          email: req.body?.email ? String(req.body.email) : null,
+        });
 
-      res.json({
-        success: true,
-        order_id: order.orderId,
-        approve_url: order.approveUrl,
-        plano: order.label,
-        value_monthly_ref: order.value,
-        gateway: 'paypal',
-      });
+        res.json({
+          success: true,
+          order_id: order.orderId,
+          approve_url: order.approveUrl,
+          plano: order.label,
+          value_monthly_ref: order.value,
+          gateway: 'paypal',
+        });
+      } catch (e: any) {
+        console.error('[paypal create-order]', e?.message || e);
+        // 502 = falha no gateway (credenciais, moeda, conta)
+        return res.status(502).json({
+          error: e?.message || 'Falha ao criar pedido PayPal',
+          gateway: 'paypal',
+          mode: process.env.PAYPAL_MODE || 'sandbox',
+        });
+      }
     })
   );
 
