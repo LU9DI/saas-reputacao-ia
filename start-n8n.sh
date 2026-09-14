@@ -14,9 +14,8 @@ cleanup() {
 }
 trap cleanup INT TERM EXIT
 
-# Do not run n8n CLI commands while the server is starting. The CLI can block
-# against the same PostgreSQL database and prevent the server from opening its
-# port. Wait for n8n's own HTTP health endpoint instead.
+# Do not run n8n CLI commands while the server is starting. Wait for n8n's
+# own HTTP health endpoint so migrations and startup initialization are done.
 READY=0
 for i in $(seq 1 90); do
   if node -e 'require("http").get("http://127.0.0.1:5678/healthz", r => process.exit(r.statusCode === 200 ? 0 : 1)).on("error", () => process.exit(1))'; then
@@ -32,13 +31,6 @@ if [ "$READY" != "1" ]; then
   exit 1
 fi
 
-# Stop the bootstrap server before changing workflow state. CLI operations and
-# the running n8n process must not compete for the same PostgreSQL database.
-echo "[n8n-bootstrap] stopping bootstrap n8n process"
-kill "$N8N_PID" 2>/dev/null || true
-wait "$N8N_PID" 2>/dev/null || true
-trap - INT TERM EXIT
-
 if [ -f "$WORKFLOW_FILE" ]; then
   echo "[n8n-bootstrap] checking production workflow"
   if [ -z "$(n8n list:workflow --onlyId 2>/dev/null)" ]; then
@@ -48,12 +40,20 @@ if [ -f "$WORKFLOW_FILE" ]; then
     echo "[n8n-bootstrap] production workflow already exists"
   fi
 
-  # Imports are initially inactive in this setup. Activate the workflow(s)
-  # found in the database instead of relying on a hard-coded workflow ID,
-  # because n8n may assign a new ID during import.
+  # Update the database while n8n is still running. The server is restarted
+  # immediately afterwards so its active workflow manager registers the
+  # production webhook from the newly activated workflow.
   echo "[n8n-bootstrap] activating production workflow"
   n8n update:workflow --all --active=true
 fi
+
+# Stop the bootstrap process only after all database CLI work is complete.
+# This avoids running CLI commands against a PostgreSQL pool that n8n has
+# already closed during shutdown.
+echo "[n8n-bootstrap] stopping bootstrap n8n process"
+kill "$N8N_PID" 2>/dev/null || true
+wait "$N8N_PID" 2>/dev/null || true
+trap - INT TERM EXIT
 
 echo "[n8n-bootstrap] starting final n8n process"
 exec n8n start
