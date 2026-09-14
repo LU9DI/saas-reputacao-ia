@@ -2,7 +2,6 @@
 set -eu
 
 WORKFLOW_FILE="/home/node/n8n-workflow.json"
-WORKFLOW_ID="48ffd71b-e851-4a92-941a-cbbd59917eb7"
 
 echo "[n8n-bootstrap] entrypoint started"
 
@@ -42,16 +41,18 @@ trap - INT TERM EXIT
 
 if [ -f "$WORKFLOW_FILE" ]; then
   echo "[n8n-bootstrap] checking production workflow"
-  if n8n list:workflow 2>/dev/null | grep -q "$WORKFLOW_ID"; then
-    echo "[n8n-bootstrap] production workflow already exists"
-  else
+  if [ -z "$(n8n list:workflow --onlyId 2>/dev/null)" ]; then
     echo "[n8n-bootstrap] importing production workflow"
     n8n import:workflow --input="$WORKFLOW_FILE"
+  else
+    echo "[n8n-bootstrap] production workflow already exists"
   fi
 
-  # n8n 2.x uses publish:workflow for production activation.
-  echo "[n8n-bootstrap] publishing production workflow"
-  n8n publish:workflow --id="$WORKFLOW_ID"
+  # Imports are initially inactive in this setup. Activate the workflow(s)
+  # found in the database instead of relying on a hard-coded workflow ID,
+  # because n8n may assign a new ID during import.
+  echo "[n8n-bootstrap] activating production workflow"
+  n8n update:workflow --all --active=true
 fi
 
 echo "[n8n-bootstrap] starting final n8n process"
