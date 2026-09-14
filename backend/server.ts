@@ -71,8 +71,8 @@ assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
 
 const BUILD = {
-  version: '1.1.3',
-  marker: 'cleanup-filtra-ai',
+  version: '1.1.4',
+  marker: 'paypal-fix-v3',
   started_at: new Date().toISOString(),
 };
 
