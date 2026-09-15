@@ -82,7 +82,6 @@ export function PixCheckoutModal({
     if (open) criar();
   }, [open, criar]);
 
-  // Poll status
   useEffect(() => {
     if (!open || !pix?.payment_id || pago) return;
     const t = setInterval(async () => {
@@ -104,18 +103,18 @@ export function PixCheckoutModal({
   const copia = pix?.copia_e_cola || pix?.qr_code || '';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-6 space-y-4 relative">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto overscroll-contain">
+      <div className="w-full max-w-md max-h-[min(92dvh,860px)] overflow-y-auto overflow-x-hidden bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 relative my-3 sm:my-6">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-200"
+          className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-200 z-10"
           aria-label="Fechar"
         >
           <X size={20} />
         </button>
 
-        <div>
+        <div className="pr-8">
           <h3 className="text-lg font-bold text-zinc-50">Pagar com Pix</h3>
           <p className="text-sm text-zinc-400 mt-1">
             {planoLabel || planoKey}
@@ -152,11 +151,11 @@ export function PixCheckoutModal({
         {!loading && !erro && pix && !pago && (
           <div className="space-y-4">
             {pix.qr_code_base64 && (
-              <div className="flex justify-center">
+              <div className="flex justify-center w-full">
                 <img
                   src={`data:image/png;base64,${pix.qr_code_base64}`}
                   alt="QR Code Pix"
-                  className="w-52 h-52 rounded-xl bg-white p-2"
+                  className="w-44 h-44 sm:w-52 sm:h-52 max-w-full rounded-xl bg-white p-2 object-contain"
                 />
               </div>
             )}

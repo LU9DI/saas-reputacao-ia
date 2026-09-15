@@ -128,7 +128,7 @@ export function MpTransparentCheckout({
               creditCard: 'all',
               debitCard: 'all',
               ticket: 'all',
-              bankTransfer: 'all', // Pix
+              bankTransfer: 'all',
               maxInstallments: 12,
             },
             visual: {
@@ -171,7 +171,6 @@ export function MpTransparentCheckout({
                         ? 'Pix gerado. Escaneie o QR ou aguarde a confirmação.'
                         : `Pagamento ${data.status}. Aguardando confirmação…`
                     );
-                    // poll
                     if (data.payment_id) {
                       const poll = setInterval(async () => {
                         try {
@@ -219,8 +218,8 @@ export function MpTransparentCheckout({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
-      <div className="w-full max-w-lg bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-5 md:p-6 space-y-4 relative my-8">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto overscroll-contain">
+      <div className="w-full max-w-lg max-h-[min(92dvh,920px)] overflow-y-auto overflow-x-hidden bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-4 sm:p-5 md:p-6 space-y-4 relative my-3 sm:my-6">
         <button
           type="button"
           onClick={onClose}
@@ -230,14 +229,14 @@ export function MpTransparentCheckout({
           <X size={20} />
         </button>
 
-        <div>
+        <div className="pr-8">
           <h3 className="text-lg font-bold text-zinc-50">Checkout Mercado Pago</h3>
           <p className="text-sm text-zinc-400 mt-1">
             {planoLabel || planoKey}
             {amount != null ? ` · R$ ${Number(amount).toFixed(2).replace('.', ',')}` : ''}
           </p>
           <p className="text-[11px] text-zinc-600 mt-1">
-            Pagamento dentro do Filtra.IA (Checkout Transparente) — cartão, Pix e mais.
+            Pagamento dentro do Filtra.AI (Checkout Transparente) — cartão, Pix e mais.
           </p>
         </div>
 
@@ -278,18 +277,24 @@ export function MpTransparentCheckout({
               </p>
             )}
             {pixQr && (
-              <div className="flex justify-center">
+              <div className="flex justify-center w-full">
                 <img
                   src={`data:image/png;base64,${pixQr}`}
                   alt="QR Pix"
-                  className="w-48 h-48 rounded-xl bg-white p-2"
+                  className="w-40 h-40 sm:w-48 sm:h-48 max-w-full rounded-xl bg-white p-2 object-contain"
                 />
               </div>
             )}
+            {/* Contém o Brick do MP para não estourar a viewport */}
             <div
               id="mp-payment-brick"
               ref={containerRef}
-              className={loading ? 'min-h-[120px]' : 'min-h-[280px]'}
+              className={
+                loading
+                  ? 'min-h-[120px] w-full max-w-full overflow-x-hidden'
+                  : 'min-h-[240px] w-full max-w-full overflow-x-hidden [&_iframe]:max-w-full [&_img]:max-w-full [&_img]:h-auto'
+              }
+              style={{ maxWidth: '100%' }}
             />
           </>
         )}
