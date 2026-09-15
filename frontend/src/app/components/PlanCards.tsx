@@ -77,7 +77,6 @@ function featuresForPlan(plan: string, limit: number, t: any) {
           ? '智能报告'
           : 'Relatório inteligente';
   const report = textOrFallback(t.feat_report, reportFallback);
-  // NUNCA reutilizar o texto do relatório aqui — bug antigo gerava X duplicado no Pro
   const aiMissing = textOrFallback(t.feat_ai_missing, 'IA integrada');
   const analytics = textOrFallback(t.feat_dashboard, 'Dashboard com análises');
   const multi = textOrFallback(t.feat_multi, 'Dashboard Multi-unidades');
@@ -103,6 +102,10 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [mpOpen, setMpOpen] = useState(false);
   const [mpPlano, setMpPlano] = useState<{ key: string; label: string } | null>(null);
+
+  const labelMensal = textOrFallback(t.monthly, 'Mensal');
+  const labelAnual = textOrFallback(t.yearly, 'Anual');
+  const labelPopular = textOrFallback(t.popular, 'Popular');
 
   useEffect(() => {
     let cancelled = false;
@@ -246,26 +249,35 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         <h2 className="text-2xl font-semibold text-white tracking-tight">{t.plans_title}</h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
           {[t.pay_paypal || 'PayPal', 'Mercado Pago'].join(' · ')}
-          {loadingPrices ? ` · ${t.updating_prices}` : ''}
+          {loadingPrices ? ` · ${t.updating_prices || 'Atualizando…'}` : ''}
         </p>
-        <div className="inline-flex rounded-xl border border-slate-300 bg-slate-100 p-1 text-sm shadow-inner mt-4">
+        {/* Toggle mensal / anual — labels sempre visíveis */}
+        <div
+          className="inline-flex rounded-full border border-slate-600/80 bg-slate-800/80 p-1 text-sm shadow-inner mt-4 gap-0.5"
+          role="group"
+          aria-label="Ciclo de cobrança"
+        >
           <button
             type="button"
             onClick={() => setCiclo('mensal')}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`min-w-[5.5rem] px-5 py-2 rounded-full font-semibold transition-colors ${
+              ciclo === 'mensal'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-300 hover:text-white'
             }`}
           >
-            {t.monthly}
+            {labelMensal}
           </button>
           <button
             type="button"
             onClick={() => setCiclo('anual')}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              ciclo === 'anual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+            className={`min-w-[5.5rem] px-5 py-2 rounded-full font-semibold transition-colors ${
+              ciclo === 'anual'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-300 hover:text-white'
             }`}
           >
-            {t.yearly}
+            {labelAnual}
           </button>
         </div>
       </div>
@@ -278,7 +290,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         {plans.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
           const price = formatPriceDisplay(ciclo === 'mensal' ? p.priceMensal : p.priceAnual);
-          const period = ciclo === 'mensal' ? t.per_month : t.annual_billing;
+          const period = ciclo === 'mensal' ? textOrFallback(t.per_month, '/mês') : textOrFallback(t.annual_billing, 'cobrança anual');
           const planBase = String(p.keyMensal || '')
             .replace(/-anual$/, '')
             .toLowerCase();
@@ -293,13 +305,13 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
               }`}
             >
               <div>
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between gap-2 mb-4 min-h-[1.5rem]">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{p.label}</p>
-                  {p.highlight && (
-                    <span className="bg-indigo-600 text-white text-[9px] tracking-widest font-black py-1 px-2.5 rounded-full uppercase shadow-sm">
-                      {t.popular}
+                  {p.highlight && labelPopular ? (
+                    <span className="shrink-0 bg-indigo-600 text-white text-[10px] tracking-wide font-bold py-0.5 px-2 rounded-full uppercase shadow-sm leading-none">
+                      {labelPopular}
                     </span>
-                  )}
+                  ) : null}
                 </div>
                 <div className="mb-1">
                   <p className="text-2xl xl:text-3xl font-black text-slate-900 tracking-tight whitespace-nowrap leading-none">
@@ -338,7 +350,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
                   className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading === `paypal-${key}` ? <Loader2 size={16} className="animate-spin" /> : null}
-                  {loading === `paypal-${key}` ? t.redirecting : t.pay_paypal || 'PayPal'}
+                  {loading === `paypal-${key}` ? textOrFallback(t.redirecting, 'Redirecionando…') : textOrFallback(t.pay_paypal, 'PayPal')}
                 </button>
               </div>
             </div>
