@@ -53,8 +53,6 @@ export default function Home() {
   const [copiado, setCopiado] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [checkoutMsg, setCheckoutMsg] = useState('');
-  /** null = nada marcado (não pré-selecionado) */
-  const [aceiteTermos, setAceiteTermos] = useState<'aceito' | 'nao_aceito' | null>(null);
 
   useEffect(() => {
     restoreStickyFromSession();
@@ -83,14 +81,6 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (aceiteTermos !== 'aceito') {
-      setErro(
-        aceiteTermos === 'nao_aceito'
-          ? 'Sem aceite dos Termos de Uso não é possível concluir o cadastro.'
-          : 'Selecione Aceito ou Não aceito nos Termos de Uso.'
-      );
-      return;
-    }
     if (!email.trim() || !email.includes('@')) {
       setErro('Informe um e-mail válido.');
       return;
@@ -114,8 +104,6 @@ export default function Home() {
           google_review_url: googleUrl.trim() || undefined,
           email: email.trim().toLowerCase(),
           senha,
-          aceite_termos: true,
-          versao_termos: '2026-09-15',
         }),
       });
       if (!response.ok) throw new Error(await readApiError(response, 'Erro ao processar ativação.'));
@@ -265,52 +253,9 @@ export default function Home() {
               />
             </div>
 
-            {/* Aceite dos Termos — não pré-marcado */}
-            <fieldset className="space-y-2 rounded-xl border border-zinc-700 bg-zinc-950/60 p-3">
-              <legend className="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1">
-                Termos de Uso
-              </legend>
-              <p className="text-[11px] text-zinc-500 leading-relaxed">
-                Li os{' '}
-                <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline">
-                  Termos de Uso
-                </a>{' '}
-                e a Política de Privacidade. Escolha uma opção (obrigatório):
-              </p>
-              <div className="flex flex-col gap-2 pt-1">
-                <label className="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-200">
-                  <input
-                    type="radio"
-                    name="aceite_termos"
-                    value="aceito"
-                    checked={aceiteTermos === 'aceito'}
-                    onChange={() => setAceiteTermos('aceito')}
-                    className="h-4 w-4 accent-indigo-500"
-                  />
-                  <span>Aceito</span>
-                </label>
-                <label className="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-200">
-                  <input
-                    type="radio"
-                    name="aceite_termos"
-                    value="nao_aceito"
-                    checked={aceiteTermos === 'nao_aceito'}
-                    onChange={() => setAceiteTermos('nao_aceito')}
-                    className="h-4 w-4 accent-zinc-400"
-                  />
-                  <span>Não aceito</span>
-                </label>
-              </div>
-              {aceiteTermos === 'nao_aceito' && (
-                <p className="text-[11px] text-amber-400/90 pt-1">
-                  Sem aceite não é possível ativar o trial nem concluir a contratação.
-                </p>
-              )}
-            </fieldset>
-
             <button
               type="submit"
-              disabled={loading || aceiteTermos !== 'aceito'}
+              disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition-colors text-sm disabled:opacity-50 cursor-pointer"
             >
               {loading ? t.processing : t.btn_activate_trial}
