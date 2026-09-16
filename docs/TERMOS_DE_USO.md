@@ -10,8 +10,6 @@
 
 **1.3.** Ao aceitar eletronicamente estes Termos, as partes celebram contrato de prestação de serviços SaaS, observada a legislação aplicável.
 
-*Conferência obrigatória: antes da publicação, confirme se a razão social e o endereço coincidem exatamente com o comprovante oficial do CNPJ.*
-
 ## 2. Definições
 
 **2.1.** Para estes Termos:
@@ -127,161 +125,159 @@
 
 **9.5. Segurança.** A CONTRATADA adotará medidas técnicas e administrativas razoáveis e compatíveis com a natureza do serviço. Nenhum sistema conectado à internet é absolutamente imune a incidentes.
 
-**9.6. Incidentes.** Ao confirmar incidente de segurança que possa acarretar risco ou dano relevante, a CONTRATADA comunicará o CONTRATANTE sem demora injustificada e, sempre que possível, em até 72 horas da confirmação, com as informações disponíveis para que o Controlador cumpra suas obrigações legais. Esse prazo contratual não substitui os prazos aplicáveis ao Controlador perante a ANPD e os titulares.
+**9.6. Incidentes.** Ao confirmar incidente de segurança que possa acarretar risco ou dano relevante, a CONTRATADA comunicará o CONTRATANTE sem demora injustificada e, sempre que possível, em até 72 horas da confirmação, com as informações disponíveis para que o Controlador cumpra suas obrigações legais.
 
 **9.7. Suboperadores e provedores.** A CONTRATADA poderá utilizar provedores de hospedagem, banco de dados, e-mail, pagamentos (incluindo PayPal e Mercado Pago), observabilidade e IA, conforme a Política de Privacidade e a lista atualizada de suboperadores.
 
-**9.8. Transferência internacional.** Quando dados pessoais forem processados fora do Brasil, a transferência observará a LGPD e os mecanismos admitidos pela regulamentação da ANPD, incluindo, quando aplicável, cláusulas contratuais-padrão ou outro mecanismo válido.
+**9.8. Transferência internacional.** Quando dados pessoais forem processados fora do Brasil, a transferência observará a LGPD e os mecanismos admitidos pela regulamentação da ANPD.
 
 **9.9. IA de terceiros.** Para recursos de IA, a CONTRATADA poderá enviar aos provedores necessários textos, feedbacks, metadados e instruções estritamente relacionadas à operação, aplicando minimização e anonimização ou pseudonimização quando tecnicamente viável.
 
 **9.10. Conteúdo de terceiros.** Feedbacks inseridos por clientes finais são de responsabilidade do CONTRATANTE quanto à coleta, finalidade, comunicação aos titulares e uso posterior.
 
-**9.11.** A CONTRATADA fornece processamento técnico e não assume obrigação geral de revisar ou moderar previamente todo conteúdo inserido. Isso não impede a remoção ou restrição de conteúdo mediante denúncia, ordem legal, risco de segurança ou violação destes Termos.
+**9.11.** A CONTRATADA fornece processamento técnico e não assume obrigação geral de revisar ou moderar previamente todo conteúdo inserido.
 
 **9.12.** O CONTRATANTE deverá remover ou corrigir conteúdo ilícito, sensível ou inadequado quando identificar o problema ou receber solicitação fundamentada.
 
 ## 10. Uso aceitável
 
-**10.1.** É proibido usar a plataforma para: fins ilícitos, fraudulentos ou abusivos; violar direitos de titulares ou terceiros; publicar malware ou código malicioso; tentar acessar contas, dados ou sistemas sem autorização; realizar scraping, crawling ou automação em massa não autorizada; burlar limites, autenticação ou medição de uso; enviar spam ou incentivar avaliações falsas; manipular artificialmente reputação, avaliações ou rankings; compartilhar credenciais fora das permissões contratadas.
+**10.1.** É proibido usar a plataforma para: fins ilícitos, fraudulentos ou abusivos; violar direitos de titulares ou terceiros; publicar malware; acessar contas ou sistemas sem autorização; scraping ou automação em massa não autorizada; burlar limites; spam ou avaliações falsas; manipular artificialmente reputação; compartilhar credenciais fora das permissões contratadas.
 
-**10.2.** A CONTRATADA poderá monitorar sinais técnicos de abuso, preservar registros e aplicar medidas proporcionais, incluindo alerta, limitação, suspensão ou encerramento.
+**10.2.** A CONTRATADA poderá monitorar sinais técnicos de abuso e aplicar medidas proporcionais, incluindo alerta, limitação, suspensão ou encerramento.
 
-**10.3.** A CONTRATADA poderá solicitar informações para investigar uso irregular e oferecer oportunidade razoável de esclarecimento, salvo urgência de segurança ou obrigação legal.
+**10.3.** A CONTRATADA poderá solicitar informações para investigar uso irregular, salvo urgência de segurança ou obrigação legal.
 
 ## 11. Disponibilidade e infraestrutura
 
 **11.1.** A CONTRATADA empregará esforços razoáveis para manter a plataforma disponível, mas não garante disponibilidade ininterrupta.
 
-**11.2.** Podem ocorrer interrupções por manutenção, atualizações, força maior, falhas de internet, serviços de nuvem, gateways de pagamento (PayPal, Mercado Pago ou outros), APIs, provedores de IA ou infraestrutura do CONTRATANTE.
+**11.2.** Podem ocorrer interrupções por manutenção, atualizações, força maior, falhas de internet, nuvem, gateways (PayPal, Mercado Pago ou outros), APIs, provedores de IA ou infraestrutura do CONTRATANTE.
 
-**11.3.** O CONTRATANTE é responsável por seus dispositivos, conexão, usuários, configurações locais e credenciais.
+**11.3.** O CONTRATANTE é responsável por seus dispositivos, conexão, usuários e credenciais.
 
-**11.4. Meta de disponibilidade.** A CONTRATADA terá como meta de qualidade disponibilidade mensal de 99,5%, excluídas as hipóteses do item 11.2. Essa meta não constitui garantia de resultado nem SLA financeiro automático nos planos de autoatendimento.
+**11.4. Meta de disponibilidade.** Meta de qualidade de 99,5% mensal, excluídas as hipóteses do item 11.2. Não constitui garantia de resultado nem SLA financeiro automático nos planos de autoatendimento.
 
-**11.5.** O CONTRATANTE poderá solicitar análise de crédito quando documentar indisponibilidade relevante. Qualquer crédito será avaliado conforme causa, duração, impacto, plano e circunstâncias do caso, limitado, quando concedido, a 50% da mensalidade do ciclo afetado.
+**11.5.** Análise de crédito por indisponibilidade relevante, limitada, quando concedido, a 50% da mensalidade do ciclo afetado.
 
-**11.6.** Planos Corporativo e Rei sob proposta específica poderão prever SLA próprio, com métricas, exclusões, créditos e procedimentos distintos.
+**11.6.** Planos Corporativo e Rei sob proposta específica poderão prever SLA próprio.
 
 ## 12. Ausência de garantia de resultados
 
-**12.1.** A plataforma é uma ferramenta de apoio à gestão de reputação e feedbacks.
+**12.1.** A plataforma é ferramenta de apoio à gestão de reputação e feedbacks.
 
-**12.2.** A CONTRATADA não garante aumento de receita, vendas, tráfego, posição no Google, nota, quantidade de avaliações, conversões, clientes ou qualquer resultado comercial específico.
+**12.2.** A CONTRATADA não garante aumento de receita, vendas, tráfego, posição no Google, nota, avaliações, conversões ou qualquer resultado comercial específico.
 
-**12.3.** Resultados dependem, entre outros fatores, do negócio, mercado, atendimento, qualidade das respostas, políticas de plataformas externas, comportamento dos clientes e decisões do CONTRATANTE.
+**12.3.** Resultados dependem do negócio, mercado, atendimento e decisões do CONTRATANTE, entre outros fatores.
 
-**12.4.** Depoimentos, exemplos, simulações e materiais de marketing não constituem promessa de resultado idêntico.
+**12.4.** Materiais de marketing não constituem promessa de resultado idêntico.
 
 ## 13. IA e conteúdo gerado
 
-**13.1.** As saídas de IA são probabilísticas e podem conter erros, omissões, vieses ou informações inadequadas.
+**13.1.** As saídas de IA são probabilísticas e podem conter erros ou omissões.
 
-**13.2.** O CONTRATANTE deve revisar e aprovar qualquer resposta, diagnóstico, classificação ou relatório antes de publicar, enviar ou tomar decisão com base nele.
+**13.2.** O CONTRATANTE deve revisar e aprovar conteúdo antes de publicar, enviar ou decidir com base nele.
 
-**13.3.** A CONTRATADA não fornece aconselhamento jurídico, médico, financeiro, regulatório ou profissional por meio da IA.
+**13.3.** A CONTRATADA não fornece aconselhamento jurídico, médico, financeiro ou profissional por meio da IA.
 
-**13.4.** A publicação automática de conteúdo somente ocorrerá se expressamente habilitada e autorizada pelo CONTRATANTE, que continuará responsável pela configuração e pelo conteúdo publicado.
+**13.4.** Publicação automática somente se habilitada e autorizada pelo CONTRATANTE.
 
 ## 14. Limitação de responsabilidade
 
-**14.1.** Na extensão permitida por lei, a CONTRATADA não responderá por danos indiretos, lucros cessantes, perda de oportunidade, perda de receita, decisões tomadas com base em IA, conteúdo do CONTRATANTE ou falhas de terceiros.
+**14.1.** Na extensão permitida por lei, a CONTRATADA não responderá por danos indiretos, lucros cessantes, perda de oportunidade ou falhas de terceiros.
 
-**14.2.** A responsabilidade contratual direta total da CONTRATADA ficará limitada aos valores efetivamente pagos pelo CONTRATANTE nos 12 meses anteriores ao fato, ressalvadas limitações não permitidas pela legislação aplicável.
+**14.2.** A responsabilidade contratual direta total da CONTRATADA fica limitada aos valores efetivamente pagos pelo CONTRATANTE nos 12 meses anteriores ao fato, ressalvadas limitações não permitidas por lei.
 
-**14.3.** Nenhuma disposição limita responsabilidade por dolo, fraude, violação de direitos indisponíveis ou hipóteses em que a lei proíba a limitação.
+**14.3.** Nenhuma disposição limita responsabilidade por dolo, fraude ou hipóteses em que a lei proíba a limitação.
 
-**14.4.** As limitações regulam a relação entre CONTRATANTE e CONTRATADA e não eliminam direitos de titulares de dados, consumidores ou terceiros.
+**14.4.** As limitações não eliminam direitos de titulares de dados, consumidores ou terceiros.
 
-**14.5.** O CONTRATANTE responderá por reclamações decorrentes de dados, instruções, conteúdos, ofertas, avaliações ou uso ilícito sob sua responsabilidade.
+**14.5.** O CONTRATANTE responderá por reclamações decorrentes de dados, conteúdos ou uso ilícito sob sua responsabilidade.
 
 ## 15. Vigência e rescisão
 
 **15.1.** O contrato começa no aceite eletrônico e permanece vigente durante o período contratado.
 
-**15.2.** A renovação será automática apenas se essa condição estiver claramente informada no checkout e houver autorização de pagamento válida.
+**15.2.** A renovação será automática apenas se informada no checkout e houver autorização de pagamento válida.
 
 **15.3.** O CONTRATANTE poderá cancelar conforme a Cláusula 7.
 
-**15.4.** A CONTRATADA poderá suspender ou rescindir em caso de: inadimplência não regularizada; violação destes Termos; uso ilícito, fraudulento ou abusivo; risco à segurança; obrigação legal; encerramento da plataforma ou atividade empresarial.
+**15.4.** A CONTRATADA poderá suspender ou rescindir em caso de inadimplência, violação destes Termos, uso ilícito, risco à segurança, obrigação legal ou encerramento da plataforma.
 
-**15.5.** Sempre que possível, a CONTRATADA comunicará a suspensão e dará prazo razoável para correção. Isso não se aplica a situações urgentes de segurança, fraude ou exigência legal.
+**15.5.** Sempre que possível, haverá comunicação e prazo razoável para correção, salvo urgência de segurança, fraude ou exigência legal.
 
-**15.6.** Após o encerramento, os dados serão tratados conforme a Política de Privacidade e os prazos legais. Quando tecnicamente disponível, o CONTRATANTE poderá solicitar exportação durante o prazo informado pela CONTRATADA.
+**15.6.** Após o encerramento, os dados serão tratados conforme a Política de Privacidade e os prazos legais.
 
 ## 16. Alterações dos Termos
 
 **16.1.** A CONTRATADA poderá alterar estes Termos para refletir mudanças legais, técnicas, comerciais ou de segurança.
 
-**16.2.** Alterações relevantes serão comunicadas com antecedência mínima de 30 dias por e-mail, painel ou outro meio adequado, salvo mudanças urgentes exigidas por lei ou segurança.
+**16.2.** Alterações relevantes serão comunicadas com antecedência mínima de 30 dias, salvo urgência legal ou de segurança.
 
-**16.3.** Se o CONTRATANTE não concordar, poderá cancelar antes da vigência da alteração, respeitados direitos adquiridos e obrigações já vencidas.
+**16.3.** Se o CONTRATANTE não concordar, poderá cancelar antes da vigência da alteração.
 
 **16.4.** A versão vigente ficará disponível com indicação de data de atualização.
 
 ## 17. Confidencialidade
 
-**17.1.** Nos planos de autoatendimento, esta cláusula não cria um NDA amplo sobre informações rotineiras. Cada parte deverá evitar divulgar credenciais, dados pessoais, informações técnicas não públicas e informações comerciais confidenciais a que tenha acesso.
+**17.1.** Nos planos de autoatendimento, esta cláusula não cria NDA amplo sobre informações rotineiras. Cada parte deverá evitar divulgar credenciais, dados pessoais e informações confidenciais a que tenha acesso.
 
-**17.2.** Para planos Corporativo ou Rei sob proposta específica, as partes manterão sigilo sobre informações confidenciais recebidas da outra parte durante a vigência e por 3 anos após o encerramento.
+**17.2.** Para planos Corporativo ou Rei sob proposta específica, as partes manterão sigilo sobre informações confidenciais durante a vigência e por 3 anos após o encerramento.
 
 **17.3.** Não são confidenciais informações públicas, já conhecidas legitimamente, desenvolvidas de forma independente ou cuja divulgação seja exigida por lei.
 
 ## 18. Comunicações e suporte
 
-**18.1.** Comunicações poderão ser feitas pelo e-mail cadastrado, painel, central de suporte ou outro canal informado.
+**18.1.** Comunicações poderão ser feitas pelo e-mail cadastrado, painel ou pelo canal oficial de suporte.
 
-**18.2.** O CONTRATANTE deve manter seus dados de contato atualizados.
+**18.2. E-mail oficial de suporte:** projetosaas1@gmail.com
 
-**18.3.** O suporte, horários e prazos dependerão do plano contratado.
+**18.3.** O CONTRATANTE deve manter seus dados de contato atualizados.
+
+**18.4.** O suporte, horários e prazos dependerão do plano contratado.
 
 ## 19. Disposições gerais
 
 **19.1.** Estes Termos são regidos pelas leis da República Federativa do Brasil.
 
-**19.2. Foro.** Fica eleito o foro da Comarca de Goiânia/GO para relações em que isso seja juridicamente válido, sem prejuízo do foro assegurado ao consumidor ou de outra competência legal imperativa.
+**19.2. Foro.** Fica eleito o foro da Comarca de Goiânia/GO quando juridicamente válido, sem prejuízo do foro do consumidor ou de competência legal imperativa.
 
-**19.3.** O aceite eletrônico, com registro da versão, data, hora, identificador da conta e evidência técnica disponível, poderá ser utilizado para comprovar a contratação.
+**19.3.** O aceite eletrônico, com registro de versão, data, hora e identificador da conta, poderá comprovar a contratação.
 
-**19.4.** A tolerância de uma parte não implica renúncia de direito.
+**19.4.** A tolerância não implica renúncia de direito.
 
-**19.5.** Se alguma disposição for considerada inválida, as demais permanecerão vigentes.
+**19.5.** Se alguma disposição for inválida, as demais permanecem vigentes.
 
-**19.6.** O CONTRATANTE não poderá ceder o contrato sem autorização, salvo reorganização empresarial permitida por lei. A CONTRATADA poderá ceder o contrato em reorganização, fusão, aquisição ou transferência da operação, preservando os direitos legais do CONTRATANTE.
+**19.6.** O CONTRATANTE não poderá ceder o contrato sem autorização, salvo reorganização permitida por lei. A CONTRATADA poderá ceder em reorganização, fusão, aquisição ou transferência da operação, preservando direitos legais do CONTRATANTE.
 
-**19.7.** O Anexo I e a Política de Privacidade fazem parte do conjunto contratual. Em caso de conflito, prevalecerá a disposição específica de proposta comercial escrita, quando houver.
+**19.7.** O Anexo I e a Política de Privacidade integram o conjunto contratual.
 
 ## 20. Aceite eletrônico
 
-**20.1.** No cadastro, trial ou checkout, o CONTRATANTE deverá manifestar-se de forma expressa, por meio de opções **não pré-marcadas**, entre:
+**20.1.** No cadastro, trial ou checkout, o CONTRATANTE deverá manifestar-se de forma expressa, por opções **não pré-marcadas**, entre:
 
 - **Aceito** — li e concordo com estes Termos de Uso e com a Política de Privacidade; ou
-- **Não aceito** — não concordo; nesse caso a contratação ou o cadastro **não** será concluído.
+- **Não aceito** — não concordo; a contratação ou o cadastro **não** será concluído.
 
 **20.2.** Somente a opção **Aceito** permite a conclusão do cadastro, do trial ou da assinatura.
 
-**20.3.** Ao selecionar **Aceito**, o CONTRATANTE declara que: leu e compreendeu estes Termos; possui capacidade legal para contratar; tem autorização para agir em nome da pessoa jurídica, quando aplicável; fornecerá informações verdadeiras; possui base legal para inserir dados na plataforma; concorda com a Política de Privacidade; entende que conteúdos de IA exigem revisão humana.
+**20.3.** Ao selecionar **Aceito**, o CONTRATANTE declara que leu e compreendeu estes Termos; possui capacidade legal; tem autorização para agir em nome da pessoa jurídica, quando aplicável; fornecerá informações verdadeiras; possui base legal para inserir dados; concorda com a Política de Privacidade; entende que conteúdos de IA exigem revisão humana.
 
-**20.4.** O aceite não impede direitos previstos em lei, especialmente os aplicáveis a consumidores e titulares de dados.
+**20.4.** O aceite não impede direitos previstos em lei.
 
 ---
 
 ## ANEXO I — Planos, limites e valores
 
-### Regras do Anexo I
-
 **I.** O plano anual é cobrado antecipadamente pelo período anual completo; os valores “por mês” servem apenas para comparação.
 
 **II.** Os limites de feedbacks e tokens valem por ciclo e não são acumuláveis.
 
-**III.** Ao atingir os limites, aplicam-se os itens 4.5.2 e 4.5.4. Pacotes adicionais, se oferecidos, serão contratados separadamente e pagos antecipadamente.
+**III.** Pacotes adicionais de tokens, se oferecidos, serão contratados separadamente e pagos antecipadamente.
 
-**IV.** Os tokens representam medição técnica de entrada e saída e podem variar conforme o modelo, o provedor e a forma de processamento.
+**IV.** Planos de autoatendimento: **Inicial, Pro, Ultra, Corporativo e Rei** (mensal e anual).
 
-**V.** A CONTRATADA poderá alterar planos, limites e preços com aviso prévio de 30 dias, observada a Cláusula 16 e os direitos legais do CONTRATANTE.
+**V.** Meios de pagamento no checkout: **PayPal** e **Mercado Pago**, conforme disponibilidade.
 
-**VI.** Planos disponíveis no autoatendimento: **Inicial, Pro, Ultra, Corporativo e Rei** (mensal e anual). Condições comerciais especiais para Corporativo ou Rei podem constar de proposta escrita.
+**VI.** Preços e limites numéricos: conforme painel e checkout vigentes na data da contratação.
 
-**VII.** Meios de pagamento no checkout: **PayPal** e **Mercado Pago**, conforme disponibilidade exibida na contratação.
-
-*(Preços e limites numéricos: conforme painel e checkout vigentes na data da contratação.)*
+**VII. Suporte:** projetosaas1@gmail.com
