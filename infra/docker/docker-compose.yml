@@ -1,0 +1,118 @@
+# Stack local: Evolution API (WhatsApp) + n8n + Postgres + Redis
+# Uso:
+#   cd infra/docker
+#   cp .env.example .env   # edite as chaves
+#   docker compose up -d
+#
+# Evolution: http://localhost:8080
+# n8n:       http://localhost:5678
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: filtra_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-evolution}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-evolution}
+    volumes:
+      - filtra_pg_data:/var/lib/postgresql/data
+      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-evolution}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - filtra_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: filtra_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - filtra_redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - filtra_net
+
+  evolution-api:
+    image: atendai/evolution-api:v2.1.1
+    container_name: filtra_evolution
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    environment:
+      SERVER_URL: ${SERVER_URL:-http://localhost:8080}
+      AUTHENTICATION_API_KEY: ${AUTHENTICATION_API_KEY:-change-me-evolution}
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "true"
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://${POSTGRES_USER:-evolution}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-evolution}?schema=public
+      DATABASE_CONNECTION_CLIENT_NAME: filtra_evolution
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379
+      CACHE_REDIS_PREFIX_KEY: evolution
+      CACHE_LOCAL_ENABLED: "false"
+      LOG_LEVEL: ERROR,WARN,DEBUG,INFO
+      LANGUAGE: pt-BR
+      CONFIG_SESSION_PHONE_CLIENT: FiltraAI
+      CONFIG_SESSION_PHONE_NAME: Chrome
+    volumes:
+      - filtra_evolution_instances:/evolution/instances
+    networks:
+      - filtra_net
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: filtra_n8n
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_HOST: ${N8N_HOST:-localhost}
+      N8N_PORT: ${N8N_PORT:-5678}
+      N8N_PROTOCOL: ${N8N_PROTOCOL:-http}
+      WEBHOOK_URL: ${WEBHOOK_URL:-http://localhost:5678/}
+      GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-America/Sao_Paulo}
+      TZ: America/Sao_Paulo
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:-change-me-n8n-encryption-key-32}
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgres
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: ${POSTGRES_USER:-evolution}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      EXECUTIONS_DATA_SAVE_ON_SUCCESS: all
+      EXECUTIONS_DATA_SAVE_ON_ERROR: all
+      # Acesso interno à Evolution e ao backend Filtra
+      EVOLUTION_BASE_URL: http://evolution-api:8080
+      EVOLUTION_API_KEY: ${AUTHENTICATION_API_KEY:-change-me-evolution}
+      FILTRA_API_URL: ${FILTRA_API_URL:-https://filtra-ia-api.onrender.com}
+    volumes:
+      - filtra_n8n_data:/home/node/.n8n
+    networks:
+      - filtra_net
+
+volumes:
+  filtra_pg_data:
+  filtra_redis_data:
+  filtra_evolution_instances:
+  filtra_n8n_data:
+
+networks:
+  filtra_net:
+    driver: bridge
