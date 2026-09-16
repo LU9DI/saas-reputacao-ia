@@ -23,9 +23,13 @@ import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from './utils/passwordPolicy'
 import { readApiError } from './utils/apiError';
 import { persistFiltraToken } from './utils/persistToken';
 import { apiFetch, restoreStickyFromSession } from './utils/apiFailover';
+import { getEnv } from './utils/env';
 
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
+
+const TERMOS_VERSAO = '2026-09-15';
+const PRIV_VERSAO = '2026-09-15';
 
 export default function Home() {
   const { language, t } = useLanguage();
@@ -53,6 +57,7 @@ export default function Home() {
   const [copiado, setCopiado] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [checkoutMsg, setCheckoutMsg] = useState('');
+  const [aceiteTrial, setAceiteTrial] = useState(false);
 
   useEffect(() => {
     restoreStickyFromSession();
@@ -81,6 +86,10 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!aceiteTrial) {
+      setErro('Marque que leu e aceita os Termos de Uso e a Política de Privacidade.');
+      return;
+    }
     if (!email.trim() || !email.includes('@')) {
       setErro('Informe um e-mail válido.');
       return;
@@ -94,6 +103,24 @@ export default function Home() {
     setErro('');
     setSucessoData(null);
     try {
+      const api = (getEnv('NEXT_PUBLIC_API_URL') || '').replace(/\/$/, '');
+      if (api) {
+        try {
+          await fetch(`${api}/api/legal/aceite`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              aceito: true,
+              contexto: 'trial',
+              email: email.trim().toLowerCase(),
+              versao_termos: TERMOS_VERSAO,
+              versao_privacidade: PRIV_VERSAO,
+            }),
+          });
+        } catch {
+          /* */
+        }
+      }
       const response = await apiFetch('/api/trial/ativar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -104,6 +131,8 @@ export default function Home() {
           google_review_url: googleUrl.trim() || undefined,
           email: email.trim().toLowerCase(),
           senha,
+          aceite_termos: true,
+          versao_termos: TERMOS_VERSAO,
         }),
       });
       if (!response.ok) throw new Error(await readApiError(response, 'Erro ao processar ativação.'));
@@ -253,12 +282,37 @@ export default function Home() {
               />
             </div>
 
+            <label className="flex items-start gap-3 cursor-pointer text-[12px] text-zinc-300 leading-snug">
+              <input
+                type="checkbox"
+                checked={aceiteTrial}
+                onChange={(e) => setAceiteTrial(e.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-indigo-500 shrink-0"
+              />
+              <span>
+                Li e aceito os{' '}
+                <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline">
+                  Termos de Uso
+                </a>{' '}
+                e a{' '}
+                <a
+                  href="/privacidade"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-400 underline"
+                >
+                  Política de Privacidade
+                </a>
+                . O teste de 7 dias não exige cartão e não gera cobrança automática.
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !aceiteTrial}
               className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition-colors text-sm disabled:opacity-50 cursor-pointer"
             >
-              {loading ? t.processing : t.btn_activate_trial}
+              {loading ? t.processing : t.btn_activate_trial || 'Começar teste gratuito'}
             </button>
             <p className="text-center text-xs text-zinc-500">
               <a href="/recuperar-senha" className="underline hover:text-indigo-400">
@@ -325,7 +379,7 @@ export default function Home() {
           </div>
         )}
       </div>
-      <div className="w-full max-w-5xl space-y-4">
+      <div className="w-full max-w-5xl space-y-4" id="planos">
         <h2 className="text-center text-sm font-medium text-zinc-400">
           {t.login_plans || t.plans || 'Planos disponíveis'}
         </h2>
@@ -333,9 +387,15 @@ export default function Home() {
         <ComoFunciona />
       </div>
       <footer className="pb-8 text-center space-y-2">
-        <p className="text-[11px] text-zinc-600">
-          <a href="/termos" className="underline hover:text-zinc-400">
+        <p className="text-[11px] text-zinc-500 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+          <a href="/termos" className="underline hover:text-zinc-300">
             Termos de Uso
+          </a>
+          <a href="/privacidade" className="underline hover:text-zinc-300">
+            Política de Privacidade
+          </a>
+          <a href="mailto:projetosaas1@gmail.com" className="underline hover:text-zinc-300">
+            Suporte
           </a>
         </p>
         <p className="text-[11px] tracking-[0.2em] uppercase text-zinc-600">
