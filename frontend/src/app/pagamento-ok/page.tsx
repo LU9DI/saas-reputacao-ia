@@ -17,8 +17,28 @@ function Conteudo() {
         <h1 className="text-2xl font-bold">Plano ativo</h1>
         <p className="text-sm text-zinc-400">
           {plano ? `Plano ${plano} ` : 'Sua assinatura '}foi processada. Em instantes o painel reflete o novo
-          plano (webhook).
+          plano.
         </p>
+        <div className="text-left text-xs text-zinc-400 space-y-2 bg-zinc-950/80 border border-zinc-800 rounded-xl p-3">
+          <p>
+            Você pode consultar a qualquer momento os{' '}
+            <Link href="/termos" className="text-indigo-400 underline">
+              Termos de Uso
+            </Link>{' '}
+            e a{' '}
+            <Link href="/privacidade" className="text-indigo-400 underline">
+              Política de Privacidade
+            </Link>
+            .
+          </p>
+          <p>
+            Cancelamento: pelo painel da empresa ou pelo e-mail{' '}
+            <a href="mailto:projetosaas1@gmail.com" className="text-indigo-400 underline">
+              projetosaas1@gmail.com
+            </a>
+            . O acesso permanece até o fim do período já pago, observadas as regras legais de reembolso.
+          </p>
+        </div>
         {sessionId && (
           <p className="text-[11px] text-zinc-600 font-mono break-all">Sessão: {sessionId}</p>
         )}
@@ -38,8 +58,8 @@ function Conteudo() {
               Fazer login no painel
             </Link>
           )}
-          <Link href="/#planos" className="text-sm text-zinc-500 hover:text-zinc-300">
-            Voltar aos planos
+          <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-300">
+            Voltar ao início
           </Link>
         </div>
       </div>

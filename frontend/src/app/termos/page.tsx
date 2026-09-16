@@ -19,17 +19,19 @@ export default function TermosPage() {
           <p className="text-sm text-zinc-400">FILTRA.AI — Versão 15 de setembro de 2026</p>
         </div>
         <p className="text-sm text-zinc-300 leading-relaxed">
-          O texto integral dos Termos está disponível no repositório do produto e será mantido atualizado
-          nesta página. Meios de pagamento previstos: <strong className="text-zinc-100">PayPal</strong> e{' '}
-          <strong className="text-zinc-100">Mercado Pago</strong>. Planos de autoatendimento: Inicial, Pro,
-          Ultra, Corporativo e Rei.
+          Contrato de prestação de serviços SaaS. Planos: Inicial, Pro, Ultra, Corporativo e Rei. Meios de
+          pagamento: <strong className="text-zinc-100">PayPal</strong> e{' '}
+          <strong className="text-zinc-100">Mercado Pago</strong>.
         </p>
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/80 p-5 space-y-3 text-sm text-zinc-300 leading-relaxed">
           <p>
-            Ao cadastrar-se ou contratar, você deverá escolher de forma expressa{' '}
-            <strong className="text-zinc-100">Aceito</strong> ou <strong className="text-zinc-100">Não aceito</strong>{' '}
-            (opções não pré-marcadas). Somente <strong className="text-zinc-100">Aceito</strong> permite concluir o
-            cadastro ou a assinatura.
+            O aceite vinculante ocorre no <strong className="text-zinc-100">checkout</strong> (compra) ou no
+            cadastro do trial, com caixa <strong className="text-zinc-100">não pré-marcada</strong>.
+          </p>
+          <p>
+            <strong className="text-zinc-100">Cancelamento:</strong> pelo painel ou suporte. O acesso permanece até o
+            fim do período já pago, observadas as regras legais de reembolso e o direito de arrependimento (CDC)
+            quando aplicável.
           </p>
           <p>
             <strong className="text-zinc-100">Suporte:</strong>{' '}
@@ -37,25 +39,21 @@ export default function TermosPage() {
               {SUPORTE_EMAIL}
             </a>
           </p>
-          <p>
-            Documento completo (Markdown):{' '}
-            <code className="text-xs text-indigo-300">docs/TERMOS_DE_USO.md</code> no repositório do projeto.
-          </p>
           <p className="text-xs text-zinc-500">
-            Este material não substitui a Política de Privacidade. Em caso de divergência, prevalece a versão
-            publicada com data de atualização.
+            Texto integral em <code className="text-indigo-300">docs/TERMOS_DE_USO.md</code>. Em caso de
+            divergência, prevalece a versão publicada com data de atualização.
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
           <Link href="/" className="text-indigo-400 hover:text-indigo-300 underline">
             Voltar ao início
           </Link>
+          <Link href="/privacidade" className="text-zinc-400 hover:text-zinc-200 underline">
+            Política de Privacidade
+          </Link>
           <Link href="/login" className="text-zinc-400 hover:text-zinc-200 underline">
             Login
           </Link>
-          <a href={`mailto:${SUPORTE_EMAIL}`} className="text-zinc-400 hover:text-zinc-200 underline">
-            Contato / suporte
-          </a>
         </div>
       </main>
     </div>
