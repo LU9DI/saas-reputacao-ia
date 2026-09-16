@@ -44,9 +44,14 @@ type Props = {
 type PendingCheckout = {
   method: 'mp' | 'paypal';
   planoKey: string;
+  planBase: string;
   label: string;
   price: string;
+  reviewLimit: number;
 };
+
+const TERMOS_VERSAO = '2026-09-15';
+const PRIV_VERSAO = '2026-09-15';
 
 function formatPriceDisplay(price: string): string {
   return String(price || '').replace(/\u00a0/g, ' ').replace(/R\$\s+/g, 'R$\u00a0').trim();
@@ -94,6 +99,19 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   return map[plan] || { features: [fb] };
 }
 
+async function registrarAceite(payload: Record<string, unknown>) {
+  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
+  try {
+    await fetch(`${api}/api/legal/aceite`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    /* não bloqueia checkout se log falhar */
+  }
+}
+
 export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const { t } = useLanguage();
   const [plans, setPlans] = useState<PlanCard[]>(DEFAULT_PLANS);
@@ -104,7 +122,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const [mpOpen, setMpOpen] = useState(false);
   const [mpPlano, setMpPlano] = useState<{ key: string; label: string } | null>(null);
   const [pending, setPending] = useState<PendingCheckout | null>(null);
-  const [aceiteTermos, setAceiteTermos] = useState<'aceito' | 'nao_aceito' | null>(null);
+  const [aceite, setAceite] = useState(false);
 
   const labelMensal = textOrFallback(t.monthly, 'Mensal');
   const labelAnual = textOrFallback(t.yearly, 'Anual');
@@ -159,17 +177,24 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
 
   const fecharAceite = () => {
     setPending(null);
-    setAceiteTermos(null);
+    setAceite(false);
   };
 
-  const iniciarCheckout = (method: 'mp' | 'paypal', planoKey: string, label: string, price: string) => {
+  const iniciarCheckout = (
+    method: 'mp' | 'paypal',
+    planoKey: string,
+    planBase: string,
+    label: string,
+    price: string,
+    reviewLimit: number
+  ) => {
     setErro('');
     if (requireEmpresa && !empresaId) {
       setErro(t.trial_title || 'Ative o trial antes de assinar.');
       return;
     }
-    setAceiteTermos(null);
-    setPending({ method, planoKey, label, price });
+    setAceite(false);
+    setPending({ method, planoKey, planBase, label, price, reviewLimit });
   };
 
   const irParaPayPal = async (planoKey: string) => {
@@ -185,7 +210,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           empresa_id: empresaId || undefined,
           email: email || undefined,
           aceite_termos: true,
-          versao_termos: '2026-09-15',
+          versao_termos: TERMOS_VERSAO,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -204,9 +229,22 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     setMpOpen(true);
   };
 
-  const confirmarCompra = () => {
-    if (!pending || aceiteTermos !== 'aceito') return;
-    const { method, planoKey, label } = pending;
+  const confirmarCompra = async () => {
+    if (!pending || !aceite) return;
+    const { method, planoKey, label, price, planBase } = pending;
+    await registrarAceite({
+      aceito: true,
+      contexto: 'checkout',
+      plano: planoKey,
+      preco_exibido: price,
+      ciclo: ciclo,
+      email: email || undefined,
+      empresa_id: empresaId || undefined,
+      metodo: method,
+      versao_termos: TERMOS_VERSAO,
+      versao_privacidade: PRIV_VERSAO,
+      plan_base: planBase,
+    });
     fecharAceite();
     if (method === 'mp') abrirMp(planoKey, label);
     else void irParaPayPal(planoKey);
@@ -262,6 +300,11 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     return <span className="text-slate-600 font-medium mt-1">{text}</span>;
   };
 
+  const periodLabel =
+    ciclo === 'mensal'
+      ? textOrFallback(t.per_month, 'por mês')
+      : textOrFallback(t.annual_billing, 'por ano (cobrança anual antecipada)');
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8">
       <div className="text-center space-y-3">
@@ -270,8 +313,17 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           {[t.pay_paypal || 'PayPal', 'Mercado Pago'].join(' · ')}
           {loadingPrices ? ` · ${t.updating_prices || 'Atualizando…'}` : ''}
         </p>
+        <p className="text-[11px] text-zinc-400">
+          <a href="/termos" className="underline hover:text-zinc-200">
+            Termos de Uso
+          </a>
+          {' · '}
+          <a href="/privacidade" className="underline hover:text-zinc-200">
+            Política de Privacidade
+          </a>
+        </p>
         <div
-          className="inline-flex rounded-full border border-slate-600/80 bg-slate-800/80 p-1 text-sm shadow-inner mt-4 gap-0.5"
+          className="inline-flex rounded-full border border-slate-600/80 bg-slate-800/80 p-1 text-sm shadow-inner mt-2 gap-0.5"
           role="group"
           aria-label="Ciclo de cobrança"
         >
@@ -279,9 +331,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
             type="button"
             onClick={() => setCiclo('mensal')}
             className={`min-w-[5.5rem] px-5 py-2 rounded-full font-semibold transition-colors ${
-              ciclo === 'mensal'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-300 hover:text-white'
+              ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'
             }`}
           >
             {labelMensal}
@@ -290,9 +340,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
             type="button"
             onClick={() => setCiclo('anual')}
             className={`min-w-[5.5rem] px-5 py-2 rounded-full font-semibold transition-colors ${
-              ciclo === 'anual'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-300 hover:text-white'
+              ciclo === 'anual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'
             }`}
           >
             {labelAnual}
@@ -315,7 +363,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           const planBase = String(p.keyMensal || '')
             .replace(/-anual$/, '')
             .toLowerCase();
-          const localized = featuresForPlan(planBase, resolveLimit(planBase, p.reviewLimit), t);
+          const limit = resolveLimit(planBase, p.reviewLimit);
+          const localized = featuresForPlan(planBase, limit, t);
           return (
             <div
               key={p.label}
@@ -359,7 +408,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
                 <button
                   type="button"
                   disabled={!!loading}
-                  onClick={() => iniciarCheckout('mp', key, p.label, price)}
+                  onClick={() => iniciarCheckout('mp', key, planBase, p.label, price, limit)}
                   className="w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 bg-[#009ee3] hover:bg-[#0088c6] text-white"
                 >
                   Mercado Pago
@@ -367,7 +416,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
                 <button
                   type="button"
                   disabled={!!loading}
-                  onClick={() => iniciarCheckout('paypal', key, p.label, price)}
+                  onClick={() => iniciarCheckout('paypal', key, planBase, p.label, price, limit)}
                   className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading === `paypal-${key}` ? <Loader2 size={16} className="animate-spin" /> : null}
@@ -392,75 +441,61 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         </p>
       </div>
 
-      {/* Etapa final: aceite dos Termos antes do pagamento */}
       {pending && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="aceite-titulo"
-            className="w-full max-w-md bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4"
+            className="w-full max-w-md bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 my-6"
           >
             <h3 id="aceite-titulo" className="text-lg font-bold text-zinc-50">
               Confirmar contratação
             </h3>
-            <p className="text-sm text-zinc-300">
-              Plano <strong className="text-white">{pending.label}</strong>
-              {pending.price ? (
-                <>
-                  {' · '}
-                  <strong className="text-white">{pending.price}</strong>
-                </>
-              ) : null}
-              {' · '}
-              {pending.method === 'mp' ? 'Mercado Pago' : 'PayPal'}
-            </p>
-            <fieldset className="space-y-2 rounded-xl border border-zinc-700 bg-zinc-950/80 p-3">
-              <legend className="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1">
-                Termos de Uso
-              </legend>
-              <p className="text-[12px] text-zinc-400 leading-relaxed">
-                Li os{' '}
+
+            <div className="text-sm text-zinc-300 space-y-2 leading-relaxed bg-zinc-950/70 border border-zinc-800 rounded-xl p-3">
+              <p>
+                Ao continuar, você contratará o plano{' '}
+                <strong className="text-white">{pending.label}</strong> por{' '}
+                <strong className="text-white">{pending.price}</strong> {periodLabel}, com renovação automática a
+                cada {ciclo === 'mensal' ? 'mês' : 'ano'}, conforme as condições desta página.
+              </p>
+              <p>
+                O plano inclui até{' '}
+                <strong className="text-white">{pending.reviewLimit.toLocaleString('pt-BR')}</strong> feedbacks
+                por ciclo e as funcionalidades do plano selecionado. Não há garantia de resultado comercial.
+              </p>
+              <p>
+                Você poderá cancelar pelo painel. Aplicam-se os Termos de Uso, a Política de Privacidade e as
+                regras legais de reembolso, inclusive o direito de arrependimento quando aplicável.
+              </p>
+            </div>
+
+            <label className="flex items-start gap-3 cursor-pointer text-sm text-zinc-100 leading-snug">
+              <input
+                type="checkbox"
+                checked={aceite}
+                onChange={(e) => setAceite(e.target.checked)}
+                className="mt-1 h-4 w-4 accent-indigo-500 shrink-0"
+              />
+              <span>
+                Li e aceito os{' '}
+                <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline">
+                  Termos de Uso e Contrato de Assinatura
+                </a>
+                , a{' '}
                 <a
-                  href="/termos"
+                  href="/privacidade"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-indigo-400 underline"
                 >
-                  Termos de Uso e Contrato de Assinatura
+                  Política de Privacidade
                 </a>{' '}
-                e a Política de Privacidade. Escolha uma opção (obrigatório):
-              </p>
-              <div className="flex flex-col gap-2 pt-1">
-                <label className="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-100">
-                  <input
-                    type="radio"
-                    name="aceite_compra"
-                    value="aceito"
-                    checked={aceiteTermos === 'aceito'}
-                    onChange={() => setAceiteTermos('aceito')}
-                    className="h-4 w-4 accent-indigo-500"
-                  />
-                  <span>Aceito</span>
-                </label>
-                <label className="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-100">
-                  <input
-                    type="radio"
-                    name="aceite_compra"
-                    value="nao_aceito"
-                    checked={aceiteTermos === 'nao_aceito'}
-                    onChange={() => setAceiteTermos('nao_aceito')}
-                    className="h-4 w-4 accent-zinc-400"
-                  />
-                  <span>Não aceito</span>
-                </label>
-              </div>
-              {aceiteTermos === 'nao_aceito' && (
-                <p className="text-[11px] text-amber-400/90 pt-1">
-                  Sem aceite não é possível concluir a compra do plano.
-                </p>
-              )}
-            </fieldset>
+                e as condições do plano selecionado.
+              </span>
+            </label>
+
             <div className="flex flex-col-reverse sm:flex-row gap-2 pt-1">
               <button
                 type="button"
@@ -471,11 +506,11 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
               </button>
               <button
                 type="button"
-                disabled={aceiteTermos !== 'aceito' || !!loading}
-                onClick={confirmarCompra}
+                disabled={!aceite || !!loading}
+                onClick={() => void confirmarCompra()}
                 className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50"
               >
-                {pending.method === 'mp' ? 'Continuar para Mercado Pago' : 'Continuar para PayPal'}
+                {ciclo === 'anual' ? 'Contratar plano anual' : 'Assinar e iniciar plano'}
               </button>
             </div>
           </div>
