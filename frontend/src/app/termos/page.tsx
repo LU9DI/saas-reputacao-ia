@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { BrandMark } from '../components/BrandMark';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
+const SUPORTE_EMAIL = 'projetosaas1@gmail.com';
+
 export default function TermosPage() {
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
@@ -30,12 +32,18 @@ export default function TermosPage() {
             cadastro ou a assinatura.
           </p>
           <p>
+            <strong className="text-zinc-100">Suporte:</strong>{' '}
+            <a href={`mailto:${SUPORTE_EMAIL}`} className="text-indigo-400 underline">
+              {SUPORTE_EMAIL}
+            </a>
+          </p>
+          <p>
             Documento completo (Markdown):{' '}
             <code className="text-xs text-indigo-300">docs/TERMOS_DE_USO.md</code> no repositório do projeto.
           </p>
           <p className="text-xs text-zinc-500">
-            Este material não substitui a Política de Privacidade nem revisão por advogado. Em caso de
-            divergência, prevalece a versão publicada com data de atualização.
+            Este material não substitui a Política de Privacidade. Em caso de divergência, prevalece a versão
+            publicada com data de atualização.
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
@@ -45,6 +53,9 @@ export default function TermosPage() {
           <Link href="/login" className="text-zinc-400 hover:text-zinc-200 underline">
             Login
           </Link>
+          <a href={`mailto:${SUPORTE_EMAIL}`} className="text-zinc-400 hover:text-zinc-200 underline">
+            Contato / suporte
+          </a>
         </div>
       </main>
     </div>
