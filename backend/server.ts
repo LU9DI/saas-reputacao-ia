@@ -36,6 +36,7 @@ import { mountUnidadeRoutes } from './routes/unidadeRoutes.js';
 import { mountExportRoutes } from './routes/exportRoutes.js';
 import { mountPublicPlanosRoutes } from './routes/publicPlanosRoutes.js';
 import { mountAuditRoutes } from './routes/auditRoutes.js';
+import { mountLegalAcceptRoutes } from './routes/legalAcceptRoutes.js';
 import { mountSmtpTestRoutes } from './routes/smtpTestRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
@@ -71,8 +72,8 @@ assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
 
 const BUILD = {
-  version: '1.1.4',
-  marker: 'paypal-fix-v3',
+  version: '1.1.5',
+  marker: 'legal-aceite-v1',
   started_at: new Date().toISOString(),
 };
 
@@ -293,6 +294,7 @@ async function main() {
   mountExportRoutes(app);
   mountPublicPlanosRoutes(app);
   mountAuditRoutes(app);
+  mountLegalAcceptRoutes(app);
   mountSmtpTestRoutes(app);
 
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET });
