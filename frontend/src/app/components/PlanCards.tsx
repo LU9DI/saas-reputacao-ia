@@ -41,6 +41,13 @@ type Props = {
   email?: string | null;
 };
 
+type PendingCheckout = {
+  method: 'mp' | 'paypal';
+  planoKey: string;
+  label: string;
+  price: string;
+};
+
 function formatPriceDisplay(price: string): string {
   return String(price || '').replace(/\u00a0/g, ' ').replace(/R\$\s+/g, 'R$\u00a0').trim();
 }
@@ -54,12 +61,6 @@ function textOrFallback(value: unknown, fallback: string): string {
   return text || fallback;
 }
 
-/**
- * Matriz de benefícios (produto):
- * - Inicial: feedbacks + WPP + dashboard — sem relatório e sem IA
- * - Pro: + relatório inteligente — ainda sem IA integrada
- * - Ultra+: + IA ativa + análises / multi-unidade conforme o plano
- */
 function featuresForPlan(plan: string, limit: number, t: any) {
   const fb = textOrFallback(t.feat_feedbacks, '{n} feedbacks/mês').replace(
     '{n}',
@@ -102,6 +103,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
   const [mpOpen, setMpOpen] = useState(false);
   const [mpPlano, setMpPlano] = useState<{ key: string; label: string } | null>(null);
+  const [pending, setPending] = useState<PendingCheckout | null>(null);
+  const [aceiteTermos, setAceiteTermos] = useState<'aceito' | 'nao_aceito' | null>(null);
 
   const labelMensal = textOrFallback(t.monthly, 'Mensal');
   const labelAnual = textOrFallback(t.yearly, 'Anual');
@@ -154,12 +157,23 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     };
   }, []);
 
-  const irParaPayPal = async (planoKey: string) => {
+  const fecharAceite = () => {
+    setPending(null);
+    setAceiteTermos(null);
+  };
+
+  const iniciarCheckout = (method: 'mp' | 'paypal', planoKey: string, label: string, price: string) => {
     setErro('');
     if (requireEmpresa && !empresaId) {
       setErro(t.trial_title || 'Ative o trial antes de assinar.');
       return;
     }
+    setAceiteTermos(null);
+    setPending({ method, planoKey, label, price });
+  };
+
+  const irParaPayPal = async (planoKey: string) => {
+    setErro('');
     setLoading(`paypal-${planoKey}`);
     try {
       const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
@@ -170,6 +184,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           plano: planoKey,
           empresa_id: empresaId || undefined,
           email: email || undefined,
+          aceite_termos: true,
+          versao_termos: '2026-09-15',
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -184,13 +200,16 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   };
 
   const abrirMp = (planoKey: string, label: string) => {
-    setErro('');
-    if (requireEmpresa && !empresaId) {
-      setErro(t.trial_title || 'Ative o trial antes de assinar.');
-      return;
-    }
     setMpPlano({ key: planoKey, label });
     setMpOpen(true);
+  };
+
+  const confirmarCompra = () => {
+    if (!pending || aceiteTermos !== 'aceito') return;
+    const { method, planoKey, label } = pending;
+    fecharAceite();
+    if (method === 'mp') abrirMp(planoKey, label);
+    else void irParaPayPal(planoKey);
   };
 
   const formatarFeature = (text: string, isMissing = false) => {
@@ -251,7 +270,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           {[t.pay_paypal || 'PayPal', 'Mercado Pago'].join(' · ')}
           {loadingPrices ? ` · ${t.updating_prices || 'Atualizando…'}` : ''}
         </p>
-        {/* Toggle mensal / anual — labels sempre visíveis */}
         <div
           className="inline-flex rounded-full border border-slate-600/80 bg-slate-800/80 p-1 text-sm shadow-inner mt-4 gap-0.5"
           role="group"
@@ -290,7 +308,10 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         {plans.map((p) => {
           const key = ciclo === 'mensal' ? p.keyMensal : p.keyAnual;
           const price = formatPriceDisplay(ciclo === 'mensal' ? p.priceMensal : p.priceAnual);
-          const period = ciclo === 'mensal' ? textOrFallback(t.per_month, '/mês') : textOrFallback(t.annual_billing, 'cobrança anual');
+          const period =
+            ciclo === 'mensal'
+              ? textOrFallback(t.per_month, '/mês')
+              : textOrFallback(t.annual_billing, 'cobrança anual');
           const planBase = String(p.keyMensal || '')
             .replace(/-anual$/, '')
             .toLowerCase();
@@ -338,7 +359,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
                 <button
                   type="button"
                   disabled={!!loading}
-                  onClick={() => abrirMp(key, p.label)}
+                  onClick={() => iniciarCheckout('mp', key, p.label, price)}
                   className="w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 disabled:opacity-50 bg-[#009ee3] hover:bg-[#0088c6] text-white"
                 >
                   Mercado Pago
@@ -346,11 +367,13 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
                 <button
                   type="button"
                   disabled={!!loading}
-                  onClick={() => irParaPayPal(key)}
+                  onClick={() => iniciarCheckout('paypal', key, p.label, price)}
                   className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[#0070ba] hover:bg-[#005ea6] text-white disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {loading === `paypal-${key}` ? <Loader2 size={16} className="animate-spin" /> : null}
-                  {loading === `paypal-${key}` ? textOrFallback(t.redirecting, 'Redirecionando…') : textOrFallback(t.pay_paypal, 'PayPal')}
+                  {loading === `paypal-${key}`
+                    ? textOrFallback(t.redirecting, 'Redirecionando…')
+                    : textOrFallback(t.pay_paypal, 'PayPal')}
                 </button>
               </div>
             </div>
@@ -368,6 +391,97 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           {textOrFallback(t.cancel_detail, 'O acesso permanece até o fim do período já pago.')}
         </p>
       </div>
+
+      {/* Etapa final: aceite dos Termos antes do pagamento */}
+      {pending && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aceite-titulo"
+            className="w-full max-w-md bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4"
+          >
+            <h3 id="aceite-titulo" className="text-lg font-bold text-zinc-50">
+              Confirmar contratação
+            </h3>
+            <p className="text-sm text-zinc-300">
+              Plano <strong className="text-white">{pending.label}</strong>
+              {pending.price ? (
+                <>
+                  {' · '}
+                  <strong className="text-white">{pending.price}</strong>
+                </>
+              ) : null}
+              {' · '}
+              {pending.method === 'mp' ? 'Mercado Pago' : 'PayPal'}
+            </p>
+            <fieldset className="space-y-2 rounded-xl border border-zinc-700 bg-zinc-950/80 p-3">
+              <legend className="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1">
+                Termos de Uso
+              </legend>
+              <p className="text-[12px] text-zinc-400 leading-relaxed">
+                Li os{' '}
+                <a
+                  href="/termos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-400 underline"
+                >
+                  Termos de Uso e Contrato de Assinatura
+                </a>{' '}
+                e a Política de Privacidade. Escolha uma opção (obrigatório):
+              </p>
+              <div className="flex flex-col gap-2 pt-1">
+                <label className="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-100">
+                  <input
+                    type="radio"
+                    name="aceite_compra"
+                    value="aceito"
+                    checked={aceiteTermos === 'aceito'}
+                    onChange={() => setAceiteTermos('aceito')}
+                    className="h-4 w-4 accent-indigo-500"
+                  />
+                  <span>Aceito</span>
+                </label>
+                <label className="flex items-center gap-2.5 cursor-pointer text-sm text-zinc-100">
+                  <input
+                    type="radio"
+                    name="aceite_compra"
+                    value="nao_aceito"
+                    checked={aceiteTermos === 'nao_aceito'}
+                    onChange={() => setAceiteTermos('nao_aceito')}
+                    className="h-4 w-4 accent-zinc-400"
+                  />
+                  <span>Não aceito</span>
+                </label>
+              </div>
+              {aceiteTermos === 'nao_aceito' && (
+                <p className="text-[11px] text-amber-400/90 pt-1">
+                  Sem aceite não é possível concluir a compra do plano.
+                </p>
+              )}
+            </fieldset>
+            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-1">
+              <button
+                type="button"
+                onClick={fecharAceite}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium border border-zinc-600 text-zinc-300 hover:bg-zinc-800"
+              >
+                Voltar
+              </button>
+              <button
+                type="button"
+                disabled={aceiteTermos !== 'aceito' || !!loading}
+                onClick={confirmarCompra}
+                className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50"
+              >
+                {pending.method === 'mp' ? 'Continuar para Mercado Pago' : 'Continuar para PayPal'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <MpTransparentCheckout
         open={mpOpen}
         onClose={() => setMpOpen(false)}
