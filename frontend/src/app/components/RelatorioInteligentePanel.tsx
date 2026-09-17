@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { apiFetch } from '../utils/apiFailover';
+import { openReportPrintWindow } from '../utils/reportPdfClient';
 
 type Review = {
   rating?: number | string | null;
@@ -89,17 +89,16 @@ function sentimentKey(value: unknown): 'positivo' | 'neutro' | 'negativo' | null
   return null;
 }
 
-/** Textos da UI do relatório (seguem o idioma do painel). */
 function uiCopy(lang: string) {
   if (lang === 'en') {
     return {
       title: 'Intelligent Report',
       subtitle:
-        'Based on data available right now. Updates when new reviews arrive. PDF language is selected separately below.',
+        'Based on data available right now. PDF opens in a print window — choose Save as PDF.',
       month: 'Period',
       pdfLang: 'PDF language',
       exportPdf: 'Export PDF',
-      generating: 'Generating…',
+      generating: 'Opening…',
       avg: 'Average',
       reviews: 'Reviews',
       positive: 'Positive',
@@ -120,8 +119,7 @@ function uiCopy(lang: string) {
       pointsCritLine: (n: number) => `${n} review(s) with up to 3 stars.`,
       followTheme: (name: string, count: number) => `Watch: ${name} (${count})`,
       recommendations: 'Recommendations',
-      recEmpty:
-        'There are no reviews in this period yet. Collect more feedback for a clearer reading.',
+      recEmpty: 'There are no reviews in this period yet. Collect more feedback for a clearer reading.',
       recCritical:
         'Prioritize reviews of 3 stars or below and identify recurring problems before seeking new reviews.',
       recLowAvg:
@@ -132,23 +130,21 @@ function uiCopy(lang: string) {
         'Watch negative sentiment in the next reviews to see if the pattern continues.',
       recTheme: (name: string) => `Monitor the theme “${name}”, seen most often in this period.`,
       footer:
-        'Report based on data available at the moment. Indicators reuse dashboard reviews. The PDF language selector only affects the exported file.',
-      errCompany: 'Invalid company for export.',
+        'Report based on data available at the moment. PDF is generated in the browser (no server wait).',
       errPeriod: 'Invalid period for export.',
-      errEmpty: 'The server returned an empty PDF.',
-      errFail: 'Could not generate the PDF.',
-      errLogin: 'Sign in again to export the PDF.',
+      errFail: 'Could not open the PDF window.',
+      errPopup: 'Pop-up blocked. Allow pop-ups for this site and try again.',
     };
   }
   if (lang === 'es') {
     return {
       title: 'Informe Inteligente',
       subtitle:
-        'Según los datos disponibles en este momento. Se actualiza con nuevas reseñas. El idioma del PDF se elige por separado abajo.',
+        'Según los datos disponibles. El PDF se abre en la ventana de impresión — elija Guardar como PDF.',
       month: 'Período',
       pdfLang: 'Idioma del PDF',
       exportPdf: 'Exportar PDF',
-      generating: 'Generando…',
+      generating: 'Abriendo…',
       avg: 'Media',
       reviews: 'Reseñas',
       positive: 'Positivas',
@@ -181,22 +177,20 @@ function uiCopy(lang: string) {
         'Siga de cerca el sentimiento negativo en las próximas reseñas para ver si el patrón se repite.',
       recTheme: (name: string) => `Monitoree el tema “${name}”, el más frecuente del período.`,
       footer:
-        'Informe según los datos disponibles en el momento. El selector de idioma del PDF solo afecta al archivo exportado.',
-      errCompany: 'Empresa no válida para exportación.',
+        'Informe según los datos disponibles. El PDF se genera en el navegador (sin esperar al servidor).',
       errPeriod: 'Período no válido para exportación.',
-      errEmpty: 'El servidor devolvió un PDF vacío.',
-      errFail: 'No se pudo generar el PDF.',
-      errLogin: 'Inicie sesión de nuevo para exportar el PDF.',
+      errFail: 'No se pudo abrir la ventana del PDF.',
+      errPopup: 'Ventana emergente bloqueada. Permita pop-ups e intente de nuevo.',
     };
   }
   if (lang === 'zh') {
     return {
       title: '智能报告',
-      subtitle: '基于当前可用数据。有新评价时更新。下方可单独选择 PDF 语言。',
+      subtitle: '基于当前数据。PDF 在打印窗口中打开 — 选择“另存为 PDF”。',
       month: '周期',
       pdfLang: 'PDF 语言',
       exportPdf: '导出 PDF',
-      generating: '生成中…',
+      generating: '打开中…',
       avg: '平均分',
       reviews: '评价',
       positive: '好评',
@@ -223,23 +217,20 @@ function uiCopy(lang: string) {
       recKeepPositive: '保持带来好评的服务标准，并作为参考。',
       recNegSentiment: '持续关注负面情绪，确认是否形成趋势。',
       recTheme: (name: string) => `关注本周期出现最多的主题「${name}」。`,
-      footer: '报告基于当前可用数据。PDF 语言选择仅影响导出文件。',
-      errCompany: '无法导出：企业无效。',
+      footer: '报告基于当前数据。PDF 在浏览器中生成（不等待服务器）。',
       errPeriod: '导出周期无效。',
-      errEmpty: '服务器返回了空 PDF。',
-      errFail: '无法生成 PDF。',
-      errLogin: '请重新登录后再导出 PDF。',
+      errFail: '无法打开 PDF 窗口。',
+      errPopup: '弹窗被拦截。请允许本站弹窗后重试。',
     };
   }
-  // pt (padrão)
   return {
     title: 'Relatório Inteligente',
     subtitle:
-      'Conforme os dados disponíveis no momento. Atualiza com novas avaliações. O idioma do PDF é escolhido à parte abaixo.',
+      'Conforme os dados disponíveis no momento. O PDF abre na impressão do navegador — escolha Salvar como PDF.',
     month: 'Período',
     pdfLang: 'Idioma do PDF',
     exportPdf: 'Exportar PDF',
-    generating: 'Gerando…',
+    generating: 'Abrindo…',
     avg: 'Nota média',
     reviews: 'Avaliações',
     positive: 'Positivas',
@@ -272,33 +263,29 @@ function uiCopy(lang: string) {
       'Acompanhe de perto o sentimento negativo nas próximas avaliações para verificar se o cenário está se repetindo.',
     recTheme: (name: string) => `Monitore o tema “${name}”, identificado com maior frequência no período.`,
     footer:
-      'Relatório conforme os dados disponíveis no momento. Os indicadores reutilizam as avaliações do painel. O seletor de idioma do PDF aplica-se somente ao arquivo exportado.',
-    errCompany: 'Empresa inválida para exportação.',
+      'Relatório conforme os dados disponíveis no momento. PDF gerado no navegador (sem esperar o servidor).',
     errPeriod: 'Período inválido para exportação.',
-    errEmpty: 'O servidor retornou um PDF vazio.',
-    errFail: 'Não foi possível gerar o PDF.',
-    errLogin: 'Faça login novamente para exportar o PDF.',
+    errFail: 'Não foi possível abrir a janela do PDF.',
+    errPopup: 'Pop-up bloqueado. Permita pop-ups neste site e tente de novo.',
   };
 }
 
 export function RelatorioInteligentePanel({
-  empresaId,
+  empresaId: _empresaId,
   api: _api,
-  authHeaders,
+  authHeaders: _authHeaders,
   panelData,
 }: Props) {
   const { language } = useLanguage();
   const copy = uiCopy(language);
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
   const [mesReport, setMesReport] = useState(currentMonth);
-  /** Idioma do PDF — independente do idioma do painel. */
   const [langPdf, setLangPdf] = useState('pt');
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
 
   const empresa = panelData?.empresa || {};
   const metricas = panelData?.metricas || {};
-  const ref = String(empresaId || empresa.slug || empresa.id || '').trim() || empresaId;
 
   const reviews: Review[] = useMemo(() => {
     if (!Array.isArray(panelData?.reviews)) return [];
@@ -382,88 +369,57 @@ export function RelatorioInteligentePanel({
     return out.slice(0, 4);
   }, [stats, copy]);
 
-  const downloadPdf = async () => {
-    if (!ref) {
-      setDownloadError(copy.errCompany);
-      return;
-    }
+  const downloadPdf = () => {
     if (!MONTH_RE.test(mesReport)) {
       setDownloadError(copy.errPeriod);
       return;
     }
     setDownloading(true);
     setDownloadError('');
-    const lang = PDF_LANGS.has(langPdf) ? langPdf : 'pt';
-    const headers = authHeaders(false);
-
-    const paths = [
-      `/api/empresa/${encodeURIComponent(ref)}/relatorio.pdf?mes=${encodeURIComponent(mesReport)}&lang=${encodeURIComponent(lang)}`,
-      `/api/empresa/${encodeURIComponent(ref)}/relatorio-inteligente.pdf?lang=${encodeURIComponent(lang)}`,
-    ];
-
-    let lastError = copy.errFail;
     try {
-      for (const path of paths) {
-        try {
-          const res = await apiFetch(path, {
-            credentials: 'include',
-            headers,
-            timeoutMs: 90_000,
-          });
-          const ctype = String(res.headers.get('content-type') || '').toLowerCase();
-
-          if (!res.ok) {
-            if (ctype.includes('json')) {
-              const body = await res.json().catch(() => ({}));
-              lastError = typeof body?.error === 'string' ? body.error : `HTTP ${res.status}`;
-            } else {
-              lastError = `HTTP ${res.status}`;
-            }
-            if (res.status === 401) {
-              lastError = copy.errLogin;
-              break;
-            }
-            if (res.status === 403 || res.status === 404) continue;
-            continue;
-          }
-
-          if (ctype.includes('json')) {
-            const body = await res.json().catch(() => ({}));
-            lastError = typeof body?.error === 'string' ? body.error : copy.errFail;
-            continue;
-          }
-
-          const blob = await res.blob();
-          if (!blob.size) {
-            lastError = copy.errEmpty;
-            continue;
-          }
-
-          const objectUrl = URL.createObjectURL(blob);
-          try {
-            const a = document.createElement('a');
-            const slug =
-              String(empresa.nome_empresa || 'empresa')
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/[^a-z0-9]+/gi, '-')
-                .replace(/^-+|-+$/g, '')
-                .toLowerCase() || 'empresa';
-            a.href = objectUrl;
-            a.download = `relatorio-${slug}-${mesReport}-${lang}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-          } finally {
-            window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
-          }
-          setDownloadError('');
-          return;
-        } catch (inner: unknown) {
-          lastError = inner instanceof Error ? inner.message : lastError;
-        }
+      const lang = PDF_LANGS.has(langPdf) ? langPdf : 'pt';
+      const pdfCopy = uiCopy(lang);
+      const recs: string[] = [];
+      if (!stats.total) {
+        recs.push(pdfCopy.recEmpty);
+      } else {
+        if (stats.critical > stats.positive) recs.push(pdfCopy.recCritical);
+        if (stats.average > 0 && stats.average < 4) recs.push(pdfCopy.recLowAvg);
+        if (stats.positive >= stats.critical) recs.push(pdfCopy.recKeepPositive);
+        if (stats.sentiment.negativo > stats.sentiment.positivo) recs.push(pdfCopy.recNegSentiment);
+        if (stats.themes.length) recs.push(pdfCopy.recTheme(stats.themes[0].name));
       }
-      throw new Error(lastError);
+      const themesLabel =
+        lang === 'en' ? 'Themes' : lang === 'es' ? 'Temas' : lang === 'zh' ? '主题' : 'Temas';
+      const opened = openReportPrintWindow({
+        companyName: String(empresa.nome_empresa || 'Empresa'),
+        periodLabel: labelMes(mesReport, lang),
+        lang,
+        stats,
+        evolution,
+        recommendations: recs.slice(0, 4),
+        labels: {
+          title: pdfCopy.title,
+          avg: pdfCopy.avg,
+          reviews: pdfCopy.reviews,
+          positive: pdfCopy.positive,
+          critical: pdfCopy.critical,
+          evolution: pdfCopy.evolution,
+          evolutionEmpty: pdfCopy.evolutionEmpty,
+          evolutionText: pdfCopy.evolutionText,
+          sentiment: pdfCopy.sentiment,
+          sentPos: pdfCopy.sentPos,
+          sentNeu: pdfCopy.sentNeu,
+          sentNeg: pdfCopy.sentNeg,
+          pointsPos: pdfCopy.pointsPos,
+          pointsCrit: pdfCopy.pointsCrit,
+          recommendations: pdfCopy.recommendations,
+          themes: themesLabel,
+          footer: pdfCopy.footer,
+          brand: 'Filtra.AI',
+        },
+      });
+      if (!opened) setDownloadError(copy.errPopup);
     } catch (error: unknown) {
       setDownloadError(error instanceof Error ? error.message : copy.errFail);
     } finally {
