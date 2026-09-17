@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 
 type Review = {
@@ -65,14 +65,67 @@ function pct(v: number, total: number): number {
 }
 
 export function RelatorioInteligentePanel({ empresaId, api, authHeaders, mesReport, langReport, mesesOpcoes, labelMes, onMesChange, onLangChange, language, panelData }: Props) {
+  const [fallbackPanel, setFallbackPanel] = useState<PanelData | null>(null);
+  const [loadingPanel, setLoadingPanel] = useState(!panelData);
   const [downloading, setDownloading] = useState(false);
 
-  const empresa = panelData?.empresa ?? {};
-  const metricas = panelData?.metricas ?? {};
+  useEffect(() => {
+    if (panelData) {
+      setFallbackPanel(null);
+      setLoadingPanel(false);
+      return;
+    }
+    let cancelled = false;
+    const cacheKey = `filtra:painel:${empresaId}`;
+
+    const readCache = (): PanelData | null => {
+      try {
+        const raw = sessionStorage.getItem(cacheKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const cached = readCache();
+    if (cached && !cancelled) {
+      setFallbackPanel(cached);
+      setLoadingPanel(false);
+    }
+
+    (async () => {
+      try {
+        const res = await fetch(`${api}/api/empresa/${encodeURIComponent(empresaId)}/painel`, {
+          credentials: 'include',
+          headers: authHeaders(false),
+          cache: 'no-store',
+        });
+        if (!res.ok) return;
+        const fresh = await res.json();
+        if (cancelled || !fresh || typeof fresh !== 'object') return;
+        const safe = fresh as PanelData;
+        setFallbackPanel(safe);
+        setLoadingPanel(false);
+        try { sessionStorage.setItem(cacheKey, JSON.stringify(safe)); } catch { /* cache opcional */ }
+      } catch {
+        if (!cancelled && !cached) setLoadingPanel(false);
+      }
+    })();
+
+    return () => { cancelled = true; };
+    // authHeaders is intentionally excluded: it is recreated by the parent.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empresaId, api, panelData]);
+
+  const source = panelData ?? fallbackPanel;
+  const empresa = source?.empresa ?? {};
+  const metricas = source?.metricas ?? {};
   const reviews = useMemo(() => {
-    if (!Array.isArray(panelData?.reviews)) return [];
-    return panelData.reviews.filter((r) => r && r.is_test !== true && r.is_test !== 'true');
-  }, [panelData?.reviews]);
+    if (!Array.isArray(source?.reviews)) return [];
+    return source.reviews.filter((r) => r && r.is_test !== true && r.is_test !== 'true');
+  }, [source?.reviews]);
 
   const monthReviews = useMemo(() => reviews.filter((r) => reviewDate(r).startsWith(mesReport)), [reviews, mesReport]);
 
@@ -171,6 +224,10 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, mesRepo
       setDownloading(false);
     }
   };
+
+  if (loadingPanel && !source) {
+    return <section className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-6 text-sm text-zinc-500">Carregando Relatório Inteligente…</section>;
+  }
 
   return (
     <section className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-6 space-y-6" aria-labelledby="relatorio-inteligente-title">
