@@ -83,10 +83,81 @@ function readCookie(): Language | null {
   }
 }
 
-/** Merge PT + idioma atual — nunca deixa chave vazia. */
+function pickValue(dict: Dictionary | undefined, key: string): string | null {
+  if (!dict) return null;
+  const v = dict[key];
+  if (v == null) return null;
+  const s = String(v).trim();
+  return s ? s : null;
+}
+
+/**
+ * Fallback dinâmico de chaves:
+ *   1) idioma atual
+ *   2) inglês (se não for pt/en)
+ *   3) português (base)
+ *   4) fallback explícito
+ *   5) própria chave
+ */
+export function resolveTranslation(
+  key: string,
+  lang: Language,
+  explicitFallback?: string
+): string {
+  const primary = pickValue(dictionaries[lang], key);
+  if (primary) return primary;
+
+  if (lang !== "en" && lang !== "pt") {
+    const enVal = pickValue(dictionaries.en, key);
+    if (enVal) return enVal;
+  }
+
+  if (lang !== "pt") {
+    const ptVal = pickValue(dictionaries.pt, key);
+    if (ptVal) return ptVal;
+  }
+
+  if (explicitFallback != null && String(explicitFallback).trim()) {
+    return String(explicitFallback);
+  }
+  return key;
+}
+
+/**
+ * Proxy: t.qualquer_chave usa resolveTranslation em tempo de acesso.
+ * Assim `t.chave_inexistente` nunca quebra a UI.
+ */
 export function dictFor(lang: Language): Dictionary {
-  if (lang === "pt") return dictionaries.pt;
-  return { ...dictionaries.pt, ...(dictionaries[lang] || {}) };
+  const target = dictionaries[lang] || dictionaries.pt;
+  return new Proxy(target, {
+    get(_obj, prop) {
+      if (typeof prop !== "string") return undefined;
+      // evita ruído de libs que leem Symbol.toStringTag etc.
+      if (prop === "then" || prop === "toJSON" || prop === "$$typeof") return undefined;
+      return resolveTranslation(prop, lang);
+    },
+    has(_obj, prop) {
+      if (typeof prop !== "string") return false;
+      return (
+        prop in dictionaries.pt ||
+        prop in (dictionaries[lang] || {}) ||
+        prop in dictionaries.en
+      );
+    },
+    ownKeys() {
+      const keys = new Set([
+        ...Object.keys(dictionaries.pt),
+        ...Object.keys(dictionaries.en),
+        ...Object.keys(dictionaries[lang] || {}),
+      ]);
+      return [...keys];
+    },
+    getOwnPropertyDescriptor(_obj, prop) {
+      if (typeof prop !== "string") return undefined;
+      const value = resolveTranslation(prop, lang);
+      return { configurable: true, enumerable: true, value };
+    },
+  }) as Dictionary;
 }
 
 /** Traduz fora de componentes React (só cliente). */
@@ -100,10 +171,7 @@ export function translateKey(
     (typeof window !== "undefined"
       ? normalizeLang(localStorage.getItem(STORAGE_KEY)) || detectBrowserLang()
       : "pt");
-  const dict = dictFor(resolved);
-  const value = dict[key];
-  if (value && String(value).trim()) return String(value);
-  return fallback || key;
+  return resolveTranslation(key, resolved, fallback);
 }
 
 function persistLang(lang: Language) {
@@ -133,7 +201,7 @@ function persistLang(lang: Language) {
 interface LanguageContextData {
   language: Language;
   setLanguage: (lang: Language) => void;
-  /** Dicionário do idioma atual (acesso por chave: t.login). */
+  /** Dicionário com fallback dinâmico (t.login). */
   t: Dictionary;
   /** Função segura: tx('login', 'Entrar'). */
   tx: (key: string, fallback?: string) => string;
@@ -141,12 +209,12 @@ interface LanguageContextData {
   translations: Dictionary;
 }
 
-const defaultDict = dictionaries.pt;
+const defaultDict = dictFor("pt");
 const LanguageContext = createContext<LanguageContextData>({
   language: "pt",
   setLanguage: () => {},
   t: defaultDict,
-  tx: (key, fallback) => defaultDict[key] || fallback || key,
+  tx: (key, fallback) => resolveTranslation(key, "pt", fallback),
   translations: defaultDict,
 });
 
@@ -156,7 +224,6 @@ export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Languag
 }) => {
   const [language, setLanguageState] = useState<Language>(initial || "pt");
 
-  // Boot: localStorage → cookie → browser → initial
   useEffect(() => {
     let next: Language = initial || "pt";
     try {
@@ -171,7 +238,6 @@ export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Languag
     writeCookie(next);
   }, [initial]);
 
-  // Sync entre abas (storage) + mesma aba (custom event) + BroadcastChannel
   useEffect(() => {
     const apply = (raw: string | null | undefined) => {
       const n = normalizeLang(raw);
@@ -221,12 +287,8 @@ export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Languag
   const dict = useMemo(() => dictFor(language), [language]);
 
   const tx = useCallback(
-    (key: string, fallback?: string) => {
-      const value = dict[key];
-      if (value && String(value).trim()) return String(value);
-      return fallback || key;
-    },
-    [dict]
+    (key: string, fallback?: string) => resolveTranslation(key, language, fallback),
+    [language]
   );
 
   const value = useMemo(
@@ -250,7 +312,7 @@ export const useLanguage = (): LanguageContextData => {
       language: "pt" as Language,
       setLanguage: () => {},
       t: defaultDict,
-      tx: (key, fallback) => defaultDict[key] || fallback || key,
+      tx: (key, fallback) => resolveTranslation(key, "pt", fallback),
       translations: defaultDict,
     }
   );
