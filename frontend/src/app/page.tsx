@@ -33,14 +33,14 @@ const PRIV_VERSAO = '2026-09-15';
 
 export default function Home() {
   const { language, t } = useLanguage();
-  const trialSubtitle =
+  const brandSubtitle =
     language === 'en'
-      ? 'Register your company with name, email and password. No credit card for the 7-day trial.'
+      ? 'Reputation'
       : language === 'es'
-        ? 'Registra la empresa con nombre, correo y contraseña. Sin tarjeta en los 7 días de prueba.'
+        ? 'Reputación'
         : language === 'zh'
-          ? '使用公司名称、邮箱和密码注册。7 天试用无需信用卡。'
-          : 'Cadastre a empresa com nome, e-mail e senha. Sem cartão de crédito nos 7 dias de teste.';
+          ? '口碑'
+          : 'Reputação';
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -188,7 +188,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black flex flex-col justify-center items-center p-4 font-sans text-zinc-100 gap-10">
       <header className="w-full max-w-5xl flex items-center justify-between px-1 pt-2">
-        <BrandMark size="md" subtitle="Reputation" href="/" />
+        <BrandMark size="md" subtitle={brandSubtitle} href="/" />
         <LanguageSwitcher />
       </header>
       {checkoutMsg && (
@@ -199,7 +199,7 @@ export default function Home() {
       <div className="w-full max-w-md bg-zinc-900 rounded-2xl shadow-xl border border-zinc-800 p-8 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold tracking-tight text-zinc-50">{t.trial_title}</h1>
-          <p className="text-sm text-zinc-400 leading-relaxed">{trialSubtitle}</p>
+          <p className="text-sm text-zinc-400 leading-relaxed">{t.trial_subtitle}</p>
         </div>
         {erro && (
           <div
