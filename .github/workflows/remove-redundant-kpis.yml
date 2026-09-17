@@ -1,0 +1,54 @@
+name: Remove redundant dashboard KPIs
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  remove-kpis:
+    if: ${{ !contains(github.event.head_commit.message, 'chore: remove redundant dashboard KPI cards') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Remove redundant KPI block
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('frontend/src/app/painel/[id]/page.tsx')
+          text = path.read_text(encoding='utf-8')
+          block = '''
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { t: t.kpi_volume || 'Volume', v: metricas.total },
+            { t: t.kpi_avg || 'Média', v: metricas.media || '—' },
+            { t: t.kpi_positive || 'Positivas', v: metricas.positivas },
+            { t: t.kpi_critical || 'Críticas', v: metricas.negativas },
+          ].map((k) => (
+            <div key={k.t} className={`${card} px-5 py-5`}>
+              <p className={label}>{k.t}</p>
+              <p className="mt-2 text-3xl font-bold tabular-nums">{k.v}</p>
+            </div>
+          ))}
+        </section>
+'''
+          count = text.count(block)
+          if count != 1:
+              raise SystemExit(f'Expected exactly 1 redundant KPI block, found {count}')
+          path.write_text(text.replace(block, ''), encoding='utf-8')
+
+      - name: Commit change and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/remove-redundant-kpis.yml
+          git add frontend/src/app/painel/[id]/page.tsx .github/workflows/remove-redundant-kpis.yml
+          git diff --cached --check
+          git commit -m "chore: remove redundant dashboard KPI cards"
+          git push origin main
