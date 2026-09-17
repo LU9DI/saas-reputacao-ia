@@ -14,7 +14,7 @@ type Review = {
 };
 
 type PanelData = {
-  empresa?: { nome_empresa?: string | null } | null;
+  empresa?: { nome_empresa?: string | null; slug?: string | null; id?: string | null } | null;
   metricas?: {
     serie_14d?: unknown;
   } | null;
@@ -93,6 +93,10 @@ function sentimentKey(value: unknown): 'positivo' | 'neutro' | 'negativo' | null
   return null;
 }
 
+function apiBase(api: string): string {
+  return String(api || '').replace(/\/$/, '');
+}
+
 export function RelatorioInteligentePanel({
   empresaId,
   api,
@@ -101,12 +105,16 @@ export function RelatorioInteligentePanel({
 }: Props) {
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
   const [mesReport, setMesReport] = useState(currentMonth);
-  const [langReport, setLangReport] = useState('pt');
+  /** Idioma do PDF apenas — não altera o idioma do painel. */
+  const [langPdf, setLangPdf] = useState('pt');
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
 
   const empresa = panelData?.empresa || {};
   const metricas = panelData?.metricas || {};
+  const ref =
+    String(empresaId || empresa.slug || empresa.id || '').trim() || empresaId;
+
   const reviews: Review[] = useMemo(() => {
     if (!Array.isArray(panelData?.reviews)) return [];
     return panelData.reviews.filter((item): item is Review => {
@@ -226,43 +234,86 @@ export function RelatorioInteligentePanel({
   }, [stats]);
 
   const downloadPdf = async () => {
-    if (!empresaId || !MONTH_RE.test(mesReport)) {
+    if (!ref) {
+      setDownloadError('Empresa inválida para exportação.');
+      return;
+    }
+    if (!MONTH_RE.test(mesReport)) {
       setDownloadError('Período inválido para exportação.');
       return;
     }
     setDownloading(true);
     setDownloadError('');
-    try {
-      const lang = REPORT_LANGS.has(langReport) ? langReport : 'pt';
-      const res = await fetch(
-        `${api}/api/empresa/${encodeURIComponent(empresaId)}/relatorio.pdf?mes=${encodeURIComponent(mesReport)}&lang=${encodeURIComponent(lang)}`,
-        { credentials: 'include', headers: authHeaders(false) }
-      );
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(typeof body?.error === 'string' ? body.error : `Erro ${res.status}`);
-      }
-      const blob = await res.blob();
-      if (!blob.size) throw new Error('O servidor retornou um PDF vazio.');
+    const lang = REPORT_LANGS.has(langPdf) ? langPdf : 'pt';
+    const base = apiBase(api);
+    const headers = authHeaders(false);
 
-      const url = URL.createObjectURL(blob);
-      try {
-        const a = document.createElement('a');
-        const slug =
-          String(empresa.nome_empresa || 'empresa')
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/gi, '-')
-            .replace(/^-+|-+$/g, '')
-            .toLowerCase() || 'empresa';
-        a.href = url;
-        a.download = `relatorio-${slug}-${mesReport}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-      } finally {
-        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    // 1) PDF mensal com i18n completo  2) fallback inteligente
+    const urls = [
+      `${base}/api/empresa/${encodeURIComponent(ref)}/relatorio.pdf?mes=${encodeURIComponent(mesReport)}&lang=${encodeURIComponent(lang)}`,
+      `${base}/api/empresa/${encodeURIComponent(ref)}/relatorio-inteligente.pdf?lang=${encodeURIComponent(lang)}`,
+    ];
+
+    let lastError = 'Não foi possível gerar o PDF.';
+    try {
+      for (const url of urls) {
+        try {
+          const res = await fetch(url, { credentials: 'include', headers });
+          const ctype = String(res.headers.get('content-type') || '').toLowerCase();
+
+          if (!res.ok) {
+            if (ctype.includes('json')) {
+              const body = await res.json().catch(() => ({}));
+              lastError =
+                typeof body?.error === 'string'
+                  ? body.error
+                  : `Erro ${res.status} ao gerar PDF.`;
+            } else {
+              lastError = `Erro ${res.status} ao gerar PDF.`;
+            }
+            // tenta a próxima URL se for 404/403 de rota alternativa
+            if (res.status === 404 || res.status === 403) continue;
+            throw new Error(lastError);
+          }
+
+          if (ctype.includes('json')) {
+            const body = await res.json().catch(() => ({}));
+            lastError =
+              typeof body?.error === 'string' ? body.error : 'Resposta inválida do servidor.';
+            continue;
+          }
+
+          const blob = await res.blob();
+          if (!blob.size) {
+            lastError = 'O servidor retornou um PDF vazio.';
+            continue;
+          }
+
+          const objectUrl = URL.createObjectURL(blob);
+          try {
+            const a = document.createElement('a');
+            const slug =
+              String(empresa.nome_empresa || 'empresa')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/gi, '-')
+                .replace(/^-+|-+$/g, '')
+                .toLowerCase() || 'empresa';
+            a.href = objectUrl;
+            a.download = `relatorio-${slug}-${mesReport}-${lang}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          } finally {
+            window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+          }
+          setDownloadError('');
+          return;
+        } catch (inner: unknown) {
+          lastError = inner instanceof Error ? inner.message : lastError;
+        }
       }
+      throw new Error(lastError);
     } catch (error: unknown) {
       setDownloadError(error instanceof Error ? error.message : 'Não foi possível gerar o PDF.');
     } finally {
@@ -284,7 +335,8 @@ export function RelatorioInteligentePanel({
             </h2>
           </div>
           <p className="text-xs text-zinc-500 mt-1 max-w-2xl leading-relaxed">
-            Conforme os dados disponíveis no momento. Atualiza sempre que houver novas avaliações no painel.
+            Conforme os dados disponíveis no momento. O seletor de idioma abaixo vale apenas para o
+            PDF exportado.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
@@ -300,17 +352,20 @@ export function RelatorioInteligentePanel({
               </option>
             ))}
           </select>
-          <select
-            value={REPORT_LANGS.has(langReport) ? langReport : 'pt'}
-            onChange={(event) => setLangReport(event.target.value)}
-            className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950"
-            aria-label="Idioma do relatório"
-          >
-            <option value="pt">PT</option>
-            <option value="en">EN</option>
-            <option value="es">ES</option>
-            <option value="zh">ZH</option>
-          </select>
+          <label className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+            <span className="hidden sm:inline">Idioma do PDF</span>
+            <select
+              value={REPORT_LANGS.has(langPdf) ? langPdf : 'pt'}
+              onChange={(event) => setLangPdf(event.target.value)}
+              className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100"
+              aria-label="Idioma do PDF"
+            >
+              <option value="pt">PDF · PT</option>
+              <option value="en">PDF · EN</option>
+              <option value="es">PDF · ES</option>
+              <option value="zh">PDF · ZH</option>
+            </select>
+          </label>
           <button
             type="button"
             onClick={downloadPdf}
@@ -444,7 +499,8 @@ export function RelatorioInteligentePanel({
             <span className="text-zinc-300">{labelMes(selectedMonth)}</span>)
           </>
         ) : null}
-        . Os indicadores reutilizam as avaliações do painel.
+        . Os indicadores reutilizam as avaliações do painel. O idioma do seletor aplica-se somente ao
+        arquivo PDF.
       </div>
     </section>
   );
