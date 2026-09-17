@@ -2,9 +2,7 @@
 set -eu
 
 # Normalize the WhatsApp HTTP Request node before importing the versioned workflow.
-# The repository stores the workflow export as an array, while n8n's runtime
-# uses the first workflow object. Evolution API expects a literal URL, the
-# apikey header, and number/text fields.
+# Evolution API expects the public base URL, the apikey header, and number/text fields.
 node <<'NODE'
 const fs = require('fs');
 const path = '/home/node/n8n-workflow.json';
@@ -15,8 +13,10 @@ if (!workflow || !Array.isArray(workflow.nodes)) {
 }
 const node = workflow.nodes.find((item) => item.name === 'WHATSAPP - Enviar');
 if (!node) throw new Error('WHATSAPP - Enviar node not found');
+const baseUrl = String(process.env.FILTRA_WHATSAPP_URL || '').replace(/\/$/, '');
+if (!baseUrl) throw new Error('FILTRA_WHATSAPP_URL is required');
 node.parameters.method = 'POST';
-node.parameters.url = 'https://spice-edgar-exhibits-presentations.trycloudflare.com/message/sendText/FiltraAI-Wpp';
+node.parameters.url = `={{$env.FILTRA_WHATSAPP_URL + '/message/sendText/FiltraAI-Wpp'}}`;
 node.parameters.sendHeaders = true;
 node.parameters.headerParameters = {
   parameters: [
@@ -30,8 +30,6 @@ node.parameters.jsonBody = '={{JSON.stringify({number:$json.destination,text:$js
 fs.writeFileSync(path, JSON.stringify(Array.isArray(exported) ? [workflow] : workflow));
 NODE
 
-# Import by the same stable workflow ID. n8n documents that an imported workflow
-# with an existing ID overwrites the existing definition.
 n8n import:workflow --input=/home/node/n8n-workflow.json
 n8n publish:workflow --id=48ffd71b-e851-4a92-941a-cbbd59917eb7
 
