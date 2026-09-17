@@ -1,6 +1,7 @@
 /**
- * PDF leve no cliente — sem API, sem pdfkit, sem travar o servidor.
- * Usa janela de impressão do navegador (Salvar como PDF).
+ * Relatório no cliente — sem API e sem window.open (evita bloqueio de pop-up).
+ * 1) iframe oculto + print
+ * 2) se falhar, baixa arquivo .html para o usuário abrir/imprimir
  */
 
 export type ClientReportStats = {
@@ -42,12 +43,17 @@ export type ClientReportPayload = {
   };
 };
 
+export type ReportExportResult = {
+  ok: boolean;
+  mode: 'iframe-print' | 'html-download' | 'failed';
+};
+
 function esc(s: string): string {
   return String(s || '')
-    .replace(/&/g, '\u0026amp;')
-    .replace(/</g, '\u0026lt;')
-    .replace(/>/g, '\u0026gt;')
-    .replace(/"/g, '\u0026quot;');
+    .replace(/&/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"');
 }
 
 function pct(value: number, total: number): string {
@@ -55,14 +61,7 @@ function pct(value: number, total: number): string {
   return `${Math.round((value / total) * 100)}%`;
 }
 
-/**
- * Abre uma página de impressão com o relatório.
- * No diálogo do navegador o usuário escolhe "Salvar como PDF".
- * Retorna true se a janela abriu.
- */
-export function openReportPrintWindow(payload: ClientReportPayload): boolean {
-  if (typeof window === 'undefined') return false;
-
+function buildReportHtml(payload: ClientReportPayload): string {
   const { companyName, periodLabel, stats, evolution, recommendations, labels } = payload;
   const avg = stats.average ? stats.average.toFixed(1) : '—';
   const themesHtml = stats.themes.length
@@ -80,7 +79,7 @@ export function openReportPrintWindow(payload: ClientReportPayload): boolean {
       ? `<p class="muted">${esc(labels.evolutionEmpty)}</p>`
       : `<p>${esc(labels.evolutionText)} <strong>${evolution > 0 ? '+' : ''}${evolution.toFixed(1)}</strong></p>`;
 
-  const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="${esc(payload.lang)}">
 <head>
   <meta charset="utf-8" />
@@ -109,7 +108,7 @@ export function openReportPrintWindow(payload: ClientReportPayload): boolean {
   </style>
 </head>
 <body>
-  <div class="no-print hint">Use <strong>Salvar como PDF</strong> / <strong>Save as PDF</strong> no diálogo de impressão.</div>
+  <div class="no-print hint">No diálogo de impressão, escolha <strong>Salvar como PDF</strong>.</div>
   <div class="brand">${esc(labels.brand)}</div>
   <h1>${esc(labels.title)}</h1>
   <p class="sub">${esc(companyName)} · ${esc(periodLabel)}</p>
@@ -144,18 +143,121 @@ export function openReportPrintWindow(payload: ClientReportPayload): boolean {
   ${recHtml}
 
   <footer>${esc(labels.footer)}</footer>
-  <script>
-    window.onload = function () {
-      setTimeout(function () { window.focus(); window.print(); }, 250);
-    };
-  </script>
 </body>
 </html>`;
+}
 
-  const w = window.open('', '_blank', 'noopener,noreferrer,width=820,height=900');
-  if (!w) return false;
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-  return true;
+function slugify(name: string): string {
+  return (
+    String(name || 'empresa')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/gi, '-')
+      .replace(/^-+|-+$/g, '')
+      .toLowerCase() || 'empresa'
+  );
+}
+
+function downloadHtmlFile(html: string, filename: string): boolean {
+  try {
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Impressão via iframe oculto — não usa window.open. */
+function printViaIframe(html: string): boolean {
+  try {
+    const existing = document.getElementById('filtra-report-print-frame');
+    if (existing) existing.remove();
+
+    const iframe = document.createElement('iframe');
+    iframe.id = 'filtra-report-print-frame';
+    iframe.setAttribute('title', 'Relatório');
+    iframe.style.cssText =
+      'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) {
+      iframe.remove();
+      return false;
+    }
+
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    const win = iframe.contentWindow;
+    if (!win) {
+      iframe.remove();
+      return false;
+    }
+
+    const runPrint = () => {
+      try {
+        win.focus();
+        win.print();
+      } catch {
+        /* */
+      }
+      window.setTimeout(() => {
+        try {
+          iframe.remove();
+        } catch {
+          /* */
+        }
+      }, 60_000);
+    };
+
+    // Aguarda o documento carregar
+    if (doc.readyState === 'complete') {
+      window.setTimeout(runPrint, 200);
+    } else {
+      iframe.onload = () => window.setTimeout(runPrint, 200);
+      window.setTimeout(runPrint, 500);
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Exporta o relatório sem pop-up.
+ * Preferência: iframe + Salvar como PDF.
+ * Fallback: download do HTML.
+ */
+export function openReportPrintWindow(payload: ClientReportPayload): boolean {
+  return exportReportClient(payload).ok;
+}
+
+export function exportReportClient(payload: ClientReportPayload): ReportExportResult {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return { ok: false, mode: 'failed' };
+  }
+
+  const html = buildReportHtml(payload);
+  const fileBase = `relatorio-${slugify(payload.companyName)}-${payload.periodLabel.replace(/[/\s]+/g, '-')}`;
+
+  if (printViaIframe(html)) {
+    return { ok: true, mode: 'iframe-print' };
+  }
+
+  if (downloadHtmlFile(html, `${fileBase}.html`)) {
+    return { ok: true, mode: 'html-download' };
+  }
+
+  return { ok: false, mode: 'failed' };
 }
