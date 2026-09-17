@@ -42,13 +42,25 @@ function detectBrowserLang(): Language {
   if (raw.startsWith("es")) return "es";
   if (raw.startsWith("en")) return "en";
   if (raw.startsWith("pt")) return "pt";
-  return "en";
+  return "pt";
 }
 
 function normalizeLang(v: string | null | undefined): Language | null {
   const s = String(v || "").toLowerCase().slice(0, 2);
   if (s === "pt" || s === "en" || s === "es" || s === "zh") return s;
   return null;
+}
+
+function applyDocumentLang(lang: Language) {
+  if (typeof document === "undefined") return;
+  document.documentElement.lang =
+    lang === "pt" ? "pt-BR" : lang === "zh" ? "zh-CN" : lang;
+}
+
+/** Merge com PT para chaves faltantes em en/es/zh — evita texto vazio ao trocar idioma. */
+function dictFor(lang: Language): Dictionary {
+  if (lang === "pt") return dictionaries.pt;
+  return { ...dictionaries.pt, ...(dictionaries[lang] || {}) };
 }
 
 interface LanguageContextData {
@@ -59,54 +71,67 @@ interface LanguageContextData {
   translations: Dictionary;
 }
 
-const LanguageContext = createContext<LanguageContextData>({} as LanguageContextData);
+const defaultDict = dictionaries.pt;
+const LanguageContext = createContext<LanguageContextData>({
+  language: "pt",
+  setLanguage: () => {
+    /* no-op fora do provider */
+  },
+  t: defaultDict,
+  translations: defaultDict,
+});
 
 export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Language }> = ({
   children,
   initial,
 }) => {
   const [language, setLanguageState] = useState<Language>(initial || "pt");
-  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    const stored = normalizeLang(
-      typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null
-    );
-    const next = stored || initial || detectBrowserLang();
-    setLanguageState(next);
-    setHydrated(true);
-    if (typeof document !== "undefined") {
-      document.documentElement.lang =
-        next === "pt" ? "pt-BR" : next === "zh" ? "zh-CN" : next;
+    let next: Language = initial || "pt";
+    try {
+      const stored = normalizeLang(localStorage.getItem(STORAGE_KEY));
+      next = stored || initial || detectBrowserLang();
+    } catch {
+      next = initial || detectBrowserLang();
     }
+    setLanguageState(next);
+    applyDocumentLang(next);
   }, [initial]);
 
   const setLanguage = useCallback((lang: Language) => {
-    setLanguageState(lang);
+    const normalized = normalizeLang(lang) || "pt";
+    setLanguageState(normalized);
     try {
-      localStorage.setItem(STORAGE_KEY, lang);
+      localStorage.setItem(STORAGE_KEY, normalized);
     } catch {
       /* */
     }
-    if (typeof document !== "undefined") {
-      document.documentElement.lang =
-        lang === "pt" ? "pt-BR" : lang === "zh" ? "zh-CN" : lang;
-    }
+    applyDocumentLang(normalized);
   }, []);
 
-  const t = useMemo(() => dictionaries[language] || dictionaries.pt, [language]);
+  const t = useMemo(() => dictFor(language), [language]);
 
   const value = useMemo(
     () => ({
-      language: hydrated ? language : language,
+      language,
       setLanguage,
       t,
       translations: t,
     }),
-    [language, setLanguage, t, hydrated]
+    [language, setLanguage, t]
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
 
-export const useLanguage = () => useContext(LanguageContext);
+export const useLanguage = (): LanguageContextData => {
+  const ctx = useContext(LanguageContext);
+  // Sempre retorna objeto válido (nunca undefined)
+  return ctx || {
+    language: "pt" as Language,
+    setLanguage: () => {},
+    t: defaultDict,
+    translations: defaultDict,
+  };
+};
