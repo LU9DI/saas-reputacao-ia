@@ -32,9 +32,12 @@ const dictionaries: Record<Language, Dictionary> = {
   zh: zh as Dictionary,
 };
 
-/** Única fonte de verdade no cliente — sem backend. */
-export const STORAGE_KEY = "filtra_lang";
-const COOKIE_KEY = "filtra_lang";
+/**
+ * v2: ignora auto-detecção antiga que gravava 'en' pelo idioma do Chrome.
+ * Padrão do produto = português.
+ */
+export const STORAGE_KEY = "filtra_lang_v2";
+const COOKIE_KEY = "filtra_lang_v2";
 const EVENT_NAME = "filtra:lang";
 const CHANNEL_NAME = "filtra_lang_channel";
 
@@ -47,13 +50,14 @@ export function normalizeLang(v: string | null | undefined): Language | null {
   return null;
 }
 
+/** Só para referência — NÃO usado no boot automático. */
 export function detectBrowserLang(): Language {
   if (typeof navigator === "undefined") return "pt";
   const raw = (navigator.language || (navigator as any).userLanguage || "pt").toLowerCase();
+  if (raw.startsWith("pt")) return "pt";
   if (raw.startsWith("zh")) return "zh";
   if (raw.startsWith("es")) return "es";
   if (raw.startsWith("en")) return "en";
-  if (raw.startsWith("pt")) return "pt";
   return "pt";
 }
 
@@ -76,7 +80,7 @@ function writeCookie(lang: Language) {
 function readCookie(): Language | null {
   if (typeof document === "undefined") return null;
   try {
-    const m = document.cookie.match(/(?:^|;\s*)filtra_lang=([a-z]{2})/i);
+    const m = document.cookie.match(/(?:^|;\s*)filtra_lang_v2=([a-z]{2})/i);
     return m ? normalizeLang(m[1]) : null;
   } catch {
     return null;
@@ -92,12 +96,8 @@ function pickValue(dict: Dictionary | undefined, key: string): string | null {
 }
 
 /**
- * Fallback dinâmico de chaves:
- *   1) idioma atual
- *   2) inglês (se não for pt/en)
- *   3) português (base)
- *   4) fallback explícito
- *   5) própria chave
+ * Fallback: idioma atual → português (sempre) → fallback explícito → chave.
+ * Nunca força inglês quando o idioma é pt.
  */
 export function resolveTranslation(
   key: string,
@@ -107,11 +107,7 @@ export function resolveTranslation(
   const primary = pickValue(dictionaries[lang], key);
   if (primary) return primary;
 
-  if (lang !== "en" && lang !== "pt") {
-    const enVal = pickValue(dictionaries.en, key);
-    if (enVal) return enVal;
-  }
-
+  // Base do produto: português
   if (lang !== "pt") {
     const ptVal = pickValue(dictionaries.pt, key);
     if (ptVal) return ptVal;
@@ -123,31 +119,21 @@ export function resolveTranslation(
   return key;
 }
 
-/**
- * Proxy: t.qualquer_chave usa resolveTranslation em tempo de acesso.
- * Assim `t.chave_inexistente` nunca quebra a UI.
- */
 export function dictFor(lang: Language): Dictionary {
   const target = dictionaries[lang] || dictionaries.pt;
   return new Proxy(target, {
     get(_obj, prop) {
       if (typeof prop !== "string") return undefined;
-      // evita ruído de libs que leem Symbol.toStringTag etc.
       if (prop === "then" || prop === "toJSON" || prop === "$$typeof") return undefined;
       return resolveTranslation(prop, lang);
     },
     has(_obj, prop) {
       if (typeof prop !== "string") return false;
-      return (
-        prop in dictionaries.pt ||
-        prop in (dictionaries[lang] || {}) ||
-        prop in dictionaries.en
-      );
+      return prop in dictionaries.pt || prop in (dictionaries[lang] || {});
     },
     ownKeys() {
       const keys = new Set([
         ...Object.keys(dictionaries.pt),
-        ...Object.keys(dictionaries.en),
         ...Object.keys(dictionaries[lang] || {}),
       ]);
       return [...keys];
@@ -160,7 +146,6 @@ export function dictFor(lang: Language): Dictionary {
   }) as Dictionary;
 }
 
-/** Traduz fora de componentes React (só cliente). */
 export function translateKey(
   key: string,
   lang?: Language,
@@ -169,7 +154,7 @@ export function translateKey(
   const resolved =
     lang ||
     (typeof window !== "undefined"
-      ? normalizeLang(localStorage.getItem(STORAGE_KEY)) || detectBrowserLang()
+      ? normalizeLang(localStorage.getItem(STORAGE_KEY)) || "pt"
       : "pt");
   return resolveTranslation(key, resolved, fallback);
 }
@@ -201,11 +186,8 @@ function persistLang(lang: Language) {
 interface LanguageContextData {
   language: Language;
   setLanguage: (lang: Language) => void;
-  /** Dicionário com fallback dinâmico (t.login). */
   t: Dictionary;
-  /** Função segura: tx('login', 'Entrar'). */
   tx: (key: string, fallback?: string) => string;
-  /** alias legado */
   translations: Dictionary;
 }
 
@@ -222,6 +204,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Languag
   children,
   initial,
 }) => {
+  // Sempre inicia em PT (produto BR). Só muda após escolha explícita salva.
   const [language, setLanguageState] = useState<Language>(initial || "pt");
 
   useEffect(() => {
@@ -229,13 +212,19 @@ export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Languag
     try {
       const stored = normalizeLang(localStorage.getItem(STORAGE_KEY));
       const cookie = readCookie();
-      next = stored || cookie || initial || detectBrowserLang();
+      // Só usa o que o usuário escolheu e salvou — nunca o idioma do Chrome
+      next = stored || cookie || initial || "pt";
     } catch {
-      next = initial || detectBrowserLang();
+      next = initial || "pt";
     }
     setLanguageState(next);
     applyDocumentLang(next);
-    writeCookie(next);
+    // limpa chave antiga que forçava inglês
+    try {
+      localStorage.removeItem("filtra_lang");
+    } catch {
+      /* */
+    }
   }, [initial]);
 
   useEffect(() => {
