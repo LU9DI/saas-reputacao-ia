@@ -212,7 +212,7 @@ function emptyPainelPayload(empresa: any, reason?: string) {
         : [],
       mostrar_graficos: true,
       mostrar_tendencia: trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
-      mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo),
+      mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo'),
       mostrar_crise: true,
       mostrar_sentimento: true,
       mostrar_ia_respostas: tem_ia,
@@ -397,7 +397,6 @@ export function mountEmpresaRoutes(app: Express) {
         });
       }
 
-      // Nunca derrubar o painel com 500 — fallback degradado
       try {
         const db = getDb();
         try {
@@ -561,7 +560,7 @@ export function mountEmpresaRoutes(app: Express) {
             whatsapp_url: linkWhatsapp(wpp),
             locale: empresa.locale || 'pt',
           },
-          reviews: reviews.slice(0, 200),
+          reviews: reais,
           metricas: {
             total,
             media,
@@ -572,21 +571,17 @@ export function mountEmpresaRoutes(app: Express) {
             alerta_crise: crises_24h >= 3,
             crises_24h,
             distribuicao: dist,
-            top_tags: tem_ia ? top_tags : [],
+            top_tags,
             taxa_positiva: total ? Math.round((positivas / total) * 100) : 0,
             serie_14d,
-            testes_excluidos: reviews.filter((r) => r.is_test).length,
+            testes_excluidos: reviews.length - reais.length,
             sentimento_mix,
-            sentimento_score_medio:
-              scoreN > 0 ? Math.round((scoreSum / scoreN) * 100) / 100 : null,
+            sentimento_score_medio: scoreN ? Math.round((scoreSum / scoreN) * 100) / 100 : null,
             feedback_usados,
             feedback_limite,
             tokens_usados: token_usados,
             tokens_limite: token_limite,
-            tokens_pct:
-              token_limite > 0
-                ? Math.min(100, Math.round((token_usados / token_limite) * 100))
-                : 0,
+            tokens_pct: token_limite > 0 ? Math.min(100, Math.round((token_usados / token_limite) * 100)) : 0,
           },
           dashboard: {
             nivel,
@@ -598,9 +593,8 @@ export function mountEmpresaRoutes(app: Express) {
               ? PLANOS_OFICIAIS.map((p) => ({ key: p, label: planLabel(p) }))
               : [],
             mostrar_graficos: true,
-            mostrar_tendencia:
-              trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
-            mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo),
+            mostrar_tendencia: trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
+            mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo'),
             mostrar_crise: true,
             mostrar_sentimento: true,
             mostrar_ia_respostas: tem_ia,
@@ -628,8 +622,8 @@ export function mountEmpresaRoutes(app: Express) {
           },
         });
       } catch (e: any) {
-        console.error('[painel] CRITICAL fallback:', e?.message || e, e?.stack?.split('\n').slice(0, 8));
-        return res.status(200).json(emptyPainelPayload(empresa, e?.message || 'fallback'));
+        console.error('painel error:', e?.message || e);
+        return res.json(emptyPainelPayload(empresa, e?.message || 'degraded'));
       }
     })
   );
