@@ -2,6 +2,8 @@
 set -eu
 
 # Normalize and import the Filtra.IA Telegram workflow.
+# The visible production workflow is PC9xbunz6ZsUSNS3; keep the
+# legacy imported workflow unpublished so the webhook cannot hit an old copy.
 node <<'NODE'
 const fs = require('fs');
 const path = '/home/node/n8n-workflow.json';
@@ -11,7 +13,7 @@ if (!workflow || !Array.isArray(workflow.nodes)) {
   throw new Error('Invalid n8n workflow export: nodes array not found');
 }
 
-workflow.id = 'xpXhhPN5dTbdhg1X';
+workflow.id = 'PC9xbunz6ZsUSNS3';
 workflow.name = 'Filtra.IA - Relatório + Telegram';
 workflow.active = true;
 workflow.isArchived = false;
@@ -63,7 +65,9 @@ for (const connection of Object.values(workflow.connections)) {
 fs.writeFileSync(path, JSON.stringify(Array.isArray(exported) ? [workflow] : workflow));
 NODE
 
+# The old imported workflow must not remain published with the same webhook path.
+n8n unpublish:workflow --id=xpXhhPN5dTbdhg1X || true
 n8n import:workflow --input=/home/node/n8n-workflow.json
-n8n publish:workflow --id=xpXhhPN5dTbdhg1X
+n8n publish:workflow --id=PC9xbunz6ZsUSNS3
 
 exec n8n start
