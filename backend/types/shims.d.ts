@@ -5,6 +5,7 @@ declare module 'sqlite' {
     all: (...args: any[]) => Promise<any[]>;
     run: (...args: any[]) => Promise<any>;
     exec: (...args: any[]) => Promise<any>;
+    close: (...args: any[]) => Promise<void>;
   };
   export function open(config: any): Promise<Database>;
 }
