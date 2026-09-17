@@ -38,9 +38,7 @@ function applyRule(
 ): { value?: unknown; error?: string } {
   let value = raw;
 
-  if (rule.transform) {
-    value = rule.transform(value);
-  }
+  if (rule.transform) value = rule.transform(value);
 
   const empty =
     value === undefined ||
@@ -48,8 +46,12 @@ function applyRule(
     (typeof value === 'string' && value.trim() === '');
 
   if (empty) {
-    if (rule.required) {
-      return { error: rule.message || `${key} é obrigatório.` };
+    if (rule.required) return { error: rule.message || `${key} é obrigatório.` };
+    // Regras customizadas opcionais ainda precisam ser executadas.
+    // Ex.: nota ≤ 3 exige comentário/WhatsApp mesmo quando esses campos estão vazios.
+    if (rule.custom) {
+      const err = rule.custom(undefined, body);
+      if (err) return { error: err };
     }
     return { value: undefined };
   }
@@ -146,28 +148,19 @@ function applyRule(
 
 export function validateBody(schema: Schema) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const body = (req.body && typeof req.body === 'object' ? req.body : {}) as Record<
-      string,
-      unknown
-    >;
+    const body = (req.body && typeof req.body === 'object' ? req.body : {}) as Record<string, unknown>;
     const fields: Record<string, string> = {};
     const out: Record<string, unknown> = {};
 
     for (const [key, rule] of Object.entries(schema)) {
       const result = applyRule(key, rule, body[key], body);
-      if (result.error) {
-        fields[key] = result.error;
-      } else if (result.value !== undefined) {
-        out[key] = result.value;
-      }
+      if (result.error) fields[key] = result.error;
+      else if (result.value !== undefined) out[key] = result.value;
     }
 
     if (Object.keys(fields).length > 0) {
       const first = Object.values(fields)[0];
-      return res.status(400).json({
-        error: first,
-        fields,
-      });
+      return res.status(400).json({ error: first, fields });
     }
 
     (req as ValidatedRequest).validated = out;
@@ -178,13 +171,7 @@ export function validateBody(schema: Schema) {
 
 export const schemaTrialAtivar: Schema = {
   cnpj: { required: true, type: 'tax_id' },
-  nome_empresa: {
-    required: true,
-    type: 'string',
-    min: 2,
-    max: 120,
-    message: 'Nome da empresa inválido.',
-  },
+  nome_empresa: { required: true, type: 'string', min: 2, max: 120, message: 'Nome da empresa inválido.' },
   email: { required: true, type: 'email' },
   senha: { required: true, type: 'password_empresa' },
   google_review_url: { required: false, type: 'url', max: 500 },
@@ -193,30 +180,10 @@ export const schemaTrialAtivar: Schema = {
 
 /** Login: Tax ID (campo cnpj) OU e-mail + senha. */
 export const schemaLoginEmpresa: Schema = {
-  cnpj: {
-    required: false,
-    type: 'string',
-    max: 120,
-    transform: (v) => String(v ?? '').trim(),
-  },
-  email: {
-    required: false,
-    type: 'string',
-    max: 200,
-    transform: (v) => String(v ?? '').trim().toLowerCase(),
-  },
-  login: {
-    required: false,
-    type: 'string',
-    max: 200,
-    transform: (v) => String(v ?? '').trim(),
-  },
-  senha: {
-    required: true,
-    type: 'string',
-    min: 1,
-    message: 'Senha é obrigatória.',
-  },
+  cnpj: { required: false, type: 'string', max: 120, transform: (v) => String(v ?? '').trim() },
+  email: { required: false, type: 'string', max: 200, transform: (v) => String(v ?? '').trim().toLowerCase() },
+  login: { required: false, type: 'string', max: 200, transform: (v) => String(v ?? '').trim() },
+  senha: { required: true, type: 'string', min: 1, message: 'Senha é obrigatória.' },
 };
 
 /** Pós-schema: exige pelo menos um identificador. */
@@ -224,29 +191,17 @@ export function ensureLoginIdentifier(req: Request, res: Response, next: NextFun
   const body = req.body || {};
   const id = String(body.login || body.email || body.cnpj || '').trim();
   if (!id) {
-    return res.status(400).json({
-      error: 'Informe CNPJ/Tax ID ou e-mail e a senha.',
-      fields: { login: 'Obrigatório' },
-    });
+    return res.status(400).json({ error: 'Informe CNPJ/Tax ID ou e-mail e a senha.', fields: { login: 'Obrigatório' } });
   }
   if (!isEmailLike(id) && id.replace(/[^A-Za-z0-9]/g, '').length < 5) {
-    return res.status(400).json({
-      error: 'Identificador inválido. Use e-mail ou Tax ID (mín. 5 caracteres).',
-    });
+    return res.status(400).json({ error: 'Identificador inválido. Use e-mail ou Tax ID (mín. 5 caracteres).' });
   }
   next();
 }
 
 export const schemaReview: Schema = {
   name: { required: false, type: 'string', max: 100 },
-  rating: {
-    required: true,
-    type: 'number',
-    integer: true,
-    min: 1,
-    max: 5,
-    message: 'Rating deve ser inteiro entre 1 e 5.',
-  },
+  rating: { required: true, type: 'number', integer: true, min: 1, max: 5, message: 'Rating deve ser inteiro entre 1 e 5.' },
   comment: {
     required: false,
     type: 'string',
@@ -254,9 +209,7 @@ export const schemaReview: Schema = {
     custom: (v, body) => {
       const rating = Number(body.rating);
       const comment = String(v ?? '').trim();
-      if (rating <= 3 && !comment) {
-        return 'Comentário obrigatório para notas ≤ 3.';
-      }
+      if (rating <= 3 && !comment) return 'Comentário obrigatório para notas ≤ 3.';
       return null;
     },
   },
@@ -268,9 +221,7 @@ export const schemaReview: Schema = {
       const rating = Number(body.rating);
       if (rating > 3) return null;
       const w = String(v ?? body.whatsapp ?? '').replace(/\D/g, '');
-      if (w.length < 8) {
-        return 'WhatsApp/telefone do cliente é obrigatório para notas ≤ 3.';
-      }
+      if (w.length < 8) return 'WhatsApp/telefone do cliente é obrigatório para notas ≤ 3.';
       return null;
     },
   },
@@ -297,18 +248,7 @@ export const schemaCheckout: Schema = {
     type: 'string',
     transform: (v) => String(v ?? '').toLowerCase().trim(),
     custom: (v) => {
-      const ok = [
-        'inicial',
-        'inicial-anual',
-        'pro',
-        'pro-anual',
-        'ultra',
-        'ultra-anual',
-        'corporativo',
-        'corporativo-anual',
-        'rei',
-        'rei-anual',
-      ].includes(String(v));
+      const ok = ['inicial', 'inicial-anual', 'pro', 'pro-anual', 'ultra', 'ultra-anual', 'corporativo', 'corporativo-anual', 'rei', 'rei-anual'].includes(String(v));
       return ok ? null : 'Plano inválido.';
     },
   },
