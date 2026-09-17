@@ -52,3 +52,5 @@ jobs:
           git diff --cached --check
           git commit -m "chore: remove redundant dashboard KPI cards"
           git push origin main
+
+# one-time trigger
