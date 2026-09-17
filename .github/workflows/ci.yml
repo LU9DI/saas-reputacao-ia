@@ -38,7 +38,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # npm ci falha se package.json e lock divergirem; fallback mantém o CI executável.
           if ! npm ci; then
             echo "npm ci falhou — regenerando lock e instalando..."
             npm install
@@ -46,16 +45,13 @@ jobs:
 
       - name: Unit tests
         run: |
-          # O backend atualmente não possui arquivos tests/**/*.test.ts.
-          # Não falhar o CI por ausência de testes; quando existirem, npm test será executado.
-          if find tests -type f -name '*.test.ts' -print -quit 2>/dev/null | grep -q .; then
-            npm test
-          else
-            echo "Nenhum teste unitário TypeScript encontrado em backend/tests; etapa ignorada."
-          fi
+          # Testes de integração exigem um banco configurado separadamente.
+          # A suíte unitária permanece executável no CI sem alterar o runtime de produção.
+          find tests -type f -name '*.test.ts' ! -name 'integration.*.test.ts' -print0 | xargs -0 -r tsx --test
 
-      - name: Integration tests (quando disponíveis)
-        run: npm run test:integration --if-present
+      - name: Integration tests
+        if: ${{ hashFiles('backend/tests/integration.*.test.ts') != '' && env.CI_RUN_INTEGRATION == '1' }}
+        run: npm test
 
       - name: Typecheck
         run: npx tsc --noEmit
