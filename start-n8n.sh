@@ -2,7 +2,7 @@
 set -eu
 
 # Normalize the WhatsApp HTTP Request node before importing the versioned workflow.
-# Evolution API expects the public base URL, the apikey header, and number/text fields.
+# Evolution API expects the current public Quick Tunnel URL, the apikey header, and number/text fields.
 node <<'NODE'
 const fs = require('fs');
 const path = '/home/node/n8n-workflow.json';
@@ -13,10 +13,9 @@ if (!workflow || !Array.isArray(workflow.nodes)) {
 }
 const node = workflow.nodes.find((item) => item.name === 'WHATSAPP - Enviar');
 if (!node) throw new Error('WHATSAPP - Enviar node not found');
-const baseUrl = String(process.env.FILTRA_WHATSAPP_URL || '').replace(/\/$/, '');
-if (!baseUrl) throw new Error('FILTRA_WHATSAPP_URL is required');
+const baseUrl = 'https://anticipated-colleges-treasure-jewel.trycloudflare.com';
 node.parameters.method = 'POST';
-node.parameters.url = `={{$env.FILTRA_WHATSAPP_URL + '/message/sendText/FiltraAI-Wpp'}}`;
+node.parameters.url = `${baseUrl}/message/sendText/FiltraAI-Wpp`;
 node.parameters.sendHeaders = true;
 node.parameters.headerParameters = {
   parameters: [
