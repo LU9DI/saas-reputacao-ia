@@ -46,6 +46,19 @@ if (workflow.connections['WHATSAPP - Enviar']) {
   delete workflow.connections['WHATSAPP - Enviar'];
 }
 
+// Update every connection target that still references the old WhatsApp node.
+for (const connection of Object.values(workflow.connections)) {
+  for (const outputs of Object.values(connection)) {
+    if (!Array.isArray(outputs)) continue;
+    for (const branch of outputs) {
+      if (!Array.isArray(branch)) continue;
+      for (const link of branch) {
+        if (link && link.node === 'WHATSAPP - Enviar') link.node = 'TELEGRAM - Enviar';
+      }
+    }
+  }
+}
+
 fs.writeFileSync(path, JSON.stringify(Array.isArray(exported) ? [workflow] : workflow));
 NODE
 
