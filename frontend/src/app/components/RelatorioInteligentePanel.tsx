@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { openReportPrintWindow } from '../utils/reportPdfClient';
+import { exportReportClient } from '../utils/reportPdfClient';
 
 type Review = {
   rating?: number | string | null;
@@ -93,8 +93,7 @@ function uiCopy(lang: string) {
   if (lang === 'en') {
     return {
       title: 'Intelligent Report',
-      subtitle:
-        'Based on data available right now. PDF opens in a print window — choose Save as PDF.',
+      subtitle: 'Based on data available right now. Click Export PDF and choose Save as PDF.',
       month: 'Period',
       pdfLang: 'PDF language',
       exportPdf: 'Export PDF',
@@ -129,18 +128,15 @@ function uiCopy(lang: string) {
       recNegSentiment:
         'Watch negative sentiment in the next reviews to see if the pattern continues.',
       recTheme: (name: string) => `Monitor the theme “${name}”, seen most often in this period.`,
-      footer:
-        'Report based on data available at the moment. PDF is generated in the browser (no server wait).',
+      footer: 'Report based on data available at the moment. PDF is generated in the browser.',
       errPeriod: 'Invalid period for export.',
-      errFail: 'Could not open the PDF window.',
-      errPopup: 'Pop-up blocked. Allow pop-ups for this site and try again.',
+      errFail: 'Could not export. Try again or use another browser.',
     };
   }
   if (lang === 'es') {
     return {
       title: 'Informe Inteligente',
-      subtitle:
-        'Según los datos disponibles. El PDF se abre en la ventana de impresión — elija Guardar como PDF.',
+      subtitle: 'Según los datos disponibles. Pulse Exportar PDF y elija Guardar como PDF.',
       month: 'Período',
       pdfLang: 'Idioma del PDF',
       exportPdf: 'Exportar PDF',
@@ -176,17 +172,15 @@ function uiCopy(lang: string) {
       recNegSentiment:
         'Siga de cerca el sentimiento negativo en las próximas reseñas para ver si el patrón se repite.',
       recTheme: (name: string) => `Monitoree el tema “${name}”, el más frecuente del período.`,
-      footer:
-        'Informe según los datos disponibles. El PDF se genera en el navegador (sin esperar al servidor).',
+      footer: 'Informe según los datos disponibles. PDF generado en el navegador.',
       errPeriod: 'Período no válido para exportación.',
-      errFail: 'No se pudo abrir la ventana del PDF.',
-      errPopup: 'Ventana emergente bloqueada. Permita pop-ups e intente de nuevo.',
+      errFail: 'No se pudo exportar. Inténtelo de nuevo u otro navegador.',
     };
   }
   if (lang === 'zh') {
     return {
       title: '智能报告',
-      subtitle: '基于当前数据。PDF 在打印窗口中打开 — 选择“另存为 PDF”。',
+      subtitle: '基于当前数据。点击导出 PDF，并在打印中选择“另存为 PDF”。',
       month: '周期',
       pdfLang: 'PDF 语言',
       exportPdf: '导出 PDF',
@@ -217,16 +211,15 @@ function uiCopy(lang: string) {
       recKeepPositive: '保持带来好评的服务标准，并作为参考。',
       recNegSentiment: '持续关注负面情绪，确认是否形成趋势。',
       recTheme: (name: string) => `关注本周期出现最多的主题「${name}」。`,
-      footer: '报告基于当前数据。PDF 在浏览器中生成（不等待服务器）。',
+      footer: '报告基于当前数据。PDF 在浏览器中生成。',
       errPeriod: '导出周期无效。',
-      errFail: '无法打开 PDF 窗口。',
-      errPopup: '弹窗被拦截。请允许本站弹窗后重试。',
+      errFail: '无法导出，请重试或更换浏览器。',
     };
   }
   return {
     title: 'Relatório Inteligente',
     subtitle:
-      'Conforme os dados disponíveis no momento. O PDF abre na impressão do navegador — escolha Salvar como PDF.',
+      'Conforme os dados disponíveis no momento. Clique em Exportar PDF e escolha Salvar como PDF na impressão.',
     month: 'Período',
     pdfLang: 'Idioma do PDF',
     exportPdf: 'Exportar PDF',
@@ -265,8 +258,7 @@ function uiCopy(lang: string) {
     footer:
       'Relatório conforme os dados disponíveis no momento. PDF gerado no navegador (sem esperar o servidor).',
     errPeriod: 'Período inválido para exportação.',
-    errFail: 'Não foi possível abrir a janela do PDF.',
-    errPopup: 'Pop-up bloqueado. Permita pop-ups neste site e tente de novo.',
+    errFail: 'Não foi possível exportar. Tente novamente ou use outro navegador.',
   };
 }
 
@@ -391,7 +383,7 @@ export function RelatorioInteligentePanel({
       }
       const themesLabel =
         lang === 'en' ? 'Themes' : lang === 'es' ? 'Temas' : lang === 'zh' ? '主题' : 'Temas';
-      const opened = openReportPrintWindow({
+      const result = exportReportClient({
         companyName: String(empresa.nome_empresa || 'Empresa'),
         periodLabel: labelMes(mesReport, lang),
         lang,
@@ -419,7 +411,7 @@ export function RelatorioInteligentePanel({
           brand: 'Filtra.AI',
         },
       });
-      if (!opened) setDownloadError(copy.errPopup);
+      if (!result.ok) setDownloadError(copy.errFail);
     } catch (error: unknown) {
       setDownloadError(error instanceof Error ? error.message : copy.errFail);
     } finally {
