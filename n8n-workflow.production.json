@@ -1,0 +1,1 @@
+{"workflow_id":"PC9xbunz6ZsUSNS3","name":"Filtra.IA - Relatório + Telegram","webhook":"POST /webhook/filtra-relatorio-v3","channels":["telegram","email"]}
