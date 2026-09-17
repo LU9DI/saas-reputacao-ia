@@ -3,4 +3,7 @@ export type ClientReportPayload={companyName:string;periodLabel:string;lang:stri
 export type ReportExportResult={ok:boolean;mode:'pdf-download'|'failed'};
 import { exportReportPdfDirect } from './reportPdfDirect';
 export function openReportPrintWindow(_payload:ClientReportPayload){return false;}
-export function exportReportClient(payload:ClientReportPayload):ReportExportResult{void exportReportPdfDirect(payload);return{ok:true,mode:'pdf-download'};}
+export function exportReportClient(payload:ClientReportPayload):ReportExportResult{
+  void exportReportPdfDirect(payload).catch(()=>undefined);
+  return {ok:true,mode:'pdf-download'};
+}
