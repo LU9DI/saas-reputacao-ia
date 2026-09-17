@@ -38,10 +38,6 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     thanks_title: 'Obrigado pelo feedback',
     thanks_body: 'Sua mensagem foi registrada em privado. A equipe vai analisar com prioridade.',
     loading: 'Carregando…',
-    staff_blocked_title: 'Acesso restrito',
-    staff_blocked_body:
-      'Contas da empresa não podem enviar avaliações. Este formulário é exclusivo do cliente final (anti-fraude).',
-    go_panel: 'Ir ao painel',
   },
   en: {
     subtitle: 'How was your experience with us today?',
@@ -71,10 +67,6 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     thanks_title: 'Thank you for your feedback',
     thanks_body: 'Your message was saved privately. The team will review it soon.',
     loading: 'Loading…',
-    staff_blocked_title: 'Restricted access',
-    staff_blocked_body:
-      'Business accounts cannot submit reviews. This form is for end customers only (anti-fraud).',
-    go_panel: 'Go to dashboard',
   },
   es: {
     subtitle: '¿Cómo fue su experiencia con nosotros hoy?',
@@ -104,10 +96,6 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     thanks_title: 'Gracias por tu feedback',
     thanks_body: 'Tu mensaje quedó registrado en privado. El equipo lo revisará pronto.',
     loading: 'Cargando…',
-    staff_blocked_title: 'Acceso restringido',
-    staff_blocked_body:
-      'Las cuentas de la empresa no pueden enviar evaluaciones. Este formulario es solo para el cliente final.',
-    go_panel: 'Ir al panel',
   },
   zh: {
     subtitle: '您今天的体验如何？',
@@ -137,22 +125,8 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     thanks_title: '感谢您的反馈',
     thanks_body: '您的消息已私下记录，团队将尽快处理。',
     loading: '加载中…',
-    staff_blocked_title: '访问受限',
-    staff_blocked_body: '商家账号不能提交评价。此表单仅供最终客户使用。',
-    go_panel: '前往控制台',
   },
 };
-
-function decodeJwtPayload(token: string): { empresa_id?: string; role?: string } | null {
-  try {
-    const part = token.split('.')[1];
-    if (!part) return null;
-    const json = atob(part.replace(/-/g, '+').replace(/_/g, '/'));
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-}
 
 export default function PaginaAvaliacao() {
   const params = useParams();
@@ -180,32 +154,9 @@ export default function PaginaAvaliacao() {
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [googleReviewUrl, setGoogleReviewUrl] = useState('');
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
-  const [staffBlocked, setStaffBlocked] = useState(false);
 
   const totalStars = Array.from({ length: 5 }, (_, i) => i + 1);
   const apiUrl = () => getEnv('NEXT_PUBLIC_API_URL');
-
-  useEffect(() => {
-    try {
-      const token = localStorage.getItem('filtra_token');
-      if (!token) {
-        setStaffBlocked(false);
-        return;
-      }
-      const payload = decodeJwtPayload(token);
-      if (!payload) return;
-      if (payload.role === 'admin' || payload.empresa_id === 'admin') {
-        setStaffBlocked(true);
-        return;
-      }
-      if (payload.empresa_id) {
-        // Qualquer sessão de empresário bloqueia o formulário público
-        setStaffBlocked(true);
-      }
-    } catch {
-      setStaffBlocked(false);
-    }
-  }, [empresaId]);
 
   const validarAcesso = async () => {
     setErroValidacao(false);
@@ -256,7 +207,6 @@ export default function PaginaAvaliacao() {
   };
 
   const handleStarClick = (selectedRating: number) => {
-    if (staffBlocked) return;
     setRating(selectedRating);
     setErro('');
     if (selectedRating >= 4) {
@@ -276,7 +226,6 @@ export default function PaginaAvaliacao() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (staffBlocked) return;
     if (!rating || rating > 3) return;
     const digits = clientWhatsapp.replace(/\D/g, '');
     if (digits.length < 8 || digits.length > 15) {
@@ -325,23 +274,6 @@ export default function PaginaAvaliacao() {
       <LanguageSwitcher compact />
     </div>
   );
-
-  if (staffBlocked) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-zinc-100 p-6">
-        <LangBar />
-        <BrandTop />
-        <h1 className="text-xl font-bold mb-3">{tx('staff_blocked_title')}</h1>
-        <p className="text-zinc-400 text-center max-w-md mb-6">{tx('staff_blocked_body')}</p>
-        <a
-          href={`/painel/${empresaId}`}
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold"
-        >
-          {tx('go_panel')}
-        </a>
-      </div>
-    );
-  }
 
   if (erroValidacao)
     return (
