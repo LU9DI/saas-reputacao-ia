@@ -65,7 +65,7 @@ import { backfillSentiment, countMissingSentiment } from './services/sentimentBa
 
 assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
-const BUILD = { version: '1.1.5', marker: 'legal-aceite-v1', started_at: new Date().toISOString() };
+const BUILD = { version: '1.1.6', marker: 'intelligent-report-v2', started_at: new Date().toISOString() };
 const app = express();
 app.set('trust proxy', 1);
 app.use(requestIdMiddleware);
