@@ -25,6 +25,11 @@ telegramNode.parameters.sendBody = true;
 telegramNode.parameters.specifyBody = 'json';
 telegramNode.parameters.jsonBody = '={{JSON.stringify({chat_id:$json.destination,text:$json.message})}}';
 
+if (workflow.connections['WHATSAPP - Enviar']) {
+  workflow.connections['TELEGRAM - Enviar'] = workflow.connections['WHATSAPP - Enviar'];
+  delete workflow.connections['WHATSAPP - Enviar'];
+}
+
 const router = workflow.nodes.find((item) => item.name === 'Roteador por canal');
 if (!router) throw new Error('Roteador por canal node not found');
 const telegramRule = router.parameters.rules.values.find((rule) => rule.conditions?.conditions?.some((condition) => condition.rightValue === 'whatsapp'));
