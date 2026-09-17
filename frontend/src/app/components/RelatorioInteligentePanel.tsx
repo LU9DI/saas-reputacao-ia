@@ -26,17 +26,36 @@ type Props = {
   api: string;
   authHeaders: (json?: boolean) => HeadersInit;
   panelData?: PanelData | null;
-  mesReport: string;
-  langReport: string;
-  mesesOpcoes: string[];
-  labelMes: (m: string) => string;
-  onMesChange: (m: string) => void;
-  onLangChange: (l: string) => void;
-  language: string;
 };
 
 const REPORT_LANGS = new Set(['pt', 'en', 'es', 'zh']);
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+function currentMonth(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function buildMonthOptions(): string[] {
+  const out: string[] = [];
+  const d = new Date();
+  d.setDate(1);
+  for (let i = 0; i < 12; i++) {
+    out.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+    d.setMonth(d.getMonth() - 1);
+  }
+  return out;
+}
+
+function labelMes(m: string): string {
+  if (!MONTH_RE.test(m)) return m;
+  const [y, mo] = m.split('-');
+  const names = [
+    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
+  ];
+  return `${names[Number(mo) - 1]}/${y}`;
+}
 
 function toFiniteNumber(value: unknown): number | null {
   const n = typeof value === 'number' ? value : Number(value);
@@ -79,14 +98,10 @@ export function RelatorioInteligentePanel({
   api,
   authHeaders,
   panelData,
-  mesReport,
-  langReport,
-  mesesOpcoes,
-  labelMes,
-  onMesChange,
-  onLangChange,
-  language,
 }: Props) {
+  const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
+  const [mesReport, setMesReport] = useState(currentMonth);
+  const [langReport, setLangReport] = useState('pt');
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
 
@@ -104,7 +119,7 @@ export function RelatorioInteligentePanel({
   const selectedMonth = MONTH_RE.test(mesReport) ? mesReport : '';
 
   const monthReviews = useMemo(() => {
-    if (!selectedMonth) return [];
+    if (!selectedMonth) return reviews;
     return reviews.filter((review) => reviewDate(review).slice(0, 7) === selectedMonth);
   }, [reviews, selectedMonth]);
 
@@ -160,7 +175,7 @@ export function RelatorioInteligentePanel({
       .map((point: any) => ({
         total: Number(point.total),
         average: toFiniteNumber(point.media),
-        date: String(point.data || point.date || ''),
+        date: String(point.data || point.date || point.dia || ''),
       }))
       .filter((point) => point.average !== null);
 
@@ -179,19 +194,29 @@ export function RelatorioInteligentePanel({
   const recommendations = useMemo(() => {
     const out: string[] = [];
     if (!stats.total) {
-      out.push('Ainda não há avaliações neste período. Gere novas avaliações para construir uma leitura mais representativa.');
+      out.push(
+        'Ainda não há avaliações neste período. Gere novas avaliações para construir uma leitura mais representativa.'
+      );
     } else {
       if (stats.critical > stats.positive) {
-        out.push('Priorize o tratamento das avaliações de até 3 estrelas e identifique os problemas recorrentes antes de buscar novas avaliações.');
+        out.push(
+          'Priorize o tratamento das avaliações de até 3 estrelas e identifique os problemas recorrentes antes de buscar novas avaliações.'
+        );
       }
       if (stats.average > 0 && stats.average < 4) {
-        out.push('Analise as causas das notas baixas e transforme os principais motivos de reclamação em ações operacionais.');
+        out.push(
+          'Analise as causas das notas baixas e transforme os principais motivos de reclamação em ações operacionais.'
+        );
       }
       if (stats.positive >= stats.critical) {
-        out.push('Mantenha os pontos que geram avaliações positivas e use esses padrões como referência para o atendimento.');
+        out.push(
+          'Mantenha os pontos que geram avaliações positivas e use esses padrões como referência para o atendimento.'
+        );
       }
       if (stats.sentiment.negativo > stats.sentiment.positivo) {
-        out.push('Acompanhe de perto o sentimento negativo nas próximas avaliações para verificar se o cenário está se repetindo.');
+        out.push(
+          'Acompanhe de perto o sentimento negativo nas próximas avaliações para verificar se o cenário está se repetindo.'
+        );
       }
       if (stats.themes.length) {
         out.push(`Monitore o tema “${stats.themes[0].name}”, identificado com maior frequência no período.`);
@@ -223,12 +248,13 @@ export function RelatorioInteligentePanel({
       const url = URL.createObjectURL(blob);
       try {
         const a = document.createElement('a');
-        const slug = String(empresa.nome_empresa || 'empresa')
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[^a-z0-9]+/gi, '-')
-          .replace(/^-+|-+$/g, '')
-          .toLowerCase() || 'empresa';
+        const slug =
+          String(empresa.nome_empresa || 'empresa')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/gi, '-')
+            .replace(/^-+|-+$/g, '')
+            .toLowerCase() || 'empresa';
         a.href = url;
         a.download = `relatorio-${slug}-${mesReport}.pdf`;
         document.body.appendChild(a);
@@ -245,36 +271,54 @@ export function RelatorioInteligentePanel({
   };
 
   return (
-    <section className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-6 space-y-6" aria-labelledby="relatorio-inteligente-title">
+    <section
+      className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-6 space-y-6"
+      aria-labelledby="relatorio-inteligente-title"
+    >
       <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <FileText size={18} className="text-indigo-400" />
-            <h2 id="relatorio-inteligente-title" className="text-base font-semibold text-zinc-100">Relatório Inteligente</h2>
+            <h2 id="relatorio-inteligente-title" className="text-base font-semibold text-zinc-100">
+              Relatório Inteligente
+            </h2>
           </div>
           <p className="text-xs text-zinc-500 mt-1 max-w-2xl leading-relaxed">
-            Visão executiva da reputação com base nos dados já disponíveis no painel.
+            Conforme os dados disponíveis no momento. Atualiza sempre que houver novas avaliações no painel.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           <select
             value={mesReport}
-            onChange={(event) => onMesChange(event.target.value)}
+            onChange={(event) => setMesReport(event.target.value)}
             className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950"
             aria-label="Período do relatório"
           >
-            {mesesOpcoes.map((month) => <option key={month} value={month}>{labelMes(month)}</option>)}
+            {mesesOpcoes.map((month) => (
+              <option key={month} value={month}>
+                {labelMes(month)}
+              </option>
+            ))}
           </select>
           <select
             value={REPORT_LANGS.has(langReport) ? langReport : 'pt'}
-            onChange={(event) => onLangChange(event.target.value)}
+            onChange={(event) => setLangReport(event.target.value)}
             className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950"
             aria-label="Idioma do relatório"
           >
-            <option value="pt">PT</option><option value="en">EN</option><option value="es">ES</option><option value="zh">ZH</option>
+            <option value="pt">PT</option>
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+            <option value="zh">ZH</option>
           </select>
-          <button type="button" onClick={downloadPdf} disabled={downloading} className="inline-flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50">
-            <Download size={16} />{downloading ? 'Gerando…' : 'Exportar PDF'}
+          <button
+            type="button"
+            onClick={downloadPdf}
+            disabled={downloading}
+            className="inline-flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50"
+          >
+            <Download size={16} />
+            {downloading ? 'Gerando…' : 'Exportar PDF'}
           </button>
         </div>
       </div>
@@ -282,12 +326,6 @@ export function RelatorioInteligentePanel({
       {downloadError && (
         <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-300">
           {downloadError}
-        </div>
-      )}
-
-      {!selectedMonth && (
-        <div role="alert" className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-300">
-          Selecione um período válido para visualizar o relatório.
         </div>
       )}
 
@@ -307,61 +345,106 @@ export function RelatorioInteligentePanel({
 
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3"><TrendingUp size={16} className="text-indigo-400" /><h3 className="text-sm font-semibold">Evolução</h3></div>
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp size={16} className="text-indigo-400" />
+            <h3 className="text-sm font-semibold">Evolução</h3>
+          </div>
           {evolution === null ? (
             <p className="text-sm text-zinc-500">Ainda não há dados suficientes para calcular a tendência.</p>
           ) : (
             <p className="text-sm text-zinc-300">
-              A média das avaliações recentes variou <strong>{evolution.delta > 0 ? '+' : ''}{evolution.delta.toFixed(1)}</strong> ponto(s) no período acompanhado.
+              A média das avaliações recentes variou{' '}
+              <strong>
+                {evolution.delta > 0 ? '+' : ''}
+                {evolution.delta.toFixed(1)}
+              </strong>{' '}
+              ponto(s) no período acompanhado.
             </p>
           )}
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
           <h3 className="text-sm font-semibold mb-3">Sentimento</h3>
           <div className="grid grid-cols-3 gap-2 text-center">
-            <div><p className="text-xs text-emerald-400">Positivo</p><p className="text-xl font-bold">{stats.sentiment.positivo}</p></div>
-            <div><p className="text-xs text-amber-300">Neutro</p><p className="text-xl font-bold">{stats.sentiment.neutro}</p></div>
-            <div><p className="text-xs text-red-400">Negativo</p><p className="text-xl font-bold">{stats.sentiment.negativo}</p></div>
+            <div>
+              <p className="text-xs text-emerald-400">Positivo</p>
+              <p className="text-xl font-bold">{stats.sentiment.positivo}</p>
+            </div>
+            <div>
+              <p className="text-xs text-amber-300">Neutro</p>
+              <p className="text-xl font-bold">{stats.sentiment.neutro}</p>
+            </div>
+            <div>
+              <p className="text-xs text-red-400">Negativo</p>
+              <p className="text-xl font-bold">{stats.sentiment.negativo}</p>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3"><CheckCircle2 size={16} className="text-emerald-400" /><h3 className="text-sm font-semibold">Principais pontos positivos</h3></div>
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle2 size={16} className="text-emerald-400" />
+            <h3 className="text-sm font-semibold">Principais pontos positivos</h3>
+          </div>
           {stats.positive === 0 ? (
             <p className="text-sm text-zinc-500">Nenhum ponto positivo identificado neste período.</p>
           ) : (
             <ul className="space-y-2 text-sm text-zinc-300">
               <li>• {stats.positive} avaliação(ões) com 4 ou 5 estrelas.</li>
-              {stats.themes.slice(0, 3).map((theme) => <li key={theme.name}>• Tema recorrente: <span className="text-zinc-100">{theme.name}</span> ({theme.count})</li>)}
+              {stats.themes.slice(0, 3).map((theme) => (
+                <li key={theme.name}>
+                  • Tema recorrente: <span className="text-zinc-100">{theme.name}</span> ({theme.count})
+                </li>
+              ))}
             </ul>
           )}
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3"><AlertTriangle size={16} className="text-red-400" /><h3 className="text-sm font-semibold">Principais pontos de atenção</h3></div>
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle size={16} className="text-red-400" />
+            <h3 className="text-sm font-semibold">Principais pontos de atenção</h3>
+          </div>
           {stats.critical === 0 ? (
             <p className="text-sm text-zinc-500">Nenhuma avaliação crítica identificada neste período.</p>
           ) : (
             <ul className="space-y-2 text-sm text-zinc-300">
               <li>• {stats.critical} avaliação(ões) com até 3 estrelas.</li>
-              {stats.themes.slice(0, 3).map((theme) => <li key={theme.name}>• Acompanhar: <span className="text-zinc-100">{theme.name}</span> ({theme.count})</li>)}
+              {stats.themes.slice(0, 3).map((theme) => (
+                <li key={theme.name}>
+                  • Acompanhar: <span className="text-zinc-100">{theme.name}</span> ({theme.count})
+                </li>
+              ))}
             </ul>
           )}
         </div>
       </div>
 
       <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-5">
-        <div className="flex items-center gap-2 mb-3"><Lightbulb size={16} className="text-indigo-300" /><h3 className="text-sm font-semibold">Recomendações</h3></div>
+        <div className="flex items-center gap-2 mb-3">
+          <Lightbulb size={16} className="text-indigo-300" />
+          <h3 className="text-sm font-semibold">Recomendações</h3>
+        </div>
         {recommendations.length ? (
-          <ul className="space-y-2 text-sm text-zinc-300">{recommendations.map((recommendation) => <li key={recommendation}>• {recommendation}</li>)}</ul>
+          <ul className="space-y-2 text-sm text-zinc-300">
+            {recommendations.map((recommendation) => (
+              <li key={recommendation}>• {recommendation}</li>
+            ))}
+          </ul>
         ) : (
           <p className="text-sm text-zinc-500">Sem recomendações suficientes para este período.</p>
         )}
       </div>
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3 text-xs text-zinc-500">
-        Relatório referente a <span className="text-zinc-300">{selectedMonth ? labelMes(selectedMonth) : mesReport}</span>. Os indicadores reutilizam os dados disponíveis no painel; nenhuma segunda coleta de avaliações é feita pelo relatório.
+        Relatório conforme os dados disponíveis no momento
+        {selectedMonth ? (
+          <>
+            {' '}(
+            <span className="text-zinc-300">{labelMes(selectedMonth)}</span>)
+          </>
+        ) : null}
+        . Os indicadores reutilizam as avaliações do painel.
       </div>
     </section>
   );
