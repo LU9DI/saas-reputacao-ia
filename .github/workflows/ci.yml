@@ -45,9 +45,9 @@ jobs:
 
       - name: Unit tests
         run: |
-          # Testes de integração exigem um banco configurado separadamente.
-          # A suíte unitária permanece executável no CI sem alterar o runtime de produção.
-          find tests -type f -name '*.test.ts' ! -name 'integration.*.test.ts' -print0 | xargs -0 -r tsx --test
+          # Use npm exec so CI remains resilient if the lockfile is temporarily
+          # out of sync with package.json and tsx is absent from node_modules/.bin.
+          find tests -type f -name '*.test.ts' ! -name 'integration.*.test.ts' -print0 | xargs -0 -r -n1 npx --yes tsx --test
 
       - name: Integration tests
         if: ${{ hashFiles('backend/tests/integration.*.test.ts') != '' && env.CI_RUN_INTEGRATION == '1' }}
