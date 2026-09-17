@@ -20,7 +20,7 @@ describe('smoke — módulos críticos exportam', () => {
     const { planTemPdf, isPlanoOficial, allowPlanSwitch } = await import('../lib/plans.js');
     assert.equal(isPlanoOficial('rei'), true);
     assert.equal(isPlanoOficial('gold'), false);
-    assert.equal(planTemPdf('inicial'), true);
+    assert.equal(planTemPdf('pro'), true);
     assert.equal(typeof allowPlanSwitch(), 'boolean');
   });
 
@@ -34,11 +34,7 @@ describe('smoke — módulos críticos exportam', () => {
     process.env.JWT_SECRET = 'secret-de-teste-com-mais-de-32-chars!!';
     delete process.env.JWT_SECRET_PREVIOUS;
     const { signAccessToken, verifyAccessToken } = await import('../lib/jwtKeys.js');
-    const t = signAccessToken({
-      id: '1',
-      nome_funcionario: 'T',
-      empresa_id: 'e',
-    });
+    const t = signAccessToken({ id: '1', nome_funcionario: 'T', empresa_id: 'e' });
     const p = verifyAccessToken(t);
     assert.equal(p.id, '1');
   });
