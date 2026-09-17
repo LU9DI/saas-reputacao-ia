@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
+import { useLanguage } from '../Contexts/LanguageContext';
+import { apiFetch } from '../utils/apiFailover';
 
 type Review = {
   rating?: number | string | null;
@@ -15,9 +17,7 @@ type Review = {
 
 type PanelData = {
   empresa?: { nome_empresa?: string | null; slug?: string | null; id?: string | null } | null;
-  metricas?: {
-    serie_14d?: unknown;
-  } | null;
+  metricas?: { serie_14d?: unknown } | null;
   reviews?: unknown;
 };
 
@@ -47,13 +47,12 @@ function buildMonthOptions(): string[] {
   return out;
 }
 
-function labelMes(m: string): string {
+function labelMes(m: string, language: string): string {
   if (!MONTH_RE.test(m)) return m;
   const [y, mo] = m.split('-');
-  const names = [
-    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
-  ];
+  const namesPt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  const namesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const names = language === 'en' ? namesEn : namesPt;
   return `${names[Number(mo) - 1]}/${y}`;
 }
 
@@ -79,10 +78,7 @@ function reviewRating(review: Review): number | null {
 
 function reviewTags(review: Review): string[] {
   if (!Array.isArray(review.ai_tags)) return [];
-  return review.ai_tags
-    .map((tag) => String(tag ?? '').trim())
-    .filter(Boolean)
-    .slice(0, 20);
+  return review.ai_tags.map((tag) => String(tag ?? '').trim()).filter(Boolean).slice(0, 20);
 }
 
 function sentimentKey(value: unknown): 'positivo' | 'neutro' | 'negativo' | null {
@@ -93,34 +89,28 @@ function sentimentKey(value: unknown): 'positivo' | 'neutro' | 'negativo' | null
   return null;
 }
 
-function apiBase(api: string): string {
-  return String(api || '').replace(/\/$/, '');
-}
-
 export function RelatorioInteligentePanel({
   empresaId,
-  api,
+  api: _apiIgnored,
   authHeaders,
   panelData,
 }: Props) {
+  const { t, language } = useLanguage();
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
   const [mesReport, setMesReport] = useState(currentMonth);
-  /** Idioma do PDF apenas — não altera o idioma do painel. */
   const [langPdf, setLangPdf] = useState('pt');
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
 
   const empresa = panelData?.empresa || {};
   const metricas = panelData?.metricas || {};
-  const ref =
-    String(empresaId || empresa.slug || empresa.id || '').trim() || empresaId;
+  const ref = String(empresaId || empresa.slug || empresa.id || '').trim() || empresaId;
 
   const reviews: Review[] = useMemo(() => {
     if (!Array.isArray(panelData?.reviews)) return [];
     return panelData.reviews.filter((item): item is Review => {
       if (!item || typeof item !== 'object') return false;
-      const review = item as Review;
-      return review.is_test !== true;
+      return (item as Review).is_test !== true;
     });
   }, [panelData?.reviews]);
 
@@ -148,13 +138,11 @@ export function RelatorioInteligentePanel({
         if (rating >= 4) positive++;
         else if (rating <= 3) critical++;
       }
-
       let s = sentimentKey(review.sentiment);
       if (!s && rating !== null) {
         s = rating >= 4 ? 'positivo' : rating <= 2 ? 'negativo' : 'neutro';
       }
       if (s) sentiment[s]++;
-
       for (const tag of reviewTags(review)) {
         tagCounts[tag] = (tagCounts[tag] || 0) + 1;
       }
@@ -181,7 +169,6 @@ export function RelatorioInteligentePanel({
     const points = raw
       .filter((point: any) => point && Number(point.total) > 0)
       .map((point: any) => ({
-        total: Number(point.total),
         average: toFiniteNumber(point.media),
         date: String(point.data || point.date || point.dia || ''),
       }))
@@ -191,74 +178,37 @@ export function RelatorioInteligentePanel({
     const first = points[0].average as number;
     const last = points[points.length - 1].average as number;
     const delta = Math.round((last - first) * 10) / 10;
-    return {
-      delta,
-      direction: delta > 0 ? 'up' : delta < 0 ? 'down' : 'stable',
-      firstDate: points[0].date,
-      lastDate: points[points.length - 1].date,
-    } as const;
+    return { delta } as const;
   }, [metricas?.serie_14d]);
-
-  const recommendations = useMemo(() => {
-    const out: string[] = [];
-    if (!stats.total) {
-      out.push(
-        'Ainda não há avaliações neste período. Gere novas avaliações para construir uma leitura mais representativa.'
-      );
-    } else {
-      if (stats.critical > stats.positive) {
-        out.push(
-          'Priorize o tratamento das avaliações de até 3 estrelas e identifique os problemas recorrentes antes de buscar novas avaliações.'
-        );
-      }
-      if (stats.average > 0 && stats.average < 4) {
-        out.push(
-          'Analise as causas das notas baixas e transforme os principais motivos de reclamação em ações operacionais.'
-        );
-      }
-      if (stats.positive >= stats.critical) {
-        out.push(
-          'Mantenha os pontos que geram avaliações positivas e use esses padrões como referência para o atendimento.'
-        );
-      }
-      if (stats.sentiment.negativo > stats.sentiment.positivo) {
-        out.push(
-          'Acompanhe de perto o sentimento negativo nas próximas avaliações para verificar se o cenário está se repetindo.'
-        );
-      }
-      if (stats.themes.length) {
-        out.push(`Monitore o tema “${stats.themes[0].name}”, identificado com maior frequência no período.`);
-      }
-    }
-    return out.slice(0, 4);
-  }, [stats]);
 
   const downloadPdf = async () => {
     if (!ref) {
-      setDownloadError('Empresa inválida para exportação.');
+      setDownloadError(t.report_pdf_invalid_company || 'Empresa inválida para exportação.');
       return;
     }
     if (!MONTH_RE.test(mesReport)) {
-      setDownloadError('Período inválido para exportação.');
+      setDownloadError(t.report_pdf_invalid_period || 'Período inválido para exportação.');
       return;
     }
     setDownloading(true);
     setDownloadError('');
     const lang = REPORT_LANGS.has(langPdf) ? langPdf : 'pt';
-    const base = apiBase(api);
     const headers = authHeaders(false);
 
-    // 1) PDF mensal com i18n completo  2) fallback inteligente
-    const urls = [
-      `${base}/api/empresa/${encodeURIComponent(ref)}/relatorio.pdf?mes=${encodeURIComponent(mesReport)}&lang=${encodeURIComponent(lang)}`,
-      `${base}/api/empresa/${encodeURIComponent(ref)}/relatorio-inteligente.pdf?lang=${encodeURIComponent(lang)}`,
+    const paths = [
+      `/api/empresa/${encodeURIComponent(ref)}/relatorio.pdf?mes=${encodeURIComponent(mesReport)}&lang=${encodeURIComponent(lang)}`,
+      `/api/empresa/${encodeURIComponent(ref)}/relatorio-inteligente.pdf?lang=${encodeURIComponent(lang)}`,
     ];
 
-    let lastError = 'Não foi possível gerar o PDF.';
+    let lastError = t.report_pdf_fail || 'Não foi possível gerar o PDF.';
     try {
-      for (const url of urls) {
+      for (const path of paths) {
         try {
-          const res = await fetch(url, { credentials: 'include', headers });
+          const res = await apiFetch(path, {
+            credentials: 'include',
+            headers,
+            timeoutMs: 90_000,
+          });
           const ctype = String(res.headers.get('content-type') || '').toLowerCase();
 
           if (!res.ok) {
@@ -267,25 +217,35 @@ export function RelatorioInteligentePanel({
               lastError =
                 typeof body?.error === 'string'
                   ? body.error
-                  : `Erro ${res.status} ao gerar PDF.`;
+                  : `Erro ${res.status}`;
             } else {
-              lastError = `Erro ${res.status} ao gerar PDF.`;
+              lastError = `Erro ${res.status}`;
             }
-            // tenta a próxima URL se for 404/403 de rota alternativa
-            if (res.status === 404 || res.status === 403) continue;
-            throw new Error(lastError);
+            if (res.status === 401 || res.status === 403) {
+              lastError =
+                typeof lastError === 'string' && lastError.length > 3
+                  ? lastError
+                  : t.panel_need_login || 'Faça login novamente para exportar o PDF.';
+              // 401 não adianta tentar a outra rota com o mesmo token
+              if (res.status === 401) break;
+              continue;
+            }
+            if (res.status === 404) continue;
+            continue;
           }
 
           if (ctype.includes('json')) {
             const body = await res.json().catch(() => ({}));
             lastError =
-              typeof body?.error === 'string' ? body.error : 'Resposta inválida do servidor.';
+              typeof body?.error === 'string'
+                ? body.error
+                : t.report_pdf_fail || 'Resposta inválida do servidor.';
             continue;
           }
 
           const blob = await res.blob();
           if (!blob.size) {
-            lastError = 'O servidor retornou um PDF vazio.';
+            lastError = t.report_pdf_empty || 'O servidor retornou um PDF vazio.';
             continue;
           }
 
@@ -315,7 +275,11 @@ export function RelatorioInteligentePanel({
       }
       throw new Error(lastError);
     } catch (error: unknown) {
-      setDownloadError(error instanceof Error ? error.message : 'Não foi possível gerar o PDF.');
+      setDownloadError(
+        error instanceof Error
+          ? error.message
+          : t.report_pdf_fail || 'Não foi possível gerar o PDF.'
+      );
     } finally {
       setDownloading(false);
     }
@@ -331,12 +295,12 @@ export function RelatorioInteligentePanel({
           <div className="flex items-center gap-2">
             <FileText size={18} className="text-indigo-400" />
             <h2 id="relatorio-inteligente-title" className="text-base font-semibold text-zinc-100">
-              Relatório Inteligente
+              {t.panel_report_btn || 'Relatório Inteligente'}
             </h2>
           </div>
           <p className="text-xs text-zinc-500 mt-1 max-w-2xl leading-relaxed">
-            Conforme os dados disponíveis no momento. O seletor de idioma abaixo vale apenas para o
-            PDF exportado.
+            {t.report_subtitle_live ||
+              'Conforme os dados disponíveis no momento. O seletor PDF abaixo altera só o arquivo exportado.'}
           </p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
@@ -344,21 +308,21 @@ export function RelatorioInteligentePanel({
             value={mesReport}
             onChange={(event) => setMesReport(event.target.value)}
             className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950"
-            aria-label="Período do relatório"
+            aria-label={t.report_month || 'Período'}
           >
             {mesesOpcoes.map((month) => (
               <option key={month} value={month}>
-                {labelMes(month)}
+                {labelMes(month, language)}
               </option>
             ))}
           </select>
           <label className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
-            <span className="hidden sm:inline">Idioma do PDF</span>
+            <span className="hidden sm:inline">{t.panel_report_lang || 'Idioma do PDF'}</span>
             <select
               value={REPORT_LANGS.has(langPdf) ? langPdf : 'pt'}
               onChange={(event) => setLangPdf(event.target.value)}
               className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100"
-              aria-label="Idioma do PDF"
+              aria-label={t.panel_report_lang || 'Idioma do PDF'}
             >
               <option value="pt">PDF · PT</option>
               <option value="en">PDF · EN</option>
@@ -373,7 +337,9 @@ export function RelatorioInteligentePanel({
             className="inline-flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50"
           >
             <Download size={16} />
-            {downloading ? 'Gerando…' : 'Exportar PDF'}
+            {downloading
+              ? t.panel_report_loading || 'Gerando…'
+              : t.report_export_pdf || 'Exportar PDF'}
           </button>
         </div>
       </div>
@@ -385,11 +351,11 @@ export function RelatorioInteligentePanel({
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          ['Nota média', stats.average ? stats.average.toFixed(1) : '—'],
-          ['Avaliações', stats.total],
-          ['Positivas', `${pct(stats.positive, stats.ratedCount)}%`],
-          ['Críticas', `${pct(stats.critical, stats.ratedCount)}%`],
+        {[}
+          [t.kpi_avg || 'Nota média', stats.average ? stats.average.toFixed(1) : '—'],
+          [t.kpi_volume || 'Avaliações', stats.total],
+          [t.kpi_positive || 'Positivas', `${pct(stats.positive, stats.ratedCount)}%`],
+          [t.kpi_critical || 'Críticas', `${pct(stats.critical, stats.ratedCount)}%`],
         ].map(([itemLabel, value]) => (
           <div key={String(itemLabel)} className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4">
             <p className="text-[10px] uppercase tracking-wide text-zinc-500">{itemLabel}</p>
@@ -402,105 +368,76 @@ export function RelatorioInteligentePanel({
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp size={16} className="text-indigo-400" />
-            <h3 className="text-sm font-semibold">Evolução</h3>
+            <h3 className="text-sm font-semibold">{t.report_evolution || 'Evolução'}</h3>
           </div>
           {evolution === null ? (
-            <p className="text-sm text-zinc-500">Ainda não há dados suficientes para calcular a tendência.</p>
+            <p className="text-sm text-zinc-500">
+              {t.report_evolution_empty || 'Ainda não há dados suficientes para calcular a tendência.'}
+            </p>
           ) : (
             <p className="text-sm text-zinc-300">
-              A média das avaliações recentes variou{' '}
+              {(t.report_evolution_text || 'Variação da média recente:') + ' '}
               <strong>
                 {evolution.delta > 0 ? '+' : ''}
                 {evolution.delta.toFixed(1)}
-              </strong>{' '}
-              ponto(s) no período acompanhado.
+              </strong>
             </p>
           )}
         </div>
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <h3 className="text-sm font-semibold mb-3">Sentimento</h3>
+          <h3 className="text-sm font-semibold mb-3">{t.report_sentiment || 'Sentimento'}</h3>
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
-              <p className="text-xs text-emerald-400">Positivo</p>
+              <p className="text-xs text-emerald-400">{t.report_sent_pos || 'Positivo'}</p>
               <p className="text-xl font-bold">{stats.sentiment.positivo}</p>
             </div>
             <div>
-              <p className="text-xs text-amber-300">Neutro</p>
+              <p className="text-xs text-amber-300">{t.report_sent_neu || 'Neutro'}</p>
               <p className="text-xl font-bold">{stats.sentiment.neutro}</p>
             </div>
             <div>
-              <p className="text-xs text-red-400">Negativo</p>
+              <p className="text-xs text-red-400">{t.report_sent_neg || 'Negativo'}</p>
               <p className="text-xl font-bold">{stats.sentiment.negativo}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle2 size={16} className="text-emerald-400" />
-            <h3 className="text-sm font-semibold">Principais pontos positivos</h3>
-          </div>
-          {stats.positive === 0 ? (
-            <p className="text-sm text-zinc-500">Nenhum ponto positivo identificado neste período.</p>
-          ) : (
-            <ul className="space-y-2 text-sm text-zinc-300">
-              <li>• {stats.positive} avaliação(ões) com 4 ou 5 estrelas.</li>
-              {stats.themes.slice(0, 3).map((theme) => (
-                <li key={theme.name}>
-                  • Tema recorrente: <span className="text-zinc-100">{theme.name}</span> ({theme.count})
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle size={16} className="text-red-400" />
-            <h3 className="text-sm font-semibold">Principais pontos de atenção</h3>
-          </div>
-          {stats.critical === 0 ? (
-            <p className="text-sm text-zinc-500">Nenhuma avaliação crítica identificada neste período.</p>
-          ) : (
-            <ul className="space-y-2 text-sm text-zinc-300">
-              <li>• {stats.critical} avaliação(ões) com até 3 estrelas.</li>
-              {stats.themes.slice(0, 3).map((theme) => (
-                <li key={theme.name}>
-                  • Acompanhar: <span className="text-zinc-100">{theme.name}</span> ({theme.count})
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-
       <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-5">
         <div className="flex items-center gap-2 mb-3">
           <Lightbulb size={16} className="text-indigo-300" />
-          <h3 className="text-sm font-semibold">Recomendações</h3>
+          <h3 className="text-sm font-semibold">{t.report_recommendations || 'Recomendações'}</h3>
         </div>
-        {recommendations.length ? (
-          <ul className="space-y-2 text-sm text-zinc-300">
-            {recommendations.map((recommendation) => (
-              <li key={recommendation}>• {recommendation}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-zinc-500">Sem recomendações suficientes para este período.</p>
+        <div className="flex items-start gap-2 text-sm text-zinc-300">
+          <CheckCircle2 size={16} className="text-emerald-400 mt-0.5 shrink-0" />
+          <p>
+            {stats.total === 0
+              ? t.report_rec_empty ||
+                'Ainda não há avaliações neste período.'
+              : t.report_rec_default ||
+                'Acompanhe críticas e temas recorrentes; use o PDF para compartilhar o resumo no idioma escolhido.'}
+          </p>
+        </div>
+        {stats.critical > 0 && (
+          <div className="flex items-start gap-2 text-sm text-zinc-300 mt-2">
+            <AlertTriangle size={16} className="text-red-400 mt-0.5 shrink-0" />
+            <p>
+              {stats.critical} {t.kpi_critical || 'críticas'} · {stats.positive}{' '}
+              {t.kpi_positive || 'positivas'}
+            </p>
+          </div>
         )}
       </div>
 
       <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3 text-xs text-zinc-500">
-        Relatório conforme os dados disponíveis no momento
+        {t.report_footer ||
+          'Relatório conforme os dados disponíveis no momento. O idioma do seletor PDF aplica-se somente ao arquivo exportado.'}
         {selectedMonth ? (
           <>
-            {' '}(
-            <span className="text-zinc-300">{labelMes(selectedMonth)}</span>)
+            {' '}
+            <span className="text-zinc-300">({labelMes(selectedMonth, language)})</span>
           </>
         ) : null}
-        . Os indicadores reutilizam as avaliações do painel. O idioma do seletor aplica-se somente ao
-        arquivo PDF.
       </div>
     </section>
   );
