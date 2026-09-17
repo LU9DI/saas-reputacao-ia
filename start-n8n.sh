@@ -18,6 +18,38 @@ workflow.id = 'xpXhhPN5dTbdhg1X';
 workflow.name = 'Filtra.IA - Relatório + WhatsApp (corrigido)';
 workflow.active = true;
 
+const webhook = workflow.nodes.find((item) => item.name === 'Webhook - Relatório');
+if (!webhook) throw new Error('Webhook - Relatório node not found');
+webhook.parameters.httpMethod = 'POST';
+webhook.parameters.path = 'filtra-relatorio-v3';
+webhook.parameters.responseMode = 'responseNode';
+
+const healthWebhook = workflow.nodes.find((item) => item.name === 'Webhook - Health Intelligent Report');
+if (healthWebhook) {
+  healthWebhook.parameters.httpMethod = 'GET';
+  healthWebhook.parameters.path = 'intelligent-report';
+  healthWebhook.parameters.responseMode = 'responseNode';
+}
+
+const successResponse = workflow.nodes.find((item) => item.name === 'Resposta - Relatório');
+if (!successResponse) throw new Error('Resposta - Relatório node not found');
+successResponse.parameters.respondWith = 'json';
+successResponse.parameters.responseBody = '={{ { ok: $json.ok, status: $json.status, cliente_id: $json.cliente_id, periodo: $json.periodo, idempotency_key: $json.idempotency_key, total: $json.total, sent: $json.sent, failed: $json.failed, results: $json.results } }}';
+successResponse.parameters.options = { responseCode: 200 };
+
+const errorResponse = workflow.nodes.find((item) => item.name === 'Resposta - Erro');
+if (!errorResponse) throw new Error('Resposta - Erro node not found');
+errorResponse.parameters.respondWith = 'json';
+errorResponse.parameters.responseBody = '={{ { ok: false, status: $json.status || 400, error: $json.error || \'Invalid request\' } }}';
+errorResponse.parameters.options = { responseCode: 400 };
+
+const healthResponse = workflow.nodes.find((item) => item.name === 'Resposta - Health Intelligent Report');
+if (healthResponse) {
+  healthResponse.parameters.respondWith = 'json';
+  healthResponse.parameters.responseBody = '={{ { ok: true, status: \'ready\', workflow: \'Filtra.IA - Relatório + WhatsApp (corrigido)\', webhook: \'POST /webhook/filtra-relatorio-v3\' } }}';
+  healthResponse.parameters.options = { responseCode: 200 };
+}
+
 const node = workflow.nodes.find((item) => item.name === 'WHATSAPP - Enviar');
 if (!node) throw new Error('WHATSAPP - Enviar node not found');
 
