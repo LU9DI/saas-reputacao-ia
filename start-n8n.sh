@@ -30,6 +30,6 @@ fs.writeFileSync(path, JSON.stringify(Array.isArray(exported) ? [workflow] : wor
 NODE
 
 n8n import:workflow --input=/home/node/n8n-workflow.json
-n8n publish:workflow --id=48ffd71b-e851-4a92-941a-cbbd59917eb7
+n8n publish:workflow --id=xpXhhPN5dTbdhg1X
 
 exec n8n start
