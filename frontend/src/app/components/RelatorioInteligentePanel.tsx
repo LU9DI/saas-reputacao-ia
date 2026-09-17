@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { MessageCircle, Mail, Smartphone, Send } from 'lucide-react';
+import { Mail, Smartphone, Send } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
 
-type Canal = 'whatsapp' | 'sms' | 'email' | 'wechat';
+type Canal = 'telegram' | 'sms' | 'email' | 'wechat';
 
 type Props = {
   empresaId: string;
@@ -19,7 +19,7 @@ type Props = {
   language: string;
 };
 
-const CANAL_IDS: Canal[] = ['whatsapp', 'sms', 'email', 'wechat'];
+const CANAL_IDS: Canal[] = ['telegram', 'sms', 'email', 'wechat'];
 
 export function RelatorioInteligentePanel({
   empresaId,
@@ -35,13 +35,13 @@ export function RelatorioInteligentePanel({
 }: Props) {
   const { t } = useLanguage();
   const [ativos, setAtivos] = useState<Record<Canal, boolean>>({
-    whatsapp: true,
+    telegram: true,
     sms: false,
     email: true,
     wechat: false,
   });
   const [destinos, setDestinos] = useState<Record<Canal, string>>({
-    whatsapp: '',
+    telegram: '',
     sms: '',
     email: '',
     wechat: '',
@@ -55,10 +55,10 @@ export function RelatorioInteligentePanel({
     Canal,
     { label: string; placeholder: string; icon: typeof Mail }
   > = {
-    whatsapp: {
-      label: t.canal_whatsapp || 'WhatsApp',
-      placeholder: '5511999998888',
-      icon: MessageCircle,
+    telegram: {
+      label: t.canal_telegram || 'Telegram',
+      placeholder: 'chat_id do Telegram',
+      icon: Send,
     },
     sms: {
       label: t.canal_sms || 'SMS',
@@ -73,7 +73,7 @@ export function RelatorioInteligentePanel({
     wechat: {
       label: t.canal_wechat || 'WeChat',
       placeholder: 'wechat_id',
-      icon: MessageCircle,
+      icon: Send,
     },
   };
 
@@ -90,13 +90,13 @@ export function RelatorioInteligentePanel({
         const list = Array.isArray(data.destinatarios) ? data.destinatarios : [];
         if (cancelled || !list.length) return;
         const nextAtivos: Record<Canal, boolean> = {
-          whatsapp: false,
+          telegram: false,
           sms: false,
           email: false,
           wechat: false,
         };
         const nextDest: Record<Canal, string> = {
-          whatsapp: '',
+          telegram: '',
           sms: '',
           email: '',
           wechat: '',
@@ -194,7 +194,7 @@ export function RelatorioInteligentePanel({
           </h2>
           <p className="text-xs text-zinc-500 mt-1 leading-relaxed max-w-xl">
             {t.report_subtitle ||
-              'Resumo operacional do período. Envio por WhatsApp, SMS, e-mail ou WeChat.'}
+              'Resumo operacional do período. Envio por Telegram, SMS, e-mail ou WeChat.'}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
