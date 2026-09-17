@@ -14,6 +14,7 @@ if (!workflow || !Array.isArray(workflow.nodes)) {
 workflow.id = 'xpXhhPN5dTbdhg1X';
 workflow.name = 'Filtra.IA - Relatório + Telegram';
 workflow.active = true;
+workflow.isArchived = false;
 
 const telegramNode = workflow.nodes.find((item) => item.name === 'WHATSAPP - Enviar');
 if (!telegramNode) throw new Error('WHATSAPP - Enviar node not found');
