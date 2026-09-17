@@ -19,7 +19,8 @@ type Props = {
   language: string;
 };
 
-const CANAL_IDS: Canal[] = ['telegram', 'sms', 'email'];
+// SMS e WeChat permanecem suportados pelo código, mas ficam ocultos da interface.
+const CANAL_IDS: Canal[] = ['telegram', 'email'];
 
 export function RelatorioInteligentePanel({ empresaId, api, authHeaders, mesReport, langReport, mesesOpcoes, labelMes, onMesChange, onLangChange, language }: Props) {
   const { t } = useLanguage();
@@ -94,7 +95,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, mesRepo
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold text-zinc-100 tracking-tight">{t.panel_report_btn || t.feat_pdf || 'Relatório inteligente'}</h2>
-          <p className="text-xs text-zinc-500 mt-1 leading-relaxed max-w-xl">{t.report_subtitle || 'Resumo operacional do período. Envio por Telegram, SMS ou e-mail.'}</p>
+          <p className="text-xs text-zinc-500 mt-1 leading-relaxed max-w-xl">{t.report_subtitle || 'Resumo operacional do período. Envio por Telegram ou e-mail.'}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <select value={mesReport} onChange={(e) => onMesChange(e.target.value)} className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950" aria-label={t.report_month || 'Mês'}>{mesesOpcoes.map((m) => <option key={m} value={m}>{labelMes(m)}</option>)}</select>
