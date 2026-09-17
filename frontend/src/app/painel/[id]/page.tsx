@@ -288,20 +288,6 @@ export default function PainelEmpresa() {
           }
         />
 
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { t: t.kpi_volume || 'Volume', v: metricas.total },
-            { t: t.kpi_avg || 'Média', v: metricas.media || '—' },
-            { t: t.kpi_positive || 'Positivas', v: metricas.positivas },
-            { t: t.kpi_critical || 'Críticas', v: metricas.negativas },
-          ].map((k) => (
-            <div key={k.t} className={`${card} px-5 py-5`}>
-              <p className={label}>{k.t}</p>
-              <p className="mt-2 text-3xl font-bold tabular-nums">{k.v}</p>
-            </div>
-          ))}
-        </section>
-
         <UsageBars
           feedbackUsados={metricas.feedback_usados}
           feedbackLimite={metricas.feedback_limite}
