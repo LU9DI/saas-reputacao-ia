@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
 import { DashboardCharts } from '../../components/DashboardCharts';
-import { currentMonthYYYYMM } from '../../utils/dateValidation';
 import { PlanSwitcher } from '../../components/PlanSwitcher';
 import { PushEnable } from '../../components/PushEnable';
 import { UsageBars } from '../../components/UsageBars';
@@ -18,8 +17,6 @@ import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { RelatorioInteligentePanel } from '../../components/RelatorioInteligentePanel';
 import { useLanguage } from '../../Contexts/LanguageContext';
 
-type LangCode = 'pt' | 'en' | 'es' | 'zh';
-
 function authHeaders(json = true): HeadersInit {
   const h: Record<string, string> = {};
   if (json) h['Content-Type'] = 'application/json';
@@ -30,34 +27,6 @@ function authHeaders(json = true): HeadersInit {
     /* */
   }
   return h;
-}
-
-function listarMesesOpcoes(qtd = 18): string[] {
-  const out: string[] = [];
-  const d = new Date();
-  d.setDate(1);
-  for (let i = 0; i < qtd; i++) {
-    out.push(currentMonthYYYYMM(d));
-    d.setMonth(d.getMonth() - 1);
-  }
-  return out;
-}
-
-function labelMes(yyyyMm: string, lang: string): string {
-  const [y, m] = yyyyMm.split('-').map(Number);
-  if (!y || !m) return yyyyMm;
-  const locale =
-    lang === 'en' ? 'en-US' : lang === 'es' ? 'es-ES' : lang === 'zh' ? 'zh-CN' : 'pt-BR';
-  const nome = new Date(y, m - 1, 1).toLocaleDateString(locale, {
-    month: 'long',
-    year: 'numeric',
-  });
-  return nome.charAt(0).toUpperCase() + nome.slice(1);
-}
-
-function asLang(v: string): LangCode {
-  if (v === 'en' || v === 'es' || v === 'zh' || v === 'pt') return v;
-  return 'pt';
 }
 
 /** Relatório inteligente: Trial e Pro+ (não no Inicial pago). */
@@ -77,7 +46,7 @@ const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
 export default function PainelEmpresa() {
   const params = useParams();
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const empresaId = String(params?.id || '');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -88,17 +57,10 @@ export default function PainelEmpresa() {
   const [googleInput, setGoogleInput] = useState('');
   const [msgWpp, setMsgWpp] = useState('');
   const [msgGoogle, setMsgGoogle] = useState('');
-  const [mesReport, setMesReport] = useState(currentMonthYYYYMM);
-  const [langReport, setLangReport] = useState<LangCode>(asLang(language));
-  const mesesOpcoes = useMemo(() => listarMesesOpcoes(18), []);
   const api = getEnv('NEXT_PUBLIC_API_URL');
   const appOrigin =
     typeof window !== 'undefined' ? window.location.origin : getEnv('NEXT_PUBLIC_APP_URL');
   const linkAvaliacao = data?.links?.avaliacao || `${appOrigin}/avaliacao/${empresaId}`;
-
-  useEffect(() => {
-    setLangReport(asLang(language));
-  }, [language]);
 
   const carregar = async () => {
     if (!empresaId) {
@@ -297,13 +259,7 @@ export default function PainelEmpresa() {
             empresaId={empresaId}
             api={api}
             authHeaders={authHeaders}
-            mesReport={mesReport}
-            langReport={langReport}
-            mesesOpcoes={mesesOpcoes}
-            labelMes={(m) => labelMes(m, language)}
-            onMesChange={setMesReport}
-            onLangChange={(l) => setLangReport(asLang(l))}
-            language={language}
+            panelData={data}
           />
         )}
 
