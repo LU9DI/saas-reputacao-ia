@@ -378,7 +378,7 @@ export function RelatorioInteligentePanel({
     setDownloadError('');
     const popup = typeof window !== 'undefined' ? window.open('', '_blank') : null;
     try {
-      const lang = PDF_LANGS.has(langPdf) ? langPdf : 'pt';
+      const lang = PDF_LANGS.has(language) ? language : 'pt';
       const base = String(api || '').replace(/\\/$/, '');
       const url =
         base +
@@ -446,20 +446,9 @@ export function RelatorioInteligentePanel({
             ))}
           </select>
 
-          <label className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
-            <span className="hidden sm:inline">{copy.pdfLang}</span>
-            <select
-              value={PDF_LANGS.has(langPdf) ? langPdf : 'pt'}
-              onChange={(e) => setLangPdf(e.target.value)}
-              className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100"
-              aria-label={copy.pdfLang}
-            >
-              <option value="pt">PDF · PT</option>
-              <option value="en">PDF · EN</option>
-              <option value="es">PDF · ES</option>
-              <option value="zh">PDF · ZH</option>
-            </select>
-          </label>
+          <span className="text-xs text-zinc-500 px-2 py-2 rounded-xl border border-zinc-800 bg-zinc-950">
+            PDF · {(PDF_LANGS.has(language) ? language : 'pt').toUpperCase()}
+          </span>
 
           <button
             type="button"
