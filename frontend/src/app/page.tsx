@@ -103,23 +103,21 @@ export default function Home() {
     setErro('');
     setSucessoData(null);
     try {
-      const api = (getEnv('NEXT_PUBLIC_API_URL') || '').replace(/\/$/, '');
-      if (api) {
-        try {
-          await fetch(`${api}/api/legal/aceite`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              aceito: true,
-              contexto: 'trial',
-              email: email.trim().toLowerCase(),
-              versao_termos: TERMOS_VERSAO,
-              versao_privacidade: PRIV_VERSAO,
-            }),
-          });
-        } catch {
-          /* */
-        }
+      try {
+        await apiFetch('/api/legal/aceite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            aceito: true,
+            contexto: 'trial',
+            email: email.trim().toLowerCase(),
+            versao_termos: TERMOS_VERSAO,
+            versao_privacidade: PRIV_VERSAO,
+          }),
+          timeoutMs: 10_000,
+        });
+      } catch {
+        /* O aceite também é enviado no endpoint de ativação. */
       }
       const response = await apiFetch('/api/trial/ativar', {
         method: 'POST',
@@ -364,11 +362,7 @@ export default function Home() {
               </a>
               {sucessoData.link_painel && (
                 <a
-                  href={
-                    sucessoData.token
-                      ? `${sucessoData.link_painel}${sucessoData.link_painel.includes('?') ? '&' : '?'}token=${encodeURIComponent(sucessoData.token)}`
-                      : sucessoData.link_painel
-                  }
+                  href={sucessoData.link_painel}
                   className="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2"
                 >
                   <LayoutDashboard size={16} /> {t.open_panel}
