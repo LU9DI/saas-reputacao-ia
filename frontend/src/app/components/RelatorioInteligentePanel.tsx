@@ -29,7 +29,7 @@ type Props = {
 };
 
 const PDF_LANGS = new Set(['pt', 'en', 'es', 'zh']);
-const MONTH_RE = /^\\d{4}-(0[1-9]|1[0-2])$/;
+const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 function currentMonth(): string {
   const d = new Date();
@@ -77,7 +77,7 @@ function reviewTags(review: Review): string[] {
 }
 
 function sentimentKey(value: unknown): 'positivo' | 'neutro' | 'negativo' | null {
-  const s = String(value || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+  const s = String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   return s.includes('pos') ? 'positivo' : s.includes('neg') ? 'negativo' : s.includes('neu') ? 'neutro' : null;
 }
 
@@ -197,7 +197,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
     const loadReportMetrics = async () => {
       if (!MONTH_RE.test(mesReport)) { setReportMetrics(null); return; }
       try {
-        const base = String(api || '').replace(/\\/+$/, '');
+        const base = String(api || '').replace(/\/+$/, '');
         const response = await fetch(
           base + '/api/empresa/' + encodeURIComponent(empresaId) + '/relatorio/inteligente?mes=' + encodeURIComponent(mesReport),
           { method: 'GET', headers: authHeaders(false), credentials: 'include' }
