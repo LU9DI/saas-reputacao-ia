@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { exportReportClient, type ClientReportPayload } from '../utils/reportPdfClient';
 
 type Review = {
   rating?: number | string | null;
@@ -264,9 +263,9 @@ function uiCopy(lang: string) {
 }
 
 export function RelatorioInteligentePanel({
-  empresaId: _empresaId,
-  api: _api,
-  authHeaders: _authHeaders,
+  empresaId,
+  api,
+  authHeaders,
   panelData,
 }: Props) {
   const { language } = useLanguage();
@@ -369,62 +368,48 @@ export function RelatorioInteligentePanel({
     return out.slice(0, 4);
   }, [stats, copy]);
 
-  /** PDF só no navegador: abre nova aba para visualizar e baixar (sem backend). */
-  const downloadPdf = () => {
+  /** Geração oficial no backend: uma vez por ciclo; downloads seguintes reutilizam o PDF persistido. */
+  const downloadPdf = async () => {
     if (!MONTH_RE.test(mesReport)) {
       setDownloadError(copy.errPeriod);
       return;
     }
     setDownloading(true);
     setDownloadError('');
+    const popup = typeof window !== 'undefined' ? window.open('', '_blank') : null;
     try {
       const lang = PDF_LANGS.has(langPdf) ? langPdf : 'pt';
-      const planName = String(empresa.plan || 'Trial');
-      const payload: ClientReportPayload = {
-        companyName: String(empresa.nome_empresa || 'Empresa'),
-        periodLabel: labelMes(mesReport, language),
-        lang,
-        plan: planName,
-        stats: {
-          total: stats.total,
-          ratedCount: stats.ratedCount || stats.total,
-          positive: stats.positive,
-          critical: stats.critical,
-          average: stats.average,
-          sentiment: stats.sentiment,
-          themes: stats.themes,
-          distribution: stats.distribution || [0, 0, 0, 0, 0],
-        },
-        evolution,
-        recommendations,
-        labels: {
-          title: copy.title,
-          avg: copy.avg,
-          reviews: copy.reviews,
-          positive: copy.positive,
-          critical: copy.critical,
-          evolution: copy.evolution,
-          evolutionEmpty: copy.evolutionEmpty,
-          evolutionText: copy.evolutionText,
-          sentiment: copy.sentiment,
-          sentPos: copy.sentPos,
-          sentNeu: copy.sentNeu,
-          sentNeg: copy.sentNeg,
-          pointsPos: copy.pointsPos,
-          pointsCrit: copy.pointsCrit,
-          recommendations: copy.recommendations,
-          themes: copy.themes,
-          footer: copy.footer,
-          brand: copy.brand,
-          rights: copy.rights,
-          plan: copy.plan,
-        },
-      };
-      const result = exportReportClient(payload);
-      if (!result.ok) {
-        setDownloadError(copy.errFail);
+      const base = String(api || '').replace(/\\/$/, '');
+      const url =
+        base +
+        '/api/empresa/' +
+        encodeURIComponent(empresaId) +
+        '/relatorio.pdf?mes=' +
+        encodeURIComponent(mesReport) +
+        '&lang=' +
+        encodeURIComponent(lang);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: authHeaders(false),
+        credentials: 'include',
+      });
+      if (!response.ok) throw new Error('PDF request failed');
+      const blob = await response.blob();
+      if (blob.type && !blob.type.includes('pdf')) throw new Error('Invalid PDF response');
+      const objectUrl = URL.createObjectURL(blob);
+      if (popup) {
+        popup.location.href = objectUrl;
+      } else {
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = 'relatorio-' + mesReport + '.pdf';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
       }
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
     } catch {
+      if (popup) popup.close();
       setDownloadError(copy.errFail);
     } finally {
       setDownloading(false);
