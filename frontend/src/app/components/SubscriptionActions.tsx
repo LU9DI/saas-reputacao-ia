@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 
 type Props = {
   empresaRef: string;
@@ -44,7 +45,7 @@ export function SubscriptionActions({
     setLoading(true);
     setMsg('');
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaRef}/cancelar-assinatura`, {
+      const res = await apiFetch(`/api/empresa/${empresaRef}/cancelar-assinatura`, {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(),
@@ -67,7 +68,7 @@ export function SubscriptionActions({
     setLoading(true);
     setMsg('');
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaRef}/reativar-assinatura`, {
+      const res = await apiFetch(`/api/empresa/${empresaRef}/reativar-assinatura`, {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(),
