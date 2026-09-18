@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
+import { exportReportClient } from '../utils/reportPdfClient';
 
 type Review = {
   rating?: number | string | null;
@@ -28,7 +29,7 @@ type Props = {
 };
 
 const PDF_LANGS = new Set(['pt', 'en', 'es', 'zh']);
-const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+const MONTH_RE = /^\\d{4}-(0[1-9]|1[0-2])$/;
 
 function currentMonth(): string {
   const d = new Date();
@@ -76,39 +77,22 @@ function reviewTags(review: Review): string[] {
 }
 
 function sentimentKey(value: unknown): 'positivo' | 'neutro' | 'negativo' | null {
-  const s = String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  if (s.includes('pos')) return 'positivo';
-  if (s.includes('neg')) return 'negativo';
-  if (s.includes('neu')) return 'neutro';
-  return null;
+  const s = String(value || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+  return s.includes('pos') ? 'positivo' : s.includes('neg') ? 'negativo' : s.includes('neu') ? 'neutro' : null;
 }
 
 function uiCopy(lang: string) {
   if (lang === 'en') {
     return {
-      title: 'Intelligent Report',
-      subtitle: 'Based on data available right now. Click Export PDF — a new tab opens to view and download.',
-      month: 'Period',
-      pdfLang: 'PDF language',
-      exportPdf: 'Export PDF',
-      generating: 'Opening…',
-      avg: 'Average',
-      reviews: 'Reviews',
-      positive: 'Positive',
-      critical: 'Critical',
-      evolution: 'Trend',
-      evolutionEmpty: 'Not enough data yet to calculate the trend.',
-      evolutionText: 'Recent average change:',
-      sentiment: 'Sentiment',
-      sentPos: 'Positive',
-      sentNeu: 'Neutral',
-      sentNeg: 'Negative',
-      pointsPos: 'Main positive points',
-      pointsPosEmpty: 'No positive points identified in this period.',
+      title: 'Intelligent Report', subtitle: 'Based on data available right now. Click Export PDF — a new tab opens to view and download.',
+      month: 'Period', pdfLang: 'PDF language', exportPdf: 'Export PDF', generating: 'Opening…',
+      avg: 'Average', reviews: 'Reviews', positive: 'Positive', critical: 'Critical', evolution: 'Trend',
+      evolutionEmpty: 'Not enough data yet to calculate the trend.', evolutionText: 'Recent average change:',
+      sentiment: 'Sentiment', sentPos: 'Positive', sentNeu: 'Neutral', sentNeg: 'Negative',
+      pointsPos: 'Main positive points', pointsPosEmpty: 'No positive points identified in this period.',
       pointsPosLine: (n: number) => `${n} review(s) with 4 or 5 stars.`,
       themeLine: (name: string, count: number) => `Recurring theme: ${name} (${count})`,
-      pointsCrit: 'Main attention points',
-      pointsCritEmpty: 'No critical reviews identified in this period.',
+      pointsCrit: 'Main attention points', pointsCritEmpty: 'No critical reviews identified in this period.',
       pointsCritLine: (n: number) => `${n} review(s) with up to 3 stars.`,
       followTheme: (name: string, count: number) => `Watch: ${name} (${count})`,
       recommendations: 'Recommendations',
@@ -118,40 +102,22 @@ function uiCopy(lang: string) {
       recKeepPositive: 'Keep the patterns that generate positive reviews and use them as a reference for service.',
       recNegSentiment: 'Watch negative sentiment in the next reviews to see if the pattern continues.',
       recTheme: (name: string) => `Monitor the theme “${name}”, seen most often in this period.`,
-      footer: 'Report based on available data. The PDF is generated and stored by the server for this cycle.',
-      errPeriod: 'Invalid period for export.',
+      footer: 'Report based on available data.', errPeriod: 'Invalid period for export.',
       errFail: 'Could not open the report. Allow pop-ups for this site and try again.',
-      brand: 'Filtra.AI',
-      themes: 'Themes',
-      rights: '© Filtra.AI — All rights reserved.',
-      plan: 'Plan',
+      brand: 'Filtra.AI', themes: 'Themes', rights: '© Filtra.AI — All rights reserved.', plan: 'Plan',
     };
   }
   if (lang === 'es') {
     return {
-      title: 'Informe Inteligente',
-      subtitle: 'Según los datos disponibles. Pulse Exportar PDF — se abre una pestaña para ver y descargar.',
-      month: 'Período',
-      pdfLang: 'Idioma del PDF',
-      exportPdf: 'Exportar PDF',
-      generating: 'Abriendo…',
-      avg: 'Media',
-      reviews: 'Reseñas',
-      positive: 'Positivas',
-      critical: 'Críticas',
-      evolution: 'Evolución',
-      evolutionEmpty: 'Aún no hay datos suficientes para calcular la tendencia.',
-      evolutionText: 'Variación de la media reciente:',
-      sentiment: 'Sentimiento',
-      sentPos: 'Positivo',
-      sentNeu: 'Neutral',
-      sentNeg: 'Negativo',
-      pointsPos: 'Principales puntos positivos',
-      pointsPosEmpty: 'Ningún punto positivo identificado en este período.',
+      title: 'Informe Inteligente', subtitle: 'Según los datos disponibles. Pulse Exportar PDF — se abre una pestaña para ver y descargar.',
+      month: 'Período', pdfLang: 'Idioma del PDF', exportPdf: 'Exportar PDF', generating: 'Abriendo…',
+      avg: 'Media', reviews: 'Reseñas', positive: 'Positivas', critical: 'Críticas', evolution: 'Evolución',
+      evolutionEmpty: 'Aún no hay datos suficientes para calcular la tendencia.', evolutionText: 'Variación de la media reciente:',
+      sentiment: 'Sentimiento', sentPos: 'Positivo', sentNeu: 'Neutral', sentNeg: 'Negativo',
+      pointsPos: 'Principales puntos positivos', pointsPosEmpty: 'Ningún punto positivo identificado en este período.',
       pointsPosLine: (n: number) => `${n} reseña(s) con 4 o 5 estrellas.`,
       themeLine: (name: string, count: number) => `Tema recurrente: ${name} (${count})`,
-      pointsCrit: 'Principales puntos de atención',
-      pointsCritEmpty: 'Ninguna reseña crítica identificada en este período.',
+      pointsCrit: 'Principales puntos de atención', pointsCritEmpty: 'Ninguna reseña crítica identificada en este período.',
       pointsCritLine: (n: number) => `${n} reseña(s) con hasta 3 estrellas.`,
       followTheme: (name: string, count: number) => `Seguir: ${name} (${count})`,
       recommendations: 'Recomendaciones',
@@ -161,113 +127,61 @@ function uiCopy(lang: string) {
       recKeepPositive: 'Mantenga los puntos que generan reseñas positivas y úselos como referencia de atención.',
       recNegSentiment: 'Siga de cerca el sentimiento negativo en las próximas reseñas para ver si el patrón se repite.',
       recTheme: (name: string) => `Monitoree el tema “${name}”, el más frecuente del período.`,
-      footer: 'Informe según los datos disponibles. PDF generado y almacenado por el servidor para este período.',
-      errPeriod: 'Período no válido para exportación.',
+      footer: 'Informe según los datos disponibles.', errPeriod: 'Período no válido para exportación.',
       errFail: 'No se pudo abrir el informe. Permita ventanas emergentes e inténtelo de nuevo.',
-      brand: 'Filtra.AI',
-      themes: 'Temas',
-      rights: '© Filtra.AI — Todos los derechos reservados.',
-      plan: 'Plan',
+      brand: 'Filtra.AI', themes: 'Temas', rights: '© Filtra.AI — Todos los derechos reservados.', plan: 'Plan',
     };
   }
   if (lang === 'zh') {
     return {
-      title: '智能报告',
-      subtitle: '基于当前数据。点击导出 PDF — 将打开新标签页查看和下载。',
-      month: '周期',
-      pdfLang: 'PDF 语言',
-      exportPdf: '导出 PDF',
-      generating: '打开中…',
-      avg: '平均分',
-      reviews: '评价',
-      positive: '好评',
-      critical: '需关注',
-      evolution: '趋势',
-      evolutionEmpty: '数据不足，暂无法计算趋势。',
-      evolutionText: '近期平均分变化：',
-      sentiment: '情绪',
-      sentPos: '积极',
-      sentNeu: '中性',
-      sentNeg: '消极',
-      pointsPos: '主要优点',
-      pointsPosEmpty: '本周期未发现明显优点。',
-      pointsPosLine: (n: number) => `${n} 条 4–5 星评价。`,
+      title: '智能报告', subtitle: '基于当前数据。点击导出 PDF — 将打开新标签页查看和下载。',
+      month: '周期', pdfLang: 'PDF 语言', exportPdf: '导出 PDF', generating: '打开中…',
+      avg: '平均分', reviews: '评价', positive: '好评', critical: '需关注', evolution: '趋势',
+      evolutionEmpty: '数据不足，暂无法计算趋势。', evolutionText: '近期平均分变化：',
+      sentiment: '情绪', sentPos: '积极', sentNeu: '中性', sentNeg: '消极',
+      pointsPos: '主要优点', pointsPosEmpty: '本周期未发现明显优点。', pointsPosLine: (n: number) => `${n} 条 4–5 星评价。`,
       themeLine: (name: string, count: number) => `常见主题：${name}（${count}）`,
-      pointsCrit: '主要关注点',
-      pointsCritEmpty: '本周期未发现差评。',
-      pointsCritLine: (n: number) => `${n} 条不超过 3 星的评价。`,
+      pointsCrit: '主要关注点', pointsCritEmpty: '本周期未发现差评。', pointsCritLine: (n: number) => `${n} 条不超过 3 星的评价。`,
       followTheme: (name: string, count: number) => `关注：${name}（${count}）`,
-      recommendations: '建议',
-      recEmpty: '本周期尚无评价，请先收集更多反馈。',
+      recommendations: '建议', recEmpty: '本周期尚无评价，请先收集更多反馈。',
       recCritical: '优先处理 3 星及以下评价，并识别重复问题。',
       recLowAvg: '分析低分原因，将主要投诉转化为运营改进。',
       recKeepPositive: '保持带来好评的服务标准，并作为参考。',
       recNegSentiment: '持续关注负面情绪，确认是否形成趋势。',
       recTheme: (name: string) => `关注本周期出现最多的主题「${name}」。`,
-      footer: '报告基于当前数据。PDF 由服务器生成并按周期保存。',
-      errPeriod: '导出周期无效。',
+      footer: '报告基于当前数据。', errPeriod: '导出周期无效。',
       errFail: '无法打开报告。请允许弹出窗口后重试。',
-      brand: 'Filtra.AI',
-      themes: '主题',
-      rights: '© Filtra.AI — 保留所有权利。',
-      plan: '套餐',
+      brand: 'Filtra.AI', themes: '主题', rights: '© Filtra.AI — 保留所有权利。', plan: '套餐',
     };
   }
   return {
     title: 'Relatório Inteligente',
-    subtitle:
-      'Conforme os dados disponíveis no momento. Clique em Exportar PDF — abre uma nova aba para visualizar e baixar.',
-    month: 'Período',
-    pdfLang: 'Idioma do PDF',
-    exportPdf: 'Exportar PDF',
-    generating: 'Abrindo…',
-    avg: 'Nota média',
-    reviews: 'Avaliações',
-    positive: 'Positivas',
-    critical: 'Críticas',
-    evolution: 'Evolução',
-    evolutionEmpty: 'Ainda não há dados suficientes para calcular a tendência.',
-    evolutionText: 'Variação da média recente:',
-    sentiment: 'Sentimento',
-    sentPos: 'Positivo',
-    sentNeu: 'Neutro',
-    sentNeg: 'Negativo',
-    pointsPos: 'Principais pontos positivos',
-    pointsPosEmpty: 'Nenhum ponto positivo identificado neste período.',
+    subtitle: 'Conforme os dados disponíveis no momento. Clique em Exportar PDF — abre uma nova aba para visualizar e baixar.',
+    month: 'Período', pdfLang: 'Idioma do PDF', exportPdf: 'Exportar PDF', generating: 'Abrindo…',
+    avg: 'Nota média', reviews: 'Avaliações', positive: 'Positivas', critical: 'Críticas', evolution: 'Evolução',
+    evolutionEmpty: 'Ainda não há dados suficientes para calcular a tendência.', evolutionText: 'Variação da média recente:',
+    sentiment: 'Sentimento', sentPos: 'Positivo', sentNeu: 'Neutro', sentNeg: 'Negativo',
+    pointsPos: 'Principais pontos positivos', pointsPosEmpty: 'Nenhum ponto positivo identificado neste período.',
     pointsPosLine: (n: number) => `${n} avaliação(ões) com 4 ou 5 estrelas.`,
     themeLine: (name: string, count: number) => `Tema recorrente: ${name} (${count})`,
-    pointsCrit: 'Principais pontos de atenção',
-    pointsCritEmpty: 'Nenhuma avaliação crítica identificada neste período.',
+    pointsCrit: 'Principais pontos de atenção', pointsCritEmpty: 'Nenhuma avaliação crítica identificada neste período.',
     pointsCritLine: (n: number) => `${n} avaliação(ões) com até 3 estrelas.`,
     followTheme: (name: string, count: number) => `Acompanhar: ${name} (${count})`,
     recommendations: 'Recomendações',
-    recEmpty:
-      'Ainda não há avaliações neste período. Gere novas avaliações para uma leitura mais representativa.',
-    recCritical:
-      'Priorize o tratamento das avaliações de até 3 estrelas e identifique os problemas recorrentes antes de buscar novas avaliações.',
-    recLowAvg:
-      'Analise as causas das notas baixas e transforme os principais motivos de reclamação em ações operacionais.',
-    recKeepPositive:
-      'Mantenha os pontos que geram avaliações positivas e use esses padrões como referência para o atendimento.',
-    recNegSentiment:
-      'Acompanhe de perto o sentimento negativo nas próximas avaliações para verificar se o cenário está se repetindo.',
+    recEmpty: 'Ainda não há avaliações neste período. Gere novas avaliações para uma leitura mais representativa.',
+    recCritical: 'Priorize o tratamento das avaliações de até 3 estrelas e identifique os problemas recorrentes antes de buscar novas avaliações.',
+    recLowAvg: 'Analise as causas das notas baixas e transforme os principais motivos de reclamação em ações operacionais.',
+    recKeepPositive: 'Mantenha os pontos que geram avaliações positivas e use esses padrões como referência para o atendimento.',
+    recNegSentiment: 'Acompanhe de perto o sentimento negativo nas próximas avaliações para verificar se o cenário está se repetindo.',
     recTheme: (name: string) => `Monitore o tema “${name}”, identificado com maior frequência no período.`,
-    footer: 'Relatório conforme os dados disponíveis no momento. PDF gerado e armazenado pelo servidor para este ciclo.',
+    footer: 'Relatório conforme os dados disponíveis no momento.',
     errPeriod: 'Período inválido para exportação.',
     errFail: 'Não foi possível abrir o relatório. Permita pop-ups neste site e tente novamente.',
-    brand: 'Filtra.AI',
-    themes: 'Temas',
-    rights: '© Filtra.AI — Todos os direitos reservados.',
-    plan: 'Plano',
+    brand: 'Filtra.AI', themes: 'Temas', rights: '© Filtra.AI — Todos os direitos reservados.', plan: 'Plano',
   };
 }
 
-export function RelatorioInteligentePanel({
-  empresaId,
-  api,
-  authHeaders,
-  panelData,
-}: Props) {
+export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelData }: Props) {
   const { language } = useLanguage();
   const copy = uiCopy(language);
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
@@ -275,38 +189,20 @@ export function RelatorioInteligentePanel({
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
   const [reportMetrics, setReportMetrics] = useState<{
-    total?: number;
-    media?: number;
-    positivas?: number;
-    negativas?: number;
-    criticas?: number;
+    total?: number; media?: number; positivas?: number; negativas?: number; criticas?: number;
   } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const loadReportMetrics = async () => {
-      if (!MONTH_RE.test(mesReport)) {
-        setReportMetrics(null);
-        return;
-      }
+      if (!MONTH_RE.test(mesReport)) { setReportMetrics(null); return; }
       try {
-        const base = String(api || '').replace(/\/+$/, '');
+        const base = String(api || '').replace(/\\/+$/, '');
         const response = await fetch(
-          base +
-            '/api/empresa/' +
-            encodeURIComponent(empresaId) +
-            '/relatorio/inteligente?mes=' +
-            encodeURIComponent(mesReport),
-          {
-            method: 'GET',
-            headers: authHeaders(false),
-            credentials: 'include',
-          }
+          base + '/api/empresa/' + encodeURIComponent(empresaId) + '/relatorio/inteligente?mes=' + encodeURIComponent(mesReport),
+          { method: 'GET', headers: authHeaders(false), credentials: 'include' }
         );
-        if (!response.ok) {
-          if (!cancelled) setReportMetrics(null);
-          return;
-        }
+        if (!response.ok) { if (!cancelled) setReportMetrics(null); return; }
         const data = await response.json();
         if (!cancelled) setReportMetrics(data?.metricas || null);
       } catch {
@@ -314,9 +210,7 @@ export function RelatorioInteligentePanel({
       }
     };
     void loadReportMetrics();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [api, empresaId, mesReport, authHeaders]);
 
   const empresa = panelData?.empresa || {};
@@ -339,12 +233,10 @@ export function RelatorioInteligentePanel({
 
   const stats = useMemo(() => {
     const total = monthReviews.length;
-    let ratingSum = 0;
-    let ratedCount = 0;
-    let positive = 0;
-    let critical = 0;
+    let ratingSum = 0, ratedCount = 0, positive = 0, critical = 0;
     const sentiment = { positivo: 0, neutro: 0, negativo: 0 };
     const tagCounts: Record<string, number> = {};
+    const distribution = [0, 0, 0, 0, 0];
 
     for (const review of monthReviews) {
       const rating = reviewRating(review);
@@ -353,27 +245,18 @@ export function RelatorioInteligentePanel({
         ratedCount++;
         if (rating >= 4) positive++;
         else if (rating <= 3) critical++;
+        distribution[rating - 1] += 1;
       }
       let s = sentimentKey(review.sentiment);
-      if (!s && rating !== null) {
-        s = rating >= 4 ? 'positivo' : rating <= 2 ? 'negativo' : 'neutro';
-      }
+      if (!s && rating !== null) s = rating >= 4 ? 'positivo' : rating <= 2 ? 'negativo' : 'neutro';
       if (s) sentiment[s]++;
-      for (const tag of reviewTags(review)) {
-        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-      }
+      for (const tag of reviewTags(review)) tagCounts[tag] = (tagCounts[tag] || 0) + 1;
     }
 
     const themes = Object.entries(tagCounts)
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .slice(0, 6)
       .map(([name, count]) => ({ name, count }));
-
-    const distribution = [0, 0, 0, 0, 0];
-    for (const review of monthReviews) {
-      const rating = reviewRating(review);
-      if (rating !== null) distribution[rating - 1] += 1;
-    }
 
     const authoritativeTotal = toFiniteNumber(reportMetrics?.total);
     const authoritativeAverage = toFiniteNumber(reportMetrics?.media);
@@ -404,9 +287,8 @@ export function RelatorioInteligentePanel({
 
   const recommendations = useMemo(() => {
     const out: string[] = [];
-    if (!stats.total) {
-      out.push(copy.recEmpty);
-    } else {
+    if (!stats.total) out.push(copy.recEmpty);
+    else {
       if (stats.critical > stats.positive) out.push(copy.recCritical);
       if (stats.average > 0 && stats.average < 4) out.push(copy.recLowAvg);
       if (stats.positive >= stats.critical) out.push(copy.recKeepPositive);
@@ -416,7 +298,7 @@ export function RelatorioInteligentePanel({
     return out.slice(0, 4);
   }, [stats, copy]);
 
-  /** Geração oficial no backend: uma vez por ciclo; downloads seguintes reutilizam o PDF persistido. */
+  /** PDF client-side: nova aba, layout profissional por plano */
   const downloadPdf = async () => {
     if (!MONTH_RE.test(mesReport)) {
       setDownloadError(copy.errPeriod);
@@ -424,40 +306,35 @@ export function RelatorioInteligentePanel({
     }
     setDownloading(true);
     setDownloadError('');
-    const popup = typeof window !== 'undefined' ? window.open('', '_blank') : null;
     try {
       const lang = PDF_LANGS.has(language) ? language : 'pt';
-      const base = String(api || '').replace(/\/+$/, '');
-      const url =
-        base +
-        '/api/empresa/' +
-        encodeURIComponent(empresaId) +
-        '/relatorio.pdf?mes=' +
-        encodeURIComponent(mesReport) +
-        '&lang=' +
-        encodeURIComponent(lang);
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: authHeaders(false),
-        credentials: 'include',
+      const result = exportReportClient({
+        companyName: String(empresa?.nome_empresa || 'Empresa'),
+        periodLabel: labelMes(mesReport, language),
+        lang,
+        plan: String(empresa?.plan || 'trial'),
+        stats: {
+          total: stats.total,
+          ratedCount: stats.ratedCount,
+          positive: stats.positive,
+          critical: stats.critical,
+          average: stats.average,
+          sentiment: stats.sentiment,
+          themes: stats.themes,
+          distribution: stats.distribution,
+        },
+        evolution,
+        recommendations,
+        labels: {
+          title: copy.title, avg: copy.avg, reviews: copy.reviews, positive: copy.positive, critical: copy.critical,
+          evolution: copy.evolution, evolutionEmpty: copy.evolutionEmpty, evolutionText: copy.evolutionText,
+          sentiment: copy.sentiment, sentPos: copy.sentPos, sentNeu: copy.sentNeu, sentNeg: copy.sentNeg,
+          pointsPos: copy.pointsPos, pointsCrit: copy.pointsCrit, recommendations: copy.recommendations,
+          themes: copy.themes, footer: copy.footer, brand: copy.brand, rights: copy.rights,
+        },
       });
-      if (!response.ok) throw new Error('PDF request failed');
-      const blob = await response.blob();
-      if (blob.type && !blob.type.includes('pdf')) throw new Error('Invalid PDF response');
-      const objectUrl = URL.createObjectURL(blob);
-      if (popup) {
-        popup.location.href = objectUrl;
-      } else {
-        const link = document.createElement('a');
-        link.href = objectUrl;
-        link.download = 'relatorio-' + mesReport + '.pdf';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }
-      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+      if (!result.ok) setDownloadError(copy.errFail);
     } catch {
-      if (popup) popup.close();
       setDownloadError(copy.errFail);
     } finally {
       setDownloading(false);
@@ -465,170 +342,145 @@ export function RelatorioInteligentePanel({
   };
 
   return (
-    <section
-      className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-6 space-y-6"
-      aria-labelledby="relatorio-inteligente-title"
-    >
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <FileText size={18} className="text-indigo-400" />
-            <h2 id="relatorio-inteligente-title" className="text-base font-semibold text-zinc-100">
-              {copy.title}
-            </h2>
-          </div>
-          <p className="text-xs text-zinc-500 mt-1 max-w-2xl leading-relaxed">{copy.subtitle}</p>
+          <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900">
+            <FileText className="h-5 w-5 text-blue-600" />
+            {copy.title}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">{copy.subtitle}</p>
         </div>
-
-        <div className="flex flex-wrap gap-2 items-center">
-          <select
-            value={mesReport}
-            onChange={(e) => setMesReport(e.target.value)}
-            className="text-sm px-3 py-2 rounded-xl border border-zinc-700 bg-zinc-950"
-            aria-label={copy.month}
-          >
-            {mesesOpcoes.map((month) => (
-              <option key={month} value={month}>
-                {labelMes(month, language)}
-              </option>
-            ))}
-          </select>
-
-          <span className="text-xs text-zinc-500 px-2 py-2 rounded-xl border border-zinc-800 bg-zinc-950">
-            PDF · {(PDF_LANGS.has(language) ? language : 'pt').toUpperCase()}
-          </span>
-
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="text-xs font-medium text-slate-600">
+            {copy.month}
+            <select
+              className="ml-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm"
+              value={mesReport}
+              onChange={(e) => setMesReport(e.target.value)}
+            >
+              {mesesOpcoes.map((m) => (
+                <option key={m} value={m}>{labelMes(m, language)}</option>
+              ))}
+            </select>
+          </label>
           <button
             type="button"
-            onClick={downloadPdf}
+            onClick={() => void downloadPdf()}
             disabled={downloading}
-            className="inline-flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60"
           >
-            <Download size={16} />
+            <Download className="h-4 w-4" />
             {downloading ? copy.generating : copy.exportPdf}
           </button>
         </div>
       </div>
 
-      {downloadError && (
-        <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-300">
+      {downloadError ? (
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <AlertTriangle className="h-4 w-4 shrink-0" />
           {downloadError}
         </div>
-      )}
+      ) : null}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.avg}</p>
-          <p className="text-2xl font-bold mt-1">{stats.average || '—'}</p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.avg}</div>
+          <div className="mt-1 text-2xl font-bold text-slate-900">{stats.average ? stats.average.toFixed(1) : '—'}</div>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.reviews}</p>
-          <p className="text-2xl font-bold mt-1">{stats.total}</p>
+        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.reviews}</div>
+          <div className="mt-1 text-2xl font-bold text-slate-900">{stats.total}</div>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.positive}</p>
-          <p className="text-2xl font-bold mt-1 text-emerald-400">{stats.positive}</p>
+        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.positive}</div>
+          <div className="mt-1 text-2xl font-bold text-emerald-600">{stats.positive}</div>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-4">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.critical}</p>
-          <p className="text-2xl font-bold mt-1 text-red-400">{stats.critical}</p>
+        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.critical}</div>
+          <div className="mt-1 text-2xl font-bold text-red-600">{stats.critical}</div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp size={16} className="text-indigo-400" />
-            <h3 className="text-sm font-semibold">{copy.evolution}</h3>
-          </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="rounded-xl border border-slate-100 p-4">
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <TrendingUp className="h-4 w-4 text-blue-600" />
+            {copy.evolution}
+          </h3>
           {evolution === null ? (
-            <p className="text-sm text-zinc-500">{copy.evolutionEmpty}</p>
+            <p className="text-sm text-slate-500">{copy.evolutionEmpty}</p>
           ) : (
-            <p className="text-sm text-zinc-300">
+            <p className="text-sm text-slate-700">
               {copy.evolutionText}{' '}
-              <span className={evolution >= 0 ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
-                {evolution > 0 ? '+' : ''}
-                {evolution}
+              <span className={evolution >= 0 ? 'font-semibold text-emerald-600' : 'font-semibold text-red-600'}>
+                {evolution > 0 ? '+' : ''}{evolution}
               </span>
             </p>
           )}
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <h3 className="text-sm font-semibold mb-3">{copy.sentiment}</h3>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div>
-              <p className="text-[11px] text-emerald-400">{copy.sentPos}</p>
-              <p className="text-xl font-bold">{stats.sentiment.positivo}</p>
-            </div>
-            <div>
-              <p className="text-[11px] text-amber-400">{copy.sentNeu}</p>
-              <p className="text-xl font-bold">{stats.sentiment.neutro}</p>
-            </div>
-            <div>
-              <p className="text-[11px] text-red-400">{copy.sentNeg}</p>
-              <p className="text-xl font-bold">{stats.sentiment.negativo}</p>
-            </div>
+        <div className="rounded-xl border border-slate-100 p-4">
+          <h3 className="mb-2 text-sm font-semibold text-slate-800">{copy.sentiment}</h3>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <span className="text-emerald-700">{copy.sentPos}: <b>{stats.sentiment.positivo}</b></span>
+            <span className="text-amber-700">{copy.sentNeu}: <b>{stats.sentiment.neutro}</b></span>
+            <span className="text-red-700">{copy.sentNeg}: <b>{stats.sentiment.negativo}</b></span>
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle2 size={16} className="text-emerald-400" />
-            <h3 className="text-sm font-semibold">{copy.pointsPos}</h3>
-          </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="rounded-xl border border-slate-100 p-4">
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            {copy.pointsPos}
+          </h3>
           {stats.positive === 0 ? (
-            <p className="text-sm text-zinc-500">{copy.pointsPosEmpty}</p>
+            <p className="text-sm text-slate-500">{copy.pointsPosEmpty}</p>
           ) : (
-            <ul className="space-y-2 text-sm text-zinc-300">
-              <li>• {copy.pointsPosLine(stats.positive)}</li>
-              {stats.themes.slice(0, 3).map((theme) => (
-                <li key={`pos-${theme.name}`}>• {copy.themeLine(theme.name, theme.count)}</li>
+            <ul className="space-y-1 text-sm text-slate-700">
+              <li>{copy.pointsPosLine(stats.positive)}</li>
+              {stats.themes.slice(0, 2).map((t) => (
+                <li key={t.name}>{copy.themeLine(t.name, t.count)}</li>
               ))}
             </ul>
           )}
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle size={16} className="text-red-400" />
-            <h3 className="text-sm font-semibold">{copy.pointsCrit}</h3>
-          </div>
+        <div className="rounded-xl border border-slate-100 p-4">
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <AlertTriangle className="h-4 w-4 text-amber-600" />
+            {copy.pointsCrit}
+          </h3>
           {stats.critical === 0 ? (
-            <p className="text-sm text-zinc-500">{copy.pointsCritEmpty}</p>
+            <p className="text-sm text-slate-500">{copy.pointsCritEmpty}</p>
           ) : (
-            <ul className="space-y-2 text-sm text-zinc-300">
-              <li>• {copy.pointsCritLine(stats.critical)}</li>
-              {stats.themes.slice(0, 3).map((theme) => (
-                <li key={`crit-${theme.name}`}>• {copy.followTheme(theme.name, theme.count)}</li>
+            <ul className="space-y-1 text-sm text-slate-700">
+              <li>{copy.pointsCritLine(stats.critical)}</li>
+              {stats.themes.slice(0, 2).map((t) => (
+                <li key={'c-' + t.name}>{copy.followTheme(t.name, t.count)}</li>
               ))}
             </ul>
           )}
         </div>
       </div>
 
-      <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Lightbulb size={16} className="text-indigo-300" />
-          <h3 className="text-sm font-semibold">{copy.recommendations}</h3>
-        </div>
-        {recommendations.length ? (
-          <ul className="space-y-2 text-sm text-zinc-300">
-            {recommendations.map((line) => (
-              <li key={line}>• {line}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-zinc-500">{copy.recEmpty}</p>
-        )}
+      <div className="mt-4 rounded-xl border border-slate-100 p-4">
+        <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+          <Lightbulb className="h-4 w-4 text-amber-500" />
+          {copy.recommendations}
+        </h3>
+        <ul className="space-y-1 text-sm text-slate-700">
+          {recommendations.map((r, i) => (
+            <li key={i}>• {r}</li>
+          ))}
+        </ul>
       </div>
 
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3 text-xs text-zinc-500">
-        {copy.footer}
-        {selectedMonth ? (
+      <div className="mt-4 text-xs text-slate-400">
+        {copy.brand}
+        {empresa?.plan ? (
           <>
-            {' '}
-            <span className="text-zinc-400">({labelMes(selectedMonth, language)})</span>
+            {' · '}{copy.plan}: <span className="font-medium text-slate-500">{String(empresa.plan)}</span>
           </>
         ) : null}
       </div>
