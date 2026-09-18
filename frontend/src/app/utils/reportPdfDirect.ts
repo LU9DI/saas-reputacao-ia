@@ -19,92 +19,142 @@ const slug = (s: string) =>
 
 type Depth = 'pro' | 'ultra' | 'corp' | 'rei';
 
+/** Nome oficial do plano (como no produto). */
+function planDisplayName(plan: string, lang: string): string {
+  const p = String(plan || '').toLowerCase();
+  if (p.includes('rei')) return 'Rei';
+  if (p.includes('corp') || p.includes('empres')) return lang === 'en' ? 'Corporate' : 'Corporativo';
+  if (p.includes('ultra') || p.includes('premium')) return 'Ultra';
+  if (p.includes('trial') || p.includes('teste') || p.includes('trialing')) {
+    return lang === 'en' ? 'Trial (Ultra)' : lang === 'es' ? 'Trial (Ultra)' : lang === 'zh' ? '试用 (Ultra)' : 'Trial (Ultra)';
+  }
+  if (p.includes('pro')) return 'Pro';
+  if (p.includes('inicial') || p.includes('basic') || p.includes('starter')) return lang === 'en' ? 'Starter' : 'Inicial';
+  return plan || 'Pro';
+}
+
 function depthOf(plan: string): Depth {
   const p = String(plan || '').toLowerCase();
   if (p.includes('rei')) return 'rei';
   if (p.includes('corp') || p.includes('empres')) return 'corp';
-  if (p.includes('ultra') || p.includes('trial') || p.includes('teste') || p.includes('premium')) return 'ultra';
+  if (p.includes('ultra') || p.includes('premium') || p.includes('trial') || p.includes('teste') || p.includes('trialing'))
+    return 'ultra';
   if (p.includes('pro')) return 'pro';
-  return 'ultra';
+  return 'pro';
 }
 
-function planHero(depth: Depth, lang: string): { title: string; subtitle: string } {
+function planHero(depth: Depth, lang: string, displayName: string): { title: string; subtitle: string } {
   const map: Record<Depth, Record<string, { title: string; subtitle: string }>> = {
     pro: {
-      pt: { title: 'PLANO PRO', subtitle: 'Essencial — KPIs e distribuição' },
-      en: { title: 'PRO PLAN', subtitle: 'Essential — KPIs and distribution' },
-      es: { title: 'PLAN PRO', subtitle: 'Esencial — KPIs y distribución' },
-      zh: { title: 'PRO 套餐', subtitle: '基础 — KPI 与分布' },
+      pt: { title: `PLANO ${displayName.toUpperCase()}`, subtitle: 'KPIs essenciais · distribuição de notas · positivas vs críticas' },
+      en: { title: `${displayName.toUpperCase()} PLAN`, subtitle: 'Essential KPIs · rating distribution · positive vs critical' },
+      es: { title: `PLAN ${displayName.toUpperCase()}`, subtitle: 'KPIs esenciales · distribución · positivas vs críticas' },
+      zh: { title: `${displayName} 套餐`, subtitle: '核心 KPI · 评分分布 · 好评 vs 差评' },
     },
     ultra: {
-      pt: { title: 'PLANO ULTRA', subtitle: 'Essencial + inteligência de sentimento' },
-      en: { title: 'ULTRA PLAN', subtitle: 'Essential + sentiment intelligence' },
-      es: { title: 'PLAN ULTRA', subtitle: 'Esencial + inteligencia de sentimiento' },
-      zh: { title: 'ULTRA 套餐', subtitle: '基础 + 情感智能' },
+      pt: { title: `PLANO ${displayName.toUpperCase()}`, subtitle: 'KPIs + sentimento (IA) + temas detectados' },
+      en: { title: `${displayName.toUpperCase()} PLAN`, subtitle: 'KPIs + sentiment (AI) + detected themes' },
+      es: { title: `PLAN ${displayName.toUpperCase()}`, subtitle: 'KPIs + sentimiento (IA) + temas detectados' },
+      zh: { title: `${displayName} 套餐`, subtitle: 'KPI + 情感分析 (AI) + 主题' },
     },
     corp: {
-      pt: { title: 'PLANO CORPORATIVO', subtitle: 'Ultra + multi-unidade e ranking' },
-      en: { title: 'CORPORATE PLAN', subtitle: 'Ultra + multi-unit ranking' },
-      es: { title: 'PLAN CORPORATIVO', subtitle: 'Ultra + multiunidad y ranking' },
-      zh: { title: '企业版', subtitle: 'Ultra + 多门店排名' },
+      pt: { title: `PLANO ${displayName.toUpperCase()}`, subtitle: 'Ultra + ranking multi-unidade + visão por filial' },
+      en: { title: `${displayName.toUpperCase()} PLAN`, subtitle: 'Ultra + multi-unit ranking + per-branch view' },
+      es: { title: `PLAN ${displayName.toUpperCase()}`, subtitle: 'Ultra + ranking multiunidad + vista por sucursal' },
+      zh: { title: `${displayName} 套餐`, subtitle: 'Ultra + 多门店排名 + 分店视图' },
     },
     rei: {
-      pt: { title: 'PLANO REI', subtitle: 'Executivo completo — filiais e visão avançada' },
-      en: { title: 'REI PLAN', subtitle: 'Full executive — branches and advanced view' },
-      es: { title: 'PLAN REI', subtitle: 'Ejecutivo completo — sucursales y visión avanzada' },
-      zh: { title: 'REI 套餐', subtitle: '完整高管版 — 门店与高级视图' },
+      pt: { title: `PLANO ${displayName.toUpperCase()}`, subtitle: 'Relatório executivo completo · donut · gargalos · detalhe por filial' },
+      en: { title: `${displayName.toUpperCase()} PLAN`, subtitle: 'Full executive report · donut · bottlenecks · rich branch detail' },
+      es: { title: `PLAN ${displayName.toUpperCase()}`, subtitle: 'Informe ejecutivo completo · donut · cuellos de botella' },
+      zh: { title: `${displayName} 套餐`, subtitle: '完整高管报告 · 圆环图 · 瓶颈 · 门店详情' },
     },
   };
   const l = ['pt', 'en', 'es', 'zh'].includes(lang) ? lang : 'pt';
   return map[depth][l] || map[depth].pt;
 }
 
-function benefits(depth: Depth, lang: string): { in: string[]; out: string[] } {
-  const all: Record<string, { label: string; min: Depth }[]> = {
-    pt: [
-      { label: 'Tudo do Pro', min: 'pro' },
-      { label: 'Sentimento: positivo / neutro / negativo', min: 'ultra' },
-      { label: 'Temas principais detectados pela IA', min: 'ultra' },
-      { label: 'Ranking de filiais (Corporativo+)', min: 'corp' },
-      { label: 'Ficha detalhada por unidade (Rei)', min: 'rei' },
-    ],
-    en: [
-      { label: 'Everything in Pro', min: 'pro' },
-      { label: 'Sentiment: positive / neutral / negative', min: 'ultra' },
-      { label: 'Main themes detected by AI', min: 'ultra' },
-      { label: 'Branch ranking (Corporate+)', min: 'corp' },
-      { label: 'Detailed page per unit (Rei)', min: 'rei' },
-    ],
-    es: [
-      { label: 'Todo de Pro', min: 'pro' },
-      { label: 'Sentimiento: positivo / neutro / negativo', min: 'ultra' },
-      { label: 'Temas principales detectados por IA', min: 'ultra' },
-      { label: 'Ranking de sucursales (Corporativo+)', min: 'corp' },
-      { label: 'Ficha detallada por unidad (Rei)', min: 'rei' },
-    ],
-    zh: [
-      { label: '含 Pro', min: 'pro' },
-      { label: '情感：正面 / 中性 / 负面', min: 'ultra' },
-      { label: 'AI 检测的主要主题', min: 'ultra' },
-      { label: '门店排名（企业版+）', min: 'corp' },
-      { label: '每店详情页（Rei）', min: 'rei' },
-    ],
-  };
+type Feature = { key: string; min: Depth; label: string };
+
+function features(depth: Depth, lang: string): { included: Feature[]; locked: Feature[] } {
   const rank: Record<Depth, number> = { pro: 1, ultra: 2, corp: 3, rei: 4 };
   const cur = rank[depth];
+  const labels: Record<string, Record<string, string>> = {
+    pt: {
+      kpis: 'KPIs e volume de avaliações',
+      dist: 'Distribuição de notas (1★–5★)',
+      poscrit: 'Positivas vs críticas',
+      sent: 'Análise de sentimento (IA)',
+      themes: 'Temas mais citados (IA)',
+      ranking: 'Ranking de unidades / filiais',
+      branch: 'Página dedicada por filial',
+      donut: 'Visão executiva (donut pos/neu/neg)',
+      bottleneck: 'Gargalos e barras de temas',
+      rich: 'Detalhe rico por filial (IA)',
+    },
+    en: {
+      kpis: 'KPIs and review volume',
+      dist: 'Rating distribution (1★–5★)',
+      poscrit: 'Positive vs critical',
+      sent: 'Sentiment analysis (AI)',
+      themes: 'Top themes (AI)',
+      ranking: 'Unit / branch ranking',
+      branch: 'Dedicated page per branch',
+      donut: 'Executive view (donut)',
+      bottleneck: 'Bottlenecks and theme bars',
+      rich: 'Rich branch detail (AI)',
+    },
+    es: {
+      kpis: 'KPIs y volumen de reseñas',
+      dist: 'Distribución de notas (1★–5★)',
+      poscrit: 'Positivas vs críticas',
+      sent: 'Análisis de sentimiento (IA)',
+      themes: 'Temas más citados (IA)',
+      ranking: 'Ranking de unidades / sucursales',
+      branch: 'Página dedicada por sucursal',
+      donut: 'Visión ejecutiva (donut)',
+      bottleneck: 'Cuellos de botella y barras de temas',
+      rich: 'Detalle rico por sucursal (IA)',
+    },
+    zh: {
+      kpis: 'KPI 与评价量',
+      dist: '评分分布 (1★–5★)',
+      poscrit: '好评 vs 差评',
+      sent: '情感分析 (AI)',
+      themes: '热门主题 (AI)',
+      ranking: '门店排名',
+      branch: '每店专属页',
+      donut: '高管圆环图',
+      bottleneck: '瓶颈与主题条',
+      rich: '丰富门店详情 (AI)',
+    },
+  };
   const l = ['pt', 'en', 'es', 'zh'].includes(lang) ? lang : 'pt';
-  const items = all[l] || all.pt;
+  const lab = labels[l] || labels.pt;
+  const order: { key: string; min: Depth }[] = [
+    { key: 'kpis', min: 'pro' },
+    { key: 'dist', min: 'pro' },
+    { key: 'poscrit', min: 'pro' },
+    { key: 'sent', min: 'ultra' },
+    { key: 'themes', min: 'ultra' },
+    { key: 'ranking', min: 'corp' },
+    { key: 'branch', min: 'corp' },
+    { key: 'donut', min: 'rei' },
+    { key: 'bottleneck', min: 'rei' },
+    { key: 'rich', min: 'rei' },
+  ];
+  const all = order.map((o) => ({ key: o.key, min: o.min, label: lab[o.key] }));
   return {
-    in: items.filter((i) => cur >= rank[i.min]).map((i) => i.label),
-    out: items.filter((i) => cur < rank[i.min]).map((i) => i.label),
+    included: all.filter((f) => cur >= rank[f.min]),
+    locked: all.filter((f) => cur < rank[f.min]),
   };
 }
 
 function sectionLabels(lang: string) {
   if (lang === 'en') {
     return {
-      benefitsIn: 'Benefits in this PDF',
-      benefitsOut: 'Not included in this plan',
+      benefitsIn: 'Included in this plan',
+      benefitsOut: 'Not in this plan (upgrade to unlock)',
       summary: 'Cycle summary',
       volume: 'Volume',
       volumeSub: 'reviews',
@@ -115,17 +165,23 @@ function sectionLabels(lang: string) {
       critical: 'Critical',
       criticalSub: '1–3★',
       dist: 'Rating distribution',
-      sentiment: 'Sentiment (Ultra+ benefit)',
-      themes: 'AI themes (Ultra+ benefit)',
-      themesEmpty: 'No themes in this cycle yet — this section is part of your plan and appears when AI tags exist.',
-      footer: 'Filtra.AI · PDF {{plan}} · plan benefits · subscription cycle',
+      sentiment: 'Sentiment analysis (AI)',
+      themes: 'Top themes (AI)',
+      themesEmpty: 'No AI themes in this cycle yet.',
+      ranking: 'Unit ranking (Corporate+)',
+      rankingEmpty: 'Register branches to see multi-unit ranking. Available on Corporate and Rei.',
+      executive: 'Executive view (Rei)',
+      bottlenecks: 'Main bottlenecks (Rei)',
+      lockedNote: 'Section available on a higher plan.',
+      footer: 'Filtra.AI · Plan {{plan}} · benefits of your subscription · cycle report',
       rights: '© Filtra.AI — All rights reserved. Confidential document.',
+      planLine: 'Plan',
     };
   }
   if (lang === 'es') {
     return {
-      benefitsIn: 'Beneficios de este PDF',
-      benefitsOut: 'No incluido en este plan',
+      benefitsIn: 'Incluido en este plan',
+      benefitsOut: 'No incluido (mejora el plan para desbloquear)',
       summary: 'Resumen del ciclo',
       volume: 'Volumen',
       volumeSub: 'reseñas',
@@ -136,17 +192,23 @@ function sectionLabels(lang: string) {
       critical: 'Críticas',
       criticalSub: '1–3★',
       dist: 'Distribución de notas',
-      sentiment: 'Sentimiento (beneficio Ultra+)',
-      themes: 'Temas de IA (beneficio Ultra+)',
-      themesEmpty: 'Ningún tema en este ciclo aún — la sección forma parte de tu plan y aparece con tags de IA.',
-      footer: 'Filtra.AI · PDF {{plan}} · beneficios del plan · ciclo de suscripción',
+      sentiment: 'Análisis de sentimiento (IA)',
+      themes: 'Temas principales (IA)',
+      themesEmpty: 'Ningún tema de IA en este ciclo aún.',
+      ranking: 'Ranking de unidades (Corporativo+)',
+      rankingEmpty: 'Registre sucursales para ver ranking multiunidad. Disponible en Corporativo y Rei.',
+      executive: 'Visión ejecutiva (Rei)',
+      bottlenecks: 'Principales cuellos de botella (Rei)',
+      lockedNote: 'Sección disponible en un plan superior.',
+      footer: 'Filtra.AI · Plan {{plan}} · beneficios de tu suscripción · informe del ciclo',
       rights: '© Filtra.AI — Todos los derechos reservados. Documento confidencial.',
+      planLine: 'Plan',
     };
   }
   if (lang === 'zh') {
     return {
-      benefitsIn: '本 PDF 权益',
-      benefitsOut: '本套餐不含',
+      benefitsIn: '本套餐包含',
+      benefitsOut: '本套餐不含（升级可解锁）',
       summary: '周期摘要',
       volume: '数量',
       volumeSub: '评价',
@@ -157,16 +219,22 @@ function sectionLabels(lang: string) {
       critical: '差评',
       criticalSub: '1–3★',
       dist: '评分分布',
-      sentiment: '情感分析（Ultra+）',
-      themes: 'AI 主题（Ultra+）',
-      themesEmpty: '本周期暂无主题 — 该板块属于您的套餐，有 AI 标签时显示。',
-      footer: 'Filtra.AI · PDF {{plan}} · 套餐权益 · 订阅周期',
+      sentiment: '情感分析 (AI)',
+      themes: '热门主题 (AI)',
+      themesEmpty: '本周期暂无 AI 主题。',
+      ranking: '门店排名（企业版+）',
+      rankingEmpty: '登记分店后可查看多门店排名。企业版与 Rei 可用。',
+      executive: '高管视图 (Rei)',
+      bottlenecks: '主要瓶颈 (Rei)',
+      lockedNote: '更高套餐可用。',
+      footer: 'Filtra.AI · 套餐 {{plan}} · 订阅权益 · 周期报告',
       rights: '© Filtra.AI — 保留所有权利。机密文件。',
+      planLine: '套餐',
     };
   }
   return {
-    benefitsIn: 'Benefícios deste PDF',
-    benefitsOut: 'Não incluso neste plano',
+    benefitsIn: 'Incluído neste plano',
+    benefitsOut: 'Não incluso (faça upgrade para liberar)',
     summary: 'Resumo do ciclo',
     volume: 'Volume',
     volumeSub: 'avaliações',
@@ -177,12 +245,18 @@ function sectionLabels(lang: string) {
     critical: 'Críticas',
     criticalSub: '1–3★',
     dist: 'Distribuição de notas',
-    sentiment: 'Sentimento (benefício Ultra+)',
-    themes: 'Temas da IA (benefício Ultra+)',
-    themesEmpty:
-      'Nenhum tema neste ciclo ainda — a seção faz parte do seu plano e aparece assim que houver tags de IA.',
-    footer: 'Filtra.AI · PDF {{plan}} · benefícios do plano · ciclo de assinatura',
+    sentiment: 'Análise de sentimento (IA)',
+    themes: 'Temas mais citados (IA)',
+    themesEmpty: 'Nenhum tema de IA neste ciclo ainda.',
+    ranking: 'Ranking de unidades (Corporativo+)',
+    rankingEmpty:
+      'Cadastre filiais para ver o ranking multi-unidade. Disponível nos planos Corporativo e Rei.',
+    executive: 'Visão executiva (Rei)',
+    bottlenecks: 'Gargalos principais (Rei)',
+    lockedNote: 'Seção disponível em um plano superior.',
+    footer: 'Filtra.AI · Plano {{plan}} · benefícios da sua assinatura · relatório do ciclo',
     rights: '© Filtra.AI — Todos os direitos reservados. Documento confidencial.',
+    planLine: 'Plano',
   };
 }
 
@@ -194,7 +268,6 @@ function distOf(p: ClientReportPayload): number[] {
   return [0, 0, 0, 0, 0];
 }
 
-/** Logo oficial embutido (mesmo SVG de /public/icons/icon.svg) — sem depender de rede/CORS. */
 const LOGO_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36" role="img" aria-label="Filtra.AI">' +
   '<defs>' +
@@ -213,9 +286,11 @@ const LOGO_SVG =
 
 function makeHtml(p: ClientReportPayload): string {
   const lang = String(p.lang || 'pt');
-  const depth = depthOf(p.plan || 'trial');
-  const hero = planHero(depth, lang);
-  const bens = benefits(depth, lang);
+  const rawPlan = p.plan || 'trial';
+  const depth = depthOf(rawPlan);
+  const displayName = planDisplayName(rawPlan, lang);
+  const hero = planHero(depth, lang, displayName);
+  const feats = features(depth, lang);
   const L = sectionLabels(lang);
   const s = p.stats;
   const total = s.ratedCount || s.total || 0;
@@ -224,8 +299,9 @@ function makeHtml(p: ClientReportPayload): string {
   const maxD = Math.max(...dist, 1);
   const showSent = depth !== 'pro';
   const showThemes = depth !== 'pro';
-  const planKey = depth === 'corp' ? 'CORPORATIVO' : depth.toUpperCase();
-  const footerLine = L.footer.replace('{{plan}}', planKey);
+  const showRanking = depth === 'corp' || depth === 'rei';
+  const showRei = depth === 'rei';
+  const footerLine = L.footer.replace('{{plan}}', displayName);
   const rights = p.labels.rights || L.rights;
 
   const bars = dist
@@ -236,14 +312,35 @@ function makeHtml(p: ClientReportPayload): string {
     })
     .join('');
 
-  const benIn = bens.in.map((x) => `<li><span class="ok">✓</span> ${esc(x)}</li>`).join('');
-  const benOut = bens.out.length
-    ? bens.out.map((x) => `<li><span class="no">○</span> ${esc(x)}</li>`).join('')
-    : '<li><span class="no">—</span></li>';
+  const benIn = feats.included.map((x) => `<li><span class="ok">✓</span> ${esc(x.label)}</li>`).join('');
+  const benOut = feats.locked.length
+    ? feats.locked.map((x) => `<li><span class="no">○</span> ${esc(x.label)}</li>`).join('')
+    : '<li><span class="ok">✓</span> —</li>';
 
   const themesHtml =
     s.themes && s.themes.length
       ? s.themes.map((t) => `<div class="theme">• ${esc(t.name)} <b>(${t.count})</b></div>`).join('')
+      : `<div class="themes-empty">${esc(L.themesEmpty)}</div>`;
+
+  const sentTotal = s.sentiment.positivo + s.sentiment.neutro + s.sentiment.negativo || 1;
+  const donutNote =
+    lang === 'en'
+      ? `Share: +${pct(s.sentiment.positivo, sentTotal)} · ~${pct(s.sentiment.neutro, sentTotal)} · −${pct(s.sentiment.negativo, sentTotal)}`
+      : lang === 'es'
+        ? `Participación: +${pct(s.sentiment.positivo, sentTotal)} · ~${pct(s.sentiment.neutro, sentTotal)} · −${pct(s.sentiment.negativo, sentTotal)}`
+        : lang === 'zh'
+          ? `占比：+${pct(s.sentiment.positivo, sentTotal)} · ~${pct(s.sentiment.neutro, sentTotal)} · −${pct(s.sentiment.negativo, sentTotal)}`
+          : `Participação: +${pct(s.sentiment.positivo, sentTotal)} · ~${pct(s.sentiment.neutro, sentTotal)} · −${pct(s.sentiment.negativo, sentTotal)}`;
+
+  const bottleneckHtml =
+    s.themes && s.themes.length
+      ? s.themes
+          .slice(0, 4)
+          .map((t, i) => {
+            const w = Math.max(8, Math.round((t.count / (s.themes[0].count || 1)) * 100));
+            return `<div class="bn-row"><span class="bn-n">${i + 1}</span><span class="bn-name">${esc(t.name)}</span><div class="track"><div class="fill bn" style="width:${w}%"></div></div><span class="cnt">${t.count}</span></div>`;
+          })
+          .join('')
       : `<div class="themes-empty">${esc(L.themesEmpty)}</div>`;
 
   const sentBlock = showSent
@@ -259,15 +356,31 @@ function makeHtml(p: ClientReportPayload): string {
     ? `<h2 class="sec">${esc(L.themes)}</h2><div class="themes-box">${themesHtml}</div>`
     : '';
 
+  const rankingBlock = showRanking
+    ? `<h2 class="sec">${esc(L.ranking)}</h2><div class="themes-box"><div class="themes-empty">${esc(L.rankingEmpty)}</div></div>`
+    : '';
+
+  const reiBlock = showRei
+    ? `<h2 class="sec">${esc(L.executive)}</h2>
+<section class="sent-grid">
+  <div class="sent-card"><small class="g">${esc(p.labels.sentPos)}</small><b>${pct(s.sentiment.positivo, sentTotal)}</b><span>${s.sentiment.positivo}</span></div>
+  <div class="sent-card"><small class="a">${esc(p.labels.sentNeu)}</small><b>${pct(s.sentiment.neutro, sentTotal)}</b><span>${s.sentiment.neutro}</span></div>
+  <div class="sent-card"><small class="r">${esc(p.labels.sentNeg)}</small><b>${pct(s.sentiment.negativo, sentTotal)}</b><span>${s.sentiment.negativo}</span></div>
+</section>
+<p class="donut-note">${esc(donutNote)}</p>
+<h2 class="sec">${esc(L.bottlenecks)}</h2>
+<div class="themes-box">${bottleneckHtml}</div>`
+    : '';
+
   return `<main class="report">
-  <div class="watermark">FILTRA.AI</div>
+  <div class="watermark">FILTRA.AI · ${esc(displayName.toUpperCase())}</div>
 
   <div class="hero">
     <div class="brand-row"><span class="logo-wrap">${LOGO_SVG}</span><span class="brand">Filtra.AI</span></div>
     <div class="plan-title">${esc(hero.title)}</div>
     <div class="plan-sub">${esc(hero.subtitle)}</div>
     <div class="company">${esc(p.companyName)}</div>
-    <div class="cycle">${esc(p.periodLabel)} · Conta: ${esc(p.plan || 'Trial')}</div>
+    <div class="cycle">${esc(p.periodLabel)} · ${esc(L.planLine)}: <strong>${esc(displayName)}</strong></div>
   </div>
 
   <section class="benefits">
@@ -294,6 +407,8 @@ function makeHtml(p: ClientReportPayload): string {
 
   ${sentBlock}
   ${themesBlock}
+  ${rankingBlock}
+  ${reiBlock}
 
   <footer>
     <div class="foot-main">${esc(footerLine)}</div>
@@ -320,9 +435,9 @@ function makeHtml(p: ClientReportPayload): string {
       margin-left: -320px;
       text-align: center;
       transform: rotate(-28deg);
-      font-size: 52px;
+      font-size: 42px;
       font-weight: 800;
-      letter-spacing: 4px;
+      letter-spacing: 3px;
       color: #1e40af;
       opacity: 0.055;
       pointer-events: none;
@@ -354,6 +469,7 @@ function makeHtml(p: ClientReportPayload): string {
     .hero .plan-sub { font-size: 11px; color: #dbeafe; margin-top: 4px; }
     .hero .company { font-size: 12px; font-weight: 700; margin-top: 10px; }
     .hero .cycle { font-size: 10px; color: #93c5fd; margin-top: 2px; }
+    .hero .cycle strong { color: #fff; }
 
     .benefits {
       position: relative;
@@ -442,6 +558,7 @@ function makeHtml(p: ClientReportPayload): string {
       overflow: hidden;
     }
     .fill { height: 100%; border-radius: 6px; min-width: 0; }
+    .fill.bn { background: #2563eb; }
     .cnt { font-size: 11px; color: #64748b; text-align: right; }
 
     .sent-grid {
@@ -485,6 +602,21 @@ function makeHtml(p: ClientReportPayload): string {
     .theme { font-size: 11px; color: #1e293b; margin-bottom: 4px; }
     .theme b { color: #64748b; font-weight: 600; }
     .themes-empty { font-size: 10px; color: #64748b; line-height: 1.45; }
+    .donut-note { position: relative; z-index: 1; font-size: 10px; color: #64748b; margin: 0 0 8px; }
+
+    .bn-row {
+      display: grid;
+      grid-template-columns: 22px 1fr 1fr 28px;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 11px;
+    }
+    .bn-n {
+      width: 18px; height: 18px; line-height: 18px; text-align: center;
+      border-radius: 50%; background: #2563eb; color: #fff; font-size: 10px; font-weight: 700;
+    }
+    .bn-name { color: #1e293b; }
 
     footer {
       position: absolute;
@@ -523,11 +655,12 @@ async function createReportPdfBlob(p: ClientReportPayload): Promise<Blob | null>
   try {
     await waitImages(host);
     const mod = await import('html2pdf.js');
+    const planSlug = slug(planDisplayName(p.plan || 'pro', p.lang || 'pt'));
     const worker = mod
       .default()
       .set({
         margin: 0,
-        filename: `relatorio-${slug(p.companyName)}-${slug(p.periodLabel)}.pdf`,
+        filename: `relatorio-${planSlug}-${slug(p.companyName)}-${slug(p.periodLabel)}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
           scale: 2,
@@ -579,7 +712,7 @@ export async function exportReportPdfDirect(p: ClientReportPayload): Promise<Rep
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `relatorio-${slug(p.companyName)}-${slug(p.periodLabel)}.pdf`;
+  a.download = `relatorio-${slug(planDisplayName(p.plan || 'pro', p.lang || 'pt'))}-${slug(p.companyName)}-${slug(p.periodLabel)}.pdf`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
   return { ok: true, mode: 'pdf-download' };
