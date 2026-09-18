@@ -1,4 +1,5 @@
 /** Cliente Web Push no browser. */
+import { apiFetch } from './apiFailover';
 
 function cleanVapidKey(raw: string): string {
   return String(raw || '')
@@ -146,7 +147,7 @@ export async function enablePush(
     };
   }
 
-  const keyRes = await fetch(`${apiUrl}/api/push/vapid-public-key`, {
+  const keyRes = await apiFetch('/api/push/vapid-public-key', {
     credentials: 'include',
   });
   const keyJson = await keyRes.json().catch(() => ({}));
@@ -176,7 +177,7 @@ export async function enablePush(
     return { ok: false, error: mapPushError(e) };
   }
 
-  const res = await fetch(`${apiUrl}/api/push/subscribe`, {
+  const res = await apiFetch('/api/push/subscribe', {
     method: 'POST',
     credentials: 'include',
     headers: authHeaders(token),
@@ -193,7 +194,7 @@ export async function enablePush(
 }
 
 export async function sendTestPush(apiUrl: string, token: string) {
-  const res = await fetch(`${apiUrl}/api/push/test`, {
+  const res = await apiFetch('/api/push/test', {
     method: 'POST',
     credentials: 'include',
     headers: authHeaders(token),
