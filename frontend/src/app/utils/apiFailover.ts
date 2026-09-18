@@ -26,7 +26,9 @@ function stripSlash(u: string): string {
 export function listApiBases(): string[] {
   const primary =
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) ||
-    'http://127.0.0.1:5000';
+    (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
+      ? 'http://127.0.0.1:5000'
+      : '');
   const backup =
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL_BACKUP) || '';
   const extras =
@@ -91,6 +93,9 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
+      if (external?.aborted) {
+        throw new DOMException('The operation was aborted.', 'AbortError');
+      }
       const res = await fetch(`${base}${pathNorm}`, {
         ...fetchInit,
         signal: controller.signal,
@@ -116,6 +121,7 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
     } catch (e: any) {
       clearTimeout(timer);
       if (external) external.removeEventListener('abort', onAbort);
+      if (e?.name === 'AbortError' && external?.aborted) throw e;
       const msg = e?.name === 'AbortError' ? 'timeout/abort' : e?.message || 'network';
       errors.push(`${base} → ${msg}`);
     }
