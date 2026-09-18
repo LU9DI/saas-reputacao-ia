@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { apiFetch } from '../utils/apiFailover';
 
 export type ReviewItem = {
   id: number;
