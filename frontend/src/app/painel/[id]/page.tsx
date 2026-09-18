@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
+import { apiFetch } from '../../utils/apiFailover';
 import { DashboardCharts } from '../../components/DashboardCharts';
 import { PlanSwitcher } from '../../components/PlanSwitcher';
 import { PushEnable } from '../../components/PushEnable';
@@ -72,7 +73,7 @@ export default function PainelEmpresa() {
     setErro('');
     setPrecisaLogin(false);
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaId}/painel`, {
+      const res = await apiFetch(`/api/empresa/${empresaId}/painel`, {
         credentials: 'include',
         headers: authHeaders(false),
       });
@@ -118,7 +119,7 @@ export default function PainelEmpresa() {
 
   const sair = async () => {
     try {
-      await fetch(`${api}/api/auth/logout`, {
+      await apiFetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(false),
@@ -137,7 +138,7 @@ export default function PainelEmpresa() {
   const salvarWhatsapp = async () => {
     setMsgWpp('');
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaId}/whatsapp`, {
+      const res = await apiFetch(`/api/empresa/${empresaId}/whatsapp`, {
         method: 'PATCH',
         credentials: 'include',
         headers: authHeaders(),
@@ -155,7 +156,7 @@ export default function PainelEmpresa() {
   const salvarGoogle = async () => {
     setMsgGoogle('');
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaId}/google`, {
+      const res = await apiFetch(`/api/empresa/${empresaId}/google`, {
         method: 'PATCH',
         credentials: 'include',
         headers: authHeaders(),
