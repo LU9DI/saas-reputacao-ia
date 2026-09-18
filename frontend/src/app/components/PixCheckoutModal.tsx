@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 import { Loader2, Copy, Check, X } from 'lucide-react';
 
 type Props = {
@@ -36,7 +36,6 @@ export function PixCheckoutModal({
   const [pix, setPix] = useState<PixPayload | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [pago, setPago] = useState(false);
-  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
 
   const criar = useCallback(async () => {
     setLoading(true);
@@ -44,7 +43,7 @@ export function PixCheckoutModal({
     setPix(null);
     setPago(false);
     try {
-      const res = await fetch(`${api}/api/pix/avulso`, {
+      const res = await apiFetch('/api/pix/avulso', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -76,7 +75,7 @@ export function PixCheckoutModal({
     } finally {
       setLoading(false);
     }
-  }, [api, planoKey, empresaId, email]);
+  }, [planoKey, empresaId, email]);
 
   useEffect(() => {
     if (open) criar();
@@ -86,7 +85,7 @@ export function PixCheckoutModal({
     if (!open || !pix?.payment_id || pago) return;
     const t = setInterval(async () => {
       try {
-        const res = await fetch(`${api}/api/pix/payment/${pix.payment_id}`);
+        const res = await apiFetch(`/api/pix/payment/${pix.payment_id}`);
         const data = await res.json().catch(() => ({}));
         if (data.approved || data.status === 'approved') {
           setPago(true);
@@ -96,7 +95,7 @@ export function PixCheckoutModal({
       }
     }, 4000);
     return () => clearInterval(t);
-  }, [open, pix?.payment_id, api, pago]);
+  }, [open, pix?.payment_id, pago]);
 
   if (!open) return null;
 
