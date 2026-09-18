@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Bell, CheckCircle2, AlertCircle } from 'lucide-react';
 import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 import { enablePush, sendTestPush } from '../utils/pushClient';
 
 export function PushEnable() {
