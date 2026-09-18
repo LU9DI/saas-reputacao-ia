@@ -194,6 +194,23 @@ function distOf(p: ClientReportPayload): number[] {
   return [0, 0, 0, 0, 0];
 }
 
+/** Logo oficial embutido (mesmo SVG de /public/icons/icon.svg) — sem depender de rede/CORS. */
+const LOGO_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="36" height="36" role="img" aria-label="Filtra.AI">' +
+  '<defs>' +
+  '<linearGradient id="g" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">' +
+  '<stop stop-color="#60a5fa"/><stop offset="0.45" stop-color="#3b82f6"/>' +
+  '<stop offset="0.75" stop-color="#6366f1"/><stop offset="1" stop-color="#7c3aed"/>' +
+  '</linearGradient>' +
+  '<linearGradient id="g2" x1="160" y1="160" x2="400" y2="420" gradientUnits="userSpaceOnUse">' +
+  '<stop stop-color="#93c5fd"/><stop offset="0.5" stop-color="#6366f1"/><stop offset="1" stop-color="#4f46e5"/>' +
+  '</linearGradient></defs>' +
+  '<rect width="512" height="512" rx="112" fill="#05050a"/>' +
+  '<path d="M112 128c0-35 29-64 64-64h176c26 0 42 30 26 51L272 230c-10 13-25 20-41 20h-55c-35 0-64-29-64-64v-58Z" fill="url(#g)"/>' +
+  '<path d="M112 224h112c19 0 36 11 44 28l102 210c11 23-6 50-31 50h-66c-12 0-23-6-29-17L146 290c-21-40-34-58-34-66Z" fill="url(#g2)"/>' +
+  '<path d="M176 272h112c14 0 25 9 29 22l10 30c3 10-5 20-15 20H208c-18 0-32-14-32-32v-40Z" fill="url(#g)" opacity="0.95"/>' +
+  '</svg>';
+
 function makeHtml(p: ClientReportPayload): string {
   const lang = String(p.lang || 'pt');
   const depth = depthOf(p.plan || 'trial');
@@ -246,7 +263,7 @@ function makeHtml(p: ClientReportPayload): string {
   <div class="watermark">FILTRA.AI</div>
 
   <div class="hero">
-    <div class="brand">Filtra.AI</div>
+    <div class="brand-row"><span class="logo-wrap">${LOGO_SVG}</span><span class="brand">Filtra.AI</span></div>
     <div class="plan-title">${esc(hero.title)}</div>
     <div class="plan-sub">${esc(hero.subtitle)}</div>
     <div class="company">${esc(p.companyName)}</div>
@@ -306,7 +323,7 @@ function makeHtml(p: ClientReportPayload): string {
       font-size: 52px;
       font-weight: 800;
       letter-spacing: 4px;
-      color: #0a5555;
+      color: #1e40af;
       opacity: 0.055;
       pointer-events: none;
       z-index: 0;
@@ -314,17 +331,29 @@ function makeHtml(p: ClientReportPayload): string {
     .hero {
       position: relative;
       z-index: 1;
-      background: #0d6e6e;
+      background: #2563eb;
       border-radius: 14px;
       padding: 18px 22px 16px;
       color: #fff;
       margin-bottom: 16px;
     }
-    .hero .brand { font-size: 9px; font-weight: 700; color: #99f6e4; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .logo-wrap {
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
+      background: #05050a;
+    }
+    .logo-wrap svg { display: block; width: 36px; height: 36px; }
+    .hero .brand { font-size: 13px; font-weight: 800; color: #fff; letter-spacing: 0.3px; margin-bottom: 0; }
     .hero .plan-title { font-size: 22px; font-weight: 800; line-height: 1.15; }
-    .hero .plan-sub { font-size: 11px; color: #d1fae5; margin-top: 4px; }
+    .hero .plan-sub { font-size: 11px; color: #dbeafe; margin-top: 4px; }
     .hero .company { font-size: 12px; font-weight: 700; margin-top: 10px; }
-    .hero .cycle { font-size: 10px; color: #a7f3d0; margin-top: 2px; }
+    .hero .cycle { font-size: 10px; color: #93c5fd; margin-top: 2px; }
 
     .benefits {
       position: relative;
@@ -340,14 +369,14 @@ function makeHtml(p: ClientReportPayload): string {
       border: 1px solid #e2e8f0;
       min-height: 88px;
     }
-    .ben.in { background: #ecfdf5; }
+    .ben.in { background: #eff6ff; }
     .ben.out { background: #f8fafc; }
     .ben h3 {
       margin: 0 0 8px;
       font-size: 9px;
       text-transform: uppercase;
       letter-spacing: 0.6px;
-      color: #0a5555;
+      color: #1e40af;
     }
     .ben.out h3 { color: #64748b; }
     .ben ul { margin: 0; padding: 0; list-style: none; }
@@ -363,7 +392,7 @@ function makeHtml(p: ClientReportPayload): string {
       color: #0f172a;
       margin: 14px 0 8px;
       padding-bottom: 4px;
-      border-bottom: 2px solid #0d6e6e;
+      border-bottom: 2px solid #2563eb;
       display: inline-block;
       min-width: 120px;
     }
