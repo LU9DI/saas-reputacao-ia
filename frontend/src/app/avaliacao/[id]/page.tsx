@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { getEnv } from '../../utils/env';
 import { apiFetch } from '../../utils/apiFailover';
 import { readApiError } from '../../utils/apiError';
 import { useLanguage } from '../../Contexts/LanguageContext';
@@ -157,8 +156,6 @@ export default function PaginaAvaliacao() {
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
 
   const totalStars = Array.from({ length: 5 }, (_, i) => i + 1);
-  const apiUrl = () => getEnv('NEXT_PUBLIC_API_URL');
-
   const validarAcesso = async () => {
     setErroValidacao(false);
     try {
@@ -207,21 +204,29 @@ export default function PaginaAvaliacao() {
     return texto;
   };
 
-  const handleStarClick = (selectedRating: number) => {
+  const handleStarClick = async (selectedRating: number) => {
+    if (loading) return;
     setRating(selectedRating);
     setErro('');
     if (selectedRating >= 4) {
-      const payload = JSON.stringify(payloadBase(selectedRating));
-      const blob = new Blob([payload], { type: 'application/json' });
-      if (!navigator.sendBeacon(`${apiUrl()}/api/reviews`, blob)) {
-        apiFetch('/api/reviews', {
+      setLoading(true);
+      try {
+        const response = await apiFetch('/api/reviews', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: payload,
+          body: JSON.stringify(payloadBase(selectedRating)),
           keepalive: true,
-        }).catch(() => {});
+        });
+        if (!response.ok) {
+          setErro(await readApiError(response, tx('send_error')));
+          return;
+        }
+        window.location.href = googleReviewUrl || 'https://www.google.com/maps';
+      } catch {
+        setErro(tx('send_error'));
+      } finally {
+        setLoading(false);
       }
-      window.location.href = googleReviewUrl || 'https://www.google.com/maps';
     }
   };
 
@@ -236,7 +241,7 @@ export default function PaginaAvaliacao() {
     setLoading(true);
     setErro('');
     try {
-      const response = await fetch(`${apiUrl()}/api/reviews`, {
+      const response = await apiFetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payloadBase(rating)),
