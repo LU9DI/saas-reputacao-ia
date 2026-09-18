@@ -26,40 +26,6 @@ jobs:
     steps:
       - run: echo "Deploy autorizado"
 
-  deploy-api-railway:
-    name: API → Railway
-    needs: gate
-    runs-on: ubuntu-latest
-    # Secrets não podem ser usados diretamente em job.if; use a variável
-    # ENABLE_RAILWAY_DEPLOY=true para habilitar este deploy explicitamente.
-    if: ${{ vars.ENABLE_RAILWAY_DEPLOY == 'true' }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Railway CLI
-        run: npm i -g @railway/cli
-
-      - name: Deploy API
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          RAILWAY_SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
-        run: |
-          if [ -z "$RAILWAY_TOKEN" ]; then
-            echo "RAILWAY_TOKEN não configurado — deploy da API não pode continuar."
-            exit 1
-          fi
-          if [ -n "$RAILWAY_SERVICE_ID" ]; then
-            railway up --service "$RAILWAY_SERVICE_ID" --detach
-          else
-            railway up --detach
-          fi
-
   deploy-web-vercel:
     name: Frontend → Vercel
     needs: gate
