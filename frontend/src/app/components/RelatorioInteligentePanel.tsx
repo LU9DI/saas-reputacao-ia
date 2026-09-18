@@ -290,7 +290,7 @@ export function RelatorioInteligentePanel({
         return;
       }
       try {
-        const base = String(api || '').replace(/\\/$/, '');
+        const base = String(api || '').replace(/\/+$/, '');
         const response = await fetch(
           base +
             '/api/empresa/' +
