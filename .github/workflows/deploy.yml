@@ -63,6 +63,9 @@ jobs:
   deploy-web-vercel:
     name: Frontend → Vercel
     needs: gate
+    # Deploy manual/opt-in: evita publicar mudanças automaticamente.
+    # Habilite com Repository Variable ENABLE_VERCEL_DEPLOY=true.
+    if: ${{ vars.ENABLE_VERCEL_DEPLOY == 'true' }}
     runs-on: ubuntu-latest
     defaults:
       run:
