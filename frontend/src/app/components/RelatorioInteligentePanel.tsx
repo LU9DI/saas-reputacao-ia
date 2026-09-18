@@ -186,7 +186,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
   const copy = uiCopy(language);
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
   const [mesReport, setMesReport] = useState(currentMonth);
-  const [pdfLang, setPdfLang] = useState(() => (PDF_LANGS.has(language) ? language : 'pt'));
+  const [pdfLang, setPdfLang] = useState<string>(() => (PDF_LANGS.has(language) ? String(language) : 'pt'));
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
   const [reportMetrics, setReportMetrics] = useState<{
@@ -384,7 +384,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
             <select
               className="ml-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
               value={pdfLang}
-              onChange={(e) => setPdfLang(e.target.value)}
+              onChange={(e) => setPdfLang(String(e.target.value))}
             >
               <option value="pt">Português</option>
               <option value="en">English</option>
