@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from '../utils/passwordPolicy';
 import { BrandMark } from '../components/BrandMark';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
@@ -47,7 +48,7 @@ function RecuperarForm() {
       return;
     }
     try {
-      const res = await fetch(`${api()}/api/auth/forgot-password`, {
+      const res = await apiFetch(`/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: emailTrim }),
@@ -89,7 +90,7 @@ function RecuperarForm() {
       return;
     }
     try {
-      const res = await fetch(`${api()}/api/auth/reset-password`, {
+      const res = await apiFetch(`/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, nova_senha: novaSenha }),
