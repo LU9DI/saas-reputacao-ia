@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { getEnv } from '../../utils/env';
+import { apiFetch } from '../../utils/apiFailover';
 import { readApiError } from '../../utils/apiError';
 import { useLanguage } from '../../Contexts/LanguageContext';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
@@ -161,7 +162,7 @@ export default function PaginaAvaliacao() {
   const validarAcesso = async () => {
     setErroValidacao(false);
     try {
-      const response = await fetch(`${apiUrl()}/api/empresa/${empresaId}/validar`);
+      const response = await apiFetch(`/api/empresa/${empresaId}/validar`);
       const data = await response.json();
       if (data.valido) {
         setTrialValido(true);
@@ -213,7 +214,7 @@ export default function PaginaAvaliacao() {
       const payload = JSON.stringify(payloadBase(selectedRating));
       const blob = new Blob([payload], { type: 'application/json' });
       if (!navigator.sendBeacon(`${apiUrl()}/api/reviews`, blob)) {
-        fetch(`${apiUrl()}/api/reviews`, {
+        apiFetch('/api/reviews', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: payload,
