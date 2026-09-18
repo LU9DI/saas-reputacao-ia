@@ -272,7 +272,6 @@ export function RelatorioInteligentePanel({
   const copy = uiCopy(language);
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
   const [mesReport, setMesReport] = useState(currentMonth);
-  const [langPdf, setLangPdf] = useState('pt');
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
 
