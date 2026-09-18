@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 
 function authHeaders(json = true): HeadersInit {
   const h: Record<string, string> = {};
@@ -65,7 +66,7 @@ export function WebAuthnSetup() {
     setLoading(true);
     setMsg('');
     try {
-      const optRes = await fetch(`${api}/api/webauthn/register/options`, {
+      const optRes = await apiFetch(`/api/webauthn/register/options`, {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(),
@@ -99,7 +100,7 @@ export function WebAuthnSetup() {
       const att = cred.response as AuthenticatorAttestationResponse;
       const publicKeyB64 = await extractPublicKeyB64(cred);
 
-      const finish = await fetch(`${api}/api/webauthn/register/verify`, {
+      const finish = await apiFetch(`/api/webauthn/register/verify`, {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(),
