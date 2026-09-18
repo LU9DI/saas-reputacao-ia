@@ -327,6 +327,12 @@ export function RelatorioInteligentePanel({
       .slice(0, 6)
       .map(([name, count]) => ({ name, count }));
 
+    const distribution = [0, 0, 0, 0, 0];
+    for (const review of monthReviews) {
+      const rating = reviewRating(review);
+      if (rating !== null) distribution[rating - 1] += 1;
+    }
+
     return {
       total,
       ratedCount,
@@ -335,6 +341,7 @@ export function RelatorioInteligentePanel({
       average: ratedCount ? Math.round((ratingSum / ratedCount) * 10) / 10 : 0,
       sentiment,
       themes,
+      distribution,
     };
   }, [monthReviews]);
 
@@ -386,6 +393,7 @@ export function RelatorioInteligentePanel({
           average: stats.average,
           sentiment: stats.sentiment,
           themes: stats.themes,
+          distribution: stats.distribution || [0, 0, 0, 0, 0],
         },
         evolution,
         recommendations,
