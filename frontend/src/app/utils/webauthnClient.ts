@@ -1,4 +1,5 @@
 /** Helpers WebAuthn no browser (digital / Face ID / Windows Hello). */
+import { apiFetch } from './apiFailover';
 
 function bufferToB64url(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
@@ -35,7 +36,7 @@ async function exportPublicKeySpki(cred: PublicKeyCredential): Promise<string> {
 }
 
 export async function registerPasskey(apiUrl: string, token: string) {
-  const optRes = await fetch(`${apiUrl}/api/webauthn/register/options`, {
+  const optRes = await apiFetch('/api/webauthn/register/options', {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -69,7 +70,7 @@ export async function registerPasskey(apiUrl: string, token: string) {
   const attestation = cred.response as AuthenticatorAttestationResponse;
   const publicKeySpki = await exportPublicKeySpki(cred);
 
-  const verifyRes = await fetch(`${apiUrl}/api/webauthn/register/verify`, {
+  const verifyRes = await apiFetch('/api/webauthn/register/verify', {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -91,7 +92,7 @@ export async function registerPasskey(apiUrl: string, token: string) {
 }
 
 export async function loginWithPasskey(apiUrl: string, cnpj: string) {
-  const optRes = await fetch(`${apiUrl}/api/webauthn/login/options`, {
+  const optRes = await apiFetch('/api/webauthn/login/options', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cnpj }),
@@ -118,7 +119,7 @@ export async function loginWithPasskey(apiUrl: string, cnpj: string) {
   if (!cred) throw new Error('Autenticação cancelada.');
 
   const assertion = cred.response as AuthenticatorAssertionResponse;
-  const verifyRes = await fetch(`${apiUrl}/api/webauthn/login/verify`, {
+  const verifyRes = await apiFetch('/api/webauthn/login/verify', {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
