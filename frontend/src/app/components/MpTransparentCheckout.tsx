@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 import { Loader2, X, Check } from 'lucide-react';
 
 type Props = {
@@ -55,7 +55,6 @@ export function MpTransparentCheckout({
   const [pago, setPago] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
   const [pixQr, setPixQr] = useState<string | null>(null);
-  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
 
   const destroyBrick = useCallback(() => {
     try {
@@ -85,10 +84,9 @@ export function MpTransparentCheckout({
       setPago(false);
       setPixQr(null);
       try {
-        const cfgRes = await fetch(
-          `${api}/api/mp/config?plano=${encodeURIComponent(planoKey)}`,
-          { cache: 'no-store' }
-        );
+        const cfgRes = await apiFetch(`/api/mp/config?plano=${encodeURIComponent(planoKey)}`, {
+          cache: 'no-store',
+        });
         const cfg = await cfgRes.json().catch(() => ({}));
         if (!cfgRes.ok || !cfg.configured) {
           throw new Error(
@@ -148,7 +146,7 @@ export function MpTransparentCheckout({
             onSubmit: ({ formData }: any) => {
               return new Promise<void>(async (resolve, reject) => {
                 try {
-                  const res = await fetch(`${api}/api/mp/process-payment`, {
+                  const res = await apiFetch('/api/mp/process-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -174,7 +172,7 @@ export function MpTransparentCheckout({
                     if (data.payment_id) {
                       const poll = setInterval(async () => {
                         try {
-                          const pr = await fetch(`${api}/api/pix/payment/${data.payment_id}`);
+                          const pr = await apiFetch(`/api/pix/payment/${data.payment_id}`);
                           const pd = await pr.json().catch(() => ({}));
                           if (pd.approved || pd.status === 'approved') {
                             clearInterval(poll);
@@ -213,7 +211,7 @@ export function MpTransparentCheckout({
       cancelled = true;
       destroyBrick();
     };
-  }, [open, api, planoKey, empresaId, email, destroyBrick]);
+  }, [open, planoKey, empresaId, email, destroyBrick]);
 
   if (!open) return null;
 
