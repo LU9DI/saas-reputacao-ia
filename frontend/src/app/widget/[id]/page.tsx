@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { apiFetch } from '../../utils/apiFailover';
 
 interface Review {
   name: string;
@@ -23,8 +24,7 @@ export default function WidgetProvas() {
       setLoading(false);
       return;
     }
-    const api = process.env.NEXT_PUBLIC_API_URL;
-    fetch(`${api}/api/empresa/${id}/widget?limit=6`)
+    apiFetch(`/api/empresa/${id}/widget?limit=6`)
       .then(async (r) => {
         const j = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(j.error || 'Erro ao carregar');
