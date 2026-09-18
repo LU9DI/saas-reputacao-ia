@@ -21,7 +21,7 @@ export function PushEnable() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${api}/api/push/vapid-public-key`);
+        const res = await apiFetch('/api/push/vapid-public-key');
         const data = await res.json().catch(() => ({}));
         if (!cancelled) setConfigured(Boolean(data.configured || data.publicKey));
         if (!res.ok && !cancelled) {
