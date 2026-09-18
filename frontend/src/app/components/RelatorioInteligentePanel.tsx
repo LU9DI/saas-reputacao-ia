@@ -298,7 +298,6 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
     return out.slice(0, 4);
   }, [stats, copy]);
 
-  /** PDF client-side: nova aba, layout profissional por plano */
   const downloadPdf = async () => {
     if (!MONTH_RE.test(mesReport)) {
       setDownloadError(copy.errPeriod);
@@ -342,20 +341,20 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900">
+          <h2 className="flex items-center gap-2 text-lg font-bold text-zinc-50">
             <FileText className="h-5 w-5 text-blue-600" />
             {copy.title}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">{copy.subtitle}</p>
+          <p className="mt-1 text-sm text-zinc-400">{copy.subtitle}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <label className="text-xs font-medium text-slate-600">
+          <label className="text-xs font-medium text-zinc-400">
             {copy.month}
             <select
-              className="ml-2 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm"
+              className="ml-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
               value={mesReport}
               onChange={(e) => setMesReport(e.target.value)}
             >
@@ -377,41 +376,41 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
       </div>
 
       {downloadError ? (
-        <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-900/60 bg-red-950/50 px-3 py-2 text-sm text-red-300">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           {downloadError}
         </div>
       ) : null}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.avg}</div>
-          <div className="mt-1 text-2xl font-bold text-slate-900">{stats.average ? stats.average.toFixed(1) : '—'}</div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{copy.avg}</div>
+          <div className="mt-1 text-2xl font-bold text-zinc-50">{stats.average ? stats.average.toFixed(1) : '—'}</div>
         </div>
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.reviews}</div>
-          <div className="mt-1 text-2xl font-bold text-slate-900">{stats.total}</div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{copy.reviews}</div>
+          <div className="mt-1 text-2xl font-bold text-zinc-50">{stats.total}</div>
         </div>
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.positive}</div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{copy.positive}</div>
           <div className="mt-1 text-2xl font-bold text-emerald-600">{stats.positive}</div>
         </div>
-        <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.critical}</div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{copy.critical}</div>
           <div className="mt-1 text-2xl font-bold text-red-600">{stats.critical}</div>
         </div>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-slate-100 p-4">
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-100">
             <TrendingUp className="h-4 w-4 text-blue-600" />
             {copy.evolution}
           </h3>
           {evolution === null ? (
-            <p className="text-sm text-slate-500">{copy.evolutionEmpty}</p>
+            <p className="text-sm text-zinc-400">{copy.evolutionEmpty}</p>
           ) : (
-            <p className="text-sm text-slate-700">
+            <p className="text-sm text-zinc-300">
               {copy.evolutionText}{' '}
               <span className={evolution >= 0 ? 'font-semibold text-emerald-600' : 'font-semibold text-red-600'}>
                 {evolution > 0 ? '+' : ''}{evolution}
@@ -419,26 +418,26 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
             </p>
           )}
         </div>
-        <div className="rounded-xl border border-slate-100 p-4">
-          <h3 className="mb-2 text-sm font-semibold text-slate-800">{copy.sentiment}</h3>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+          <h3 className="mb-2 text-sm font-semibold text-zinc-100">{copy.sentiment}</h3>
           <div className="flex flex-wrap gap-3 text-sm">
-            <span className="text-emerald-700">{copy.sentPos}: <b>{stats.sentiment.positivo}</b></span>
-            <span className="text-amber-700">{copy.sentNeu}: <b>{stats.sentiment.neutro}</b></span>
-            <span className="text-red-700">{copy.sentNeg}: <b>{stats.sentiment.negativo}</b></span>
+            <span className="text-emerald-400">{copy.sentPos}: <b>{stats.sentiment.positivo}</b></span>
+            <span className="text-amber-400">{copy.sentNeu}: <b>{stats.sentiment.neutro}</b></span>
+            <span className="text-red-400">{copy.sentNeg}: <b>{stats.sentiment.negativo}</b></span>
           </div>
         </div>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-2">
-        <div className="rounded-xl border border-slate-100 p-4">
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-100">
             <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             {copy.pointsPos}
           </h3>
           {stats.positive === 0 ? (
-            <p className="text-sm text-slate-500">{copy.pointsPosEmpty}</p>
+            <p className="text-sm text-zinc-400">{copy.pointsPosEmpty}</p>
           ) : (
-            <ul className="space-y-1 text-sm text-slate-700">
+            <ul className="space-y-1 text-sm text-zinc-300">
               <li>{copy.pointsPosLine(stats.positive)}</li>
               {stats.themes.slice(0, 2).map((t) => (
                 <li key={t.name}>{copy.themeLine(t.name, t.count)}</li>
@@ -446,15 +445,15 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
             </ul>
           )}
         </div>
-        <div className="rounded-xl border border-slate-100 p-4">
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-100">
             <AlertTriangle className="h-4 w-4 text-amber-600" />
             {copy.pointsCrit}
           </h3>
           {stats.critical === 0 ? (
-            <p className="text-sm text-slate-500">{copy.pointsCritEmpty}</p>
+            <p className="text-sm text-zinc-400">{copy.pointsCritEmpty}</p>
           ) : (
-            <ul className="space-y-1 text-sm text-slate-700">
+            <ul className="space-y-1 text-sm text-zinc-300">
               <li>{copy.pointsCritLine(stats.critical)}</li>
               {stats.themes.slice(0, 2).map((t) => (
                 <li key={'c-' + t.name}>{copy.followTheme(t.name, t.count)}</li>
@@ -464,23 +463,23 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-slate-100 p-4">
-        <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+      <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4">
+        <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-100">
           <Lightbulb className="h-4 w-4 text-amber-500" />
           {copy.recommendations}
         </h3>
-        <ul className="space-y-1 text-sm text-slate-700">
+        <ul className="space-y-1 text-sm text-zinc-300">
           {recommendations.map((r, i) => (
             <li key={i}>• {r}</li>
           ))}
         </ul>
       </div>
 
-      <div className="mt-4 text-xs text-slate-400">
+      <div className="mt-4 text-xs text-zinc-500">
         {copy.brand}
         {empresa?.plan ? (
           <>
-            {' · '}{copy.plan}: <span className="font-medium text-slate-500">{String(empresa.plan)}</span>
+            {' · '}{copy.plan}: <span className="font-medium text-zinc-400">{String(empresa.plan)}</span>
           </>
         ) : null}
       </div>
