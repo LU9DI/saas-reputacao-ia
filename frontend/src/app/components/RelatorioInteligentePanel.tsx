@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
 
@@ -274,6 +274,50 @@ export function RelatorioInteligentePanel({
   const [mesReport, setMesReport] = useState(currentMonth);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
+  const [reportMetrics, setReportMetrics] = useState<{
+    total?: number;
+    media?: number;
+    positivas?: number;
+    negativas?: number;
+    criticas?: number;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadReportMetrics = async () => {
+      if (!MONTH_RE.test(mesReport)) {
+        setReportMetrics(null);
+        return;
+      }
+      try {
+        const base = String(api || '').replace(/\\/$/, '');
+        const response = await fetch(
+          base +
+            '/api/empresa/' +
+            encodeURIComponent(empresaId) +
+            '/relatorio/inteligente?mes=' +
+            encodeURIComponent(mesReport),
+          {
+            method: 'GET',
+            headers: authHeaders(false),
+            credentials: 'include',
+          }
+        );
+        if (!response.ok) {
+          if (!cancelled) setReportMetrics(null);
+          return;
+        }
+        const data = await response.json();
+        if (!cancelled) setReportMetrics(data?.metricas || null);
+      } catch {
+        if (!cancelled) setReportMetrics(null);
+      }
+    };
+    void loadReportMetrics();
+    return () => {
+      cancelled = true;
+    };
+  }, [api, empresaId, mesReport, authHeaders]);
 
   const empresa = panelData?.empresa || {};
   const metricas = panelData?.metricas || {};
@@ -331,17 +375,22 @@ export function RelatorioInteligentePanel({
       if (rating !== null) distribution[rating - 1] += 1;
     }
 
+    const authoritativeTotal = toFiniteNumber(reportMetrics?.total);
+    const authoritativeAverage = toFiniteNumber(reportMetrics?.media);
+    const authoritativePositive = toFiniteNumber(reportMetrics?.positivas);
+    const authoritativeCritical = toFiniteNumber(reportMetrics?.negativas);
+
     return {
-      total,
-      ratedCount,
-      positive,
-      critical,
-      average: ratedCount ? Math.round((ratingSum / ratedCount) * 10) / 10 : 0,
+      total: authoritativeTotal ?? total,
+      ratedCount: authoritativeTotal ?? ratedCount,
+      positive: authoritativePositive ?? positive,
+      critical: authoritativeCritical ?? critical,
+      average: authoritativeAverage ?? (ratedCount ? Math.round((ratingSum / ratedCount) * 10) / 10 : 0),
       sentiment,
       themes,
       distribution,
     };
-  }, [monthReviews]);
+  }, [monthReviews, reportMetrics]);
 
   const evolution = useMemo(() => {
     const raw = Array.isArray(metricas?.serie_14d) ? metricas.serie_14d : [];
