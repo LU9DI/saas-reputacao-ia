@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 import { MpTransparentCheckout } from './MpTransparentCheckout';
 import { useLanguage } from '../Contexts/LanguageContext';
 import { Check, X, ShieldCheck, Loader2, Sparkles, MessageCircle, FileText, BarChart3, Headset, Rocket, Layers } from 'lucide-react';
@@ -100,9 +100,8 @@ function featuresForPlan(plan: string, limit: number, t: any) {
 }
 
 async function registrarAceite(payload: Record<string, unknown>) {
-  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
   try {
-    await fetch(`${api}/api/legal/aceite`, {
+    await apiFetch('/api/legal/aceite', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -130,10 +129,9 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
     const carregar = async () => {
       try {
-        const planosRes = await fetch(`${apiUrl}/api/planos`, {
+        const planosRes = await apiFetch('/api/planos', {
           cache: 'no-store',
           headers: { 'Cache-Control': 'no-cache' },
         });
@@ -201,8 +199,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     setErro('');
     setLoading(`paypal-${planoKey}`);
     try {
-      const apiUrl = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
-      const res = await fetch(`${apiUrl}/api/paypal/create-order`, {
+      const res = await apiFetch('/api/paypal/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
