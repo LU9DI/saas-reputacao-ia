@@ -186,6 +186,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
   const copy = uiCopy(language);
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
   const [mesReport, setMesReport] = useState(currentMonth);
+  const [pdfLang, setPdfLang] = useState(() => (PDF_LANGS.has(language) ? language : 'pt'));
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
   const [reportMetrics, setReportMetrics] = useState<{
@@ -306,10 +307,11 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
     setDownloading(true);
     setDownloadError('');
     try {
-      const lang = PDF_LANGS.has(language) ? language : 'pt';
+      const lang = PDF_LANGS.has(pdfLang) ? pdfLang : 'pt';
+      const pdfCopy = uiCopy(lang);
       const result = exportReportClient({
         companyName: String(empresa?.nome_empresa || 'Empresa'),
-        periodLabel: labelMes(mesReport, language),
+        periodLabel: labelMes(mesReport, lang),
         lang,
         plan: String(empresa?.plan || 'trial'),
         stats: {
@@ -325,11 +327,25 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
         evolution,
         recommendations,
         labels: {
-          title: copy.title, avg: copy.avg, reviews: copy.reviews, positive: copy.positive, critical: copy.critical,
-          evolution: copy.evolution, evolutionEmpty: copy.evolutionEmpty, evolutionText: copy.evolutionText,
-          sentiment: copy.sentiment, sentPos: copy.sentPos, sentNeu: copy.sentNeu, sentNeg: copy.sentNeg,
-          pointsPos: copy.pointsPos, pointsCrit: copy.pointsCrit, recommendations: copy.recommendations,
-          themes: copy.themes, footer: copy.footer, brand: copy.brand, rights: copy.rights,
+          title: pdfCopy.title,
+          avg: pdfCopy.avg,
+          reviews: pdfCopy.reviews,
+          positive: pdfCopy.positive,
+          critical: pdfCopy.critical,
+          evolution: pdfCopy.evolution,
+          evolutionEmpty: pdfCopy.evolutionEmpty,
+          evolutionText: pdfCopy.evolutionText,
+          sentiment: pdfCopy.sentiment,
+          sentPos: pdfCopy.sentPos,
+          sentNeu: pdfCopy.sentNeu,
+          sentNeg: pdfCopy.sentNeg,
+          pointsPos: pdfCopy.pointsPos,
+          pointsCrit: pdfCopy.pointsCrit,
+          recommendations: pdfCopy.recommendations,
+          themes: pdfCopy.themes,
+          footer: pdfCopy.footer,
+          brand: pdfCopy.brand,
+          rights: pdfCopy.rights,
         },
       });
       if (!result.ok) setDownloadError(copy.errFail);
@@ -361,6 +377,19 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
               {mesesOpcoes.map((m) => (
                 <option key={m} value={m}>{labelMes(m, language)}</option>
               ))}
+            </select>
+          </label>
+          <label className="text-xs font-medium text-zinc-400">
+            {copy.pdfLang}
+            <select
+              className="ml-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+              value={pdfLang}
+              onChange={(e) => setPdfLang(e.target.value)}
+            >
+              <option value="pt">Português</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="zh">中文</option>
             </select>
           </label>
           <button
