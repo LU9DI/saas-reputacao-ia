@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 
 const PLANOS = [
   { key: 'trial', label: 'Trial' },
@@ -48,7 +49,7 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
       if (!token) {
         throw new Error('Faça login em /login antes de trocar o plano (token ausente).');
       }
-      const res = await fetch(`${api}/api/empresa/${empresaRef}/plano`, {
+      const res = await apiFetch(`/api/empresa/${empresaRef}/plano`, {
         method: 'PATCH',
         credentials: 'include',
         headers: authHeaders(),
