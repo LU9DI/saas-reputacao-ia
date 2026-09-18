@@ -23,7 +23,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_label: 'Seu WhatsApp *',
     wpp_placeholder: 'DDD + número (ex: 11999998888)',
     wpp_hint: 'Usamos só para a empresa entrar em contato sobre esta reclamação.',
-    wpp_invalid: 'Informe um WhatsApp válido com DDD (8 a 15 dígitos).',
+    wpp_invalid: 'Informe um WhatsApp válido com DDD (ex: 11 99999-8888).',
     wpp_not_configured: 'A empresa ainda não configurou WhatsApp de suporte.',
     btn_send_wpp: 'Enviar e falar no WhatsApp',
     btn_send_private: 'Enviar feedback privado',
@@ -52,7 +52,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_label: 'Your WhatsApp *',
     wpp_placeholder: 'Country code + number',
     wpp_hint: 'Used only so the business can contact you about this feedback.',
-    wpp_invalid: 'Enter a valid WhatsApp number (8–15 digits).',
+    wpp_invalid: 'Enter a valid WhatsApp number with area code.',
     wpp_not_configured: 'This business has not set up support WhatsApp yet.',
     btn_send_wpp: 'Send and open WhatsApp',
     btn_send_private: 'Send private feedback',
@@ -81,7 +81,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_label: 'Tu WhatsApp *',
     wpp_placeholder: 'Código de país + número',
     wpp_hint: 'Solo para que la empresa contacte sobre este comentario.',
-    wpp_invalid: 'Indica un WhatsApp válido (8–15 dígitos).',
+    wpp_invalid: 'Indica un WhatsApp válido con código de área.',
     wpp_not_configured: 'La empresa aún no configuró WhatsApp de soporte.',
     btn_send_wpp: 'Enviar y abrir WhatsApp',
     btn_send_private: 'Enviar feedback privado',
@@ -110,7 +110,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_label: '您的 WhatsApp *',
     wpp_placeholder: '国家代码 + 号码',
     wpp_hint: '仅用于商家就本次反馈联系您。',
-    wpp_invalid: '请输入有效的 WhatsApp 号码（8–15 位数字）。',
+    wpp_invalid: '请输入有效的 WhatsApp 号码。',
     wpp_not_configured: '商家尚未配置客服 WhatsApp。',
     btn_send_wpp: '发送并打开 WhatsApp',
     btn_send_private: '发送私下反馈',
@@ -127,6 +127,14 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     loading: '加载中…',
   },
 };
+
+/** Aceita BR (10/11 dígitos) ou internacional (12–15 com DDI). */
+function whatsappValido(raw: string): boolean {
+  const d = String(raw || '').replace(/\D/g, '');
+  if (d.length === 10 || d.length === 11) return true; // BR sem DDI
+  if (d.length >= 12 && d.length <= 15) return true;
+  return false;
+}
 
 export default function PaginaAvaliacao() {
   const params = useParams();
@@ -233,9 +241,12 @@ export default function PaginaAvaliacao() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!rating || rating > 3) return;
-    const digits = clientWhatsapp.replace(/\D/g, '');
-    if (digits.length < 8 || digits.length > 15) {
+    if (!whatsappValido(clientWhatsapp)) {
       setErro(tx('wpp_invalid'));
+      return;
+    }
+    if (!comment.trim()) {
+      setErro(tx('comment_label').replace('*', '').trim() + ' é obrigatório.');
       return;
     }
     setLoading(true);
@@ -375,15 +386,19 @@ export default function PaginaAvaliacao() {
                     onChange={(e) => setComment(e.target.value)}
                     placeholder={tx('comment_placeholder')}
                     rows={5}
+                    required
                     className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-zinc-300 mb-2">{tx('wpp_label')}</label>
                   <input
+                    type="tel"
+                    inputMode="tel"
                     value={clientWhatsapp}
                     onChange={(e) => setClientWhatsapp(e.target.value)}
                     placeholder={tx('wpp_placeholder')}
+                    required
                     className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
                   />
                   <p className="text-xs text-zinc-500 mt-2">{tx('wpp_hint')}</p>
