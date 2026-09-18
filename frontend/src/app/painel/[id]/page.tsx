@@ -6,7 +6,6 @@ import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
 import { apiFetch } from '../../utils/apiFailover';
 import { DashboardCharts } from '../../components/DashboardCharts';
-import { PlanSwitcher } from '../../components/PlanSwitcher';
 import { PushEnable } from '../../components/PushEnable';
 import { UsageBars } from '../../components/UsageBars';
 import { SubscriptionActions } from '../../components/SubscriptionActions';
@@ -263,13 +262,6 @@ export default function PainelEmpresa() {
             panelData={data}
           />
         )}
-
-        <PlanSwitcher
-          empresaRef={empresaId}
-          planAtual={empresa.plan}
-          enabled={Boolean(dashboard?.plan_switch)}
-          onChanged={carregar}
-        />
 
         <WebAuthnSetup />
         <PushEnable />
