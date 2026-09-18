@@ -74,7 +74,7 @@ export function ReviewsList({
   const marcarTratada = async (id: number, undo = false) => {
     setTratandoId(id);
     try {
-      const res = await fetch(`${apiBase}/api/reviews/${id}/tratar`, {
+      const res = await apiFetch(`/api/reviews/${id}/tratar`, {
         method: 'PATCH',
         credentials: 'include',
         headers: authHeaders(true),
