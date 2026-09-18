@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getEnv } from '../utils/env';
+import { apiFetch } from '../utils/apiFailover';
 
 type Unidade = {
   id: string;
@@ -28,7 +28,6 @@ function authHeaders(json = true): HeadersInit {
 }
 
 export function UnidadesPanel({ empresaRef, enabled }: Props) {
-  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
   const [items, setItems] = useState<Unidade[]>([]);
   const [nome, setNome] = useState('');
   const [cidade, setCidade] = useState('');
@@ -40,7 +39,7 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
     if (!enabled) return;
     setLoadError('');
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaRef}/unidades`, {
+      const res = await apiFetch(`/api/empresa/${empresaRef}/unidades`, {
         credentials: 'include',
         headers: authHeaders(false),
       });
@@ -74,7 +73,7 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
     setLoading(true);
     setMsg('');
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaRef}/unidades`, {
+      const res = await apiFetch(`/api/empresa/${empresaRef}/unidades`, {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(),
@@ -98,7 +97,7 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
   const remove = async (id: string) => {
     if (!confirm('Remover esta unidade?')) return;
     try {
-      const res = await fetch(`${api}/api/empresa/${empresaRef}/unidades/${id}`, {
+      const res = await apiFetch(`/api/empresa/${empresaRef}/unidades/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: authHeaders(false),
