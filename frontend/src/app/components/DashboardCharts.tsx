@@ -53,59 +53,6 @@ function TrendLine({ serie }: { serie: SerieDia[] }) {
   return <div className="w-full overflow-x-auto"><svg viewBox={`0 0 ${w} ${h + 24}`} className="w-full max-w-full h-auto" role="img"><defs><linearGradient id="trendFillDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#818cf8" stopOpacity="0.4" /><stop offset="100%" stopColor="#818cf8" stopOpacity="0.02" /></linearGradient></defs>{area && <path d={area} fill="url(#trendFillDark)" />}{path && <path d={path} fill="none" stroke="#818cf8" strokeWidth="2.5" strokeLinejoin="round" />}{points.map((p, i) => <g key={p.dia}><circle cx={p.x} cy={p.y} r={hover === i ? 5 : 3} fill={hover === i ? '#c7d2fe' : '#6366f1'} className="cursor-pointer" onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)} />{(i === 0 || i === points.length - 1 || i % 3 === 0) && <text x={p.x} y={h + 14} textAnchor="middle" fill="#71717a" style={{ fontSize: 9 }}>{formatDia(p.dia)}</text>}</g>)}</svg>{hover != null && points[hover] && <p className="text-xs text-zinc-400 text-center mt-1">{formatDia(points[hover].dia)}: <strong className="text-zinc-200">{points[hover].total}</strong> eval · média <strong className="text-zinc-200">{points[hover].media || '—'}</strong> · +{points[hover].positivas} / −{points[hover].negativas}</p>}{!serie.some((s) => s.total > 0) && <p className="text-xs text-zinc-500 text-center">Sem avaliações nos últimos 14 dias.</p>}<p className="text-[10px] text-zinc-600 text-center mt-1">Escala máx. no período: {maxY}</p></div>;
 }
 
-function Highlights14d({ serie }: { serie: SerieDia[] }) {
-  const points = serie.filter((s) => Number(s.total) > 0);
-  const total = serie.reduce((sum, s) => sum + Number(s.total || 0), 0);
-  const positive = serie.reduce((sum, s) => sum + Number(s.positivas || 0), 0);
-  const negative = serie.reduce((sum, s) => sum + Number(s.negativas || 0), 0);
-  const ratedDays = points.filter((s) => Number.isFinite(Number(s.media)));
-  const average = ratedDays.length
-    ? Math.round((ratedDays.reduce((sum, s) => sum + Number(s.media), 0) / ratedDays.length) * 10) / 10
-    : 0;
-  const bestDay = points.length
-    ? points.reduce((best, current) => (current.media > best.media ? current : best), points[0])
-    : null;
-  const lastDay = points.length ? points[points.length - 1] : null;
-
-  return (
-    <div className={card}>
-      <p className={title}>Destaques · últimos 14 dias</p>
-      {!points.length ? (
-        <p className="text-sm text-zinc-500">Ainda não há avaliações nos últimos 14 dias.</p>
-      ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <div className="rounded-xl bg-zinc-950/60 border border-zinc-800 p-3">
-            <p className="text-[10px] uppercase tracking-wide text-zinc-600">Avaliações</p>
-            <p className="text-xl font-bold mt-1">{total}</p>
-          </div>
-          <div className="rounded-xl bg-zinc-950/60 border border-zinc-800 p-3">
-            <p className="text-[10px] uppercase tracking-wide text-zinc-600">Positivas</p>
-            <p className="text-xl font-bold mt-1 text-emerald-400">{positive}</p>
-          </div>
-          <div className="rounded-xl bg-zinc-950/60 border border-zinc-800 p-3">
-            <p className="text-[10px] uppercase tracking-wide text-zinc-600">Atenção</p>
-            <p className="text-xl font-bold mt-1 text-red-400">{negative}</p>
-          </div>
-          <div className="rounded-xl bg-zinc-950/60 border border-zinc-800 p-3">
-            <p className="text-[10px] uppercase tracking-wide text-zinc-600">Média diária</p>
-            <p className="text-xl font-bold mt-1">{average || '—'}</p>
-          </div>
-          <div className="rounded-xl bg-zinc-950/60 border border-zinc-800 p-3">
-            <p className="text-[10px] uppercase tracking-wide text-zinc-600">Melhor dia</p>
-            <p className="text-sm font-semibold mt-1">{bestDay ? formatDia(bestDay.dia) : '—'}</p>
-            <p className="text-[11px] text-zinc-500 mt-0.5">{bestDay ? `${bestDay.media || '—'} · ${bestDay.total} eval.` : ''}</p>
-          </div>
-        </div>
-      )}
-      {lastDay && (
-        <p className="text-[10px] text-zinc-600 mt-3">
-          Último dia com avaliações: {formatDia(lastDay.dia)} · {lastDay.total} avaliação(ões)
-        </p>
-      )}
-    </div>
-  );
-}
-
 function TagBars({ tags }: { tags: { tag: string; count: number }[] }) { const max = Math.max(...tags.map((t) => t.count), 1); return <ul className="space-y-2.5">{tags.map((t) => <li key={t.tag} className="flex items-center gap-3 text-sm"><span className="w-28 sm:w-36 truncate text-zinc-400 text-xs" title={t.tag}>{t.tag}</span><div className="flex-1 h-2.5 rounded-full bg-zinc-800 overflow-hidden"><div className="h-full rounded-full bg-indigo-500 transition-all duration-500" style={{ width: `${(t.count / max) * 100}%` }} /></div><span className="text-xs font-semibold text-zinc-300 tabular-nums w-6 text-right">{t.count}</span></li>)}</ul>; }
 
 export function DashboardCharts({ distribuicao, positivas, negativas, serie = [], topTags = [], nivel, crises24h = 0, alertaCrise = false, mostrarTendencia, mostrarTags }: Props) {
@@ -114,5 +61,5 @@ export function DashboardCharts({ distribuicao, positivas, negativas, serie = []
   const showTrend = mostrarTendencia ?? true;
   const showTags = analitico && (mostrarTags ?? true) && topTags.length > 0;
   const showDonut = analitico;
-  return <div className="space-y-5"><Highlights14d serie={serie} /><div className={`grid grid-cols-1 ${showDonut ? 'md:grid-cols-2' : ''} gap-5`}><div className={card}><p className={title}>Distribuição de notas</p><BarDist values={distribuicao} /></div>{showDonut && <div className={card}><p className={title}>Positivas vs críticas</p><DonutMix positive={positivas} negative={negativas} />{alertaCrise && <p className="mt-4 text-xs text-red-300 bg-red-950/50 border border-red-900 rounded-lg px-3 py-2">Alerta: {crises24h} notas ≤2★ nas últimas 24h</p>}</div>}</div>{showTrend && <div className={card}><p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500 mb-1">Tendência · últimos 14 dias</p><p className="text-xs text-zinc-600 mb-3">Volume diário</p><TrendLine serie={serie} /></div>}{showTags && <div className={card}><p className={title}>Temas mais citados (IA) · Ultra+</p><TagBars tags={topTags} /></div>}{!analitico && <p className="text-xs text-zinc-600 text-center">Dashboard básico do plano. O Ultra e superiores liberam as análises avançadas.</p>}</div>;
+  return <div className="space-y-5"><div className={`grid grid-cols-1 ${showDonut ? 'md:grid-cols-2' : ''} gap-5`}><div className={card}><p className={title}>Distribuição de notas</p><BarDist values={distribuicao} /></div>{showDonut && <div className={card}><p className={title}>Positivas vs críticas</p><DonutMix positive={positivas} negative={negativas} />{alertaCrise && <p className="mt-4 text-xs text-red-300 bg-red-950/50 border border-red-900 rounded-lg px-3 py-2">Alerta: {crises24h} notas ≤2★ nas últimas 24h</p>}</div>}</div>{showTrend && <div className={card}><p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500 mb-1">Tendência · últimos 14 dias</p><p className="text-xs text-zinc-600 mb-3">Volume diário</p><TrendLine serie={serie} /></div>}{showTags && <div className={card}><p className={title}>Temas mais citados (IA) · Ultra+</p><TagBars tags={topTags} /></div>}{!analitico && <p className="text-xs text-zinc-600 text-center">Dashboard básico do plano. O Ultra e superiores liberam as análises avançadas.</p>}</div>;
 }
