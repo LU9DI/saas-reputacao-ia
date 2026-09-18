@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp, Eye } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { exportReportClient } from '../utils/reportPdfClient';
 
 type Review = {
   rating?: number | string | null;
@@ -275,6 +274,8 @@ export function RelatorioInteligentePanel({
   const [langPdf, setLangPdf] = useState('pt');
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const empresa = panelData?.empresa || {};
   const metricas = panelData?.metricas || {};
@@ -361,60 +362,47 @@ export function RelatorioInteligentePanel({
     return out.slice(0, 4);
   }, [stats, copy]);
 
-  const downloadPdf = () => {
+  const downloadPdf = async () => {
     if (!MONTH_RE.test(mesReport)) {
       setDownloadError(copy.errPeriod);
       return;
     }
+    setPdfLoading(true);
     setDownloading(true);
     setDownloadError('');
     try {
       const lang = PDF_LANGS.has(langPdf) ? langPdf : 'pt';
-      const pdfCopy = uiCopy(lang);
-      const recs: string[] = [];
-      if (!stats.total) {
-        recs.push(pdfCopy.recEmpty);
-      } else {
-        if (stats.critical > stats.positive) recs.push(pdfCopy.recCritical);
-        if (stats.average > 0 && stats.average < 4) recs.push(pdfCopy.recLowAvg);
-        if (stats.positive >= stats.critical) recs.push(pdfCopy.recKeepPositive);
-        if (stats.sentiment.negativo > stats.sentiment.positivo) recs.push(pdfCopy.recNegSentiment);
-        if (stats.themes.length) recs.push(pdfCopy.recTheme(stats.themes[0].name));
+      const res = await fetch(
+        `${_api || ''}/api/empresa/${_empresaId}/relatorio.pdf?mes=${encodeURIComponent(mesReport)}&lang=${encodeURIComponent(lang)}`,
+        {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            ...(_authHeaders ? _authHeaders(false) : {}),
+            Accept: 'application/pdf',
+          },
+        }
+      );
+      if (!res.ok) {
+        let message = copy.errFail;
+        try {
+          const body = await res.json();
+          if (body?.error) message = String(body.error);
+        } catch {
+          /* resposta não-JSON */
+        }
+        throw new Error(message);
       }
-      const themesLabel =
-        lang === 'en' ? 'Themes' : lang === 'es' ? 'Temas' : lang === 'zh' ? '主题' : 'Temas';
-      const result = exportReportClient({
-        companyName: String(empresa.nome_empresa || 'Empresa'),
-        periodLabel: labelMes(mesReport, lang),
-        lang,
-        stats,
-        evolution,
-        recommendations: recs.slice(0, 4),
-        labels: {
-          title: pdfCopy.title,
-          avg: pdfCopy.avg,
-          reviews: pdfCopy.reviews,
-          positive: pdfCopy.positive,
-          critical: pdfCopy.critical,
-          evolution: pdfCopy.evolution,
-          evolutionEmpty: pdfCopy.evolutionEmpty,
-          evolutionText: pdfCopy.evolutionText,
-          sentiment: pdfCopy.sentiment,
-          sentPos: pdfCopy.sentPos,
-          sentNeu: pdfCopy.sentNeu,
-          sentNeg: pdfCopy.sentNeg,
-          pointsPos: pdfCopy.pointsPos,
-          pointsCrit: pdfCopy.pointsCrit,
-          recommendations: pdfCopy.recommendations,
-          themes: themesLabel,
-          footer: pdfCopy.footer,
-          brand: 'Filtra.AI',
-        },
+      const blob = await res.blob();
+      if (!blob.size || blob.type !== 'application/pdf') throw new Error(copy.errFail);
+      setPdfUrl((previous) => {
+        if (previous) URL.revokeObjectURL(previous);
+        return URL.createObjectURL(blob);
       });
-      if (!result.ok) setDownloadError(copy.errFail);
     } catch (error: unknown) {
       setDownloadError(error instanceof Error ? error.message : copy.errFail);
     } finally {
+      setPdfLoading(false);
       setDownloading(false);
     }
   };
@@ -470,8 +458,8 @@ export function RelatorioInteligentePanel({
             disabled={downloading}
             className="inline-flex items-center gap-2 text-sm px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium disabled:opacity-50"
           >
-            <Download size={16} />
-            {downloading ? copy.generating : copy.exportPdf}
+            <Eye size={16} />
+            {pdfLoading ? 'Abrindo…' : 'Ver relatório'}
           </button>
         </div>
       </div>
@@ -479,6 +467,30 @@ export function RelatorioInteligentePanel({
       {downloadError && (
         <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-300">
           {downloadError}
+        </div>
+      )}
+
+      {pdfUrl && (
+        <div className="rounded-xl border border-zinc-800 bg-zinc-950 overflow-hidden">
+          <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-zinc-800">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <FileText size={16} className="text-indigo-400" />
+              Relatório profissional
+            </div>
+            <a
+              href={pdfUrl}
+              download={`relatorio-${empresa.nome_empresa || 'empresa'}-${mesReport}.pdf`}
+              className="inline-flex items-center gap-2 text-xs px-3 py-2 rounded-lg border border-zinc-700 text-zinc-200 hover:bg-zinc-800"
+            >
+              <Download size={14} />
+              Baixar PDF
+            </a>
+          </div>
+          <iframe
+            title="Relatório profissional Filtra.AI"
+            src={pdfUrl}
+            className="w-full h-[720px] bg-white"
+          />
         </div>
       )}
 
