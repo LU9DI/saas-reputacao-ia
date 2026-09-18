@@ -427,7 +427,7 @@ export function RelatorioInteligentePanel({
     const popup = typeof window !== 'undefined' ? window.open('', '_blank') : null;
     try {
       const lang = PDF_LANGS.has(language) ? language : 'pt';
-      const base = String(api || '').replace(/\\/$/, '');
+      const base = String(api || '').replace(/\/+$/, '');
       const url =
         base +
         '/api/empresa/' +
