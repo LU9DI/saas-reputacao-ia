@@ -170,34 +170,62 @@ async function waitImages(root: HTMLElement) {
   );
 }
 
+function toBlob(value: unknown): Blob {
+  if (value instanceof Blob) return value;
+  if (typeof value === 'string') {
+    // data URL ou base64
+    if (value.startsWith('data:')) {
+      const [meta, data] = value.split(',');
+      const isBase64 = /;base64/i.test(meta || '');
+      const bytes = isBase64 ? atob(data || '') : decodeURIComponent(data || '');
+      const arr = new Uint8Array(bytes.length);
+      for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+      return new Blob([arr], { type: 'application/pdf' });
+    }
+    return new Blob([value], { type: 'application/pdf' });
+  }
+  throw new Error('html2pdf não retornou Blob');
+}
+
 export async function createReportPdfBlob(payload: ClientReportPayload): Promise<Blob> {
   const html = makeHtml(payload);
   const iframe = document.createElement('iframe');
   iframe.style.cssText = 'position:fixed;left:-100000px;top:0;width:794px;height:1123px;border:0;';
   document.body.appendChild(iframe);
-  const doc = iframe.contentDocument!;
-  doc.open();
-  doc.write(html);
-  doc.close();
-  await new Promise((r) => setTimeout(r, 50));
-  const reportEl = doc.getElementById('filtra-report') as HTMLElement;
-  if (reportEl) await waitImages(reportEl);
-  if (reportEl && reportEl.scrollHeight < 1123) {
-    reportEl.style.minHeight = '1123px';
-    reportEl.style.height = '1123px';
+  try {
+    const doc = iframe.contentDocument!;
+    doc.open();
+    doc.write(html);
+    doc.close();
+    await new Promise((r) => setTimeout(r, 50));
+    const reportEl = doc.getElementById('filtra-report') as HTMLElement;
+    if (reportEl) await waitImages(reportEl);
+    if (reportEl && reportEl.scrollHeight < 1123) {
+      reportEl.style.minHeight = '1123px';
+      reportEl.style.height = '1123px';
+    }
+    const html2pdf = (await import('html2pdf.js')).default;
+    const opt = {
+      margin: 0,
+      filename: `filtra-relatorio-${slug(payload.companyName || 'empresa')}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: {
+        unit: 'px' as const,
+        format: [794, 1123] as [number, number],
+        orientation: 'portrait' as const,
+      },
+    };
+    const worker = html2pdf().set(opt).from(reportEl);
+    const raw = await worker.outputPdf('blob');
+    return toBlob(raw);
+  } finally {
+    try {
+      document.body.removeChild(iframe);
+    } catch {
+      /* */
+    }
   }
-  const html2pdf = (await import('html2pdf.js')).default;
-  const opt = {
-    margin: 0,
-    filename: `filtra-relatorio-${slug(payload.companyName || 'empresa')}.pdf`,
-    image: { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'px' as const, format: [794, 1123] as [number, number], orientation: 'portrait' as const },
-  };
-  const worker = html2pdf().set(opt).from(reportEl);
-  const blob: Blob = await worker.outputPdf('blob');
-  document.body.removeChild(iframe);
-  return blob;
 }
 
 /** Usado pelo exportReportClient: gera PDF e exibe na aba aberta. */
