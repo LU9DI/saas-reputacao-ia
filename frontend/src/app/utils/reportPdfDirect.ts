@@ -19,14 +19,6 @@ const slug = (s: string) =>
 
 type Depth = 'inicial' | 'pro' | 'ultra' | 'corp' | 'rei';
 
-const LIMITS: Record<Depth, number> = {
-  inicial: 100,
-  pro: 300,
-  ultra: 800,
-  corp: 2500,
-  rei: 8000,
-};
-
 function planDisplayName(plan: string, lang: string): string {
   const p = String(plan || '').toLowerCase();
   if (p.includes('rei')) return 'Rei';
@@ -90,15 +82,16 @@ function makeHtml(p: ClientReportPayload): string {
     : '';
 
   const themes = Array.isArray((s as any).themes) ? (s as any).themes : [];
-  const themesBlock =
-    showSent
-      ? `<h2 class="sec">Temas mais citados (IA)</h2>
+  const themesBlock = showSent
+    ? `<h2 class="sec">Temas mais citados (IA)</h2>
          <section class="themes">${
            themes.length
-             ? themes.map((t: any) => `<div class="theme">• ${esc(t.name)} <b>(${t.count})</b></div>`).join('')
+             ? themes
+                 .map((t: any) => `<div class="theme">• ${esc(t.name)} <b>(${t.count})</b></div>`)
+                 .join('')
              : '<div class="themes-empty">Nenhum tema de IA neste ciclo ainda.</div>'
          }</section>`
-      : '';
+    : '';
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/>
 <style>
@@ -165,15 +158,14 @@ function makeHtml(p: ClientReportPayload): string {
 async function waitImages(root: HTMLElement) {
   const imgs = Array.from(root.querySelectorAll('img'));
   await Promise.all(
-    imgs.map(
-      (img) =>
-        img.complete
-          ? Promise.resolve()
-          : new Promise<void>((res) => {
-              img.onload = () => res();
-              img.onerror = () => res();
-              setTimeout(() => res(), 2000);
-            })
+    imgs.map((img) =>
+      img.complete
+        ? Promise.resolve()
+        : new Promise<void>((res) => {
+            img.onload = () => res();
+            img.onerror = () => res();
+            setTimeout(() => res(), 2000);
+          })
     )
   );
 }
@@ -189,7 +181,7 @@ export async function createReportPdfBlob(payload: ClientReportPayload): Promise
   doc.close();
   await new Promise((r) => setTimeout(r, 50));
   const reportEl = doc.getElementById('filtra-report') as HTMLElement;
-  await waitImages(reportEl);
+  if (reportEl) await waitImages(reportEl);
   if (reportEl && reportEl.scrollHeight < 1123) {
     reportEl.style.minHeight = '1123px';
     reportEl.style.height = '1123px';
@@ -198,14 +190,48 @@ export async function createReportPdfBlob(payload: ClientReportPayload): Promise
   const opt = {
     margin: 0,
     filename: `filtra-relatorio-${slug(payload.companyName || 'empresa')}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
+    image: { type: 'jpeg' as const, quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' as const },
+    jsPDF: { unit: 'px' as const, format: [794, 1123] as [number, number], orientation: 'portrait' as const },
   };
   const worker = html2pdf().set(opt).from(reportEl);
   const blob: Blob = await worker.outputPdf('blob');
   document.body.removeChild(iframe);
   return blob;
+}
+
+/** Usado pelo exportReportClient: gera PDF e exibe na aba aberta. */
+export async function previewReportPdfDirect(
+  payload: ClientReportPayload,
+  previewWindow: Window
+): Promise<void> {
+  try {
+    const blob = await createReportPdfBlob(payload);
+    const url = URL.createObjectURL(blob);
+    try {
+      previewWindow.location.href = url;
+    } catch {
+      previewWindow.document.open();
+      previewWindow.document.write(
+        `<!DOCTYPE html><html><body style="margin:0">
+         <iframe src="${url}" style="border:0;width:100%;height:100vh"></iframe>
+         <p style="font-family:system-ui;padding:12px">
+           <a href="${url}" download="filtra-relatorio-${slug(payload.companyName || 'empresa')}.pdf">Baixar PDF</a>
+         </p></body></html>`
+      );
+      previewWindow.document.close();
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
+  } catch (e: any) {
+    try {
+      previewWindow.document.body.innerHTML =
+        `<div style="font-family:system-ui;padding:40px;color:#b91c1c">Falha ao gerar PDF: ${esc(
+          String(e?.message || e)
+        )}</div>`;
+    } catch {
+      /* */
+    }
+  }
 }
 
 export async function exportReportPdfDirect(payload: ClientReportPayload): Promise<ReportExportResult> {
@@ -220,7 +246,7 @@ export async function exportReportPdfDirect(payload: ClientReportPayload): Promi
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 60000);
     return { ok: true, mode: 'pdf-download' };
-  } catch (e: any) {
-    return { ok: false, mode: 'error', error: String(e?.message || e) } as any;
+  } catch {
+    return { ok: false, mode: 'failed' };
   }
 }
