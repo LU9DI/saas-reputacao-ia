@@ -34,6 +34,7 @@ NODE
   n8n publish:workflow --id=filtraLeadAutomation2026
 fi
 
-# Start immediately so Render can detect port 5678 without waiting for any
-# database/import operation.
+echo "Starting n8n on 0.0.0.0:5678..."
+export N8N_LISTEN_ADDRESS=0.0.0.0
+export N8N_PORT=5678
 exec n8n start
