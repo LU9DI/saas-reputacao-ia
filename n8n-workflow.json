@@ -472,7 +472,7 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { lead_id: $json.body.lead_id, action: 'followup', status: 'pending', draft: $json.followup_draft, approval_required: true } }}",
+          "jsonBody": "={{ { lead_id: $json.lead_id, action: 'followup', status: 'pending', draft: $json.followup_draft, approval_required: true } }}",
           "options": {}
         },
         "id": "la4",
