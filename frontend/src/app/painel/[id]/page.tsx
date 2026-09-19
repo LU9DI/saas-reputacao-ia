@@ -41,6 +41,42 @@ function planAllowsReport(plan?: string, status?: string, dashboard?: any): bool
   return false;
 }
 
+/** Liberação do PDF após 1 mês da assinatura (ciclo pelo aniversário do plano). */
+function reportReleaseStatus(empresa: any, dashboard?: any): { released: boolean; unlockLabel: string | null } {
+  const p = String(empresa?.plan || '').toLowerCase();
+  const s = String(empresa?.status || '').toLowerCase();
+  // Trial: disponível de imediato
+  if (dashboard?.trial_completo) return { released: true, unlockLabel: null };
+  if (p === 'trial' || p === 'teste' || p === 'test' || s === 'trial' || s === 'teste') {
+    return { released: true, unlockLabel: null };
+  }
+
+  const expiraRaw = empresa?.expira_em;
+  if (!expiraRaw) return { released: true, unlockLabel: null };
+
+  const end = new Date(expiraRaw);
+  if (Number.isNaN(end.getTime())) return { released: true, unlockLabel: null };
+
+  // Início do ciclo = fim do período − 1 mês (assinatura / renovação)
+  const start = new Date(end.getTime());
+  start.setMonth(start.getMonth() - 1);
+
+  // Liberação = 1 mês após a assinatura (fim do ciclo atual)
+  const unlock = new Date(start.getTime());
+  unlock.setMonth(unlock.getMonth() + 1);
+
+  if (Date.now() >= unlock.getTime()) {
+    return { released: true, unlockLabel: null };
+  }
+
+  const unlockLabel = unlock.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+  return { released: false, unlockLabel };
+}
+
 const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
 const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
@@ -205,6 +241,7 @@ export default function PainelEmpresa() {
   const dist = metricas.distribuicao || [0, 0, 0, 0, 0];
   const nivel = dashboard?.nivel || 'basico';
   const reportOk = planAllowsReport(empresa.plan, empresa.status, dashboard);
+  const release = reportReleaseStatus(empresa, dashboard);
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
   const status = empresa.status_acesso || String(empresa.status || '').toUpperCase();
   const reviews = Array.isArray(data.reviews) ? data.reviews : [];
@@ -254,13 +291,29 @@ export default function PainelEmpresa() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 md:px-10 py-10 space-y-8">
-        {reportOk && (
+        {reportOk && release.released && (
           <RelatorioInteligentePanel
             empresaId={empresaId}
             api={api}
             authHeaders={authHeaders}
             panelData={data}
           />
+        )}
+
+        {reportOk && !release.released && (
+          <section className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-5 py-4">
+            <p className="text-sm font-semibold text-amber-200">Relatório PDF ainda não liberado</p>
+            <p className="mt-1 text-sm text-amber-100/90 leading-relaxed">
+              O relatório inteligente fica disponível após completar 1 mês da assinatura do plano
+              {release.unlockLabel ? (
+                <>
+                  . Previsão de liberação: <strong className="text-amber-50">{release.unlockLabel}</strong>.
+                </>
+              ) : (
+                '.'
+              )}
+            </p>
+          </section>
         )}
 
         <WebAuthnSetup />
