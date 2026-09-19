@@ -228,14 +228,14 @@ export default function AdminDashboard() {
     setMsg('');
     try {
       const draft = followupDrafts[id];
-      const res = await fetch(\`\${apiUrl()}/api/admin/followups/\${id}/\${action}\`, {
+      const res = await fetch(`${apiUrl()}/api/admin/followups/${id}/${action}`, {
         method: 'POST',
         credentials: 'include',
         headers: authHeaders(),
         body: action === 'approve' ? JSON.stringify({ draft }) : '{}',
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || \`Erro \${res.status}\`);
+      if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
       setMsg(action === 'approve' ? 'Follow-up aprovado e colocado na fila de envio.' : 'Follow-up rejeitado.');
       await carregarDados();
     } catch (e: any) {
@@ -509,16 +509,30 @@ export default function AdminDashboard() {
 
         {!!dash?.faturas_atrasadas?.length && (
           <div className="bg-red-950/20 border border-red-900/40 rounded-2xl overflow-hidden">
-            <div className="px-5 py-3 text-sm font-semibold text-red-300">Acessos atrasados</div>
+            <div className="px-5 py-3 border-b border-red-900/40 flex items-center gap-2">
+              <AlertCircle size={16} className="text-red-400" />
+              <h2 className="font-semibold text-sm text-red-300">Faturas atrasadas</h2>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <tbody className="divide-y divide-red-900/20">
+                <thead className="text-xs text-zinc-500 uppercase">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Empresa</th>
+                    <th className="px-4 py-2 text-left">Plano</th>
+                    <th className="px-4 py-2 text-left">Venceu</th>
+                    <th className="px-4 py-2 text-right">Dias</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-red-900/30">
                   {dash.faturas_atrasadas.map((f) => (
                     <tr key={f.id}>
-                      <td className="px-4 py-2">{f.nome_empresa}</td>
-                      <td className="px-4 py-2 text-zinc-400">{f.cnpj}</td>
-                      <td className="px-4 py-2 uppercase text-xs">{f.plan}</td>
-                      <td className="px-4 py-2 text-red-400 text-right">{f.dias_atraso}d</td>
+                      <td className="px-4 py-2.5">
+                        <div className="font-medium">{f.nome_empresa}</div>
+                        <div className="text-xs text-zinc-500">{f.cnpj}</div>
+                      </td>
+                      <td className="px-4 py-2.5 uppercase text-xs">{f.plan}</td>
+                      <td className="px-4 py-2.5 text-xs">{fmtDt(f.expira_em)}</td>
+                      <td className="px-4 py-2.5 text-right text-red-300 tabular-nums">{f.dias_atraso}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -528,82 +542,61 @@ export default function AdminDashboard() {
         )}
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-          <div className="p-5 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-semibold text-sm">Empresas</h2>
+          <div className="px-5 py-4 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
+              <Building2 size={16} className="text-indigo-400" /> Empresas
+            </h2>
             <input
+              type="search"
+              placeholder="Filtrar nome, CNPJ, plano…"
               value={filtro}
               onChange={(e) => setFiltro(e.target.value)}
-              placeholder="Buscar nome, CNPJ, plano…"
               className="bg-zinc-950 border border-zinc-700 rounded-xl px-3 py-2 text-sm w-full max-w-xs"
             />
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-[11px] uppercase text-zinc-500">
+              <thead className="text-xs text-zinc-500 uppercase">
                 <tr>
                   <th className="px-4 py-2 text-left">Empresa</th>
                   <th className="px-4 py-2 text-left">Status</th>
                   <th className="px-4 py-2 text-left">Plano</th>
-                  <th className="px-4 py-2 text-left">Cadastro / Vence</th>
-                  <th className="px-4 py-2 text-right">Tokens</th>
+                  <th className="px-4 py-2 text-left">Expira</th>
                   <th className="px-4 py-2 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
                 {empresasFiltradas.map((e) => (
-                  <tr key={e.id} className={e.atrasado ? 'bg-red-950/20' : ''}>
+                  <tr key={e.id} className={e.atrasado ? 'bg-red-950/10' : ''}>
                     <td className="px-4 py-3">
                       <div className="font-medium">{e.nome_empresa}</div>
                       <div className="text-xs text-zinc-500">{e.cnpj}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-[10px] uppercase px-2 py-0.5 rounded-full bg-zinc-800">
-                        {e.status}
-                      </span>
-                      {e.cancel_at_period_end && (
+                      <span className="text-xs uppercase">{e.status}</span>
+                      {e.cancel_at_period_end ? (
                         <span className="ml-1 text-[10px] text-amber-400">cancel. pend.</span>
-                      )}
+                      ) : null}
                     </td>
                     <td className="px-4 py-3 uppercase text-xs">{e.plan || '—'}</td>
-                    <td className="px-4 py-3 text-xs text-zinc-500">
-                      <div>{fmtDt(e.criado_em)}</div>
-                      <div className="text-zinc-400">vence {fmtDt(e.expira_em)}</div>
-                    </td>
-                    <td className="px-4 py-3 text-right tabular-nums text-zinc-400">
-                      {(e.total_tokens || 0).toLocaleString('pt-BR')}
-                    </td>
+                    <td className="px-4 py-3 text-xs text-zinc-400">{e.expira_em ? fmtDt(e.expira_em) : '—'}</td>
                     <td className="px-4 py-3 text-right">
-                      <div className="inline-flex flex-wrap items-center justify-end gap-1">
+                      <div className="inline-flex flex-wrap gap-1 justify-end">
                         {e.painel_path && (
-                          <Link href={e.painel_path} className="text-indigo-400 text-xs hover:underline px-1">
-                            painel
+                          <Link
+                            href={e.painel_path}
+                            className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
+                          >
+                            Painel
                           </Link>
                         )}
                         <button
                           type="button"
                           disabled={busyId === e.id}
-                          onClick={() => acao(e.id, 'renovar', { ciclo: 'month', dias: 30 })}
-                          className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50"
-                          title="Estender 1 mês (+30 dias)"
+                          onClick={() => acao(e.id, 'estender', { dias: 7 })}
+                          className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 disabled:opacity-50"
                         >
-                          1 mês
-                        </button>
-                        <button
-                          type="button"
-                          disabled={busyId === e.id}
-                          onClick={() => acao(e.id, 'renovar', { ciclo: 'year', dias: 365 })}
-                          className="text-xs px-2 py-1 rounded-lg bg-indigo-950/60 text-indigo-300 hover:bg-indigo-900/50 disabled:opacity-50"
-                          title="Estender 1 ano (+365 dias)"
-                        >
-                          1 ano
-                        </button>
-                        <button
-                          type="button"
-                          disabled={busyId === e.id}
-                          onClick={() => acao(e.id, 'cancelar', { imediato: true })}
-                          className="text-xs px-2 py-1 rounded-lg bg-red-950/50 text-red-300 hover:bg-red-900/40 disabled:opacity-50"
-                        >
-                          cancelar
+                          +7d
                         </button>
                       </div>
                     </td>
@@ -611,6 +604,9 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            {!empresasFiltradas.length && (
+              <p className="p-5 text-sm text-zinc-500">Nenhuma empresa encontrada.</p>
+            )}
           </div>
         </div>
       </div>
