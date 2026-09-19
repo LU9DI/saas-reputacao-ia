@@ -472,7 +472,7 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { lead_id: $json.body.lead_id, action: 'followup', status: 'pending' } }}",
+          "jsonBody": "={{ { lead_id: $json.body.lead_id, action: 'followup', status: 'pending', draft: $json.followup_draft, approval_required: true } }}",
           "options": {}
         },
         "id": "la4",
@@ -480,8 +480,21 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
         "position": [
+          780,
+          180
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const b=$json.body||{}; const nome=String(b.nome_empresa||'empresa').trim(); const score=Number(b.score||0); const reason=String(b.reason||'').trim(); const qualification=String(b.qualification||'').trim(); const first=nome||'sua empresa'; const message=`Olá! Vi o interesse da ${first} no Filtra.AI e preparei uma análise inicial. A qualificação automática ficou em ${qualification||'avaliação'} (${score}/100).${reason?` Motivo: ${reason}`:''} Podemos mostrar como a plataforma pode ajudar a acompanhar e melhorar a reputação da empresa. Se fizer sentido, posso enviar os próximos detalhes.`; return [{json:{...b,followup_draft:message,approval_required:true}}];"
+        },
+        "id": "la5",
+        "name": "Preparar Follow-up (rascunho)",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
           520,
-          80
+          180
         ]
       }
     ],
@@ -506,6 +519,17 @@
               "index": 0
             }
           ],
+          [
+            {
+              "node": "Preparar Follow-up (rascunho)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Follow-up (rascunho)": {
+        "main": [
           [
             {
               "node": "Follow-up - Mark Pending",
