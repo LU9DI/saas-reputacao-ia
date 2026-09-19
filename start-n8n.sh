@@ -24,4 +24,10 @@ fs.writeFileSync(path, JSON.stringify(workflows));
 NODE
 
 n8n import:workflow --input=/home/node/n8n-workflow.json
+
+# n8n CLI imports workflows as inactive by default. Activate each production
+# workflow before starting n8n so webhook triggers are registered at boot.
+n8n update:workflow --id=PC9xbunz6ZsUSNS3 --active=true
+n8n update:workflow --id=filtraLeadAutomation2026 --active=true
+
 exec n8n start
