@@ -5,9 +5,8 @@ WORKFLOW_FILE=/home/node/n8n-workflow.json
 
 # IMPORTANT: n8n import deactivates workflows and can block startup while the
 # database migration/import lock is held. Never auto-import on boot.
-# The Render service uses the persistent n8n database, so published workflows
-# survive restarts. Set N8N_IMPORT_WORKFLOWS=true only for an intentional
-# one-time workflow re-import, then redeploy/restart again with it unset.
+# The Render service uses the persistent n8n database. Set
+# N8N_IMPORT_WORKFLOWS=true only for an intentional one-time re-import.
 if [ "${N8N_IMPORT_WORKFLOWS:-false}" = "true" ]; then
   node <<'NODE'
 const fs = require('fs');
@@ -30,9 +29,13 @@ fs.writeFileSync(path, JSON.stringify(workflows));
 NODE
 
   n8n import:workflow --input="$WORKFLOW_FILE"
-  n8n publish:workflow --id=PC9xbunz6ZsUSNS3
-  n8n publish:workflow --id=filtraLeadAutomation2026
 fi
+
+# n8n 2.x uses publish/unpublish instead of the old active toggle.
+# Publish BEFORE starting n8n so the boot-time ActiveWorkflowManager sees
+# activeVersion records and registers production webhooks in memory.
+n8n publish:workflow --id=PC9xbunz6ZsUSNS3
+n8n publish:workflow --id=filtraLeadAutomation2026
 
 echo "Starting n8n on 0.0.0.0:5678..."
 export N8N_LISTEN_ADDRESS=0.0.0.0
