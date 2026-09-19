@@ -167,7 +167,6 @@ export default function AdminDashboard() {
         fetch(`${base}/api/admin/dashboard`, { credentials: 'include', headers }),
         fetch(`${base}/api/admin/empresas`, { credentials: 'include', headers }),
         fetch(`${base}/api/admin/integracoes`, { credentials: 'include', headers }),
-        fetch(`${base}/api/admin/followups?status=pending`, { credentials: 'include', headers }),
       ]);
       if (rDash.ok) setDash(await rDash.json());
       if (rEmp.ok) setEmpresas(await rEmp.json());
