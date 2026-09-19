@@ -310,15 +310,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           {[t.pay_paypal || 'PayPal', 'Mercado Pago'].join(' · ')}
           {loadingPrices ? ` · ${t.updating_prices || 'Atualizando…'}` : ''}
         </p>
-        <p className="text-[11px] text-zinc-400">
-          <a href="/termos" className="underline hover:text-zinc-200">
-            Termos de Uso
-          </a>
-          {' · '}
-          <a href="/privacidade" className="underline hover:text-zinc-200">
-            Política de Privacidade
-          </a>
-        </p>
         <div
           className="inline-flex rounded-full border border-slate-600/80 bg-slate-800/80 p-1 text-sm shadow-inner mt-2 gap-0.5"
           role="group"
@@ -464,52 +455,43 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
                 por ciclo e as funcionalidades do plano selecionado. Não há garantia de resultado comercial.
               </p>
               <p>
-                Você poderá cancelar pelo painel. O acesso permanece até o fim do período já pago. Aplicam-se os
-                Termos de Uso, a Política de Privacidade e as regras legais de reembolso, inclusive o direito de
-                arrependimento quando aplicável.
+                Você poderá cancelar pelo painel. O acesso permanece até o fim do período já pago. Aplicam-se os{' '}
+                <a href="/termos" className="underline text-zinc-200" target="_blank" rel="noreferrer">
+                  Termos de Uso
+                </a>{' '}
+                e a{' '}
+                <a href="/privacidade" className="underline text-zinc-200" target="_blank" rel="noreferrer">
+                  Política de Privacidade
+                </a>
+                .
               </p>
             </div>
 
-            <label className="flex items-start gap-3 cursor-pointer text-sm text-zinc-100 leading-snug">
+            <label className="flex items-start gap-3 text-sm text-zinc-200 cursor-pointer">
               <input
                 type="checkbox"
                 checked={aceite}
                 onChange={(e) => setAceite(e.target.checked)}
-                className="mt-1 h-4 w-4 accent-indigo-500 shrink-0"
+                className="mt-1 rounded border-zinc-600"
               />
-              <span>
-                Li e aceito os{' '}
-                <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-400 underline">
-                  Termos de Uso e Contrato de Assinatura
-                </a>
-                , a{' '}
-                <a
-                  href="/privacidade"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-400 underline"
-                >
-                  Política de Privacidade
-                </a>{' '}
-                e as condições do plano selecionado.
-              </span>
+              <span>Li e aceito os Termos de Uso e a Política de Privacidade para esta contratação.</span>
             </label>
 
-            <div className="flex flex-col-reverse sm:flex-row gap-2 pt-1">
+            <div className="flex gap-2 pt-1">
               <button
                 type="button"
                 onClick={fecharAceite}
-                className="flex-1 py-2.5 rounded-xl text-sm font-medium border border-zinc-600 text-zinc-300 hover:bg-zinc-800"
+                className="flex-1 py-2.5 rounded-xl border border-zinc-600 text-zinc-200 text-sm font-semibold hover:bg-zinc-800"
               >
                 Voltar
               </button>
               <button
                 type="button"
-                disabled={!aceite || !!loading}
+                disabled={!aceite}
                 onClick={() => void confirmarCompra()}
-                className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-bold"
               >
-                {ciclo === 'anual' ? 'Contratar plano anual' : 'Assinar e iniciar plano'}
+                Continuar
               </button>
             </div>
           </div>
