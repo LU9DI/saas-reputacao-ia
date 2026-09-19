@@ -16,6 +16,9 @@ import {
   Workflow,
   Download,
   Settings2,
+  Mail,
+  Check,
+  X,
 } from 'lucide-react';
 
 interface Empresa {
@@ -67,6 +70,26 @@ interface Dashboard {
   }[];
 }
 
+interface Followup {
+  id: string;
+  lead_id: string;
+  channel: string;
+  draft: string;
+  status: string;
+  approval_required: number;
+  approved_at?: string | null;
+  rejected_at?: string | null;
+  sent_at?: string | null;
+  message_id?: string | null;
+  last_error?: string | null;
+  created_at: string;
+  nome_empresa?: string | null;
+  email?: string | null;
+  score?: number | null;
+  qualification?: string | null;
+  ai_reason?: string | null;
+}
+
 interface Integracoes {
   n8n: { configurado: boolean; url_mascarada: string | null; ok: boolean | null; detalhe: string };
   google_maps: { api_key_env: boolean; empresas_com_link_google: number; ok: boolean; detalhe: string };
@@ -115,6 +138,9 @@ export default function AdminDashboard() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [integ, setInteg] = useState<Integracoes | null>(null);
+  const [followups, setFollowups] = useState<Followup[]>([]);
+  const [followupDrafts, setFollowupDrafts] = useState<Record<string, string>>({});
+  const [followupBusy, setFollowupBusy] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [msg, setMsg] = useState('');
@@ -145,6 +171,12 @@ export default function AdminDashboard() {
       if (rDash.ok) setDash(await rDash.json());
       if (rEmp.ok) setEmpresas(await rEmp.json());
       if (rInt.ok) setInteg(await rInt.json());
+      const rFollowups = await fetch(`${base}/api/admin/followups?status=pending`, { credentials: 'include', headers });
+      if (rFollowups.ok) {
+        const rows = await rFollowups.json();
+        setFollowups(rows);
+        setFollowupDrafts(Object.fromEntries(rows.map((x: Followup) => [x.id, x.draft])));
+      }
       if (!rDash.ok && !rEmp.ok) setErro('Falha ao carregar dados do admin.');
     } catch {
       setErro(`Falha de rede. API em ${apiUrl()} online?`);
@@ -187,6 +219,28 @@ export default function AdminDashboard() {
       setMsg(e.message || 'Falha');
     } finally {
       setBusyId(null);
+    }
+  };
+
+  const processFollowup = async (id: string, action: 'approve' | 'reject') => {
+    setFollowupBusy(id);
+    setMsg('');
+    try {
+      const draft = followupDrafts[id];
+      const res = await fetch(`${apiUrl()}/api/admin/followups/${id}/${action}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: authHeaders(),
+        body: action === 'approve' ? JSON.stringify({ draft }) : '{}',
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
+      setMsg(action === 'approve' ? 'Follow-up aprovado e colocado na fila de envio.' : 'Follow-up rejeitado.');
+      await carregarDados();
+    } catch (e: any) {
+      setMsg(e.message || 'Falha ao processar follow-up.');
+    } finally {
+      setFollowupBusy(null);
     }
   };
 
@@ -411,6 +465,45 @@ export default function AdminDashboard() {
             </Link>
           </div>
         </div>
+
+        {followups.length > 0 && (
+          <div className="bg-zinc-900 border border-amber-900/50 rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-zinc-800 flex items-center gap-2">
+              <Mail size={16} className="text-amber-400" />
+              <div>
+                <h2 className="font-semibold text-sm">Follow-ups aguardando aprovação</h2>
+                <p className="text-xs text-zinc-500">Nenhum envio é realizado antes da aprovação.</p>
+              </div>
+            </div>
+            <div className="divide-y divide-zinc-800">
+              {followups.map((f) => (
+                <div key={f.id} className="p-5 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="font-medium">{f.nome_empresa || 'Empresa sem nome'}</p>
+                      <p className="text-xs text-zinc-500">{f.email || 'sem e-mail'} · score {f.score ?? '—'}/100</p>
+                    </div>
+                    <span className="text-[10px] uppercase px-2 py-1 rounded-full bg-amber-950/50 text-amber-300">pendente</span>
+                  </div>
+                  <textarea
+                    value={followupDrafts[f.id] ?? f.draft}
+                    onChange={(e) => setFollowupDrafts((prev) => ({ ...prev, [f.id]: e.target.value }))}
+                    rows={4}
+                    className="w-full bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-sm leading-relaxed"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button type="button" disabled={followupBusy === f.id} onClick={() => processFollowup(f.id, 'reject')} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-950/50 text-red-300 text-sm disabled:opacity-50">
+                      <X size={15} /> Rejeitar
+                    </button>
+                    <button type="button" disabled={followupBusy === f.id || !(followupDrafts[f.id] ?? f.draft).trim()} onClick={() => processFollowup(f.id, 'approve')} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-700 text-white text-sm disabled:opacity-50">
+                      <Check size={15} /> Aprovar e enviar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {!!dash?.faturas_atrasadas?.length && (
           <div className="bg-red-950/20 border border-red-900/40 rounded-2xl overflow-hidden">
