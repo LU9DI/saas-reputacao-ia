@@ -551,7 +551,7 @@
       {
         "parameters": {
           "respondWith": "json",
-          "responseBody": "={{JSON.stringify({ok:true,event:$json.body?.event??null,lead_id:$json.body?.lead_id??null})}}",
+          "responseBody": "={{JSON.stringify({ok:true,event:$json.body?.event??null,lead_id:$json.body?.lead_id??null,automation_result:$json})}}",
           "options": {}
         },
         "id": "laResponse",
