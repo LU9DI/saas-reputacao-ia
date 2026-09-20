@@ -1,16 +1,21 @@
 #!/bin/sh
 set -eu
-
-WORKFLOW_FILE="/home/node/n8n-workflow.json"
-WORKFLOW_ID="48ffd71b-e851-4a92-941a-cbbd59917eb7"
-
-if [ -f "$WORKFLOW_FILE" ]; then
-  if n8n list:workflow 2>/dev/null | grep -q "$WORKFLOW_ID"; then
-    echo "[n8n-bootstrap] production workflow already exists"
-  else
-    echo "[n8n-bootstrap] importing production workflow"
-    n8n import:workflow --input="$WORKFLOW_FILE"
-  fi
+WORKFLOW_FILE=/home/node/n8n-workflow.json
+if [ "${N8N_IMPORT_WORKFLOWS:-false}" = "true" ]; then
+  node <<'NODE'
+const fs = require('fs');
+const path = '/home/node/n8n-workflow.json';
+const exported = JSON.parse(fs.readFileSync(path, 'utf8'));
+const workflows = Array.isArray(exported) ? exported : [exported];
+if (!workflows.length || workflows.some((workflow) => !workflow || !Array.isArray(workflow.nodes) || !workflow.connections)) throw new Error('Invalid n8n workflow export');
+for (const workflow of workflows) { workflow.active = true; workflow.isArchived = false; }
+fs.writeFileSync(path, JSON.stringify(workflows));
+NODE
+  n8n import:workflow --input="$WORKFLOW_FILE"
 fi
-
+n8n publish:workflow --id=PC9xbunz6ZsUSNS3
+n8n publish:workflow --id=filtraLeadAutomation2026
+echo "Starting n8n on 0.0.0.0:5678..."
+export N8N_LISTEN_ADDRESS=0.0.0.0
+export N8N_PORT=5678
 exec n8n start
