@@ -7,7 +7,7 @@ if [ "${N8N_IMPORT_WORKFLOWS:-false}" = "true" ] && [ -f "$WORKFLOW_FILE" ]; the
   echo "[n8n-bootstrap] starting temporary n8n for workflow import/publish"
   n8n start &
   N8N_PID=$!
-  sleep 35
+  sleep 80
 
   echo "[n8n-bootstrap] importing bundled workflows"
   n8n import:workflow --input="$WORKFLOW_FILE"
