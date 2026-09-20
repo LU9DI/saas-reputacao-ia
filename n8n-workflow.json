@@ -1,0 +1,575 @@
+[
+  {
+    "id": "PC9xbunz6ZsUSNS3",
+    "name": "Filtra.IA - Relatório Telegram",
+    "active": true,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "filtra-relatorio-v3",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "1",
+        "name": "Webhook - Relatório",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -900,
+          0
+        ],
+        "webhookId": "filtra-relatorio-v3"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body=$json.body??$json;\nconst headers=$json.headers??{};\nconst token=headers['x-filtra-report-token']??headers['X-Filtra-Report-Token']??headers['X-Filtra-Secret']??'';\nconst expected=String($env.N8N_WEBHOOK_SECRET||$env.N8N_INBOUND_SECRET||$env.N8N_WHATSAPP_REPORT_TOKEN||'').trim();\nif(!expected||token!==expected)return[{json:{ok:false,status:401,error:'Unauthorized'}}];\nif(!body?.cliente_id||!body?.periodo||!Array.isArray(body.destinatarios))return[{json:{ok:false,status:400,error:'Invalid payload'}}];\nif(body.destinatarios.length===0)return[{json:{ok:false,status:400,error:'No recipients'}}];\nconst report=body.relatorio??body.report??body.message??'';\nlet message;\nif(typeof report==='string')message=report;\nelse if(report&&typeof report==='object'){message=Object.entries(report).filter(([_,v])=>v!==null&&v!==undefined&&typeof v!=='object').map(([k,v])=>`${k}: ${v}`).join('\\n');if(!message.trim())message=JSON.stringify(report);}\nelse message=String(report??'');\nreturn[{json:{ok:true,cliente_id:String(body.cliente_id),periodo:String(body.periodo),idempotency_key:String(body.idempotency_key||`relatorio:${body.cliente_id}:${body.periodo}`),message,destinatarios:body.destinatarios}}];"
+        },
+        "id": "2",
+        "name": "Preparar relatório",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -650,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{$json.ok}}",
+                "operation": "isTrue"
+              }
+            ]
+          }
+        },
+        "id": "3",
+        "name": "Dados válidos?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -420,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const recipients=$json.destinatarios||[];\nreturn recipients.map((r,index)=>({json:{cliente_id:$json.cliente_id,periodo:$json.periodo,idempotency_key:$json.idempotency_key,message:$json.message,recipient_index:index,channel:String(r.canal??r.channel??r.tipo??'').trim().toLowerCase(),destination:r.destino??r.destination??r.phone??r.email??r.address??null}}));"
+        },
+        "id": "4",
+        "name": "Separar destinatários",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -150,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{$json.channel}}",
+                      "rightValue": "telegram",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "id": "5",
+        "name": "Roteador por canal",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3,
+        "position": [
+          80,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{'https://api.telegram.org/bot'+$env.TELEGRAM_BOT_TOKEN+'/sendMessage'}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{JSON.stringify({chat_id:$json.destination,text:$json.message})}}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            },
+            "includeInputData": true
+          },
+          "continueOnFail": true
+        },
+        "id": "6",
+        "name": "TELEGRAM - Enviar",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          340,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const original=$('Separar destinatários').item.json;\nconst response=$json||{};\nconst ok=response.ok===true;\nreturn[{json:{...original,delivery_ok:ok,provider_response:response}}];"
+        },
+        "id": "7",
+        "name": "TELEGRAM - Resultado",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          590,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const items=$input.all();\nconst results=items.map(item=>{const d=item.json||{};const provider=d.provider_response||{};const ok=d.delivery_ok===true||provider.ok===true;return{channel:d.channel??null,destination:d.destination??null,status:ok?'sent':'failed',ok,error:ok?null:(provider.description||provider.error?.message||provider.error||null),provider_response:provider};});\nconst failed=results.filter(r=>!r.ok).length;\nreturn[{json:{ok:results.length>0&&failed===0,status:results.length===0?'no_recipients':failed===0?'completed':'partial_failure',total:results.length,sent:results.filter(r=>r.ok).length,failed,results}}];"
+        },
+        "id": "10",
+        "name": "Agregar resultados",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          850,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{$json}}",
+          "options": {}
+        },
+        "id": "11",
+        "name": "Resposta - Relatório",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1090,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{$json}}",
+          "options": {}
+        },
+        "id": "12",
+        "name": "Resposta - Erro",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -150,
+          220
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "intelligent-report",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "13",
+        "name": "Webhook - Health",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -650,
+          400
+        ],
+        "webhookId": "intelligent-report-health-2026"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{JSON.stringify({ok:true,status:'ready',workflow:'Filtra.IA - Relatório Telegram',webhook:'POST /webhook/filtra-relatorio-v3'})}}",
+          "options": {}
+        },
+        "id": "14",
+        "name": "Resposta - Health",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -400,
+          400
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook - Relatório": {
+        "main": [
+          [
+            {
+              "node": "Preparar relatório",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar relatório": {
+        "main": [
+          [
+            {
+              "node": "Dados válidos?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Dados válidos?": {
+        "main": [
+          [
+            {
+              "node": "Separar destinatários",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Resposta - Erro",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Separar destinatários": {
+        "main": [
+          [
+            {
+              "node": "Roteador por canal",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Roteador por canal": {
+        "main": [
+          [
+            {
+              "node": "TELEGRAM - Enviar",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "TELEGRAM - Enviar": {
+        "main": [
+          [
+            {
+              "node": "TELEGRAM - Resultado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "TELEGRAM - Resultado": {
+        "main": [
+          [
+            {
+              "node": "Agregar resultados",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Agregar resultados": {
+        "main": [
+          [
+            {
+              "node": "Resposta - Relatório",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook - Health": {
+        "main": [
+          [
+            {
+              "node": "Resposta - Health",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {
+      "instanceId": "d640304d6608c8e46a10b31c7d6ba15f7f71941dfc26006b0e3186e272610692"
+    },
+    "tags": []
+  },
+  {
+    "id": "filtraLeadAutomation2026",
+    "name": "Filtra.AI - Lead Automation",
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "filtra-ai-leads",
+          "responseMode": "onReceived",
+          "options": {}
+        },
+        "id": "la1",
+        "name": "Filtra.AI Events",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "webhookId": "filtra-ai-leads"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body=$json.body??$json; const headers=$json.headers??{}; const token=String(headers['x-filtra-secret']??headers['X-Filtra-Secret']??'').trim(); const expected=String($env.N8N_WEBHOOK_SECRET||$env.N8N_INBOUND_SECRET||'').trim(); if(!expected || token!==expected) return []; return [{json:{...$json,body}}];"
+        },
+        "id": "la1auth",
+        "name": "Validar segredo do evento",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          130,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{$json.body.event}}",
+                      "rightValue": "lead.crm_sync.requested",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                },
+                "renameOutput": true,
+                "outputKey": "crm_sync"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{$json.body.event}}",
+                      "rightValue": "lead.followup.requested",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                },
+                "renameOutput": true,
+                "outputKey": "followup"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "la2",
+        "name": "Route Automation Events",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          260,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{$env.FILTRA_API_URL+'/api/n8n/inbound/automation-result'}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Filtra-Secret",
+                "value": "={{$env.FILTRA_INBOUND_SECRET}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { lead_id: $json.body.lead_id, action: 'hubspot_sync', status: 'pending' } }}",
+          "options": {}
+        },
+        "id": "la3",
+        "name": "CRM Sync - Mark Pending",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          520,
+          -80
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{$env.FILTRA_API_URL+'/api/n8n/inbound/automation-result'}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Filtra-Secret",
+                "value": "={{$env.FILTRA_INBOUND_SECRET}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { lead_id: $json.lead_id, action: 'followup', status: 'pending', draft: $json.followup_draft, approval_required: true } }}",
+          "options": {}
+        },
+        "id": "la4",
+        "name": "Follow-up - Mark Pending",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          780,
+          180
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const b=$json.body||{}; const nome=String(b.nome_empresa||'empresa').trim(); const score=Number(b.score||0); const reason=String(b.reason||'').trim(); const qualification=String(b.qualification||'').trim(); const first=nome||'sua empresa'; const message=`Olá! Vi o interesse da ${first} no Filtra.AI e preparei uma análise inicial. A qualificação automática ficou em ${qualification||'avaliação'} (${score}/100).${reason?` Motivo: ${reason}`:''} Podemos mostrar como a plataforma pode ajudar a acompanhar e melhorar a reputação da empresa. Se fizer sentido, posso enviar os próximos detalhes.`; return [{json:{...b,followup_draft:message,approval_required:true}}];"
+        },
+        "id": "la5",
+        "name": "Preparar Follow-up (rascunho)",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          520,
+          180
+        ]
+      }
+    ],
+    "connections": {
+      "Filtra.AI Events": {
+        "main": [
+          [
+            {
+              "node": "Validar segredo do evento",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Route Automation Events": {
+        "main": [
+          [
+            {
+              "node": "CRM Sync - Mark Pending",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Preparar Follow-up (rascunho)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Follow-up (rascunho)": {
+        "main": [
+          [
+            {
+              "node": "Follow-up - Mark Pending",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar segredo do evento": {
+        "main": [
+          [
+            {
+              "node": "Route Automation Events",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {},
+    "tags": []
+  }
+]
