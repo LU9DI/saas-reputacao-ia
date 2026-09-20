@@ -356,7 +356,7 @@
         "parameters": {
           "httpMethod": "POST",
           "path": "filtra-ai-leads",
-          "responseMode": "onReceived",
+          "responseMode": "responseNode",
           "options": {}
         },
         "id": "la1",
@@ -371,7 +371,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const body=$json.body??$json; const headers=$json.headers??{}; const token=String(headers['x-filtra-secret']??headers['X-Filtra-Secret']??'').trim(); const expected=String($env.N8N_WEBHOOK_SECRET||$env.N8N_INBOUND_SECRET||'').trim(); if(!expected || token!==expected) return []; return [{json:{...$json,body}}];"
+          "jsCode": "const body=$json.body??$json; const headers=$json.headers??{}; const token=String(headers['x-filtra-secret']??headers['X-Filtra-Secret']??'').trim(); const expected=String($env.N8N_WEBHOOK_SECRET||$env.N8N_INBOUND_SECRET||'').trim(); if(!expected || token!==expected) return [{json:{auth_ok:false,status:401,error:'Unauthorized'}}]; return [{json:{...$json,body,auth_ok:true}}];"
         },
         "id": "la1auth",
         "name": "Validar segredo do evento",
@@ -509,6 +509,59 @@
           520,
           180
         ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{$json.auth_ok}}",
+                "operation": "isTrue"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "laAuthGate",
+        "name": "Segredo válido?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          210,
+          220
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{JSON.stringify({ok:false,error:'Unauthorized'})}}",
+          "options": {
+            "responseCode": 401
+          }
+        },
+        "id": "laUnauthorized",
+        "name": "Resposta - Unauthorized",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          500,
+          420
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{JSON.stringify({ok:true,event:$json.body?.event??null,lead_id:$json.body?.lead_id??null})}}",
+          "options": {}
+        },
+        "id": "laResponse",
+        "name": "Resposta - Lead Automation",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1030,
+          180
+        ]
       }
     ],
     "connections": {
@@ -556,7 +609,47 @@
         "main": [
           [
             {
+              "node": "Segredo válido?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Segredo válido?": {
+        "main": [
+          [
+            {
               "node": "Route Automation Events",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Resposta - Unauthorized",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CRM Sync - Mark Pending": {
+        "main": [
+          [
+            {
+              "node": "Resposta - Lead Automation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Follow-up - Mark Pending": {
+        "main": [
+          [
+            {
+              "node": "Resposta - Lead Automation",
               "type": "main",
               "index": 0
             }
