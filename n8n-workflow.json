@@ -983,5 +983,324 @@
     "pinData": {},
     "meta": {},
     "tags": []
+  },
+  {
+    "id": "filtraLeadTelegram2026",
+    "name": "Filtra.AI - Telegram Automation",
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "filtra-ai-telegram-v2",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "la1",
+        "name": "Filtra.AI Events",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "webhookId": "filtra-ai-telegram-v2"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body=$json.body??$json; const headers=$json.headers??{}; const token=String(headers['x-filtra-secret']??headers['X-Filtra-Secret']??'').trim(); const expected=String($env.N8N_WEBHOOK_SECRET||$env.N8N_INBOUND_SECRET||'').trim(); if(!expected || token!==expected) return [{json:{auth_ok:false,status:401,error:'Unauthorized'}}]; return [{json:{...$json,body,auth_ok:true}}];"
+        },
+        "id": "la1auth",
+        "name": "Validar segredo do evento",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          130,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{$json.body.event}}",
+                      "rightValue": "lead.crm_sync.requested",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                },
+                "renameOutput": true,
+                "outputKey": "crm_sync"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{$json.body.event}}",
+                      "rightValue": "lead.followup.requested",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ]
+                },
+                "renameOutput": true,
+                "outputKey": "followup"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "la2",
+        "name": "Route Automation Events",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          260,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{$env.FILTRA_API_URL+'/api/n8n/inbound/automation-result'}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Filtra-Secret",
+                "value": "={{$env.FILTRA_INBOUND_SECRET}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { lead_id: $json.body.lead_id, action: 'hubspot_sync', status: 'pending' } }}",
+          "options": {}
+        },
+        "id": "la3",
+        "name": "CRM Sync - Mark Pending",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          520,
+          -80
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{$env.FILTRA_API_URL+'/api/n8n/inbound/automation-result'}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "X-Filtra-Secret",
+                "value": "={{$env.N8N_WEBHOOK_SECRET||$env.N8N_INBOUND_SECRET}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { lead_id: $json.lead_id, action: 'followup', status: 'pending', draft: $json.followup_draft, approval_required: true, channel: String($json.channel || $json.preferred_channel || 'email').trim().toLowerCase() } }}",
+          "options": {}
+        },
+        "id": "la4",
+        "name": "Follow-up - Mark Pending",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          780,
+          180
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const b=$json.body||{}; const nome=String(b.nome_empresa||'empresa').trim(); const score=Number(b.score||0); const reason=String(b.reason||'').trim(); const qualification=String(b.qualification||'').trim(); const first=nome||'sua empresa'; const message=`Olá! Vi o interesse da ${first} no Filtra.AI e preparei uma análise inicial. A qualificação automática ficou em ${qualification||'avaliação'} (${score}/100).${reason?` Motivo: ${reason}`:''} Podemos mostrar como a plataforma pode ajudar a acompanhar e melhorar a reputação da empresa. Se fizer sentido, posso enviar os próximos detalhes.`; return [{json:{...b,followup_draft:message,approval_required:true}}];"
+        },
+        "id": "la5",
+        "name": "Preparar Follow-up (rascunho)",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          520,
+          180
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{$json.auth_ok}}",
+                "operation": "isTrue"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "laAuthGate",
+        "name": "Segredo válido?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          210,
+          220
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{JSON.stringify({ok:false,error:'Unauthorized'})}}",
+          "options": {
+            "responseCode": 401
+          }
+        },
+        "id": "laUnauthorized",
+        "name": "Resposta - Unauthorized",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          500,
+          420
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{JSON.stringify({ok:true,event:$json.body?.event??null,lead_id:$json.body?.lead_id??null,automation_result:$json})}}",
+          "options": {}
+        },
+        "id": "laResponse",
+        "name": "Resposta - Lead Automation",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1030,
+          180
+        ]
+      }
+    ],
+    "connections": {
+      "Filtra.AI Events": {
+        "main": [
+          [
+            {
+              "node": "Validar segredo do evento",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Route Automation Events": {
+        "main": [
+          [
+            {
+              "node": "CRM Sync - Mark Pending",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Preparar Follow-up (rascunho)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Follow-up (rascunho)": {
+        "main": [
+          [
+            {
+              "node": "Follow-up - Mark Pending",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar segredo do evento": {
+        "main": [
+          [
+            {
+              "node": "Segredo válido?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Segredo válido?": {
+        "main": [
+          [
+            {
+              "node": "Route Automation Events",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Resposta - Unauthorized",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CRM Sync - Mark Pending": {
+        "main": [
+          [
+            {
+              "node": "Resposta - Lead Automation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Follow-up - Mark Pending": {
+        "main": [
+          [
+            {
+              "node": "Resposta - Lead Automation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {},
+    "tags": []
   }
 ]
