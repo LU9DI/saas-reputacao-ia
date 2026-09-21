@@ -355,7 +355,7 @@
       {
         "parameters": {
           "httpMethod": "POST",
-          "path": "filtra-ai-leads",
+          "path": "filtra-ai-leads-v2",
           "responseMode": "responseNode",
           "options": {}
         },
@@ -367,7 +367,7 @@
           0,
           0
         ],
-        "webhookId": "filtra-ai-leads"
+        "webhookId": "filtra-ai-leads-v2"
       },
       {
         "parameters": {
@@ -485,7 +485,7 @@
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{ { lead_id: $json.lead_id, action: 'followup', status: 'pending', draft: $json.followup_draft, approval_required: true, channel: String($json.channel || $json.preferred_channel || 'email').trim().toLowerCase() } }}",
+          "jsonBody": "{{ { lead_id: $json.lead_id, action: 'followup', status: 'pending', draft: $json.followup_draft, approval_required: true, channel: String($json.channel || $json.preferred_channel || 'email').trim().toLowerCase() } }}",
           "options": {}
         },
         "id": "la4",
