@@ -16,6 +16,7 @@ if [ "${N8N_IMPORT_WORKFLOWS:-false}" = "true" ] && [ -f "$WORKFLOW_FILE" ]; the
   echo "[n8n-bootstrap] publishing bundled workflows"
   n8n publish:workflow --id="PC9xbunz6ZsUSNS3"
   n8n publish:workflow --id="filtraLeadAutomation2026"
+  n8n publish:workflow --id="aPqhpo48pl3ZOpyP"
 
   echo "[n8n-bootstrap] stopping temporary port listener"
   kill "$LISTENER_PID" 2>/dev/null || true
