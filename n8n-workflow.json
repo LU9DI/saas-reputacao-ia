@@ -679,7 +679,7 @@
           "options": {}
         },
         "id": "la1",
-        "name": "Webhook - Filtra.AI Telegram",
+        "name": "Filtra.AI Events",
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2,
         "position": [
