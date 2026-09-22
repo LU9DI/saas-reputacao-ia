@@ -10,9 +10,22 @@ import {
 
 const trialLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 30,
+  max: 10,
   message: { error: 'Limite de ativações excedido. Tente mais tarde.' },
 });
+
+function clientIp(req: Request): string {
+  const xf = req.headers['x-forwarded-for'];
+  if (typeof xf === 'string' && xf.trim()) {
+    return xf.split(',')[0].trim();
+  }
+  if (Array.isArray(xf) && xf[0]) {
+    return String(xf[0]).split(',')[0].trim();
+  }
+  const real = req.headers['x-real-ip'];
+  if (typeof real === 'string' && real.trim()) return real.trim();
+  return String(req.ip || (req.socket as any)?.remoteAddress || '').trim();
+}
 
 export function mountTrialRoutes(app: Express) {
   app.post(
@@ -23,7 +36,6 @@ export function mountTrialRoutes(app: Express) {
       try {
         const result = await ativarTrial(
           {
-            cnpj: String(req.body.cnpj),
             nome_empresa: String(req.body.nome_empresa),
             email: String(req.body.email),
             senha: String(req.body.senha),
@@ -32,6 +44,7 @@ export function mountTrialRoutes(app: Express) {
               : undefined,
             whatsapp: req.body.whatsapp ? String(req.body.whatsapp) : undefined,
             locale: req.body.locale ? String(req.body.locale) : undefined,
+            signup_ip: clientIp(req),
           },
           undefined,
           res
@@ -39,7 +52,9 @@ export function mountTrialRoutes(app: Express) {
         return res.status(201).json(result);
       } catch (e: any) {
         if (e instanceof TrialConflictError || e?.name === 'TrialConflictError') {
-          return res.status(409).json({ error: e.message || 'CNPJ já cadastrado.' });
+          return res.status(409).json({
+            error: e.message || 'Este e-mail ou IP já utilizou o período de testes.',
+          });
         }
         if (e instanceof TrialValidationError || e?.name === 'TrialValidationError') {
           return res.status(400).json({ error: e.message });
