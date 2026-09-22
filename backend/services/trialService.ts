@@ -1,5 +1,6 @@
 /**
- * Trial 7 dias — SQLite + Postgres.
+ * Trial 7 dias — identificação só por e-mail; trava por IP.
+ * Sem CNPJ / Tax ID no fluxo de ativação.
  */
 import crypto from 'crypto';
 import type { Database } from 'sqlite';
@@ -9,7 +10,6 @@ import { createUsuarioForEmpresa } from '../passwordResetRoutes.js';
 import { normalizarWhatsapp } from '../lib/whatsapp.js';
 import { notificarTrialAtivado } from '../lib/notifications.js';
 import { setAuthCookie, signAccessToken } from '../lib/auth.js';
-import { canonicalTaxId, taxIdValido } from '../lib/cnpj.js';
 import { notifyN8n } from '../lib/n8n.js';
 
 const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
@@ -17,14 +17,17 @@ const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://loca
   ''
 );
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export type TrialInput = {
-  cnpj: string;
   nome_empresa: string;
   email: string;
   senha: string;
   google_review_url?: string;
   whatsapp?: string;
   locale?: string;
+  /** IP do cliente (obrigatório para a trava de 1 trial por IP). */
+  signup_ip?: string;
 };
 
 export type TrialResult = {
@@ -44,7 +47,7 @@ export type TrialResult = {
 
 export class TrialConflictError extends Error {
   status = 409;
-  constructor(message = 'Este identificador fiscal já ativou o período de testes.') {
+  constructor(message = 'Este e-mail ou este IP já utilizou o período de testes.') {
     super(message);
     this.name = 'TrialConflictError';
   }
@@ -68,28 +71,62 @@ function isUniqueViolation(e: any): boolean {
   );
 }
 
+/** Identificador interno único derivado do e-mail (coluna cnpj no banco). */
+function syntheticIdFromEmail(email: string): string {
+  const h = crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex').slice(0, 14);
+  return `em${h}`;
+}
+
+function normalizeIp(raw: string | undefined | null): string {
+  const s = String(raw || '')
+    .trim()
+    .toLowerCase();
+  if (!s || s === '::1' || s === '127.0.0.1' || s === 'unknown') return s;
+  // IPv6 mapped IPv4
+  if (s.startsWith('::ffff:')) return s.slice(7);
+  return s.slice(0, 64);
+}
+
+async function ensureSignupIpColumn(db: Database): Promise<void> {
+  try {
+    const cols = (await db.all(`PRAGMA table_info(empresas)`)).map((c: any) => String(c.name));
+    if (!cols.includes('signup_ip')) {
+      await db.exec(`ALTER TABLE empresas ADD COLUMN signup_ip TEXT`);
+    }
+  } catch {
+    try {
+      await db.exec(`ALTER TABLE empresas ADD COLUMN signup_ip TEXT`);
+    } catch {
+      /* coluna já existe ou Postgres sem pragma */
+    }
+  }
+  try {
+    await db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_signup_ip ON empresas(signup_ip)`);
+  } catch {
+    /* ok */
+  }
+}
+
 export async function ativarTrial(
   input: TrialInput,
   db: Database = getDb(),
   res?: Response
 ): Promise<TrialResult> {
-  const cnpj = canonicalTaxId(String(input.cnpj));
-  const nome = String(input.nome_empresa).trim();
-  const email = String(input.email).trim().toLowerCase();
-  const senha = String(input.senha);
+  const nome = String(input.nome_empresa || '').trim();
+  const email = String(input.email || '').trim().toLowerCase();
+  const senha = String(input.senha || '');
   const googleReviewUrl = input.google_review_url ? String(input.google_review_url) : '';
   const wpp = normalizarWhatsapp(input.whatsapp || null);
+  const signupIp = normalizeIp(input.signup_ip);
 
-  if (!taxIdValido(String(input.cnpj)) || !cnpj || cnpj.length < 5) {
-    throw new TrialValidationError(
-      'Identificador fiscal inválido. Use CNPJ (Brasil) ou Tax ID (5–20 caracteres).'
-    );
-  }
   if (!nome || nome.length < 2) {
     throw new TrialValidationError('Nome da empresa inválido.');
   }
-  if (!email.includes('@')) {
+  if (!EMAIL_RE.test(email)) {
     throw new TrialValidationError('E-mail inválido.');
+  }
+  if (!signupIp || signupIp === 'unknown') {
+    throw new TrialValidationError('Não foi possível identificar a conexão. Tente novamente.');
   }
 
   if (input.whatsapp && String(input.whatsapp).trim() && !wpp) {
@@ -98,16 +135,29 @@ export async function ativarTrial(
     );
   }
 
-  const existente = await db.get(`SELECT id FROM empresas WHERE cnpj = ?`, [cnpj]);
-  if (existente) {
-    throw new TrialConflictError();
-  }
+  await ensureSignupIpColumn(db);
 
+  // 1 trial por e-mail
   const emailUser = await db.get(`SELECT id FROM usuarios WHERE lower(email) = lower(?) LIMIT 1`, [
     email,
   ]);
   if (emailUser) {
-    throw new TrialConflictError('Este e-mail já está cadastrado.');
+    throw new TrialConflictError('Este e-mail já utilizou o período de testes.');
+  }
+
+  // 1 trial por IP
+  const ipUsed = await db.get(
+    `SELECT id FROM empresas WHERE signup_ip = ? LIMIT 1`,
+    [signupIp]
+  );
+  if (ipUsed) {
+    throw new TrialConflictError('Este dispositivo/rede já utilizou o período de testes.');
+  }
+
+  const syntheticId = syntheticIdFromEmail(email);
+  const existente = await db.get(`SELECT id FROM empresas WHERE cnpj = ?`, [syntheticId]);
+  if (existente) {
+    throw new TrialConflictError('Este e-mail já utilizou o período de testes.');
   }
 
   const id = crypto.randomUUID();
@@ -119,21 +169,22 @@ export async function ativarTrial(
     await db.run(
       `INSERT INTO empresas (
          id, cnpj, nome_empresa, slug, google_review_url, whatsapp_suporte,
-         status, plan, criado_em, expira_em
-       ) VALUES (?, ?, ?, ?, ?, ?, 'trial', 'trial', ?, ?)`,
-      [id, cnpj, nome, slug, googleReviewUrl || null, wpp, criadoEm, expiraEm]
+         status, plan, criado_em, expira_em, signup_ip
+       ) VALUES (?, ?, ?, ?, ?, ?, 'trial', 'trial', ?, ?, ?)`,
+      [id, syntheticId, nome, slug, googleReviewUrl || null, wpp, criadoEm, expiraEm, signupIp]
     );
   } catch (e: any) {
     console.error('[trial] insert empresa:', e?.code, e?.message || e);
     if (isUniqueViolation(e)) throw new TrialConflictError();
+    // Fallback sem coluna signup_ip (schema antigo)
     try {
       await db.run(
-        `INSERT INTO empresas (id, cnpj, nome_empresa, status, plan, criado_em, expira_em)
-         VALUES (?, ?, ?, 'trial', 'trial', ?, ?)`,
-        [id, cnpj, nome, criadoEm, expiraEm]
+        `INSERT INTO empresas (id, cnpj, nome_empresa, slug, status, plan, criado_em, expira_em)
+         VALUES (?, ?, ?, ?, 'trial', 'trial', ?, ?)`,
+        [id, syntheticId, nome, slug, criadoEm, expiraEm]
       );
       try {
-        await db.run(`UPDATE empresas SET slug = ? WHERE id = ?`, [slug, id]);
+        await db.run(`UPDATE empresas SET signup_ip = ? WHERE id = ?`, [signupIp, id]);
       } catch {
         /* */
       }
@@ -149,7 +200,7 @@ export async function ativarTrial(
   try {
     const u = await createUsuarioForEmpresa(db, {
       empresaId: id,
-      cnpj,
+      cnpj: syntheticId,
       nome,
       email,
       senha,
@@ -196,7 +247,7 @@ export async function ativarTrial(
     }
   } catch (e: any) {
     console.error('[trial] JWT:', e?.message || e);
-    throw new TrialValidationError('Falha ao gerar token. Verifique JWT_SECRET no Render.');
+    throw new TrialValidationError('Falha ao gerar token. Verifique JWT_SECRET no servidor.');
   }
 
   notificarTrialAtivado({
@@ -211,14 +262,13 @@ export async function ativarTrial(
   notifyN8n('trial.ativado', {
     empresa_id: id,
     slug,
-    cnpj,
-    tax_id: cnpj,
     nome_empresa: nome,
     email,
     whatsapp: wpp,
     google_review_url: googleReviewUrl || null,
     locale: input.locale || 'pt-BR',
     expira_em: expiraEm,
+    signup_ip: signupIp,
     link_painel: `${APP_URL}/painel/${slug}`,
     link_avaliacao: `${APP_URL}/avaliacao/${slug}`,
   });
