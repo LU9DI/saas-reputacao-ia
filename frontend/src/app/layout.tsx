@@ -4,12 +4,28 @@ import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://filtraai.com'),
   title: {
     default: 'FILTRA.AI — Online Reputation Management',
     template: '%s · FILTRA.AI',
   },
   description:
-    'Smart crisis containment and review management for local businesses',
+    'AI-assisted customer feedback and online reputation management for businesses.',
+  keywords: ['AI reputation management', 'review monitoring', 'customer feedback', 'online reputation management'],
+  alternates: { canonical: '/' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com',
+    siteName: 'Filtra.AI',
+    title: 'Filtra.AI — AI Reputation Management',
+    description: 'AI-assisted customer feedback and online reputation management for businesses.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Filtra.AI — AI Reputation Management',
+    description: 'AI-assisted customer feedback and online reputation management for businesses.',
+  },
+  robots: { index: true, follow: true },
   applicationName: 'FILTRA.AI',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
