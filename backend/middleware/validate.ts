@@ -47,8 +47,6 @@ function applyRule(
 
   if (empty) {
     if (rule.required) return { error: rule.message || `${key} é obrigatório.` };
-    // Regras customizadas opcionais ainda precisam ser executadas.
-    // Ex.: nota ≤ 3 exige comentário/WhatsApp mesmo quando esses campos estão vazios.
     if (rule.custom) {
       const err = rule.custom(undefined, body);
       if (err) return { error: err };
@@ -169,8 +167,8 @@ export function validateBody(schema: Schema) {
   };
 }
 
+/** Trial 7 dias: só e-mail (sem CNPJ / Tax ID). */
 export const schemaTrialAtivar: Schema = {
-  cnpj: { required: true, type: 'tax_id' },
   nome_empresa: { required: true, type: 'string', min: 2, max: 120, message: 'Nome da empresa inválido.' },
   email: { required: true, type: 'email' },
   senha: { required: true, type: 'password_empresa' },
@@ -191,10 +189,10 @@ export function ensureLoginIdentifier(req: Request, res: Response, next: NextFun
   const body = req.body || {};
   const id = String(body.login || body.email || body.cnpj || '').trim();
   if (!id) {
-    return res.status(400).json({ error: 'Informe CNPJ/Tax ID ou e-mail e a senha.', fields: { login: 'Obrigatório' } });
+    return res.status(400).json({ error: 'Informe e-mail e a senha.', fields: { login: 'Obrigatório' } });
   }
   if (!isEmailLike(id) && id.replace(/[^A-Za-z0-9]/g, '').length < 5) {
-    return res.status(400).json({ error: 'Identificador inválido. Use e-mail ou Tax ID (mín. 5 caracteres).' });
+    return res.status(400).json({ error: 'Identificador inválido. Use e-mail.' });
   }
   next();
 }
