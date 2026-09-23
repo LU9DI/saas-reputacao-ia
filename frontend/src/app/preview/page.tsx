@@ -291,7 +291,7 @@ export default function LandingPreview() {
             <a href="/login" className="hover:text-white">{language === 'pt' ? 'Entrar' : language === 'en' ? 'Sign in' : language === 'es' ? 'Entrar' : '登录'}</a>
           </div>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher compact />
+            <LanguageSwitcher />
             <a href="/preview/teste" className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
           </div>
         </nav>
@@ -360,7 +360,7 @@ export default function LandingPreview() {
       </section>
 
       <footer className="border-t border-white/[0.06] px-6 py-10 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><a href="/privacidade" className="text-zinc-500 hover:text-white">{c.privacy}</a><a href="/termos" className="text-zinc-500 hover:text-white">{c.terms}</a><span className="text-zinc-700">{c.footer}</span></div></div>
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><a href="/privacidade" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.privacy}</a><a href="/termos" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.terms}</a><span className="text-zinc-700">{c.footer}</span></div></div>
       </footer>
     </main>
   );
