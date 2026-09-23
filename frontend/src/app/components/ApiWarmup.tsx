@@ -1,17 +1,25 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { restoreStickyFromSession, apiFetch, getApiBase } from '../utils/apiFailover';
 
 /**
- * Pré-aquece a API do Render assim que o app carrega.
- * - Restaura sticky base da sessão
- * - Ping em /api/health (acorda cold start em background)
- * - Re-ping a cada 4 min enquanto a aba estiver aberta
- * - dns-prefetch / preconnect no head
+ * Pré-aquece a API do Render nas páginas que realmente precisam dela.
+ * As rotas de demonstração locais são deliberadamente offline e não devem
+ * tentar acessar 127.0.0.1:5000 nem qualquer backend.
  */
 export function ApiWarmup() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    const isOfflineDemo =
+      pathname === '/preview' ||
+      pathname.startsWith('/preview/') ||
+      pathname === '/painel/preview';
+
+    if (isOfflineDemo) return;
+
     restoreStickyFromSession();
 
     const base = getApiBase();
@@ -47,7 +55,6 @@ export function ApiWarmup() {
       });
     };
 
-    // imediato + um pouco depois (cobre cold start longo)
     warm();
     const t1 = window.setTimeout(warm, 2_500);
     const interval = window.setInterval(warm, 4 * 60 * 1000);
@@ -63,7 +70,7 @@ export function ApiWarmup() {
       window.clearInterval(interval);
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
