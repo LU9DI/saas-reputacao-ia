@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, Building2, Check, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Building2, Check, Link2, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
 import { BrandMark } from '../../components/BrandMark';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { useLanguage } from '../../Contexts/LanguageContext';
@@ -18,6 +18,7 @@ export default function PreviewTrial() {
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [googleUrl, setGoogleUrl] = useState('');
   const [aceite, setAceite] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -117,6 +118,7 @@ export default function PreviewTrial() {
           nome_empresa: nomeEmpresa.trim(),
           email: email.trim().toLowerCase(),
           senha,
+          google_review_url: googleUrl.trim() || undefined,
           aceite_termos: true,
           versao_termos: TERMOS_VERSAO,
         }),
@@ -162,6 +164,7 @@ export default function PreviewTrial() {
             <form onSubmit={submit} className="space-y-4">
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Building2 size={14}/>{copy.company}</span><input required value={nomeEmpresa} onChange={e=>setNomeEmpresa(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="Hotel Aurora" /></label>
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Mail size={14}/>{copy.email}</span><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="voce@empresa.com" /></label>
+              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Link2 size={14}/>{language === 'pt' ? 'Link do Google (opcional)' : language === 'en' ? 'Google link (optional)' : language === 'es' ? 'Enlace de Google (opcional)' : 'Google 链接（可选）'}</span><input type="url" value={googleUrl} onChange={e=>setGoogleUrl(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="https://maps.google.com/..." /></label>
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Lock size={14}/>{copy.password}</span><input required minLength={8} type="password" value={senha} onChange={e=>setSenha(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="••••••••" /><span className="mt-2 block text-[11px] text-zinc-600">{SENHA_EMPRESA_HINT}</span></label>
               <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-zinc-400"><input type="checkbox" checked={aceite} onChange={e=>setAceite(e.target.checked)} className="mt-1 h-4 w-4 accent-indigo-500" /><span>{copy.note} <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">Termos</a> · <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">Privacidade</a>.</span></label>
               <button disabled={loading} className="group flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 py-4 font-semibold text-white transition hover:bg-indigo-400 disabled:opacity-50">{loading ? '…' : copy.button}<ArrowRight size={17} className="transition group-hover:translate-x-0.5"/></button>
