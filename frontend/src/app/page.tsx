@@ -23,7 +23,6 @@ import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from './utils/passwordPolicy'
 import { readApiError } from './utils/apiError';
 import { persistFiltraToken } from './utils/persistToken';
 import { apiFetch, restoreStickyFromSession } from './utils/apiFailover';
-import { getEnv } from './utils/env';
 
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
@@ -380,7 +379,27 @@ export default function Home() {
         <PlanCards />
         <ComoFunciona />
       </div>
-      <footer className="pb-8 text-center space-y-2">
+      <footer className="pb-8 text-center space-y-3 max-w-3xl">
+        <p className="text-[11px] text-zinc-500 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+          <a href="/como-funciona" className="underline hover:text-zinc-300">
+            Como funciona
+          </a>
+          <a href="/restaurantes" className="underline hover:text-zinc-300">
+            Restaurantes
+          </a>
+          <a href="/clinicas" className="underline hover:text-zinc-300">
+            Clínicas
+          </a>
+          <a href="/agencias" className="underline hover:text-zinc-300">
+            Agências
+          </a>
+          <a href="/pedir-estrela-vs-filtrar" className="underline hover:text-zinc-300">
+            Pedir vs filtrar
+          </a>
+          <a href="/blog" className="underline hover:text-zinc-300">
+            Blog
+          </a>
+        </p>
         <p className="text-[11px] text-zinc-500 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
           <a href="/termos" className="underline hover:text-zinc-300">
             Termos de Uso
