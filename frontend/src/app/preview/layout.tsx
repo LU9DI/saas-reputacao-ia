@@ -5,14 +5,14 @@ export const metadata: Metadata = {
   description:
     'Conheça o novo posicionamento do Filtra.AI: gestão de avaliações, reputação, feedbacks, relatórios e inteligência artificial em um único painel.',
   robots: { index: false, follow: false },
-  alternates: { canonical: '/' },
+  alternates: { canonical: '/preview' },
   openGraph: {
     type: 'website',
     title: 'Filtra.AI — Gestão de reputação com IA',
     description:
       'Gestão de avaliações, reputação, feedbacks e inteligência artificial em um único painel.',
     siteName: 'Filtra.AI',
-    url: '/',
+    url: '/preview',
     locale: 'pt_BR',
   },
   twitter: {
