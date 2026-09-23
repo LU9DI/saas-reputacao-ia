@@ -116,7 +116,7 @@ export default function PainelEmpresa() {
   const params = useParams();
   const { t } = useLanguage();
   const empresaId = String(params?.id || '');
-  const isLocalPreview = typeof window !== 'undefined' && window.location.hostname === 'localhost' && empresaId === 'preview';
+  const isLocalPreview = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && empresaId === 'preview';
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
