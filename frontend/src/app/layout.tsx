@@ -3,19 +3,66 @@ import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://filtraai.com';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: 'FILTRA.AI — Online Reputation Management',
-    template: '%s · FILTRA.AI',
+    default:
+      'Filtra.AI — Gestão de avaliações Google e reputação online | Trial 7 dias',
+    template: '%s · Filtra.AI',
   },
   description:
-    'Smart crisis containment and review management for local businesses',
-  applicationName: 'FILTRA.AI',
+    'Filtre avaliações antes do Google: 4–5★ vão ao Google Reviews, 1–3★ ficam no painel privado com IA. QR Code, WhatsApp, relatório inteligente. Teste grátis por 7 dias, sem cartão.',
+  applicationName: 'Filtra.AI',
+  keywords: [
+    'gestão de avaliações Google',
+    'reputação online',
+    'Google Reviews',
+    'Google Meu Negócio',
+    'filtro de avaliações',
+    'QR Code avaliação',
+    'reputação restaurante',
+    'avaliações clínica',
+    'SEO local reviews',
+    'Filtra.AI',
+  ],
+  authors: [{ name: 'Filtra.AI' }],
+  creator: 'Filtra.AI',
+  publisher: 'Filtra.AI',
   manifest: '/manifest.webmanifest',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    url: siteUrl,
+    siteName: 'Filtra.AI',
+    title: 'Filtra.AI — Reputação com filtro | Avaliações Google',
+    description:
+      '4–5★ → Google · 1–3★ → painel privado + IA. Trial grátis de 7 dias para restaurantes, clínicas e redes.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Filtra.AI — Gestão de avaliações Google',
+    description:
+      'Filtre antes de publicar. Trial 7 dias grátis. QR + painel + IA.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'FILTRA.AI',
+    title: 'Filtra.AI',
   },
   formatDetection: {
     telephone: false,
