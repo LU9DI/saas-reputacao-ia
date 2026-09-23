@@ -71,7 +71,7 @@ const copy: Record<Language, Copy> = {
     howEyebrow: 'Como funciona',
     howTitle: 'Do feedback à ação em poucos passos.',
     howText: 'O Filtra.AI organiza o ciclo completo da reputação para sua equipe gastar menos tempo procurando problemas e mais tempo resolvendo-os.',
-    steps: [['01', 'Colete', 'QR Code, link ou canais conectados levam o cliente ao fluxo de avaliação.'], ['02', 'Entenda', 'A IA identifica sentimento, temas recorrentes e pontos de atenção.'], ['03', 'Aja', 'Sua equipe recebe contexto para responder, corrigir e acompanhar a evolução.']],
+    steps: [['01', 'Colete', 'QR Code, link ou canais conectados levam o cliente ao fluxo de avaliação.'], ['02', 'Entenda', 'A IA identifica sentimento, temas recorrentes e pontos de atenção.'], ['03', 'Execute', 'Sua equipe recebe contexto para responder, corrigir e acompanhar a evolução.']],
     featuresEyebrow: 'Recursos',
     featuresTitle: 'Mais do que avaliações.',
     featuresText: 'Uma camada de inteligência para entender a experiência do cliente e proteger a reputação da empresa.',
