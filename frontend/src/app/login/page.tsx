@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Lock, AlertCircle, Fingerprint } from 'lucide-react';
+import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { PlanCards } from '../components/PlanCards';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { BrandMark } from '../components/BrandMark';
 import { readApiError } from '../utils/apiError';
-import { loginWithPasskey, webauthnSupported } from '../utils/webauthnClient';
 import { useLanguage } from '../Contexts/LanguageContext';
 import { apiFetch } from '../utils/apiFailover';
 
@@ -33,7 +32,6 @@ export default function LoginPage() {
   const [identificador, setIdentificador] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingBio, setLoadingBio] = useState(false);
   const [erro, setErro] = useState('');
   const [ok, setOk] = useState('');
 
@@ -68,9 +66,12 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      const body: Record<string, string> = { senha };
-      if (isEmail(id)) body.email = id.toLowerCase();
-      else body.tax_id = id;
+      if (!isEmail(id)) {
+        setErro(t.login_id_invalid || 'Informe um e-mail válido.');
+        setLoading(false);
+        return;
+      }
+      const body: Record<string, string> = { email: id.toLowerCase(), senha };
 
       const res = await apiFetch('/api/auth/login', {
         method: 'POST',
@@ -86,39 +87,6 @@ export default function LoginPage() {
       setErro(err.message || t.login_error || 'Erro ao entrar');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDigital = async () => {
-    if (loadingBio) return;
-    setErro('');
-    setOk('');
-    if (!webauthnSupported()) {
-      setErro(t.login_bio_unsupported || 'Este navegador não suporta login por digital (WebAuthn).');
-      return;
-    }
-    const id = identificador.trim();
-    if (isEmail(id)) {
-      setErro(
-        t.login_bio_use_tax ||
-          'Para biometria, use o Tax ID / CNPJ cadastrado (não o e-mail).'
-      );
-      return;
-    }
-    const tax = id.replace(/[^A-Za-z0-9]/g, '');
-    if (tax.length < 5) {
-      setErro(t.login_bio_need_tax || 'Informe o Tax ID ou CNPJ antes de usar a digital.');
-      return;
-    }
-    setLoadingBio(true);
-    try {
-      const { getApiBase } = await import('../utils/apiFailover');
-      const data = await loginWithPasskey(getApiBase(), tax);
-      afterLogin(data);
-    } catch (err: any) {
-      setErro(err.message || t.login_bio_fail || 'Falha na biometria');
-    } finally {
-      setLoadingBio(false);
     }
   };
 
@@ -176,8 +144,7 @@ export default function LoginPage() {
               className={inputCls}
             />
             <p className="text-[11px] text-zinc-500">
-              {t.login_id_hint ||
-                'Use o e-mail do trial. Se preferir, pode entrar com CNPJ ou Tax ID cadastrado.'}
+              {t.login_id_hint || 'Use o e-mail cadastrado no trial.'}
             </p>
           </div>
 
@@ -209,17 +176,6 @@ export default function LoginPage() {
               : t.login_submit || 'Entrar com senha'}
           </button>
 
-          <button
-            type="button"
-            disabled={loadingBio}
-            onClick={handleDigital}
-            className="w-full bg-zinc-800 hover:bg-zinc-700 active:scale-[0.99] border border-zinc-600 text-zinc-100 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
-          >
-            <Fingerprint size={18} />
-            {loadingBio
-              ? t.login_bio_waiting || 'Aguardando digital…'
-              : t.login_bio || 'Entrar com digital'}
-          </button>
 
           <p className="text-center text-xs text-zinc-500 space-x-3">
             <a href="/recuperar-senha" className="underline hover:text-indigo-400">
