@@ -167,6 +167,7 @@ export default function PainelEmpresa() {
   };
 
   useEffect(() => {
+    if (isLocalPreview) return;
     carregar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaId]);
