@@ -37,6 +37,17 @@ type Copy = {
   finalTitle: string;
   finalText: string;
   footer: string;
+  panelEyebrow: string;
+  panelTitle: string;
+  panelText: string;
+  panelRating: string;
+  panelReviews: string;
+  panelPositive: string;
+  panelAttention: string;
+  panelAi: string;
+  panelReport: string;
+  privacy: string;
+  terms: string;
 };
 
 const copy: Record<Language, Copy> = {
@@ -71,6 +82,7 @@ const copy: Record<Language, Copy> = {
     finalTitle: 'Comece a entender sua reputação hoje.',
     finalText: 'Teste o Filtra.AI por 7 dias e veja como feedbacks podem virar informação útil para sua empresa.',
     footer: 'Filtra.AI · Preview de redesign · Não altera a landing atual',
+    panelEyebrow: 'Painel do cliente', panelTitle: 'Um painel que ajuda o gestor a decidir, não apenas a olhar números.', panelText: 'O painel atual já reúne métricas, avaliações, IA, relatório, alertas, QR Code, WhatsApp e gestão do plano. A evolução visual pode deixar essas ações mais claras e rápidas.', panelRating: 'Nota média', panelReviews: 'Avaliações', panelPositive: 'Positivas', panelAttention: 'Atenção', panelAi: 'IA encontrou 3 temas', panelReport: 'Relatório inteligente atualizado', privacy: 'Política de Privacidade', terms: 'Termos de Uso',
   },
   en: {
     badge: 'Reputation intelligence for businesses',
@@ -103,6 +115,7 @@ const copy: Record<Language, Copy> = {
     finalTitle: 'Start understanding your reputation today.',
     finalText: 'Try Filtra.AI for 7 days and see how feedback can become useful information for your business.',
     footer: 'Filtra.AI · Redesign preview · Does not change the current landing',
+    panelEyebrow: 'Customer dashboard', panelTitle: 'A dashboard that helps managers decide, not just look at numbers.', panelText: 'The current dashboard already brings together metrics, reviews, AI, reports, alerts, QR Code, WhatsApp, and plan management. The visual evolution can make those actions clearer and faster.', panelRating: 'Average rating', panelReviews: 'Reviews', panelPositive: 'Positive', panelAttention: 'Attention', panelAi: 'AI found 3 themes', panelReport: 'Intelligent report updated', privacy: 'Privacy Policy', terms: 'Terms of Use',
   },
   es: {
     badge: 'Inteligencia de reputación para empresas',
@@ -135,6 +148,7 @@ const copy: Record<Language, Copy> = {
     finalTitle: 'Empieza a entender tu reputación hoy.',
     finalText: 'Prueba Filtra.AI durante 7 días y descubre cómo los comentarios pueden convertirse en información útil para tu empresa.',
     footer: 'Filtra.AI · Vista previa del rediseño · No cambia la landing actual',
+    panelEyebrow: 'Panel del cliente', panelTitle: 'Un panel que ayuda al gestor a decidir, no solo a mirar números.', panelText: 'El panel actual ya reúne métricas, reseñas, IA, informes, alertas, QR Code, WhatsApp y gestión del plan. La evolución visual puede hacer estas acciones más claras y rápidas.', panelRating: 'Calificación media', panelReviews: 'Reseñas', panelPositive: 'Positivas', panelAttention: 'Atención', panelAi: 'La IA encontró 3 temas', panelReport: 'Informe inteligente actualizado', privacy: 'Política de Privacidad', terms: 'Términos de Uso',
   },
   zh: {
     badge: '企业声誉智能',
@@ -167,6 +181,7 @@ const copy: Record<Language, Copy> = {
     finalTitle: '今天就开始了解您的声誉。',
     finalText: '免费试用 Filtra.AI 7 天，看看客户反馈如何成为企业有价值的信息。',
     footer: 'Filtra.AI · 重设计预览 · 不改变当前首页',
+    panelEyebrow: '客户面板', panelTitle: '帮助管理者做决定，而不只是查看数字。', panelText: '当前面板已经整合指标、评价、AI、报告、提醒、二维码、WhatsApp 和方案管理。视觉升级可以让这些操作更清晰、更快速。', panelRating: '平均评分', panelReviews: '评价', panelPositive: '正面', panelAttention: '需关注', panelAi: 'AI 发现 3 个主题', panelReport: '智能报告已更新', privacy: '隐私政策', terms: '使用条款',
   },
 };
 
@@ -205,6 +220,52 @@ function DashboardMockup({ c }: { c: Copy }) {
             ))}
           </div>
           <div className="mt-5 rounded-xl border border-emerald-400/15 bg-emerald-400/5 p-3 text-xs text-emerald-200">✓ {c.weekly}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function ClientPanelMockup({ c }: { c: Copy }) {
+  return (
+    <div className="rounded-[30px] border border-white/10 bg-zinc-950 p-3 shadow-2xl shadow-indigo-950/30">
+      <div className="grid overflow-hidden rounded-[22px] border border-white/10 bg-[#08080b] md:grid-cols-[180px_1fr]">
+        <aside className="hidden border-r border-white/10 bg-black/30 p-4 md:block">
+          <div className="mb-8 text-xs font-semibold text-white">Filtra.AI</div>
+          <div className="space-y-2 text-xs">
+            {['Visão geral', 'Avaliações', 'Relatório IA', 'Alertas', 'Configurações'].map((item, i) => (
+              <div key={item} className={`rounded-lg px-3 py-2 ${i === 0 ? 'bg-indigo-500/15 text-indigo-200' : 'text-zinc-500'}`}>{item}</div>
+            ))}
+          </div>
+        </aside>
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col gap-3 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
+            <div><div className="text-[10px] font-semibold uppercase tracking-[.2em] text-indigo-400">{c.panelEyebrow}</div><div className="mt-1 text-xl font-semibold text-white">Hotel Aurora</div></div>
+            <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs text-emerald-300">TRIAL · ATIVO</div>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-4">
+            {[['4,8', c.panelRating], ['1.284', c.panelReviews], ['91%', c.panelPositive], ['37', c.panelAttention]].map(([v,l],i) => (
+              <div key={l} className="rounded-2xl border border-white/10 bg-white/[0.025] p-3"><div className="text-xl font-semibold text-white">{v}</div><div className="mt-1 text-[10px] text-zinc-500">{l}</div></div>
+            ))}
+          </div>
+          <div className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+              <div className="flex items-center justify-between"><span className="text-xs text-zinc-500">Evolução · 14 dias</span><span className="text-xs text-emerald-400">+18,4%</span></div>
+              <div className="mt-5 h-32 rounded-xl bg-gradient-to-b from-indigo-500/15 to-transparent p-2">
+                <svg viewBox="0 0 500 120" className="h-full w-full"><path d="M0 95 C60 85 90 90 135 70 S220 82 265 55 S350 60 405 32 S455 40 500 12" fill="none" stroke="currentColor" strokeWidth="4" className="text-indigo-400" /></svg>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.06] p-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-white"><Bot size={16} className="text-indigo-300" /> {c.panelAi}</div>
+              <div className="mt-4 space-y-3">{['Atendimento', 'Tempo de espera', 'Equipe'].map((x,i)=><div key={x}><div className="flex justify-between text-[11px] text-zinc-400"><span>{x}</span><span>{[82,64,91][i]}%</span></div><div className="mt-1 h-1 rounded-full bg-white/10"><div className="h-1 rounded-full bg-indigo-400" style={{width: [82,64,91][i] + '%'}} /></div></div>)}</div>
+              <div className="mt-4 rounded-lg bg-emerald-400/5 p-2 text-[11px] text-emerald-300">✓ {c.panelReport}</div>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="text-xs text-zinc-500">QR Code · WhatsApp · Google</div><div className="mt-2 text-sm text-zinc-200">Canais e link de avaliação centralizados</div></div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="text-xs text-zinc-500">Feedbacks recentes</div><div className="mt-2 text-sm text-zinc-200">3 avaliações precisam de atenção</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -268,6 +329,22 @@ export default function LandingPreview() {
         </div>
       </section>
 
+      <section className="border-y border-white/[0.06] bg-white/[0.015]">
+        <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-[.75fr_1.25fr]">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.panelEyebrow}</span>
+              <h2 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{c.panelTitle}</h2>
+              <p className="mt-5 text-lg leading-8 text-zinc-400">{c.panelText}</p>
+              <div className="mt-7 flex flex-wrap gap-2 text-xs text-zinc-500">
+                <span className="rounded-full border border-white/10 px-3 py-1.5">✓ IA</span><span className="rounded-full border border-white/10 px-3 py-1.5">✓ Relatórios</span><span className="rounded-full border border-white/10 px-3 py-1.5">✓ Alertas</span><span className="rounded-full border border-white/10 px-3 py-1.5">✓ QR Code</span>
+              </div>
+            </div>
+            <ClientPanelMockup c={c} />
+          </div>
+        </div>
+      </section>
+
       <section id="planos" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
         <div className="mb-10 max-w-2xl"><span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.plansEyebrow}</span><h2 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{c.plansTitle}</h2><p className="mt-5 text-zinc-400">{c.plansText}</p></div>
         <PlanCards />
@@ -283,7 +360,7 @@ export default function LandingPreview() {
       </section>
 
       <footer className="border-t border-white/[0.06] px-6 py-10 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="text-xs text-zinc-600">{c.footer}</div></div>
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><a href="/privacidade" className="text-zinc-500 hover:text-white">{c.privacy}</a><a href="/termos" className="text-zinc-500 hover:text-white">{c.terms}</a><span className="text-zinc-700">{c.footer}</span></div></div>
       </footer>
     </main>
   );
