@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
+import { JsonLd } from './components/JsonLd';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://filtraai.com';
 
@@ -96,6 +97,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className="h-full" suppressHydrationWarning>
       <body className="min-h-full bg-black text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
+        <JsonLd />
         <Providers>
           {children}
           <PwaRegister />
