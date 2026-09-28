@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/como-funciona',
     '/auditoria-gratuita',
     '/hoteis',
+    '/parceiros',
     '/restaurantes',
     '/clinicas',
     '/agencias',
