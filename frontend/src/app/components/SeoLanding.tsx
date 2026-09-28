@@ -25,6 +25,11 @@ export function SeoLanding({
         </Link>
       </header>
       <main className="max-w-3xl mx-auto px-4 pb-16 space-y-8">
+        <nav aria-label="Breadcrumb" className="text-xs text-zinc-500">
+          <Link href="/" className="hover:text-zinc-300">Início</Link>
+          <span className="mx-2">/</span>
+          <span aria-current="page" className="text-zinc-400">{h1}</span>
+        </nav>
         <div className="space-y-3">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">{h1}</h1>
           <p className="text-zinc-400 leading-relaxed text-sm sm:text-base">{lead}</p>
@@ -55,6 +60,21 @@ export function SeoLanding({
           </Link>
           <Link href="/agencias" className="hover:text-zinc-300">
             Agências
+          </Link>
+          <Link href="/hoteis" className="hover:text-zinc-300">
+            Hotéis
+          </Link>
+          <Link href="/turismo" className="hover:text-zinc-300">
+            Turismo
+          </Link>
+          <Link href="/associacoes" className="hover:text-zinc-300">
+            Associações
+          </Link>
+          <Link href="/franquias" className="hover:text-zinc-300">
+            Franquias
+          </Link>
+          <Link href="/parceiros" className="hover:text-zinc-300">
+            Parceiros
           </Link>
           <Link href="/pedir-estrela-vs-filtrar" className="hover:text-zinc-300">
             Pedir vs filtrar
