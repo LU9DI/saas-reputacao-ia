@@ -7,6 +7,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     '',
     '/como-funciona',
+    '/auditoria-gratuita',
+    '/hoteis',
+    '/parceiros',
+    '/associacoes',
+    '/turismo',
+    '/franquias',
     '/restaurantes',
     '/clinicas',
     '/agencias',
