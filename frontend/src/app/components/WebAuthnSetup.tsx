@@ -76,9 +76,9 @@ export function WebAuthnSetup() {
       });
       const opt = await optRes.json().catch(() => ({}));
       if (optRes.status === 401) {
-        throw new Error('Faça login de novo (/login) antes de cadastrar a digital.');
+        throw new Error(t.webauthn_login_again);
       }
-      if (!optRes.ok) throw new Error(opt.error || 'Falha ao iniciar registro da digital');
+      if (!optRes.ok) throw new Error(opt.error || t.webauthn_start_error);
 
       const publicKey = { ...opt.publicKey };
       publicKey.challenge = b64urlToBuffer(publicKey.challenge);
@@ -96,7 +96,7 @@ export function WebAuthnSetup() {
       const cred = (await navigator.credentials.create({
         publicKey,
       })) as PublicKeyCredential | null;
-      if (!cred) throw new Error('Registro cancelado.');
+      if (!cred) throw new Error(t.webauthn_cancelled);
 
       const rawId = bufferToB64url(cred.rawId);
       const att = cred.response as AuthenticatorAttestationResponse;
@@ -116,10 +116,10 @@ export function WebAuthnSetup() {
         }),
       });
       const data = await finish.json().catch(() => ({}));
-      if (!finish.ok) throw new Error(data.error || 'Falha ao salvar digital');
+      if (!finish.ok) throw new Error(data.error || t.webauthn_save_error);
       setMsg(t.webauthn_success);
     } catch (e: any) {
-      setMsg(e.message || 'Não foi possível registrar a digital');
+      setMsg(e.message || t.webauthn_error);
     } finally {
       setLoading(false);
     }
