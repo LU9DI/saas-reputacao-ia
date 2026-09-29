@@ -116,7 +116,7 @@ export function WebAuthnSetup() {
       });
       const data = await finish.json().catch(() => ({}));
       if (!finish.ok) throw new Error(data.error || 'Falha ao salvar digital');
-      setMsg('{t.webauthn_success}');
+      setMsg(t.webauthn_success);
     } catch (e: any) {
       setMsg(e.message || 'Não foi possível registrar a digital');
     } finally {
@@ -134,7 +134,7 @@ export function WebAuthnSetup() {
         {msg && (
           <p
             className={`text-xs mt-1 ${
-              msg.includes('cadastrada') ? 'text-emerald-400' : 'text-red-400'
+              msg === t.webauthn_success ? 'text-emerald-400' : 'text-red-400'
             }`}
           >
             {msg}
@@ -147,7 +147,7 @@ export function WebAuthnSetup() {
         onClick={registrar}
         className="text-sm px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 font-medium hover:bg-white disabled:opacity-50"
       >
-        {loading ? '{t.webauthn_wait}' : '{t.webauthn_register}'}
+        {loading ? t.webauthn_wait : t.webauthn_register}
       </button>
     </section>
   );
