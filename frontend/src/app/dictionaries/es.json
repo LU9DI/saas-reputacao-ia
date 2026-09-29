@@ -194,4 +194,10 @@
 ,
   "units_confirm_remove": "¿Eliminar esta unidad?",
   "units_remove_error": "No se pudo eliminar."
+,
+  "webauthn_login_again": "Inicia sesión de nuevo (/login) antes de registrar la clave de acceso.",
+  "webauthn_start_error": "No se pudo iniciar el registro.",
+  "webauthn_cancelled": "Registro cancelado.",
+  "webauthn_save_error": "No se pudo guardar la clave de acceso.",
+  "webauthn_error": "No se pudo registrar la clave de acceso."
 }
