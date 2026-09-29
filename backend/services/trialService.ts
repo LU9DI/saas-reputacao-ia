@@ -9,6 +9,7 @@ import { getDb, slugify, slugUnico } from '../lib/db.js';
 import { createUsuarioForEmpresa } from '../passwordResetRoutes.js';
 import { normalizarWhatsapp } from '../lib/whatsapp.js';
 import { notificarTrialAtivado, notificarTrialVerificacao } from '../lib/notifications.js';
+import { mailConfigured } from '../lib/mailer.js';
 import { setAuthCookie, signAccessToken } from '../lib/auth.js';
 import { notifyN8n } from '../lib/n8n.js';
 
@@ -143,6 +144,9 @@ export async function ativarTrial(
   }
 
   await ensureSignupIpColumn(db);
+  if (!mailConfigured()) {
+    throw new TrialValidationError('O serviço de confirmação por e-mail está temporariamente indisponível. Tente novamente mais tarde.');
+  }
 
   // 1 trial por e-mail
   const emailUser = await db.get(`SELECT id FROM usuarios WHERE lower(email) = lower(?) LIMIT 1`, [
@@ -247,12 +251,19 @@ export async function ativarTrial(
     [crypto.randomUUID(), id, verificationHash, verificationExpira]
   );
   const verificationUrl = `${APP_URL}/teste/verificar?token=${encodeURIComponent(verificationToken)}`;
-  await notificarTrialVerificacao({
-    email,
-    nomeEmpresa: nome,
-    verificationUrl,
-    locale: input.locale,
-  }).catch((e) => console.warn('[trial] e-mail verificação:', e?.message || e));
+  try {
+    await notificarTrialVerificacao({
+      email,
+      nomeEmpresa: nome,
+      verificationUrl,
+      locale: input.locale,
+    });
+  } catch (e: any) {
+    try { await db.run('DELETE FROM trial_email_verifications WHERE empresa_id = ?', [id]); } catch {}
+    try { await db.run('DELETE FROM usuarios WHERE empresa_id = ?', [id]); } catch {}
+    try { await db.run('DELETE FROM empresas WHERE id = ?', [id]); } catch {}
+    throw new TrialValidationError('Não foi possível enviar o e-mail de confirmação. Tente novamente.');
+  }
 
   notifyN8n('trial.verificacao_pendente', {
     empresa_id: id,
