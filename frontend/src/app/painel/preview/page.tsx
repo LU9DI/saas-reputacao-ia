@@ -1,6 +1,7 @@
 'use client';
 
 import { BrandMark } from '../../components/BrandMark';
+import { PreviewNavigator } from '../../components/PreviewNavigator';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { useLanguage, type Language } from '../../Contexts/LanguageContext';
 
@@ -18,7 +19,8 @@ const copy: Record<Language, {
 
 export default function PreviewClientPanel(){
  const {language}=useLanguage(); const c=copy[language];
- return <main className="min-h-screen bg-[#050507] text-zinc-100">
+ return <PreviewNavigator />
+    <main className="min-h-screen bg-[#050507] text-zinc-100">
   <header className="border-b border-white/10 bg-zinc-950"><div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5"><BrandMark size="sm" href="/preview" subtitle="Reputação"/><div className="flex items-center gap-3"><span className="hidden text-xs text-zinc-500 sm:block">Demo · localhost</span><LanguageSwitcher/><a href="/preview/teste" className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white">{c.start}</a></div></div></header>
   <div className="mx-auto max-w-7xl px-6 py-10">
    <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.eyebrow}</p><h1 className="mt-2 text-4xl font-semibold tracking-tight">{c.hotel}</h1><p className="mt-2 text-sm text-zinc-500">{c.subtitle}</p></div><span className="w-fit rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1.5 text-xs text-emerald-300">{c.active}</span></div>
