@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { apiFetch } from '../../utils/apiFailover';
 import { persistFiltraToken } from '../../utils/persistToken';
 
+/** Confirma e-mail do trial e redireciona ao painel. */
 export default function VerifyTrialEmail() {
   const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading');
   const [message, setMessage] = useState('Confirmando seu e-mail…');
