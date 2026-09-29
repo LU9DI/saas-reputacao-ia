@@ -6,6 +6,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const paths = [
     '',
+    '/feedback-de-clientes',
+    '/analise-de-avaliacoes-com-ia',
+    '/gestao-de-reputacao-online',
     '/como-funciona',
     '/auditoria-gratuita',
     '/hoteis',
@@ -36,6 +39,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${base}${path}`,
     lastModified: now,
     changeFrequency: path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly',
-    priority: path === '' ? 1 : path.startsWith('/blog') ? 0.8 : 0.7,
+    priority:
+      path === '' ? 1 :
+      ['/feedback-de-clientes', '/analise-de-avaliacoes-com-ia', '/gestao-de-reputacao-online', '/auditoria-gratuita'].includes(path) ? 0.95 :
+      path.startsWith('/blog') ? 0.8 : 0.7,
   }));
 }
