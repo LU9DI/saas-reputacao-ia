@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLanguage } from '../Contexts/LanguageContext';
 import { Bell, CheckCircle2, AlertCircle } from 'lucide-react';
 import { getEnv } from '../utils/env';
 import { apiFetch } from '../utils/apiFailover';
@@ -31,7 +32,7 @@ export function PushEnable() {
       } catch {
         if (!cancelled) {
           setConfigured(false);
-          setMsg('Não foi possível contactar a API de push.');
+          setMsg('{t.push_api_error}');
           setMsgType('err');
         }
       }
@@ -58,7 +59,7 @@ export function PushEnable() {
     <div className="rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-zinc-100 flex items-center gap-2">
-          <Bell size={16} className="text-indigo-400 shrink-0" /> Alertas no celular/PC
+          <Bell size={16} className="text-indigo-400 shrink-0" /> {t.push_title}
           {active && (
             <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
               Ativo
@@ -66,11 +67,11 @@ export function PushEnable() {
           )}
         </p>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Receba aviso quando entrar avaliação crítica (1–3★).
+          {t.push_desc}
         </p>
         {configured === false && (
           <p className="text-xs text-amber-400 mt-1">
-            Push não configurado no servidor (VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY).
+            {t.push_config_error}
           </p>
         )}
         {msg && (
@@ -112,8 +113,8 @@ export function PushEnable() {
               setActive(true);
               setMsg(
                 r.already
-                  ? 'Alertas já estavam ativos neste dispositivo. Você receberá avisos de críticas 1–3★.'
-                  : 'Alertas ativados neste dispositivo. Você receberá avisos de críticas 1–3★.'
+                  ? '{t.push_already}'
+                  : '{t.push_enabled}'
               );
               setMsgType('ok');
 
@@ -122,7 +123,7 @@ export function PushEnable() {
                 const t = await sendTestPush(api, token);
                 if ((t.sent ?? 0) > 0) {
                   setMsg(
-                    'Alertas ativados! Enviamos uma notificação de teste — confira a bandeja do sistema.'
+                    '{t.push_test_ok}'
                   );
                 } else if ((t.subscriptions ?? 0) === 0) {
                   setMsg(
@@ -141,7 +142,7 @@ export function PushEnable() {
             }
           }}
         >
-          {loading ? 'Ativando…' : active ? 'Reativar' : 'Ativar'}
+          {loading ? t.push_enabling : active ? t.push_reactivate : t.push_activate}
         </button>
         <button
           type="button"
@@ -161,12 +162,12 @@ export function PushEnable() {
               const r = await sendTestPush(api, token);
               const sent = r.sent ?? 0;
               if (sent > 0) {
-                setMsg(`Teste enviado (${sent}). Deve aparecer uma notificação agora.`);
+                setMsg(t.push_test_sent.replace('{n}', String(sent)));
                 setMsgType('ok');
                 setActive(true);
               } else {
                 setMsg(
-                  `Nenhuma notificação enviada (subs=${r.subscriptions ?? 0}). Clique em Ativar neste aparelho.`
+                  t.push_no_sub.replace('{n}', String(r.subscriptions ?? 0))
                 );
                 setMsgType('err');
               }
