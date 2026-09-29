@@ -291,7 +291,6 @@ export default function LandingPreview() {
             <a href="#como-funciona" className="hover:text-white">{c.howEyebrow}</a>
             <a href="#recursos" className="hover:text-white">{c.featuresEyebrow}</a>
             <a href="#planos" className="hover:text-white">{c.plansEyebrow}</a>
-            <a href="/login" className="hover:text-white">{language === 'pt' ? 'Entrar' : language === 'en' ? 'Sign in' : language === 'es' ? 'Entrar' : '登录'}</a>
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
