@@ -178,4 +178,15 @@
   "login_bio_need_tax": "使用生物识别前请输入邮箱。"
 ,
   "sub_confirm": "在已付费周期结束时取消？您可以使用 Filtra.AI 直到到期日。未来的 Mercado Pago / PayPal 费用将不会由 Filtra.AI 续订。"
+,
+  "panel_ai_active": "AI 已启用",
+  "panel_quick_actions": "快捷操作",
+  "panel_qr": "二维码",
+  "panel_shortcuts": "面板快捷入口",
+  "panel_shortcuts_desc": "让主要操作更清晰、更易使用。",
+  "panel_records": "条记录已加载",
+  "panel_crises_24h": "危机 · 24小时",
+  "panel_critical_reviews": "负面评价",
+  "panel_positive_reviews": "正面评价",
+  "panel_account_operation": "账户操作"
 }
