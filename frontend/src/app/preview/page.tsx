@@ -82,7 +82,7 @@ const copy: Record<Language, Copy> = {
     plansText: 'Os planos atuais continuam aqui; esta versão apenas muda a forma como o visitante chega até eles.',
     finalTitle: 'Comece a entender sua reputação hoje.',
     finalText: 'Teste o Filtra.AI por 7 dias e veja como feedbacks podem virar informação útil para sua empresa.',
-    footer: 'Filtra.AI · Preview de redesign · Não altera a landing atual',
+    footer: 'Filtra.AI',
     panelEyebrow: 'Painel do cliente', panelTitle: 'Um painel que ajuda o gestor a decidir, não apenas a olhar números.', panelText: 'O painel atual já reúne métricas, avaliações, IA, relatório, alertas, QR Code, WhatsApp e gestão do plano. A evolução visual pode deixar essas ações mais claras e rápidas.', panelRating: 'Nota média', panelReviews: 'Avaliações', panelPositive: 'Positivas', panelAttention: 'Atenção', panelAi: 'IA encontrou 3 temas', panelReport: 'Relatório inteligente atualizado', privacy: 'Política de Privacidade', terms: 'Termos de Uso',
   },
   en: {
