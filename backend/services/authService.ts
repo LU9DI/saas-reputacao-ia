@@ -6,10 +6,8 @@ import { getDb } from '../lib/db.js';
 import { setAuthCookie, signAccessToken } from '../lib/auth.js';
 import { writeAudit, clientIp } from '../lib/auditLog.js';
 import { empresaTemAcesso } from './billingService.js';
-import { canonicalTaxId, isEmailLike, normalizarCnpj } from '../lib/cnpj.js';
 
 export type LoginInput = {
-  cnpj?: string;
   email?: string;
   login?: string;
   senha: string;
@@ -37,31 +35,10 @@ export class AuthAccessDeniedError extends Error {
   }
 }
 
-async function findUsuario(db: Database, identifier: string): Promise<any | null> {
-  const raw = String(identifier || '').trim();
-  if (!raw) return null;
-
-  if (isEmailLike(raw)) {
-    const email = raw.toLowerCase();
-    const byEmail = await db.get(`SELECT * FROM usuarios WHERE lower(email) = lower(?) LIMIT 1`, [
-      email,
-    ]);
-    if (byEmail) return byEmail;
-  }
-
-  const tax = canonicalTaxId(raw);
-  if (tax.length >= 5) {
-    const byTax = await db.get(`SELECT * FROM usuarios WHERE cnpj = ? LIMIT 1`, [tax]);
-    if (byTax) return byTax;
-    // legado: só dígitos
-    const digits = normalizarCnpj(raw);
-    if (digits && digits !== tax) {
-      const byDigits = await db.get(`SELECT * FROM usuarios WHERE cnpj = ? LIMIT 1`, [digits]);
-      if (byDigits) return byDigits;
-    }
-  }
-
-  return null;
+async function findUsuario(db: Database, email: string): Promise<any | null> {
+  const normalized = String(email || '').trim().toLowerCase();
+  if (!normalized) return null;
+  return db.get(`SELECT * FROM usuarios WHERE lower(email) = lower(?) LIMIT 1`, [normalized]);
 }
 
 export async function loginEmpresa(
@@ -71,7 +48,7 @@ export async function loginEmpresa(
   req?: Request
 ): Promise<LoginResult> {
   const senha = String(input.senha || '');
-  const identifier = String(input.login || input.email || input.cnpj || '').trim();
+  const identifier = String(input.email || '').trim().toLowerCase();
   const ip = req ? clientIp(req) : null;
   const ua = req ? String(req.headers['user-agent'] || '').slice(0, 200) : null;
 
