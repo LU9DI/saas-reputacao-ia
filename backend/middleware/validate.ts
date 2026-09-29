@@ -2,12 +2,11 @@
  * Middleware de validação de body — sem dependências externas.
  */
 import type { Request, Response, NextFunction } from 'express';
-import { normalizarCnpj, cnpjValido, taxIdValido, canonicalTaxId, isEmailLike } from '../lib/cnpj.js';
 import { validarSenhaEmpresa } from '../lib/passwordPolicy.js';
 
 export type FieldRule = {
   required?: boolean;
-  type?: 'string' | 'number' | 'boolean' | 'email' | 'cnpj' | 'tax_id' | 'url' | 'password_empresa';
+  type?: 'string' | 'number' | 'boolean' | 'email' | 'url' | 'password_empresa';
   min?: number;
   max?: number;
   integer?: boolean;
@@ -176,23 +175,17 @@ export const schemaTrialAtivar: Schema = {
   whatsapp: { required: false, type: 'string', max: 20 },
 };
 
-/** Login: Tax ID (campo cnpj) OU e-mail + senha. */
+/** Login: e-mail + senha. */
 export const schemaLoginEmpresa: Schema = {
-  cnpj: { required: false, type: 'string', max: 120, transform: (v) => String(v ?? '').trim() },
-  email: { required: false, type: 'string', max: 200, transform: (v) => String(v ?? '').trim().toLowerCase() },
-  login: { required: false, type: 'string', max: 200, transform: (v) => String(v ?? '').trim() },
+  email: { required: true, type: 'email' },
   senha: { required: true, type: 'string', min: 1, message: 'Senha é obrigatória.' },
 };
 
-/** Pós-schema: exige pelo menos um identificador. */
+/** Pós-schema: exige e-mail válido. */
 export function ensureLoginIdentifier(req: Request, res: Response, next: NextFunction) {
-  const body = req.body || {};
-  const id = String(body.login || body.email || body.cnpj || '').trim();
-  if (!id) {
-    return res.status(400).json({ error: 'Informe e-mail e a senha.', fields: { login: 'Obrigatório' } });
-  }
-  if (!isEmailLike(id) && id.replace(/[^A-Za-z0-9]/g, '').length < 5) {
-    return res.status(400).json({ error: 'Identificador inválido. Use e-mail.' });
+  const email = String(req.body?.email || '').trim();
+  if (!email) {
+    return res.status(400).json({ error: 'Informe o e-mail e a senha.', fields: { email: 'Obrigatório' } });
   }
   next();
 }
