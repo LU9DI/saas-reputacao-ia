@@ -175,10 +175,8 @@
   "push_test_ok": "¡Alertas activadas! Enviamos una notificación de prueba; revisa la bandeja del sistema.",
   "push_no_sub": "No se envió ninguna notificación (subs={n}). Pulsa Activar en este dispositivo.",
   "login_bio_use_tax": "Para biometría, usa el correo registrado.",
-  "login_bio_need_tax": "Introduce el correo antes de usar la biometría."
-,
-  "sub_confirm": "¿Cancelar al final del período pagado? Puedes seguir usando Filtra.AI hasta la fecha de vencimiento. Los futuros cobros de Mercado Pago / PayPal no serán renovados por Filtra.AI."
-,
+  "login_bio_need_tax": "Introduce el correo antes de usar la biometría.",
+  "sub_confirm": "¿Cancelar al final del período pagado? Puedes seguir usando Filtra.AI hasta la fecha de vencimiento. Los futuros cobros de Mercado Pago / PayPal no serán renovados por Filtra.AI.",
   "panel_ai_active": "IA activa",
   "panel_quick_actions": "Acciones rápidas",
   "panel_qr": "Código QR",
@@ -188,16 +186,14 @@
   "panel_crises_24h": "Crisis · 24h",
   "panel_critical_reviews": "Evaluaciones críticas",
   "panel_positive_reviews": "Evaluaciones positivas",
-  "panel_account_operation": "Operación de la cuenta"
-,
-  "panel_start_trial": "Comenzar prueba de 7 días"
-,
+  "panel_account_operation": "Operación de la cuenta",
+  "panel_start_trial": "Comenzar prueba de 7 días",
   "units_confirm_remove": "¿Eliminar esta unidad?",
-  "units_remove_error": "No se pudo eliminar."
-,
+  "units_remove_error": "No se pudo eliminar.",
   "webauthn_login_again": "Inicia sesión de nuevo (/login) antes de registrar la clave de acceso.",
   "webauthn_start_error": "No se pudo iniciar el registro.",
   "webauthn_cancelled": "Registro cancelado.",
   "webauthn_save_error": "No se pudo guardar la clave de acceso.",
-  "webauthn_error": "No se pudo registrar la clave de acceso."
+  "webauthn_error": "No se pudo registrar la clave de acceso.",
+  "push_active_badge": "Activo"
 }
