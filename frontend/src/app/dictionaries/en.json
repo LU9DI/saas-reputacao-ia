@@ -143,5 +143,19 @@
   "panel_offline": "Could not reach the server.",
   "panel_unavailable": "Dashboard unavailable.",
   "panel_go_login": "Go to login",
-  "panel_retry": "Try again"
+  "panel_retry": "Try again",
+  "panel_overview": "Overview",
+  "panel_reviews": "Reviews",
+  "panel_ai_report": "AI Report",
+  "panel_alerts": "Alerts",
+  "panel_settings": "Settings",
+  "panel_dashboard": "Client dashboard",
+  "panel_subtitle": "Overview of your reputation and the signals found by AI.",
+  "panel_average_rating": "Average rating",
+  "panel_reviews_total": "Reviews",
+  "panel_positive": "Positive",
+  "panel_attention": "Attention points",
+  "panel_feedback": "Customer feedback",
+  "panel_crisis_alert": "There are attention signals in recent reviews.",
+  "panel_no_alerts": "No critical alerts identified in the available metrics."
 }

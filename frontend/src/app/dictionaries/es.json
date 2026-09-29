@@ -117,5 +117,19 @@
   "panel_offline": "No se pudo conectar al servidor.",
   "panel_unavailable": "Panel no disponible.",
   "panel_go_login": "Ir al inicio de sesión",
-  "panel_retry": "Reintentar"
+  "panel_retry": "Reintentar",
+  "panel_overview": "Vista general",
+  "panel_reviews": "Reseñas",
+  "panel_ai_report": "Informe IA",
+  "panel_alerts": "Alertas",
+  "panel_settings": "Configuración",
+  "panel_dashboard": "Panel del cliente",
+  "panel_subtitle": "Vista general de la reputación y de las señales encontradas por la IA.",
+  "panel_average_rating": "Calificación media",
+  "panel_reviews_total": "Reseñas",
+  "panel_positive": "Positivas",
+  "panel_attention": "Puntos de atención",
+  "panel_feedback": "Comentarios de clientes",
+  "panel_crisis_alert": "Hay señales de atención en las reseñas recientes.",
+  "panel_no_alerts": "No se identificaron alertas críticas en las métricas disponibles."
 }

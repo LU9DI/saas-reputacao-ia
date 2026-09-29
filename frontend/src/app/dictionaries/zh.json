@@ -117,5 +117,19 @@
   "panel_offline": "无法连接服务器。",
   "panel_unavailable": "面板不可用。",
   "panel_go_login": "前往登录",
-  "panel_retry": "重试"
+  "panel_retry": "重试",
+  "panel_overview": "概览",
+  "panel_reviews": "评价",
+  "panel_ai_report": "AI 报告",
+  "panel_alerts": "提醒",
+  "panel_settings": "设置",
+  "panel_dashboard": "客户面板",
+  "panel_subtitle": "查看您的声誉以及 AI 发现的关键信号。",
+  "panel_average_rating": "平均评分",
+  "panel_reviews_total": "评价",
+  "panel_positive": "正面评价",
+  "panel_attention": "需关注事项",
+  "panel_feedback": "客户反馈",
+  "panel_crisis_alert": "近期评价中发现需要关注的信号。",
+  "panel_no_alerts": "当前指标中未发现关键提醒。"
 }

@@ -166,5 +166,19 @@
   "panel_offline": "Não foi possível conectar ao servidor.",
   "panel_unavailable": "Painel indisponível.",
   "panel_go_login": "Ir para login",
-  "panel_retry": "Tentar novamente"
+  "panel_retry": "Tentar novamente",
+  "panel_overview": "Visão geral",
+  "panel_reviews": "Avaliações",
+  "panel_ai_report": "Relatório IA",
+  "panel_alerts": "Alertas",
+  "panel_settings": "Configurações",
+  "panel_dashboard": "Painel do cliente",
+  "panel_subtitle": "Visão geral da reputação e dos sinais encontrados pela IA.",
+  "panel_average_rating": "Nota média",
+  "panel_reviews_total": "Avaliações",
+  "panel_positive": "Positivas",
+  "panel_attention": "Pontos de atenção",
+  "panel_feedback": "Feedback dos clientes",
+  "panel_crisis_alert": "Há sinais de atenção nas avaliações recentes.",
+  "panel_no_alerts": "Nenhum alerta crítico identificado nas métricas disponíveis."
 }
