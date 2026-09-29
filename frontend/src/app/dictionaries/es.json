@@ -191,4 +191,7 @@
   "panel_account_operation": "Operación de la cuenta"
 ,
   "panel_start_trial": "Comenzar prueba de 7 días"
+,
+  "units_confirm_remove": "¿Eliminar esta unidad?",
+  "units_remove_error": "No se pudo eliminar."
 }
