@@ -129,12 +129,10 @@ export default function AuditoriaGratuitaPage() {
                   <p className="mt-2 text-zinc-400">{diagnostic.review_count} avaliações · média {diagnostic.average_rating.toFixed(2)} · {diagnostic.positive_count} positivas · {diagnostic.negative_count} negativas</p>
                 </div>
                 <div><h3 className="font-semibold">Resumo</h3><p className="mt-2 text-zinc-300">{diagnostic.summary}</p></div>
-                {[
-                  ['Pontos fortes', diagnostic.strengths],
-                  ['Riscos', diagnostic.risks],
-                  ['Temas recorrentes', diagnostic.recurring_themes],
-                  ['Ações sugeridas', diagnostic.actions],
-                ].map(([title, items]) => items?.length ? <div key={String(title)}><h3 className="font-semibold">{title}</h3><ul className="mt-2 space-y-2 text-zinc-300">{items.map((item) => <li key={item}>• {item}</li>)}</ul></div> : null)}
+                {diagnostic.strengths?.length ? <div><h3 className="font-semibold">Pontos fortes</h3><ul className="mt-2 space-y-2 text-zinc-300">{diagnostic.strengths.map((item) => <li key={item}>• {item}</li>)}</ul></div> : null}
+                {diagnostic.risks?.length ? <div><h3 className="font-semibold">Riscos</h3><ul className="mt-2 space-y-2 text-zinc-300">{diagnostic.risks.map((item) => <li key={item}>• {item}</li>)}</ul></div> : null}
+                {diagnostic.recurring_themes?.length ? <div><h3 className="font-semibold">Temas recorrentes</h3><ul className="mt-2 space-y-2 text-zinc-300">{diagnostic.recurring_themes.map((item) => <li key={item}>• {item}</li>)}</ul></div> : null}
+                {diagnostic.actions?.length ? <div><h3 className="font-semibold">Ações sugeridas</h3><ul className="mt-2 space-y-2 text-zinc-300">{diagnostic.actions.map((item) => <li key={item}>• {item}</li>)}</ul></div> : null}
                 <div className="rounded-xl border border-indigo-900 bg-indigo-950/30 p-4">
                   <p className="text-sm text-zinc-300">Este é um diagnóstico inicial. Para acompanhar avaliações, tendências e ações continuamente, conheça o teste de 7 dias da Filtra.AI.</p>
                   <Link href="/login?trial=7" className="mt-4 inline-block rounded-xl bg-indigo-600 px-5 py-3 font-semibold">Continuar para o teste de 7 dias</Link>
