@@ -6,10 +6,6 @@
   "trial_subtitle": "Cadastre a empresa com nome, e-mail e senha. Sem cartão de crédito nos 7 dias de teste.",
   "label_company": "Nome da Empresa",
   "ph_company": "Ex: Restaurante Sabor Único",
-  "label_tax_id": "CNPJ / Tax ID (opcional)",
-  "ph_tax_id": "00.000.000/0000-00 ou deixe em branco",
-  "tax_id_hint": "Brasileiros: informe o CNPJ. Europa, Ásia e outros países: pode deixar em branco — o e-mail é o identificador principal.",
-  "tax_id_invalid": "CNPJ inválido. Verifique os dígitos ou deixe o campo em branco.",
   "label_email": "E-mail de acesso",
   "ph_email": "seu@email.com",
   "label_password": "Senha de acesso",
@@ -49,8 +45,6 @@
   "login_error": "Erro ao entrar",
   "login_fail": "Falha no login",
   "login_bio_unsupported": "Este navegador não suporta login por digital (WebAuthn).",
-  "login_bio_use_tax": "Para biometria, use o e-mail cadastrado.",
-  "login_bio_need_tax": "Informe o e-mail antes de usar a digital.",
   "login_bio_fail": "Falha na biometria",
   "recovery_title": "Recuperação de senha",
   "recovery_subtitle_request": "Use o mesmo e-mail do cadastro da empresa. Link válido por 1 hora.",
@@ -242,5 +236,7 @@
   "webauthn_cancelled": "Registro cancelado.",
   "webauthn_save_error": "Falha ao salvar digital.",
   "webauthn_error": "Não foi possível registrar a digital.",
-  "push_active_badge": "Ativo"
+  "push_active_badge": "Ativo",
+  "login_bio_use_email": "Para biometria, use o e-mail cadastrado.",
+  "login_bio_need_email": "Informe o e-mail antes de usar a digital."
 }
