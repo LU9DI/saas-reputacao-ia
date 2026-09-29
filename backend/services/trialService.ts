@@ -272,6 +272,15 @@ export async function ativarTrial(
   };
 }
 
+  return {
+    success: true,
+    empresa_id: id,
+    slug,
+    verification_required: true,
+    message: 'Enviamos um link de confirmação para o seu e-mail. Confirme o endereço para ativar os 7 dias grátis.',
+  };
+}
+
 export async function verificarTrialEmail(
   token: string,
   db: Database = getDb(),
@@ -307,62 +316,5 @@ export async function verificarTrialEmail(
     slug,
     verification_required: true,
     message: 'Enviamos um link de confirmação para o seu e-mail. Confirme o endereço para ativar os 7 dias grátis.',
-  };
-}
-
-
-  const tokenPayload = {
-    id: String(usuario?.id || usuarioId),
-    nome_funcionario: String(usuario?.nome_funcionario || nome),
-    empresa_id: id,
-  };
-
-  let token: string;
-  try {
-    token = signAccessToken(tokenPayload);
-    if (res) {
-      try {
-        setAuthCookie(res, token);
-      } catch (ce: any) {
-        console.warn('[trial] cookie:', ce?.message || ce);
-      }
-    }
-  } catch (e: any) {
-    console.error('[trial] JWT:', e?.message || e);
-    throw new TrialValidationError('Falha ao gerar token. Verifique JWT_SECRET no servidor.');
-  }
-
-  notificarTrialAtivado({
-    email,
-    nomeEmpresa: nome,
-    slug,
-    empresaId: id,
-    expiraEm,
-    locale: input.locale,
-  }).catch((e) => console.warn('e-mail trial:', e?.message || e));
-
-  notifyN8n('trial.ativado', {
-    empresa_id: id,
-    slug,
-    nome_empresa: nome,
-    email,
-    whatsapp: wpp,
-    google_review_url: googleReviewUrl || null,
-    locale: input.locale || 'pt-BR',
-    expira_em: expiraEm,
-    signup_ip: signupIp,
-    link_painel: `${APP_URL}/painel/${slug}`,
-    link_avaliacao: `${APP_URL}/avaliacao/${slug}`,
-  });
-
-  return {
-    success: true,
-    empresa_id: id,
-    slug,
-    link_acesso: `${APP_URL}/avaliacao/${slug}`,
-    link_painel: `${APP_URL}/painel/${slug}`,
-    expira_em: expiraEm,
-    token,
-    tokenPayload,
   };
 }
