@@ -8,7 +8,7 @@ import type { Response } from 'express';
 import { getDb, slugify, slugUnico } from '../lib/db.js';
 import { createUsuarioForEmpresa } from '../passwordResetRoutes.js';
 import { normalizarWhatsapp } from '../lib/whatsapp.js';
-import { notificarTrialAtivado } from '../lib/notifications.js';
+import { notificarTrialAtivado, notificarTrialVerificacao } from '../lib/notifications.js';
 import { setAuthCookie, signAccessToken } from '../lib/auth.js';
 import { notifyN8n } from '../lib/n8n.js';
 
@@ -34,9 +34,11 @@ export type TrialResult = {
   success: true;
   empresa_id: string;
   slug: string;
-  link_acesso: string;
-  link_painel: string;
-  expira_em: string;
+  link_acesso?: string;
+  link_painel?: string;
+  expira_em?: string;
+  verification_required?: boolean;
+  message?: string;
   token?: string;
   tokenPayload?: {
     id: string;
@@ -101,6 +103,11 @@ async function ensureSignupIpColumn(db: Database): Promise<void> {
     }
   }
   try {
+    await db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_empresas_signup_ip_unique ON empresas(signup_ip)`);
+  } catch {
+    try { await db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_signup_ip ON empresas(signup_ip)`); } catch {}
+  }
+  try {
     await db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_signup_ip ON empresas(signup_ip)`);
   } catch {
     /* ok */
@@ -163,14 +170,18 @@ export async function ativarTrial(
   const id = crypto.randomUUID();
   const slug = await slugUnico(slugify(nome) || 'empresa');
   const criadoEm = new Date().toISOString();
+  // O relógio dos 7 dias só começa após a confirmação do e-mail.
   const expiraEm = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const verificationHash = crypto.createHash('sha256').update(verificationToken).digest('hex');
+  const verificationExpira = new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
   try {
     await db.run(
       `INSERT INTO empresas (
          id, cnpj, nome_empresa, slug, google_review_url, whatsapp_suporte,
          status, plan, criado_em, expira_em, signup_ip
-       ) VALUES (?, ?, ?, ?, ?, ?, 'trial', 'trial', ?, ?, ?)`,
+       ) VALUES (?, ?, ?, ?, ?, ?, 'trial_pending', 'trial', ?, ?, ?)`,
       [id, syntheticId, nome, slug, googleReviewUrl || null, wpp, criadoEm, expiraEm, signupIp]
     );
   } catch (e: any) {
@@ -228,6 +239,77 @@ export async function ativarTrial(
     (await db.get(`SELECT id, nome_funcionario, empresa_id FROM usuarios WHERE id = ?`, [
       usuarioId,
     ]));
+
+  await db.exec(`CREATE TABLE IF NOT EXISTS trial_email_verifications (id TEXT PRIMARY KEY, empresa_id TEXT NOT NULL, token_hash TEXT NOT NULL, expira_em TIMESTAMPTZ NOT NULL, usado INTEGER DEFAULT 0, criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
+  try { await db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_trial_verification_token ON trial_email_verifications(token_hash)`); } catch {}
+  await db.run(
+    `INSERT INTO trial_email_verifications (id, empresa_id, token_hash, expira_em, usado) VALUES (?, ?, ?, ?, 0)`,
+    [crypto.randomUUID(), id, verificationHash, verificationExpira]
+  );
+  const verificationUrl = `${APP_URL}/teste/verificar?token=${encodeURIComponent(verificationToken)}`;
+  await notificarTrialVerificacao({
+    email,
+    nomeEmpresa: nome,
+    verificationUrl,
+    locale: input.locale,
+  }).catch((e) => console.warn('[trial] e-mail verificação:', e?.message || e));
+
+  notifyN8n('trial.verificacao_pendente', {
+    empresa_id: id,
+    slug,
+    nome_empresa: nome,
+    email,
+    locale: input.locale || 'pt-BR',
+    signup_ip: signupIp,
+  });
+
+  return {
+    success: true,
+    empresa_id: id,
+    slug,
+    verification_required: true,
+    message: 'Enviamos um link de confirmação para o seu e-mail. Confirme o endereço para ativar os 7 dias grátis.',
+  };
+}
+
+export async function verificarTrialEmail(
+  token: string,
+  db: Database = getDb(),
+  res?: Response
+): Promise<TrialResult> {
+  const raw = String(token || '').trim();
+  if (raw.length < 40) throw new TrialValidationError('Link de confirmação inválido.');
+  const hash = crypto.createHash('sha256').update(raw).digest('hex');
+  const row = await db.get(
+    `SELECT v.id AS verification_id, v.empresa_id, v.expira_em AS verification_expira, v.usado,
+            e.slug, e.nome_empresa, u.id AS usuario_id, u.nome_funcionario, u.email
+       FROM trial_email_verifications v
+       JOIN empresas e ON e.id = v.empresa_id
+       JOIN usuarios u ON u.empresa_id = e.id
+      WHERE v.token_hash = ? AND v.usado = 0
+      LIMIT 1`,
+    [hash]
+  );
+  if (!row) throw new TrialValidationError('Link inválido ou já utilizado.');
+  if (new Date(row.verification_expira).getTime() < Date.now()) {
+    await db.run('UPDATE trial_email_verifications SET usado = 1 WHERE id = ?', [row.verification_id]);
+    throw new TrialValidationError('Link expirado. Solicite um novo teste.');
+  }
+
+  const expiraEm = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  await db.run('UPDATE empresas SET status = ?, expira_em = ? WHERE id = ?', ['trial', expiraEm, row.empresa_id]);
+  await db.run('UPDATE trial_email_verifications SET usado = 1 WHERE id = ?', [row.verification_id]);
+
+  // A conta permanece pendente até o e-mail ser confirmado.
+  return {
+    success: true,
+    empresa_id: id,
+    slug,
+    verification_required: true,
+    message: 'Enviamos um link de confirmação para o seu e-mail. Confirme o endereço para ativar os 7 dias grátis.',
+  };
+}
+
 
   const tokenPayload = {
     id: String(usuario?.id || usuarioId),
