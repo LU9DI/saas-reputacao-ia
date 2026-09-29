@@ -202,4 +202,15 @@
   "push_no_sub": "No notification sent (subs={n}). Click Enable on this device."
 ,
   "sub_confirm": "Cancel at the end of the paid period? You can keep using Filtra.AI until the expiration date. Future Mercado Pago / PayPal charges will not be renewed by Filtra.AI."
+,
+  "panel_ai_active": "AI active",
+  "panel_quick_actions": "Quick actions",
+  "panel_qr": "QR Code",
+  "panel_shortcuts": "Panel shortcuts",
+  "panel_shortcuts_desc": "A cleaner structure for the main routines.",
+  "panel_records": "records loaded",
+  "panel_crises_24h": "Crises · 24h",
+  "panel_critical_reviews": "Critical reviews",
+  "panel_positive_reviews": "Positive reviews",
+  "panel_account_operation": "Account operations"
 }
