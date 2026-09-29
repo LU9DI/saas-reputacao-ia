@@ -241,4 +241,10 @@
 ,
   "units_confirm_remove": "Remover esta unidade?",
   "units_remove_error": "Falha ao remover."
+,
+  "webauthn_login_again": "Faça login de novo (/login) antes de cadastrar a digital.",
+  "webauthn_start_error": "Falha ao iniciar registro da digital.",
+  "webauthn_cancelled": "Registro cancelado.",
+  "webauthn_save_error": "Falha ao salvar digital.",
+  "webauthn_error": "Não foi possível registrar a digital."
 }
