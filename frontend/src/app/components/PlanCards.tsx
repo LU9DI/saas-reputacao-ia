@@ -128,6 +128,21 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const labelPopular = textOrFallback(t.popular, 'Popular');
 
   useEffect(() => {
+    // A landing /preview é uma demonstração visual e precisa funcionar
+    // completamente sem backend no localhost. Mantemos os planos oficiais
+    // como fallback e só consultamos /api/planos fora do preview local.
+    const isPreviewLocal =
+      typeof window !== 'undefined' &&
+      (window.location.pathname === '/preview' ||
+        window.location.pathname.startsWith('/preview/')) &&
+      (window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1');
+
+    if (isPreviewLocal) {
+      setLoadingPrices(false);
+      return;
+    }
+
     let cancelled = false;
     const carregar = async () => {
       try {
