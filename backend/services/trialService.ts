@@ -272,15 +272,6 @@ export async function ativarTrial(
   };
 }
 
-  return {
-    success: true,
-    empresa_id: id,
-    slug,
-    verification_required: true,
-    message: 'Enviamos um link de confirmação para o seu e-mail. Confirme o endereço para ativar os 7 dias grátis.',
-  };
-}
-
 export async function verificarTrialEmail(
   token: string,
   db: Database = getDb(),
