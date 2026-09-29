@@ -1,0 +1,77 @@
+[
+  {
+    "id": "filtraEmailAcquisition2026",
+    "name": "Filtra.AI - Email Acquisition Events",
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "filtra-email-acquisition-v1",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "ea1",
+        "name": "Resend Acquisition Event",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [0, 0],
+        "webhookId": "filtra-email-acquisition-v1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body=$json.body??$json; const headers=$json.headers??{}; const token=String(headers['x-filtra-secret']??headers['X-Filtra-Secret']??'').trim(); const expected=String($env.N8N_INBOUND_SECRET||$env.N8N_WEBHOOK_SECRET||'').trim(); if(!expected||token!==expected)return[{json:{ok:false,status:401,error:'Unauthorized'}}]; const event=String(body.event||'').trim(); if(!event)return[{json:{ok:false,status:400,error:'event obrigatório'}}]; return[{json:{ok:true,processed:true,event,event_id:String(body.event_id||''),email_id:String(body.email_id||''),occurred_at:body.occurred_at||null,source:body.source||'filtra-ia'}}];"
+        },
+        "id": "ea2",
+        "name": "Validar e Processar",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [260, 0]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{JSON.stringify($json)}}",
+          "options": {}
+        },
+        "id": "ea3",
+        "name": "Resposta - Acquisition",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [520, 0]
+      }
+    ],
+    "connections": {
+      "Resend Acquisition Event": {
+        "main": [
+          [
+            {
+              "node": "Validar e Processar",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar e Processar": {
+        "main": [
+          [
+            {
+              "node": "Resposta - Acquisition",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "pinData": {},
+    "meta": {},
+    "tags": []
+  }
+]
