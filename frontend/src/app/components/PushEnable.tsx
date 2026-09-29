@@ -8,6 +8,7 @@ import { apiFetch } from '../utils/apiFailover';
 import { enablePush, sendTestPush } from '../utils/pushClient';
 
 export function PushEnable() {
+  const { t } = useLanguage();
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState<'ok' | 'err' | ''>('');
   const [loading, setLoading] = useState(false);
