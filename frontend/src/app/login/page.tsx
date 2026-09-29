@@ -1,12 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Lock, AlertCircle, Fingerprint } from 'lucide-react';
+import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { PlanCards } from '../components/PlanCards';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { BrandMark } from '../components/BrandMark';
 import { readApiError } from '../utils/apiError';
-import { loginWithPasskey, webauthnSupported } from '../utils/webauthnClient';
 import { useLanguage } from '../Contexts/LanguageContext';
 import { apiFetch } from '../utils/apiFailover';
 
@@ -33,7 +32,6 @@ export default function LoginPage() {
   const [identificador, setIdentificador] = useState('');
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
-  const [loadingBio, setLoadingBio] = useState(false);
   const [erro, setErro] = useState('');
   const [ok, setOk] = useState('');
 
@@ -68,9 +66,12 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      const body: Record<string, string> = { senha };
-      if (isEmail(id)) body.email = id.toLowerCase();
-      else body.tax_id = id;
+      if (!isEmail(id)) {
+        setErro(t.login_id_invalid || 'Informe um e-mail válido.');
+        setLoading(false);
+        return;
+      }
+      const body: Record<string, string> = { email: id.toLowerCase(), senha };
 
       const res = await apiFetch('/api/auth/login', {
         method: 'POST',
@@ -89,155 +90,114 @@ export default function LoginPage() {
     }
   };
 
-  const handleDigital = async () => {
-    if (loadingBio) return;
-    setErro('');
-    setOk('');
-    if (!webauthnSupported()) {
-      setErro(t.login_bio_unsupported || 'Este navegador não suporta login por digital (WebAuthn).');
-      return;
-    }
-    const id = identificador.trim();
-    if (isEmail(id)) {
-      setErro(
-        t.login_bio_use_tax ||
-          'Para biometria, use o Tax ID / CNPJ cadastrado (não o e-mail).'
-      );
-      return;
-    }
-    const tax = id.replace(/[^A-Za-z0-9]/g, '');
-    if (tax.length < 5) {
-      setErro(t.login_bio_need_tax || 'Informe o Tax ID ou CNPJ antes de usar a digital.');
-      return;
-    }
-    setLoadingBio(true);
-    try {
-      const { getApiBase } = await import('../utils/apiFailover');
-      const data = await loginWithPasskey(getApiBase(), tax);
-      afterLogin(data);
-    } catch (err: any) {
-      setErro(err.message || t.login_bio_fail || 'Falha na biometria');
-    } finally {
-      setLoadingBio(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center p-4 font-sans text-zinc-100 gap-8 py-10">
-      <header className="w-full max-w-md flex items-center justify-end">
-        <LanguageSwitcher compact />
-      </header>
+    <div className="min-h-screen bg-[#050507] text-zinc-100">
+      <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-8 sm:px-6">
+        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] shadow-2xl lg:grid-cols-[1.05fr_.95fr]">
+          <section className="hidden border-r border-white/10 bg-gradient-to-br from-indigo-500/15 via-transparent to-transparent p-10 lg:flex lg:flex-col lg:justify-between">
+            <div>
+              <BrandMark size="sm" href="/" subtitle="Online Reputation" />
+              <p className="mt-16 text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">Filtra.AI</p>
+              <h1 className="mt-4 max-w-md text-4xl font-semibold tracking-tight text-white">
+                {t.login_title || 'Sua reputação trabalhando por você.'}
+              </h1>
+              <p className="mt-5 max-w-md text-sm leading-7 text-zinc-400">
+                {t.login_subtitle || 'Acompanhe avaliações, sinais e oportunidades em um só lugar.'}
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div className="text-lg font-semibold text-white">24/7</div>
+                <div className="mt-1 text-xs text-zinc-500">Monitoramento</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                <div className="text-lg font-semibold text-white">IA</div>
+                <div className="mt-1 text-xs text-zinc-500">Insights acionáveis</div>
+              </div>
+            </div>
+          </section>
 
-      <div className="w-full max-w-md bg-zinc-900 rounded-2xl shadow-xl border border-zinc-800 p-8 space-y-6">
-        <div className="text-center space-y-4">
-          <div className="flex justify-center pt-1">
-            <BrandMark size="lg" href="/" centered subtitle="Online Reputation" />
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-50">
-            {t.login_title || t.login || 'Login'}
-          </h1>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            {t.login_subtitle || 'Entrar com e-mail e senha.'}
-          </p>
+          <section className="p-6 sm:p-10">
+            <div className="mb-8 flex items-center justify-between gap-3">
+              <BrandMark size="sm" href="/" subtitle="Online Reputation" />
+              <LanguageSwitcher compact />
+            </div>
+
+            <div className="mx-auto max-w-md">
+              <div className="mb-7">
+                <p className="text-xs font-semibold uppercase tracking-[.2em] text-indigo-400">Acesso</p>
+                <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+                  {t.login || t.login_title || 'Entrar'}
+                </h2>
+                <p className="mt-2 text-sm text-zinc-500">
+                  {t.login_subtitle || 'Entrar com e-mail e senha.'}
+                </p>
+              </div>
+
+              {erro && (
+                <div role="alert" className="mb-4 flex items-center gap-3 rounded-xl border border-red-900/70 bg-red-950/40 p-3.5 text-sm text-red-300">
+                  <AlertCircle size={18} className="shrink-0" />
+                  <span>{erro}</span>
+                </div>
+              )}
+              {ok && (
+                <p className="mb-4 rounded-xl border border-emerald-800/60 bg-emerald-950/30 px-3 py-2 text-sm text-emerald-300">{ok}</p>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-2">
+                  <label htmlFor="login-id" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    <Mail size={14} /> {t.login_id_label || 'E-mail'}
+                  </label>
+                  <input
+                    id="login-id"
+                    type="email"
+                    inputMode="email"
+                    required
+                    autoComplete="username"
+                    value={identificador}
+                    onChange={(e) => setIdentificador(e.target.value)}
+                    placeholder={t.login_id_placeholder || 'seu@email.com'}
+                    className={inputCls.replace('bg-zinc-950', 'bg-white/[0.03]').replace('border-zinc-700', 'border-white/10')}
+                  />
+                  <p className="text-[11px] text-zinc-600">{t.login_id_hint || 'Use o e-mail cadastrado no trial.'}</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="login-senha" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                    <Lock size={14} /> {t.login_password || t.label_password || 'Senha'}
+                  </label>
+                  <input
+                    id="login-senha"
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    className={inputCls.replace('bg-zinc-950', 'bg-white/[0.03]').replace('border-zinc-700', 'border-white/10')}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-xl bg-indigo-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-950/30 transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {loading ? (t.login_loading || 'Entrando…') : (t.login_submit || 'Entrar')}
+                </button>
+              </form>
+
+              <div className="mt-7 flex flex-col gap-3 text-center text-sm">
+                <a href="/" className="font-medium text-indigo-300 hover:text-indigo-200">
+                  {t.trial_cta || 'Começar 7 dias grátis'}
+                </a>
+                <a href="/preview" className="text-zinc-500 hover:text-zinc-300">
+                  {t.login_back || 'Voltar para o Filtra.AI'}
+                </a>
+              </div>
+            </div>
+          </section>
         </div>
-
-        {erro && (
-          <div
-            role="alert"
-            className="flex items-center gap-3 bg-red-950/50 text-red-300 p-3.5 rounded-xl border border-red-900 text-sm"
-          >
-            <AlertCircle size={18} className="shrink-0" />
-            <span>{erro}</span>
-          </div>
-        )}
-        {ok && (
-          <p className="text-sm text-emerald-300 bg-emerald-950/40 border border-emerald-800 rounded-xl px-3 py-2">
-            {ok}
-          </p>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <label
-              htmlFor="login-id"
-              className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
-            >
-              <Mail size={14} /> {t.login_id_label || 'E-mail'}
-            </label>
-            <input
-              id="login-id"
-              type="text"
-              inputMode="email"
-              required
-              autoComplete="username"
-              value={identificador}
-              onChange={(e) => setIdentificador(e.target.value)}
-              placeholder={t.login_id_placeholder || 'seu@email.com'}
-              className={inputCls}
-            />
-            <p className="text-[11px] text-zinc-500">
-              {t.login_id_hint ||
-                'Use o e-mail do trial. Se preferir, pode entrar com CNPJ ou Tax ID cadastrado.'}
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <label
-              htmlFor="login-senha"
-              className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5"
-            >
-              <Lock size={14} /> {t.login_password || t.label_password || 'Senha'}
-            </label>
-            <input
-              id="login-senha"
-              type="password"
-              required
-              autoComplete="current-password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              className={inputCls}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-medium py-3 rounded-xl transition-all text-sm disabled:opacity-50"
-          >
-            {loading
-              ? t.login_submitting || 'Entrando…'
-              : t.login_submit || 'Entrar com senha'}
-          </button>
-
-          <button
-            type="button"
-            disabled={loadingBio}
-            onClick={handleDigital}
-            className="w-full bg-zinc-800 hover:bg-zinc-700 active:scale-[0.99] border border-zinc-600 text-zinc-100 font-medium py-3 rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
-          >
-            <Fingerprint size={18} />
-            {loadingBio
-              ? t.login_bio_waiting || 'Aguardando digital…'
-              : t.login_bio || 'Entrar com digital'}
-          </button>
-
-          <p className="text-center text-xs text-zinc-500 space-x-3">
-            <a href="/recuperar-senha" className="underline hover:text-indigo-400">
-              {t.login_forgot || t.forgot_password || 'Esqueci a senha'}
-            </a>
-            <span className="text-zinc-600">|</span>
-            <a href="/" className="underline hover:text-indigo-400">
-              {t.login_trial || t.trial_cta || 'Ativar 7 dias grátis'}
-            </a>
-          </p>
-        </form>
-      </div>
-
-      <div className="w-full px-2 pb-10">
-        <p className="text-center text-sm font-medium text-zinc-400 mb-4">
-          {t.login_plans || t.plans || 'Planos disponíveis'}
-        </p>
-        <PlanCards requireEmpresa={false} />
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_hint: 'Usamos só para a empresa entrar em contato sobre esta reclamação.',
     wpp_invalid: 'Informe um WhatsApp válido com DDD (ex: 11 99999-8888).',
     wpp_not_configured: 'A empresa ainda não configurou WhatsApp de suporte.',
+    required: 'é obrigatório.',
     btn_send_wpp: 'Enviar e falar no WhatsApp',
     btn_send_private: 'Enviar feedback privado',
     btn_open_wpp: 'Abrir WhatsApp da empresa',
@@ -54,6 +55,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_hint: 'Used only so the business can contact you about this feedback.',
     wpp_invalid: 'Enter a valid WhatsApp number with area code.',
     wpp_not_configured: 'This business has not set up support WhatsApp yet.',
+    required: 'is required.',
     btn_send_wpp: 'Send and open WhatsApp',
     btn_send_private: 'Send private feedback',
     btn_open_wpp: 'Open business WhatsApp',
@@ -83,6 +85,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_hint: 'Solo para que la empresa contacte sobre este comentario.',
     wpp_invalid: 'Indica un WhatsApp válido con código de área.',
     wpp_not_configured: 'La empresa aún no configuró WhatsApp de soporte.',
+    required: 'es obligatorio.',
     btn_send_wpp: 'Enviar y abrir WhatsApp',
     btn_send_private: 'Enviar feedback privado',
     btn_open_wpp: 'Abrir WhatsApp de la empresa',
@@ -112,6 +115,7 @@ const EVAL_FALLBACK: Record<string, Record<string, string>> = {
     wpp_hint: '仅用于商家就本次反馈联系您。',
     wpp_invalid: '请输入有效的 WhatsApp 号码。',
     wpp_not_configured: '商家尚未配置客服 WhatsApp。',
+    required: '为必填项。',
     btn_send_wpp: '发送并打开 WhatsApp',
     btn_send_private: '发送私下反馈',
     btn_open_wpp: '打开商家 WhatsApp',
@@ -246,7 +250,7 @@ export default function PaginaAvaliacao() {
       return;
     }
     if (!comment.trim()) {
-      setErro(tx('comment_label').replace('*', '').trim() + ' é obrigatório.');
+      setErro(tx('comment_label').replace('*', '').trim() + ' ' + tx('required'));
       return;
     }
     setLoading(true);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '../Contexts/LanguageContext';
 import { apiFetch } from '../utils/apiFailover';
 
 export type ReviewItem = {
@@ -44,6 +45,12 @@ async function copiarTexto(texto: string): Promise<boolean> {
 }
 
 const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
+const REVIEW_TEXT = {
+  pt: { title:'Feedbacks privados', desc:'Resposta da IA, botão copiar e WhatsApp do cliente — marque como tratada após responder', empty:'Nenhuma crítica no momento. Avaliações 1–3★ aparecem aqui.', ai:'Resposta IA (editável)', suggested:'Resposta sugerida (editável)', copied:'Copiado!', copy:'Copiar resposta', clientWa:'WhatsApp do cliente', numberCopied:'Número copiado!', copyNumber:'Copiar número', anon:'WhatsApp anonimizado (LGPD)', missing:'WhatsApp do cliente não informado neste feedback', undo:'Desfazer tratada', treat:'Marcar como tratada', error:'Erro ao marcar como tratada' },
+  en: { title:'Private feedback', desc:'AI response, copy and customer WhatsApp — mark as handled after responding', empty:'No critical feedback right now. Ratings 1–3★ appear here.', ai:'AI response (editable)', suggested:'Suggested response (editable)', copied:'Copied!', copy:'Copy response', clientWa:'Customer WhatsApp', numberCopied:'Number copied!', copyNumber:'Copy number', anon:'Anonymized WhatsApp (LGPD)', missing:'Customer WhatsApp was not provided for this feedback', undo:'Undo handled', treat:'Mark as handled', error:'Error marking as handled' },
+  es: { title:'Feedback privado', desc:'Respuesta de IA, copiar y WhatsApp del cliente — marca como tratado después de responder', empty:'No hay críticas en este momento. Las evaluaciones 1–3★ aparecen aquí.', ai:'Respuesta de IA (editable)', suggested:'Respuesta sugerida (editable)', copied:'¡Copiado!', copy:'Copiar respuesta', clientWa:'WhatsApp del cliente', numberCopied:'¡Número copiado!', copyNumber:'Copiar número', anon:'WhatsApp anonimizado (LGPD)', missing:'No se informó el WhatsApp del cliente en este feedback', undo:'Deshacer tratado', treat:'Marcar como tratado', error:'Error al marcar como tratado' },
+  zh: { title:'私密反馈', desc:'AI 回复、复制和客户 WhatsApp — 回复后可标记为已处理', empty:'目前没有负面反馈。1–3★ 评价会显示在这里。', ai:'AI 回复（可编辑）', suggested:'建议回复（可编辑）', copied:'已复制！', copy:'复制回复', clientWa:'客户 WhatsApp', numberCopied:'号码已复制！', copyNumber:'复制号码', anon:'匿名 WhatsApp（LGPD）', missing:'此反馈未提供客户 WhatsApp', undo:'撤销已处理', treat:'标记为已处理', error:'标记处理时出错' },
+} as const;
 
 export function ReviewsList({
   reviews,
@@ -53,6 +60,8 @@ export function ReviewsList({
   authHeaders,
   onRefresh,
 }: Props) {
+  const { language } = useLanguage();
+  const tx = REVIEW_TEXT[language] || REVIEW_TEXT.pt;
   const criticas = (reviews || []).filter((r) => r.rating <= 3 && !r.is_test);
   const [drafts, setDrafts] = useState<Record<number, string>>(() => {
     const d: Record<number, string> = {};
@@ -81,10 +90,10 @@ export function ReviewsList({
         body: JSON.stringify({ undo }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(json.error || 'Falha ao atualizar');
+      if (!res.ok) throw new Error(json.error || tx.error);
       await onRefresh();
     } catch (e: any) {
-      alert(e.message || 'Erro ao marcar como tratada');
+      alert(e.message || tx.error);
     } finally {
       setTratandoId(null);
     }
@@ -93,10 +102,8 @@ export function ReviewsList({
   return (
     <section className={`${card} overflow-hidden`}>
       <div className="px-6 py-5 border-b border-zinc-800">
-        <h2 className="text-sm font-semibold text-zinc-200">Feedbacks privados</h2>
-        <p className="text-xs text-zinc-500 mt-1">
-          Resposta da IA, botão copiar e WhatsApp do cliente — marque como tratada após responder
-        </p>
+        <h2 className="text-sm font-semibold text-zinc-200">{tx.title}</h2>
+        <p className="text-xs text-zinc-500 mt-1" >{tx.desc}</p>
       </div>
       {criticas.length === 0 ? (
         <div className="px-6 py-14 text-center text-sm text-zinc-500">
@@ -132,7 +139,7 @@ export function ReviewsList({
 
                 <div className="mt-3 pl-3 border-l-2 border-indigo-500/40 space-y-2">
                   <p className="text-[11px] uppercase text-zinc-500">
-                    {r.ai_reply ? 'Resposta IA (editável)' : 'Resposta sugerida (editável)'}
+                    {r.ai_reply ? tx.ai : tx.suggested}
                   </p>
                   <textarea
                     value={draft}
@@ -150,7 +157,7 @@ export function ReviewsList({
                         }}
                         className="text-xs px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500"
                       >
-                        {copiadoId === keyCopy ? 'Copiado!' : 'Copiar resposta'}
+                        {copiadoId === keyCopy ? tx.copied : tx.copy}
                       </button>
                     )}
 
@@ -176,12 +183,12 @@ export function ReviewsList({
                           }}
                           className="text-xs px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700"
                         >
-                          {copiadoId === keyWa ? 'Número copiado!' : 'Copiar número'}
+                          {copiadoId === keyWa ? tx.numberCopied : tx.copyNumber}
                         </button>
                         <span className="text-xs text-zinc-500 font-mono">{r.client_whatsapp}</span>
                       </>
                     ) : r.client_whatsapp_anon ? (
-                      <span className="text-xs text-zinc-500">WhatsApp anonimizado (LGPD)</span>
+                      <span className="text-xs text-zinc-500">{tx.anon}</span>
                     ) : (
                       <span className="text-xs text-amber-600/80">
                         WhatsApp do cliente não informado neste feedback
