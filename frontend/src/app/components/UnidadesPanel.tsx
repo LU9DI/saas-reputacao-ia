@@ -134,7 +134,7 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
               {u.cidade ? <span className="text-zinc-500"> · {u.cidade}</span> : null}
             </span>
             <button type="button" onClick={() => remove(u.id)} className="text-xs text-red-400">
-              Remover
+              {t.units_remove}
             </button>
           </li>
         ))}
