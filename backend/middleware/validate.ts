@@ -71,23 +71,6 @@ function applyRule(
       value = s;
       break;
     }
-    case 'cnpj': {
-      const s = normalizarCnpj(String(value));
-      if (!cnpjValido(s)) return { error: rule.message || 'CNPJ inválido.' };
-      value = s;
-      break;
-    }
-    case 'tax_id': {
-      if (!taxIdValido(String(value))) {
-        return {
-          error:
-            rule.message ||
-            'Identificador fiscal inválido. Use CNPJ (Brasil) ou Tax ID (5–20 caracteres).',
-        };
-      }
-      value = canonicalTaxId(String(value));
-      break;
-    }
     case 'url': {
       const s = String(value).trim();
       if (s && !isUrl(s)) return { error: rule.message || 'URL inválida (use http/https).' };
@@ -166,7 +149,7 @@ export function validateBody(schema: Schema) {
   };
 }
 
-/** Trial 7 dias: só e-mail (sem CNPJ / Tax ID). */
+/** Trial 7 dias: cadastro por e-mail. */
 export const schemaTrialAtivar: Schema = {
   nome_empresa: { required: true, type: 'string', min: 2, max: 120, message: 'Nome da empresa inválido.' },
   email: { required: true, type: 'email' },
