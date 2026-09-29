@@ -238,4 +238,7 @@
   "panel_account_operation": "Operação da conta"
 ,
   "panel_start_trial": "Começar 7 dias"
+,
+  "units_confirm_remove": "Remover esta unidade?",
+  "units_remove_error": "Falha ao remover."
 }
