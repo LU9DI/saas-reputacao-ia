@@ -222,10 +222,8 @@
   "push_already": "Alertas já estavam ativos neste dispositivo. Você receberá avisos de críticas 1–3★.",
   "push_test_sent": "Teste enviado ({n}). Deve aparecer uma notificação agora.",
   "push_test_ok": "Alertas ativados! Enviamos uma notificação de teste — confira a bandeja do sistema.",
-  "push_no_sub": "Nenhuma notificação enviada (subs={n}). Clique em Ativar neste aparelho."
-,
-  "sub_confirm": "Cancelar no fim do período já pago? Você continua usando até a data de validade. Cobranças futuras no Mercado Pago / PayPal não serão renovadas pelo Filtra.AI."
-,
+  "push_no_sub": "Nenhuma notificação enviada (subs={n}). Clique em Ativar neste aparelho.",
+  "sub_confirm": "Cancelar no fim do período já pago? Você continua usando até a data de validade. Cobranças futuras no Mercado Pago / PayPal não serão renovadas pelo Filtra.AI.",
   "panel_ai_active": "IA ativa",
   "panel_quick_actions": "Ações rápidas",
   "panel_qr": "QR Code",
@@ -235,16 +233,14 @@
   "panel_crises_24h": "Crises · 24h",
   "panel_critical_reviews": "Avaliações críticas",
   "panel_positive_reviews": "Avaliações positivas",
-  "panel_account_operation": "Operação da conta"
-,
-  "panel_start_trial": "Começar 7 dias"
-,
+  "panel_account_operation": "Operação da conta",
+  "panel_start_trial": "Começar 7 dias",
   "units_confirm_remove": "Remover esta unidade?",
-  "units_remove_error": "Falha ao remover."
-,
+  "units_remove_error": "Falha ao remover.",
   "webauthn_login_again": "Faça login de novo (/login) antes de cadastrar a digital.",
   "webauthn_start_error": "Falha ao iniciar registro da digital.",
   "webauthn_cancelled": "Registro cancelado.",
   "webauthn_save_error": "Falha ao salvar digital.",
-  "webauthn_error": "Não foi possível registrar a digital."
+  "webauthn_error": "Não foi possível registrar a digital.",
+  "push_active_badge": "Ativo"
 }
