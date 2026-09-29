@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { apiFetch } from '../../../utils/apiFailover';
-import { persistFiltraToken } from '../../../utils/persistToken';
+import { apiFetch } from '../../utils/apiFailover';
+import { persistFiltraToken } from '../../utils/persistToken';
 
 export default function VerifyTrialEmail() {
   const [status, setStatus] = useState<'loading' | 'ok' | 'error'>('loading');
