@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '../Contexts/LanguageContext';
 import { getEnv } from '../utils/env';
 import { apiFetch } from '../utils/apiFailover';
 
@@ -28,6 +29,7 @@ export function SubscriptionActions({
   expiraEm,
   status,
 }: Props) {
+  const { t } = useLanguage();
   const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,7 +57,7 @@ export function SubscriptionActions({
       if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
       setMsg(
         data.mensagem ||
-          'Cancelamento agendado. Você usa até o fim do período pago (Mercado Pago / PayPal).'
+          '{t.sub_cancelled}'
       );
     } catch (e: any) {
       setMsg(e.message || 'Falha ao cancelar');
@@ -76,9 +78,9 @@ export function SubscriptionActions({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
-      setMsg(data.mensagem || 'Reativado.');
+      setMsg(data.mensagem || t.sub_reactivated);
     } catch (e: any) {
-      setMsg(e.message || 'Falha');
+      setMsg(e.message || t.sub_fail);
     } finally {
       setLoading(false);
     }
@@ -86,14 +88,14 @@ export function SubscriptionActions({
 
   return (
     <section className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-5 space-y-3">
-      <p className="text-[11px] uppercase tracking-wide text-zinc-500">Assinatura</p>
+      <p className="text-[11px] uppercase tracking-wide text-zinc-500">{t.sub_title}</p>
       {cancelAtPeriodEnd ? (
         <p className="text-sm text-amber-300">
-          Cancelamento agendado{expiraEm ? ` · acesso até ${expiraEm}` : ''}.
+          {t.sub_scheduled}{expiraEm ? ` · ${t.sub_access_until} ${expiraEm}` : ''}.
         </p>
       ) : (
         <p className="text-sm text-zinc-400">
-          Cancele a qualquer momento. Uso até o fim do período pago. Pagamentos: Mercado Pago e PayPal.
+          {t.sub_cancel_info}
         </p>
       )}
       <div className="flex flex-wrap gap-2 items-center">
