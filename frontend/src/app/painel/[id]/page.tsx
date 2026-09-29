@@ -45,7 +45,7 @@ function planAllowsReport(plan?: string, status?: string, dashboard?: any): bool
 const card = 'bg-zinc-900 border border-zinc-800 rounded-2xl';
 const label = 'text-[11px] uppercase tracking-wide text-zinc-500';
 
-export function LocalPreviewPanel() {
+function LocalPreviewPanel() {
   const cards = [
     ['4,8', 'Nota média', '↗ 0,3'],
     ['1.284', 'Avaliações', '↗ 12%'],
