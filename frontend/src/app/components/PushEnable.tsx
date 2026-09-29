@@ -120,15 +120,13 @@ export function PushEnable() {
 
               // tenta um push de confirmação (não bloqueia a mensagem de sucesso)
               try {
-                const t = await sendTestPush(api, token);
-                if ((t.sent ?? 0) > 0) {
+                const tst = await sendTestPush(api, token);
+                if ((tst.sent ?? 0) > 0) {
                   setMsg(
                     t.push_test_ok
                   );
-                } else if ((t.subscriptions ?? 0) === 0) {
-                  setMsg(
-                    'Registro OK, mas o servidor ainda não viu a subscription. Clique em Testar ou ative de novo.'
-                  );
+                } else if ((tst.subscriptions ?? 0) === 0) {
+                  setMsg(t.push_no_sub.replace('{n}', String(tst.subscriptions ?? 0)));
                   setMsgType('err');
                 }
               } catch {
