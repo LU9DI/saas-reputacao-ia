@@ -1,4 +1,4 @@
-/** PDF liberado após 1 mês da assinatura (aniversário do plano). Trial: liberado. */
+/** PDF liberado a cada aniversário mensal da assinatura. Trial: liberado. */
 export function pdfReleaseStatus(empresa: {
   plan?: string | null;
   status?: string | null;
@@ -9,14 +9,15 @@ export function pdfReleaseStatus(empresa: {
   if (p === 'trial' || p === 'teste' || p === 'test' || s === 'trial' || s === 'teste') {
     return { released: true, unlockLabel: null };
   }
+
+  // expira_em representa o fim do período mensal já pago/atual.
+  // Portanto, o PDF do ciclo é liberado no mesmo dia do mês em que
+  // esse período termina e a assinatura entra no próximo ciclo.
   const expiraRaw = empresa?.expira_em;
   if (!expiraRaw) return { released: true, unlockLabel: null };
-  const end = new Date(expiraRaw);
-  if (Number.isNaN(end.getTime())) return { released: true, unlockLabel: null };
-  const start = new Date(end.getTime());
-  start.setMonth(start.getMonth() - 1);
-  const unlock = new Date(start.getTime());
-  unlock.setMonth(unlock.getMonth() + 1);
+  const unlock = new Date(expiraRaw);
+  if (Number.isNaN(unlock.getTime())) return { released: true, unlockLabel: null };
+
   if (Date.now() >= unlock.getTime()) return { released: true, unlockLabel: null };
   return {
     released: false,
