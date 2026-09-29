@@ -466,15 +466,15 @@ export default function PainelEmpresa() {
                     <div className="mt-4 grid gap-3 sm:grid-cols-3">
                       <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                         <div className="text-2xl font-semibold text-white">{metricas.crises_24h ?? 0}</div>
-                        <div className="mt-1 text-xs text-zinc-500"">{t.panel_crises_24h}</div>
+                        <div className="mt-1 text-xs text-zinc-500">{t.panel_crises_24h}</div>
                       </div>
                       <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                         <div className="text-2xl font-semibold text-white">{metricas.negativas ?? 0}</div>
-                        <div className="mt-1 text-xs text-zinc-500"">{t.panel_critical_reviews}</div>
+                        <div className="mt-1 text-xs text-zinc-500">{t.panel_critical_reviews}</div>
                       </div>
                       <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
                         <div className="text-2xl font-semibold text-white">{metricas.positivas ?? 0}</div>
-                        <div className="mt-1 text-xs text-zinc-500"">{t.panel_positive_reviews}</div>
+                        <div className="mt-1 text-xs text-zinc-500">{t.panel_positive_reviews}</div>
                       </div>
                     </div>
                   </div>
@@ -485,7 +485,7 @@ export default function PainelEmpresa() {
             <section id="settings" className="scroll-mt-28 space-y-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[.18em] text-indigo-400">{t.panel_settings || 'Configurações'}</p>
-                <h3 className="mt-1 text-xl font-semibold text-white"">{t.panel_account_operation}</h3>
+                <h3 className="mt-1 text-xl font-semibold text-white">{t.panel_account_operation}</h3>
               </div>
 
               <WebAuthnSetup />
