@@ -364,7 +364,7 @@ export default function PainelEmpresa() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {dashboard?.tem_ia && <span className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs text-indigo-200"><Bot size={14} /"> {t.panel_ai_active}</span>}
+                  {dashboard?.tem_ia && <span className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs text-indigo-200"><Bot size={14} /> {t.panel_ai_active}</span>}
                   <span className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-400"><ShieldCheck size={14} /> {status}</span>
                 </div>
               </div>
