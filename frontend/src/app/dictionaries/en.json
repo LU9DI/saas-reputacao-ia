@@ -218,4 +218,10 @@
 ,
   "units_confirm_remove": "Remove this unit?",
   "units_remove_error": "Failed to remove."
+,
+  "webauthn_login_again": "Please log in again (/login) before registering a passkey.",
+  "webauthn_start_error": "Could not start passkey registration.",
+  "webauthn_cancelled": "Registration cancelled.",
+  "webauthn_save_error": "Could not save passkey.",
+  "webauthn_error": "Could not register the passkey."
 }
