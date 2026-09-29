@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://filtraai.com'),
   title: 'Filtra.AI — Gestão de reputação com IA | Preview',
   description: 'Gestão de avaliações, reputação, feedbacks, relatórios e inteligência artificial em um único painel.',
+  robots: { index: false, follow: false },
   keywords: ['gestão de reputação','reputação online','avaliações de clientes','feedback de clientes','inteligência artificial','gestão de avaliações','Filtra.AI'],
   robots: { index: false, follow: false },
   alternates: { canonical: '/preview' },
