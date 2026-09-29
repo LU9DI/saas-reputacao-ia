@@ -2,6 +2,7 @@
 
 import { ArrowRight, BarChart3, Bot, Check, MessageSquare, ShieldCheck, Sparkles, Star, Zap } from 'lucide-react';
 import { BrandMark } from '../components/BrandMark';
+import { PreviewNavigator } from '../components/PreviewNavigator';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PlanCards } from '../components/PlanCards';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
