@@ -522,6 +522,9 @@ export async function notificarTrialVerificacao(opts: {
     locale === 'en' ? 'Confirm your email' : locale === 'es' ? 'Confirma tu correo' : 'Confirme seu e-mail',
     `<p>${intro}</p><p><a href="${opts.verificationUrl}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:600">${button}</a></p><p style="font-size:12px;color:#71717a">${text.split('\n').at(-1)}</p>`
   );
-  await enviarEmail({ to: opts.email, subject, text, html });
+  const result = await enviarEmail({ to: opts.email, subject, text, html });
+  if (!result.ok) {
+    throw new Error(result.error || 'Falha no envio do e-mail de confirmação.');
+  }
 }
 
