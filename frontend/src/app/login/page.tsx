@@ -192,7 +192,7 @@ export default function LoginPage() {
                   {t.trial_cta || 'Começar 7 dias grátis'}
                 </a>
                 <a href="/preview" className="text-zinc-500 hover:text-zinc-300">
-                  {t.login_back || 'Voltar para o Filtra.AI'}
+                  Voltar
                 </a>
               </div>
             </div>
