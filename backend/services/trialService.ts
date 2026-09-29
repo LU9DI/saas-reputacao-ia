@@ -290,7 +290,7 @@ export async function verificarTrialEmail(
   if (raw.length < 40) throw new TrialValidationError('Link de confirmação inválido.');
   const hash = crypto.createHash('sha256').update(raw).digest('hex');
   const row = await db.get(
-    `SELECT v.id AS verification_id, v.empresa_id, v.expira_em AS verification_expira, v.usado,
+    `SELECT v.id AS verification_id, v.empresa_id, v.expira_em AS verification_expira,
             e.slug, e.nome_empresa, u.id AS usuario_id, u.nome_funcionario, u.email
        FROM trial_email_verifications v
        JOIN empresas e ON e.id = v.empresa_id
@@ -304,17 +304,13 @@ export async function verificarTrialEmail(
     await db.run('UPDATE trial_email_verifications SET usado = 1 WHERE id = ?', [row.verification_id]);
     throw new TrialValidationError('Link expirado. Solicite um novo teste.');
   }
-
   const expiraEm = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
   await db.run('UPDATE empresas SET status = ?, expira_em = ? WHERE id = ?', ['trial', expiraEm, row.empresa_id]);
   await db.run('UPDATE trial_email_verifications SET usado = 1 WHERE id = ?', [row.verification_id]);
-
-  // A conta permanece pendente até o e-mail ser confirmado.
-  return {
-    success: true,
-    empresa_id: id,
-    slug,
-    verification_required: true,
-    message: 'Enviamos um link de confirmação para o seu e-mail. Confirme o endereço para ativar os 7 dias grátis.',
-  };
+  const tokenPayload = { id: String(row.usuario_id), nome_funcionario: String(row.nome_funcionario || row.nome_empresa), empresa_id: String(row.empresa_id) };
+  const accessToken = signAccessToken(tokenPayload);
+  if (res) { try { setAuthCookie(res, accessToken); } catch (e: any) { console.warn('[trial] cookie:', e?.message || e); } }
+  await notificarTrialAtivado({ email: row.email, nomeEmpresa: row.nome_empresa, slug: row.slug, empresaId: row.empresa_id, expiraEm }).catch((e) => console.warn('[trial] e-mail trial:', e?.message || e));
+  notifyN8n('trial.ativado', { empresa_id: row.empresa_id, slug: row.slug, nome_empresa: row.nome_empresa, email: row.email, expira_em: expiraEm, link_painel: `${APP_URL}/painel/${row.slug}`, link_avaliacao: `${APP_URL}/avaliacao/${row.slug}` });
+  return { success: true, empresa_id: String(row.empresa_id), slug: String(row.slug), link_acesso: `${APP_URL}/avaliacao/${row.slug}`, link_painel: `${APP_URL}/painel/${row.slug}`, expira_em: expiraEm, token: accessToken, tokenPayload };
 }
