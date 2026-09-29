@@ -60,7 +60,7 @@ function LocalPreviewPanel() {
           <div className="flex items-center gap-3">
             <span className="hidden text-xs text-zinc-500 sm:block">Modo demonstração · localhost</span>
             <LanguageSwitcher compact />
-            <a href="/preview/teste" className="rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white">Começar 7 dias</a>
+            <a href="/" className="rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white">{t.panel_start_trial || "Começar 7 dias"}</a>
           </div>
         </div>
       </header>
