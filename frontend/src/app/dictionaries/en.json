@@ -215,4 +215,7 @@
   "panel_account_operation": "Account operations"
 ,
   "panel_start_trial": "Start 7-day trial"
+,
+  "units_confirm_remove": "Remove this unit?",
+  "units_remove_error": "Failed to remove."
 }
