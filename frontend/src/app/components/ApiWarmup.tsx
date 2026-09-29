@@ -18,7 +18,13 @@ export function ApiWarmup() {
       pathname.startsWith('/preview/') ||
       pathname === '/painel/preview';
 
-    if (isOfflineDemo) return;
+    // No ambiente local, o warmup não deve gerar ruído nem tentar
+    // acordar uma API em 127.0.0.1:5000 só para navegar pelas demos.
+    const isLocalHost =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+    if (isOfflineDemo || isLocalHost) return;
 
     restoreStickyFromSession();
 
