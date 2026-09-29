@@ -6,6 +6,7 @@ import {
   ativarTrial,
   TrialConflictError,
   TrialValidationError,
+  verificarTrialEmail,
 } from '../services/trialService.js';
 
 const trialLimiter = rateLimit({
@@ -28,6 +29,22 @@ function clientIp(req: Request): string {
 }
 
 export function mountTrialRoutes(app: Express) {
+
+  app.get(
+    '/api/trial/verificar',
+    asyncHandler(async (req: Request, res: Response) => {
+      try {
+        const result = await verificarTrialEmail(String(req.query.token || ''), undefined, res);
+        return res.status(200).json(result);
+      } catch (e: any) {
+        if (e instanceof TrialValidationError || e?.name === 'TrialValidationError') {
+          return res.status(400).json({ error: e.message });
+        }
+        console.error('[trial/verificar]', e?.message || e);
+        return res.status(500).json({ error: 'Não foi possível confirmar o e-mail.' });
+      }
+    })
+  );
   app.post(
     '/api/trial/ativar',
     trialLimiter,
