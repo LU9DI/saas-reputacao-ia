@@ -5,31 +5,233 @@ import { PreviewNavigator } from '../../components/PreviewNavigator';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { useLanguage, type Language } from '../../Contexts/LanguageContext';
 
-const copy: Record<Language, {
- eyebrow:string; hotel:string; subtitle:string; active:string; start:string;
- stats:[string,string,string][]; evolution:string; last14:string; ai:string;
- themes:[string,string][]; report:string; cards:[string,string,string][];
- structure:string; independent:string; nav:string[];
-}> = {
- pt:{eyebrow:'Painel do cliente',hotel:'Hotel Aurora',subtitle:'Visão geral da reputação e dos sinais encontrados pela IA.',active:'TRIAL · ATIVO',start:'Começar 7 dias',stats:[['4,8','Nota média','↗ 0,3'],['1.284','Avaliações','↗ 12%'],['91%','Positivas','↗ 6,2%'],['37','Pontos de atenção','3 novos']],evolution:'Evolução da reputação',last14:'Últimos 14 dias',ai:'IA encontrou 3 temas',themes:[['Atendimento','82%'],['Tempo de espera','64%'],['Equipe','91%']],report:'Relatório inteligente atualizado',cards:[['Alertas','3','precisam de atenção hoje'],['Feedbacks recentes','3','avaliações precisam de atenção'],['Ações rápidas','QR · WhatsApp · Google','canais centralizados']],structure:'Estrutura do painel',independent:'Demonstração visual independente da API.',nav:['Visão geral','Avaliações','Relatório IA','Alertas','Configurações']},
- en:{eyebrow:'Customer dashboard',hotel:'Hotel Aurora',subtitle:'Overview of reputation and signals found by AI.',active:'TRIAL · ACTIVE',start:'Start 7 days',stats:[['4.8','Average rating','↗ 0.3'],['1,284','Reviews','↗ 12%'],['91%','Positive','↗ 6.2%'],['37','Attention points','3 new']],evolution:'Reputation trend',last14:'Last 14 days',ai:'AI found 3 themes',themes:[['Service','82%'],['Waiting time','64%'],['Team','91%']],report:'Intelligent report updated',cards:[['Alerts','3','need attention today'],['Recent feedback','3','reviews need attention'],['Quick actions','QR · WhatsApp · Google','centralized channels']],structure:'Dashboard structure',independent:'Visual demonstration independent from the API.',nav:['Overview','Reviews','AI Report','Alerts','Settings']},
- es:{eyebrow:'Panel del cliente',hotel:'Hotel Aurora',subtitle:'Resumen de la reputación y señales encontradas por la IA.',active:'PRUEBA · ACTIVA',start:'Comenzar 7 días',stats:[['4,8','Calificación media','↗ 0,3'],['1.284','Reseñas','↗ 12%'],['91%','Positivas','↗ 6,2%'],['37','Puntos de atención','3 nuevos']],evolution:'Evolución de la reputación',last14:'Últimos 14 días',ai:'La IA encontró 3 temas',themes:[['Atención','82%'],['Tiempo de espera','64%'],['Equipo','91%']],report:'Informe inteligente actualizado',cards:[['Alertas','3','necesitan atención hoy'],['Comentarios recientes','3','reseñas necesitan atención'],['Acciones rápidas','QR · WhatsApp · Google','canales centralizados']],structure:'Estructura del panel',independent:'Demostración visual independiente de la API.',nav:['Vista general','Reseñas','Informe IA','Alertas','Configuración']},
- zh:{eyebrow:'客户面板',hotel:'Hotel Aurora',subtitle:'声誉概览以及 AI 发现的重要信号。',active:'试用 · 已激活',start:'开始 7 天试用',stats:[['4.8','平均评分','↗ 0.3'],['1,284','评价','↗ 12%'],['91%','正面','↗ 6.2%'],['37','关注点','新增 3']],evolution:'声誉趋势',last14:'最近 14 天',ai:'AI 发现 3 个主题',themes:[['服务','82%'],['等待时间','64%'],['团队','91%']],report:'智能报告已更新',cards:[['提醒','3','今天需要关注'],['近期反馈','3','条评价需要关注'],['快速操作','QR · WhatsApp · Google','渠道已集中管理']],structure:'面板结构',independent:'独立于 API 的视觉演示。',nav:['概览','评价','AI 报告','提醒','设置']}
+type Copy = {
+  eyebrow: string;
+  hotel: string;
+  subtitle: string;
+  active: string;
+  start: string;
+  stats: [string, string, string][];
+  evolution: string;
+  last14: string;
+  ai: string;
+  themes: [string, string][];
+  report: string;
+  cards: [string, string, string][];
+  structure: string;
+  independent: string;
+  nav: string[];
 };
 
-export default function PreviewClientPanel(){
- const {language}=useLanguage(); const c=copy[language];
- return <>
-  <PreviewNavigator />
-    <main className="min-h-screen bg-[#050507] text-zinc-100">
-  <header className="border-b border-white/10 bg-zinc-950"><div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5"><BrandMark size="sm" href="/preview" subtitle="Reputação"/><div className="flex items-center gap-3"><span className="hidden text-xs text-zinc-500 sm:block">Demo · localhost</span><LanguageSwitcher/><a href="/preview/teste" className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white">{c.start}</a></div></div></header>
-  <div className="mx-auto max-w-7xl px-6 py-10">
-   <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.eyebrow}</p><h1 className="mt-2 text-4xl font-semibold tracking-tight">{c.hotel}</h1><p className="mt-2 text-sm text-zinc-500">{c.subtitle}</p></div><span className="w-fit rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1.5 text-xs text-emerald-300">{c.active}</span></div>
-   <nav aria-label={c.eyebrow} className="mb-5 flex flex-wrap gap-2">{c.nav.map((x,i)=><span key={x} className={`rounded-xl border px-3 py-2 text-xs ${i===0?'border-indigo-400/30 bg-indigo-500/10 text-indigo-200':'border-white/10 text-zinc-500'}`}>{x}</span>)}</nav>
-   <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{c.stats.map(([v,l,t])=><div key={l} className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><div className="flex justify-between"><strong className="text-2xl">{v}</strong><span className="text-xs text-emerald-400">{t}</span></div><p className="mt-2 text-xs text-zinc-500">{l}</p></div>)}</section>
-   <section className="mt-4 grid gap-4 lg:grid-cols-[1.3fr_.7fr]"><div className="rounded-3xl border border-white/10 bg-white/[0.025] p-6"><p className="text-sm font-medium">{c.evolution}</p><p className="mt-1 text-xs text-zinc-500">{c.last14}</p><div className="mt-6 h-48 rounded-2xl bg-gradient-to-b from-indigo-500/15 to-transparent p-4"><svg viewBox="0 0 700 180" className="h-full w-full" aria-label={c.evolution}><path d="M0 145 C70 132 90 142 145 116 S230 128 285 91 S380 104 430 69 S520 82 580 42 S640 53 700 20" fill="none" stroke="currentColor" strokeWidth="5" className="text-indigo-400"/></svg></div></div><div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.06] p-6"><p className="text-sm font-semibold">{c.ai}</p><div className="mt-6 space-y-5">{c.themes.map(([n,v])=><div key={n}><div className="flex justify-between text-xs text-zinc-400"><span>{n}</span><span>{v}</span></div><div className="mt-2 h-1.5 rounded-full bg-white/10"><div className="h-1.5 rounded-full bg-indigo-400" style={{width:v}}/></div></div>)}</div><div className="mt-6 rounded-xl bg-emerald-400/5 p-3 text-xs text-emerald-300">✓ {c.report}</div></div></section>
-   <section className="mt-4 grid gap-4 md:grid-cols-3">{c.cards.map(([t,v,d])=><div key={t} className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><p className="text-sm font-medium">{t}</p><p className="mt-4 text-2xl font-semibold">{v}</p><p className="mt-1 text-xs text-zinc-500">{d}</p></div>)}</section>
-   <section className="mt-4 rounded-3xl border border-white/10 bg-white/[0.025] p-6"><p className="text-sm font-semibold">{c.structure}</p><p className="mt-1 text-xs text-zinc-500">{c.independent}</p><div className="mt-4 flex flex-wrap gap-2 text-xs">{c.nav.map(x=><span key={x} className="rounded-full border border-white/10 px-3 py-1.5">{x}</span>)}</div></section>
-  </div>
- </main>;
+const copy: Record<Language, Copy> = {
+  pt: {
+    eyebrow: 'Painel do cliente',
+    hotel: 'Hotel Aurora',
+    subtitle: 'Visão geral da reputação e dos sinais encontrados pela IA.',
+    active: 'TRIAL · ATIVO',
+    start: 'Começar 7 dias',
+    stats: [
+      ['4,8', 'Nota média', '↗ 0,3'],
+      ['1.284', 'Avaliações', '↗ 12%'],
+      ['91%', 'Positivas', '↗ 6,2%'],
+      ['37', 'Pontos de atenção', '3 novos'],
+    ],
+    evolution: 'Evolução da reputação',
+    last14: 'Últimos 14 dias',
+    ai: 'IA encontrou 3 temas',
+    themes: [['Atendimento', '82%'], ['Tempo de espera', '64%'], ['Equipe', '91%']],
+    report: 'Relatório inteligente atualizado',
+    cards: [
+      ['Alertas', '3', 'precisam de atenção hoje'],
+      ['Feedbacks recentes', '3', 'avaliações precisam de atenção'],
+      ['Ações rápidas', 'QR · WhatsApp · Google', 'canais centralizados'],
+    ],
+    structure: 'Estrutura do painel',
+    independent: 'Demonstração visual independente da API.',
+    nav: ['Visão geral', 'Avaliações', 'Relatório IA', 'Alertas', 'Configurações'],
+  },
+  en: {
+    eyebrow: 'Customer dashboard',
+    hotel: 'Hotel Aurora',
+    subtitle: 'Overview of reputation and signals found by AI.',
+    active: 'TRIAL · ACTIVE',
+    start: 'Start 7 days',
+    stats: [['4.8', 'Average rating', '↗ 0.3'], ['1,284', 'Reviews', '↗ 12%'], ['91%', 'Positive', '↗ 6.2%'], ['37', 'Attention points', '3 new']],
+    evolution: 'Reputation trend',
+    last14: 'Last 14 days',
+    ai: 'AI found 3 themes',
+    themes: [['Service', '82%'], ['Waiting time', '64%'], ['Team', '91%']],
+    report: 'Intelligent report updated',
+    cards: [['Alerts', '3', 'need attention today'], ['Recent feedback', '3', 'reviews need attention'], ['Quick actions', 'QR · WhatsApp · Google', 'centralized channels']],
+    structure: 'Dashboard structure',
+    independent: 'Visual demonstration independent from the API.',
+    nav: ['Overview', 'Reviews', 'AI Report', 'Alerts', 'Settings'],
+  },
+  es: {
+    eyebrow: 'Panel del cliente',
+    hotel: 'Hotel Aurora',
+    subtitle: 'Resumen de la reputación y señales encontradas por la IA.',
+    active: 'PRUEBA · ACTIVA',
+    start: 'Comenzar 7 días',
+    stats: [['4,8', 'Calificación media', '↗ 0,3'], ['1.284', 'Reseñas', '↗ 12%'], ['91%', 'Positivas', '↗ 6,2%'], ['37', 'Puntos de atención', '3 nuevos']],
+    evolution: 'Evolución de la reputación',
+    last14: 'Últimos 14 días',
+    ai: 'La IA encontró 3 temas',
+    themes: [['Atención', '82%'], ['Tiempo de espera', '64%'], ['Equipo', '91%']],
+    report: 'Informe inteligente actualizado',
+    cards: [['Alertas', '3', 'necesitan atención hoy'], ['Comentarios recientes', '3', 'reseñas necesitan atención'], ['Acciones rápidas', 'QR · WhatsApp · Google', 'canales centralizados']],
+    structure: 'Estructura del panel',
+    independent: 'Demostración visual independiente de la API.',
+    nav: ['Vista general', 'Reseñas', 'Informe IA', 'Alertas', 'Configuración'],
+  },
+  zh: {
+    eyebrow: '客户面板',
+    hotel: 'Hotel Aurora',
+    subtitle: '声誉概览以及 AI 发现的重要信号。',
+    active: '试用 · 已激活',
+    start: '开始 7 天试用',
+    stats: [['4.8', '平均评分', '↗ 0.3'], ['1,284', '评价', '↗ 12%'], ['91%', '正面', '↗ 6.2%'], ['37', '关注点', '新增 3']],
+    evolution: '声誉趋势',
+    last14: '最近 14 天',
+    ai: 'AI 发现 3 个主题',
+    themes: [['服务', '82%'], ['等待时间', '64%'], ['团队', '91%']],
+    report: '智能报告已更新',
+    cards: [['提醒', '3', '今天需要关注'], ['近期反馈', '3', '条评价需要关注'], ['快速操作', 'QR · WhatsApp · Google', '渠道已集中管理']],
+    structure: '面板结构',
+    independent: '独立于 API 的视觉演示。',
+    nav: ['概览', '评价', 'AI 报告', '提醒', '设置'],
+  },
+};
+
+export default function PreviewClientPanel() {
+  const { language } = useLanguage();
+  const c = copy[language] ?? copy.pt;
+
+  return (
+    <>
+      <PreviewNavigator />
+
+      <main className="min-h-screen bg-[#050507] text-zinc-100">
+        <header className="border-b border-white/10 bg-zinc-950">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
+            <BrandMark size="sm" href="/preview" subtitle="Reputação" />
+            <div className="flex items-center gap-3">
+              <span className="hidden text-xs text-zinc-500 sm:block">Demo · localhost</span>
+              <LanguageSwitcher />
+              <a
+                href="/preview/teste"
+                className="rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white"
+              >
+                {c.start}
+              </a>
+            </div>
+          </div>
+        </header>
+
+        <div className="mx-auto max-w-7xl px-6 py-10">
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">
+                {c.eyebrow}
+              </p>
+              <h1 className="mt-2 text-4xl font-semibold tracking-tight">{c.hotel}</h1>
+              <p className="mt-2 text-sm text-zinc-500">{c.subtitle}</p>
+            </div>
+            <span className="w-fit rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1.5 text-xs text-emerald-300">
+              {c.active}
+            </span>
+          </div>
+
+          <nav aria-label={c.eyebrow} className="mb-5 flex flex-wrap gap-2">
+            {c.nav.map((item, index) => (
+              <span
+                key={item}
+                className={
+                  index === 0
+                    ? 'rounded-xl border border-indigo-400/30 bg-indigo-500/10 px-3 py-2 text-xs text-indigo-200'
+                    : 'rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-500'
+                }
+              >
+                {item}
+              </span>
+            ))}
+          </nav>
+
+          <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {c.stats.map(([value, label, trend]) => (
+              <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
+                <div className="flex justify-between">
+                  <strong className="text-2xl">{value}</strong>
+                  <span className="text-xs text-emerald-400">{trend}</span>
+                </div>
+                <p className="mt-2 text-xs text-zinc-500">{label}</p>
+              </div>
+            ))}
+          </section>
+
+          <section className="mt-4 grid gap-4 lg:grid-cols-[1.3fr_.7fr]">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.025] p-6">
+              <p className="text-sm font-medium">{c.evolution}</p>
+              <p className="mt-1 text-xs text-zinc-500">{c.last14}</p>
+              <div className="mt-6 h-48 rounded-2xl bg-gradient-to-b from-indigo-500/15 to-transparent p-4">
+                <div className="h-full w-full">
+                  <svg viewBox="0 0 700 180" className="h-full w-full" aria-label={c.evolution}>
+                    <path
+                      d="M0 145 C70 132 90 142 145 116 S230 128 285 91 S380 104 430 69 S520 82 580 42 S640 53 700 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="5"
+                      className="text-indigo-400"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.06] p-6">
+              <p className="text-sm font-semibold">{c.ai}</p>
+              <div className="mt-6 space-y-5">
+                {c.themes.map(([name, value]) => (
+                  <div key={name}>
+                    <div className="flex justify-between text-xs text-zinc-400">
+                      <span>{name}</span>
+                      <span>{value}</span>
+                    </div>
+                    <div className="mt-2 h-1.5 rounded-full bg-white/10">
+                      <div className="h-1.5 rounded-full bg-indigo-400" style={{ width: value }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 rounded-xl bg-emerald-400/5 p-3 text-xs text-emerald-300">
+                ✓ {c.report}
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-4 grid gap-4 md:grid-cols-3">
+            {c.cards.map(([title, value, description]) => (
+              <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
+                <p className="text-sm font-medium">{title}</p>
+                <p className="mt-4 text-2xl font-semibold">{value}</p>
+                <p className="mt-1 text-xs text-zinc-500">{description}</p>
+              </div>
+            ))}
+          </section>
+
+          <section className="mt-4 rounded-3xl border border-white/10 bg-white/[0.025] p-6">
+            <p className="text-sm font-semibold">{c.structure}</p>
+            <p className="mt-1 text-xs text-zinc-500">{c.independent}</p>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs">
+              {c.nav.map((item) => (
+                <span key={item} className="rounded-full border border-white/10 px-3 py-1.5">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
+    </>
+  );
 }
