@@ -188,7 +188,7 @@ export default function LoginPage() {
               </form>
 
               <div className="mt-7 flex flex-col gap-3 text-center text-sm">
-                <a href="/preview/teste" className="font-medium text-indigo-300 hover:text-indigo-200">
+                <a href="/" className="font-medium text-indigo-300 hover:text-indigo-200">
                   {t.trial_cta || 'Começar 7 dias grátis'}
                 </a>
                 <a href="/preview" className="text-zinc-500 hover:text-zinc-300">
