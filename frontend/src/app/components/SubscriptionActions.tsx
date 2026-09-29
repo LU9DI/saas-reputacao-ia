@@ -37,10 +37,7 @@ export function SubscriptionActions({
   if (status !== 'ativo' && status !== 'trial') return null;
 
   const cancelar = async () => {
-    if (
-      !confirm(
-        'Cancelar no fim do período já pago? Você continua usando até a data de validade. Cobranças futuras no Mercado Pago / PayPal não serão renovadas pelo Filtra.IA.'
-      )
+    if (!confirm(t.sub_confirm)
     ) {
       return;
     }
