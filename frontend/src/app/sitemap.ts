@@ -32,7 +32,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/planos',
     '/termos',
     '/privacidade',
-    '/login',
   ];
 
   return paths.map((path) => ({
