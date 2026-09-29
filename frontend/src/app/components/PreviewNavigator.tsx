@@ -15,6 +15,7 @@ export function PreviewNavigator() {
           <Link href="/preview/teste" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"><PlayCircle size={13} className="mr-1 inline" />Teste 7 dias</Link>
           <Link href="/painel/preview" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"><LayoutDashboard size={13} className="mr-1 inline" />Painel</Link>
           <Link href="/privacidade" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"><LockKeyhole size={13} className="mr-1 inline" />Privacidade</Link>
+          <Link href="/login" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white">Login</Link>
           <Link href="/termos" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"><FileText size={13} className="mr-1 inline" />Termos</Link>
         </nav>
       </div>
