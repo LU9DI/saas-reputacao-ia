@@ -13,6 +13,7 @@ if [ "${N8N_IMPORT_WORKFLOWS:-false}" = "true" ] && [ -f "$WORKFLOW_FILE" ]; the
   echo "[n8n-bootstrap] importing bundled workflows"
   n8n import:workflow --input="$WORKFLOW_FILE"
   n8n import:workflow --input="/home/node/n8n-content-acquisition.json"
+  n8n import:workflow --input="/home/node/n8n-email-acquisition.json"
 
   echo "[n8n-bootstrap] publishing bundled workflows"
   n8n publish:workflow --id="PC9xbunz6ZsUSNS3"
@@ -20,6 +21,7 @@ if [ "${N8N_IMPORT_WORKFLOWS:-false}" = "true" ] && [ -f "$WORKFLOW_FILE" ]; the
   n8n publish:workflow --id="aPqhpo48pl3ZOpyP"
   n8n publish:workflow --id="filtraLeadTelegram2026"
   n8n publish:workflow --id="filtraContentAcquisition2026"
+  n8n publish:workflow --id="filtraEmailAcquisition2026"
 
   echo "[n8n-bootstrap] stopping temporary port listener"
   kill "$LISTENER_PID" 2>/dev/null || true
