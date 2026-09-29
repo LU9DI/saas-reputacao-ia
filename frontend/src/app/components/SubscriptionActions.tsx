@@ -60,7 +60,7 @@ export function SubscriptionActions({
           '{t.sub_cancelled}'
       );
     } catch (e: any) {
-      setMsg(e.message || 'Falha ao cancelar');
+      setMsg(e.message || t.sub_fail);
     } finally {
       setLoading(false);
     }
