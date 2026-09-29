@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '../Contexts/LanguageContext';
 import { getEnv } from '../utils/env';
 import { apiFetch } from '../utils/apiFailover';
 
@@ -44,6 +45,7 @@ async function extractPublicKeyB64(credential: PublicKeyCredential): Promise<str
 }
 
 export function WebAuthnSetup() {
+  const { t } = useLanguage();
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
@@ -54,9 +56,9 @@ export function WebAuthnSetup() {
   if (!supported) {
     return (
       <section className="rounded-2xl border border-zinc-800 bg-zinc-900 px-5 py-4">
-        <p className="text-sm font-medium text-zinc-100">Login por digital / Face ID</p>
+        <p className="text-sm font-medium text-zinc-100">{t.webauthn_title}</p>
         <p className="text-xs text-zinc-500 mt-1">
-          Este navegador não suporta WebAuthn. Use Chrome, Edge ou Safari recente.
+          {t.webauthn_unsupported}
         </p>
       </section>
     );
@@ -74,9 +76,9 @@ export function WebAuthnSetup() {
       });
       const opt = await optRes.json().catch(() => ({}));
       if (optRes.status === 401) {
-        throw new Error('Faça login de novo (/login) antes de cadastrar a digital.');
+        throw new Error(t.webauthn_login_again);
       }
-      if (!optRes.ok) throw new Error(opt.error || 'Falha ao iniciar registro da digital');
+      if (!optRes.ok) throw new Error(opt.error || t.webauthn_start_error);
 
       const publicKey = { ...opt.publicKey };
       publicKey.challenge = b64urlToBuffer(publicKey.challenge);
@@ -94,7 +96,7 @@ export function WebAuthnSetup() {
       const cred = (await navigator.credentials.create({
         publicKey,
       })) as PublicKeyCredential | null;
-      if (!cred) throw new Error('Registro cancelado.');
+      if (!cred) throw new Error(t.webauthn_cancelled);
 
       const rawId = bufferToB64url(cred.rawId);
       const att = cred.response as AuthenticatorAttestationResponse;
@@ -114,10 +116,10 @@ export function WebAuthnSetup() {
         }),
       });
       const data = await finish.json().catch(() => ({}));
-      if (!finish.ok) throw new Error(data.error || 'Falha ao salvar digital');
-      setMsg('Digital cadastrada. No próximo login você poderá usar biometria.');
+      if (!finish.ok) throw new Error(data.error || t.webauthn_save_error);
+      setMsg(t.webauthn_success);
     } catch (e: any) {
-      setMsg(e.message || 'Não foi possível registrar a digital');
+      setMsg(e.message || t.webauthn_error);
     } finally {
       setLoading(false);
     }
@@ -128,12 +130,12 @@ export function WebAuthnSetup() {
       <div className="flex-1">
         <p className="text-sm font-medium text-zinc-100">Login por digital / Face ID</p>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Cadastre a biometria deste dispositivo após entrar com senha (localhost ou HTTPS).
+          {t.webauthn_desc}
         </p>
         {msg && (
           <p
             className={`text-xs mt-1 ${
-              msg.includes('cadastrada') ? 'text-emerald-400' : 'text-red-400'
+              msg === t.webauthn_success ? 'text-emerald-400' : 'text-red-400'
             }`}
           >
             {msg}
@@ -146,7 +148,7 @@ export function WebAuthnSetup() {
         onClick={registrar}
         className="text-sm px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 font-medium hover:bg-white disabled:opacity-50"
       >
-        {loading ? 'Aguardando biometria…' : 'Cadastrar digital'}
+        {loading ? t.webauthn_wait : t.webauthn_register}
       </button>
     </section>
   );
