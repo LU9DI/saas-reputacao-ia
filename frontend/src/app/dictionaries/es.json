@@ -176,4 +176,6 @@
   "push_no_sub": "No se envió ninguna notificación (subs={n}). Pulsa Activar en este dispositivo.",
   "login_bio_use_tax": "Para biometría, usa el correo registrado.",
   "login_bio_need_tax": "Introduce el correo antes de usar la biometría."
+,
+  "sub_confirm": "¿Cancelar al final del período pagado? Puedes seguir usando Filtra.AI hasta la fecha de vencimiento. Los futuros cobros de Mercado Pago / PayPal no serán renovados por Filtra.AI."
 }
