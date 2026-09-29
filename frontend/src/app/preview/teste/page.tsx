@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ArrowRight, Building2, Check, Link2, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
 import { BrandMark } from '../../components/BrandMark';
+import { PreviewNavigator } from '../../components/PreviewNavigator';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { useLanguage } from '../../Contexts/LanguageContext';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from '../../utils/passwordPolicy';
@@ -137,6 +138,7 @@ export default function PreviewTrial() {
   };
 
   return (
+    <PreviewNavigator />
     <main className="min-h-screen overflow-hidden bg-[#050507] text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(14,165,233,.14),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(99,102,241,.22),transparent_32%)]" />
       <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
