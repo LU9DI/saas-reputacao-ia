@@ -200,4 +200,6 @@
   "push_test_sent": "Test sent ({n}). A notification should appear now.",
   "push_test_ok": "Alerts enabled! We sent a test notification — check your system tray.",
   "push_no_sub": "No notification sent (subs={n}). Click Enable on this device."
+,
+  "sub_confirm": "Cancel at the end of the paid period? You can keep using Filtra.AI until the expiration date. Future Mercado Pago / PayPal charges will not be renewed by Filtra.AI."
 }
