@@ -29,6 +29,7 @@ function authHeaders(json = true): HeadersInit {
 }
 
 export function UnidadesPanel({ empresaRef, enabled }: Props) {
+  const { t } = useLanguage();
   const [items, setItems] = useState<Unidade[]>([]);
   const [nome, setNome] = useState('');
   const [cidade, setCidade] = useState('');
