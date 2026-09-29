@@ -225,4 +225,15 @@
   "push_no_sub": "Nenhuma notificação enviada (subs={n}). Clique em Ativar neste aparelho."
 ,
   "sub_confirm": "Cancelar no fim do período já pago? Você continua usando até a data de validade. Cobranças futuras no Mercado Pago / PayPal não serão renovadas pelo Filtra.AI."
+,
+  "panel_ai_active": "IA ativa",
+  "panel_quick_actions": "Ações rápidas",
+  "panel_qr": "QR Code",
+  "panel_shortcuts": "Atalhos do painel",
+  "panel_shortcuts_desc": "Uma estrutura mais limpa para as rotinas principais.",
+  "panel_records": "registros carregados",
+  "panel_crises_24h": "Crises · 24h",
+  "panel_critical_reviews": "Avaliações críticas",
+  "panel_positive_reviews": "Avaliações positivas",
+  "panel_account_operation": "Operação da conta"
 }
