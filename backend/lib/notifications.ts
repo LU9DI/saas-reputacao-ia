@@ -2,7 +2,7 @@
  * Notificações automáticas por e-mail (SMTP via mailer).
  * Links do painel passam por /login?next=... para o usuário autenticar.
  */
-import { enviarEmail, smtpConfigured } from './mailer.js';
+import { enviarEmail, mailConfigured } from './mailer.js';
 
 const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
   /\/$/,
@@ -491,7 +491,7 @@ export async function notificarTrialVerificacao(opts: {
   verificationUrl: string;
   locale?: string;
 }): Promise<void> {
-  if (!opts.email || !smtpConfigured()) return;
+  if (!opts.email || !mailConfigured()) return;
   const locale = normLocale(opts.locale);
   const subject =
     locale === 'en'
