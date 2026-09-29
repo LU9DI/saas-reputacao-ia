@@ -97,7 +97,7 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
   };
 
   const remove = async (id: string) => {
-    if (!confirm('Remover esta unidade?')) return;
+    if (!confirm(t.units_confirm_remove)) return;
     try {
       const res = await apiFetch(`/api/empresa/${empresaRef}/unidades/${id}`, {
         method: 'DELETE',
@@ -105,7 +105,7 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
         headers: authHeaders(false),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Falha ao remover');
+      if (!res.ok) throw new Error(data.error || t.units_remove_error);
       await load();
     } catch (e: any) {
       setMsg(e.message || t.units_load_error);
