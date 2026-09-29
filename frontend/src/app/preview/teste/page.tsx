@@ -134,6 +134,10 @@ export default function PreviewTrial() {
       });
       if (!response.ok) throw new Error(await readApiError(response, 'Não foi possível ativar o teste.'));
       const data = await response.json();
+      if (data.verification_required) {
+        setErro(data.message || (language === 'pt' ? 'Enviamos um link de confirmação para seu e-mail. Abra sua caixa de entrada para ativar o teste.' : language === 'en' ? 'We sent a confirmation link to your email. Check your inbox to activate the trial.' : language === 'es' ? 'Enviamos un enlace de confirmación a tu correo. Revisa tu bandeja para activar la prueba.' : '我们已向您的邮箱发送确认链接，请查收以激活试用。'));
+        return;
+      }
       persistFiltraToken(data.token);
       const id = data.slug || data.empresa_id;
       const target = data.link_painel || (id ? `/painel/${id}` : '/');
