@@ -178,4 +178,15 @@
   "login_bio_need_tax": "Introduce el correo antes de usar la biometría."
 ,
   "sub_confirm": "¿Cancelar al final del período pagado? Puedes seguir usando Filtra.AI hasta la fecha de vencimiento. Los futuros cobros de Mercado Pago / PayPal no serán renovados por Filtra.AI."
+,
+  "panel_ai_active": "IA activa",
+  "panel_quick_actions": "Acciones rápidas",
+  "panel_qr": "Código QR",
+  "panel_shortcuts": "Atajos del panel",
+  "panel_shortcuts_desc": "Una estructura más limpia para las rutinas principales.",
+  "panel_records": "registros cargados",
+  "panel_crises_24h": "Crisis · 24h",
+  "panel_critical_reviews": "Evaluaciones críticas",
+  "panel_positive_reviews": "Evaluaciones positivas",
+  "panel_account_operation": "Operación de la cuenta"
 }
