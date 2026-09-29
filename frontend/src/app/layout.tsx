@@ -9,46 +9,45 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://filtraai.com';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default:
-      'Filtra.AI — Gestão de avaliações Google e reputação online | Trial 7 dias',
+    default: 'Filtra.AI — Transforme a voz do cliente em crescimento',
     template: '%s · Filtra.AI',
   },
   description:
-    'Filtre avaliações antes do Google: 4–5★ vão ao Google Reviews, 1–3★ ficam no painel privado com IA. QR Code, WhatsApp, relatório inteligente. Teste grátis por 7 dias, sem cartão.',
+    'Filtra.AI transforma avaliações e feedback de clientes em inteligência para crescimento, reputação, retenção e decisões de gestão. Teste grátis por 7 dias.',
   applicationName: 'Filtra.AI',
   keywords: [
-    'gestão de avaliações Google',
+    'feedback de clientes',
+    'análise de avaliações com IA',
+    'gestão de reputação online',
+    'customer feedback analytics',
+    'review analysis',
+    'AI reputation management',
+    'experiência do cliente',
+    'satisfação do cliente',
+    'gestão de avaliações',
     'reputação online',
-    'Google Reviews',
-    'Google Meu Negócio',
-    'filtro de avaliações',
-    'QR Code avaliação',
-    'reputação restaurante',
-    'avaliações clínica',
-    'SEO local reviews',
+    'crescimento empresarial',
     'Filtra.AI',
   ],
   authors: [{ name: 'Filtra.AI' }],
   creator: 'Filtra.AI',
   publisher: 'Filtra.AI',
   manifest: '/manifest.webmanifest',
-  alternates: {
-    canonical: '/',
-  },
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
     url: siteUrl,
     siteName: 'Filtra.AI',
-    title: 'Filtra.AI — Reputação com filtro | Avaliações Google',
+    title: 'Filtra.AI — Transforme a voz do cliente em crescimento',
     description:
-      '4–5★ → Google · 1–3★ → painel privado + IA. Trial grátis de 7 dias para restaurantes, clínicas e redes.',
+      'Descubra padrões nas avaliações, identifique problemas e oportunidades e transforme a voz do consumidor em decisões de crescimento. Trial grátis de 7 dias.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Filtra.AI — Gestão de avaliações Google',
+    title: 'Filtra.AI — A voz do cliente pode mostrar onde sua empresa cresce',
     description:
-      'Filtre antes de publicar. Trial 7 dias grátis. QR + painel + IA.',
+      'Analise avaliações e feedback com IA e transforme sinais de clientes em prioridades de ação. Trial de 7 dias.',
   },
   robots: {
     index: true,
@@ -65,9 +64,7 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'Filtra.AI',
   },
-  formatDetection: {
-    telephone: false,
-  },
+  formatDetection: { telephone: false },
   icons: {
     icon: [
       { url: '/icons/icon.svg', type: 'image/svg+xml' },
