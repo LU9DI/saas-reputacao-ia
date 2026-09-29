@@ -223,4 +223,6 @@
   "push_test_sent": "Teste enviado ({n}). Deve aparecer uma notificação agora.",
   "push_test_ok": "Alertas ativados! Enviamos uma notificação de teste — confira a bandeja do sistema.",
   "push_no_sub": "Nenhuma notificação enviada (subs={n}). Clique em Ativar neste aparelho."
+,
+  "sub_confirm": "Cancelar no fim do período já pago? Você continua usando até a data de validade. Cobranças futuras no Mercado Pago / PayPal não serão renovadas pelo Filtra.AI."
 }
