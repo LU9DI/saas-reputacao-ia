@@ -194,4 +194,10 @@
 ,
   "units_confirm_remove": "删除此单位？",
   "units_remove_error": "删除失败。"
+,
+  "webauthn_login_again": "请重新登录（/login）后再注册通行密钥。",
+  "webauthn_start_error": "无法开始通行密钥注册。",
+  "webauthn_cancelled": "注册已取消。",
+  "webauthn_save_error": "无法保存通行密钥。",
+  "webauthn_error": "无法注册通行密钥。"
 }
