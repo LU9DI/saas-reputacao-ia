@@ -280,7 +280,8 @@ export default function LandingPreview() {
   const c = copy[language];
 
   return (
-    <PreviewNavigator />
+    <>
+      <PreviewNavigator />
     <main className="min-h-screen overflow-hidden bg-[#050507] text-white">
       <section className="relative">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(79,70,229,.24),transparent_30%),radial-gradient(circle_at_15%_20%,rgba(14,165,233,.12),transparent_25%)]" />
@@ -365,5 +366,6 @@ export default function LandingPreview() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><a href="/privacidade" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.privacy}</a><a href="/termos" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.terms}</a><span className="text-zinc-700">{c.footer}</span></div></div>
       </footer>
     </main>
+    </>
   );
 }
