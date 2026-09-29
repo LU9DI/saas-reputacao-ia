@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowLeft, LayoutDashboard, FileText, Home, LockKeyhole, PlayCircle } from 'lucide-react';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function PreviewNavigator() {
   return (
@@ -11,6 +12,7 @@ export function PreviewNavigator() {
           <ArrowLeft size={14} /> Hub de preview
         </Link>
         <nav className="flex shrink-0 items-center gap-1.5">
+          <LanguageSwitcher variant="flags" compact className="mr-1" />
           <Link href="/preview" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"><Home size={13} className="mr-1 inline" />Landing</Link>
           <Link href="/preview/teste" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"><PlayCircle size={13} className="mr-1 inline" />Teste 7 dias</Link>
           <Link href="/painel/preview" className="rounded-lg px-3 py-1.5 text-zinc-400 hover:bg-white/5 hover:text-white"><LayoutDashboard size={13} className="mr-1 inline" />Painel</Link>
