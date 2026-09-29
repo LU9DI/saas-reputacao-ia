@@ -2,13 +2,9 @@
   "lang_name": "English",
   "title": "Your opinion matters",
   "trial_title": "Activate Your 7-Day Free Trial",
-  "trial_subtitle": "Register with company name, email and password. Tax ID is optional (international users can leave it blank). No card for the 7-day trial.",
+  "trial_subtitle": "Register with company name, email and password. No card for the 7-day trial.",
   "label_company": "Company Name",
   "ph_company": "e.g. Unique Flavor Restaurant",
-  "label_tax_id": "Tax ID / Registration (optional)",
-  "ph_tax_id": "Tax number or leave blank",
-  "tax_id_hint": "Optional. Brazilians may enter CNPJ; Europe, Asia and others can leave blank — email is the primary identifier.",
-  "tax_id_invalid": "Invalid Tax ID. Check the value or leave the field blank.",
   "label_email": "Access email",
   "ph_email": "you@email.com",
   "label_password": "Password",
@@ -48,8 +44,6 @@
   "login_error": "Could not sign in",
   "login_fail": "Login failed",
   "login_bio_unsupported": "This browser does not support biometric login (WebAuthn).",
-  "login_bio_use_tax": "For biometrics, use the registered email.",
-  "login_bio_need_tax": "Enter the email before using biometrics.",
   "login_bio_fail": "Biometric login failed",
   "recovery_title": "Password recovery",
   "recovery_subtitle_request": "Use the same email from your company registration. Link valid for 1 hour.",
@@ -219,5 +213,7 @@
   "webauthn_cancelled": "Registration cancelled.",
   "webauthn_save_error": "Could not save passkey.",
   "webauthn_error": "Could not register the passkey.",
-  "push_active_badge": "Active"
+  "push_active_badge": "Active",
+  "login_bio_use_email": "For biometrics, use the registered email.",
+  "login_bio_need_email": "Enter the email before using biometrics."
 }
