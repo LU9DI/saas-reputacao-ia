@@ -199,10 +199,8 @@
   "push_already": "Alerts were already active on this device. You will receive 1–3★ review alerts.",
   "push_test_sent": "Test sent ({n}). A notification should appear now.",
   "push_test_ok": "Alerts enabled! We sent a test notification — check your system tray.",
-  "push_no_sub": "No notification sent (subs={n}). Click Enable on this device."
-,
-  "sub_confirm": "Cancel at the end of the paid period? You can keep using Filtra.AI until the expiration date. Future Mercado Pago / PayPal charges will not be renewed by Filtra.AI."
-,
+  "push_no_sub": "No notification sent (subs={n}). Click Enable on this device.",
+  "sub_confirm": "Cancel at the end of the paid period? You can keep using Filtra.AI until the expiration date. Future Mercado Pago / PayPal charges will not be renewed by Filtra.AI.",
   "panel_ai_active": "AI active",
   "panel_quick_actions": "Quick actions",
   "panel_qr": "QR Code",
@@ -212,16 +210,14 @@
   "panel_crises_24h": "Crises · 24h",
   "panel_critical_reviews": "Critical reviews",
   "panel_positive_reviews": "Positive reviews",
-  "panel_account_operation": "Account operations"
-,
-  "panel_start_trial": "Start 7-day trial"
-,
+  "panel_account_operation": "Account operations",
+  "panel_start_trial": "Start 7-day trial",
   "units_confirm_remove": "Remove this unit?",
-  "units_remove_error": "Failed to remove."
-,
+  "units_remove_error": "Failed to remove.",
   "webauthn_login_again": "Please log in again (/login) before registering a passkey.",
   "webauthn_start_error": "Could not start passkey registration.",
   "webauthn_cancelled": "Registration cancelled.",
   "webauthn_save_error": "Could not save passkey.",
-  "webauthn_error": "Could not register the passkey."
+  "webauthn_error": "Could not register the passkey.",
+  "push_active_badge": "Active"
 }
