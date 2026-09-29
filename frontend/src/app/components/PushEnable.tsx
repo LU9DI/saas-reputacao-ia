@@ -26,13 +26,13 @@ export function PushEnable() {
         const data = await res.json().catch(() => ({}));
         if (!cancelled) setConfigured(Boolean(data.configured || data.publicKey));
         if (!res.ok && !cancelled) {
-          setMsg(data.error || 'Push não configurado no servidor (VAPID).');
+          setMsg(data.error || t.push_config_error);
           setMsgType('err');
         }
       } catch {
         if (!cancelled) {
           setConfigured(false);
-          setMsg('{t.push_api_error}');
+          setMsg(t.push_api_error);
           setMsgType('err');
         }
       }
@@ -105,7 +105,7 @@ export function PushEnable() {
             try {
               const r = await enablePush(api, token);
               if (!r.ok) {
-                setMsg(r.error || 'Não foi possível ativar.');
+                setMsg(r.error || t.push_api_error);
                 setMsgType('err');
                 setActive(false);
                 return;
@@ -113,8 +113,8 @@ export function PushEnable() {
               setActive(true);
               setMsg(
                 r.already
-                  ? '{t.push_already}'
-                  : '{t.push_enabled}'
+                  ? t.push_already
+                  : t.push_enabled
               );
               setMsgType('ok');
 
@@ -123,7 +123,7 @@ export function PushEnable() {
                 const t = await sendTestPush(api, token);
                 if ((t.sent ?? 0) > 0) {
                   setMsg(
-                    '{t.push_test_ok}'
+                    t.push_test_ok
                   );
                 } else if ((t.subscriptions ?? 0) === 0) {
                   setMsg(
@@ -135,7 +135,7 @@ export function PushEnable() {
                 /* ativação ok; teste pode falhar se token cookie-only */
               }
             } catch (e: any) {
-              setMsg(e?.message || 'Erro ao ativar alertas.');
+              setMsg(e?.message || t.push_api_error);
               setMsgType('err');
             } finally {
               setLoading(false);
@@ -155,7 +155,7 @@ export function PushEnable() {
             try {
               const en = await enablePush(api, token);
               if (!en.ok) {
-                setMsg(en.error || 'Ative os alertas antes de testar.');
+                setMsg(en.error || t.push_activate);
                 setMsgType('err');
                 return;
               }
@@ -172,7 +172,7 @@ export function PushEnable() {
                 setMsgType('err');
               }
             } catch (e: any) {
-              setMsg(e?.message || 'Falha no teste');
+              setMsg(e?.message || t.push_api_error);
               setMsgType('err');
             } finally {
               setLoading(false);
