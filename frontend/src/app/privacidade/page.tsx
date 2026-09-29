@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { BrandMark } from '../components/BrandMark';
+import { PreviewNavigator } from '../components/PreviewNavigator';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
 
@@ -60,4 +61,5 @@ zh:{title:'隐私政策',date:'版本：2026年9月23日',intro:'本政策说明
 ['11. 数据主体权利','根据 LGPD，数据主体可请求确认、访问、更正、匿名化、阻止或删除、可携带性及其他法定权利。'],
 ['12. 更新','本政策可能因产品、供应商、法律或处理实践变化而更新，并公布当前版本和更新日期。']]}}
 ;
-export default function PrivacidadePage(){const{language}=useLanguage();const c=copy[language];return <div className="min-h-screen bg-black text-zinc-100 font-sans"><header className="mx-auto flex max-w-3xl items-center justify-between px-4 pb-4 pt-6"><BrandMark size="md" subtitle="Reputation" href="/preview"/><LanguageSwitcher/></header><main className="mx-auto max-w-3xl space-y-7 px-4 pb-16 text-sm leading-relaxed text-zinc-300"><div className="space-y-2"><h1 className="text-2xl font-bold tracking-tight text-zinc-50">{c.title}</h1><p className="text-zinc-400">{c.date}</p><p className="text-zinc-400">{c.intro}</p></div>{c.sections.map(([h,t])=><section key={h} className="space-y-3"><h2 className="text-base font-semibold text-zinc-100">{h}</h2><p>{t}</p></section>)}<div className="flex flex-wrap gap-4 pt-4"><Link href="/termos" className="text-indigo-400 underline">{c.terms}</Link><Link href="/preview" className="text-zinc-400 underline">{c.home}</Link></div></main></div>}
+export default function PrivacidadePage(){const{language}=useLanguage();const c=copy[language];return <div className="min-h-screen bg-black text-zinc-100 font-sans"><header className="mx-auto flex max-w-3xl items-center justify-between px-4 pb-4 pt-6"><BrandMark size="md" subtitle="Reputation" href="/preview"/><LanguageSwitcher/></header><PreviewNavigator />
+    <main className="mx-auto max-w-3xl space-y-7 px-4 pb-16 text-sm leading-relaxed text-zinc-300"><div className="space-y-2"><h1 className="text-2xl font-bold tracking-tight text-zinc-50">{c.title}</h1><p className="text-zinc-400">{c.date}</p><p className="text-zinc-400">{c.intro}</p></div>{c.sections.map(([h,t])=><section key={h} className="space-y-3"><h2 className="text-base font-semibold text-zinc-100">{h}</h2><p>{t}</p></section>)}<div className="flex flex-wrap gap-4 pt-4"><Link href="/termos" className="text-indigo-400 underline">{c.terms}</Link><Link href="/preview" className="text-zinc-400 underline">{c.home}</Link></div></main></div>}
