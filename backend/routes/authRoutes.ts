@@ -33,9 +33,7 @@ export function mountAuthRoutes(app: Express) {
       try {
         const result = await loginEmpresa(
           {
-            cnpj: req.body.cnpj != null ? String(req.body.cnpj) : undefined,
             email: req.body.email != null ? String(req.body.email) : undefined,
-            login: req.body.login != null ? String(req.body.login) : undefined,
             senha: String(req.body.senha),
           },
           res,
