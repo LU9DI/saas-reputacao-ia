@@ -87,15 +87,23 @@ export default function PreviewTrial() {
     },
   }[language];
 
+  const localDemo = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
     if (!aceite) return setErro(copy.note);
-    if (!email.trim() || !email.includes('@')) return setErro('Informe um e-mail válido.');
+    if (!email.trim() || !email.includes('@')) return setErro(language === 'pt' ? 'Informe um e-mail válido.' : language === 'en' ? 'Enter a valid email address.' : language === 'es' ? 'Introduce un correo válido.' : '请输入有效的电子邮箱。');
     const policy = validarSenhaEmpresa(senha);
     if (!policy.ok) return setErro(policy.error);
     setLoading(true);
     try {
+      // A rota de preview é offline no localhost. Nunca tente 127.0.0.1:5000 aqui.
+      // O fluxo real de ativação continua usando a API quando executado fora do preview local.
+      if (localDemo) {
+        window.location.href = '/painel/preview';
+        return;
+      }
       try {
         await apiFetch('/api/legal/aceite', {
           method: 'POST',
@@ -153,7 +161,14 @@ export default function PreviewTrial() {
           <h1 className="mt-6 max-w-xl text-5xl font-semibold tracking-[-.045em] sm:text-6xl">{copy.title}</h1>
           <p className="mt-6 max-w-xl text-lg leading-8 text-zinc-400">{copy.text}</p>
           <div className="mt-8 grid gap-3 text-sm text-zinc-300 sm:grid-cols-2">
-            {['Sem cartão', '7 dias para testar', 'Painel completo', 'IA para sua reputação'].map((x) => <div key={x} className="flex items-center gap-2"><Check size={16} className="text-indigo-300" />{x}</div>)}
+            {(language === 'pt'
+  ? ['Sem cartão', '7 dias para testar', 'Painel completo', 'IA para sua reputação']
+  : language === 'en'
+    ? ['No credit card', '7 days to try', 'Full dashboard', 'AI for your reputation']
+    : language === 'es'
+      ? ['Sin tarjeta', '7 días para probar', 'Panel completo', 'IA para tu reputación']
+      : ['无需信用卡', '7 天试用', '完整面板', 'AI 声誉分析']
+).map((x) => <div key={x} className="flex items-center gap-2"><Check size={16} className="text-indigo-300" />{x}</div>)}
           </div>
         </div>
 
@@ -161,7 +176,7 @@ export default function PreviewTrial() {
           <div className="rounded-[25px] border border-white/10 bg-zinc-950/95 p-6 sm:p-8">
             <div className="mb-7 flex items-center justify-between">
               <div><div className="text-sm font-semibold text-white">Filtra.AI</div><div className="mt-1 text-xs text-zinc-500">{copy.eyebrow}</div></div>
-              <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs text-emerald-300">7 DIAS GRÁTIS</div>
+              <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs text-emerald-300">{language === 'pt' ? '7 DIAS GRÁTIS' : language === 'en' ? '7-DAY FREE TRIAL' : language === 'es' ? '7 DÍAS GRATIS' : '免费试用 7 天'}</div>
             </div>
             {erro && <div role="alert" className="mb-4 rounded-xl border border-red-900/70 bg-red-950/40 px-4 py-3 text-sm text-red-300">{erro}</div>}
             <form onSubmit={submit} className="space-y-4">
@@ -169,7 +184,7 @@ export default function PreviewTrial() {
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Mail size={14}/>{copy.email}</span><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="voce@empresa.com" /></label>
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Link2 size={14}/>{language === 'pt' ? 'Link do Google (opcional)' : language === 'en' ? 'Google link (optional)' : language === 'es' ? 'Enlace de Google (opcional)' : 'Google 链接（可选）'}</span><input type="url" value={googleUrl} onChange={e=>setGoogleUrl(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="https://maps.google.com/..." /></label>
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Lock size={14}/>{copy.password}</span><input required minLength={8} type="password" value={senha} onChange={e=>setSenha(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="••••••••" /><span className="mt-2 block text-[11px] text-zinc-600">{SENHA_EMPRESA_HINT}</span></label>
-              <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-zinc-400"><input type="checkbox" checked={aceite} onChange={e=>setAceite(e.target.checked)} className="mt-1 h-4 w-4 accent-indigo-500" /><span>{copy.note} <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">Termos</a> · <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">Privacidade</a>.</span></label>
+              <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-zinc-400"><input type="checkbox" checked={aceite} onChange={e=>setAceite(e.target.checked)} className="mt-1 h-4 w-4 accent-indigo-500" /><span>{copy.note} <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">{language === 'pt' ? 'Termos' : language === 'en' ? 'Terms' : language === 'es' ? 'Términos' : '条款'}</a> · <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">{language === 'pt' ? 'Privacidade' : language === 'en' ? 'Privacy' : language === 'es' ? 'Privacidad' : '隐私'}</a>.</span></label>
               <button disabled={loading} className="group flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 py-4 font-semibold text-white transition hover:bg-indigo-400 disabled:opacity-50">{loading ? '…' : copy.button}<ArrowRight size={17} className="transition group-hover:translate-x-0.5"/></button>
             </form>
             <div className="mt-5 flex items-center justify-center gap-2 text-xs text-zinc-600"><ShieldCheck size={14}/> {copy.sideText.split('. ')[0]}.</div>
