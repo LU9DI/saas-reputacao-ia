@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '../Contexts/LanguageContext';
 import { getEnv } from '../utils/env';
 import { apiFetch } from '../utils/apiFailover';
 
@@ -54,9 +55,9 @@ export function WebAuthnSetup() {
   if (!supported) {
     return (
       <section className="rounded-2xl border border-zinc-800 bg-zinc-900 px-5 py-4">
-        <p className="text-sm font-medium text-zinc-100">Login por digital / Face ID</p>
+        <p className="text-sm font-medium text-zinc-100">{t.webauthn_title}</p>
         <p className="text-xs text-zinc-500 mt-1">
-          Este navegador não suporta WebAuthn. Use Chrome, Edge ou Safari recente.
+          {t.webauthn_unsupported}
         </p>
       </section>
     );
@@ -115,7 +116,7 @@ export function WebAuthnSetup() {
       });
       const data = await finish.json().catch(() => ({}));
       if (!finish.ok) throw new Error(data.error || 'Falha ao salvar digital');
-      setMsg('Digital cadastrada. No próximo login você poderá usar biometria.');
+      setMsg('{t.webauthn_success}');
     } catch (e: any) {
       setMsg(e.message || 'Não foi possível registrar a digital');
     } finally {
@@ -128,7 +129,7 @@ export function WebAuthnSetup() {
       <div className="flex-1">
         <p className="text-sm font-medium text-zinc-100">Login por digital / Face ID</p>
         <p className="text-xs text-zinc-500 mt-0.5">
-          Cadastre a biometria deste dispositivo após entrar com senha (localhost ou HTTPS).
+          {t.webauthn_desc}
         </p>
         {msg && (
           <p
@@ -146,7 +147,7 @@ export function WebAuthnSetup() {
         onClick={registrar}
         className="text-sm px-4 py-2 rounded-xl bg-zinc-100 text-zinc-900 font-medium hover:bg-white disabled:opacity-50"
       >
-        {loading ? 'Aguardando biometria…' : 'Cadastrar digital'}
+        {loading ? '{t.webauthn_wait}' : '{t.webauthn_register}'}
       </button>
     </section>
   );
