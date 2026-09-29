@@ -57,7 +57,7 @@ export function SubscriptionActions({
       if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);
       setMsg(
         data.mensagem ||
-          '{t.sub_cancelled}'
+          t.sub_cancelled
       );
     } catch (e: any) {
       setMsg(e.message || t.sub_fail);
