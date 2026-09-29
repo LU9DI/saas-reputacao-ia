@@ -176,4 +176,6 @@
   "push_no_sub": "没有发送通知（subs={n}）。请在此设备点击启用。",
   "login_bio_use_tax": "生物识别请使用已注册的邮箱。",
   "login_bio_need_tax": "使用生物识别前请输入邮箱。"
+,
+  "sub_confirm": "在已付费周期结束时取消？您可以使用 Filtra.AI 直到到期日。未来的 Mercado Pago / PayPal 费用将不会由 Filtra.AI 续订。"
 }
