@@ -37,8 +37,7 @@ export function SubscriptionActions({
   if (status !== 'ativo' && status !== 'trial') return null;
 
   const cancelar = async () => {
-    if (!confirm(t.sub_confirm)
-    ) {
+    if (!confirm(t.sub_confirm)) {
       return;
     }
     setLoading(true);
