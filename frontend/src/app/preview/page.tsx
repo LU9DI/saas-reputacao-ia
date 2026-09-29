@@ -279,6 +279,7 @@ export default function LandingPreview() {
   const c = copy[language];
 
   return (
+    <PreviewNavigator />
     <main className="min-h-screen overflow-hidden bg-[#050507] text-white">
       <section className="relative">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(79,70,229,.24),transparent_30%),radial-gradient(circle_at_15%_20%,rgba(14,165,233,.12),transparent_25%)]" />
