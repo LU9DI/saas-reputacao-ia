@@ -19,6 +19,7 @@ export default function Page() {
           <Link href="/planos" className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">Conheça a Filtra.AI</Link>
         </div>
       </header>
+      <section className="mt-16 space-y-10"><div><h2 className="text-3xl font-bold">Por que feedback de clientes é um ativo</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Comentários e avaliações registram a experiência depois da compra. Quando analisados em conjunto, ajudam a encontrar padrões que uma equipe pode não perceber ao responder cada comentário isoladamente. O objetivo é transformar sinais repetidos em decisões de produto, atendimento, operação e reputação.</p></div><div><h2 className="text-3xl font-bold">O que procurar nas avaliações</h2><ul className="mt-4 max-w-3xl space-y-3 leading-7 text-zinc-400"><li>• temas recorrentes em notas baixas;</li><li>• elogios que mostram diferenciais percebidos;</li><li>• problemas de atendimento, prazo, preço ou entrega;</li><li>• mudanças na percepção ao longo do tempo;</li><li>• diferenças entre unidades, serviços ou canais.</li></ul></div></section>
       <section className="mt-16 grid gap-6 md:grid-cols-3">
         {[
           ['Encontre padrões', 'Descubra reclamações, elogios e temas recorrentes que ficam escondidos em centenas de avaliações.'],
@@ -30,6 +31,7 @@ export default function Page() {
         <h2 className="text-2xl font-bold">O que seus clientes estão dizendo que você ainda não percebeu?</h2>
         <p className="mt-3 leading-7 text-zinc-300">A Filtra.AI ajuda empresas a transformar avaliações em informação acionável, em vez de deixar milhares de comentários parados em plataformas diferentes.</p>
       </section>
+      <nav className="mt-12 flex flex-wrap gap-4 text-sm"><Link href="/analise-de-avaliacoes-com-ia" className="underline">Análise de avaliações com IA</Link><Link href="/gestao-de-reputacao-online" className="underline">Gestão de reputação online</Link><Link href="/auditoria-gratuita" className="underline">Auditoria gratuita</Link></nav>
     </main>
   );
 }
