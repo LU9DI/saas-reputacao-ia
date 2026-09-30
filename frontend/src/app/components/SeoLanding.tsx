@@ -49,6 +49,18 @@ export function SeoLanding({
           </Link>
         </div>
         <nav className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500 pt-6 border-t border-zinc-800">
+          <Link href="/feedback-de-clientes" className="hover:text-zinc-300">
+            Feedback de clientes
+          </Link>
+          <Link href="/analise-de-avaliacoes-com-ia" className="hover:text-zinc-300">
+            Análise de avaliações com IA
+          </Link>
+          <Link href="/gestao-de-reputacao-online" className="hover:text-zinc-300">
+            Reputação online
+          </Link>
+          <Link href="/auditoria-gratuita" className="hover:text-zinc-300">
+            Auditoria gratuita
+          </Link>
           <Link href="/como-funciona" className="hover:text-zinc-300">
             Como funciona
           </Link>
