@@ -62,11 +62,11 @@ export default function AuditoriaGratuitaPage() {
     }
     setLoading(true);
     try {
-      await registerConsent();
+      const consentData = await registerConsent();
       const response = await fetch(API ? API.replace(/\/$/, '') + '/api/public/diagnostic' : '/api/public/diagnostic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ company, locale: 'pt', reviews }),
+        body: JSON.stringify({ company, locale: 'pt', reviews, lead_id: consentData?.lead_id || '' }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Não foi possível gerar o diagnóstico.');
