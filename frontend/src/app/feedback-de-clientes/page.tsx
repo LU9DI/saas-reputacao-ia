@@ -3,13 +3,21 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Feedback de clientes: transforme opiniões em crescimento',
-  description: 'Entenda o que seus clientes estão dizendo, encontre padrões nas avaliações e transforme feedback em decisões para crescer, reter clientes e proteger sua reputação.',
-  alternates: { canonical: '/feedback-de-clientes' },
+  description: 'Entenda o que seus clientes estão dizendo, encontre padrões e transforme feedback em decisões de produto, atendimento e crescimento.',
+  alternates: { canonical: 'https://filtraai.com/feedback-de-clientes' },
 };
 
 export default function Page() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://filtraai.com/' },
+          { '@type': 'ListItem', position: 2, name: 'Feedback de clientes', item: 'https://filtraai.com/feedback-de-clientes' },
+        ],
+      }) }} />
       <header className="max-w-3xl">
         <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI · Inteligência de clientes</p>
         <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-6xl">Feedback de clientes não é só opinião. É dado de crescimento.</h1>
