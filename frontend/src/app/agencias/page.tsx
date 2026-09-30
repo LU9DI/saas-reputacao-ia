@@ -13,13 +13,14 @@ export default function AgenciasPage() {
     <SeoLanding
       h1="Ofereça reputação operacional aos seus clientes"
       lead="Agências de SEO local e marketing digital já entregam Google Meu Negócio, anúncios e conteúdo. O Filtra.AI completa o stack: um canal de avaliação que alimenta reviews positivos e reduz surpresas no Maps."
-        breadcrumbHref="/agencias"
+      breadcrumbHref="/agencias"
       contextLinks={[
         { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Estruture a operação de reputação que sua agência entrega aos clientes.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Transforme avaliações em temas, sinais e relatórios acionáveis.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Conecte reputação e estratégia de presença local.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Use um diagnóstico inicial para abrir conversas com novos clientes.' },
-      ]}\n      sections={[
+      ]}
+      sections={[
         {
           heading: 'Por que isso vende',
           body: 'Clientes perguntam “como subir a nota no Google?”. Em vez de só pedir estrela no WhatsApp, você entrega um fluxo com QR, painel e relatório — serviço recorrente com valor percebido alto.',
