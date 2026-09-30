@@ -5,7 +5,18 @@ export const metadata: Metadata = {
   title: 'Reputação online para turismo e hotelaria | Filtra.AI',
   description:
     'Monitore avaliações e feedback de hóspedes, clientes e visitantes no turismo. Organize padrões de experiência e ações com o Filtra.AI.',
-  alternates: { canonical: '/turismo' },
+  alternates: { canonical: 'https://filtraai.com/turismo' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/turismo',
+    title: 'Reputação online para turismo e hotelaria | Filtra.AI',
+    description: 'Monitore avaliações e feedback de hóspedes, clientes e visitantes no turismo. Organize padrões de experiência e ações com o Filtra.AI.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Reputação online para turismo e hotelaria | Filtra.AI',
+    description: 'Monitore avaliações e feedback no turismo e transforme padrões de experiência em ações.',
+  },
 };
 
 export default function TurismoPage() {
