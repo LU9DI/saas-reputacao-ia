@@ -5,6 +5,12 @@ export const metadata: Metadata = {
   title: 'Gestão de reputação online para empresas',
   description: 'Monitore avaliações, responda sinais importantes e transforme a reputação online em uma rotina de gestão e melhoria contínua.',
   alternates: { canonical: 'https://filtraai.com/gestao-de-reputacao-online' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/gestao-de-reputacao-online',
+    title: 'Gestão de reputação online para empresas | Filtra.AI',
+    description: 'Monitore avaliações, responda sinais importantes e transforme a reputação online em uma rotina de gestão e melhoria contínua.',
+  },
 };
 
 export default function Page() {
