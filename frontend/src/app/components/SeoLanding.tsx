@@ -40,6 +40,29 @@ export function SeoLanding({
             <p className="text-sm text-zinc-300 leading-relaxed">{s.body}</p>
           </section>
         ))}
+        <section className="border-t border-zinc-800 pt-8">
+          <h2 className="text-lg font-semibold text-zinc-100">Aprofunde sua análise de reputação</h2>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+            Continue por um destes caminhos para entender feedback, avaliações, reputação e diagnóstico.
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {[
+              ['/feedback-de-clientes', 'Feedback de clientes', 'Transforme opiniões em informação útil para o negócio.'],
+              ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA', 'Identifique padrões e temas recorrentes nas avaliações.'],
+              ['/gestao-de-reputacao-online', 'Gestão de reputação online', 'Organize monitoramento, respostas e evolução da reputação.'],
+              ['/auditoria-gratuita', 'Auditoria gratuita', 'Faça um diagnóstico inicial e descubra pontos de atenção.'],
+            ].map(([href, title, description]) => (
+              <Link
+                key={href}
+                href={href}
+                className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-indigo-500/40"
+              >
+                <span className="font-medium text-zinc-100">{title}</span>
+                <span className="mt-1 block text-xs leading-5 text-zinc-500">{description}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
         <div className="pt-4">
           <Link
             href={ctaHref}
