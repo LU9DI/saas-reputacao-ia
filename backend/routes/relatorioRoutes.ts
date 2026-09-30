@@ -5,7 +5,7 @@
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { getDb, findEmpresa } from '../lib/db.js';
-import { gerarRelatorioMensalPDF, ensureUnidadesSchema, PDF_LAYOUT_VERSION } from '../relatorioPdf.js';
+import { gerarRelatorioMensalPDF, ensureUnidadesSchema, PDF_LAYOUT_VERSION, cycleWindowFromExpiry } from '../relatorioPdf.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { validateReportMonth } from '../lib/dateValidation.js';
 import { planTemPdf } from '../lib/plans.js';
@@ -94,33 +94,62 @@ export function mountRelatorioRoutes(app: Express) {
         });
       }
 
-      const mesCheck = validateReportMonth(req.query.mes, {
-        defaultToCurrent: true,
-        minYear: 2020,
-        allowFutureMonths: 0,
-      });
-      if (!mesCheck.ok) {
-        await logPdfGeneration(db, {
-          empresa_id: empresa.id,
-          empresa_nome: empresa.nome_empresa,
-          status: 'error',
-          error: mesCheck.error,
-          auth_mode,
-          duration_ms: Date.now() - t0,
+      const explicitMonth = req.query.mes !== undefined && String(req.query.mes).trim() !== '';
+      let mesAno = '';
+      let reportWindow = null as ReturnType<typeof cycleWindowFromExpiry>;
+      if (explicitMonth) {
+        const mesCheck = validateReportMonth(req.query.mes, {
+          defaultToCurrent: false,
+          minYear: 2020,
+          allowFutureMonths: 0,
         });
-        return res.status(400).json({
-          error: mesCheck.error,
-          exemplo: '2026-09',
+        if (!mesCheck.ok) {
+          await logPdfGeneration(db, {
+            empresa_id: empresa.id,
+            empresa_nome: empresa.nome_empresa,
+            status: 'error',
+            error: mesCheck.error,
+            auth_mode,
+            duration_ms: Date.now() - t0,
+          });
+          return res.status(400).json({
+            error: mesCheck.error,
+            exemplo: '2026-09',
+          });
+        }
+        mesAno = mesCheck.value;
+      } else if (plan !== 'trial' && String(empresa.status || '').toLowerCase() !== 'trial') {
+        // Paid subscriptions use the current billing period, whose end is expira_em.
+        // The explicit ?mes=YYYY-MM path remains available for historical calendar-month reports.
+        reportWindow = cycleWindowFromExpiry((empresa as any).expira_em);
+        if (reportWindow) {
+          mesAno = reportWindow.end.toISOString().slice(0, 7);
+        } else {
+          const mesCheck = validateReportMonth(undefined, {
+            defaultToCurrent: true,
+            minYear: 2020,
+            allowFutureMonths: 0,
+          });
+          if (!mesCheck.ok) throw new Error(mesCheck.error);
+          mesAno = mesCheck.value;
+        }
+      } else {
+        const mesCheck = validateReportMonth(undefined, {
+          defaultToCurrent: true,
+          minYear: 2020,
+          allowFutureMonths: 0,
         });
+        if (!mesCheck.ok) throw new Error(mesCheck.error);
+        mesAno = mesCheck.value;
       }
-      const mesAno = mesCheck.value;
 
       const lang = normalizeLang(
         req.query.lang || (empresa as any).locale || (empresa as any).idioma || (empresa as any).language
       );
-      const version = PDF_LAYOUT_VERSION || 'v7';
+      const version = PDF_LAYOUT_VERSION || 'v8';
+      const cacheKey = reportWindow?.key || mesAno;
 
-      const cached = readPdfCache(empresa.id, mesAno, plan, lang, version);
+      const cached = readPdfCache(empresa.id, cacheKey, plan, lang, version);
       if (cached) {
         await logPdfGeneration(db, {
           empresa_id: empresa.id,
@@ -132,10 +161,13 @@ export function mountRelatorioRoutes(app: Express) {
           duration_ms: Date.now() - t0,
         });
         const slug = (empresa as any).slug || empresa.id.slice(0, 8);
+        const cacheFilename = reportWindow
+          ? `relatorio-${slug}-ciclo-${reportWindow.end.toISOString().slice(0, 10)}-${lang}.pdf`
+          : `relatorio-${slug}-${mesAno}-${lang}.pdf`;
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader(
           'Content-Disposition',
-          `attachment; filename="relatorio-${slug}-${mesAno}-${lang}.pdf"`
+          `attachment; filename="${cacheFilename}"`
         );
         res.setHeader('X-PDF-Cache', 'HIT');
         res.setHeader('X-PDF-Lang', lang);
@@ -147,7 +179,7 @@ export function mountRelatorioRoutes(app: Express) {
 
       let pdf: Buffer;
       try {
-        pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno, undefined, lang);
+        pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno, undefined, lang, reportWindow);
       } catch (e: any) {
         await logPdfGeneration(db, {
           empresa_id: empresa.id,
@@ -162,7 +194,7 @@ export function mountRelatorioRoutes(app: Express) {
         throw e;
       }
 
-      writePdfCache(empresa.id, mesAno, plan, pdf, lang, version);
+      writePdfCache(empresa.id, cacheKey, plan, pdf, lang, version);
 
       await logPdfGeneration(db, {
         empresa_id: empresa.id,
@@ -175,7 +207,9 @@ export function mountRelatorioRoutes(app: Express) {
       });
 
       const slug = (empresa as any).slug || empresa.id.slice(0, 8);
-      const filename = `relatorio-${slug}-${mesAno}-${lang}.pdf`;
+      const filename = reportWindow
+        ? `relatorio-${slug}-ciclo-${reportWindow.end.toISOString().slice(0, 10)}-${lang}.pdf`
+        : `relatorio-${slug}-${mesAno}-${lang}.pdf`;
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
