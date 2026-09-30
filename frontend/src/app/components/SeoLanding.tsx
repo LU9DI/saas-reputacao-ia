@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { BrandMark } from './BrandMark';
 
 type Section = { heading: string; body: string };
+type ContextLink = { href: string; title: string; description: string };
 
 export function SeoLanding({
   h1,
@@ -9,13 +10,27 @@ export function SeoLanding({
   sections,
   ctaHref = '/',
   ctaLabel = 'Começar teste gratuito (7 dias)',
+  breadcrumbHref,
+  contextLinks = [],
 }: {
   h1: string;
   lead: string;
   sections: Section[];
   ctaHref?: string;
   ctaLabel?: string;
+  breadcrumbHref?: string;
+  contextLinks?: ContextLink[];
 }) {
+  const breadcrumbs = breadcrumbHref
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://filtraai.com/' },
+          { '@type': 'ListItem', position: 2, name: h1, item: `https://filtraai.com${breadcrumbHref}` },
+        ],
+      }
+    : null;
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
@@ -24,6 +39,7 @@ export function SeoLanding({
           Trial grátis
         </Link>
       </header>
+      {breadcrumbs && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />}
       <main className="max-w-3xl mx-auto px-4 pb-16 space-y-8">
         <nav aria-label="Breadcrumb" className="text-xs text-zinc-500">
           <Link href="/" className="hover:text-zinc-300">Início</Link>
@@ -43,15 +59,15 @@ export function SeoLanding({
         <section className="border-t border-zinc-800 pt-8">
           <h2 className="text-lg font-semibold text-zinc-100">Aprofunde sua análise de reputação</h2>
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-            Continue por um destes caminhos para entender feedback, avaliações, reputação e diagnóstico.
+            Continue por estes caminhos para entender feedback, avaliações, reputação e diagnóstico.
           </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {[
-              ['/feedback-de-clientes', 'Feedback de clientes', 'Transforme opiniões em informação útil para o negócio.'],
-              ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA', 'Identifique padrões e temas recorrentes nas avaliações.'],
-              ['/gestao-de-reputacao-online', 'Gestão de reputação online', 'Organize monitoramento, respostas e evolução da reputação.'],
-              ['/auditoria-gratuita', 'Auditoria gratuita', 'Faça um diagnóstico inicial e descubra pontos de atenção.'],
-            ].map(([href, title, description]) => (
+            {(contextLinks.length ? contextLinks : [
+              { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões em informação útil para o negócio.' },
+              { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Identifique padrões e temas recorrentes nas avaliações.' },
+              { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Organize monitoramento, respostas e evolução da reputação.' },
+              { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial e descubra pontos de atenção.' },
+            ]).map(({ href, title, description }) => (
               <Link
                 key={href}
                 href={href}
