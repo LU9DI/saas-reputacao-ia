@@ -4,7 +4,7 @@ import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 import { JsonLd } from './components/JsonLd';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://filtraai.com';
+const siteUrl = 'https://filtraai.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   creator: 'Filtra.AI',
   publisher: 'Filtra.AI',
   manifest: '/manifest.webmanifest',
-  alternates: { canonical: '/' },
+  alternates: { canonical: 'https://filtraai.com/' },
   category: 'BusinessApplication',
   openGraph: {
     type: 'website',
