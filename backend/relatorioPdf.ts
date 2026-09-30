@@ -7,7 +7,7 @@
  * Rei:   + donut + gargalos + pagina rica por filial
  * Trial: = Ultra
  *
- * Layout v7 — checklist profissional, banners i18n, zero páginas em branco.
+ * Layout v8 — ciclo de faturamento, paginação protegida e cache versionado.
  * Idiomas: PT / EN / ES / ZH via ?lang= ou locale da empresa.
  * Compatível SQLite + Postgres.
  */
@@ -196,7 +196,7 @@ async function loadReviews(
     const d = rowDate(r as ReviewRow);
     if (window) {
       const dt = parseStoredDate(d);
-      if (!dt || dt < window.start || dt > window.end) continue;
+      if (!dt || dt < window.start || dt >= window.end) continue;
     } else if (d && !d.startsWith(mesAno)) {
       continue;
     }
