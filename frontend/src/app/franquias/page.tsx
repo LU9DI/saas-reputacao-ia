@@ -5,7 +5,18 @@ export const metadata: Metadata = {
   title: 'Gestão de reputação para franquias e redes | Filtra.AI',
   description:
     'Organize avaliações e feedback de várias unidades, identifique padrões e acompanhe reputação local com o Filtra.AI para franquias e redes.',
-  alternates: { canonical: '/franquias' },
+  alternates: { canonical: 'https://filtraai.com/franquias' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/franquias',
+    title: 'Gestão de reputação para franquias e redes | Filtra.AI',
+    description: 'Organize avaliações e feedback de várias unidades, identifique padrões e acompanhe reputação local com o Filtra.AI para franquias e redes.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gestão de reputação para franquias e redes | Filtra.AI',
+    description: 'Organize avaliações de várias unidades e acompanhe padrões de reputação com o Filtra.AI.',
+  },
 };
 
 export default function FranquiasPage() {
