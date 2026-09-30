@@ -39,7 +39,7 @@ type ReviewRow = {
 
 type Unidade = { id: string; nome: string; slug?: string | null };
 export type PdfDepth = 'pro' | 'ultra' | 'corp' | 'rei';
-export const PDF_LAYOUT_VERSION = 'v7';
+export const PDF_LAYOUT_VERSION = 'v8';
 
 const C = {
   navy: '#0f172a',
@@ -144,7 +144,38 @@ function sentimentOf(reviews: ReviewRow[]) {
   return { pos, neu, neg };
 }
 
-async function loadReviews(db: Database, empresaId: string, mesAno: string): Promise<ReviewRow[]> {
+type ReportWindow = { start: Date; end: Date; label: string; key: string };
+
+function parseStoredDate(raw: unknown): Date | null {
+  const d = new Date(String(raw || ''));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function previousMonthSameDay(date: Date): Date {
+  const d = new Date(date.getTime());
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() - 1);
+  const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, lastDay));
+  return d;
+}
+
+function cycleWindowFromExpiry(expiraRaw: unknown): ReportWindow | null {
+  const end = parseStoredDate(expiraRaw);
+  if (!end) return null;
+  const start = previousMonthSameDay(end);
+  const label = `${start.toLocaleDateString('pt-BR')} – ${end.toLocaleDateString('pt-BR')}`;
+  const key = `cycle-${end.toISOString().slice(0, 10)}`;
+  return { start, end, label, key };
+}
+
+async function loadReviews(
+  db: Database,
+  empresaId: string,
+  mesAno: string,
+  window?: ReportWindow | null
+): Promise<ReviewRow[]> {
   const sqls = [
     `SELECT rating, is_test, ai_tags, sentiment, unidade_id, origin, created_at FROM reviews WHERE empresa_id = ? LIMIT 5000`,
     `SELECT rating, is_test, ai_tags, sentiment, unidade_id, origin, "createdAt" as created_at FROM reviews WHERE empresa_id = ? LIMIT 5000`,
@@ -163,7 +194,12 @@ async function loadReviews(db: Database, empresaId: string, mesAno: string): Pro
   for (const r of rows) {
     if (isTest(r as ReviewRow)) continue;
     const d = rowDate(r as ReviewRow);
-    if (d && !d.startsWith(mesAno)) continue;
+    if (window) {
+      const dt = parseStoredDate(d);
+      if (!dt || dt < window.start || dt > window.end) continue;
+    } else if (d && !d.startsWith(mesAno)) {
+      continue;
+    }
     out.push(r as ReviewRow);
   }
   return out;
@@ -367,7 +403,8 @@ function donut(
 type HeaderCtx = { plan: string; periodo: string; depth: PdfDepth; lang: PdfLang };
 
 function ensureSpace(doc: PDFKit.PDFDocument, need: number, ctx: HeaderCtx) {
-  if (doc.y + need < doc.page.height - M.bottom) return;
+  const footerReserve = 24;
+  if (doc.y + need < doc.page.height - M.bottom - footerReserve) return;
   doc.addPage();
   header(doc, ctx.plan, ctx.periodo, ctx.depth, ctx.lang);
 }
@@ -377,7 +414,8 @@ export async function gerarRelatorioMensalPDF(
   empresaId: string,
   mesAno: string,
   _callGroq?: (system: string, user: string) => Promise<string>,
-  langRaw?: string | null
+  langRaw?: string | null,
+  reportWindow?: ReportWindow | null
 ): Promise<Buffer> {
   let empresa: any = null;
   try {
@@ -412,7 +450,7 @@ export async function gerarRelatorioMensalPDF(
   }
 
   const [reviews, unidades] = await Promise.all([
-    loadReviews(db, empresaId, mesAno).catch(() => [] as ReviewRow[]),
+    loadReviews(db, empresaId, mesAno, reportWindow).catch(() => [] as ReviewRow[]),
     needUnits ? loadUnidades(db, empresaId) : Promise.resolve([] as Unidade[]),
   ]);
 
@@ -431,7 +469,7 @@ export async function gerarRelatorioMensalPDF(
   const tags = depth === 'pro' ? [] : parseTags(reviews);
   const sent = depth === 'pro' ? null : sentimentOf(reviews);
 
-  const periodo = monthPeriod(mesAno, lang);
+  const periodo = reportWindow?.label || monthPeriod(mesAno, lang);
   const dateLocale =
     lang === 'en' ? 'en-US' : lang === 'es' ? 'es-ES' : lang === 'zh' ? 'zh-CN' : 'pt-BR';
   const emissao = new Intl.DateTimeFormat(dateLocale, { dateStyle: 'long' }).format(new Date());
