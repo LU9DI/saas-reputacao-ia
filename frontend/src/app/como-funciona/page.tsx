@@ -5,7 +5,13 @@ export const metadata: Metadata = {
   title: 'Como funciona o Filtra.AI | Filtro de avaliações Google',
   description:
     'Veja o passo a passo: QR ou link, nota de 1 a 5, 4–5★ vão ao Google Reviews e 1–3★ ficam no painel privado com apoio de IA. Trial 7 dias grátis.',
-  alternates: { canonical: '/como-funciona' },
+  alternates: { canonical: 'https://filtraai.com/como-funciona' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/como-funciona',
+    title: 'Como funciona o Filtra.AI | Gestão de reputação e avaliações',
+    description: 'Veja como o Filtra.AI organiza avaliações, feedback e reputação em um fluxo com IA e teste gratuito de 7 dias.',
+  },
 };
 
 export default function ComoFuncionaPage() {
