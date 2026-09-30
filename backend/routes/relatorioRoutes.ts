@@ -1,6 +1,6 @@
 /**
  * Relatório PDF mensal — autenticado, cache em disco, SEM tokens de IA.
- * Suporta ?lang=pt|en|es|zh e diferencia conteúdo por plano (v7).
+ * Suporta ?lang=pt|en|es|zh e diferencia conteúdo por plano (v8).
  */
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
