@@ -5,7 +5,18 @@ export const metadata: Metadata = {
   title: 'Gestão de reputação para associações e federações | Filtra.AI',
   description:
     'Organize feedback, avaliações e sinais de reputação de associados, empresas e unidades em um fluxo centralizado com o Filtra.AI.',
-  alternates: { canonical: '/associacoes' },
+  alternates: { canonical: 'https://filtraai.com/associacoes' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/associacoes',
+    title: 'Gestão de reputação para associações e federações | Filtra.AI',
+    description: 'Organize feedback, avaliações e sinais de reputação de associados, empresas e unidades em um fluxo centralizado com o Filtra.AI.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gestão de reputação para associações e federações | Filtra.AI',
+    description: 'Organize feedback, avaliações e sinais de reputação de associados, empresas e unidades com o Filtra.AI.',
+  },
 };
 
 export default function AssociacoesPage() {
