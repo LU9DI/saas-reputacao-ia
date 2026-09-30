@@ -141,6 +141,7 @@ export default function AuditoriaGratuitaPage() {
             )}
           </div>
         </section>
+        <nav className="flex flex-wrap gap-4 text-sm text-zinc-400"><Link href="/feedback-de-clientes" className="underline">Feedback de clientes</Link><Link href="/analise-de-avaliacoes-com-ia" className="underline">Análise de avaliações com IA</Link><Link href="/gestao-de-reputacao-online" className="underline">Gestão de reputação online</Link><Link href="/planos" className="underline">Planos</Link></nav>
       </div>
     </main>
   );
