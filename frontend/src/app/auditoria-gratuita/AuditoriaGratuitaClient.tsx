@@ -69,8 +69,8 @@ export function AuditoriaGratuitaClient() {
       setError('Informe o nome da empresa.');
       return;
     }
-    if (!email.trim() || !consent) {
-      setError('Informe seu e-mail e autorize o recebimento de comunicações da Filtra.AI para continuar.');
+    if (!email.trim()) {
+      setError('Informe seu e-mail para receber o resultado e, se desejar, acompanhar novidades da Filtra.AI.');
       return;
     }
     if (reviews.length < 3) {
@@ -79,7 +79,7 @@ export function AuditoriaGratuitaClient() {
     }
     setLoading(true);
     try {
-      const consentData = await registerConsent();
+      const consentData = consent ? await registerConsent() : null;
       const response = await fetch(
         API ? API.replace(/\/$/, '') + '/api/public/diagnostic' : '/api/public/diagnostic',
         {
@@ -219,8 +219,8 @@ export function AuditoriaGratuitaClient() {
                 className="mt-1"
               />
               <span>
-                Autorizo a Filtra.AI a enviar informações sobre o diagnóstico, o teste de 7 dias e seus serviços. Posso
-                cancelar a qualquer momento.
+                Quero receber da Filtra.AI informações sobre o diagnóstico, o teste de 7 dias e seus serviços. O
+                consentimento é opcional e posso cancelar a qualquer momento.
               </span>
             </label>
             <label className="block text-sm font-medium">Avaliações reais</label>
@@ -233,7 +233,7 @@ export function AuditoriaGratuitaClient() {
             />
             <button
               onClick={runDiagnostic}
-              disabled={loading || !company.trim() || !email.trim() || !consent}
+              disabled={loading || !company.trim() || !email.trim()}
               className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? 'Gerando diagnóstico…' : 'Gerar diagnóstico gratuito'}
