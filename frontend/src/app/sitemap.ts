@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/agencias',
     '/pedir-estrela-vs-filtrar',
     '/blog',
+    '/blog/gestao-reputacao-online-guia',
     '/blog/como-conseguir-avaliacoes-google',
     '/blog/velocity-reviews-google-maps-2026',
     '/blog/review-1-estrela-primeiras-24-horas',
