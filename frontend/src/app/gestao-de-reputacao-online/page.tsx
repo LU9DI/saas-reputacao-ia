@@ -2,14 +2,22 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: avaliações e crescimento',
-  description: 'Gestão de reputação online com inteligência de clientes. Monitore avaliações, encontre padrões e transforme a voz do consumidor em ações de crescimento.',
-  alternates: { canonical: '/gestao-de-reputacao-online' },
+  title: 'Gestão de reputação online para empresas',
+  description: 'Monitore avaliações, responda sinais importantes e transforme a reputação online em uma rotina de gestão e melhoria contínua.',
+  alternates: { canonical: 'https://filtraai.com/gestao-de-reputacao-online' },
 };
 
 export default function Page() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://filtraai.com/' },
+          { '@type': 'ListItem', position: 2, name: 'Gestão de reputação online', item: 'https://filtraai.com/gestao-de-reputacao-online' },
+        ],
+      }) }} />
       <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI · Reputação online</p>
       <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">Sua reputação online é uma fonte de crescimento.</h1>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">Cada avaliação pública influencia a percepção de futuros clientes e também revela informações sobre a experiência de quem já comprou. A Filtra.AI transforma esse fluxo de avaliações em inteligência para gestão.</p>
