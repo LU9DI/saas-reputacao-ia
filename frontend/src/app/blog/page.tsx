@@ -11,6 +11,11 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    href: '/blog/gestao-reputacao-online-guia',
+    title: 'Gestão de reputação online: guia prático para empresas',
+    intent: 'Guia · Reputação',
+  },
+  {
     href: '/blog/como-conseguir-avaliacoes-google',
     title: 'Como conseguir mais avaliações no Google (sem parecer spam)',
     intent: 'Guia prático',
