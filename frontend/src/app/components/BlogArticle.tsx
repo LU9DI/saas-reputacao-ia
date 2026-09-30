@@ -38,6 +38,18 @@ export function BlogArticle({
           </Link>
         </div>
         <nav className="flex flex-wrap gap-3 text-xs text-zinc-500 pt-4 border-t border-zinc-800">
+          <Link href="/feedback-de-clientes" className="hover:text-zinc-300">
+            Feedback de clientes
+          </Link>
+          <Link href="/analise-de-avaliacoes-com-ia" className="hover:text-zinc-300">
+            Análise de avaliações com IA
+          </Link>
+          <Link href="/gestao-de-reputacao-online" className="hover:text-zinc-300">
+            Gestão de reputação online
+          </Link>
+          <Link href="/auditoria-gratuita" className="hover:text-zinc-300">
+            Auditoria gratuita
+          </Link>
           <Link href="/blog" className="hover:text-zinc-300">
             Todos os artigos
           </Link>
