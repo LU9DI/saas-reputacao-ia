@@ -13,6 +13,13 @@ export default function AssociacoesPage() {
     <SeoLanding
       h1="Associações e federações: transforme feedback em gestão"
       lead="Entidades setoriais recebem sinais de associados, empresas e públicos diferentes. O Filtra.AI ajuda a organizar feedback e identificar padrões para que a equipe saiba onde concentrar atenção."
+      breadcrumbHref="/associacoes"
+      contextLinks={[
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Organize monitoramento, respostas e evolução da reputação.' },
+        { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões de associados e públicos em informação útil.' },
+        { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Identifique padrões e temas recorrentes nas avaliações.' },
+        { href: '/parceiros', title: 'Programa de parceiros', description: 'Veja como entidades e parceiros podem apoiar clientes em um piloto.' },
+      ]}
       sections={[
         {
           heading: 'Escute associados e empresas',
