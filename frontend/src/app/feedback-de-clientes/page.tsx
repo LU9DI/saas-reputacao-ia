@@ -5,6 +5,12 @@ export const metadata: Metadata = {
   title: 'Feedback de clientes: transforme opiniões em crescimento',
   description: 'Entenda o que seus clientes estão dizendo, encontre padrões e transforme feedback em decisões de produto, atendimento e crescimento.',
   alternates: { canonical: 'https://filtraai.com/feedback-de-clientes' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/feedback-de-clientes',
+    title: 'Feedback de clientes: transforme opiniões em crescimento | Filtra.AI',
+    description: 'Entenda o que seus clientes estão dizendo, encontre padrões e transforme feedback em decisões de produto, atendimento e crescimento.',
+  },
 };
 
 export default function Page() {
