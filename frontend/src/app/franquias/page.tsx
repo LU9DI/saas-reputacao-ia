@@ -13,6 +13,13 @@ export default function FranquiasPage() {
     <SeoLanding
       h1="Franquias e redes: visão da reputação por unidade"
       lead="Cada unidade influencia a percepção da marca. O Filtra.AI ajuda redes e franquias a organizar avaliações e feedback, identificar padrões e enxergar onde a experiência precisa de atenção."
+      breadcrumbHref="/franquias"
+      contextLinks={[
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Organize monitoramento, respostas e evolução da reputação.' },
+        { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões em informação operacional para a rede.' },
+        { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões recorrentes entre unidades e avaliações.' },
+        { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial de uma unidade ou da rede.' },
+      ]}
       sections={[
         {
           heading: 'Visão por unidade',
