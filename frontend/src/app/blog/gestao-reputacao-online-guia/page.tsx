@@ -14,8 +14,21 @@ export const metadata: Metadata = {
   },
 };
 
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: 'Gestão de reputação online: guia prático para empresas',
+  description:
+    'Um processo prático para transformar avaliações e feedback em melhoria operacional, confiança e novas oportunidades comerciais.',
+  mainEntityOfPage: 'https://filtraai.com/blog/gestao-reputacao-online-guia',
+  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
+  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
+};
+
 export default function BlogReputacaoOnlinePage() {
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Blog" href="/" />
@@ -140,5 +153,6 @@ export default function BlogReputacaoOnlinePage() {
         </nav>
       </article>
     </div>
+    </>
   );
 }
