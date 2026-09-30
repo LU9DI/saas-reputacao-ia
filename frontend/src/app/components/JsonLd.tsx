@@ -1,4 +1,4 @@
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://filtraai.com';
+const siteUrl = 'https://filtraai.com';
 
 const graph = {
   '@context': 'https://schema.org',
@@ -33,15 +33,7 @@ const graph = {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL', description: 'Teste gratuito de 7 dias sem cartão', url: siteUrl },
       provider: { '@id': `${siteUrl}/#organization` },
     },
-    {
-      '@type': 'FAQPage',
-      '@id': `${siteUrl}/#faq`,
-      mainEntity: [
-        { '@type': 'Question', name: 'O que é o Filtra.AI?', acceptedAnswer: { '@type': 'Answer', text: 'O Filtra.AI é uma plataforma SaaS que ajuda empresas a monitorar avaliações, entender feedback de clientes e transformar sinais de reputação em ações de crescimento.' } },
-        { '@type': 'Question', name: 'O Filtra.AI analisa avaliações com inteligência artificial?', acceptedAnswer: { '@type': 'Answer', text: 'Sim. A plataforma organiza sinais, temas e oportunidades presentes nas avaliações e no feedback para apoiar decisões de gestão.' } },
-        { '@type': 'Question', name: 'Existe teste gratuito?', acceptedAnswer: { '@type': 'Answer', text: 'Sim. O Filtra.AI oferece um teste de 7 dias sem cartão para conhecer a plataforma.' } },
-      ],
-    },
+
   ],
 };
 
