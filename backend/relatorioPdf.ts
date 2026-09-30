@@ -161,7 +161,7 @@ function previousMonthSameDay(date: Date): Date {
   return d;
 }
 
-function cycleWindowFromExpiry(expiraRaw: unknown): ReportWindow | null {
+export function cycleWindowFromExpiry(expiraRaw: unknown): ReportWindow | null {
   const end = parseStoredDate(expiraRaw);
   if (!end) return null;
   const start = previousMonthSameDay(end);
