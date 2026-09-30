@@ -3,7 +3,6 @@ import type { MetadataRoute } from 'next';
 const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://filtraai.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
   const paths = [
     '',
     '/feedback-de-clientes',
@@ -29,14 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/clinica-checklist-avaliacoes-google',
     '/blog/agencia-vender-gestao-reputacao',
     '/blog/whatsapp-pedir-estrela-vs-filtrar-qr',
-    '/planos',
     '/termos',
     '/privacidade',
   ];
 
   return paths.map((path) => ({
     url: `${base}${path}`,
-    lastModified: now,
     changeFrequency: path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly',
     priority:
       path === '' ? 1 :
