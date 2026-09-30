@@ -369,6 +369,15 @@ export default function LandingPreview() {
               </Link>
             ))}
           </div>
+          <div className="mt-8 border-t border-white/10 pt-6">
+            <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">Guias para aprofundar</p>
+            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <Link href="/blog/como-conseguir-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">Como conseguir avaliações no Google</Link>
+              <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 hover:text-indigo-200">SEO local e avaliações</Link>
+              <Link href="/blog/review-1-estrela-primeiras-24-horas" className="text-indigo-300 hover:text-indigo-200">Como agir diante de uma avaliação de 1 estrela</Link>
+              <Link href="/blog/clinica-checklist-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">Checklist de avaliações para clínicas</Link>
+            </div>
+          </div>
         </div>
       </section>
 
