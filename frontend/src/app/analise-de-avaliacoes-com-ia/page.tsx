@@ -5,6 +5,12 @@ export const metadata: Metadata = {
   title: 'Análise de avaliações com IA para empresas',
   description: 'Analise avaliações de clientes com IA para identificar temas, sentimento, riscos e oportunidades de melhoria com mais rapidez.',
   alternates: { canonical: 'https://filtraai.com/analise-de-avaliacoes-com-ia' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/analise-de-avaliacoes-com-ia',
+    title: 'Análise de avaliações com IA para empresas | Filtra.AI',
+    description: 'Analise avaliações de clientes com IA para identificar temas, sentimento, riscos e oportunidades de melhoria com mais rapidez.',
+  },
 };
 
 export default function Page() {
