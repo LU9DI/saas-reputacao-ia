@@ -68,6 +68,24 @@ export default function BlogIndexPage() {
             Reputação, Google Reviews e SEO local para negócios que dependem de nota pública.
           </p>
         </div>
+        <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+          <h2 className="text-lg font-semibold text-zinc-100">Ferramentas e guias de reputação</h2>
+          <p className="mt-2 text-sm leading-6 text-zinc-400">
+            Vá direto para os conteúdos centrais do Filtra.AI sobre feedback, avaliações, reputação e diagnóstico.
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              ['/feedback-de-clientes', 'Feedback de clientes'],
+              ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA'],
+              ['/gestao-de-reputacao-online', 'Gestão de reputação online'],
+              ['/auditoria-gratuita', 'Auditoria gratuita'],
+            ].map(([href, title]) => (
+              <Link key={href} href={href} className="rounded-xl border border-zinc-800 px-4 py-3 text-sm text-indigo-300 hover:border-indigo-500/40 hover:text-indigo-200">
+                {title} →
+              </Link>
+            ))}
+          </div>
+        </section>
         <ul className="space-y-4">
           {posts.map((p) => (
             <li key={p.href} className="border border-zinc-800 rounded-xl p-4 hover:border-zinc-700">
