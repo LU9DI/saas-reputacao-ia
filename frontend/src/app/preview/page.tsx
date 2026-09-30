@@ -5,6 +5,7 @@ import { BrandMark } from '../components/BrandMark';
 import { PreviewNavigator } from '../components/PreviewNavigator';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PlanCards } from '../components/PlanCards';
+import Link from 'next/link';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
 
 type Copy = {
@@ -343,6 +344,30 @@ export default function LandingPreview() {
               </div>
             </div>
             <ClientPanelMockup c={c} />
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-white/[0.06] bg-black/20">
+        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div className="max-w-2xl">
+            <span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">SEO & reputação</span>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Entenda e melhore a reputação da sua empresa.</h2>
+            <p className="mt-4 text-base leading-7 text-zinc-400">Conteúdos e ferramentas para transformar feedback, avaliações e reputação online em ações de crescimento.</p>
+          </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              ['/feedback-de-clientes', 'Feedback de clientes', 'Transforme opiniões em sinais claros para melhorar a experiência.'],
+              ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA', 'Encontre temas, sentimentos e pontos de atenção em escala.'],
+              ['/gestao-de-reputacao-online', 'Gestão de reputação online', 'Acompanhe avaliações, respostas, tendências e evolução.'],
+              ['/auditoria-gratuita', 'Auditoria gratuita', 'Faça um diagnóstico inicial da reputação da sua empresa.'],
+            ].map(([href, title, description]) => (
+              <Link key={href} href={href} className="group rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-indigo-400/30 hover:bg-white/[0.04]">
+                <h3 className="font-semibold text-zinc-100 group-hover:text-indigo-200">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p>
+                <span className="mt-4 inline-block text-xs font-medium text-indigo-300">Saiba mais →</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
