@@ -13,7 +13,13 @@ export default function RestaurantesPage() {
     <SeoLanding
       h1="Reputação no Google para restaurantes e food service"
       lead="Uma review 1★ no horário de pico pode custar semanas de anúncio. O Filtra.AI coloca o pedido de avaliação no fluxo da mesa — e separa o que deve ir ao Google do que deve ser tratado na cozinha e no salão."
-      sections={[
+        breadcrumbHref="/restaurantes"
+      contextLinks={[
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação para restaurantes', description: 'Monitore avaliações e transforme sinais do salão e do delivery em ações.' },
+        { href: '/analise-de-avaliacoes-com-ia', title: 'Analisar avaliações com IA', description: 'Encontre padrões recorrentes em atendimento, tempo de espera e experiência.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Entenda como reputação e presença local se conectam.' },
+        { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Crie um fluxo contínuo de opiniões para melhorar a operação.' },
+      ]}\n      sections={[
         {
           heading: 'A dor do salão',
           body: 'Cliente satisfeito raramente abre o Maps sozinho. Cliente irritado quase sempre avalia. Sem um canal no ponto de contato (mesa, conta, delivery), a nota pública vira roleta.',
