@@ -13,6 +13,13 @@ export default function TurismoPage() {
     <SeoLanding
       h1="Turismo: transforme avaliações em melhoria da experiência"
       lead="Hotéis, resorts, operadores e negócios turísticos vivem de confiança. O Filtra.AI organiza avaliações e feedback para revelar padrões de experiência e oportunidades de melhoria."
+      breadcrumbHref="/turismo"
+      contextLinks={[
+        { href: '/hoteis', title: 'Gestão de reputação para hotéis', description: 'Organize avaliações de hóspedes e padrões de experiência.' },
+        { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Identifique temas recorrentes em avaliações e feedbacks.' },
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Acompanhe sinais públicos e oportunidades de melhoria.' },
+        { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial da reputação do negócio.' },
+      ]}
       sections={[
         {
           heading: 'Capture feedback no momento certo',
