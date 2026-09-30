@@ -369,6 +369,26 @@ export default function LandingPreview() {
               </Link>
             ))}
           </div>
+          <div className="mt-8">
+            <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">Soluções por segmento</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                ['/hoteis', 'Hotéis', 'Avaliações de hóspedes e reputação hoteleira.'],
+                ['/restaurantes', 'Restaurantes', 'Feedback, avaliações e experiência no atendimento.'],
+                ['/clinicas', 'Clínicas', 'Reputação e experiência de pacientes.'],
+                ['/franquias', 'Franquias', 'Visão da reputação por unidade e rede.'],
+                ['/associacoes', 'Associações', 'Feedback de associados e entidades setoriais.'],
+                ['/turismo', 'Turismo', 'Reputação para operações e negócios turísticos.'],
+                ['/agencias', 'Agências', 'Gestão de reputação para carteiras de clientes.'],
+                ['/parceiros', 'Parceiros', 'Programa para consultorias, agências e entidades.'],
+              ].map(([href, title, description]) => (
+                <Link key={href} href={href} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 transition hover:border-indigo-400/30">
+                  <h3 className="font-medium text-zinc-100">{title}</h3>
+                  <p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
           <div className="mt-8 border-t border-white/10 pt-6">
             <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">Guias para aprofundar</p>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
