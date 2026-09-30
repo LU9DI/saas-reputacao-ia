@@ -15,26 +15,40 @@ export default function Page() {
       title="Clínica e reputação online: checklist de avaliações Google"
       lead="Paciente pesquisa nota antes de agendar. Um fluxo simples de feedback protege a agenda e a marca."
     >
-      <H2>Checklist da recepção</H2>
+      <H2>1. Antes de pedir uma avaliação</H2>
       <p>
-        Após a consulta: mensagem ou QR com link de avaliação. Tom acolhedor, sem exigir 5★. Registrar se o
-        paciente já avaliou para não insistir.
+        Defina o momento do pedido: normalmente depois que o atendimento foi concluído e a principal dúvida do
+        paciente já foi resolvida. Use uma mensagem curta ou QR code que leve diretamente ao fluxo de feedback.
+        O objetivo é medir a experiência, não pressionar por uma nota específica.
       </p>
-      <H2>Checklist da gestão</H2>
+      <H2>2. Separe feedback privado de avaliação pública</H2>
       <p>
-        Revisar painel de feedbacks 1–3★ no mesmo dia. Classificar causa (espera, comunicação, resultado
-        esperado). Definir dono da resposta.
+        Um fluxo de feedback permite descobrir rapidamente quando a experiência ficou abaixo do esperado.
+        Registre o motivo — espera, atendimento, comunicação, cobrança ou resultado percebido — e encaminhe o
+        caso para a pessoa responsável. Isso cria uma rotina operacional em vez de tratar cada avaliação como
+        um evento isolado.
       </p>
-      <H2>Checklist do Google</H2>
+      <H2>3. Trate avaliações públicas como parte da operação</H2>
       <p>
-        Responder reviews públicas em até 48h. Manter fotos e horários do perfil atualizados. Acompanhar nota
-        média mensal, não só o total acumulado.
+        Para as avaliações que chegam ao Google, estabeleça um responsável e um prazo interno de resposta.
+        Acompanhe a evolução da nota, a quantidade de novas avaliações e os temas recorrentes. Uma clínica com
+        várias unidades também deve comparar esses indicadores por local, porque médias consolidadas podem
+        esconder problemas específicos.
       </p>
-      <H2>Multi-unidade</H2>
+      <H2>4. Transforme os dados em ações</H2>
       <p>
-        Compare unidades no painel. O Filtra.AI nos planos Corporativo/Rei ajuda a ver onde a reputação
-        escorrega antes de virar padrão de rede.
+        Toda semana, escolha os principais motivos negativos e registre uma ação concreta para cada um. Depois,
+        acompanhe se o volume daquele tema diminuiu. O valor do processo está em transformar comentários de
+        pacientes em melhoria operacional mensurável.
       </p>
+      <H2>5. Checklist rápido para a equipe</H2>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Definir quando o pedido de feedback acontece.</li>
+        <li>Disponibilizar QR code ou link simples.</li>
+        <li>Registrar temas recorrentes de insatisfação.</li>
+        <li>Responder avaliações públicas com responsável definido.</li>
+        <li>Comparar unidades e acompanhar tendências semanalmente.</li>
+      </ul>
     </BlogArticle>
   );
 }
