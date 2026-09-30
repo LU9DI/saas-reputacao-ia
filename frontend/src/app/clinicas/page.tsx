@@ -13,13 +13,14 @@ export default function ClinicasPage() {
     <SeoLanding
       h1="Clínicas: controle a reputação antes do Google"
       lead="Na saúde, confiança é o produto. Uma avaliação pública impulsiva pode assustar novos pacientes. O Filtra.AI organiza o pedido de feedback e separa o que deve ser público do que exige cuidado interno."
-        breadcrumbHref="/clinicas"
+      breadcrumbHref="/clinicas"
       contextLinks={[
         { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação para clínicas', description: 'Organize avaliações, respostas e sinais de experiência por unidade.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Analisar avaliações com IA', description: 'Identifique temas recorrentes em atendimento, espera e comunicação.' },
         { href: '/blog/clinica-checklist-avaliacoes-google', title: 'Checklist de avaliações para clínicas', description: 'Um guia prático para estruturar o processo de avaliação.' },
         { href: '/feedback-de-clientes', title: 'Feedback de pacientes', description: 'Transforme opiniões em insumos para melhoria contínua.' },
-      ]}\n      sections={[
+      ]}
+      sections={[
         {
           heading: 'Momento certo de pedir',
           body: 'Após a consulta ou procedimento, quando a experiência ainda está fresca, o link ou QR no WhatsApp da clínica aumenta a taxa de resposta sem constranger a recepção.',
