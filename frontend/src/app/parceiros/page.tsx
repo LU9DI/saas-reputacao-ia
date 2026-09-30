@@ -5,7 +5,18 @@ export const metadata: Metadata = {
   title: 'Programa de parceiros Filtra.AI | Reputação e feedback',
   description:
     'Parcerias para consultorias, agências e entidades que atendem empresas preocupadas com reputação, avaliações e experiência do cliente.',
-  alternates: { canonical: '/parceiros' },
+  alternates: { canonical: 'https://filtraai.com/parceiros' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/parceiros',
+    title: 'Programa de parceiros Filtra.AI | Reputação e feedback',
+    description: 'Parcerias para consultorias, agências e entidades que atendem empresas preocupadas com reputação, avaliações e experiência do cliente.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Programa de parceiros Filtra.AI | Reputação e feedback',
+    description: 'Parcerias para consultorias, agências e entidades que atendem empresas com foco em reputação e experiência.',
+  },
 };
 
 export default function ParceirosPage() {
