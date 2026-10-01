@@ -5,10 +5,10 @@ import { BrandMark } from '../../components/BrandMark';
 const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: guia prático para empresas',
-  description: 'Entenda como estruturar gestão de reputação online: monitoramento, avaliações, respostas, feedback de clientes, indicadores e ações de melhoria.',
+  title: 'Gestão de reputação online: guia prático',
+  description: 'Guia prático de gestão de reputação online: monitoramento, avaliações, respostas, feedback, indicadores e ações de melhoria.',
   alternates: { canonical },
-  openGraph: { title: 'Gestão de reputação online: guia prático para empresas', description: 'Um processo prático para transformar avaliações e feedback em melhoria operacional, confiança e novas oportunidades comerciais.', url: canonical, type: 'article' },
+  openGraph: { title: 'Gestão de reputação online: guia prático', description: 'Um processo prático para transformar avaliações e feedback em melhoria operacional, confiança e novas oportunidades comerciais.', url: canonical, type: 'article' },
 };
 
 const articleSchema = {
@@ -18,7 +18,8 @@ const articleSchema = {
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   datePublished: '2026-09-30', dateModified: '2026-09-30',
   author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
+  image: 'https://filtraai.com/icons/icon-512.png',
+  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com', logo: { '@type': 'ImageObject', url: 'https://filtraai.com/icons/icon-512.png' } },
 };
 
 export default function BlogReputacaoOnlinePage() {
