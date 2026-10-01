@@ -69,8 +69,8 @@ export function AuditoriaGratuitaClient() {
       setError('Informe o nome da empresa.');
       return;
     }
-    if (!email.trim()) {
-      setError('Informe seu e-mail para receber o resultado e, se desejar, acompanhar novidades da Filtra.AI.');
+    if (consent && !email.trim()) {
+      setError('Informe seu e-mail para registrar o consentimento.');
       return;
     }
     if (reviews.length < 3) {
@@ -114,8 +114,9 @@ export function AuditoriaGratuitaClient() {
             Auditoria gratuita de avaliações e reputação online
           </h1>
           <p className="max-w-3xl text-lg leading-8 text-zinc-400">
-            Cole avaliações reais da sua empresa e receba uma leitura objetiva dos pontos fortes, riscos, temas
-            recorrentes e ações possíveis. O diagnóstico usa somente o conteúdo fornecido.
+            Descubra em poucos minutos o que seus clientes estão elogiando, reclamando e repetindo — e transforme isso
+            em prioridades de melhoria. Cole avaliações reais e receba um diagnóstico inicial gratuito, sem precisar
+            contratar nada para ver o resultado.
           </p>
         </header>
 
@@ -203,15 +204,16 @@ export function AuditoriaGratuitaClient() {
               placeholder="Nome da empresa"
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-none focus:border-indigo-500"
             />
-            <label className="block text-sm font-medium">E-mail</label>
+            <label className="block text-sm font-medium">E-mail <span className="text-zinc-500">(opcional)</span></label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="voce@empresa.com"
+              placeholder="voce@empresa.com (opcional)">
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-none focus:border-indigo-500"
             />
             <label className="flex items-start gap-3 text-sm text-zinc-400">
+
               <input
                 type="checkbox"
                 checked={consent}
@@ -225,6 +227,7 @@ export function AuditoriaGratuitaClient() {
             </label>
             <label className="block text-sm font-medium">Avaliações reais</label>
             <p className="text-xs text-zinc-500">Uma por linha: nota | texto. Não inclua dados pessoais de clientes.</p>
+            <p className="text-xs text-zinc-500">O e-mail só é necessário se você optar por receber comunicações da Filtra.AI.</p>
             <textarea
               value={raw}
               onChange={(e) => setRaw(e.target.value)}
@@ -233,10 +236,10 @@ export function AuditoriaGratuitaClient() {
             />
             <button
               onClick={runDiagnostic}
-              disabled={loading || !company.trim() || !email.trim()}
+              disabled={loading || !company.trim() || (consent && !email.trim())}
               className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? 'Gerando diagnóstico…' : 'Gerar diagnóstico gratuito'}
+              {loading ? 'Gerando diagnóstico…' : 'Gerar meu diagnóstico gratuito'}
             </button>
             {error && (
               <p className="rounded-xl border border-red-900 bg-red-950/40 p-3 text-sm text-red-300">{error}</p>
