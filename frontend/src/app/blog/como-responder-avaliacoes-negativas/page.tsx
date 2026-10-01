@@ -5,11 +5,11 @@ import { BrandMark } from '../../components/BrandMark';
 const canonical = 'https://filtraai.com/blog/como-responder-avaliacoes-negativas';
 
 export const metadata: Metadata = {
-  title: 'Como responder avaliações negativas: guia para empresas | Filtra.AI',
-  description: 'Aprenda a responder avaliações negativas com rapidez, contexto e profissionalismo, transformar reclamações em aprendizado e acompanhar os temas recorrentes.',
+  title: 'Como responder avaliações negativas',
+  description: 'Aprenda a responder avaliações negativas com contexto e profissionalismo, transformar reclamações em aprendizado e acompanhar temas recorrentes.',
   alternates: { canonical },
   openGraph: {
-    title: 'Como responder avaliações negativas: guia para empresas | Filtra.AI',
+    title: 'Como responder avaliações negativas',
     description: 'Um método prático para responder críticas públicas sem transformar o problema em disputa.',
     url: canonical,
     type: 'article',
@@ -25,7 +25,8 @@ const articleSchema = {
   datePublished: '2026-09-30',
   dateModified: '2026-09-30',
   author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
+  image: 'https://filtraai.com/icons/icon-512.png',
+  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com', logo: { '@type': 'ImageObject', url: 'https://filtraai.com/icons/icon-512.png' } },
 };
 
 export default function BlogComoResponderAvaliacaoNegativaPage() {
