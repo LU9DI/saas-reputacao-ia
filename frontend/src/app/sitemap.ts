@@ -4,7 +4,7 @@ const base = 'https://filtraai.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
-    '', '/feedback-de-clientes', '/analise-de-avaliacoes-com-ia', '/gestao-de-reputacao-online',
+    '', '/feedback-de-clientes', '/analise-de-avaliacoes-com-ia', '/gestao-de-reputacao-online', '/avaliacoes-google',
     '/como-funciona', '/auditoria-gratuita', '/hoteis', '/parceiros', '/associacoes', '/turismo',
     '/franquias', '/restaurantes', '/clinicas', '/agencias', '/pedir-estrela-vs-filtrar', '/blog',
     '/blog/gestao-reputacao-online-guia', '/blog/como-responder-avaliacoes-negativas',
