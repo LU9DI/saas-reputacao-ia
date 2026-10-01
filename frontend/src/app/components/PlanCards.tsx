@@ -323,7 +323,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         <h2 className="text-2xl font-semibold text-white tracking-tight">{t.plans_title}</h2>
         <p className="text-sm text-white max-w-2xl mx-auto font-medium leading-relaxed">
           {[t.pay_paypal || 'PayPal', 'Mercado Pago'].join(' · ')}
-          {loadingPrices ? ` · ${t.updating_prices || 'Atualizando…'}` : ''}
         </p>
         <div
           className="inline-flex rounded-full border border-slate-600/80 bg-slate-800/80 p-1 text-sm shadow-inner mt-2 gap-0.5"
