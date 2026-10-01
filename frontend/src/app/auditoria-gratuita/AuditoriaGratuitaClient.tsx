@@ -209,7 +209,7 @@ export function AuditoriaGratuitaClient() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="voce@empresa.com (opcional)">
+              placeholder="voce@empresa.com (opcional)"
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-none focus:border-indigo-500"
             />
             <label className="flex items-start gap-3 text-sm text-zinc-400">
