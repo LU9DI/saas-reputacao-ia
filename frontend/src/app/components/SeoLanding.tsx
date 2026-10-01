@@ -8,7 +8,7 @@ export function SeoLanding({
   h1,
   lead,
   sections,
-  ctaHref = '/',
+  ctaHref = '/preview/teste',
   ctaLabel = 'Começar teste gratuito (7 dias)',
   breadcrumbHref,
   contextLinks = [],
@@ -35,7 +35,7 @@ export function SeoLanding({
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Reputação" href="/" />
-        <Link href="/" className="text-sm text-indigo-400 hover:text-indigo-300">
+        <Link href="/preview/teste" className="text-sm text-indigo-400 hover:text-indigo-300">
           Trial grátis
         </Link>
       </header>
