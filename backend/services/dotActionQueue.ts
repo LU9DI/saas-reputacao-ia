@@ -1,6 +1,7 @@
 import { getDb, withDbTransaction } from '../lib/db.js';
 import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRegistry.js';
 import { recordDotActionAudit } from './dotActionAudit.js';
+import { executeDotActionThroughGateway } from './dotExecutionGateway.js';
 
 export type DotActionStatus = 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled';
 
@@ -117,49 +118,5 @@ async function dbAll(empresaId: string) {
 
 export async function executeDotAction(empresaId: string, actionId: number) {
   await ensureSchema();
-  const db = getDb();
-  const row = await db.get(
-    `SELECT a.*, d.status AS decision_status, d.requires_approval
-       FROM dot_action_queue a
-       JOIN dot_decisions d ON d.id = a.decision_id AND d.empresa_id = a.empresa_id
-      WHERE a.id = ? AND a.empresa_id = ? AND a.status = ? LIMIT 1`,
-    [actionId, empresaId, 'approved']
-  );
-  if (!row) return { ok: false, reason: 'Ação não encontrada ou não aprovada.', status: null };
-  if (String(row.decision_status) !== 'approved' || Number(row.requires_approval) !== 1) {
-    return { ok: false, reason: 'A decisão vinculada não está aprovada para execução.', status: row.status };
-  }
-
-  const definition = getDotActionDefinition(String(row.action));
-  if (!definition) return { ok: false, reason: 'Executor não registrado para esta ação.', status: row.status };
-  if (definition.externalSideEffect) return { ok: false, reason: 'Ação externa exige executor homologado.', status: row.status };
-
-  const now = new Date().toISOString();
-  const claimed = await db.run(
-    "UPDATE dot_action_queue SET status = ?, error = NULL WHERE id = ? AND empresa_id = ? AND status = 'approved'",
-    ['executing', actionId, empresaId]
-  );
-  if (!claimed || claimed.changes !== 1) {
-    return { ok: false, reason: 'Ação já está sendo processada ou mudou de estado.', status: 'approved' };
-  }
-  await recordDotActionAudit({ empresaId, actionId, decisionId: Number(row.decision_id), event: 'execution_started', actorType: 'system', metadata: { executor: definition.executorKey } });
-
-  try {
-    // Executor local seguro: registra a execução sem chamar sistemas externos.
-    const finished = new Date().toISOString();
-    await db.run(
-      'UPDATE dot_action_queue SET status = ?, executed_at = ? WHERE id = ? AND empresa_id = ? AND status = ?',
-      ['executed', finished, actionId, empresaId, 'executing']
-    );
-    await recordDotActionAudit({ empresaId, actionId, decisionId: Number(row.decision_id), event: 'executed', actorType: 'system', metadata: { executor: definition.executorKey } });
-    return { ok: true, id: actionId, status: 'executed', simulated: true, executor: definition.executorKey, startedAt: now, executedAt: finished };
-  } catch (error: any) {
-    const message = String(error?.message || error);
-    await db.run(
-      'UPDATE dot_action_queue SET status = ?, error = ? WHERE id = ? AND empresa_id = ? AND status = ?',
-      ['failed', message, actionId, empresaId, 'executing']
-    );
-    await recordDotActionAudit({ empresaId, actionId, decisionId: Number(row.decision_id), event: 'failed', actorType: 'system', metadata: { error: message } });
-    return { ok: false, id: actionId, status: 'failed', reason: String(error?.message || error) };
-  }
+  return executeDotActionThroughGateway(empresaId, actionId);
 }
