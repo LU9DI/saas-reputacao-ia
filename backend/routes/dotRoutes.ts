@@ -3,6 +3,8 @@ import rateLimit from 'express-rate-limit';
 import { callAI } from '../groqService.js';
 import { prepareDotAction } from '../services/dotTools.js';
 import { loadDotRealContext } from '../services/dotContext.js';
+import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
+import { listDotEvents } from '../services/dotMonitor.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -153,6 +155,27 @@ export function mountDotRoutes(app: Express) {
         'memoria_de_conversa',
       ],
     });
+  });
+
+  app.get('/api/dot/preferences', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const preferences = await getDotPreferences(access.empresaId);
+    res.json({ ok: true, plan: access.plan, preferences });
+  });
+
+  app.put('/api/dot/preferences', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const preferences = await saveDotPreferences(access.empresaId, req.body || {});
+    res.json({ ok: true, plan: access.plan, preferences });
+  });
+
+  app.get('/api/dot/events', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const events = await listDotEvents(access.empresaId);
+    res.json({ ok: true, events });
   });
 
   app.get('/api/dot/briefing', async (req: Request, res: Response) => {
