@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowUp, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
+
+const SESSION_KEY = 'filtra-dot-local-session';
 
 const suggestions = [
   'Como está minha reputação hoje?',
@@ -13,6 +15,7 @@ const suggestions = [
 ];
 
 type Message = { role: 'dot' | 'user'; text: string };
+type Briefing = { headline: string; trend: string; rating: string; reviews: number; priority: string; reason: string; suggestedAction: string };
 
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
@@ -39,6 +42,19 @@ export default function FiltraDotPage() {
   const [messages, setMessages] = useState<Message[]>([initialMessage()]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [sessionId] = useState(() => {
+    if (typeof window === 'undefined') return 'local-demo';
+    const existing = window.localStorage.getItem(SESSION_KEY);
+    if (existing) return existing;
+    const created = crypto.randomUUID();
+    window.localStorage.setItem(SESSION_KEY, created);
+    return created;
+  });
+  const [briefing, setBriefing] = useState<Briefing | null>(null);
+
+  useEffect(() => {
+    void fetch(\`\${API_URL}/api/dot/briefing\`).then((response) => response.json()).then((data) => setBriefing(data.briefing)).catch(() => undefined);
+  }, []);
 
   async function send(message = input) {
     const text = message.trim();
@@ -51,7 +67,7 @@ export default function FiltraDotPage() {
       const response = await fetch(`${API_URL}/api/dot/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, session_id: sessionId }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Falha ao falar com o Dot.');
@@ -142,9 +158,10 @@ export default function FiltraDotPage() {
             <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Hoje</div>
               <div className="mt-4 space-y-3">
+                {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">Sinal prioritário</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
                 <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> Tendência</div><div className="mt-1 text-xl font-semibold text-white">+18,4%</div></div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> Sinais</div><div className="mt-1 text-xl font-semibold text-white">3 padrões</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> Próximo passo</div><div className="mt-1 text-sm font-medium text-white">Atacar o tempo de espera</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> Próximo passo</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'Atacar o tempo de espera'}</div></div>
               </div>
             </div>
 
