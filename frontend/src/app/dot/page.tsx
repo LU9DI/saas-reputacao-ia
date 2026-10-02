@@ -6,6 +6,18 @@ import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, T
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
 
 const SESSION_KEY = 'filtra-dot-local-session';
+const TOKEN_KEY = 'filtra_token';
+
+function authHeaders(json = true): HeadersInit {
+  const headers: Record<string, string> = json ? { 'Content-Type': 'application/json' } : {};
+  try {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) headers.Authorization = `Bearer ${token}`;
+  } catch {
+    // Localhost demo continues without a token.
+  }
+  return headers;
+}
 
 const suggestions = [
   'Como está minha reputação hoje?',
@@ -54,14 +66,14 @@ export default function FiltraDotPage() {
   const [proposal, setProposal] = useState<any>(null);
 
   useEffect(() => {
-    void fetch(`${API_URL}/api/dot/briefing`).then((response) => response.json()).then((data) => setBriefing(data.briefing)).catch(() => undefined);
+    void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
 
   async function prepareAction() {
     try {
       const response = await fetch(API_URL + '/api/dot/action/prepare', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({ action: briefing?.priority || 'tempo de espera' }),
       });
       const data = await response.json();
@@ -72,7 +84,7 @@ export default function FiltraDotPage() {
   }
   async function resetConversation() {
     try {
-      await fetch(`${API_URL}/api/dot/session/${sessionId}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/api/dot/session/${sessionId}`, { method: 'DELETE', headers: authHeaders(false) });
     } catch {
       // O reset visual continua disponível mesmo se a API local estiver parada.
     }
@@ -90,7 +102,7 @@ export default function FiltraDotPage() {
     try {
       const response = await fetch(`${API_URL}/api/dot/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders(),
         body: JSON.stringify({ message: text, session_id: sessionId }),
       });
       const data = await response.json();
@@ -113,7 +125,7 @@ export default function FiltraDotPage() {
           <div className="flex items-center gap-3">
             <DotAvatar />
             <div>
-              <div className="flex items-center gap-2 text-sm font-semibold">Filtra Dot <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">REI</span></div>
+              <div className="flex items-center gap-2 text-sm font-semibold">Filtra Dot <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">REI / CORPORATIVO</span></div>
               <div className="text-xs text-zinc-500">Agente de reputação e crescimento</div>
             </div>
           </div>
