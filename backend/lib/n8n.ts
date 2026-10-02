@@ -17,7 +17,8 @@ export type N8nEvent =
   | 'review.critica'
   | 'review.nova'
   | 'lead.whatsapp'
-  | 'empresa.bloqueada';
+  | 'empresa.bloqueada'
+  | 'lead.capturado';
 
 export function n8nConfigured(): boolean {
   const url = process.env.N8N_WEBHOOK_URL?.trim();
