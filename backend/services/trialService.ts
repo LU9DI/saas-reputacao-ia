@@ -29,6 +29,8 @@ export type TrialInput = {
   locale?: string;
   /** IP do cliente (obrigatório para a trava de 1 trial por IP). */
   signup_ip?: string;
+  /** Fluxo de captação consentida pode ativar imediatamente, sem verificação adicional por e-mail. */
+  skip_email_verification?: boolean;
 };
 
 export type TrialResult = {
@@ -126,6 +128,7 @@ export async function ativarTrial(
   const googleReviewUrl = input.google_review_url ? String(input.google_review_url) : '';
   const wpp = normalizarWhatsapp(input.whatsapp || null);
   const signupIp = normalizeIp(input.signup_ip);
+  const skipEmailVerification = input.skip_email_verification === true;
 
   if (!nome || nome.length < 2) {
     throw new TrialValidationError('Nome da empresa inválido.');
@@ -144,7 +147,7 @@ export async function ativarTrial(
   }
 
   await ensureSignupIpColumn(db);
-  if (!mailConfigured()) {
+  if (!skipEmailVerification && !mailConfigured()) {
     throw new TrialValidationError('O serviço de confirmação por e-mail está temporariamente indisponível. Tente novamente mais tarde.');
   }
 
@@ -243,6 +246,47 @@ export async function ativarTrial(
     (await db.get(`SELECT id, nome_funcionario, empresa_id FROM usuarios WHERE id = ?`, [
       usuarioId,
     ]));
+
+  if (skipEmailVerification) {
+    const expiraAtivacao = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    await db.run('UPDATE empresas SET status = ?, expira_em = ? WHERE id = ?', ['trial', expiraAtivacao, id]);
+    const tokenPayload = {
+      id: String(usuario?.id || usuarioId),
+      nome_funcionario: String(usuario?.nome_funcionario || nome),
+      empresa_id: String(id),
+    };
+    const accessToken = signAccessToken(tokenPayload);
+    if (res) {
+      try { setAuthCookie(res, accessToken); } catch (e: any) { console.warn('[trial] cookie:', e?.message || e); }
+    }
+    await notificarTrialAtivado({
+      email,
+      nomeEmpresa: nome,
+      slug,
+      empresaId: id,
+      expiraEm: expiraAtivacao,
+    }).catch((e) => console.warn('[trial] e-mail trial:', e?.message || e));
+    notifyN8n('trial.ativado', {
+      empresa_id: id,
+      slug,
+      nome_empresa: nome,
+      email,
+      expira_em: expiraAtivacao,
+      link_painel: `${APP_URL}/painel/${slug}`,
+      link_avaliacao: `${APP_URL}/avaliacao/${slug}`,
+      activation_source: 'lead-form',
+    });
+    return {
+      success: true,
+      empresa_id: id,
+      slug,
+      link_acesso: `${APP_URL}/avaliacao/${slug}`,
+      link_painel: `${APP_URL}/painel/${slug}`,
+      expira_em: expiraAtivacao,
+      token: accessToken,
+      tokenPayload,
+    };
+  }
 
   await db.exec(`CREATE TABLE IF NOT EXISTS trial_email_verifications (id TEXT PRIMARY KEY, empresa_id TEXT NOT NULL, token_hash TEXT NOT NULL, expira_em TIMESTAMPTZ NOT NULL, usado INTEGER DEFAULT 0, criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
   try { await db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_trial_verification_token ON trial_email_verifications(token_hash)`); } catch {}
