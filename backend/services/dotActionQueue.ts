@@ -23,6 +23,11 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
   const db = getDb();
   const decision = await db.get('SELECT * FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [decisionId, empresaId]);
   if (!decision) return null;
+
+  const decisionStatus = String(decision.status || '');
+  if (!['pending', 'prepared'].includes(decisionStatus)) return null;
+  if (Number(decision.requires_approval) !== 1) return null;
+
   const options = JSON.parse(decision.options_json || '[]');
   const option = options.find((item: any) => item.id === optionId);
   if (!option) return null;
