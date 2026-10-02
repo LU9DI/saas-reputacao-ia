@@ -1,4 +1,5 @@
 import { getDb, withDbTransaction } from '../lib/db.js';
+import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRegistry.js';
 
 export type DotActionStatus = 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled';
 
@@ -17,12 +18,13 @@ async function ensureSchema() {
     created_at TEXT NOT NULL
   )`);
   await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_decision_option ON dot_action_queue(empresa_id, decision_id, option_id)');
+  await db.exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_one_active_decision ON dot_action_queue(empresa_id, decision_id) WHERE status IN ('prepared','approved','executing')");
 }
 
 export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string) {
   await ensureSchema();
-  const db = getDb();
-  const decision = await db.get('SELECT * FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [decisionId, empresaId]);
+  return withDbTransaction(async (tx) => {
+  const decision = await tx.get('SELECT * FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [decisionId, empresaId]);
   if (!decision) return null;
 
   const decisionStatus = String(decision.status || '');
@@ -32,7 +34,9 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
   const options = JSON.parse(decision.options_json || '[]');
   const option = options.find((item: any) => item.id === optionId);
   if (!option) return null;
-  const existing = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId]);
+  const definition = getDotActionDefinition(String(option.action));
+  if (!definition || !dotActionRequiresApproval(definition.action)) return null;
+  const existing = await tx.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId]);
   if (existing) return existing;
   try {
     const result = await db.run(
@@ -40,20 +44,21 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
       [empresaId, decisionId, option.id, option.action, 'prepared', new Date().toISOString()]
     );
     if (decisionStatus === 'pending') {
-      const promoted = await db.run(
+      const promoted = await tx.run(
         "UPDATE dot_decisions SET status = 'prepared' WHERE id = ? AND empresa_id = ? AND status = 'pending'",
         [decisionId, empresaId]
       );
       if (promoted.changes !== 1) {
-        await db.run('DELETE FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\'', [result.lastID, empresaId]);
-        return null;
+        throw new Error('Não foi possível preparar a decisão; transação revertida.');
       }
     }
-    return { id: result.lastID, decisionId, optionId: option.id, action: option.action, status: 'prepared' };
+    return { id: result.lastID, decisionId, optionId: option.id, action: definition.action, status: 'prepared' };
   } catch {
-    const current = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND option_id = ? LIMIT 1', [empresaId, decisionId, optionId]);
-    return current || null;
+    const current = await tx.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId]);
+    if (current) return current;
+    throw error;
   }
+  });
 }
 
 export async function approveDotAction(empresaId: string, actionId: number) {
@@ -116,14 +121,9 @@ export async function executeDotAction(empresaId: string, actionId: number) {
     return { ok: false, reason: 'A decisão vinculada não está aprovada para execução.', status: row.status };
   }
 
-  const supportedLocalActions = new Set([
-    'priorizar_e_resolver',
-    'escalar_responsavel',
-    'corrigir_e_acompanhar',
-  ]);
-  if (!supportedLocalActions.has(String(row.action))) {
-    return { ok: false, reason: 'Executor não registrado para esta ação.', status: row.status };
-  }
+  const definition = getDotActionDefinition(String(row.action));
+  if (!definition) return { ok: false, reason: 'Executor não registrado para esta ação.', status: row.status };
+  if (definition.externalSideEffect) return { ok: false, reason: 'Ação externa exige executor homologado.', status: row.status };
 
   const now = new Date().toISOString();
   const claimed = await db.run(
@@ -141,7 +141,7 @@ export async function executeDotAction(empresaId: string, actionId: number) {
       'UPDATE dot_action_queue SET status = ?, executed_at = ? WHERE id = ? AND empresa_id = ? AND status = ?',
       ['executed', finished, actionId, empresaId, 'executing']
     );
-    return { ok: true, id: actionId, status: 'executed', simulated: true, startedAt: now, executedAt: finished };
+    return { ok: true, id: actionId, status: 'executed', simulated: true, executor: definition.executorKey, startedAt: now, executedAt: finished };
   } catch (error: any) {
     await db.run(
       'UPDATE dot_action_queue SET status = ?, error = ? WHERE id = ? AND empresa_id = ? AND status = ?',
