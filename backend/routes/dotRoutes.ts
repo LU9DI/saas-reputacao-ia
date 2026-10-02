@@ -6,7 +6,7 @@ import { loadDotRealContext } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
 import { listDotDecisions, updateDotDecision } from '../services/dotDecision.js';
-import { prepareDotActionFromDecision, approveDotAction, listDotActions } from '../services/dotActionQueue.js';
+import { prepareDotActionFromDecision, approveDotAction, executeDotAction, listDotActions } from '../services/dotActionQueue.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -220,6 +220,14 @@ export function mountDotRoutes(app: Express) {
     const action = await approveDotAction(access.empresaId, Number(req.params.id));
     if (!action) return res.status(409).json({ error: 'Ação não encontrada ou já processada.' });
     res.json({ ok: true, action });
+  });
+
+  app.post('/api/dot/actions/:id/run', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const result = await executeDotAction(access.empresaId, Number(req.params.id));
+    if (!result.ok) return res.status(409).json(result);
+    res.json({ ok: true, action: result, external_side_effect: false });
   });
 
   app.get('/api/dot/events', async (req: Request, res: Response) => {
