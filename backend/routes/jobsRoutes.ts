@@ -14,6 +14,7 @@ import { enforcarExpiracoes } from '../services/billingService.js';
 import { processRetryQueue, retryQueueStats } from '../lib/retryQueue.js';
 import { createSqliteBackup } from '../lib/backup.js';
 import { enviarEmail } from '../lib/mailer.js';
+import { runDotMonitor } from '../services/dotMonitor.js';
 
 function authorized(req: Request): boolean {
   const secret = process.env.JOBS_SECRET?.trim();
@@ -52,6 +53,32 @@ const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://loca
 );
 
 export function mountJobsRoutes(app: Express) {
+  /** Monitor proativo do Filtra Dot. O scheduler externo deve chamar este endpoint. */
+  app.post('/api/jobs/dot-monitor', async (req: Request, res: Response) => {
+    if (!authorized(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const db = getDb();
+      const empresas = await db.all(
+        `SELECT id, plan, status FROM empresas
+         WHERE status IN ('ativo', 'trial')
+           AND LOWER(IFNULL(plan, '')) IN ('rei', 'corporativo', 'corp')`
+      );
+      const resultados = [];
+      for (const empresa of empresas || []) {
+        try {
+          resultados.push({ empresa_id: empresa.id, ...(await runDotMonitor(empresa.id)) });
+        } catch (error: any) {
+          resultados.push({ empresa_id: empresa.id, ok: false, error: String(error?.message || error) });
+        }
+      }
+      res.json({ success: true, empresas: resultados.length, resultados });
+    } catch (e: any) {
+      console.error('jobs/dot-monitor:', e?.message || e);
+      res.status(500).json({ error: 'INTERNAL_SERVER_ERROR' });
+    }
+  });
+
+
   app.post('/api/jobs/retry-failures', async (req: Request, res: Response) => {
     if (!authorized(req)) return res.status(401).json({ error: 'Unauthorized' });
     try {
