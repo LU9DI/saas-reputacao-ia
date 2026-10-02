@@ -81,7 +81,7 @@ export async function createDecisionsForEvents(empresaId: string, events: any[])
     if (exists) continue;
     const d = classify(event);
     const r = await db.run(
-      'INSERT INTO dot_decisions (empresa_id,event_id,type,priority,severity,reason,evidence_json,recommendation,options_json,requires_approval,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO dot_decisions (empresa_id,event_id,type,priority,severity,reason,evidence_json,recommendation,options_json,requires_approval,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) RETURNING id',
       [empresaId,d.eventId,d.type,d.priority,d.severity,d.reason,JSON.stringify(d.evidence),d.recommendation,JSON.stringify(d.options),d.requiresApproval ? 1 : 0,d.status,new Date().toISOString()]
     );
     created.push({ ...d, id: r.lastID });
