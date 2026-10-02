@@ -5,6 +5,7 @@ import { Providers } from './Providers';
 import { JsonLd } from './components/JsonLd';
 
 const siteUrl = 'https://filtraai.com';
+const ogImage = `${siteUrl}/og-image.svg`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -52,14 +53,14 @@ export const metadata: Metadata = {
     title: 'Filtra.AI — Transforme a voz do cliente em crescimento',
     description:
       'Descubra padrões nas avaliações, identifique problemas e oportunidades e transforme a voz do consumidor em decisões de crescimento. Teste grátis por 7 dias.',
-    images: [{ url: '/icons/icon-512.png', width: 512, height: 512, alt: 'Filtra.AI — gestão de reputação e avaliações com IA' }],
+    images: [{ url: ogImage, width: 1200, height: 630, alt: 'Filtra.AI — Gestão de avaliações Google' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Filtra.AI — A voz do cliente pode mostrar onde sua empresa cresce',
     description:
       'Analise avaliações e feedback com IA e transforme sinais de clientes em prioridades de ação. Teste grátis por 7 dias.',
-    images: ['/icons/icon-512.png'],
+    images: [ogImage],
   },
   robots: {
     index: true,
