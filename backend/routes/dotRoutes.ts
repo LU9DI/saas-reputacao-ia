@@ -2,6 +2,7 @@ import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { callAI } from '../groqService.js';
 import { prepareDotAction } from '../services/dotTools.js';
+import { loadDotRealContext } from '../services/dotContext.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -67,12 +68,12 @@ function resetSession(id: string) {
   sessions.delete(id);
 }
 
-function buildConversation(history: ChatItem[], message: string): string {
+function buildConversation(context: string, history: ChatItem[], message: string): string {
   const transcript = history
     .slice(-MAX_HISTORY)
     .map((item) => `${item.role === 'user' ? 'USUÁRIO' : 'FILTRA DOT'}: ${item.text}`)
     .join('\n');
-  return [DEMO_CONTEXT, transcript, `USUÁRIO: ${message}`].filter(Boolean).join('\n\n');
+  return [context, transcript, `USUÁRIO: ${message}`].filter(Boolean).join('\n\n');
 }
 
 async function resolveDotAccess(req: Request): Promise<DotAccess> {
@@ -158,20 +159,30 @@ export function mountDotRoutes(app: Express) {
     const access = await resolveDotAccess(req);
     if (!access.allowed) return deny(res, access);
 
+    const context = access.demo
+      ? DEMO_CONTEXT
+      : await loadDotRealContext(access.empresaId as string);
+
     res.json({
       ok: true,
       demo: access.demo,
       plan: access.plan || 'rei',
       plan_label: access.planLabel || 'Rei',
-      briefing: {
-        headline: 'A reputação está saudável, mas existe um sinal recorrente para investigar.',
-        trend: '+18,4%',
-        rating: '4,8/5',
-        reviews: 1284,
-        priority: 'Tempo de espera',
-        reason: 'As reclamações recentes apontam repetição do mesmo tema.',
-        suggestedAction: 'Analisar as avaliações afetadas e preparar um plano para a equipe.',
-      },
+      context,
+      briefing: access.demo
+        ? {
+            headline: 'A reputação está saudável, mas existe um sinal recorrente para investigar.',
+            trend: '+18,4%',
+            rating: '4,8/5',
+            reviews: 1284,
+            priority: 'Tempo de espera',
+            reason: 'As reclamações recentes apontam repetição do mesmo tema.',
+            suggestedAction: 'Analisar as avaliações afetadas e preparar um plano para a equipe.',
+          }
+        : {
+            headline: 'Briefing calculado a partir das avaliações reais da empresa.',
+            suggestedAction: 'Peça ao Dot para analisar os principais temas e preparar o próximo passo.',
+          },
     });
   });
 
@@ -213,9 +224,13 @@ export function mountDotRoutes(app: Express) {
     const history = sessionHistory(sessionId);
 
     try {
+      const context = access.demo
+        ? DEMO_CONTEXT
+        : await loadDotRealContext(access.empresaId as string);
+
       const result = await callAI(
         SYSTEM,
-        buildConversation(history, message),
+        buildConversation(context, history, message),
         700,
         0.45,
         { empresaId: access.empresaId || null, tipo: 'filtra_dot_chat' }
