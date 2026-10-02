@@ -357,6 +357,7 @@ export default function LandingPreview() {
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
+              ['/ia', 'Filtra.AI para IA', 'Leve análise de reputação, avaliações e feedback para ChatGPT, Claude e Grok.'],
               ['/feedback-de-clientes', 'Feedback de clientes', 'Transforme opiniões em sinais claros para melhorar a experiência.'],
               ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA', 'Encontre temas, sentimentos e pontos de atenção em escala.'],
               ['/gestao-de-reputacao-online', 'Gestão de reputação online', 'Acompanhe avaliações, respostas, tendências e evolução.'],
