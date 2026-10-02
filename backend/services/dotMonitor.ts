@@ -1,6 +1,8 @@
 import { getDb } from '../lib/db.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { createDecisionsForEvents } from './dotDecision.js';
+import { prepareDotActionFromDecision } from './dotActionQueue.js';
+import { evaluateDotPolicy } from './dotPolicy.js';
 
 async function ensureSchema() {
   const db = getDb();
@@ -80,7 +82,26 @@ export async function runDotMonitor(empresaId: string) {
   }
 
   const decisions = await createDecisionsForEvents(empresaId, created);
-  return { ok: true, skipped: false, average: Number(average.toFixed(2)), events: created, decisions, preferences };
+  const policy = evaluateDotPolicy(preferences, created.some((event) => event.severity === 'critical') ? 'critical' : 'medium');
+  const preparedActions = [];
+  if (policy.prepareAction) {
+    for (const decision of decisions) {
+      const option = decision.options?.[0];
+      if (!option) continue;
+      const action = await prepareDotActionFromDecision(empresaId, decision.id, option.id);
+      if (action) preparedActions.push(action);
+    }
+  }
+  return {
+    ok: true,
+    skipped: false,
+    average: Number(average.toFixed(2)),
+    events: created,
+    decisions,
+    prepared_actions: preparedActions,
+    policy,
+    preferences,
+  };
 }
 
 export async function listDotEvents(empresaId: string) {
