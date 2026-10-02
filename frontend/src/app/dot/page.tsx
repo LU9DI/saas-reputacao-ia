@@ -53,7 +53,7 @@ export default function FiltraDotPage() {
   const [briefing, setBriefing] = useState<Briefing | null>(null);
 
   useEffect(() => {
-    void fetch(\`\${API_URL}/api/dot/briefing\`).then((response) => response.json()).then((data) => setBriefing(data.briefing)).catch(() => undefined);
+    void fetch(`${API_URL}/api/dot/briefing`).then((response) => response.json()).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
 
   async function resetConversation() {
