@@ -8,7 +8,7 @@ export type DotActionProposal = {
   demo: boolean;
 };
 
-export function prepareDotAction(action: string): DotActionProposal {
+export function prepareDotAction(action: string, demo = true): DotActionProposal {
   const normalized = action.trim().toLowerCase();
   const known = normalized.includes('tempo') || normalized.includes('espera') || normalized.includes('equipe');
 
@@ -24,7 +24,7 @@ export function prepareDotAction(action: string): DotActionProposal {
       ],
       requiresApproval: true,
       executed: false,
-      demo: true,
+      demo,
     };
   }
 
