@@ -94,6 +94,35 @@ test('Dot action queue: approval is one-way and execution is replay-safe', async
   assert.equal(replayExecution.ok, false);
 });
 
+test('Dot action queue: concurrent approvals consume the same action only once', async () => {
+  await setup();
+  const empresa = crypto.randomUUID();
+  const decisionId = await seedDecision(empresa);
+  const prepared = await prepareDotActionFromDecision(empresa, decisionId, 'opcao_1');
+  assert.ok(prepared?.id);
+
+  const results = await Promise.all([
+    approveDotAction(empresa, Number(prepared.id)),
+    approveDotAction(empresa, Number(prepared.id)),
+  ]);
+
+  assert.equal(results.filter((item) => item?.status === 'approved').length, 1);
+  assert.equal(results.filter((item) => item === null).length, 1);
+
+  const db = getDb();
+  const action = await db.get(
+    'SELECT status, approved_at FROM dot_action_queue WHERE id = ? AND empresa_id = ?',
+    [prepared.id, empresa]
+  );
+  const decision = await db.get(
+    'SELECT status FROM dot_decisions WHERE id = ? AND empresa_id = ?',
+    [decisionId, empresa]
+  );
+  assert.equal(action?.status, 'approved');
+  assert.ok(action?.approved_at);
+  assert.equal(decision?.status, 'approved');
+});
+
 test('Dot action queue: an action cannot execute before approval', async () => {
   await setup();
   const empresa = crypto.randomUUID();
