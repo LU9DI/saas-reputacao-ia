@@ -1,5 +1,6 @@
 import { getDb } from '../lib/db.js';
 import { getDotPreferences } from './dotPreferences.js';
+import { createDecisionsForEvents } from './dotDecision.js';
 
 async function ensureSchema() {
   const db = getDb();
@@ -78,7 +79,8 @@ export async function runDotMonitor(empresaId: string) {
     created.push(event);
   }
 
-  return { ok: true, skipped: false, average: Number(average.toFixed(2)), events: created, preferences };
+  const decisions = await createDecisionsForEvents(empresaId, created);
+  return { ok: true, skipped: false, average: Number(average.toFixed(2)), events: created, decisions, preferences };
 }
 
 export async function listDotEvents(empresaId: string) {
