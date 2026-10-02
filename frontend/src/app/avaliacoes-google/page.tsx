@@ -48,7 +48,7 @@ export default function Page() {
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">Transforme avaliações Google e feedback de clientes em uma rotina de gestão. Organize solicitações, identifique padrões e acompanhe os sinais que influenciam a percepção da sua empresa no Google Maps.</p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link href="/auditoria-gratuita" className="rounded-xl bg-indigo-500 px-5 py-3 font-semibold">Fazer auditoria gratuita</Link>
-        <Link href="/feedback-de-clientes" className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">Conhecer o fluxo de feedback</Link>
+        <Link href="/feedback-de-clientes" className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">Conhecer o fluxo de feedback</Link><Link href="/ia" className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">Filtra.AI para IA</Link>
       </div>
 
       <section className="mt-16 space-y-10">
