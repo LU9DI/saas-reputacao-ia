@@ -5,6 +5,7 @@ import { prepareDotAction } from '../services/dotTools.js';
 import { loadDotRealContext } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
+import { resolveDotComplaint } from '../services/dotResolve.js';
 import { listDotDecisions, updateDotDecision } from '../services/dotDecision.js';
 import { prepareDotActionFromDecision, approveDotAction, executeDotAction, listDotActions } from '../services/dotActionQueue.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
@@ -228,6 +229,33 @@ export function mountDotRoutes(app: Express) {
     const result = await executeDotAction(access.empresaId, Number(req.params.id));
     if (!result.ok) return res.status(409).json(result);
     res.json({ ok: true, action: result, external_side_effect: false });
+  });
+
+  app.post('/api/dot/resolve', dotLimiter, async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed) return deny(res, access);
+    const complaint = cleanMessage(req.body?.complaint || req.body?.message);
+    if (!complaint) return res.status(400).json({ error: 'Relato do cliente é obrigatório.' });
+    if (!access.empresaId) {
+      return res.json({
+        ok: true,
+        demo: true,
+        result: {
+          problem_summary: complaint,
+          verification_status: 'unverified',
+          confidence: 'baixa',
+          facts: [{ source: 'modo demonstração', fact: 'O Dot Resolve precisa de uma empresa autenticada para verificar dados reais.' }],
+          evidence: [],
+          options: [
+            { id: 'opcao_1', title: 'Investigar e acompanhar', description: 'Validar o caso com os dados da empresa antes de agir.', action: 'corrigir_e_acompanhar', risk: 'medio' },
+            { id: 'opcao_2', title: 'Escalar para responsável', description: 'Deixar a validação final com o responsável da empresa.', action: 'escalar_responsavel', risk: 'baixo' },
+          ],
+          requires_owner_decision: true,
+        },
+      });
+    }
+    const result = await resolveDotComplaint(access.empresaId, complaint);
+    res.json({ ok: true, demo: access.demo, result });
   });
 
   app.get('/api/dot/events', async (req: Request, res: Response) => {
