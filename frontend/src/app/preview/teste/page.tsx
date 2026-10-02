@@ -22,6 +22,7 @@ export default function PreviewTrial() {
   const [googleUrl, setGoogleUrl] = useState('');
   const [aceite, setAceite] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [erro, setErro] = useState('');
 
   const copy = {
@@ -92,11 +93,13 @@ export default function PreviewTrial() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro('');
+    setStatus('idle');
     if (!aceite) return setErro(copy.note);
     if (!email.trim() || !email.includes('@')) return setErro(language === 'pt' ? 'Informe um e-mail válido.' : language === 'en' ? 'Enter a valid email address.' : language === 'es' ? 'Introduce un correo válido.' : '请输入有效的电子邮箱。');
     const policy = validarSenhaEmpresa(senha);
     if (!policy.ok) return setErro(policy.error);
     setLoading(true);
+    setStatus('sending');
     try {
       // A rota de preview é offline no localhost. Nunca tente 127.0.0.1:5000 aqui.
       // O fluxo real de ativação continua usando a API quando executado fora do preview local.
@@ -118,7 +121,7 @@ export default function PreviewTrial() {
           timeoutMs: 10000,
         });
       } catch {}
-      const response = await apiFetch('/api/trial/ativar', {
+      const response = await apiFetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -130,10 +133,14 @@ export default function PreviewTrial() {
           google_review_url: googleUrl.trim() || undefined,
           aceite_termos: true,
           versao_termos: TERMOS_VERSAO,
+          consent: true,
+          source: 'website-trial',
+          locale: language,
         }),
       });
       if (!response.ok) throw new Error(await readApiError(response, 'Não foi possível ativar o teste.'));
       const data = await response.json();
+      setStatus('success');
       if (data.verification_required) {
         setErro(data.message || (language === 'pt' ? 'Enviamos um link de confirmação para seu e-mail. Abra sua caixa de entrada para ativar o teste.' : language === 'en' ? 'We sent a confirmation link to your email. Check your inbox to activate the trial.' : language === 'es' ? 'Enviamos un enlace de confirmación a tu correo. Revisa tu bandeja para activar la prueba.' : '我们已向您的邮箱发送确认链接，请查收以激活试用。'));
         return;
@@ -143,6 +150,7 @@ export default function PreviewTrial() {
       const target = data.link_painel || (id ? `/painel/${id}` : '/');
       window.location.href = target;
     } catch (err: any) {
+      setStatus('error');
       setErro(err.message === 'Failed to fetch' ? 'Não foi possível conectar ao servidor.' : err.message || 'Não foi possível ativar o teste.');
     } finally {
       setLoading(false);
@@ -183,6 +191,7 @@ export default function PreviewTrial() {
               <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs text-emerald-300">{language === 'pt' ? '7 DIAS GRÁTIS' : language === 'en' ? '7-DAY FREE TRIAL' : language === 'es' ? '7 DÍAS GRATIS' : '免费试用 7 天'}</div>
             </div>
             {erro && <div role="alert" className="mb-4 rounded-xl border border-red-900/70 bg-red-950/40 px-4 py-3 text-sm text-red-300">{erro}</div>}
+            {status === 'success' && !erro && <div role="status" className="mb-4 rounded-xl border border-emerald-900/70 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-300">{copy.success}</div>}
             <form onSubmit={submit} className="space-y-4">
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Building2 size={14}/>{copy.company}</span><input required value={nomeEmpresa} onChange={e=>setNomeEmpresa(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="Hotel Aurora" /></label>
               <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Mail size={14}/>{copy.email}</span><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="voce@empresa.com" /></label>
