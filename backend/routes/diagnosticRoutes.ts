@@ -45,7 +45,7 @@ export function mountDiagnosticRoutes(app: Express) {
             VALUES (?,?,?,?,CURRENT_TIMESTAMP,?) ON CONFLICT(id) DO NOTHING`, [
             crypto.randomUUID(), leadId, 'diagnostic.completed', 'website', JSON.stringify({ company, locale, review_count: reviews.length }).slice(0, 20000)
           ]);
-          await db.run(`UPDATE leads SET acquisition_stage='diagnosed', acquisition_next_at=NULL WHERE id=? AND COALESCE(acquisition_suppressed,0)=0`, [leadId]);
+          await db.run(`UPDATE acquisition_leads SET acquisition_stage='diagnosed', acquisition_next_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE id=? AND COALESCE(acquisition_suppressed,0)=0`, [leadId]);
         } catch (persistError: any) {
           console.warn('[acquisition] diagnostic persistence failed:', persistError?.message || persistError);
         }
