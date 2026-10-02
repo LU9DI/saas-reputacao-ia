@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch server.ts",
-    "build": "node -e "console.log('Filtra.IA build ok')",
+    "build": "node -e \"console.log('Filtra.IA build ok')\"",
     "start": "tsx server.ts",
     "start:prod": "tsx server.ts",
     "smtp:test": "tsx scripts/smtp-connectivity-test.ts",
