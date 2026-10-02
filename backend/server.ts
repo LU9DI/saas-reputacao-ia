@@ -66,6 +66,7 @@ import { allowPlanSwitch } from './lib/plans.js';
 import { smtpConfigured } from './lib/mailer.js';
 import { anonymizeOldClientWhatsapp, ensureReviewTreatmentColumns } from './lib/lgpd.js';
 import { backfillSentiment, countMissingSentiment } from './services/sentimentBackfill.js';
+import { startDotMonitorScheduler } from './services/dotScheduler.js';
 
 assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
@@ -115,6 +116,7 @@ async function main() {
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET }); mountAdminPasswordResetRoutes(app, getDb); mountMfaRoutes(app, getDb, { JWT_SECRET, setAuthCookie, autenticarToken }); mountPasswordResetRoutes(app, getDb); mountStripeRoutes(app, getDb);
   app.use(notFoundHandler); app.use(errorHandler);
   console.log(`📦 build ${BUILD.version} marker=${BUILD.marker}`); console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF'} | Pix: ${mpConfigured() ? 'ok' : 'OFF'} | PayPal: ${paypalConfigured() ? 'ok' : 'OFF'} | WeChat: ${wechatConfigured() ? 'ok' : 'OFF'}`); console.log(`📧 SMTP: ${smtpConfigured() ? 'configurado' : 'OFF — defina SMTP_* no Render'}`); console.log('🔌 MCP: POST /mcp (Grok custom connector)'); if (!wechatConfigured()) console.log('⚠️  WeChat Pay OFF — defina WECHAT_APP_ID / WECHAT_MCH_ID / WECHAT_API_KEY para ligar.');
+  startDotMonitorScheduler();
   server = app.listen(PORT, () => console.log(`🚀 API Filtra.AI em http://localhost:${PORT}`)); server.keepAliveTimeout = 65_000; server.headersTimeout = 66_000; process.on('SIGTERM', () => gracefulShutdown('SIGTERM')); process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 main().catch((e) => { console.error(e); process.exit(1); });
