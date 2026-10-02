@@ -27,7 +27,7 @@ const suggestions = [
 ];
 
 type Message = { role: 'dot' | 'user'; text: string };
-type Briefing = { headline: string; trend: string; rating: string; reviews: number; priority: string; reason: string; suggestedAction: string };
+type Briefing = { headline: string; trend?: string; rating?: string; reviews?: number; priority?: string; reason?: string; suggestedAction: string };\ntype DotEvent = { id: number; type: string; severity: string; title: string; details: string; created_at: string };
 
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
@@ -43,10 +43,10 @@ function DotAvatar({ active = false }: { active?: boolean }) {
   );
 }
 
-function initialMessage(): Message {
+function initialMessage(company = 'sua empresa'): Message {
   return {
     role: 'dot',
-    text: 'Olá. Eu sou o Filtra Dot. Estou acompanhando a reputação do Hotel Aurora neste protótipo local. Posso analisar sinais, explicar o que mudou e preparar o próximo passo para você.',
+    text: `Olá. Eu sou o Filtra Dot. Estou acompanhando a reputação de ${company}. Posso analisar sinais, explicar o que mudou e preparar o próximo passo para você.`,
   };
 }
 
@@ -63,7 +63,7 @@ export default function FiltraDotPage() {
     return created;
   });
   const [briefing, setBriefing] = useState<Briefing | null>(null);
-  const [proposal, setProposal] = useState<any>(null);
+  const [proposal, setProposal] = useState<any>(null);\n  const [events, setEvents] = useState<DotEvent[]>([]);
 
   useEffect(() => {
     void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
@@ -213,13 +213,13 @@ export default function FiltraDotPage() {
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Hoje</div>
               <div className="mt-4 space-y-3">
                 {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">Sinal prioritário</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> Tendência</div><div className="mt-1 text-xl font-semibold text-white">+18,4%</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> Sinais</div><div className="mt-1 text-xl font-semibold text-white">3 padrões</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> Próximo passo</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'Atacar o tempo de espera'}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">Preparar ação</button></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> Tendência</div><div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || 'monitorando'}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> Sinais</div><div className="mt-1 text-xl font-semibold text-white">{events.length || 'nenhum'}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> Próximo passo</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'O Dot está monitorando sua empresa.'}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">Preparar ação</button></div>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
+            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="text-xs font-semibold text-zinc-300">Alertas recentes</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">Configurar autonomia</a></div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>\n\n            <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
               <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> O que posso fazer</div>
               <ul className="mt-4 space-y-3 text-xs leading-5 text-zinc-400">
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> Analisar avaliações e padrões</li>
