@@ -5,7 +5,6 @@ import { prepareDotAction } from '../services/dotTools.js';
 import { loadDotRealContext } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
-import { runDueDotMonitors } from '../services/dotScheduler.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -177,13 +176,6 @@ export function mountDotRoutes(app: Express) {
     if (!access.allowed || !access.empresaId) return deny(res, access);
     const result = await runDotMonitor(access.empresaId);
     res.json({ ok: true, demo: access.demo, result });
-  });
-
-  app.post('/api/dot/monitor/run-due', dotLimiter, async (req: Request, res: Response) => {
-    const access = await resolveDotAccess(req);
-    if (!access.allowed || !access.empresaId) return deny(res, access);
-    const result = await runDueDotMonitors();
-    res.json({ ok: true, result });
   });
 
   app.get('/api/dot/events', async (req: Request, res: Response) => {
