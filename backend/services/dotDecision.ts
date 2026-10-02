@@ -39,7 +39,11 @@ async function ensureSchema() {
     requires_approval INTEGER NOT NULL DEFAULT 1,
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TEXT NOT NULL
-  )`);
+  );
+  const columns = await db.all('PRAGMA table_info(dot_decisions)');
+  if (!(columns || []).some((c: any) => c.name === 'options_json')) {
+    await db.exec("ALTER TABLE dot_decisions ADD COLUMN options_json TEXT NOT NULL DEFAULT '[]'");
+  }
 }
 
 function classify(event: any): DotDecision {
@@ -77,7 +81,7 @@ export async function createDecisionsForEvents(empresaId: string, events: any[])
     if (exists) continue;
     const d = classify(event);
     const r = await db.run(
-      'INSERT INTO dot_decisions (empresa_id,event_id,type,priority,severity,reason,evidence_json,recommendation,requires_approval,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO dot_decisions (empresa_id,event_id,type,priority,severity,reason,evidence_json,recommendation,options_json,requires_approval,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
       [empresaId,d.eventId,d.type,d.priority,d.severity,d.reason,JSON.stringify(d.evidence),d.recommendation,JSON.stringify(d.options),d.requiresApproval ? 1 : 0,d.status,new Date().toISOString()]
     );
     created.push({ ...d, id: r.lastID });
