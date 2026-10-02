@@ -16,6 +16,7 @@ async function ensureSchema() {
     error TEXT,
     created_at TEXT NOT NULL
   )`);
+  await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_decision_option ON dot_action_queue(empresa_id, decision_id, option_id)');
 }
 
 export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string) {
@@ -33,22 +34,51 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
   if (!option) return null;
   const existing = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND option_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId, optionId]);
   if (existing) return existing;
-  const result = await db.run(
-    'INSERT INTO dot_action_queue (empresa_id,decision_id,option_id,action,status,created_at) VALUES (?,?,?,?,?,?)',
-    [empresaId, decisionId, option.id, option.action, 'prepared', new Date().toISOString()]
-  );
-  return { id: result.lastID, decisionId, optionId: option.id, action: option.action, status: 'prepared' };
+  try {
+    const result = await db.run(
+      'INSERT INTO dot_action_queue (empresa_id,decision_id,option_id,action,status,created_at) VALUES (?,?,?,?,?,?)',
+      [empresaId, decisionId, option.id, option.action, 'prepared', new Date().toISOString()]
+    );
+    const promoted = await db.run(
+      "UPDATE dot_decisions SET status = 'prepared' WHERE id = ? AND empresa_id = ? AND status = 'pending'",
+      [decisionId, empresaId]
+    );
+    if (promoted.changes !== 1) {
+      await db.run('DELETE FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\'', [result.lastID, empresaId]);
+      const current = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND option_id = ? LIMIT 1', [empresaId, decisionId, optionId]);
+      return current || null;
+    }
+    return { id: result.lastID, decisionId, optionId: option.id, action: option.action, status: 'prepared' };
+  } catch {
+    const current = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND option_id = ? LIMIT 1', [empresaId, decisionId, optionId]);
+    return current || null;
+  }
 }
 
 export async function approveDotAction(empresaId: string, actionId: number) {
   await ensureSchema();
   const db = getDb();
   const now = new Date().toISOString();
+  const action = await db.get('SELECT decision_id FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\' LIMIT 1', [actionId, empresaId]);
+  if (!action) return null;
+
+  const decision = await db.get('SELECT id, status, requires_approval FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [action.decision_id, empresaId]);
+  if (!decision || String(decision.status) !== 'prepared' || Number(decision.requires_approval) !== 1) return null;
+
+  const decisionApproved = await db.run(
+    "UPDATE dot_decisions SET status = 'approved' WHERE id = ? AND empresa_id = ? AND status = 'prepared' AND requires_approval = 1",
+    [action.decision_id, empresaId]
+  );
+  if (decisionApproved.changes !== 1) return null;
+
   const updated = await db.run(
     "UPDATE dot_action_queue SET status = ?, approved_at = ? WHERE id = ? AND empresa_id = ? AND status = 'prepared'",
     ['approved', now, actionId, empresaId]
   );
-  if (!updated || updated.changes !== 1) return null;
+  if (!updated || updated.changes !== 1) {
+    await db.run("UPDATE dot_decisions SET status = 'prepared' WHERE id = ? AND empresa_id = ? AND status = 'approved'", [action.decision_id, empresaId]);
+    return null;
+  }
   return { id: actionId, status: 'approved', executed: false };
 }
 
@@ -66,10 +96,16 @@ export async function executeDotAction(empresaId: string, actionId: number) {
   await ensureSchema();
   const db = getDb();
   const row = await db.get(
-    'SELECT * FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = ? LIMIT 1',
+    `SELECT a.*, d.status AS decision_status, d.requires_approval
+       FROM dot_action_queue a
+       JOIN dot_decisions d ON d.id = a.decision_id AND d.empresa_id = a.empresa_id
+      WHERE a.id = ? AND a.empresa_id = ? AND a.status = ? LIMIT 1`,
     [actionId, empresaId, 'approved']
   );
   if (!row) return { ok: false, reason: 'Ação não encontrada ou não aprovada.', status: null };
+  if (String(row.decision_status) !== 'approved' || Number(row.requires_approval) !== 1) {
+    return { ok: false, reason: 'A decisão vinculada não está aprovada para execução.', status: row.status };
+  }
 
   const supportedLocalActions = new Set([
     'priorizar_e_resolver',
