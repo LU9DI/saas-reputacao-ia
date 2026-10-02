@@ -92,9 +92,21 @@ export async function createDecisionsForEvents(empresaId: string, events: any[])
 export async function updateDotDecision(empresaId: string, id: number, status: 'prepared' | 'approved' | 'rejected') {
   await ensureSchema();
   const db = getDb();
-  const row = await db.get('SELECT id FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [id, empresaId]);
+  const row = await db.get('SELECT id, status FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [id, empresaId]);
   if (!row) return null;
-  await db.run('UPDATE dot_decisions SET status = ? WHERE id = ? AND empresa_id = ?', [status, id, empresaId]);
+
+  const current = String(row.status);
+  const allowed: Record<string, string[]> = {
+    pending: ['prepared', 'rejected'],
+    prepared: ['approved', 'rejected'],
+  };
+  if (!allowed[current]?.includes(status)) return null;
+
+  const updated = await db.run(
+    'UPDATE dot_decisions SET status = ? WHERE id = ? AND empresa_id = ? AND status = ?',
+    [status, id, empresaId, current]
+  );
+  if (!updated || updated.changes !== 1) return null;
   return { id, status };
 }
 
