@@ -163,7 +163,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
         const adapted = adaptSql(sql);
         const q = convertPlaceholders(adapted);
         const r = await c.query(q, params);
-        const lastID = /RETURNING\\s+id\\b/i.test(q) ? Number(r.rows[0]?.id) || undefined : undefined;
+        const lastID = /RETURNING\s+id\b/i.test(q) ? Number(r.rows[0]?.id) || undefined : undefined;
         return { changes: r.rowCount || 0, lastID };
       } finally {
         c.release();
@@ -216,7 +216,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
           if (/^PRAGMA/i.test(sql.trim())) return { changes: 0 };
           const q = convertPlaceholders(adaptSql(sql));
           const r = await c.query(q, params);
-          const lastID = /RETURNING\\s+id\\b/i.test(q) ? Number(r.rows[0]?.id) || undefined : undefined;
+          const lastID = /RETURNING\s+id\b/i.test(q) ? Number(r.rows[0]?.id) || undefined : undefined;
           return { changes: r.rowCount || 0, lastID };
         },
         get: async <TResult = any>(sql: string, params: any[] = []) => {
