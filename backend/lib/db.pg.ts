@@ -99,6 +99,7 @@ export type PgDatabase = {
   run: (sql: string, params?: any[]) => Promise<{ changes: number; lastID?: number }>;
   get: <T = any>(sql: string, params?: any[]) => Promise<T | undefined>;
   all: <T = any>(sql: string, params?: any[]) => Promise<T[]>;
+  transaction: <T>(fn: (tx: PgDatabase) => Promise<T>) => Promise<T>;
   close: () => Promise<void>;
 };
 
@@ -194,6 +195,56 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
         const q = convertPlaceholders(adapted);
         const r = await c.query(q, params);
         return r.rows as T[];
+      } finally {
+        c.release();
+      }
+    },
+
+    async transaction<T>(fn: (tx: PgDatabase) => Promise<T>): Promise<T> {
+      const c = await pool!.connect();
+      const txDb: PgDatabase = {
+        exec: async (sql: string) => {
+          const adapted = adaptSql(sql);
+          const statements = adapted.split(';').map((x) => x.trim()).filter(Boolean);
+          for (const st of statements) {
+            if (/^PRAGMA/i.test(st)) continue;
+            await c.query(st);
+          }
+        },
+        run: async (sql: string, params: any[] = []) => {
+          if (/^PRAGMA/i.test(sql.trim())) return { changes: 0 };
+          const q = convertPlaceholders(adaptSql(sql));
+          const r = await c.query(q, params);
+          return { changes: r.rowCount || 0, lastID: undefined };
+        },
+        get: async <TResult = any>(sql: string, params: any[] = []) => {
+          if (/PRAGMA\s+table_info/i.test(sql)) {
+            const rows = await handlePragma(c, sql);
+            return rows[0] as TResult | undefined;
+          }
+          const q = convertPlaceholders(adaptSql(sql));
+          const r = await c.query(q, params);
+          return r.rows[0] as TResult | undefined;
+        },
+        all: async <TResult = any>(sql: string, params: any[] = []) => {
+          if (/PRAGMA\s+table_info/i.test(sql)) {
+            return (await handlePragma(c, sql)) as TResult[];
+          }
+          const q = convertPlaceholders(adaptSql(sql));
+          const r = await c.query(q, params);
+          return r.rows as TResult[];
+        },
+        transaction: async <Nested>(nestedFn: (nestedTx: PgDatabase) => Promise<Nested>) => nestedFn(txDb).catch((error) => { throw error; }),
+        close: async () => {},
+      };
+      await c.query('BEGIN');
+      try {
+        const result = await fn(txDb);
+        await c.query('COMMIT');
+        return result;
+      } catch (error) {
+        try { await c.query('ROLLBACK'); } catch {}
+        throw error;
       } finally {
         c.release();
       }
