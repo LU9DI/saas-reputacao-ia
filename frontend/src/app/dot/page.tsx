@@ -29,7 +29,19 @@ const suggestions = [
 type Message = { role: 'dot' | 'user'; text: string };
 type Briefing = { headline: string; trend?: string; rating?: string; reviews?: number; priority?: string; reason?: string; suggestedAction: string };
 type DotEvent = { id: number; type: string; severity: string; title: string; details: string; created_at: string };
-type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string; action: string; risk: string };\ntype DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };\ntype DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
+type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string; action: string; risk: string };
+type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
+type DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
+type DotResolve = {
+  problem_summary: string;
+  verification_status: 'confirmed' | 'unverified' | 'not_found';
+  confidence: 'alta' | 'media' | 'baixa';
+  facts: { source: string; fact: string }[];
+  evidence: { id: string; rating: number; comment: string; createdAt?: string }[];
+  options: DotOption[];
+  requires_owner_decision: boolean;
+  decision_id?: number;
+};
 
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
@@ -67,13 +79,51 @@ export default function FiltraDotPage() {
   const [briefing, setBriefing] = useState<Briefing | null>(null);
   const [proposal, setProposal] = useState<any>(null);
   const [events, setEvents] = useState<DotEvent[]>([]);
-  const [decisions, setDecisions] = useState<DotDecision[]>([]);\n  const [actions, setActions] = useState<DotAction[]>([]);
+  const [decisions, setDecisions] = useState<DotDecision[]>([]);
+  const [actions, setActions] = useState<DotAction[]>([]);
 
   useEffect(() => {
     void fetch(`${API_URL}/api/dot/events`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.events) setEvents(d.events); }).catch(() => undefined);
-    void fetch(`${API_URL}/api/dot/decisions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.decisions) setDecisions(d.decisions); }).catch(() => undefined);\n    void fetch(`${API_URL}/api/dot/actions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.actions) setActions(d.actions); }).catch(() => undefined);
+    void fetch(`${API_URL}/api/dot/decisions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.decisions) setDecisions(d.decisions); }).catch(() => undefined);
+    void fetch(`${API_URL}/api/dot/actions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.actions) setActions(d.actions); }).catch(() => undefined);
     void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
+
+  async function resolveComplaint() {
+    const complaint = resolveInput.trim();
+    if (!complaint || resolveBusy) return;
+    setResolveBusy(true);
+    try {
+      const response = await fetch(API_URL + '/api/dot/resolve', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ complaint }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || 'Não foi possível verificar o relato.');
+      setResolveResult(data.result);
+      setResolveInput('');
+      if (data.result?.decision_id) {
+        const d = await fetch(API_URL + '/api/dot/decisions', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
+        if (d?.decisions) setDecisions(d.decisions);
+      }
+    } catch (error: any) {
+      setResolveResult({
+        problem_summary: complaint,
+        verification_status: 'unverified',
+        confidence: 'baixa',
+        facts: [{ source: 'Filtra Dot', fact: error?.message || 'Falha na verificação.' }],
+        evidence: [],
+        options: [
+          { id: 'opcao_1', title: 'Investigar e acompanhar', description: 'Verificar os fatos antes de agir.', action: 'corrigir_e_acompanhar', risk: 'medio' },
+          { id: 'opcao_2', title: 'Escalar para responsável', description: 'Deixar a decisão com o responsável da empresa.', action: 'escalar_responsavel', risk: 'baixo' },
+        ],
+        requires_owner_decision: true,
+      });
+    } finally {
+      setResolveBusy(false);
+    }
+  }
 
   async function prepareOption(decisionId: number, optionId: string) {
     try {
@@ -253,6 +303,28 @@ export default function FiltraDotPage() {
               </div>
             )}
 
+
+            <div className="rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Bot size={14} /> Dot Resolve</div>
+              <div className="mt-2 text-xs leading-5 text-zinc-500">Receba uma reclamação, verifique o que os dados da empresa sustentam e deixe a decisão final com o responsável.</div>
+              <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder="Ex.: cliente diz que esperou 40 minutos para ser atendido..." className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
+              <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? 'Verificando evidências…' : 'Verificar reclamação'}</button>
+              {resolveResult && (
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                    <div className="flex items-center justify-between text-[10px] uppercase tracking-wider">
+                      <span className="text-zinc-500">Verificação</span>
+                      <span className={resolveResult.verification_status === 'confirmed' ? 'text-emerald-300' : 'text-amber-300'}>{resolveResult.verification_status} · confiança {resolveResult.confidence}</span>
+                    </div>
+                    <div className="mt-2 text-xs leading-5 text-zinc-300">{resolveResult.problem_summary}</div>
+                  </div>
+                  {resolveResult.facts.map((fact, i) => <div key={i} className="text-[11px] leading-5 text-zinc-500"><span className="text-zinc-300">{fact.source}:</span> {fact.fact}</div>)}
+                  {resolveResult.evidence.length > 0 && <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Evidências encontradas</div><div className="space-y-2">{resolveResult.evidence.slice(0,5).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-black/20 p-2.5"><div className="flex justify-between text-[10px]"><span className="text-amber-300">Nota {e.rating}/5</span><span className="text-zinc-600">{e.id}</span></div><div className="mt-1 text-[11px] leading-5 text-zinc-400">{e.comment}</div></div>)}</div></div>}
+                  <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Duas opções</div><div className="grid gap-2">{resolveResult.options.slice(0,2).map(o => <button key={o.id} type="button" disabled={!resolveResult.decision_id} onClick={() => resolveResult.decision_id && void prepareOption(resolveResult.decision_id, o.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30 disabled:opacity-40"><div className="text-xs font-semibold text-white">{o.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{o.description}</div><div className="mt-1 text-[10px] text-zinc-600">Risco: {o.risk}</div></button>)}</div></div>
+                  {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">A decisão final permanece com o responsável. Nenhuma ação externa é executada automaticamente.</div>}
+                </div>
+              )}
+            </div>
 
             <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Hoje</div>
