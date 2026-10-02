@@ -97,6 +97,7 @@ export async function createLead(
         whatsapp: input.whatsapp,
         locale: input.locale,
         signup_ip: input.signup_ip,
+        skip_email_verification: true,
       },
       db,
       res,
