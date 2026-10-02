@@ -38,9 +38,12 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
 export async function approveDotAction(empresaId: string, actionId: number) {
   await ensureSchema();
   const db = getDb();
-  const row = await db.get('SELECT id FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = ? LIMIT 1', [actionId, empresaId, 'prepared']);
-  if (!row) return null;
-  await db.run('UPDATE dot_action_queue SET status = ?, approved_at = ? WHERE id = ? AND empresa_id = ?', ['approved', new Date().toISOString(), actionId, empresaId]);
+  const now = new Date().toISOString();
+  const updated = await db.run(
+    "UPDATE dot_action_queue SET status = ?, approved_at = ? WHERE id = ? AND empresa_id = ? AND status = 'prepared'",
+    ['approved', now, actionId, empresaId]
+  );
+  if (!updated || updated.changes !== 1) return null;
   return { id: actionId, status: 'approved', executed: false };
 }
 
