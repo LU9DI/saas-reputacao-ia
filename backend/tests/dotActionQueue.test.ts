@@ -1,6 +1,17 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import { test } from 'node:test';
+
+let sqliteAvailable = true;
+try {
+  await import('sqlite3');
+  await import('sqlite');
+} catch {
+  sqliteAvailable = false;
+}
+
+const queueTest = (name: string, fn: () => Promise<void>) =>
+  test(name, { skip: !sqliteAvailable }, fn);
 import { initDB, getDb } from '../lib/db.js';
 import {
   prepareDotActionFromDecision,
@@ -54,7 +65,7 @@ async function seedDecision(empresaId: string) {
   return Number(r.lastID);
 }
 
-test('Dot action queue: prepare is tenant-scoped and blocks a second active option', async () => {
+queueTest('Dot action queue: prepare is tenant-scoped and blocks a second active option', async () => {
   await setup();
   const empresa = crypto.randomUUID();
   const otherEmpresa = crypto.randomUUID();
@@ -72,7 +83,7 @@ test('Dot action queue: prepare is tenant-scoped and blocks a second active opti
   assert.equal(crossTenant, null);
 });
 
-test('Dot action queue: approval is one-way and execution is replay-safe', async () => {
+queueTest('Dot action queue: approval is one-way and execution is replay-safe', async () => {
   await setup();
   const empresa = crypto.randomUUID();
   const decisionId = await seedDecision(empresa);
@@ -94,7 +105,7 @@ test('Dot action queue: approval is one-way and execution is replay-safe', async
   assert.equal(replayExecution.ok, false);
 });
 
-test('Dot action queue: concurrent approvals consume the same action only once', async () => {
+queueTest('Dot action queue: concurrent approvals consume the same action only once', async () => {
   await setup();
   const empresa = crypto.randomUUID();
   const decisionId = await seedDecision(empresa);
@@ -123,7 +134,7 @@ test('Dot action queue: concurrent approvals consume the same action only once',
   assert.equal(decision?.status, 'approved');
 });
 
-test('Dot action queue: an action cannot execute before approval', async () => {
+queueTest('Dot action queue: an action cannot execute before approval', async () => {
   await setup();
   const empresa = crypto.randomUUID();
   const decisionId = await seedDecision(empresa);
