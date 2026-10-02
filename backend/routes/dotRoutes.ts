@@ -2,6 +2,10 @@ import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { callAI } from '../groqService.js';
 import { prepareDotAction } from '../services/dotTools.js';
+import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
+import { findEmpresa } from '../lib/db.js';
+import { planLabel } from '../lib/plans.js';
+import { empresaTemAcesso } from '../services/billingService.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -35,6 +39,15 @@ IMPORTANTE: estes números são apenas para o protótipo local e não representa
 `;
 
 type ChatItem = { role: 'user' | 'dot'; text: string; at: number };
+type DotAccess = {
+  allowed: boolean;
+  demo: boolean;
+  empresaId?: string;
+  plan?: string;
+  planLabel?: string;
+  reason?: string;
+};
+
 const sessions = new Map<string, ChatItem[]>();
 const MAX_HISTORY = 12;
 
@@ -62,13 +75,75 @@ function buildConversation(history: ChatItem[], message: string): string {
   return [DEMO_CONTEXT, transcript, `USUÁRIO: ${message}`].filter(Boolean).join('\n\n');
 }
 
+async function resolveDotAccess(req: Request): Promise<DotAccess> {
+  const token = extrairToken(req);
+
+  // Localhost continua permitindo o protótipo demonstrativo sem login.
+  if (!token) {
+    if (process.env.NODE_ENV !== 'production') {
+      return { allowed: true, demo: true, plan: 'rei', planLabel: 'Rei' };
+    }
+    return { allowed: false, demo: false, reason: 'Autenticação necessária.' };
+  }
+
+  try {
+    const payload = verifyAccessToken(token);
+    if (isAdminUser({ empresa_id: payload.empresa_id, role: payload.role })) {
+      return { allowed: false, demo: false, reason: 'Conta admin não possui acesso ao Dot de empresa.' };
+    }
+
+    const empresa = await findEmpresa(payload.empresa_id);
+    if (!empresa || !empresaTemAcesso(empresa)) {
+      return { allowed: false, demo: false, reason: 'Assinatura/trial inativo.' };
+    }
+
+    const plan = String(empresa.plan || '').toLowerCase();
+    const liberado = plan === 'rei' || plan === 'corporativo' || plan === 'corp';
+    if (!liberado) {
+      return {
+        allowed: false,
+        demo: false,
+        empresaId: empresa.id,
+        plan,
+        planLabel: planLabel(plan),
+        reason: 'O Filtra Dot está em acesso antecipado para os planos Rei e Corporativo.',
+      };
+    }
+
+    return {
+      allowed: true,
+      demo: false,
+      empresaId: empresa.id,
+      plan,
+      planLabel: planLabel(plan),
+    };
+  } catch {
+    return { allowed: false, demo: false, reason: 'Token inválido ou expirado.' };
+  }
+}
+
+function deny(res: Response, access: DotAccess) {
+  return res.status(403).json({
+    ok: false,
+    error: access.reason || 'Acesso ao Filtra Dot não liberado.',
+    code: 'DOT_PLAN_REQUIRED',
+    allowedPlans: ['rei', 'corporativo'],
+  });
+}
+
 export function mountDotRoutes(app: Express) {
-  app.get('/api/dot/status', (_req: Request, res: Response) => {
+  app.get('/api/dot/status', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
     res.json({
       ok: true,
-      enabled: process.env.NODE_ENV !== 'production' || process.env.FILTRA_DOT_ENABLED === '1',
-      plan: 'rei',
-      demo: true,
+      enabled:
+        access.allowed &&
+        (process.env.NODE_ENV !== 'production' || process.env.FILTRA_DOT_ENABLED === '1'),
+      access: access.allowed,
+      demo: access.demo,
+      plan: access.plan || 'rei',
+      plan_label: access.planLabel || 'Rei',
+      priority_access: ['rei', 'corporativo'],
       capabilities: [
         'analisar_reputacao',
         'detectar_padroes',
@@ -79,10 +154,15 @@ export function mountDotRoutes(app: Express) {
     });
   });
 
-  app.get('/api/dot/briefing', (_req: Request, res: Response) => {
+  app.get('/api/dot/briefing', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed) return deny(res, access);
+
     res.json({
       ok: true,
-      demo: true,
+      demo: access.demo,
+      plan: access.plan || 'rei',
+      plan_label: access.planLabel || 'Rei',
       briefing: {
         headline: 'A reputação está saudável, mas existe um sinal recorrente para investigar.',
         trend: '+18,4%',
@@ -95,18 +175,33 @@ export function mountDotRoutes(app: Express) {
     });
   });
 
-  app.post('/api/dot/action/prepare', dotLimiter, (req: Request, res: Response) => {
+  app.post('/api/dot/action/prepare', dotLimiter, async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed) return deny(res, access);
+
     const action = cleanMessage(req.body?.action);
     if (!action) return res.status(400).json({ error: 'Ação obrigatória.' });
-    return res.json({ ok: true, proposal: prepareDotAction(action) });
+
+    return res.json({
+      ok: true,
+      demo: access.demo,
+      plan: access.plan || 'rei',
+      proposal: prepareDotAction(action),
+    });
   });
 
-  app.delete('/api/dot/session/:sessionId', (req: Request, res: Response) => {
+  app.delete('/api/dot/session/:sessionId', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed) return deny(res, access);
+
     resetSession(String(req.params.sessionId || ''));
     res.json({ ok: true });
   });
 
   app.post('/api/dot/chat', dotLimiter, async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed) return deny(res, access);
+
     if (process.env.NODE_ENV === 'production' && process.env.FILTRA_DOT_ENABLED !== '1') {
       return res.status(404).json({ error: 'Filtra Dot ainda não está habilitado.' });
     }
@@ -123,7 +218,7 @@ export function mountDotRoutes(app: Express) {
         buildConversation(history, message),
         700,
         0.45,
-        { tipo: 'filtra_dot_chat' }
+        { empresaId: access.empresaId || null, tipo: 'filtra_dot_chat' }
       );
 
       history.push({ role: 'user', text: message, at: Date.now() });
@@ -135,7 +230,10 @@ export function mountDotRoutes(app: Express) {
         message: result.text,
         provider: result.provider,
         latency_ms: result.latency_ms,
-        demo: true,
+        tokens_used: result.tokens,
+        demo: access.demo,
+        plan: access.plan || 'rei',
+        plan_label: access.planLabel || 'Rei',
         session_id: sessionId,
         memory_turns: Math.floor(history.length / 2),
       });
