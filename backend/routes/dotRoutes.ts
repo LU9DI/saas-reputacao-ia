@@ -6,7 +6,7 @@ import { loadDotRealContext } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
 import { resolveDotComplaint } from '../services/dotResolve.js';
-import { listDotDecisions, updateDotDecision } from '../services/dotDecision.js';
+import { createDecisionsForEvents, listDotDecisions, updateDotDecision } from '../services/dotDecision.js';
 import { prepareDotActionFromDecision, approveDotAction, executeDotAction, listDotActions } from '../services/dotActionQueue.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
@@ -255,7 +255,37 @@ export function mountDotRoutes(app: Express) {
       });
     }
     const result = await resolveDotComplaint(access.empresaId, complaint);
-    res.json({ ok: true, demo: access.demo, result });
+    const db = (await import('../lib/db.js')).getDb();
+    await db.exec(`CREATE TABLE IF NOT EXISTS dot_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      empresa_id TEXT NOT NULL,
+      type TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      title TEXT NOT NULL,
+      details TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      acknowledged_at TEXT
+    )`);
+    const severity = result.verification_status === 'confirmed' ? 'critical' : 'warning';
+    const eventTitle = result.verification_status === 'confirmed'
+      ? 'Reclamação confirmada pelo Dot Resolve'
+      : 'Reclamação recebida para verificação';
+    const eventDetails = [
+      result.problem_summary,
+      ...result.facts.map((fact) => fact.fact),
+      result.evidence.length ? `Evidências relacionadas: ${result.evidence.length}.` : 'Nenhuma evidência relacionada encontrada.',
+    ].join(' ');
+    const inserted = await db.run(
+      'INSERT INTO dot_events (empresa_id,type,severity,title,details,created_at) VALUES (?,?,?,?,?,?)',
+      [access.empresaId, 'complaint_resolution', severity, eventTitle, eventDetails, new Date().toISOString()]
+    );
+    const decisions = await createDecisionsForEvents(access.empresaId, [{ id: inserted.lastID, type: 'complaint_resolution', severity, title: eventTitle, details: eventDetails }]);
+    const decision = decisions[0];
+    res.json({
+      ok: true,
+      demo: access.demo,
+      result: { ...result, decision_id: decision?.id },
+    });
   });
 
   app.get('/api/dot/events', async (req: Request, res: Response) => {
