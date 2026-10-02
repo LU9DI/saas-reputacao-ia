@@ -39,7 +39,7 @@ async function ensureSchema() {
     requires_approval INTEGER NOT NULL DEFAULT 1,
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TEXT NOT NULL
-  );
+  )`);
   const columns = await db.all('PRAGMA table_info(dot_decisions)');
   if (!(columns || []).some((c: any) => c.name === 'options_json')) {
     await db.exec("ALTER TABLE dot_decisions ADD COLUMN options_json TEXT NOT NULL DEFAULT '[]'");
