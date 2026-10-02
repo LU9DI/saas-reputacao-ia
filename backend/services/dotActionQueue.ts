@@ -1,5 +1,6 @@
 import { getDb, withDbTransaction } from '../lib/db.js';
 import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRegistry.js';
+import { recordDotActionAudit } from './dotActionAudit.js';
 
 export type DotActionStatus = 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled';
 
@@ -23,7 +24,7 @@ async function ensureSchema() {
 
 export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string) {
   await ensureSchema();
-  return withDbTransaction(async (tx) => {
+  const prepared = await withDbTransaction(async (tx) => {
   const decision = await tx.get('SELECT * FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [decisionId, empresaId]);
   if (!decision) return null;
 
@@ -59,13 +60,17 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
     throw error;
   }
   });
+  if (prepared?.id) {
+    await recordDotActionAudit({ empresaId, actionId: Number(prepared.id), decisionId, event: 'prepared', actorType: 'dot', metadata: { optionId } });
+  }
+  return prepared;
 }
 
 export async function approveDotAction(empresaId: string, actionId: number) {
   await ensureSchema();
   const now = new Date().toISOString();
 
-  return withDbTransaction(async (tx) => {
+  const approved = await withDbTransaction(async (tx) => {
     const action = await tx.get(
       'SELECT id, decision_id FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\' LIMIT 1',
       [actionId, empresaId]
@@ -92,8 +97,12 @@ export async function approveDotAction(empresaId: string, actionId: number) {
       throw new Error('Não foi possível consumir a ação preparada; transação revertida.');
     }
 
-    return { id: actionId, status: 'approved', executed: false };
+    return { id: actionId, decisionId: Number(action.decision_id), status: 'approved', executed: false };
   });
+  if (approved?.id) {
+    await recordDotActionAudit({ empresaId, actionId, decisionId: Number(approved.decisionId), event: 'approved', actorType: 'user' });
+  }
+  return approved;
 }
 
 export async function listDotActions(empresaId: string) {
@@ -133,6 +142,7 @@ export async function executeDotAction(empresaId: string, actionId: number) {
   if (!claimed || claimed.changes !== 1) {
     return { ok: false, reason: 'Ação já está sendo processada ou mudou de estado.', status: 'approved' };
   }
+  await recordDotActionAudit({ empresaId, actionId, decisionId: Number(row.decision_id), event: 'execution_started', actorType: 'system', metadata: { executor: definition.executorKey } });
 
   try {
     // Executor local seguro: registra a execução sem chamar sistemas externos.
@@ -141,12 +151,15 @@ export async function executeDotAction(empresaId: string, actionId: number) {
       'UPDATE dot_action_queue SET status = ?, executed_at = ? WHERE id = ? AND empresa_id = ? AND status = ?',
       ['executed', finished, actionId, empresaId, 'executing']
     );
+    await recordDotActionAudit({ empresaId, actionId, decisionId: Number(row.decision_id), event: 'executed', actorType: 'system', metadata: { executor: definition.executorKey } });
     return { ok: true, id: actionId, status: 'executed', simulated: true, executor: definition.executorKey, startedAt: now, executedAt: finished };
   } catch (error: any) {
+    const message = String(error?.message || error);
     await db.run(
       'UPDATE dot_action_queue SET status = ?, error = ? WHERE id = ? AND empresa_id = ? AND status = ?',
-      ['failed', String(error?.message || error), actionId, empresaId, 'executing']
+      ['failed', message, actionId, empresaId, 'executing']
     );
+    await recordDotActionAudit({ empresaId, actionId, decisionId: Number(row.decision_id), event: 'failed', actorType: 'system', metadata: { error: message } });
     return { ok: false, id: actionId, status: 'failed', reason: String(error?.message || error) };
   }
 }
