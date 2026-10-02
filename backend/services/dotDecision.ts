@@ -1,5 +1,13 @@
 import { getDb } from '../lib/db.js';
 
+export type DotOption = {
+  id: 'opcao_1' | 'opcao_2';
+  title: string;
+  description: string;
+  action: string;
+  risk: 'baixo' | 'medio' | 'alto';
+};
+
 export type DotDecision = {
   id?: number;
   eventId: number;
@@ -9,6 +17,7 @@ export type DotDecision = {
   reason: string;
   evidence: string[];
   recommendation: string;
+  options: DotOption[];
   requiresApproval: boolean;
   status: 'pending' | 'prepared' | 'approved' | 'rejected';
   createdAt?: string;
@@ -26,6 +35,7 @@ async function ensureSchema() {
     reason TEXT NOT NULL,
     evidence_json TEXT NOT NULL,
     recommendation TEXT NOT NULL,
+    options_json TEXT NOT NULL DEFAULT '[]',
     requires_approval INTEGER NOT NULL DEFAULT 1,
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TEXT NOT NULL
@@ -42,8 +52,17 @@ function classify(event: any): DotDecision {
     reason: event.details,
     evidence: [event.title, event.details],
     recommendation: critical
-      ? 'Investigar imediatamente a origem do sinal e preparar um plano de resposta antes de qualquer ação externa.'
-      : 'Acompanhar a evolução do sinal e preparar uma intervenção caso ele persista ou se agrave.',
+      ? 'O sinal merece tratamento prioritário. O Dot deve verificar os fatos e apresentar duas formas objetivas de resolver a pendência.'
+      : 'O sinal deve ser acompanhado e, se confirmado, o Dot deve apresentar duas formas objetivas de resolver a pendência.',
+    options: critical
+      ? [
+          { id: 'opcao_1', title: 'Resolver diretamente', description: 'Priorizar a pendência e preparar uma resposta ao cliente.', action: 'priorizar_e_resolver', risk: 'medio' },
+          { id: 'opcao_2', title: 'Escalar para responsável', description: 'Encaminhar com contexto, evidências e prazo de acompanhamento.', action: 'escalar_responsavel', risk: 'baixo' },
+        ]
+      : [
+          { id: 'opcao_1', title: 'Acompanhar e corrigir', description: 'Atuar sobre a causa identificada e acompanhar o resultado.', action: 'corrigir_e_acompanhar', risk: 'medio' },
+          { id: 'opcao_2', title: 'Escalar para responsável', description: 'Enviar o caso ao responsável com contexto e evidências.', action: 'escalar_responsavel', risk: 'baixo' },
+        ],
     requiresApproval: true,
     status: 'pending',
   };
@@ -59,7 +78,7 @@ export async function createDecisionsForEvents(empresaId: string, events: any[])
     const d = classify(event);
     const r = await db.run(
       'INSERT INTO dot_decisions (empresa_id,event_id,type,priority,severity,reason,evidence_json,recommendation,requires_approval,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
-      [empresaId,d.eventId,d.type,d.priority,d.severity,d.reason,JSON.stringify(d.evidence),d.recommendation,d.requiresApproval ? 1 : 0,d.status,new Date().toISOString()]
+      [empresaId,d.eventId,d.type,d.priority,d.severity,d.reason,JSON.stringify(d.evidence),d.recommendation,JSON.stringify(d.options),d.requiresApproval ? 1 : 0,d.status,new Date().toISOString()]
     );
     created.push({ ...d, id: r.lastID });
   }
@@ -78,5 +97,5 @@ export async function updateDotDecision(empresaId: string, id: number, status: '
 export async function listDotDecisions(empresaId: string) {
   await ensureSchema();
   const rows = await getDb().all('SELECT * FROM dot_decisions WHERE empresa_id = ? ORDER BY id DESC LIMIT 50',[empresaId]);
-  return (rows || []).map((r:any) => ({...r, evidence: JSON.parse(r.evidence_json || '[]'), requiresApproval: Boolean(r.requires_approval), createdAt: r.created_at}));
+  return (rows || []).map((r:any) => ({...r, evidence: JSON.parse(r.evidence_json || '[]'), options: JSON.parse(r.options_json || '[]'), requiresApproval: Boolean(r.requires_approval), createdAt: r.created_at}));
 }
