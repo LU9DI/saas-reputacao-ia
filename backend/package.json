@@ -30,19 +30,21 @@
     "pdfkit": "^0.16.0",
     "pg": "^8.13.3",
     "tsx": "^4.19.3",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.4"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/jsonwebtoken": "^9.0.9",
+    "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.17.0",
     "@types/nodemailer": "^6.4.17",
     "@types/pdfkit": "^0.13.9",
     "@types/pg": "^8.11.11",
     "@types/web-push": "^3.6.4",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
     "typescript": "^5.8.2"
   },
   "overrides": {
