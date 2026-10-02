@@ -5,6 +5,7 @@ import { prepareDotAction } from '../services/dotTools.js';
 import { loadDotRealContext } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
+import { listDotDecisions } from '../services/dotDecision.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -176,6 +177,13 @@ export function mountDotRoutes(app: Express) {
     if (!access.allowed || !access.empresaId) return deny(res, access);
     const result = await runDotMonitor(access.empresaId);
     res.json({ ok: true, demo: access.demo, result });
+  });
+
+  app.get('/api/dot/decisions', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const decisions = await listDotDecisions(access.empresaId);
+    res.json({ ok: true, decisions });
   });
 
   app.get('/api/dot/events', async (req: Request, res: Response) => {
