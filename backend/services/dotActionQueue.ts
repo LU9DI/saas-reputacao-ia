@@ -53,3 +53,47 @@ export async function listDotActions(empresaId: string) {
 async function dbAll(empresaId: string) {
   return getDb().all('SELECT * FROM dot_action_queue WHERE empresa_id = ? ORDER BY id DESC LIMIT 50', [empresaId]);
 }
+
+export async function executeDotAction(empresaId: string, actionId: number) {
+  await ensureSchema();
+  const db = getDb();
+  const row = await db.get(
+    'SELECT * FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = ? LIMIT 1',
+    [actionId, empresaId, 'approved']
+  );
+  if (!row) return { ok: false, reason: 'Ação não encontrada ou não aprovada.', status: null };
+
+  const supportedLocalActions = new Set([
+    'priorizar_e_resolver',
+    'escalar_responsavel',
+    'corrigir_e_acompanhar',
+  ]);
+  if (!supportedLocalActions.has(String(row.action))) {
+    return { ok: false, reason: 'Executor não registrado para esta ação.', status: row.status };
+  }
+
+  const now = new Date().toISOString();
+  const claimed = await db.run(
+    "UPDATE dot_action_queue SET status = ?, error = NULL WHERE id = ? AND empresa_id = ? AND status = 'approved'",
+    ['executing', actionId, empresaId]
+  );
+  if (!claimed || claimed.changes !== 1) {
+    return { ok: false, reason: 'Ação já está sendo processada ou mudou de estado.', status: 'approved' };
+  }
+
+  try {
+    // Executor local seguro: registra a execução sem chamar sistemas externos.
+    const finished = new Date().toISOString();
+    await db.run(
+      'UPDATE dot_action_queue SET status = ?, executed_at = ? WHERE id = ? AND empresa_id = ? AND status = ?',
+      ['executed', finished, actionId, empresaId, 'executing']
+    );
+    return { ok: true, id: actionId, status: 'executed', simulated: true, startedAt: now, executedAt: finished };
+  } catch (error: any) {
+    await db.run(
+      'UPDATE dot_action_queue SET status = ?, error = ? WHERE id = ? AND empresa_id = ? AND status = ?',
+      ['failed', String(error?.message || error), actionId, empresaId, 'executing']
+    );
+    return { ok: false, id: actionId, status: 'failed', reason: String(error?.message || error) };
+  }
+}
