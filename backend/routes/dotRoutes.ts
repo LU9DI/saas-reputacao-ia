@@ -281,7 +281,7 @@ export function mountDotRoutes(app: Express) {
       result.evidence.length ? `Evidências relacionadas: ${result.evidence.length}.` : 'Nenhuma evidência relacionada encontrada.',
     ].join(' ');
     const inserted = await db.run(
-      'INSERT INTO dot_events (empresa_id,type,severity,title,details,created_at) VALUES (?,?,?,?,?,?)',
+      'INSERT INTO dot_events (empresa_id,type,severity,title,details,created_at) VALUES (?,?,?,?,?,?) RETURNING id',
       [access.empresaId, 'complaint_resolution', severity, eventTitle, eventDetails, new Date().toISOString()]
     );
     const decisions = await createDecisionsForEvents(access.empresaId, [{ id: inserted.lastID, type: 'complaint_resolution', severity, title: eventTitle, details: eventDetails }]);
