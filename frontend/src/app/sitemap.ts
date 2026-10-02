@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return paths.map((path) => ({
     url: `${base}${path}`,
+    ...(path === '/ia' ? { lastModified: '2026-10-02' } : {}),
     changeFrequency: path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly',
     priority:
       path === '' ? 1 :
