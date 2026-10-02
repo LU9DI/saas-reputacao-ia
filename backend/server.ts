@@ -20,6 +20,7 @@ import { mountAuthRoutes } from './routes/authRoutes.js';
 import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
 import { mountReviewRoutes } from './routes/reviewRoutes.js';
 import { mountDiagnosticRoutes } from './routes/diagnosticRoutes.js';
+import { mountAcquisitionRoutes, ensureAcquisitionSchema } from './routes/acquisitionRoutes.js';
 import { mountAdminDashboardRoutes } from './routes/adminDashboardRoutes.js';
 import { mountAdminTecnicoRoutes } from './routes/adminTecnicoRoutes.js';
 import { mountAdminNegocioRoutes } from './routes/adminNegocioRoutes.js';
@@ -106,9 +107,10 @@ async function main() {
   try { await ensurePlanPricingSchema(getDb()); await refreshPlanPricesFromDb(getDb()); } catch (e) { console.warn('plan pricing:', e); }
   try { await ensureRetryQueue(getDb()); registerAllRetryHandlers(); startRetryWorker(); } catch (e) { console.warn('retry queue:', e); }
   try { await ensureReviewTreatmentColumns(getDb()); } catch (e) { console.warn('treatment columns:', e); }
+  try { await ensureAcquisitionSchema(getDb()); } catch (e) { console.warn('acquisition schema:', e); }
   await runSentimentBackfillOnBoot();
   await runLgpdSweepOnBoot();
-  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app);
+  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app);
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET }); mountAdminPasswordResetRoutes(app, getDb); mountMfaRoutes(app, getDb, { JWT_SECRET, setAuthCookie, autenticarToken }); mountPasswordResetRoutes(app, getDb); mountStripeRoutes(app, getDb);
   app.use(notFoundHandler); app.use(errorHandler);
   console.log(`📦 build ${BUILD.version} marker=${BUILD.marker}`); console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF'} | Pix: ${mpConfigured() ? 'ok' : 'OFF'} | PayPal: ${paypalConfigured() ? 'ok' : 'OFF'} | WeChat: ${wechatConfigured() ? 'ok' : 'OFF'}`); console.log(`📧 SMTP: ${smtpConfigured() ? 'configurado' : 'OFF — defina SMTP_* no Render'}`); console.log('🔌 MCP: POST /mcp (Grok custom connector)'); if (!wechatConfigured()) console.log('⚠️  WeChat Pay OFF — defina WECHAT_APP_ID / WECHAT_MCH_ID / WECHAT_API_KEY para ligar.');
