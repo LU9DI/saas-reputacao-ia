@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowUp, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
 
@@ -56,6 +56,16 @@ export default function FiltraDotPage() {
     void fetch(\`\${API_URL}/api/dot/briefing\`).then((response) => response.json()).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
 
+  async function resetConversation() {
+    try {
+      await fetch(`${API_URL}/api/dot/session/${sessionId}`, { method: 'DELETE' });
+    } catch {
+      // O reset visual continua disponível mesmo se a API local estiver parada.
+    }
+    setMessages([initialMessage()]);
+    setInput('');
+  }
+
   async function send(message = input) {
     const text = message.trim();
     if (!text || busy) return;
@@ -92,6 +102,11 @@ export default function FiltraDotPage() {
               <div className="flex items-center gap-2 text-sm font-semibold">Filtra Dot <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">REI</span></div>
               <div className="text-xs text-zinc-500">Agente de reputação e crescimento</div>
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => void resetConversation()} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200 disabled:opacity-40">
+              <RotateCcw size={13} /> Nova conversa
+            </button>
           </div>
           <div className="hidden items-center gap-2 text-xs text-zinc-500 sm:flex">
             <ShieldCheck size={14} className="text-emerald-400" /> Ações externas protegidas por aprovação
