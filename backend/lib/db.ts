@@ -25,6 +25,7 @@ export function getDb(): Database {
 }
 
 type TransactionDb = Pick<Database, 'exec' | 'run' | 'get' | 'all'>;
+let sqliteTransactionChain: Promise<unknown> = Promise.resolve();
 
 export async function withDbTransaction<T>(fn: (tx: TransactionDb) => Promise<T>): Promise<T> {
   const db = getDb() as Database & {
@@ -35,19 +36,37 @@ export async function withDbTransaction<T>(fn: (tx: TransactionDb) => Promise<T>
     return db.transaction(fn);
   }
 
-  await db.exec('BEGIN');
-  try {
-    const result = await fn(db);
-    await db.exec('COMMIT');
-    return result;
-  } catch (error) {
+  const run = async () => {
+    await db.exec('BEGIN');
     try {
-      await db.exec('ROLLBACK');
-    } catch {
-      /* preserve original error */
+      const result = await fn(db);
+      await db.exec('COMMIT');
+      return result;
+    } catch (error) {
+      try {
+        await db.exec('ROLLBACK');
+      } catch {
+        /* preserve original error */
+      }
+      throw error;
     }
-    throw error;
+  };
+
+  // SQLite uses one connection in this adapter. Serialize transactions there;
+  // production Postgres uses a real DB connection/transaction per invocation.
+  if (dbEngine() === 'sqlite') {
+    const previous = sqliteTransactionChain;
+    let release!: () => void;
+    sqliteTransactionChain = new Promise<void>((resolve) => { release = resolve; });
+    await previous.catch(() => {});
+    try {
+      return await run();
+    } finally {
+      release();
+    }
   }
+
+  return run();
 }
 
 export function dbEngine(): 'sqlite' | 'postgres' {
