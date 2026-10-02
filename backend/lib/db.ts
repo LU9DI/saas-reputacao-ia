@@ -24,6 +24,32 @@ export function getDb(): Database {
   return _db;
 }
 
+type TransactionDb = Pick<Database, 'exec' | 'run' | 'get' | 'all'>;
+
+export async function withDbTransaction<T>(fn: (tx: TransactionDb) => Promise<T>): Promise<T> {
+  const db = getDb() as Database & {
+    transaction?: <R>(callback: (tx: TransactionDb) => Promise<R>) => Promise<R>;
+  };
+
+  if (typeof db.transaction === 'function') {
+    return db.transaction(fn);
+  }
+
+  await db.exec('BEGIN');
+  try {
+    const result = await fn(db);
+    await db.exec('COMMIT');
+    return result;
+  } catch (error) {
+    try {
+      await db.exec('ROLLBACK');
+    } catch {
+      /* preserve original error */
+    }
+    throw error;
+  }
+}
+
 export function dbEngine(): 'sqlite' | 'postgres' {
   return _engine;
 }
