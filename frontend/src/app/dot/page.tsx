@@ -29,7 +29,7 @@ const suggestions = [
 type Message = { role: 'dot' | 'user'; text: string };
 type Briefing = { headline: string; trend?: string; rating?: string; reviews?: number; priority?: string; reason?: string; suggestedAction: string };
 type DotEvent = { id: number; type: string; severity: string; title: string; details: string; created_at: string };
-type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string };
+type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string; action: string; risk: string };\ntype DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
 
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
@@ -74,6 +74,18 @@ export default function FiltraDotPage() {
     void fetch(`${API_URL}/api/dot/decisions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.decisions) setDecisions(d.decisions); }).catch(() => undefined);
     void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
+
+  async function prepareOption(decisionId: number, optionId: string) {
+    try {
+      const response = await fetch(API_URL + '/api/dot/decisions/' + decisionId + '/prepare-action', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ optionId }),
+      });
+      if (!response.ok) return;
+      setDecisions(current => current.map(d => d.id === decisionId ? { ...d, status: 'prepared' } : d));
+    } catch {}
+  }
 
   async function updateDecision(id: number, action: 'prepare' | 'approve' | 'reject') {
     try {
@@ -241,6 +253,13 @@ export default function FiltraDotPage() {
   <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
   <div className="mt-2 text-[11px] leading-5 text-zinc-500">Recomendação: {d.recommendation}</div>
   {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">A decisão final é do empresário.</div>}
+  <div className="mt-3 grid gap-2">
+    {(d.options || []).slice(0,2).map(option => <button key={option.id} type="button" onClick={() => void prepareOption(d.id, option.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30">
+      <div className="text-xs font-semibold text-white">{option.title}</div>
+      <div className="mt-1 text-[11px] leading-5 text-zinc-500">{option.description}</div>
+      <div className="mt-1 text-[10px] text-zinc-600">Risco: {option.risk}</div>
+    </button>)}
+  </div>
   {d.status === 'pending' && <div className="mt-3 flex gap-2">
     <button type="button" onClick={() => void updateDecision(d.id,'prepare')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">Preparar</button>
     <button type="button" onClick={() => void updateDecision(d.id,'approve')} className="rounded-lg bg-indigo-500 px-2.5 py-1.5 text-[10px] text-white hover:bg-indigo-400">Aprovar</button>
