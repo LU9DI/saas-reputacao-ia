@@ -1,4 +1,4 @@
-import { getDb } from '../lib/db.js';
+import { getDb, withDbTransaction } from '../lib/db.js';
 
 export type DotActionStatus = 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled';
 
@@ -58,29 +58,37 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
 
 export async function approveDotAction(empresaId: string, actionId: number) {
   await ensureSchema();
-  const db = getDb();
   const now = new Date().toISOString();
-  const action = await db.get('SELECT decision_id FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\' LIMIT 1', [actionId, empresaId]);
-  if (!action) return null;
 
-  const decision = await db.get('SELECT id, status, requires_approval FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [action.decision_id, empresaId]);
-  if (!decision || String(decision.status) !== 'prepared' || Number(decision.requires_approval) !== 1) return null;
+  return withDbTransaction(async (tx) => {
+    const action = await tx.get(
+      'SELECT id, decision_id FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\' LIMIT 1',
+      [actionId, empresaId]
+    );
+    if (!action) return null;
 
-  const decisionApproved = await db.run(
-    "UPDATE dot_decisions SET status = 'approved' WHERE id = ? AND empresa_id = ? AND status = 'prepared' AND requires_approval = 1",
-    [action.decision_id, empresaId]
-  );
-  if (decisionApproved.changes !== 1) return null;
+    const decision = await tx.get(
+      'SELECT id, status, requires_approval FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1',
+      [action.decision_id, empresaId]
+    );
+    if (!decision || String(decision.status) !== 'prepared' || Number(decision.requires_approval) !== 1) return null;
 
-  const updated = await db.run(
-    "UPDATE dot_action_queue SET status = ?, approved_at = ? WHERE id = ? AND empresa_id = ? AND status = 'prepared'",
-    ['approved', now, actionId, empresaId]
-  );
-  if (!updated || updated.changes !== 1) {
-    await db.run("UPDATE dot_decisions SET status = 'prepared' WHERE id = ? AND empresa_id = ? AND status = 'approved'", [action.decision_id, empresaId]);
-    return null;
-  }
-  return { id: actionId, status: 'approved', executed: false };
+    const decisionApproved = await tx.run(
+      "UPDATE dot_decisions SET status = 'approved' WHERE id = ? AND empresa_id = ? AND status = 'prepared' AND requires_approval = 1",
+      [action.decision_id, empresaId]
+    );
+    if (decisionApproved.changes !== 1) return null;
+
+    const updated = await tx.run(
+      "UPDATE dot_action_queue SET status = ?, approved_at = ? WHERE id = ? AND empresa_id = ? AND status = 'prepared'",
+      ['approved', now, actionId, empresaId]
+    );
+    if (!updated || updated.changes !== 1) {
+      throw new Error('Não foi possível consumir a ação preparada; transação revertida.');
+    }
+
+    return { id: actionId, status: 'approved', executed: false };
+  });
 }
 
 export async function listDotActions(empresaId: string) {
