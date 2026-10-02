@@ -4,7 +4,7 @@ import PreviewLanding from './preview/page';
 export const metadata: Metadata = {
   title: 'Gestão de reputação online com IA | Filtra.AI',
   description:
-    'Analise avaliações, feedback e reputação online com inteligência artificial. Encontre padrões, identifique pontos de atenção e transforme a voz do cliente em ações de crescimento.',
+    'Analise avaliações, feedback e reputação online com IA. Encontre padrões e transforme a voz do cliente em ações de crescimento.',
   alternates: { canonical: 'https://filtraai.com/' },
   openGraph: {
     type: 'website',
