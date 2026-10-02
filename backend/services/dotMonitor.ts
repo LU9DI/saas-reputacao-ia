@@ -72,11 +72,11 @@ export async function runDotMonitor(empresaId: string) {
       [empresaId, event.type, new Date(Date.now() - 24 * 3600000).toISOString()]
     );
     if (duplicate) continue;
-    await db.run(
-      'INSERT INTO dot_events (empresa_id, type, severity, title, details, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    const inserted = await db.run(
+      'INSERT INTO dot_events (empresa_id, type, severity, title, details, created_at) VALUES (?, ?, ?, ?, ?, ?) RETURNING id',
       [empresaId, event.type, event.severity, event.title, event.details, new Date().toISOString()]
     );
-    created.push(event);
+    created.push({ ...event, id: inserted.lastID });
   }
 
   const decisions = await createDecisionsForEvents(empresaId, created);
