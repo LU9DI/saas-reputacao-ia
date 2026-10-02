@@ -66,6 +66,15 @@ export async function createDecisionsForEvents(empresaId: string, events: any[])
   return created;
 }
 
+export async function updateDotDecision(empresaId: string, id: number, status: 'prepared' | 'approved' | 'rejected') {
+  await ensureSchema();
+  const db = getDb();
+  const row = await db.get('SELECT id FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [id, empresaId]);
+  if (!row) return null;
+  await db.run('UPDATE dot_decisions SET status = ? WHERE id = ? AND empresa_id = ?', [status, id, empresaId]);
+  return { id, status };
+}
+
 export async function listDotDecisions(empresaId: string) {
   await ensureSchema();
   const rows = await getDb().all('SELECT * FROM dot_decisions WHERE empresa_id = ? ORDER BY id DESC LIMIT 50',[empresaId]);
