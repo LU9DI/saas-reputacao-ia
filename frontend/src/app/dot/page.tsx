@@ -51,11 +51,25 @@ export default function FiltraDotPage() {
     return created;
   });
   const [briefing, setBriefing] = useState<Briefing | null>(null);
+  const [proposal, setProposal] = useState<any>(null);
 
   useEffect(() => {
     void fetch(`${API_URL}/api/dot/briefing`).then((response) => response.json()).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
 
+  async function prepareAction() {
+    try {
+      const response = await fetch(API_URL + '/api/dot/action/prepare', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: briefing?.priority || 'tempo de espera' }),
+      });
+      const data = await response.json();
+      if (response.ok) setProposal(data.proposal);
+    } catch {
+      // A proposta é opcional no protótipo local.
+    }
+  }
   async function resetConversation() {
     try {
       await fetch(`${API_URL}/api/dot/session/${sessionId}`, { method: 'DELETE' });
@@ -176,7 +190,7 @@ export default function FiltraDotPage() {
                 {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">Sinal prioritário</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
                 <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> Tendência</div><div className="mt-1 text-xl font-semibold text-white">+18,4%</div></div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> Sinais</div><div className="mt-1 text-xl font-semibold text-white">3 padrões</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> Próximo passo</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'Atacar o tempo de espera'}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> Próximo passo</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'Atacar o tempo de espera'}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">Preparar ação</button></div>
               </div>
             </div>
 
