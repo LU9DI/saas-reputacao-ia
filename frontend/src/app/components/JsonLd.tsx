@@ -11,6 +11,7 @@ const graph = {
       url: siteUrl,
       email: 'projetosaas1@gmail.com',
       description: 'Plataforma brasileira de gestão de reputação online, avaliações e feedback de clientes com inteligência artificial. O site oficial é filtraai.com.',
+      disambiguatingDescription: 'Filtra.AI é uma plataforma SaaS brasileira de gestão de reputação, avaliações e feedback de clientes. Não confundir com outras empresas ou marcas chamadas FiltrAI/Filtra AI.',
       logo: `${siteUrl}/icons/icon-512.png`,
     },
     {
