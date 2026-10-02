@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { callAI } from '../groqService.js';
+import { prepareDotAction } from '../services/dotTools.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -92,6 +93,12 @@ export function mountDotRoutes(app: Express) {
         suggestedAction: 'Analisar as avaliações afetadas e preparar um plano para a equipe.',
       },
     });
+  });
+
+  app.post('/api/dot/action/prepare', dotLimiter, (req: Request, res: Response) => {
+    const action = cleanMessage(req.body?.action);
+    if (!action) return res.status(400).json({ error: 'Ação obrigatória.' });
+    return res.json({ ok: true, proposal: prepareDotAction(action) });
   });
 
   app.delete('/api/dot/session/:sessionId', (req: Request, res: Response) => {
