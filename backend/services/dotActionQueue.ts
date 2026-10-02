@@ -32,21 +32,22 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
   const options = JSON.parse(decision.options_json || '[]');
   const option = options.find((item: any) => item.id === optionId);
   if (!option) return null;
-  const existing = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND option_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId, optionId]);
+  const existing = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId]);
   if (existing) return existing;
   try {
     const result = await db.run(
       'INSERT INTO dot_action_queue (empresa_id,decision_id,option_id,action,status,created_at) VALUES (?,?,?,?,?,?)',
       [empresaId, decisionId, option.id, option.action, 'prepared', new Date().toISOString()]
     );
-    const promoted = await db.run(
-      "UPDATE dot_decisions SET status = 'prepared' WHERE id = ? AND empresa_id = ? AND status = 'pending'",
-      [decisionId, empresaId]
-    );
-    if (promoted.changes !== 1) {
-      await db.run('DELETE FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\'', [result.lastID, empresaId]);
-      const current = await db.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND option_id = ? LIMIT 1', [empresaId, decisionId, optionId]);
-      return current || null;
+    if (decisionStatus === 'pending') {
+      const promoted = await db.run(
+        "UPDATE dot_decisions SET status = 'prepared' WHERE id = ? AND empresa_id = ? AND status = 'pending'",
+        [decisionId, empresaId]
+      );
+      if (promoted.changes !== 1) {
+        await db.run('DELETE FROM dot_action_queue WHERE id = ? AND empresa_id = ? AND status = \'prepared\'', [result.lastID, empresaId]);
+        return null;
+      }
     }
     return { id: result.lastID, decisionId, optionId: option.id, action: option.action, status: 'prepared' };
   } catch {
