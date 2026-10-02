@@ -293,10 +293,25 @@ export function mountDotRoutes(app: Express) {
     );
     const decisions = await createDecisionsForEvents(access.empresaId, [{ id: inserted.lastID, type: 'complaint_resolution', severity, title: eventTitle, details: eventDetails }]);
     const decision = decisions[0];
+    let preparedAction = null;
+    if (decision?.id) {
+      const preferences = await getDotPreferences(access.empresaId);
+      if (preferences.prepareActionsAutomatically && preferences.autonomy !== 'observador') {
+        preparedAction = await prepareDotActionFromDecision(
+          access.empresaId,
+          Number(decision.id),
+          String(result.options[0]?.id || 'opcao_1'),
+        );
+      }
+    }
     res.json({
       ok: true,
       demo: access.demo,
-      result: { ...result, decision_id: decision?.id },
+      result: {
+        ...result,
+        decision_id: decision?.id,
+        prepared_action: preparedAction,
+      },
     });
   });
 
