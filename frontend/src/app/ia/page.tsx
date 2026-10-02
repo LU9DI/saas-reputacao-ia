@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Filtra.AI para ChatGPT, Claude e Grok | Reputação com IA',
+  title: 'Filtra.AI para ChatGPT, Claude e Grok | IA',
   description:
     'Use o Filtra.AI com ChatGPT, Claude, Grok e outros clientes MCP para analisar avaliações, entender a reputação e transformar feedback em ações.',
   alternates: { canonical: 'https://filtraai.com/ia' },
