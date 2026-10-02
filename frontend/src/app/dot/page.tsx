@@ -27,7 +27,8 @@ const suggestions = [
 ];
 
 type Message = { role: 'dot' | 'user'; text: string };
-type Briefing = { headline: string; trend?: string; rating?: string; reviews?: number; priority?: string; reason?: string; suggestedAction: string };\ntype DotEvent = { id: number; type: string; severity: string; title: string; details: string; created_at: string };
+type Briefing = { headline: string; trend?: string; rating?: string; reviews?: number; priority?: string; reason?: string; suggestedAction: string };
+type DotEvent = { id: number; type: string; severity: string; title: string; details: string; created_at: string };
 
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
@@ -66,6 +67,7 @@ export default function FiltraDotPage() {
   const [proposal, setProposal] = useState<any>(null);\n  const [events, setEvents] = useState<DotEvent[]>([]);
 
   useEffect(() => {
+    void fetch(`${API_URL}/api/dot/events`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.events) setEvents(d.events); }).catch(() => undefined);
     void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
 
