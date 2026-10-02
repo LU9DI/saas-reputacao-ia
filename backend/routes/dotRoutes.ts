@@ -61,6 +61,11 @@ function cleanMessage(value: unknown): string {
   return String(value ?? '').trim().slice(0, 4000);
 }
 
+function scopedSessionId(access: DotAccess, id: string): string {
+  const safeId = id || 'local-demo';
+  return access.empresaId ? `${access.empresaId}:${safeId}` : `demo:${safeId}`;
+}
+
 function sessionHistory(id: string): ChatItem[] {
   const current = sessions.get(id);
   if (current) return current;
@@ -353,7 +358,7 @@ export function mountDotRoutes(app: Express) {
     const access = await resolveDotAccess(req);
     if (!access.allowed) return deny(res, access);
 
-    resetSession(String(req.params.sessionId || ''));
+    resetSession(scopedSessionId(access, String(req.params.sessionId || '')));
     res.json({ ok: true });
   });
 
@@ -366,9 +371,10 @@ export function mountDotRoutes(app: Express) {
     }
 
     const message = cleanMessage(req.body?.message);
-    const sessionId = cleanMessage(req.body?.session_id) || 'local-demo';
+    const requestedSessionId = cleanMessage(req.body?.session_id) || 'local-demo';
     if (!message) return res.status(400).json({ error: 'Mensagem obrigatória.' });
 
+    const sessionId = scopedSessionId(access, requestedSessionId);
     const history = sessionHistory(sessionId);
 
     try {
@@ -397,7 +403,7 @@ export function mountDotRoutes(app: Express) {
         demo: access.demo,
         plan: access.plan || 'rei',
         plan_label: access.planLabel || 'Rei',
-        session_id: sessionId,
+        session_id: requestedSessionId,
         memory_turns: Math.floor(history.length / 2),
       });
     } catch (error: any) {
