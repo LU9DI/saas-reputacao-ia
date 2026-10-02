@@ -81,6 +81,9 @@ export default function FiltraDotPage() {
   const [events, setEvents] = useState<DotEvent[]>([]);
   const [decisions, setDecisions] = useState<DotDecision[]>([]);
   const [actions, setActions] = useState<DotAction[]>([]);
+  const [resolveInput, setResolveInput] = useState('');
+  const [resolveBusy, setResolveBusy] = useState(false);
+  const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
 
   useEffect(() => {
     void fetch(`${API_URL}/api/dot/events`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.events) setEvents(d.events); }).catch(() => undefined);
