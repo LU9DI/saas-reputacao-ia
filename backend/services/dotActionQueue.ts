@@ -39,9 +39,9 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
   const existing = await tx.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId]);
   if (existing) return existing;
   try {
-    const result = await db.run(
+    const result = await tx.run(
       'INSERT INTO dot_action_queue (empresa_id,decision_id,option_id,action,status,created_at) VALUES (?,?,?,?,?,?) RETURNING id',
-      [empresaId, decisionId, option.id, option.action, 'prepared', new Date().toISOString()]
+      [empresaId, decisionId, option.id, definition.action, 'prepared', new Date().toISOString()]
     );
     if (decisionStatus === 'pending') {
       const promoted = await tx.run(
@@ -53,7 +53,7 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
       }
     }
     return { id: result.lastID, decisionId, optionId: option.id, action: definition.action, status: 'prepared' };
-  } catch {
+  } catch (error) {
     const current = await tx.get('SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND status IN (\'prepared\',\'approved\',\'executing\') LIMIT 1', [empresaId, decisionId]);
     if (current) return current;
     throw error;
