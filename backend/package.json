@@ -11,7 +11,8 @@
     "start:prod": "tsx server.ts",
     "smtp:test": "tsx scripts/smtp-connectivity-test.ts",
     "test": "find tests -type f -name '*.test.ts' -print0 | xargs -0 -r tsx --test",
-    "audit": "npm audit --omit=dev"
+    "audit": "npm audit --omit=dev",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=20"
