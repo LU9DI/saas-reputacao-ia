@@ -28,7 +28,7 @@ export default function Page() {
       <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI · Análise de avaliações com IA</p>
       <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">Transforme centenas de avaliações em decisões de crescimento.</h1>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">A análise manual de reviews consome tempo e deixa padrões importantes passarem. A Filtra.AI usa inteligência artificial para organizar a voz do consumidor e mostrar o que merece atenção.</p>
-      <Link href="/auditoria-gratuita" className="mt-8 inline-block rounded-xl bg-indigo-500 px-5 py-3 font-semibold">Começar gratuitamente</Link>
+      <div className="mt-8 flex flex-wrap gap-3"><Link href="/auditoria-gratuita" className="rounded-xl bg-indigo-500 px-5 py-3 font-semibold">Começar gratuitamente</Link><Link href="/ia" className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">Filtra.AI para IA</Link></div>
 
       <section className="mt-16 space-y-10">
         <div><h2 className="text-3xl font-bold">Como a análise de avaliações ajuda a gestão</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Uma lista de reviews mostra comentários individuais. Uma análise estruturada permite enxergar recorrência, contexto e prioridade. Isso facilita identificar problemas que merecem investigação e pontos fortes que devem ser preservados.</p><p className="mt-4 max-w-3xl leading-8 text-zinc-400">A inteligência artificial é especialmente útil quando o volume cresce. O sistema pode organizar grandes conjuntos de texto por temas, sinais de sentimento e contexto, reduzindo o trabalho de triagem e síntese. A equipe continua responsável pela decisão.</p></div>
@@ -43,7 +43,7 @@ export default function Page() {
       </section>
 
       <section className="mt-16 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-8"><h2 className="text-2xl font-bold">Veja o que existe por trás das notas</h2><p className="mt-3 leading-7 text-zinc-300">Comece com uma auditoria gratuita e descubra os temas, riscos e oportunidades presentes nas avaliações que você fornecer.</p><Link href="/auditoria-gratuita" className="mt-6 inline-block rounded-xl bg-indigo-500 px-5 py-3 font-semibold">Fazer auditoria gratuita</Link></section>
-      <nav className="mt-12 flex flex-wrap gap-4 text-sm"><Link href="/feedback-de-clientes" className="underline">Feedback de clientes</Link><Link href="/gestao-de-reputacao-online" className="underline">Gestão de reputação online</Link><Link href="/auditoria-gratuita" className="underline">Auditoria gratuita</Link><Link href="/blog/gestao-reputacao-online-guia" className="underline">Guia de gestão de reputação</Link><Link href="/blog/como-responder-avaliacoes-negativas" className="underline">Guia de avaliações negativas</Link></nav>
+      <nav className="mt-12 flex flex-wrap gap-4 text-sm"><Link href="/feedback-de-clientes" className="underline">Feedback de clientes</Link><Link href="/gestao-de-reputacao-online" className="underline">Gestão de reputação online</Link><Link href="/avaliacoes-google" className="underline">Avaliações Google</Link><Link href="/ia" className="underline">Filtra.AI para IA</Link><Link href="/auditoria-gratuita" className="underline">Auditoria gratuita</Link><Link href="/blog/gestao-reputacao-online-guia" className="underline">Guia de gestão de reputação</Link><Link href="/blog/como-responder-avaliacoes-negativas" className="underline">Guia de avaliações negativas</Link></nav>
     </main>
   );
 }
