@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+<title id="title">Filtra.AI</title>
+<desc id="desc">Gestão de avaliações Google</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563eb"/><stop offset="0.55" stop-color="#4f46e5"/><stop offset="1" stop-color="#4338ca"/></linearGradient>
+  <radialGradient id="glow" cx="78%" cy="18%" r="65%"><stop offset="0" stop-color="#ffffff" stop-opacity=".22"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1200" height="630" fill="url(#bg)"/>
+<rect width="1200" height="630" fill="url(#glow)"/>
+<g fill="#fff" font-family="Arial, Helvetica, sans-serif">
+  <text x="90" y="285" font-size="92" font-weight="700" letter-spacing="-3">Filtra.AI</text>
+  <text x="94" y="350" font-size="34" font-weight="500" opacity=".95">Gestão de avaliações Google</text>
+</g>
+<circle cx="1040" cy="475" r="86" fill="#fff" opacity=".10"/>
+<circle cx="1040" cy="475" r="52" fill="#fff" opacity=".12"/>
+</svg>

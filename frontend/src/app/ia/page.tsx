@@ -11,6 +11,7 @@ export const metadata: Metadata = {
     title: 'Filtra.AI para ChatGPT, Claude e Grok',
     description:
       'Leve a inteligência de reputação do Filtra.AI para agentes de IA compatíveis com MCP.',
+    images: [{ url: '/og-image.svg', width: 1200, height: 630, alt: 'Filtra.AI — Gestão de avaliações Google' }],
   },
 };
 
