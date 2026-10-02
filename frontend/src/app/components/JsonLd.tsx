@@ -7,9 +7,10 @@ const graph = {
       '@type': 'Organization',
       '@id': `${siteUrl}/#organization`,
       name: 'Filtra.AI',
+      alternateName: ['Filtra AI', 'Filtra.AI Gestão de Reputação'],
       url: siteUrl,
       email: 'projetosaas1@gmail.com',
-      description: 'Plataforma de gestão de reputação online, avaliações e feedback de clientes com inteligência artificial.',
+      description: 'Plataforma brasileira de gestão de reputação online, avaliações e feedback de clientes com inteligência artificial. O site oficial é filtraai.com.',
       logo: `${siteUrl}/icons/icon-512.png`,
     },
     {
