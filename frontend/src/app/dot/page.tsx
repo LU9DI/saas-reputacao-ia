@@ -28,7 +28,8 @@ const suggestions = [
 
 type Message = { role: 'dot' | 'user'; text: string };
 type Briefing = { headline: string; trend?: string; rating?: string; reviews?: number; priority?: string; reason?: string; suggestedAction: string };
-type DotEvent = { id: number; type: string; severity: string; title: string; details: string; created_at: string };\ntype DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string };
+type DotEvent = { id: number; type: string; severity: string; title: string; details: string; created_at: string };
+type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string };
 
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
@@ -64,12 +65,24 @@ export default function FiltraDotPage() {
     return created;
   });
   const [briefing, setBriefing] = useState<Briefing | null>(null);
-  const [proposal, setProposal] = useState<any>(null);\n  const [events, setEvents] = useState<DotEvent[]>([]);\n  const [decisions, setDecisions] = useState<DotDecision[]>([]);
+  const [proposal, setProposal] = useState<any>(null);
+  const [events, setEvents] = useState<DotEvent[]>([]);
+  const [decisions, setDecisions] = useState<DotDecision[]>([]);
 
   useEffect(() => {
-    void fetch(`${API_URL}/api/dot/events`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.events) setEvents(d.events); }).catch(() => undefined);\n    void fetch(`${API_URL}/api/dot/decisions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.decisions) setDecisions(d.decisions); }).catch(() => undefined);
+    void fetch(`${API_URL}/api/dot/events`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.events) setEvents(d.events); }).catch(() => undefined);
+    void fetch(`${API_URL}/api/dot/decisions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.decisions) setDecisions(d.decisions); }).catch(() => undefined);
     void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
+
+  async function updateDecision(id: number, action: 'prepare' | 'approve' | 'reject') {
+    try {
+      const url = API_URL + '/api/dot/decisions/' + id + '/' + action;
+      const response = await fetch(url, { method: 'POST', headers: authHeaders() });
+      if (!response.ok) return;
+      setDecisions(current => current.map(d => d.id === id ? { ...d, status: action === 'prepare' ? 'prepared' : action === 'approve' ? 'approved' : 'rejected' } : d));
+    } catch {}
+  }
 
   async function prepareAction() {
     try {
@@ -221,7 +234,22 @@ export default function FiltraDotPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="text-xs font-semibold text-zinc-300">Alertas recentes</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">Configurar autonomia</a></div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>\n\n            <div className="rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5"><div className="flex items-center justify-between"><div className="text-xs font-semibold text-amber-200">Decisões do Dot</div><span className="text-[10px] text-zinc-500">{decisions.length} registradas</span></div><div className="mt-3 space-y-3">{decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{d.priority.toUpperCase()}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div><div className="mt-1 text-xs text-zinc-400">{d.reason}</div><div className="mt-2 text-[11px] leading-5 text-zinc-500">Recomendação: {d.recommendation}</div>{d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">Aprovação necessária para ação externa.</div>}</div>)}{decisions.length===0 && <div className="text-xs text-zinc-600">O Dot ainda não registrou uma decisão.</div>}</div></div>\n\n            <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
+            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="text-xs font-semibold text-zinc-300">Alertas recentes</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">Configurar autonomia</a></div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>
+
+            <div className="rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5"><div className="flex items-center justify-between"><div className="text-xs font-semibold text-amber-200">Decisões do Dot</div><span className="text-[10px] text-zinc-500">{decisions.length} registradas</span></div><div className="mt-3 space-y-3">{decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{d.priority.toUpperCase()}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div><div className="mt-1 text-xs text-zinc-400">{d.reason}</div><div className="mt-2 text-[11px] leading-5 text-zinc-500">Recomendação: {d.recommendation}</div>{d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">Aprovação necessária para ação externa.</div>}</div>)}{decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
+  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{d.priority.toUpperCase()}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div>
+  <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
+  <div className="mt-2 text-[11px] leading-5 text-zinc-500">Recomendação: {d.recommendation}</div>
+  {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">A decisão final é do empresário.</div>}
+  {d.status === 'pending' && <div className="mt-3 flex gap-2">
+    <button type="button" onClick={() => void updateDecision(d.id,'prepare')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">Preparar</button>
+    <button type="button" onClick={() => void updateDecision(d.id,'approve')} className="rounded-lg bg-indigo-500 px-2.5 py-1.5 text-[10px] text-white hover:bg-indigo-400">Aprovar</button>
+    <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">Rejeitar</button>
+  </div>}
+</div>)}
+{decisions.length===0 && <div className="text-xs text-zinc-600">O Dot ainda não registrou uma decisão.</div>}</div></div>
+
+            <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
               <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> O que posso fazer</div>
               <ul className="mt-4 space-y-3 text-xs leading-5 text-zinc-400">
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> Analisar avaliações e padrões</li>
