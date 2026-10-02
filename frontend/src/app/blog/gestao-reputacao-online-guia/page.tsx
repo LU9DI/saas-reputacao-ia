@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { BrandMark } from '../../components/BrandMark';
 
 const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
+const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
   title: 'Gestão de reputação online: guia prático',
@@ -17,9 +18,9 @@ const articleSchema = {
   description: 'Um processo prático para transformar avaliações e feedback em melhoria operacional, confiança e novas oportunidades comerciais.',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   datePublished: '2026-09-30', dateModified: '2026-09-30',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  image: 'https://filtraai.com/icons/icon-512.png',
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com', logo: { '@type': 'ImageObject', url: 'https://filtraai.com/icons/icon-512.png' } },
+  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com', logo: { '@type': 'ImageObject', url: logo } },
+  image: logo,
+  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com', logo: { '@type': 'ImageObject', url: logo } },
 };
 
 export default function BlogReputacaoOnlinePage() {
