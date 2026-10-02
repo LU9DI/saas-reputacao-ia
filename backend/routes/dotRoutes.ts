@@ -4,7 +4,8 @@ import { callAI } from '../groqService.js';
 import { prepareDotAction } from '../services/dotTools.js';
 import { loadDotRealContext } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
-import { listDotEvents } from '../services/dotMonitor.js';
+import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
+import { runDueDotMonitors } from '../services/dotScheduler.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -171,11 +172,33 @@ export function mountDotRoutes(app: Express) {
     res.json({ ok: true, plan: access.plan, preferences });
   });
 
+  app.post('/api/dot/monitor/run', dotLimiter, async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const result = await runDotMonitor(access.empresaId);
+    res.json({ ok: true, demo: access.demo, result });
+  });
+
+  app.post('/api/dot/monitor/run-due', dotLimiter, async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const result = await runDueDotMonitors();
+    res.json({ ok: true, result });
+  });
+
   app.get('/api/dot/events', async (req: Request, res: Response) => {
     const access = await resolveDotAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
     const events = await listDotEvents(access.empresaId);
     res.json({ ok: true, events });
+  });
+
+  app.post('/api/dot/events/:id/ack', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const db = (await import('../lib/db.js')).getDb();
+    await db.run('UPDATE dot_events SET acknowledged_at = ? WHERE id = ? AND empresa_id = ?', [new Date().toISOString(), String(req.params.id), access.empresaId]);
+    res.json({ ok: true });
   });
 
   app.get('/api/dot/briefing', async (req: Request, res: Response) => {
@@ -220,7 +243,7 @@ export function mountDotRoutes(app: Express) {
       ok: true,
       demo: access.demo,
       plan: access.plan || 'rei',
-      proposal: prepareDotAction(action),
+      proposal: prepareDotAction(action, access.demo),
     });
   });
 
