@@ -33,6 +33,7 @@ type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string
 type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
 type DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
 type DotSchedulerStatus = { running: boolean; timer_active: boolean; tick_ms: number; last_run_at: string | null; last_success_at: string | null; last_error_at: string | null; last_error: string | null; duration_ms: number | null; companies_processed: number; companies_skipped: number; companies_errors: number; followups_processed: number; events_created: number; decisions_created: number; actions_prepared: number };
+type DotStatus = { access: boolean; enabled: boolean; demo: boolean; feature_enabled?: boolean; plan?: string; plan_label?: string; scheduler?: DotSchedulerStatus };
 type DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; result_json?: string | null; created_at: string; completed_at?: string | null };
 type DotResolve = {
   problem_summary: string;
@@ -85,6 +86,7 @@ export default function FiltraDotPage() {
   const [actions, setActions] = useState<DotAction[]>([]);
   const [followUps, setFollowUps] = useState<DotFollowUp[]>([]);
   const [scheduler, setScheduler] = useState<DotSchedulerStatus | null>(null);
+  const [dotStatus, setDotStatus] = useState<DotStatus | null>(null);
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
@@ -109,6 +111,17 @@ export default function FiltraDotPage() {
         actionsResponse.ok ? actionsResponse.json() : null,
         followupsResponse.ok ? followupsResponse.json() : null,
       ]);
+      if (status) {
+        setDotStatus({
+          access: Boolean(status.access),
+          enabled: Boolean(status.enabled),
+          demo: Boolean(status.demo),
+          feature_enabled: typeof status.feature_enabled === 'boolean' ? status.feature_enabled : undefined,
+          plan: status.plan,
+          plan_label: status.plan_label,
+          scheduler: status.scheduler,
+        });
+      }
       if (status?.scheduler) setScheduler(status.scheduler);
       if (eventsData?.events) setEvents(eventsData.events);
       if (decisionsData?.decisions) setDecisions(decisionsData.decisions);
@@ -228,6 +241,36 @@ export default function FiltraDotPage() {
     }
     setMessages([initialMessage()]);
     setInput('');
+  }
+
+  const featureEnabled = dotStatus?.feature_enabled ?? dotStatus?.enabled ?? false;
+  if (dotStatus && !dotStatus.access) {
+    return (
+      <main className="min-h-screen bg-black text-zinc-100">
+        <div className="mx-auto flex min-h-screen max-w-2xl items-center px-6 py-12">
+          <section className="w-full rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <DotAvatar />
+              <div>
+                <div className="text-sm font-semibold text-white">Filtra Dot</div>
+                <div className="text-xs text-zinc-500">Acesso antecipado</div>
+              </div>
+            </div>
+            <div className="mt-8 text-2xl font-semibold tracking-tight text-white">
+              {featureEnabled ? 'O Filtra Dot está reservado aos planos Rei e Corporativo.' : 'O Filtra Dot está temporariamente indisponível.'}
+            </div>
+            <p className="mt-3 text-sm leading-6 text-zinc-400">
+              {featureEnabled
+                ? 'Sua conta atual não possui acesso ao Dot. O recurso está em acesso antecipado para clientes Rei e Corporativo.'
+                : 'O recurso ainda não está habilitado neste ambiente.'}
+            </p>
+            <div className="mt-6 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.05] p-4 text-xs leading-5 text-zinc-400">
+              Plano identificado: <span className="font-medium text-zinc-200">{dotStatus.plan_label || dotStatus.plan || 'não identificado'}</span>
+            </div>
+          </section>
+        </div>
+      </main>
+    );
   }
 
   async function send(message = input) {
