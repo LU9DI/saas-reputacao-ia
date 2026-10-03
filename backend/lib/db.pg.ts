@@ -162,7 +162,8 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
         const adapted = adaptSql(sql);
         const q = convertPlaceholders(adapted);
         const r = await c.query(q, params);
-        return { changes: r.rowCount || 0, lastID: undefined };
+        const returnedId = (r.rows?.[0] && (r.rows[0].id ?? r.rows[0].ID)) as number | undefined;
+        return { changes: r.rowCount || 0, lastID: returnedId };
       } finally {
         c.release();
       }
