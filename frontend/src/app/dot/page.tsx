@@ -32,7 +32,7 @@ type DotEvent = { id: number; type: string; severity: string; title: string; det
 type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string; action: string; risk: string };
 type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
 type DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
-type DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; created_at: string; completed_at?: string | null };
+type DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; result_json?: string | null; created_at: string; completed_at?: string | null };
 type DotResolve = {
   problem_summary: string;
   verification_status: 'confirmed' | 'unverified' | 'not_found';
@@ -392,7 +392,8 @@ export default function FiltraDotPage() {
               <div className="mt-3 space-y-2">
                 {followUps.slice(0,3).map(f => <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
                   <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{f.status}</span></div>
-                  <div className="mt-1 text-[11px] text-zinc-500">Retorno previsto: {new Date(f.due_at).toLocaleString('pt-BR')}</div>
+                  <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `Retorno previsto: ${new Date(f.due_at).toLocaleString('pt-BR')}` : `Resultado: ${f.outcome || 'avaliado'}`}</div>
+                  {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 text-[10px] text-zinc-600">Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>; } catch { return null; } })()}
                 </div>)}
                 {followUps.length === 0 && <div className="text-xs text-zinc-600">O Dot criará o acompanhamento após uma execução.</div>}
               </div>
