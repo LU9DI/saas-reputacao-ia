@@ -108,7 +108,7 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     verifyComplaint: 'Verificar reclamação',
     verifyingComplaint: 'Verificando evidências…',
     decisionOwner: 'A decisão final permanece com o responsável.',
-    noAction: 'Nenhuma ação preparada.',
+    noAction: 'Nenhuma ação foi preparada ainda.',
     loading: 'Carregando estado operacional…',
     unavailableTitle: 'O Filtra Dot está temporariamente indisponível.',
     unavailableBody: 'O recurso ainda não está habilitado neste ambiente.',
@@ -889,7 +889,6 @@ export default function FiltraDotPage() {
           </section>
 
           <aside className="space-y-4 lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
-            <aside className="space-y-4 lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
             <div className="rounded-3xl border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.08] to-white/[0.02] p-5">
               <div className="flex items-start gap-3">
                 <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-indigo-500/15 text-indigo-200"><ChevronRight size={16} /></div>
@@ -917,23 +916,23 @@ export default function FiltraDotPage() {
             
             <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupOverview}</div>
             <div id="dot-overview" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Resumo de hoje</div>
-              <div className="mt-2 text-[11px] leading-5 text-zinc-600">O que mudou, o que importa e qual próximo passo faz sentido.</div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> {ui.overviewTitle}</div>
+              <div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.overviewBody}</div>
               <div className="mt-4 space-y-3">
                 {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">{ui.prioritySignal}</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> {ui.trendLabel}</div><div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || 'monitorando'}</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> {ui.signalsLabel}</div><div className="mt-1 text-xl font-semibold text-white">{events.length || 'nenhum'}</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> {ui.nextStepLabel}</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'O Dot está monitorando sua empresa.'}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">{ui.prepareAction}</button></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> {ui.trendLabel}</div><div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || ui.waiting}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> {ui.signalsLabel}</div><div className="mt-1 text-xl font-semibold text-white">{events.length || '—'}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> {ui.nextStepLabel}</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || ui.monitoringActive}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">{ui.prepareAction}</button></div>
               </div>
             </div>
-            <div id="dot-alerts" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><CircleAlert size={13} className="text-amber-300" /> {ui.alertsTitle}</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">{ui.autonomy}</a></div><div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.alertsBody}</div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>
+            <div id="dot-alerts" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><CircleAlert size={13} className="text-amber-300" /> {ui.alertsTitle}</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">{ui.autonomy}</a></div><div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.alertsBody}</div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum sinal novo no momento.</div>}</div></div>
             <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupDecide}</div>
             <div id="dot-decisions" className="scroll-mt-5 rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5">
               <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-amber-200"><CheckCircle2 size={13} /> {ui.decisionsTitle}</div><span className="text-[10px] text-zinc-500">{decisions.length} {ui.registered}</span></div>
               <div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.decisionsBody}</div>
               <div className="mt-3 space-y-3">
                 {decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{dotPriorityLabel(d.priority, uiLocale)}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{dotPriorityLabel(d.priority, uiLocale)}</span><span className="text-[10px] text-zinc-500">{dotStatusLabel(d.status, uiLocale)}</span></div>
                   <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
                   <div className="mt-2 text-[11px] leading-5 text-zinc-500">{ui.nextStepLabel}: {d.recommendation}</div>
                   {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">{ui.finalOwner}</div>}
@@ -949,18 +948,18 @@ export default function FiltraDotPage() {
                     <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">Rejeitar</button>
                   </div>}
                 </div>)}
-                {decisions.length===0 && <div className="text-xs text-zinc-600">O Dot ainda não registrou uma decisão.</div>}
+                {decisions.length===0 && <div className="text-xs text-zinc-600">Ainda não há decisões sugeridas.</div>}
               </div>
             </div>
             {proposal && (
               <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.04] p-5">
-                <div className="text-xs font-semibold text-emerald-300">AÇÃO PREPARADA — NÃO EXECUTADA</div>
+                <div className="text-xs font-semibold text-emerald-300">Ação preparada · não executada</div>
                 <div className="mt-2 text-sm font-semibold text-white">{proposal.title}</div>
                 <div className="mt-2 text-xs leading-5 text-zinc-400">{proposal.objective}</div>
                 <ol className="mt-3 space-y-2 text-xs text-zinc-400">
                   {(proposal.steps || []).map((step: string, index: number) => <li key={step}>{index + 1}. {step}</li>)}
                 </ol>
-                <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">Aprovação será obrigatória antes de qualquer ação externa.</div>
+                <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">A aprovação é obrigatória antes de qualquer ação externa.</div>
               </div>
             )}
             <div id="dot-actions" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
@@ -987,7 +986,7 @@ export default function FiltraDotPage() {
                   <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `{ui.due}: ${new Date(f.due_at).toLocaleString('pt-BR')}` : `{ui.outcome}: ${f.outcome || 'avaliado'}`}</div>
                   {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão #{r.reassessment.decision_id ?? '—'}{r.reassessment.prepared_action_id ? ` · ação preparada #${r.reassessment.prepared_action_id}` : ''}</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
                 </div>)}
-                {followUps.length === 0 && <div className="text-xs text-zinc-600">O Dot criará o acompanhamento após uma execução.</div>}
+                {followUps.length === 0 && <div className="text-xs text-zinc-600">O acompanhamento aparecerá quando houver uma ação executada.</div>}
               </div>
             </div>
             <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTools}</div>
@@ -1046,7 +1045,7 @@ export default function FiltraDotPage() {
                     <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.companies}</span><div className="mt-1 text-zinc-200">{scheduler.companies_processed} {ui.processed} · {scheduler.companies_skipped} {ui.waitingCompanies}</div></div>
                     <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.followUpsLabel}</span><div className="mt-1 text-zinc-200">{scheduler.followups_processed}</div></div>
                     <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.decisionsLabel}</span><div className="mt-1 text-zinc-200">{scheduler.decisions_created}</div></div>
-                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Ações</span><div className="mt-1 text-zinc-200">{scheduler.actions_prepared} {ui.preparedLabel}</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.actionsTitle}</span><div className="mt-1 text-zinc-200">{scheduler.actions_prepared} {ui.preparedLabel}</div></div>
                   </div>
                   {scheduler.last_error && <div className="mt-3 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[10px] text-amber-200">{scheduler.last_error}</div>}
                 </>
