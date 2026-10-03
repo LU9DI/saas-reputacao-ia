@@ -303,7 +303,7 @@ export function AuditoriaGratuitaClient({ language = 'pt' }: { language?: Langua
                     {c.initial}
                   </p>
                   <Link
-                    href="/login?trial=7"
+                    href={language === 'pt' ? '/login?trial=7' : `/${language}/login?trial=7`}
                     className="mt-4 inline-block rounded-xl bg-indigo-600 px-5 py-3 font-semibold"
                   >
                     {c.trial}
