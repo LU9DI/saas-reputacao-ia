@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { apiFetch } from '../utils/apiFailover';
-import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap, Clipboard, ClipboardCheck, Wifi, FlaskConical } from 'lucide-react';
 
 const SESSION_KEY = 'filtra-dot-local-session';
 const TOKEN_KEY = 'filtra_token';
@@ -33,6 +34,11 @@ type DotUi = {
   unknownPlan: string;
   noExternalAuto: string;
   companyPlaceholder: string;
+  online: string;
+  demo: string;
+  copyResponse: string;
+  copiedResponse: string;
+  responseLimit: string;
 };
 
 const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
@@ -61,6 +67,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     unknownPlan: 'não identificado',
     noExternalAuto: 'Nenhuma ação externa é executada automaticamente.',
     companyPlaceholder: 'sua empresa',
+    online: 'Online',
+    demo: 'Demo local',
+    copyResponse: 'Copiar resposta',
+    copiedResponse: 'Copiado',
+    responseLimit: 'Resposta otimizada para ser completa sem excesso de tokens.',
   },
   en: {
     earlyAccess: 'Early access',
@@ -87,6 +98,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     unknownPlan: 'not identified',
     noExternalAuto: 'No external action is executed automatically.',
     companyPlaceholder: 'your company',
+    online: 'Online',
+    demo: 'Local demo',
+    copyResponse: 'Copy response',
+    copiedResponse: 'Copied',
+    responseLimit: 'Response optimized to stay complete without unnecessary token usage.',
   },
   es: {
     earlyAccess: 'Acceso anticipado',
@@ -113,6 +129,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     unknownPlan: 'no identificado',
     noExternalAuto: 'Ninguna acción externa se ejecuta automáticamente.',
     companyPlaceholder: 'tu empresa',
+    online: 'En línea',
+    demo: 'Demo local',
+    copyResponse: 'Copiar respuesta',
+    copiedResponse: 'Copiado',
+    responseLimit: 'Respuesta optimizada para ser completa sin exceso de tokens.',
   },
 };
 
@@ -195,6 +216,87 @@ function DotAvatar({ active = false }: { active?: boolean }) {
   );
 }
 
+function inlineMarkdown(value: string): ReactNode[] {
+  return value.split(/(\\*\\*[^*]+\\*\\*)/g).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="font-semibold text-white">{part.slice(2, -2)}</strong>;
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
+function DotRichText({ text }: { text: string }) {
+  const lines = text.replace(/\r/g, '').split('\n');
+  const blocks: ReactNode[] = [];
+  let i = 0;
+  const isBullet = (value: string) => /^\s*[-*]\s+/.test(value);
+  const isNumbered = (value: string) => /^\s*\d+[.)]\s+/.test(value);
+  const isHeading = (value: string) => /^\s*#{1,3}\s+/.test(value);
+  const isTableRow = (value: string) => value.includes("|");
+
+  while (i < lines.length) {
+    const line = (lines[i] || "").trimEnd();
+    if (!line.trim()) { i += 1; continue; }
+
+    if (isTableRow(line) && isTableRow(lines[i + 1] || "") && /---+/.test(lines[i + 1] || "")) {
+      const rows: string[][] = [];
+      const parseRow = (value: string) => value.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(cell => cell.trim());
+      rows.push(parseRow(line));
+      i += 2;
+      while (i < lines.length && isTableRow(lines[i] || "") && (lines[i] || "").trim()) {
+        rows.push(parseRow(lines[i] || ""));
+        i += 1;
+      }
+      blocks.push(
+        <div key={blocks.length} className="my-4 overflow-x-auto rounded-xl border border-white/10">
+          <table className="min-w-full text-left text-xs">
+            <thead className="bg-white/[0.04] text-zinc-300"><tr>{rows[0].map((cell, idx) => <th key={idx} className="px-3 py-2 font-semibold">{inlineMarkdown(cell)}</th>)}</tr></thead>
+            <tbody>{rows.slice(1).map((row, rowIndex) => <tr key={rowIndex} className="border-t border-white/5 align-top">{rows[0].map((_, colIndex) => <td key={colIndex} className="px-3 py-2 leading-5 text-zinc-400">{inlineMarkdown(row[colIndex] || "")}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+      );
+      continue;
+    }
+
+    if (isHeading(line)) {
+      const content = line.replace(/^\s*#{1,3}\s+/, '');
+      blocks.push(<div key={blocks.length} className="mt-4 text-sm font-semibold text-white">{inlineMarkdown(content)}</div>);
+      i += 1;
+      continue;
+    }
+
+    if (isBullet(line)) {
+      const items: string[] = [];
+      while (i < lines.length && isBullet(lines[i] || "")) {
+        items.push((lines[i] || '').replace(/^\s*[-*]\s+/, ''));
+        i += 1;
+      }
+      blocks.push(<ul key={blocks.length} className="my-3 space-y-1.5 pl-5 text-zinc-300">{items.map((item, idx) => <li key={idx} className="list-disc leading-6">{inlineMarkdown(item)}</li>)}</ul>);
+      continue;
+    }
+
+    if (isNumbered(line)) {
+      const items: string[] = [];
+      while (i < lines.length && isNumbered(lines[i] || "")) {
+        items.push((lines[i] || '').replace(/^\s*\d+[.)]\s+/, ''));
+        i += 1;
+      }
+      blocks.push(<ol key={blocks.length} className="my-3 space-y-1.5 pl-5 text-zinc-300">{items.map((item, idx) => <li key={idx} className="list-decimal leading-6">{inlineMarkdown(item)}</li>)}</ol>);
+      continue;
+    }
+
+    const paragraph: string[] = [line.trim()];
+    i += 1;
+    while (i < lines.length && (lines[i] || "").trim() && !isBullet(lines[i] || "") && !isNumbered(lines[i] || "") && !isHeading(lines[i] || "") && !isTableRow(lines[i] || "")) {
+      paragraph.push((lines[i] || '').trim());
+      i += 1;
+    }
+    blocks.push(<p key={blocks.length} className="my-2 leading-7 text-zinc-200">{inlineMarkdown(paragraph.join(" "))}</p>);
+  }
+
+  return <div>{blocks}</div>;
+}
+
 function initialMessage(company = 'sua empresa', locale = detectDotLocale()): Message {
   if (locale === 'en') {
     return { role: 'dot', text: `Hello. I’m Filtra Dot. I’m monitoring the reputation of ${company}. I can analyze signals, explain what changed, and prepare the next step for you.` };
@@ -212,6 +314,8 @@ export default function FiltraDotPage() {
   const [messages, setMessages] = useState<Message[]>([initialMessage('sua empresa', 'pt')]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [copiedMessage, setCopiedMessage] = useState<number | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [sessionId] = useState(() => {
     if (typeof window === 'undefined') return 'local-demo';
     const existing = window.localStorage.getItem(SESSION_KEY);
@@ -231,6 +335,10 @@ export default function FiltraDotPage() {
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, busy]);
 
   useEffect(() => {
     const locale = detectDotLocale();
@@ -385,6 +493,16 @@ export default function FiltraDotPage() {
       // A proposta é opcional no protótipo local.
     }
   }
+  async function copyResponse(text: string, index: number) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedMessage(index);
+      window.setTimeout(() => setCopiedMessage(current => current === index ? null : current), 1600);
+    } catch {
+      // Clipboard may be unavailable in some browser contexts.
+    }
+  }
+
   async function resetConversation() {
     try {
       await apiFetch(`/api/dot/session/${sessionId}`, { method: 'DELETE', headers: authHeaders(false) });
@@ -458,7 +576,14 @@ export default function FiltraDotPage() {
           <div className="flex items-center gap-3">
             <DotAvatar />
             <div>
-              <div className="flex items-center gap-2 text-sm font-semibold">Filtra Dot <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">REI / CORPORATIVO</span></div>
+              <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
+                <span>Filtra Dot</span>
+                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">REI / CORPORATIVO</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+                  {dotStatus?.demo ? <FlaskConical size={10} /> : <Wifi size={10} />}
+                  {dotStatus?.demo ? ui.demo : ui.online}
+                </span>
+              </div>
               <div className="text-xs text-zinc-500">Agente de reputação e crescimento</div>
             </div>
           </div>
@@ -485,21 +610,38 @@ export default function FiltraDotPage() {
 
                 <div className="space-y-4">
                   {messages.slice(1).map((message, index) => (
-                    <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'items-start gap-4'}`}>
+                    <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'items-start gap-3'}`}>
                       {message.role === 'dot' && <DotAvatar active={busy && index === messages.length - 2} />}
-                      <div className={message.role === 'user'
-                        ? 'max-w-[85%] rounded-2xl rounded-br-sm bg-indigo-500 px-4 py-3 text-sm leading-6 text-white'
-                        : 'max-w-[85%] rounded-2xl rounded-tl-sm border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-zinc-200 whitespace-pre-wrap'}>
-                        {message.text}
+                      <div className={`group ${message.role === 'user' ? 'max-w-[85%]' : 'max-w-[92%]'}`}>
+                        <div className={message.role === 'user'
+                          ? 'rounded-2xl rounded-br-sm bg-indigo-500 px-4 py-3 text-sm leading-6 text-white shadow-lg shadow-indigo-950/20'
+                          : 'rounded-2xl rounded-tl-sm border border-white/10 bg-white/[0.035] p-4 text-sm leading-7 text-zinc-200 shadow-lg shadow-black/10'}>
+                          {message.role === 'user' ? message.text : <DotRichText text={message.text} />}
+                        </div>
+                        {message.role === 'dot' && (
+                          <div className="mt-1 flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                            <button
+                              type="button"
+                              onClick={() => void copyResponse(message.text, index)}
+                              className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"
+                              aria-label={copiedMessage === index ? ui.copiedResponse : ui.copyResponse}
+                              title={copiedMessage === index ? ui.copiedResponse : ui.copyResponse}
+                            >
+                              {copiedMessage === index ? <ClipboardCheck size={11} /> : <Clipboard size={11} />}
+                              {copiedMessage === index ? ui.copiedResponse : ui.copyResponse}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
                   {busy && (
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <DotAvatar active />
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs text-zinc-500">{ui.analyzing}</div>
+                      <div className="rounded-2xl border border-indigo-400/10 bg-indigo-500/[0.04] px-4 py-3 text-xs text-zinc-500">{ui.analyzing}</div>
                     </div>
                   )}
+                  <div ref={messagesEndRef} />
                 </div>
               </div>
             </div>
@@ -524,11 +666,14 @@ export default function FiltraDotPage() {
                   <ArrowUp size={18} />
                 </button>
               </div>
-              <div className="mx-auto mt-2 max-w-3xl text-[10px] text-zinc-600">{ui.localDemo}</div>
+              <div className="mx-auto mt-2 flex max-w-3xl items-center justify-between gap-3 text-[10px] text-zinc-600">
+                <span>{ui.localDemo}</span>
+                <span className="hidden text-right sm:block">{ui.responseLimit}</span>
+              </div>
             </div>
           </section>
 
-          <aside className="space-y-4">
+          <aside className="space-y-4 lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
             <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5">
               <div className="flex items-center justify-between">
                 <div className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-400">Dot Control</div>
@@ -662,7 +807,7 @@ export default function FiltraDotPage() {
               <div className="text-xs font-semibold text-zinc-300">{ui.suggestionsTitle}</div>
               <div className="mt-3 space-y-2">
                 {suggestions.map((suggestion) => (
-                  <button key={suggestion} onClick={() => void send(suggestion)} disabled={busy} className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200 disabled:opacity-40">
+                  <button key={suggestion} onClick={() => void send(suggestion)} disabled={busy} className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-indigo-500/[0.03] hover:text-zinc-200 disabled:opacity-40">
                     {suggestion}
                   </button>
                 ))}
