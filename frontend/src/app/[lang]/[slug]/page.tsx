@@ -16,7 +16,7 @@ type Item = {
   bullets: string[];
   cta: string;
   ctaAudit: string;
-  nav: { title: string; description: string }[];
+  nav: [string, string][];
 };
 
 const base = 'https://filtraai.com';
@@ -163,9 +163,9 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
               const targetIndex = navIndexes[i] ?? index;
               const prefix = lang === 'en' ? '/en' : lang === 'es' ? '/es' : '/zh';
               return (
-                <Link key={n.title} href={prefix + sourcePaths[targetIndex]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500/40">
-                  <span className="font-medium">{n.title}</span>
-                  <span className="mt-1 block text-xs leading-5 text-zinc-500">{n.description}</span>
+                <Link key={n[0]} href={prefix + sourcePaths[targetIndex]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500/40">
+                  <span className="font-medium">{n[0]}</span>
+                  <span className="mt-1 block text-xs leading-5 text-zinc-500">{n[1]}</span>
                 </Link>
               );
             })}
