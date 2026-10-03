@@ -3,11 +3,11 @@
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
 const localizedSlugs: Record<Exclude<Language,'pt'>,string[]> = {
-  en:['ai','customer-feedback','ai-review-analysis','online-reputation-management','google-reviews'],
-  es:['ia','feedback-clientes','analisis-resenas-ia','gestion-reputacion-online','resenas-google'],
-  zh:['ai','customer-feedback','ai-review-analysis','online-reputation-management','google-reviews'],
+  en:['ai','customer-feedback','ai-review-analysis','online-reputation-management','google-reviews','hotels','restaurants','clinics','agencies','franchises','tourism','associations','partners','how-it-works','ask-vs-filter','free-audit'],
+  es:['ia','feedback-clientes','analisis-resenas-ia','gestion-reputacion-online','resenas-google','hoteles','restaurantes','clinicas','agencias','franquicias','turismo','asociaciones','socios','como-funciona','pedir-vs-filtrar','auditoria-gratuita'],
+  zh:['ai','customer-feedback','ai-review-analysis','online-reputation-management','google-reviews','hotels','restaurants','clinics','agencies','franchises','tourism','associations','partners','how-it-works','ask-vs-filter','free-audit'],
 };
-const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google'];
+const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google','/hoteis','/restaurantes','/clinicas','/agencias','/franquias','/turismo','/associacoes','/parceiros','/como-funciona','/pedir-estrela-vs-filtrar','/auditoria-gratuita'];
 
 export function LanguageSwitcher({className='',compact=false,variant='select'}:{className?:string;compact?:boolean;variant?:'select'|'flags'}) {
   const {language,setLanguage,tx}=useLanguage();
