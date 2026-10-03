@@ -6,6 +6,7 @@ import { apiFetch } from '../utils/apiFailover';
 import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap, Clipboard, ClipboardCheck, Wifi, FlaskConical, ChevronRight, ChevronDown, CircleAlert } from 'lucide-react';
 
 const SESSION_KEY = 'filtra-dot-local-session';
+const DOT_LOCALE_KEY = 'filtra-dot-locale';
 type DotUi = {
   locale: string;
   earlyAccess: string;
@@ -87,6 +88,11 @@ type DotUi = {
   capabilitiesTitle: string;
   suggestionsTitle2: string;
   detailsGroup: string;
+  languageLabel: string;
+  languageAuto: string;
+  languagePt: string;
+  languageEn: string;
+  languageEs: string;
 };
 
 const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
@@ -170,6 +176,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     capabilitiesTitle: 'O que o Dot pode fazer',
     suggestionsTitle2: 'Perguntas para começar',
     detailsGroup: 'Detalhes operacionais',
+    languageLabel: 'Idioma',
+    languageAuto: 'Automático',
+    languagePt: 'Português',
+    languageEn: 'English',
+    languageEs: 'Español',
   },
   en: {
     earlyAccess: 'Early access',
@@ -251,6 +262,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     capabilitiesTitle: 'What Dot can do',
     suggestionsTitle2: 'Questions to get started',
     detailsGroup: 'Operational details',
+    languageLabel: 'Language',
+    languageAuto: 'Automatic',
+    languagePt: 'Português',
+    languageEn: 'English',
+    languageEs: 'Español',
   },
   es: {
     earlyAccess: 'Acceso anticipado',
@@ -332,6 +348,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     capabilitiesTitle: 'Lo que Dot puede hacer',
     suggestionsTitle2: 'Preguntas para empezar',
     detailsGroup: 'Detalles operativos',
+    languageLabel: 'Idioma',
+    languageAuto: 'Automático',
+    languagePt: 'Português',
+    languageEn: 'English',
+    languageEs: 'Español',
   },
 };
 
@@ -574,6 +595,7 @@ function DotAccordion({
 }
 
 export default function FiltraDotPage() {
+  const [languagePreference, setLanguagePreference] = useState<'auto' | 'pt' | 'en' | 'es'>('auto');
   const [uiLocale, setUiLocale] = useState('pt');
   const ui = dotUi(uiLocale);
   const [suggestions, setSuggestions] = useState<string[]>(() => localizedSuggestions('pt'));
@@ -637,15 +659,38 @@ export default function FiltraDotPage() {
   }, [messages, busy]);
 
   useEffect(() => {
-    const locale = detectDotLocale();
-    if (locale === 'pt') return;
-    const nextUi = dotUi(locale);
+    let preference: 'auto' | 'pt' | 'en' | 'es' = 'auto';
+    try {
+      const stored = window.localStorage.getItem(DOT_LOCALE_KEY);
+      if (stored === 'pt' || stored === 'en' || stored === 'es' || stored === 'auto') preference = stored;
+    } catch {}
+    const locale = preference === 'auto' ? detectDotLocale() : preference;
+    setLanguagePreference(preference);
     setUiLocale(locale);
+    const nextUi = dotUi(locale);
     setSuggestions(localizedSuggestions(locale));
-    setMessages((current) => current.length === 1 && current[0].role === 'dot'
-      ? [initialMessage(nextUi.companyPlaceholder, locale)]
-      : current);
-  }, []);
+    setMessages((current) =>
+      current.length === 1 && current[0].role === 'dot'
+        ? [initialMessage(nextUi.companyPlaceholder, locale)]
+        : current
+    );
+  }, [languagePreference]);
+
+  function changeLanguage(next: 'auto' | 'pt' | 'en' | 'es') {
+    const locale = next === 'auto' ? detectDotLocale() : next;
+    setLanguagePreference(next);
+    setUiLocale(locale);
+    const nextUi = dotUi(locale);
+    setSuggestions(localizedSuggestions(locale));
+    setMessages((current) =>
+      current.length === 1 && current[0].role === 'dot'
+        ? [initialMessage(nextUi.companyPlaceholder, locale)]
+        : current
+    );
+    try {
+      window.localStorage.setItem(DOT_LOCALE_KEY, next);
+    } catch {}
+  }
 
   useEffect(() => {
     let disposed = false;
@@ -884,11 +929,28 @@ export default function FiltraDotPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <label className="relative inline-flex items-center rounded-xl border border-white/10 bg-white/[0.02] px-2.5 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200">
+              <span className="sr-only">{ui.languageLabel}</span>
+              <span className="mr-2 text-[10px] uppercase tracking-[.12em] text-zinc-600">{ui.languageLabel}</span>
+              <select
+                value={languagePreference}
+                onChange={(event) => changeLanguage(event.target.value as 'auto' | 'pt' | 'en' | 'es')}
+                aria-label={ui.languageLabel}
+                title={ui.languageLabel}
+                className="cursor-pointer appearance-none bg-transparent pr-4 text-xs text-zinc-300 outline-none"
+              >
+                <option value="auto">{ui.languageAuto}</option>
+                <option value="pt">{ui.languagePt}</option>
+                <option value="en">{ui.languageEn}</option>
+                <option value="es">{ui.languageEs}</option>
+              </select>
+              <ChevronDown size={12} className="pointer-events-none absolute right-2.5 text-zinc-600" />
+            </label>
             <button type="button" onClick={() => void resetConversation()} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200 disabled:opacity-40">
               <RotateCcw size={13} /> {ui.newConversation}
             </button>
           </div>
-          <div className="hidden items-center gap-2 text-xs text-zinc-500 sm:flex">
+          <div className="hidden items-center gap-2 text-xs text-zinc-500 xl:flex">
             <ShieldCheck size={14} className="text-emerald-400" /> {ui.protectedActions}
           </div>
         </header>
