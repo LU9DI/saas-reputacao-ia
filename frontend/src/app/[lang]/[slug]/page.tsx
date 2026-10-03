@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
 import { segmentTranslations } from './segmentTranslations';
+import { AuditoriaGratuitaClient } from '../../auditoria-gratuita/AuditoriaGratuitaClient';
 
 type Lang = 'en' | 'es' | 'zh';
 type Section = { heading: string; body: string };
@@ -129,6 +130,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
   const found=get(lang,slug);
   if (!found) notFound();
   const {item,index}=found;
+  if (index === 15) return <AuditoriaGratuitaClient language={lang as Lang} />;
   const localizedNav = item.nav.length ? item.nav : (lang==='en' ? [['Customer Feedback','Understand the customer voice.'],['AI Review Analysis','Find recurring themes faster.'],['Online Reputation Management','Organize reputation signals.'],['Free Audit','Get an initial diagnosis.']] : lang==='es' ? [['Feedback de clientes','Entiende la voz del cliente.'],['Análisis de reseñas con IA','Encuentra temas recurrentes.'],['Gestión de reputación online','Organiza señales de reputación.'],['Auditoría gratuita','Obtén un diagnóstico inicial.']] : [['客户反馈','理解客户声音。'],['AI 评价分析','发现重复主题。'],['在线声誉管理','整理声誉信号。'],['免费审计','获得初步诊断。']]);
   return (
     <main className="min-h-screen bg-black text-zinc-100">
