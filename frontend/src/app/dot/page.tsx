@@ -1040,7 +1040,7 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="alerts"
               title={ui.alertsTitle}
-              meta={events.length ? `${events.length} sinal(is)` : '0 sinais'}
+              meta={events.length ? String(events.length) : undefined}
               icon={<CircleAlert size={15} />}
               open={openPanel === 'alerts'}
               onToggle={() => togglePanel('alerts')}
@@ -1065,7 +1065,7 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="decisions"
               title={ui.decisionsTitle}
-              meta={decisions.length ? `${decisions.length} ${ui.registered}` : '0'}
+              meta={decisions.length ? String(decisions.length) : undefined}
               icon={<CheckCircle2 size={15} />}
               open={openPanel === 'decisions'}
               onToggle={() => togglePanel('decisions')}
@@ -1105,7 +1105,7 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="actions"
               title={ui.actionsTitle}
-              meta={proposal ? '1 pendência' : (actions.length ? `${actions.length} ${ui.registered}` : '0')}
+              meta={proposal || actions.length ? String(actions.length + (proposal ? 1 : 0)) : undefined}
               icon={<Zap size={15} />}
               open={openPanel === 'actions'}
               onToggle={() => togglePanel('actions')}
@@ -1140,7 +1140,7 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="followups"
               title={ui.followupTitle}
-              meta={`${followUps.filter(f => f.status === 'pending').length} ${ui.pending}`}
+              meta={followUps.length ? String(followUps.length) : undefined}
               icon={<Clock3 size={15} />}
               open={openPanel === 'followups'}
               onToggle={() => togglePanel('followups')}
@@ -1213,7 +1213,7 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="capabilities"
               title={ui.capabilitiesTitle}
-              meta="3 capacidades principais"
+              meta="3"
               icon={<Bot size={15} />}
               open={openPanel === 'capabilities'}
               onToggle={() => togglePanel('capabilities')}
@@ -1228,7 +1228,7 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="suggestions"
               title={ui.suggestionsTitle2}
-              meta={`${suggestions.length}`}
+              meta={suggestions.length ? String(suggestions.length) : undefined}
               icon={<Sparkles size={15} />}
               open={openPanel === 'suggestions'}
               onToggle={() => togglePanel('suggestions')}
