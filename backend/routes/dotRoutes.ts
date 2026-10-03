@@ -13,6 +13,7 @@ import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
+import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -156,6 +157,7 @@ export function mountDotRoutes(app: Express) {
       plan: access.plan || 'rei',
       plan_label: access.planLabel || 'Rei',
       priority_access: ['rei', 'corporativo'],
+      scheduler: getDotSchedulerStatus(),
       capabilities: [
         'analisar_reputacao',
         'detectar_padroes',
