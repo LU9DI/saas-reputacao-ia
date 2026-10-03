@@ -32,6 +32,7 @@ type DotEvent = { id: number; type: string; severity: string; title: string; det
 type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string; action: string; risk: string };
 type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
 type DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
+type DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; created_at: string; completed_at?: string | null };
 type DotResolve = {
   problem_summary: string;
   verification_status: 'confirmed' | 'unverified' | 'not_found';
@@ -81,6 +82,7 @@ export default function FiltraDotPage() {
   const [events, setEvents] = useState<DotEvent[]>([]);
   const [decisions, setDecisions] = useState<DotDecision[]>([]);
   const [actions, setActions] = useState<DotAction[]>([]);
+  const [followUps, setFollowUps] = useState<DotFollowUp[]>([]);
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
@@ -89,6 +91,7 @@ export default function FiltraDotPage() {
     void fetch(`${API_URL}/api/dot/events`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.events) setEvents(d.events); }).catch(() => undefined);
     void fetch(`${API_URL}/api/dot/decisions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.decisions) setDecisions(d.decisions); }).catch(() => undefined);
     void fetch(`${API_URL}/api/dot/actions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.actions) setActions(d.actions); }).catch(() => undefined);
+    void fetch(`${API_URL}/api/dot/followups`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.followups) setFollowUps(d.followups); }).catch(() => undefined);
     void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
 
@@ -155,6 +158,10 @@ export default function FiltraDotPage() {
       if (!response.ok) return;
       const data = await response.json();
       if (data?.action) setActions(current => current.map(a => a.id === actionId ? { ...a, status: data.action.status, executed_at: data.action.executedAt } : a));
+      if (data?.action?.status === 'executed') {
+        const follow = await fetch(API_URL + '/api/dot/followups', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
+        if (follow?.followups) setFollowUps(follow.followups);
+      }
     } catch {}
   }
 
@@ -377,6 +384,17 @@ export default function FiltraDotPage() {
                   {a.status === 'executed' && <div className="mt-2 text-[10px] text-emerald-300">Executada somente no executor local; nenhum sistema externo foi alterado.</div>}
                 </div>)}
                 {actions.length===0 && <div className="text-xs text-zinc-600">Nenhuma ação preparada.</div>}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-emerald-400/15 bg-emerald-500/[0.04] p-5">
+              <div className="flex items-center justify-between"><div className="text-xs font-semibold text-emerald-200">Acompanhamento</div><span className="text-[10px] text-zinc-500">{followUps.filter(f => f.status === 'pending').length} pendentes</span></div>
+              <div className="mt-3 space-y-2">
+                {followUps.slice(0,3).map(f => <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
+                  <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{f.status}</span></div>
+                  <div className="mt-1 text-[11px] text-zinc-500">Retorno previsto: {new Date(f.due_at).toLocaleString('pt-BR')}</div>
+                </div>)}
+                {followUps.length === 0 && <div className="text-xs text-zinc-600">O Dot criará o acompanhamento após uma execução.</div>}
               </div>
             </div>
 
