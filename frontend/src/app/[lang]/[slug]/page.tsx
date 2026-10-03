@@ -147,7 +147,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
         <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{item.h1}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">{item.intro}</p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href={`/${lang}/preview/teste`} className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold">{item.cta}</Link>
+          <Link href="/preview/teste" className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold">{item.cta}</Link>
           <Link href={`/${lang}/auditoria-gratuita`} className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">{item.ctaAudit}</Link>
         </div>
         <section className="mt-14 space-y-10">
