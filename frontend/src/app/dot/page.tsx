@@ -6,8 +6,6 @@ import { apiFetch } from '../utils/apiFailover';
 import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap, Clipboard, ClipboardCheck, Wifi, FlaskConical } from 'lucide-react';
 
 const SESSION_KEY = 'filtra-dot-local-session';
-const TOKEN_KEY = 'filtra_token';
-
 type DotUi = {
   locale: string;
   earlyAccess: string;
@@ -151,14 +149,7 @@ function dotUi(locale = detectDotLocale()): DotUi {
 
 
 function authHeaders(json = true): HeadersInit {
-  const headers: Record<string, string> = json ? { 'Content-Type': 'application/json' } : {};
-  try {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) headers.Authorization = `Bearer ${token}`;
-  } catch {
-    // Localhost demo continues without a token.
-  }
-  return headers;
+  return json ? { 'Content-Type': 'application/json' } : {};
 }
 
 function localizedSuggestions(locale: string): string[] {
