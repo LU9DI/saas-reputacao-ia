@@ -16,7 +16,7 @@ type Item = {
   bullets: string[];
   cta: string;
   ctaAudit: string;
-  nav: [string, string][];
+  nav: [string, string][] | { title: string; description: string }[];
 };
 
 const base = 'https://filtraai.com';
@@ -70,7 +70,7 @@ const translations: Record<Lang, Partial<Record<string, Omit<Item,'slug'>>>> = {
 
 function fill(lang: Lang, index: number): Item {
   const baseItem = pt[index];
-  const translated = translations[lang][baseItem.slug];
+  const translated = translations[lang][baseItem.slug] ?? segmentTranslations[lang][baseItem.slug];
   if (translated) return { slug: baseItem.slug, ...translated };
   const names: Record<Lang,string[]> = {
     en:['Google Reviews Management','Hotel Reputation Management','Restaurant Reputation Management','Clinic Reputation Management','Reputation for Marketing Agencies','Franchise Reputation Management','Tourism Reputation Management','Feedback for Associations','Filtra.AI Partner Program','How Filtra.AI Works','Asking for Reviews vs Managing Reputation','Free Reputation Audit'],
@@ -128,6 +128,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
   const found=get(lang,slug);
   if (!found) notFound();
   const {item,index}=found;
+  const localizedNav = item.nav.length ? item.nav : (lang==='en' ? [['Customer Feedback','Understand the customer voice.'],['AI Review Analysis','Find recurring themes faster.'],['Online Reputation Management','Organize reputation signals.'],['Free Audit','Get an initial diagnosis.']] : lang==='es' ? [['Feedback de clientes','Entiende la voz del cliente.'],['Análisis de reseñas con IA','Encuentra temas recurrentes.'],['Gestión de reputación online','Organiza señales de reputación.'],['Auditoría gratuita','Obtén un diagnóstico inicial.']] : [['客户反馈','理解客户声音。'],['AI 评价分析','发现重复主题。'],['在线声誉管理','整理声誉信号。'],['免费审计','获得初步诊断。']]);
   return (
     <main className="min-h-screen bg-black text-zinc-100">
       <header className="border-b border-zinc-800">
@@ -158,7 +159,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
         <section className="mt-14">
           <h2 className="text-2xl font-semibold">{lang==='en'?'Explore related topics':lang==='es'?'Explora temas relacionados':'探索相关主题'}</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {item.nav.map((n,i) => {
+            {localizedNav.map((n,i) => {
               const navIndexes = [1, 2, 3, 15];
               const targetIndex = navIndexes[i] ?? index;
               const prefix = lang === 'en' ? '/en' : lang === 'es' ? '/es' : '/zh';
