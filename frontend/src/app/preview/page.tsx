@@ -116,7 +116,7 @@ const copy: Record<Language, Copy> = {
     plansText: 'The current plans remain here; this version only changes how visitors reach them.',
     finalTitle: 'Start understanding your reputation today.',
     finalText: 'Try Filtra.AI for 7 days and see how feedback can become useful information for your business.',
-    footer: 'Filtra.AI · Redesign preview · Does not change the current landing',
+    footer: 'Filtra.AI',
     panelEyebrow: 'Customer dashboard', panelTitle: 'A dashboard that helps managers decide, not just look at numbers.', panelText: 'The current dashboard already brings together metrics, reviews, AI, reports, alerts, QR Code, WhatsApp, and plan management. The visual evolution can make those actions clearer and faster.', panelRating: 'Average rating', panelReviews: 'Reviews', panelPositive: 'Positive', panelAttention: 'Attention', panelAi: 'AI found 3 themes', panelReport: 'Intelligent report updated', privacy: 'Privacy Policy', terms: 'Terms of Use',
   },
   es: {
@@ -149,7 +149,7 @@ const copy: Record<Language, Copy> = {
     plansText: 'Los planes actuales siguen aquí; esta versión solo cambia la forma en que el visitante llega a ellos.',
     finalTitle: 'Empieza a entender tu reputación hoy.',
     finalText: 'Prueba Filtra.AI durante 7 días y descubre cómo los comentarios pueden convertirse en información útil para tu empresa.',
-    footer: 'Filtra.AI · Vista previa del rediseño · No cambia la landing actual',
+    footer: 'Filtra.AI',
     panelEyebrow: 'Panel del cliente', panelTitle: 'Un panel que ayuda al gestor a decidir, no solo a mirar números.', panelText: 'El panel actual ya reúne métricas, reseñas, IA, informes, alertas, QR Code, WhatsApp y gestión del plan. La evolución visual puede hacer estas acciones más claras y rápidas.', panelRating: 'Calificación media', panelReviews: 'Reseñas', panelPositive: 'Positivas', panelAttention: 'Atención', panelAi: 'La IA encontró 3 temas', panelReport: 'Informe inteligente actualizado', privacy: 'Política de Privacidad', terms: 'Términos de Uso',
   },
   zh: {
@@ -182,7 +182,7 @@ const copy: Record<Language, Copy> = {
     plansText: '现有方案保持不变；这个版本只是改变访客到达方案页面的方式。',
     finalTitle: '今天就开始了解您的声誉。',
     finalText: '免费试用 Filtra.AI 7 天，看看客户反馈如何成为企业有价值的信息。',
-    footer: 'Filtra.AI · 重设计预览 · 不改变当前首页',
+    footer: 'Filtra.AI',
     panelEyebrow: '客户面板', panelTitle: '帮助管理者做决定，而不只是查看数字。', panelText: '当前面板已经整合指标、评价、AI、报告、提醒、二维码、WhatsApp 和方案管理。视觉升级可以让这些操作更清晰、更快速。', panelRating: '平均评分', panelReviews: '评价', panelPositive: '正面', panelAttention: '需关注', panelAi: 'AI 发现 3 个主题', panelReport: '智能报告已更新', privacy: '隐私政策', terms: '使用条款',
   },
 };
