@@ -1053,18 +1053,7 @@ export default function FiltraDotPage() {
             </div>
 
 
-            {proposal && (
-              <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.04] p-5">
-                <div className="text-xs font-semibold text-emerald-300">AÇÃO PREPARADA — NÃO EXECUTADA</div>
-                <div className="mt-2 text-sm font-semibold text-white">{proposal.title}</div>
-                <div className="mt-2 text-xs leading-5 text-zinc-400">{proposal.objective}</div>
-                <ol className="mt-3 space-y-2 text-xs text-zinc-400">
-                  {(proposal.steps || []).map((step: string, index: number) => <li key={step}>{index + 1}. {step}</li>)}
-                </ol>
-                <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">Aprovação será obrigatória antes de qualquer ação externa.</div>
-              </div>
-            )}
-            </div>
+                        </div>
           </aside>
         </div>
       </div>
