@@ -16,7 +16,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">\n      <nav className="mb-8 flex justify-end">\n        <LanguageSwitcher />\n      </nav>
+    <main className="mx-auto max-w-5xl px-6 py-16">
+      <nav className="mb-8 flex justify-end">
+        <LanguageSwitcher />
+      </nav>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
