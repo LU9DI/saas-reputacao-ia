@@ -125,7 +125,8 @@ export function AuditoriaGratuitaClient({ language = 'pt' }: { language?: Langua
   }
 
   return (
-    <main className="min-h-screen bg-black text-zinc-100 px-6 py-12">\n      <div className="mx-auto flex max-w-5xl justify-end pb-4"><LanguageSwitcher /></div>
+    <main className="min-h-screen bg-black text-zinc-100 px-6 py-12">
+      <div className="mx-auto flex max-w-5xl justify-end pb-4"><LanguageSwitcher /></div>
       <div className="mx-auto max-w-5xl space-y-10">
         <header className="space-y-4">
           <p className="text-sm font-semibold uppercase tracking-widest text-indigo-400">
