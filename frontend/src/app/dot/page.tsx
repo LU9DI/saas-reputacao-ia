@@ -983,7 +983,7 @@ export default function FiltraDotPage() {
               <div className="mt-3 space-y-2">
                 {followUps.slice(0,3).map(f => <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
                   <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status, uiLocale)}</span></div>
-                  <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `{ui.due}: ${new Date(f.due_at).toLocaleString('pt-BR')}` : `{ui.outcome}: ${f.outcome || 'avaliado'}`}</div>
+                  <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `{ui.due}: ${new Date(f.due_at).toLocaleString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US')}` : `{ui.outcome}: ${f.outcome || 'avaliado'}`}</div>
                   {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão #{r.reassessment.decision_id ?? '—'}{r.reassessment.prepared_action_id ? ` · ação preparada #${r.reassessment.prepared_action_id}` : ''}</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
                 </div>)}
                 {followUps.length === 0 && <div className="text-xs text-zinc-600">O acompanhamento aparecerá quando houver uma ação executada.</div>}
@@ -1040,7 +1040,7 @@ export default function FiltraDotPage() {
               </div>
               {scheduler ? (
                 <>
-                  <div className="mt-3 text-xs text-zinc-500">{ui.lastRound}: {scheduler.last_success_at ? new Date(scheduler.last_success_at).toLocaleString('pt-BR') : '{ui.notRunYet}'}</div>
+                  <div className="mt-3 text-xs text-zinc-500">{ui.lastRound}: {scheduler.last_success_at ? new Date(scheduler.last_success_at).toLocaleString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US') : '{ui.notRunYet}'}</div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
                     <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.companies}</span><div className="mt-1 text-zinc-200">{scheduler.companies_processed} {ui.processed} · {scheduler.companies_skipped} {ui.waitingCompanies}</div></div>
                     <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.followUpsLabel}</span><div className="mt-1 text-zinc-200">{scheduler.followups_processed}</div></div>
