@@ -147,8 +147,8 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
         <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{item.h1}</h1>
         <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">{item.intro}</p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/preview/teste" className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold">{item.cta}</Link>
-          <Link href="/auditoria-gratuita" className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">{item.ctaAudit}</Link>
+          <Link href={`/${lang}/preview/teste`} className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold">{item.cta}</Link>
+          <Link href={`/${lang}/auditoria-gratuita`} className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">{item.ctaAudit}</Link>
         </div>
         <section className="mt-14 space-y-10">
           {item.sections.map(s => <article key={s.heading}><h2 className="text-2xl font-semibold">{s.heading}</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">{s.body}</p></article>)}
