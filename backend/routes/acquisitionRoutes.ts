@@ -1,3 +1,204 @@
+
+import { enviarEmail } from '../lib/mailer.js';
+
+function acquisitionDailyLimit(): number {
+  const configured = Number(process.env.ACQUISITION_DAILY_LIMIT || 80);
+  return Math.min(80, Math.max(1, Number.isFinite(configured) ? Math.floor(configured) : 80));
+}
+
+function acquisitionDelayDays(stage: string): number {
+  if (stage === 'consented' || stage === 'diagnosed') return 3;
+  if (stage === 'followup_1') return 4;
+  return 0;
+}
+
+function acquisitionMessage(stage: string, company: string, appUrl: string) {
+  const nome = company || 'sua empresa';
+  if (stage === 'followup_1') {
+    return {
+      subject: 'Filtra.AI — conseguiu testar o diagnóstico de reputação?',
+      text: [
+        'Olá,',
+        '',
+        `Passando para saber se você conseguiu testar o Filtra.AI para ${nome}.`,
+        'O objetivo é transformar avaliações e feedbacks em sinais práticos para melhorar reputação, visibilidade e aquisição de clientes.',
+        '',
+        `Teste por 7 dias: ${appUrl}/auditoria-gratuita`,
+        '',
+        'Se não fizer sentido para você, basta responder este e-mail e não enviaremos novas mensagens.',
+        '',
+        'Filtra.AI',
+      ].join('\\n'),
+    };
+  }
+  if (stage === 'followup_2') {
+    return {
+      subject: 'Filtra.AI — último contato sobre o teste de 7 dias',
+      text: [
+        'Olá,',
+        '',
+        `Este é nosso último contato automático sobre o Filtra.AI para ${nome}.`,
+        'Se quiser avaliar como seus clientes percebem a empresa e encontrar oportunidades nas avaliações, o teste de 7 dias continua disponível.',
+        '',
+        `Acessar: ${appUrl}/auditoria-gratuita`,
+        '',
+        'Depois deste contato, não enviaremos novas mensagens automáticas.',
+        '',
+        'Filtra.AI',
+      ].join('\\n'),
+    };
+  }
+  return {
+    subject: 'Filtra.AI — transforme feedback em crescimento',
+    text: [
+      'Olá,',
+      '',
+      `Você demonstrou interesse em avaliar a reputação de ${nome} com o Filtra.AI.`,
+      'A plataforma organiza avaliações e feedbacks para ajudar a identificar oportunidades de melhoria, reputação e aquisição.',
+      '',
+      `Teste grátis por 7 dias: ${appUrl}/auditoria-gratuita`,
+      '',
+      'Se não quiser receber novas mensagens, basta responder este e-mail.',
+      '',
+      'Filtra.AI',
+    ].join('\\n'),
+  };
+}
+
+async function processAcquisitionBatch(options: { limit: number; source: string }) {
+  const db = (await import('../lib/db.js')).getDb();
+  await ensureAcquisitionSchema(db);
+
+  const dailyLimit = acquisitionDailyLimit();
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+  const sentRow = await db.get(
+    `SELECT COUNT(*) AS count
+     FROM acquisition_events
+     WHERE event_type='outreach.sent' AND occurred_at >= ?`,
+    [startOfDay.toISOString()]
+  );
+  const alreadySent = Number(sentRow?.count || 0);
+  const remaining = Math.max(0, dailyLimit - alreadySent);
+  const target = Math.min(Math.max(1, options.limit), remaining);
+  if (target <= 0) {
+    return { attempted: 0, sent: 0, failed: 0, skipped: 0, daily_limit: dailyLimit, sent_today: alreadySent };
+  }
+
+  const nowIso = new Date().toISOString();
+  const queue = await db.all(
+    `SELECT id,email,company,source,acquisition_stage
+     FROM acquisition_leads
+     WHERE consent=1 AND acquisition_suppressed=0 AND status='eligible'
+       AND (
+         acquisition_stage IN ('consented','diagnosed','followup_1','followup_2')
+         OR (acquisition_stage='sending' AND (acquisition_locked_until IS NULL OR acquisition_locked_until <= ?))
+       )
+       AND (acquisition_next_at IS NULL OR acquisition_next_at <= ?)
+     ORDER BY created_at ASC
+     LIMIT ${target}`,
+    [nowIso, nowIso]
+  );
+
+  const appUrl = (process.env.APP_URL || process.env.FRONTEND_URL || 'https://filtraai.com').replace(/\\/$/, '');
+  let sent = 0;
+  let failed = 0;
+  let skipped = 0;
+
+  for (const lead of queue || []) {
+    const token = crypto.randomUUID();
+    const lockedUntil = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    const claimed = await db.run(
+      `UPDATE acquisition_leads
+       SET acquisition_stage='sending', acquisition_lock_token=?, acquisition_locked_until=?,
+           acquisition_last_error=NULL, updated_at=CURRENT_TIMESTAMP
+       WHERE id=? AND consent=1 AND acquisition_suppressed=0 AND status='eligible'
+         AND (
+           acquisition_stage IN ('consented','diagnosed','followup_1','followup_2')
+           OR (acquisition_stage='sending' AND (acquisition_locked_until IS NULL OR acquisition_locked_until <= ?))
+         )
+         AND (acquisition_next_at IS NULL OR acquisition_next_at <= ?)`,
+      [token, lockedUntil, lead.id, nowIso, nowIso]
+    );
+    if (!claimed || Number(claimed.changes || 0) < 1) {
+      skipped++;
+      continue;
+    }
+
+    const stage = String(lead.acquisition_stage || 'consented');
+    const message = acquisitionMessage(stage, String(lead.company || ''), appUrl);
+    const result = await enviarEmail({ to: lead.email, subject: message.subject, text: message.text });
+
+    if (result.ok) {
+      const nextDays = acquisitionDelayDays(stage);
+      const nextAt = nextDays > 0 ? new Date(Date.now() + nextDays * 86400000).toISOString() : null;
+      const nextStage = stage === 'consented' || stage === 'diagnosed'
+        ? 'followup_1'
+        : stage === 'followup_1'
+          ? 'followup_2'
+          : 'completed';
+
+      await db.run(
+        `UPDATE acquisition_leads
+         SET acquisition_stage=?, acquisition_next_at=?, acquisition_sent_at=?, acquisition_lock_token=NULL,
+             acquisition_locked_until=NULL, acquisition_last_error=NULL, updated_at=CURRENT_TIMESTAMP
+         WHERE id=? AND acquisition_lock_token=?`,
+        [nextStage, nextAt, new Date().toISOString(), lead.id, token]
+      );
+      await db.run(
+        `INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json)
+         VALUES (?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING`,
+        [crypto.randomUUID(), lead.id, 'outreach.sent', options.source, new Date().toISOString(),
+          JSON.stringify({ stage, message_id: result.messageId || null, mode: result.mode })]
+      );
+      sent++;
+    } else {
+      const retryAt = new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString();
+      await db.run(
+        `UPDATE acquisition_leads
+         SET acquisition_stage=?, acquisition_next_at=?, acquisition_lock_token=NULL,
+             acquisition_locked_until=NULL, acquisition_last_error=?, updated_at=CURRENT_TIMESTAMP
+         WHERE id=? AND acquisition_lock_token=?`,
+        [stage, retryAt, String(result.error || 'Falha no envio').slice(0, 500), lead.id, token]
+      );
+      await db.run(
+        `INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json)
+         VALUES (?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING`,
+        [crypto.randomUUID(), lead.id, 'outreach.failed', options.source, new Date().toISOString(),
+          JSON.stringify({ stage, error: result.error || 'Falha no envio', mode: result.mode })]
+      );
+      failed++;
+    }
+  }
+
+  return { attempted: (queue || []).length, sent, failed, skipped, daily_limit: dailyLimit, sent_today: alreadySent + sent };
+}
+
+export function startAcquisitionScheduler() {
+  if (process.env.ACQUISITION_SCHEDULER !== '1') {
+    console.log('📨 Acquisition scheduler: OFF (defina ACQUISITION_SCHEDULER=1 para ligar)');
+    return;
+  }
+  const intervalMs = Math.max(5, Number(process.env.ACQUISITION_INTERVAL_MINUTES || 15)) * 60_000;
+  let running = false;
+  const run = async () => {
+    if (running) return;
+    running = true;
+    try {
+      const result = await processAcquisitionBatch({ limit: 80, source: 'acquisition-scheduler' });
+      console.log(`📨 Acquisition scheduler: attempted=${result.attempted} sent=${result.sent} failed=${result.failed} sent_today=${result.sent_today}/${result.daily_limit}`);
+    } catch (e: any) {
+      console.warn('📨 Acquisition scheduler:', e?.message || e);
+    } finally {
+      running = false;
+    }
+  };
+  setTimeout(run, 30_000).unref();
+  const timer = setInterval(run, intervalMs);
+  timer.unref();
+  console.log(`📨 Acquisition scheduler: ON a cada ${Math.round(intervalMs / 60000)} min, limite diário ${acquisitionDailyLimit()}`);
+}
+
 import type { Express, Request, Response } from 'express';
 import crypto from 'crypto';
 import type { Database } from 'sqlite';
@@ -27,6 +228,10 @@ export async function ensureAcquisitionSchema(db: Database) {
       acquisition_stage TEXT NOT NULL DEFAULT 'consented',
       acquisition_next_at TIMESTAMPTZ,
       acquisition_suppressed INTEGER NOT NULL DEFAULT 0,
+      acquisition_lock_token TEXT,
+      acquisition_locked_until TIMESTAMPTZ,
+      acquisition_sent_at TIMESTAMPTZ,
+      acquisition_last_error TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
@@ -68,7 +273,12 @@ export async function ensureAcquisitionSchema(db: Database) {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  await safeAlter(db, 'ALTER TABLE acquisition_leads ADD COLUMN acquisition_lock_token TEXT');
+  await safeAlter(db, 'ALTER TABLE acquisition_leads ADD COLUMN acquisition_locked_until TIMESTAMPTZ');
+  await safeAlter(db, 'ALTER TABLE acquisition_leads ADD COLUMN acquisition_sent_at TIMESTAMPTZ');
+  await safeAlter(db, 'ALTER TABLE acquisition_leads ADD COLUMN acquisition_last_error TEXT');
   await safeAlter(db, 'CREATE INDEX IF NOT EXISTS idx_acq_leads_eligible ON acquisition_leads(consent, acquisition_suppressed, acquisition_stage)');
+  await safeAlter(db, 'CREATE INDEX IF NOT EXISTS idx_acq_leads_lock ON acquisition_leads(acquisition_locked_until)');
   await safeAlter(db, 'CREATE INDEX IF NOT EXISTS idx_acq_events_lead ON acquisition_events(lead_id, occurred_at)');
   await safeAlter(db, 'CREATE INDEX IF NOT EXISTS idx_acq_content_campaign ON acquisition_content(campaign_id, platform)');
 }
@@ -128,17 +338,38 @@ export function mountAcquisitionRoutes(app: Express) {
     if (!secretOk(req)) return res.status(401).json({ error: 'Unauthorized' });
     const db = (await import('../lib/db.js')).getDb();
     await ensureAcquisitionSchema(db);
+    const requestedLimit = Number(req.query.limit || 100);
+    const limit = Math.min(100, Math.max(1, Number.isFinite(requestedLimit) ? Math.floor(requestedLimit) : 100));
+    const nowIso = new Date().toISOString();
     const rows = await db.all(
       `SELECT id,email,company,source,consent_at,acquisition_stage,acquisition_next_at
        FROM acquisition_leads
        WHERE consent=1 AND acquisition_suppressed=0
          AND status='eligible'
-         AND acquisition_stage NOT IN ('suppressed','unsubscribed')
-         AND (acquisition_next_at IS NULL OR acquisition_next_at <= CURRENT_TIMESTAMP)
+         AND (
+           acquisition_stage IN ('consented','diagnosed','followup_1','followup_2')
+           OR (acquisition_stage='sending' AND (acquisition_locked_until IS NULL OR acquisition_locked_until <= ?))
+         )
+         AND (acquisition_next_at IS NULL OR acquisition_next_at <= ?)
        ORDER BY created_at ASC
-       LIMIT 100`
+       LIMIT ${limit}`,
+      [nowIso, nowIso]
     );
     return res.json({ ok: true, count: rows.length, leads: rows });
+  });
+
+  app.post('/api/n8n/acquisition/send', async (req: Request, res: Response) => {
+    if (!secretOk(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const result = await processAcquisitionBatch({
+        limit: Math.min(80, Math.max(1, Number(req.body?.limit || req.query.limit || 80))),
+        source: String(req.body?.source || 'acquisition-worker').slice(0, 120),
+      });
+      return res.json({ ok: true, ...result });
+    } catch (error: any) {
+      console.error('[acquisition] send:', error?.message || error);
+      return res.status(500).json({ error: 'Não foi possível processar a aquisição agora.' });
+    }
   });
 
   app.post('/api/n8n/acquisition/events', async (req: Request, res: Response) => {
@@ -224,8 +455,22 @@ export function mountAcquisitionRoutes(app: Express) {
         (SELECT COUNT(*) FROM acquisition_leads) AS total_leads,
         (SELECT COUNT(*) FROM acquisition_leads WHERE consent=1 AND acquisition_suppressed=0) AS eligible_leads,
         (SELECT COUNT(*) FROM acquisition_events) AS events,
+        (SELECT COUNT(*) FROM acquisition_events WHERE event_type='outreach.sent' AND occurred_at >= ?) AS sent_today,
         (SELECT COUNT(*) FROM acquisition_content) AS content_items`
     );
-    return res.json({ ok: true, ...row });
+    const startOfDay = new Date();
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const row = await db.get(
+      `SELECT
+        (SELECT COUNT(*) FROM acquisition_leads) AS total_leads,
+        (SELECT COUNT(*) FROM acquisition_leads WHERE consent=1 AND acquisition_suppressed=0) AS eligible_leads,
+        (SELECT COUNT(*) FROM acquisition_events) AS events,
+        (SELECT COUNT(*) FROM acquisition_events WHERE event_type='outreach.sent' AND occurred_at >= ?) AS sent_today,
+        (SELECT COUNT(*) FROM acquisition_content) AS content_items`,
+      [startOfDay.toISOString()]
+    );
+    return res.json({ ok: true, daily_limit: acquisitionDailyLimit(), ...row });
   });
 }
+
+
