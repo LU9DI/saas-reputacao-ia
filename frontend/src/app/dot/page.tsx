@@ -32,7 +32,7 @@ type DotEvent = { id: number; type: string; severity: string; title: string; det
 type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string; action: string; risk: string };
 type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
 type DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
-type DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; result_json?: string | null; created_at: string; completed_at?: string | null };
+type DotSchedulerStatus = { running: boolean; timer_active: boolean; tick_ms: number; last_run_at: string | null; last_success_at: string | null; last_error_at: string | null; last_error: string | null; duration_ms: number | null; companies_processed: number; companies_skipped: number; companies_errors: number; followups_processed: number; events_created: number; decisions_created: number; actions_prepared: number };\ntype DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; result_json?: string | null; created_at: string; completed_at?: string | null };
 type DotResolve = {
   problem_summary: string;
   verification_status: 'confirmed' | 'unverified' | 'not_found';
@@ -82,17 +82,48 @@ export default function FiltraDotPage() {
   const [events, setEvents] = useState<DotEvent[]>([]);
   const [decisions, setDecisions] = useState<DotDecision[]>([]);
   const [actions, setActions] = useState<DotAction[]>([]);
-  const [followUps, setFollowUps] = useState<DotFollowUp[]>([]);
+  const [followUps, setFollowUps] = useState<DotFollowUp[]>([]);\n  const [scheduler, setScheduler] = useState<DotSchedulerStatus | null>(null);
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
 
   useEffect(() => {
-    void fetch(`${API_URL}/api/dot/events`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.events) setEvents(d.events); }).catch(() => undefined);
-    void fetch(`${API_URL}/api/dot/decisions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.decisions) setDecisions(d.decisions); }).catch(() => undefined);
-    void fetch(`${API_URL}/api/dot/actions`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.actions) setActions(d.actions); }).catch(() => undefined);
-    void fetch(`${API_URL}/api/dot/followups`, { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null).then(d => { if (d?.followups) setFollowUps(d.followups); }).catch(() => undefined);
-    void fetch(`${API_URL}/api/dot/briefing`, { headers: authHeaders(false) }).then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.'); return data; }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
+    let disposed = false;
+    const refreshOperationalState = async () => {
+      const headers = authHeaders(false);
+      const responses = await Promise.all([
+        fetch(API_URL + '/api/dot/status', { headers }),
+        fetch(API_URL + '/api/dot/events', { headers }),
+        fetch(API_URL + '/api/dot/decisions', { headers }),
+        fetch(API_URL + '/api/dot/actions', { headers }),
+        fetch(API_URL + '/api/dot/followups', { headers }),
+      ]);
+      if (disposed) return;
+      const [statusResponse, eventsResponse, decisionsResponse, actionsResponse, followupsResponse] = responses;
+      const [status, eventsData, decisionsData, actionsData, followupsData] = await Promise.all([
+        statusResponse.ok ? statusResponse.json() : null,
+        eventsResponse.ok ? eventsResponse.json() : null,
+        decisionsResponse.ok ? decisionsResponse.json() : null,
+        actionsResponse.ok ? actionsResponse.json() : null,
+        followupsResponse.ok ? followupsResponse.json() : null,
+      ]);
+      if (status?.scheduler) setScheduler(status.scheduler);
+      if (eventsData?.events) setEvents(eventsData.events);
+      if (decisionsData?.decisions) setDecisions(decisionsData.decisions);
+      if (actionsData?.actions) setActions(actionsData.actions);
+      if (followupsData?.followups) setFollowUps(followupsData.followups);
+    };
+    void refreshOperationalState().catch(() => undefined);
+    const interval = window.setInterval(() => { void refreshOperationalState().catch(() => undefined); }, 30_000);
+    return () => { disposed = true; window.clearInterval(interval); };
+  }, []);
+
+  useEffect(() => {
+    void fetch(API_URL + '/api/dot/briefing', { headers: authHeaders(false) }).then(async (response) => {
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.');
+      return data;
+    }).then((data) => setBriefing(data.briefing)).catch(() => undefined);
   }, []);
 
   async function resolveComplaint() {
@@ -301,6 +332,28 @@ export default function FiltraDotPage() {
           </section>
 
           <aside className="space-y-4">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5">
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-400">Dot Control</div>
+                <div className={scheduler?.last_error_at ? 'text-[10px] text-amber-300' : 'text-[10px] text-emerald-300'}>
+                  {scheduler?.running ? '● Executando' : scheduler?.timer_active ? '● Monitoramento ativo' : '● Aguardando'}
+                </div>
+              </div>
+              {scheduler ? (
+                <>
+                  <div className="mt-3 text-xs text-zinc-500">Última rodada: {scheduler.last_success_at ? new Date(scheduler.last_success_at).toLocaleString('pt-BR') : 'ainda não executada'}</div>
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Empresas</span><div className="mt-1 text-zinc-200">{scheduler.companies_processed} processadas · {scheduler.companies_skipped} aguardando</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Follow-ups</span><div className="mt-1 text-zinc-200">{scheduler.followups_processed}</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Decisões</span><div className="mt-1 text-zinc-200">{scheduler.decisions_created}</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Ações</span><div className="mt-1 text-zinc-200">{scheduler.actions_prepared} preparadas</div></div>
+                  </div>
+                  {scheduler.last_error && <div className="mt-3 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[10px] text-amber-200">{scheduler.last_error}</div>}
+                </>
+              ) : <div className="mt-3 text-xs text-zinc-600">Carregando estado operacional…</div>}
+            </div>
+
+
             {proposal && (
               <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.04] p-5">
                 <div className="text-xs font-semibold text-emerald-300">AÇÃO PREPARADA — NÃO EXECUTADA</div>
