@@ -3,6 +3,7 @@ import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRe
 import { evaluateDotPolicy, type DotRisk } from './dotPolicy.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { recordDotActionAudit } from './dotActionAudit.js';
+import { createDotFollowUp } from './dotFollowUp.js';
 
 export type DotExecutionResult = {
   ok: boolean;
@@ -106,6 +107,10 @@ export async function executeDotActionThroughGateway(
       actorType: 'system',
       metadata: { executor: definition.executorKey, simulated: true },
     });
+
+    // Toda execução termina com acompanhamento persistido. Isso fecha o ciclo
+    // local sem produzir efeito externo e permite ao Dot voltar ao caso depois.
+    await createDotFollowUp(empresaId, Number(row.decision_id), actionId, 24);
 
     return { ok: true, id: actionId, status: 'executed', simulated: true, executor: definition.executorKey, startedAt, executedAt };
   } catch (error: any) {
