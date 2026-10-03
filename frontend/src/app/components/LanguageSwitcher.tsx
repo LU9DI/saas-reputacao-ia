@@ -20,6 +20,11 @@ export function LanguageSwitcher({className='',compact=false,variant='select'}:{
     setLanguage(code);
     if(typeof window==='undefined')return;
     const path=window.location.pathname;
+    if(path==='/' || path==='/en' || path==='/es' || path==='/zh'){
+      if(code==='pt'){ if(path!=='/') window.location.href='/'; }
+      else if(path!=='/'+code) window.location.href='/'+code;
+      return;
+    }
     const sourceIndex=sourcePaths.indexOf(path);
     const blogIndex=path==='/blog' ? -1 : (path.startsWith('/blog/') ? blogSlugs.indexOf(path.slice(6)) : -2);
     if(path==='/blog'){ if(code!=='pt') window.location.href='/'+code+'/blog'; return; }
