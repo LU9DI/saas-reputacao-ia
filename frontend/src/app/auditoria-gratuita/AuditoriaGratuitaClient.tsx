@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import type { Language } from '../../Contexts/LanguageContext';
 
 type Diagnostic = {
   company: string;
@@ -19,7 +20,15 @@ type Diagnostic = {
 
 const API = process.env.NEXT_PUBLIC_API_URL || '';
 
-export function AuditoriaGratuitaClient() {
+const auditCopy: Record<Language, { kicker:string; title:string; intro:string; company:string; email:string; optional:string; consent:string; reviews:string; reviewHelp:string; emailHelp:string; button:string; loading:string; resultTitle:string; noData:string; strengths:string; risks:string; themes:string; actions:string; summary:string; confidence:string; trial:string; nav:string[]; }> = {
+  pt: { kicker:'Filtra.AI · diagnóstico gratuito', title:'Auditoria gratuita de avaliações e reputação online', intro:'Descubra o que seus clientes estão elogiando, reclamando e repetindo. Cole avaliações reais e receba um diagnóstico inicial gratuito.', company:'Empresa', email:'E-mail', optional:'opcional', consent:'Quero receber da Filtra.AI informações sobre o diagnóstico, o teste de 7 dias e seus serviços. O consentimento é opcional e posso cancelar a qualquer momento.', reviews:'Avaliações reais', reviewHelp:'Uma por linha: nota | texto. Não inclua dados pessoais de clientes.', emailHelp:'O e-mail só é necessário se você optar por receber comunicações da Filtra.AI.', button:'Gerar meu diagnóstico gratuito', loading:'Gerando diagnóstico…', resultTitle:'O que você recebe', noData:'Nada é inventado: sem avaliações fornecidas, não há diagnóstico.', strengths:'Pontos fortes', risks:'Riscos', themes:'Temas recorrentes', actions:'Ações sugeridas', summary:'Resumo', confidence:'Confiança', trial:'Continuar para o teste de 7 dias', nav:['Feedback de clientes','Análise de avaliações com IA','Gestão de reputação online','Planos'] },
+  en: { kicker:'Filtra.AI · free diagnosis', title:'Free audit of reviews and online reputation', intro:'Discover what customers praise, criticize, and repeat. Paste real reviews and receive an initial free diagnosis.', company:'Company', email:'Email', optional:'optional', consent:'I want to receive information from Filtra.AI about the diagnosis, 7-day trial, and services. Consent is optional and I can cancel at any time.', reviews:'Real reviews', reviewHelp:'One per line: rating | text. Do not include customers’ personal data.', emailHelp:'Email is only required if you choose to receive communications from Filtra.AI.', button:'Generate my free diagnosis', loading:'Generating diagnosis…', resultTitle:'What you receive', noData:'Nothing is invented: without reviews, there is no diagnosis.', strengths:'Strengths', risks:'Risks', themes:'Recurring themes', actions:'Suggested actions', summary:'Summary', confidence:'Confidence', trial:'Continue to the 7-day trial', nav:['Customer feedback','AI review analysis','Online reputation management','Plans'] },
+  es: { kicker:'Filtra.AI · diagnóstico gratuito', title:'Auditoría gratuita de reseñas y reputación online', intro:'Descubre qué elogian, critican y repiten tus clientes. Pega reseñas reales y recibe un diagnóstico inicial gratuito.', company:'Empresa', email:'Correo electrónico', optional:'opcional', consent:'Quiero recibir información de Filtra.AI sobre el diagnóstico, la prueba de 7 días y sus servicios. El consentimiento es opcional y puedo cancelarlo cuando quiera.', reviews:'Reseñas reales', reviewHelp:'Una por línea: nota | texto. No incluyas datos personales de clientes.', emailHelp:'El correo solo es necesario si eliges recibir comunicaciones de Filtra.AI.', button:'Generar mi diagnóstico gratuito', loading:'Generando diagnóstico…', resultTitle:'Qué recibes', noData:'No se inventa nada: sin reseñas proporcionadas no hay diagnóstico.', strengths:'Puntos fuertes', risks:'Riesgos', themes:'Temas recurrentes', actions:'Acciones sugeridas', summary:'Resumen', confidence:'Confianza', trial:'Continuar con la prueba de 7 días', nav:['Comentarios de clientes','Análisis de reseñas con IA','Gestión de reputación online','Planes'] },
+  zh: { kicker:'Filtra.AI · 免费诊断', title:'免费评价与在线声誉审计', intro:'了解客户在称赞、批评和反复提及什么。粘贴真实评价，即可获得免费的初步诊断。', company:'企业', email:'电子邮件', optional:'可选', consent:'我希望接收 Filtra.AI 关于诊断、7 天试用和服务的信息。授权是可选的，我可以随时取消。', reviews:'真实评价', reviewHelp:'每行一条：评分 | 文本。请勿包含客户个人数据。', emailHelp:'只有选择接收 Filtra.AI 通讯时才需要填写邮箱。', button:'生成我的免费诊断', loading:'正在生成诊断…', resultTitle:'您将获得', noData:'不会编造结果：没有提供评价就不会生成诊断。', strengths:'优势', risks:'风险', themes:'重复主题', actions:'建议行动', summary:'摘要', confidence:'置信度', trial:'继续 7 天试用', nav:['客户反馈','AI 评价分析','在线声誉管理','方案'] },
+};
+
+export function AuditoriaGratuitaClient({ language = 'pt' }: { language?: Language }) {
+  const c = auditCopy[language];
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
@@ -53,7 +62,7 @@ export function AuditoriaGratuitaClient() {
           email: email.trim(),
           company: company.trim(),
           consent: true,
-          source: 'auditoria-gratuita',
+          source: `auditoria-gratuita-${language}`,
         }),
       }
     );
@@ -87,7 +96,7 @@ export function AuditoriaGratuitaClient() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             company,
-            locale: 'pt',
+            locale: language,
             reviews,
             lead_id: consentData?.lead_id || '',
           }),
@@ -108,15 +117,13 @@ export function AuditoriaGratuitaClient() {
       <div className="mx-auto max-w-5xl space-y-10">
         <header className="space-y-4">
           <p className="text-sm font-semibold uppercase tracking-widest text-indigo-400">
-            Filtra.AI · diagnóstico gratuito
+            {c.kicker}
           </p>
           <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-            Auditoria gratuita de avaliações e reputação online
+            {c.title}
           </h1>
           <p className="max-w-3xl text-lg leading-8 text-zinc-400">
-            Descubra em poucos minutos o que seus clientes estão elogiando, reclamando e repetindo — e transforme isso
-            em prioridades de melhoria. Cole avaliações reais e receba um diagnóstico inicial gratuito, sem precisar
-            contratar nada para ver o resultado.
+            {c.intro}
           </p>
         </header>
 
@@ -197,14 +204,14 @@ export function AuditoriaGratuitaClient() {
 
         <section className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-            <label className="block text-sm font-medium">Empresa</label>
+            <label className="block text-sm font-medium">{c.company}</label>
             <input
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               placeholder="Nome da empresa"
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-none focus:border-indigo-500"
             />
-            <label className="block text-sm font-medium">E-mail <span className="text-zinc-500">(opcional)</span></label>
+            <label className="block text-sm font-medium">{c.email} <span className="text-zinc-500">({c.optional})</span></label>
             <input
               type="email"
               value={email}
@@ -220,14 +227,11 @@ export function AuditoriaGratuitaClient() {
                 onChange={(e) => setConsent(e.target.checked)}
                 className="mt-1"
               />
-              <span>
-                Quero receber da Filtra.AI informações sobre o diagnóstico, o teste de 7 dias e seus serviços. O
-                consentimento é opcional e posso cancelar a qualquer momento.
-              </span>
+              <span>{c.consent}</span>
             </label>
-            <label className="block text-sm font-medium">Avaliações reais</label>
-            <p className="text-xs text-zinc-500">Uma por linha: nota | texto. Não inclua dados pessoais de clientes.</p>
-            <p className="text-xs text-zinc-500">O e-mail só é necessário se você optar por receber comunicações da Filtra.AI.</p>
+            <label className="block text-sm font-medium">{c.reviews}</label>
+            <p className="text-xs text-zinc-500">{c.reviewHelp}</p>
+            <p className="text-xs text-zinc-500">{c.emailHelp}</p>
             <textarea
               value={raw}
               onChange={(e) => setRaw(e.target.value)}
@@ -239,7 +243,7 @@ export function AuditoriaGratuitaClient() {
               disabled={loading || !company.trim() || (consent && !email.trim())}
               className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? 'Gerando diagnóstico…' : 'Gerar meu diagnóstico gratuito'}
+              {loading ? c.loading : c.button}
             </button>
             {error && (
               <p className="rounded-xl border border-red-900 bg-red-950/40 p-3 text-sm text-red-300">{error}</p>
@@ -249,15 +253,15 @@ export function AuditoriaGratuitaClient() {
           <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
             {!diagnostic ? (
               <div className="space-y-4 text-zinc-400">
-                <h2 className="text-2xl font-semibold text-zinc-100">O que você recebe</h2>
+                <h2 className="text-2xl font-semibold text-zinc-100">{c.resultTitle}</h2>
                 <ul className="space-y-3">
-                  <li>• média e distribuição das notas fornecidas;</li>
-                  <li>• pontos fortes identificados nas avaliações;</li>
-                  <li>• riscos e temas que aparecem repetidamente;</li>
-                  <li>• ações práticas baseadas no material analisado;</li>
-                  <li>• indicação de confiança conforme a quantidade e clareza das evidências.</li>
+                  <li>• {language === 'pt' ? 'média e distribuição das notas fornecidas' : language === 'en' ? 'average and distribution of the supplied ratings' : language === 'es' ? 'media y distribución de las notas proporcionadas' : '所提供评分的平均值与分布'};</li>
+                  <li>• {c.strengths};</li>
+                  <li>• {c.risks} e {c.themes};</li>
+                  <li>• {c.actions};</li>
+                  <li>• {c.confidence} conforme a quantidade e clareza das evidências.</li>
                 </ul>
-                <p className="pt-4 text-sm">Nada é inventado: sem avaliações fornecidas, não há diagnóstico.</p>
+                <p className="pt-4 text-sm">{c.noData}</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -269,12 +273,12 @@ export function AuditoriaGratuitaClient() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-semibold">Resumo</h3>
+                  <h3 className="font-semibold">{c.summary}</h3>
                   <p className="mt-2 text-zinc-300">{diagnostic.summary}</p>
                 </div>
                 {diagnostic.strengths?.length ? (
                   <div>
-                    <h3 className="font-semibold">Pontos fortes</h3>
+                    <h3 className="font-semibold">{c.strengths}</h3>
                     <ul className="mt-2 space-y-2 text-zinc-300">
                       {diagnostic.strengths.map((item) => (
                         <li key={item}>• {item}</li>
@@ -284,7 +288,7 @@ export function AuditoriaGratuitaClient() {
                 ) : null}
                 {diagnostic.risks?.length ? (
                   <div>
-                    <h3 className="font-semibold">Riscos</h3>
+                    <h3 className="font-semibold">{c.risks}</h3>
                     <ul className="mt-2 space-y-2 text-zinc-300">
                       {diagnostic.risks.map((item) => (
                         <li key={item}>• {item}</li>
@@ -294,7 +298,7 @@ export function AuditoriaGratuitaClient() {
                 ) : null}
                 {diagnostic.recurring_themes?.length ? (
                   <div>
-                    <h3 className="font-semibold">Temas recorrentes</h3>
+                    <h3 className="font-semibold">{c.themes}</h3>
                     <ul className="mt-2 space-y-2 text-zinc-300">
                       {diagnostic.recurring_themes.map((item) => (
                         <li key={item}>• {item}</li>
@@ -304,7 +308,7 @@ export function AuditoriaGratuitaClient() {
                 ) : null}
                 {diagnostic.actions?.length ? (
                   <div>
-                    <h3 className="font-semibold">Ações sugeridas</h3>
+                    <h3 className="font-semibold">{c.actions}</h3>
                     <ul className="mt-2 space-y-2 text-zinc-300">
                       {diagnostic.actions.map((item) => (
                         <li key={item}>• {item}</li>
@@ -321,7 +325,7 @@ export function AuditoriaGratuitaClient() {
                     href="/login?trial=7"
                     className="mt-4 inline-block rounded-xl bg-indigo-600 px-5 py-3 font-semibold"
                   >
-                    Continuar para o teste de 7 dias
+                    {c.trial}
                   </Link>
                 </div>
               </div>
@@ -330,16 +334,16 @@ export function AuditoriaGratuitaClient() {
         </section>
         <nav className="flex flex-wrap gap-4 text-sm text-zinc-400">
           <Link href="/feedback-de-clientes" className="underline">
-            Feedback de clientes
+            {c.nav[0]}
           </Link>
           <Link href="/analise-de-avaliacoes-com-ia" className="underline">
-            Análise de avaliações com IA
+            {c.nav[1]}
           </Link>
           <Link href="/gestao-de-reputacao-online" className="underline">
-            Gestão de reputação online
+            {c.nav[2]}
           </Link>
           <Link href="/planos" className="underline">
-            Planos
+            {c.nav[3]}
           </Link>
         </nav>
       </div>
