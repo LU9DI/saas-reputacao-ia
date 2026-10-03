@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BrandMark } from './BrandMark';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 type Section = { heading: string; body: string };
 type ContextLink = { href: string; title: string; description: string };
@@ -35,9 +36,12 @@ export function SeoLanding({
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Reputação" href="/" />
-        <Link href="/preview/teste" className="text-sm text-indigo-400 hover:text-indigo-300">
-          Trial grátis
-        </Link>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher compact />
+          <Link href="/preview/teste" className="text-sm text-indigo-400 hover:text-indigo-300">
+            Trial grátis
+          </Link>
+        </div>
       </header>
       {breadcrumbs && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />}
       <main className="max-w-3xl mx-auto px-4 pb-16 space-y-8">
