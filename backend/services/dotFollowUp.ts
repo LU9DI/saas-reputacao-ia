@@ -1,4 +1,8 @@
 import { getDb } from '../lib/db.js';
+import { getDotPreferences } from './dotPreferences.js';
+import { createDecisionsForEvents } from './dotDecision.js';
+import { prepareDotActionFromDecision } from './dotActionQueue.js';
+import { evaluateDotPolicy } from './dotPolicy.js';
 
 export type DotFollowUpStatus = 'pending' | 'completed' | 'cancelled';
 
@@ -20,6 +24,19 @@ async function ensureSchema() {
   try { await db.exec('ALTER TABLE dot_followups ADD COLUMN baseline_json TEXT'); } catch {}
   try { await db.exec('ALTER TABLE dot_followups ADD COLUMN result_json TEXT'); } catch {}
   await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_followups_action ON dot_followups(empresa_id, action_id)');
+  await db.exec(`CREATE TABLE IF NOT EXISTS dot_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    empresa_id TEXT NOT NULL,
+    type TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    title TEXT NOT NULL,
+    details TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    acknowledged_at TEXT
+  )`);
+  try { await db.exec('ALTER TABLE dot_events ADD COLUMN source_followup_id INTEGER'); } catch {}
+  await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_events_followup ON dot_events(empresa_id, source_followup_id)');
+  await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_events_empresa_type ON dot_events(empresa_id, type, created_at)');
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_followups_empresa_status ON dot_followups(empresa_id, status, due_at)');
 }
 
@@ -99,11 +116,98 @@ export async function monitorDueDotFollowUps(empresaId?: string) {
       monitored_at: now,
     };
 
-    await db.run(
+    const completed = await db.run(
       "UPDATE dot_followups SET status = 'completed', outcome = ?, result_json = ?, completed_at = ? WHERE id = ? AND empresa_id = ? AND status = 'pending'",
       [outcome, JSON.stringify(result), now, row.id, row.empresa_id],
     );
-    results.push({ id: row.id, empresa_id: row.empresa_id, ...result });
+    if (!completed || completed.changes !== 1) continue;
+
+    let deteriorationEvent: any = null;
+    let decisions: any[] = [];
+    let preparedActions: any[] = [];
+
+    if (outcome === 'piorou') {
+      const preferences = await getDotPreferences(String(row.empresa_id));
+      const critical = deltaCritical > 0 || deltaRecent <= -0.2;
+      const severity = critical ? 'critical' : 'warning';
+      const policy = evaluateDotPolicy(preferences, severity);
+      const details = [
+        `O acompanhamento da ação #${row.action_id} terminou com piora.`,
+        `Variação da média: ${deltaAverage >= 0 ? '+' : ''}${deltaAverage.toFixed(2)}.`,
+        `Variação da média recente: ${deltaRecent >= 0 ? '+' : ''}${deltaRecent.toFixed(2)}.`,
+        `Variação de avaliações críticas: ${deltaCritical >= 0 ? '+' : ''}${deltaCritical}.`,
+        'O Dot deve reavaliar a situação antes de qualquer nova ação externa.',
+      ].join(' ');
+
+      const existingEvent = await db.get(
+        'SELECT * FROM dot_events WHERE empresa_id = ? AND source_followup_id = ? LIMIT 1',
+        [row.empresa_id, row.id],
+      );
+
+      if (existingEvent) {
+        deteriorationEvent = existingEvent;
+      } else {
+        const inserted = await db.run(
+          'INSERT INTO dot_events (empresa_id,type,severity,title,details,source_followup_id,created_at) VALUES (?,?,?,?,?,?,?) RETURNING id',
+          [row.empresa_id, 'followup_deterioration', severity, 'Resultado da ação piorou', details, row.id, now],
+        );
+        deteriorationEvent = {
+          id: inserted.lastID,
+          empresa_id: row.empresa_id,
+          type: 'followup_deterioration',
+          severity,
+          title: 'Resultado da ação piorou',
+          details,
+          source_followup_id: row.id,
+          created_at: now,
+        };
+      }
+
+      if (policy.createDecision) {
+        decisions = await createDecisionsForEvents(String(row.empresa_id), [deteriorationEvent]);
+        if (decisions.length === 0) {
+          const existingDecision = await db.get(
+            'SELECT * FROM dot_decisions WHERE empresa_id = ? AND event_id = ? LIMIT 1',
+            [row.empresa_id, deteriorationEvent.id],
+          );
+          if (existingDecision) {
+            decisions = [{
+              id: existingDecision.id,
+              eventId: existingDecision.event_id,
+              priority: existingDecision.priority,
+              severity: existingDecision.severity,
+              status: existingDecision.status,
+              requiresApproval: Boolean(existingDecision.requires_approval),
+              options: JSON.parse(existingDecision.options_json || '[]'),
+            }];
+          }
+        }
+
+        if (policy.prepareAction) {
+          const decision = decisions[0];
+          const option = decision?.options?.[0];
+          if (decision?.id && option?.id) {
+            const action = await prepareDotActionFromDecision(String(row.empresa_id), Number(decision.id), option.id);
+            if (action) preparedActions.push(action);
+          }
+        }
+      }
+
+      result.reassessment = {
+        event_id: Number(deteriorationEvent.id),
+        decision_id: decisions[0]?.id ?? null,
+        prepared_action_id: preparedActions[0]?.id ?? null,
+        policy,
+      };
+    }
+
+    results.push({
+      id: row.id,
+      empresa_id: row.empresa_id,
+      ...result,
+      decisions,
+      prepared_actions: preparedActions,
+    });
   }
   return results;
 }
