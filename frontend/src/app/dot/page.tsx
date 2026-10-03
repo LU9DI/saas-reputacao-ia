@@ -1034,7 +1034,7 @@ export default function FiltraDotPage() {
               </select>
               <ChevronDown size={12} className="pointer-events-none absolute right-2.5 text-zinc-600" />
             </label>
-            <label className="relative hidden items-center rounded-xl border border-white/10 bg-white/[0.02] px-2.5 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200 md:inline-flex">
+            <label className="relative inline-flex items-center rounded-xl border border-white/10 bg-white/[0.02] px-2.5 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200">
               <span className="sr-only">{ui.responseModeLabel}</span>
               <span className="mr-2 text-[10px] uppercase tracking-[.12em] text-zinc-600">{ui.responseModeLabel}</span>
               <select
@@ -1080,7 +1080,8 @@ export default function FiltraDotPage() {
                           {message.role === 'user' ? message.text : <DotRichText text={message.text} />}
                         </div>
                         {message.role === 'dot' && (
-                          <div className="mt-1 flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                          <>
+                            <div className="mt-1 flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
                             <button
                               type="button"
                               onClick={() => void copyResponse(message.text, index)}
@@ -1100,12 +1101,14 @@ export default function FiltraDotPage() {
                               <CircleAlert size={11} />
                               {explainingMessage === index ? ui.explainingResponse : ui.whyThisResponse}
                             </button>
+                            </div>
                           </div>
                           {explanations[index] && (
                             <div className="mt-2 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-3 text-xs leading-6 text-zinc-300">
                               <DotRichText text={explanations[index]} />
                             </div>
                           )}
+                          </>
                         )}
                       </div>
                     </div>
