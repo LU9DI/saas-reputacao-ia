@@ -88,8 +88,78 @@ export async function executeDotActionThroughGateway(
   });
 
   try {
-    // Até existirem executores externos homologados, o executor local apenas
-    // registra a execução. Nenhum sistema externo é chamado neste estágio.
+    // Execução interna real: o Dot não envia nada para fora, mas transforma a
+    // aprovação em um caso operacional persistido e auditável.
+    await db.exec(`CREATE TABLE IF NOT EXISTS dot_internal_cases (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      empresa_id TEXT NOT NULL,
+      decision_id INTEGER NOT NULL,
+      action_id INTEGER NOT NULL,
+      event_id INTEGER,
+      action TEXT NOT NULL,
+      status TEXT NOT NULL,
+      priority TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      next_step TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`);
+    await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_internal_cases_action ON dot_internal_cases(empresa_id, action_id)');
+
+    const existingCase = await db.get(
+      'SELECT * FROM dot_internal_cases WHERE empresa_id = ? AND action_id = ? LIMIT 1',
+      [empresaId, actionId],
+    );
+
+    let internalCase = existingCase;
+    if (!internalCase) {
+      const decision = await db.get(
+        'SELECT event_id, priority, reason FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1',
+        [Number(row.decision_id), empresaId],
+      );
+      if (!decision) throw new Error('Decisão vinculada não encontrada durante a execução.');
+
+      const mapping: Record<string, { status: string; nextStep: string }> = {
+        priorizar_e_resolver: {
+          status: 'prioritized',
+          nextStep: 'Validar a evidência e registrar a resolução antes de qualquer contato externo.',
+        },
+        escalar_responsavel: {
+          status: 'escalated',
+          nextStep: 'Responsável deve revisar o caso e definir a tratativa.',
+        },
+        corrigir_e_acompanhar: {
+          status: 'monitoring',
+          nextStep: 'Aplicar a correção interna e aguardar o acompanhamento do Dot.',
+        },
+      };
+      const outcome = mapping[String(row.action)] || {
+        status: 'open',
+        nextStep: 'Revisar o caso no painel do Dot.',
+      };
+
+      const result = await db.run(
+        'INSERT INTO dot_internal_cases (empresa_id,decision_id,action_id,event_id,action,status,priority,summary,next_step,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?) RETURNING id',
+        [
+          empresaId,
+          Number(row.decision_id),
+          actionId,
+          decision.event_id ?? null,
+          String(row.action),
+          outcome.status,
+          String(decision.priority || 'media'),
+          String(decision.reason || 'Caso criado pelo Dot.').slice(0, 4000),
+          outcome.nextStep,
+          startedAt,
+          startedAt,
+        ],
+      );
+      internalCase = await db.get(
+        'SELECT * FROM dot_internal_cases WHERE id = ? AND empresa_id = ? LIMIT 1',
+        [result.lastID, empresaId],
+      );
+    }
+
     const executedAt = new Date().toISOString();
     const finished = await db.run(
       "UPDATE dot_action_queue SET status = 'executed', executed_at = ? WHERE id = ? AND empresa_id = ? AND status = 'executing'",
@@ -105,14 +175,31 @@ export async function executeDotActionThroughGateway(
       decisionId: Number(row.decision_id),
       event: 'executed',
       actorType: 'system',
-      metadata: { executor: definition.executorKey, simulated: true },
+      metadata: {
+        executor: definition.executorKey,
+        simulated: false,
+        externalSideEffect: false,
+        internalCaseId: internalCase?.id ?? null,
+        internalStatus: internalCase?.status ?? null,
+        nextStep: internalCase?.next_step ?? null,
+      },
     });
 
-    // Toda execução termina com acompanhamento persistido. Isso fecha o ciclo
-    // local sem produzir efeito externo e permite ao Dot voltar ao caso depois.
     await createDotFollowUp(empresaId, Number(row.decision_id), actionId, 24);
 
-    return { ok: true, id: actionId, status: 'executed', simulated: true, executor: definition.executorKey, startedAt, executedAt };
+    return {
+      ok: true,
+      id: actionId,
+      status: 'executed',
+      simulated: false,
+      executor: definition.executorKey,
+      startedAt,
+      executedAt,
+      reason: internalCase
+        ? `Caso interno criado/atualizado (#${internalCase.id}) para acompanhamento.`
+        : 'Caso interno criado para acompanhamento.',
+    };
+
   } catch (error: any) {
     const reason = String(error?.message || error);
     await db.run(
