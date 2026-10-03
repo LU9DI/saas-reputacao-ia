@@ -99,7 +99,16 @@ queueTest('Dot action queue: approval is one-way and execution is replay-safe', 
   const executed = await executeDotAction(empresa, Number(prepared.id));
   assert.equal(executed.ok, true);
   assert.equal(executed.status, 'executed');
-  assert.equal(executed.simulated, true);
+  assert.equal(executed.simulated, false);
+
+  const db = getDb();
+  const internalCase = await db.get(
+    'SELECT action, status, action_id FROM dot_internal_cases WHERE empresa_id = ? AND action_id = ?',
+    [empresa, Number(prepared.id)]
+  );
+  assert.equal(internalCase?.action, 'priorizar_e_resolver');
+  assert.equal(internalCase?.status, 'prioritized');
+  assert.equal(Number(internalCase?.action_id), Number(prepared.id));
 
   const replayExecution = await executeDotAction(empresa, Number(prepared.id));
   assert.equal(replayExecution.ok, false);
