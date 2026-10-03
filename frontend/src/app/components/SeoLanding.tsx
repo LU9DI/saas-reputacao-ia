@@ -37,7 +37,7 @@ export function SeoLanding({
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Reputação" href="/" />
         <div className="flex items-center gap-3">
-          <LanguageSwitcher compact />
+          <LanguageSwitcher />
           <Link href="/preview/teste" className="text-sm text-indigo-400 hover:text-indigo-300">
             Trial grátis
           </Link>
@@ -60,6 +60,16 @@ export function SeoLanding({
             <p className="text-sm text-zinc-300 leading-relaxed">{s.body}</p>
           </section>
         ))}
+        <section className="border-t border-indigo-500/20 pt-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-400">Auditoria gratuita</p>
+          <h2 className="mt-2 text-lg font-semibold text-zinc-100">Descubra o que seus clientes estão dizendo</h2>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+            Cole avaliações reais e receba um diagnóstico inicial com pontos fortes, riscos, temas recorrentes e ações sugeridas.
+          </p>
+          <Link href="/auditoria-gratuita" className="mt-5 inline-flex items-center justify-center rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-5 py-3 text-sm">
+            Fazer auditoria gratuita
+          </Link>
+        </section>
         <section className="border-t border-zinc-800 pt-8">
           <h2 className="text-lg font-semibold text-zinc-100">Aprofunde sua análise de reputação</h2>
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
