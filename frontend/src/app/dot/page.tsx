@@ -7,6 +7,7 @@ import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, T
 
 const SESSION_KEY = 'filtra-dot-local-session';
 const DOT_LOCALE_KEY = 'filtra-dot-locale';
+const DOT_MODE_KEY = 'filtra-dot-response-mode';
 type DotUi = {
   locale: string;
   earlyAccess: string;
@@ -93,6 +94,18 @@ type DotUi = {
   languagePt: string;
   languageEn: string;
   languageEs: string;
+  responseModeLabel: string;
+  modeObjective: string;
+  modeDidactic: string;
+  modeObjectiveHint: string;
+  modeDidacticHint: string;
+  whyThisResponse: string;
+  explainingResponse: string;
+  explanationUnavailable: string;
+  pendingDecision: string;
+  pendingAction: string;
+  signalsContext: string;
+  calmContext: string;
 };
 
 const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
@@ -181,6 +194,18 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     languagePt: 'Português',
     languageEn: 'English',
     languageEs: 'Español',
+    responseModeLabel: 'Modo de resposta',
+    modeObjective: 'Objetivo',
+    modeDidactic: 'Didático',
+    modeObjectiveHint: 'Direto ao ponto, com evidências e próximo passo.',
+    modeDidacticHint: 'Explica melhor o contexto, os termos e a evidência.',
+    whyThisResponse: 'Por que o Dot está dizendo isso?',
+    explainingResponse: 'Explicando a evidência…',
+    explanationUnavailable: 'Não foi possível explicar esta resposta agora.',
+    pendingDecision: 'Decisão pendente',
+    pendingAction: 'Ação pendente',
+    signalsContext: 'sinais',
+    calmContext: 'Sem pendências críticas',
   },
   en: {
     earlyAccess: 'Early access',
@@ -267,6 +292,18 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     languagePt: 'Português',
     languageEn: 'English',
     languageEs: 'Español',
+    responseModeLabel: 'Response mode',
+    modeObjective: 'Objective',
+    modeDidactic: 'Didactic',
+    modeObjectiveHint: 'Straight to the point, with evidence and a next step.',
+    modeDidacticHint: 'Explains context, terms, and evidence more clearly.',
+    whyThisResponse: 'Why is Dot saying this?',
+    explainingResponse: 'Explaining the evidence…',
+    explanationUnavailable: 'This response could not be explained right now.',
+    pendingDecision: 'Pending decision',
+    pendingAction: 'Pending action',
+    signalsContext: 'signals',
+    calmContext: 'No critical pending items',
   },
   es: {
     earlyAccess: 'Acceso anticipado',
@@ -353,6 +390,18 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     languagePt: 'Português',
     languageEn: 'English',
     languageEs: 'Español',
+    responseModeLabel: 'Modo de respuesta',
+    modeObjective: 'Objetivo',
+    modeDidactic: 'Didáctico',
+    modeObjectiveHint: 'Directo al punto, con evidencias y siguiente paso.',
+    modeDidacticHint: 'Explica mejor el contexto, los términos y la evidencia.',
+    whyThisResponse: '¿Por qué Dot dice esto?',
+    explainingResponse: 'Explicando la evidencia…',
+    explanationUnavailable: 'No fue posible explicar esta respuesta ahora.',
+    pendingDecision: 'Decisión pendiente',
+    pendingAction: 'Acción pendiente',
+    signalsContext: 'señales',
+    calmContext: 'Sin pendientes críticos',
   },
 };
 
@@ -596,6 +645,7 @@ function DotAccordion({
 
 export default function FiltraDotPage() {
   const [languagePreference, setLanguagePreference] = useState<'auto' | 'pt' | 'en' | 'es'>('auto');
+  const [responseMode, setResponseMode] = useState<'objetivo' | 'didatico'>('objetivo');
   const [uiLocale, setUiLocale] = useState('pt');
   const ui = dotUi(uiLocale);
   const [suggestions, setSuggestions] = useState<string[]>(() => localizedSuggestions('pt'));
@@ -623,6 +673,8 @@ export default function FiltraDotPage() {
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
+  const [explanations, setExplanations] = useState<Record<number, string>>({});
+  const [explainingMessage, setExplainingMessage] = useState<number | null>(null);
   const [openPanel, setOpenPanel] = useState<DotPanelId>('overview');
   const panelTouchedRef = useRef(false);
 
@@ -663,6 +715,8 @@ export default function FiltraDotPage() {
     try {
       const stored = window.localStorage.getItem(DOT_LOCALE_KEY);
       if (stored === 'pt' || stored === 'en' || stored === 'es' || stored === 'auto') preference = stored;
+      const storedMode = window.localStorage.getItem(DOT_MODE_KEY);
+      if (storedMode === 'objetivo' || storedMode === 'didatico') setResponseMode(storedMode);
     } catch {}
     const locale = preference === 'auto' ? detectDotLocale() : preference;
     setLanguagePreference(preference);
@@ -690,6 +744,11 @@ export default function FiltraDotPage() {
     try {
       window.localStorage.setItem(DOT_LOCALE_KEY, next);
     } catch {}
+  }
+
+  function changeResponseMode(next: 'objetivo' | 'didatico') {
+    setResponseMode(next);
+    try { window.localStorage.setItem(DOT_MODE_KEY, next); } catch {}
   }
 
   useEffect(() => {
@@ -884,6 +943,25 @@ export default function FiltraDotPage() {
     );
   }
 
+  async function explainResponse(index: number, responseText: string) {
+    if (explainingMessage === index || explanations[index]) return;
+    setExplainingMessage(index);
+    try {
+      const response = await apiFetch('/api/dot/explain', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ response_text: responseText, session_id: sessionId }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || ui.explanationUnavailable);
+      setExplanations((current) => ({ ...current, [index]: data.explanation }));
+    } catch {
+      setExplanations((current) => ({ ...current, [index]: ui.explanationUnavailable }));
+    } finally {
+      setExplainingMessage(null);
+    }
+  }
+
   async function send(message = input) {
     const text = message.trim();
     if (!text || busy) return;
@@ -895,7 +973,7 @@ export default function FiltraDotPage() {
       const response = await apiFetch(`/api/dot/chat`, {
         method: 'POST',
         headers: authHeaders(),
-        body: JSON.stringify({ message: text, session_id: sessionId }),
+        body: JSON.stringify({ message: text, session_id: sessionId, response_mode: responseMode }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Falha ao falar com o Dot.');
@@ -926,6 +1004,16 @@ export default function FiltraDotPage() {
                 </span>
               </div>
               <div className="text-xs text-zinc-500">Agente de reputação e crescimento</div>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {(() => {
+                  const hasPendingAction = Boolean(proposal) || actions.some((action) => ['prepared', 'approved', 'executing'].includes(action.status));
+                  const hasPendingDecision = decisions.some((decision) => decision.status === 'pending');
+                  if (hasPendingAction) return <span className="rounded-full border border-indigo-400/20 bg-indigo-500/10 px-2 py-1 text-[10px] text-indigo-200">{ui.pendingAction}</span>;
+                  if (hasPendingDecision) return <span className="rounded-full border border-amber-400/20 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">{ui.pendingDecision}</span>;
+                  if (events.length > 0) return <span className="rounded-full border border-amber-400/15 bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">{events.length} {ui.signalsContext}</span>;
+                  return <span className="rounded-full border border-emerald-400/15 bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-200">{ui.calmContext}</span>;
+                })()}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -943,6 +1031,21 @@ export default function FiltraDotPage() {
                 <option value="pt">{ui.languagePt}</option>
                 <option value="en">{ui.languageEn}</option>
                 <option value="es">{ui.languageEs}</option>
+              </select>
+              <ChevronDown size={12} className="pointer-events-none absolute right-2.5 text-zinc-600" />
+            </label>
+            <label className="relative hidden items-center rounded-xl border border-white/10 bg-white/[0.02] px-2.5 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200 md:inline-flex">
+              <span className="sr-only">{ui.responseModeLabel}</span>
+              <span className="mr-2 text-[10px] uppercase tracking-[.12em] text-zinc-600">{ui.responseModeLabel}</span>
+              <select
+                value={responseMode}
+                onChange={(event) => changeResponseMode(event.target.value as 'objetivo' | 'didatico')}
+                aria-label={ui.responseModeLabel}
+                title={responseMode === 'didatico' ? ui.modeDidacticHint : ui.modeObjectiveHint}
+                className="cursor-pointer appearance-none bg-transparent pr-4 text-xs text-zinc-300 outline-none"
+              >
+                <option value="objetivo">{ui.modeObjective}</option>
+                <option value="didatico">{ui.modeDidactic}</option>
               </select>
               <ChevronDown size={12} className="pointer-events-none absolute right-2.5 text-zinc-600" />
             </label>
@@ -988,7 +1091,21 @@ export default function FiltraDotPage() {
                               {copiedMessage === index ? <ClipboardCheck size={11} /> : <Clipboard size={11} />}
                               {copiedMessage === index ? ui.copiedResponse : ui.copyResponse}
                             </button>
+                            <button
+                              type="button"
+                              onClick={() => void explainResponse(index, message.text)}
+                              disabled={explainingMessage === index}
+                              className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300 disabled:opacity-50"
+                            >
+                              <CircleAlert size={11} />
+                              {explainingMessage === index ? ui.explainingResponse : ui.whyThisResponse}
+                            </button>
                           </div>
+                          {explanations[index] && (
+                            <div className="mt-2 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-3 text-xs leading-6 text-zinc-300">
+                              <DotRichText text={explanations[index]} />
+                            </div>
+                          )}
                         )}
                       </div>
                     </div>
@@ -1026,7 +1143,7 @@ export default function FiltraDotPage() {
               </div>
               <div className="mx-auto mt-2 flex max-w-3xl items-center justify-between gap-3 text-[10px] text-zinc-600">
                 <span>{dotStatus?.demo ? ui.localDemo : ui.protectedActions}</span>
-                <span className="hidden text-right sm:block">{ui.responseLimit}</span>
+                <span className="hidden text-right sm:block">{responseMode === 'didatico' ? ui.modeDidacticHint : ui.modeObjectiveHint}</span>
               </div>
             </div>
           </section>
