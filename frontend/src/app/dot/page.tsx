@@ -728,7 +728,7 @@ export default function FiltraDotPage() {
         ? [initialMessage(nextUi.companyPlaceholder, locale)]
         : current
     );
-  }, [languagePreference]);
+  }, []);
 
   function changeLanguage(next: 'auto' | 'pt' | 'en' | 'es') {
     const locale = next === 'auto' ? detectDotLocale() : next;
@@ -1102,7 +1102,6 @@ export default function FiltraDotPage() {
                               {explainingMessage === index ? ui.explainingResponse : ui.whyThisResponse}
                             </button>
                             </div>
-                          </div>
                           {explanations[index] && (
                             <div className="mt-2 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-3 text-xs leading-6 text-zinc-300">
                               <DotRichText text={explanations[index]} />
