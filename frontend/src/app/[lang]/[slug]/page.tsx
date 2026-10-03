@@ -38,8 +38,14 @@ function get(lang:string,slug:string){const items=pages[lang as Lang];if(!items)
 
 export async function generateMetadata({params}:{params:Promise<{lang:string;slug:string}>}):Promise<Metadata>{
  const {lang,slug}=await params; const found=get(lang,slug); if(!found)return{};
- const languages:Record<string,string>={}; (['en','es','zh'] as Lang[]).forEach(code=>{languages[code]=base+'/'+code+'/'+pages[code][found.index].slug;});
- return {title:found.item.title,description:found.item.description,alternates:{canonical:base+'/'+lang+'/'+slug,languages:{...languages,'x-default':base+sourcePaths[found.index]}}};
+ const languages:Record<string,string>={
+   'pt-BR':base+sourcePaths[found.index],
+   'en':base+'/en/'+pages.en[found.index].slug,
+   'es':base+'/es/'+pages.es[found.index].slug,
+   'zh-CN':base+'/zh/'+pages.zh[found.index].slug,
+   'x-default':base+sourcePaths[found.index],
+ };
+ return {title:found.item.title,description:found.item.description,alternates:{canonical:base+'/'+lang+'/'+slug,languages}};
 }
 
 export default async function Page({params}:{params:Promise<{lang:string;slug:string}>}){
