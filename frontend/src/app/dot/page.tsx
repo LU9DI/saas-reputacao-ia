@@ -28,6 +28,11 @@ type DotUi = {
   decisionOwner: string;
   noAction: string;
   loading: string;
+  unavailableTitle: string;
+  unavailableBody: string;
+  unknownPlan: string;
+  noExternalAuto: string;
+  companyPlaceholder: string;
 };
 
 const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
@@ -51,6 +56,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     decisionOwner: 'A decisão final permanece com o responsável.',
     noAction: 'Nenhuma ação preparada.',
     loading: 'Carregando estado operacional…',
+    unavailableTitle: 'O Filtra Dot está temporariamente indisponível.',
+    unavailableBody: 'O recurso ainda não está habilitado neste ambiente.',
+    unknownPlan: 'não identificado',
+    noExternalAuto: 'Nenhuma ação externa é executada automaticamente.',
+    companyPlaceholder: 'sua empresa',
   },
   en: {
     earlyAccess: 'Early access',
@@ -72,6 +82,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     decisionOwner: 'The final decision remains with the responsible owner.',
     noAction: 'No action prepared.',
     loading: 'Loading operational state…',
+    unavailableTitle: 'Filtra Dot is temporarily unavailable.',
+    unavailableBody: 'The feature is not enabled in this environment.',
+    unknownPlan: 'not identified',
+    noExternalAuto: 'No external action is executed automatically.',
+    companyPlaceholder: 'your company',
   },
   es: {
     earlyAccess: 'Acceso anticipado',
@@ -93,6 +108,11 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     decisionOwner: 'La decisión final permanece con el responsable.',
     noAction: 'No hay ninguna acción preparada.',
     loading: 'Cargando estado operativo…',
+    unavailableTitle: 'Filtra Dot no está disponible temporalmente.',
+    unavailableBody: 'La función aún no está habilitada en este entorno.',
+    unknownPlan: 'no identificado',
+    noExternalAuto: 'Ninguna acción externa se ejecuta automáticamente.',
+    companyPlaceholder: 'tu empresa',
   },
 };
 
@@ -189,7 +209,7 @@ export default function FiltraDotPage() {
   const [uiLocale] = useState(() => detectDotLocale());
   const ui = dotUi(uiLocale);
   const [suggestions] = useState<string[]>(() => localizedSuggestions(uiLocale));
-  const [messages, setMessages] = useState<Message[]>([initialMessage('sua empresa', uiLocale)]);
+  const [messages, setMessages] = useState<Message[]>([initialMessage(ui.companyPlaceholder, uiLocale)]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [sessionId] = useState(() => {
@@ -360,7 +380,7 @@ export default function FiltraDotPage() {
     } catch {
       // O reset visual continua disponível mesmo se a API local estiver parada.
     }
-    setMessages([initialMessage('sua empresa', uiLocale)]);
+    setMessages([initialMessage(ui.companyPlaceholder, uiLocale)]);
     setInput('');
   }
 
@@ -378,15 +398,15 @@ export default function FiltraDotPage() {
               </div>
             </div>
             <div className="mt-8 text-2xl font-semibold tracking-tight text-white">
-              {featureEnabled ? ui.earlyAccessTitle : 'Filtra Dot is temporarily unavailable.'}
+              {featureEnabled ? ui.earlyAccessTitle : ui.unavailableTitle}
             </div>
             <p className="mt-3 text-sm leading-6 text-zinc-400">
               {featureEnabled
                 ? ui.earlyAccessBody
-                : 'The feature is not enabled in this environment.'}
+                : ui.unavailableBody}
             </p>
             <div className="mt-6 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.05] p-4 text-xs leading-5 text-zinc-400">
-              {ui.plan}: <span className="font-medium text-zinc-200">{dotStatus.plan_label || dotStatus.plan || 'não identificado'}</span>
+              {ui.plan}: <span className="font-medium text-zinc-200">{dotStatus.plan_label || dotStatus.plan || ui.unknownPlan}</span>
             </div>
           </section>
         </div>
@@ -550,7 +570,7 @@ export default function FiltraDotPage() {
                   {resolveResult.facts.map((fact, i) => <div key={i} className="text-[11px] leading-5 text-zinc-500"><span className="text-zinc-300">{fact.source}:</span> {fact.fact}</div>)}
                   {resolveResult.evidence.length > 0 && <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Evidências encontradas</div><div className="space-y-2">{resolveResult.evidence.slice(0,5).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-black/20 p-2.5"><div className="flex justify-between text-[10px]"><span className="text-amber-300">Nota {e.rating}/5</span><span className="text-zinc-600">{e.id}</span></div><div className="mt-1 text-[11px] leading-5 text-zinc-400">{e.comment}</div></div>)}</div></div>}
                   <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Duas opções</div><div className="grid gap-2">{resolveResult.options.slice(0,2).map(o => <button key={o.id} type="button" disabled={!resolveResult.decision_id} onClick={() => resolveResult.decision_id && void prepareOption(resolveResult.decision_id, o.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30 disabled:opacity-40"><div className="text-xs font-semibold text-white">{o.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{o.description}</div><div className="mt-1 text-[10px] text-zinc-600">Risco: {o.risk}</div></button>)}</div></div>
-                  {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">{ui.decisionOwner} Nenhuma ação externa é executada automaticamente.</div>}
+                  {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">{ui.decisionOwner} {ui.noExternalAuto}</div>}
                 </div>
               )}
             </div>
