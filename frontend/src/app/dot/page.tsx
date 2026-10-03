@@ -37,6 +37,56 @@ type DotUi = {
   copyResponse: string;
   copiedResponse: string;
   responseLimit: string;
+  quickGuideTitle: string;
+  quickGuideBody: string;
+  quickGuideSummary: string;
+  groupOverview: string;
+  groupDecide: string;
+  groupTrack: string;
+  groupTools: string;
+  healthTitle: string;
+  monitoringActive: string;
+  running: string;
+  waiting: string;
+  lastRound: string;
+  notRunYet: string;
+  companies: string;
+  processed: string;
+  waitingCompanies: string;
+  followUpsLabel: string;
+  decisionsLabel: string;
+  preparedLabel: string;
+  overviewTitle: string;
+  overviewBody: string;
+  prioritySignal: string;
+  trendLabel: string;
+  signalsLabel: string;
+  nextStepLabel: string;
+  prepareAction: string;
+  alertsTitle: string;
+  alertsBody: string;
+  autonomy: string;
+  decisionsTitle: string;
+  decisionsBody: string;
+  registered: string;
+  finalOwner: string;
+  actionsTitle: string;
+  actionsBody: string;
+  approveAction: string;
+  executeLocal: string;
+  executedLocal: string;
+  followupTitle: string;
+  pending: string;
+  due: string;
+  outcome: string;
+  investigateTitle: string;
+  investigateBody: string;
+  evidenceTitle: string;
+  optionsTitle: string;
+  riskLabel: string;
+  capabilitiesTitle: string;
+  suggestionsTitle2: string;
+  detailsGroup: string;
 };
 
 const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
@@ -70,6 +120,56 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     copyResponse: 'Copiar resposta',
     copiedResponse: 'Copiado',
     responseLimit: 'Resposta otimizada para ser completa sem excesso de tokens.',
+    quickGuideTitle: 'Guia rápido',
+    quickGuideBody: 'Entenda o Dot em etapas',
+    quickGuideSummary: 'Comece pelo resumo e avance para sinais, decisões, ações e acompanhamento.',
+    groupOverview: 'Visão geral',
+    groupDecide: 'Decidir',
+    groupTrack: 'Acompanhar',
+    groupTools: 'Ferramentas',
+    healthTitle: 'Saúde do monitoramento',
+    monitoringActive: 'Monitoramento ativo',
+    running: 'Executando',
+    waiting: 'Aguardando',
+    lastRound: 'Última rodada',
+    notRunYet: 'ainda não executada',
+    companies: 'Empresas',
+    processed: 'processadas',
+    waitingCompanies: 'aguardando',
+    followUpsLabel: 'Acompanhamentos',
+    decisionsLabel: 'Decisões',
+    preparedLabel: 'preparadas',
+    overviewTitle: 'Resumo de hoje',
+    overviewBody: 'O que mudou, o que importa e qual próximo passo faz sentido.',
+    prioritySignal: 'Sinal prioritário',
+    trendLabel: 'Tendência',
+    signalsLabel: 'Sinais',
+    nextStepLabel: 'Próximo passo',
+    prepareAction: 'Preparar ação',
+    alertsTitle: 'Sinais que merecem atenção',
+    alertsBody: 'Sinais detectados automaticamente. Leia a evidência antes de decidir.',
+    autonomy: 'Configurar autonomia',
+    decisionsTitle: 'Decisões sugeridas',
+    decisionsBody: 'O Dot transforma sinais em opções claras. A decisão continua com o responsável.',
+    registered: 'registradas',
+    finalOwner: 'A decisão final permanece com o responsável.',
+    actionsTitle: 'Ações preparadas',
+    actionsBody: 'Preparar não significa executar. Cada ação passa pelo fluxo de aprovação.',
+    approveAction: 'Aprovar ação',
+    executeLocal: 'Executar demonstração',
+    executedLocal: 'Executada somente no ambiente de demonstração; nenhum sistema externo foi alterado.',
+    followupTitle: 'Acompanhamento',
+    pending: 'pendentes',
+    due: 'Retorno previsto',
+    outcome: 'Resultado',
+    investigateTitle: 'Investigar uma reclamação',
+    investigateBody: 'Descreva a reclamação. O Dot verifica o que os dados sustentam e mostra as evidências encontradas.',
+    evidenceTitle: 'Evidências encontradas',
+    optionsTitle: 'Opções de encaminhamento',
+    riskLabel: 'Risco',
+    capabilitiesTitle: 'O que o Dot pode fazer',
+    suggestionsTitle2: 'Perguntas para começar',
+    detailsGroup: 'Detalhes operacionais',
   },
   en: {
     earlyAccess: 'Early access',
@@ -101,6 +201,56 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     copyResponse: 'Copy response',
     copiedResponse: 'Copied',
     responseLimit: 'Response optimized to stay complete without unnecessary token usage.',
+    quickGuideTitle: 'Quick guide',
+    quickGuideBody: 'Understand Dot in steps',
+    quickGuideSummary: 'Start with the summary, then move to signals, decisions, actions, and follow-up.',
+    groupOverview: 'Overview',
+    groupDecide: 'Decide',
+    groupTrack: 'Track',
+    groupTools: 'Tools',
+    healthTitle: 'Monitoring health',
+    monitoringActive: 'Monitoring active',
+    running: 'Running',
+    waiting: 'Waiting',
+    lastRound: 'Last run',
+    notRunYet: 'not run yet',
+    companies: 'Companies',
+    processed: 'processed',
+    waitingCompanies: 'waiting',
+    followUpsLabel: 'Follow-ups',
+    decisionsLabel: 'Decisions',
+    preparedLabel: 'prepared',
+    overviewTitle: 'Today’s summary',
+    overviewBody: 'What changed, what matters, and what the next useful step is.',
+    prioritySignal: 'Priority signal',
+    trendLabel: 'Trend',
+    signalsLabel: 'Signals',
+    nextStepLabel: 'Next step',
+    prepareAction: 'Prepare action',
+    alertsTitle: 'Signals that need attention',
+    alertsBody: 'Signals detected automatically. Review the evidence before deciding.',
+    autonomy: 'Configure autonomy',
+    decisionsTitle: 'Suggested decisions',
+    decisionsBody: 'Dot turns signals into clear options. The responsible owner keeps the final decision.',
+    registered: 'registered',
+    finalOwner: 'The final decision remains with the responsible owner.',
+    actionsTitle: 'Prepared actions',
+    actionsBody: 'Preparing does not mean executing. Each action follows the approval flow.',
+    approveAction: 'Approve action',
+    executeLocal: 'Run demo',
+    executedLocal: 'Executed only in the demo environment; no external system was changed.',
+    followupTitle: 'Follow-up',
+    pending: 'pending',
+    due: 'Due',
+    outcome: 'Outcome',
+    investigateTitle: 'Investigate a complaint',
+    investigateBody: 'Describe the complaint. Dot checks what the data supports and shows the evidence found.',
+    evidenceTitle: 'Evidence found',
+    optionsTitle: 'Next-step options',
+    riskLabel: 'Risk',
+    capabilitiesTitle: 'What Dot can do',
+    suggestionsTitle2: 'Questions to get started',
+    detailsGroup: 'Operational details',
   },
   es: {
     earlyAccess: 'Acceso anticipado',
@@ -132,6 +282,56 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     copyResponse: 'Copiar respuesta',
     copiedResponse: 'Copiado',
     responseLimit: 'Respuesta optimizada para ser completa sin exceso de tokens.',
+    quickGuideTitle: 'Guía rápida',
+    quickGuideBody: 'Entiende Dot por etapas',
+    quickGuideSummary: 'Empieza por el resumen y avanza hacia señales, decisiones, acciones y seguimiento.',
+    groupOverview: 'Resumen',
+    groupDecide: 'Decidir',
+    groupTrack: 'Seguimiento',
+    groupTools: 'Herramientas',
+    healthTitle: 'Salud del monitoreo',
+    monitoringActive: 'Monitoreo activo',
+    running: 'Ejecutando',
+    waiting: 'En espera',
+    lastRound: 'Última ronda',
+    notRunYet: 'todavía no ejecutada',
+    companies: 'Empresas',
+    processed: 'procesadas',
+    waitingCompanies: 'en espera',
+    followUpsLabel: 'Seguimientos',
+    decisionsLabel: 'Decisiones',
+    preparedLabel: 'preparadas',
+    overviewTitle: 'Resumen de hoy',
+    overviewBody: 'Qué cambió, qué importa y cuál es el siguiente paso útil.',
+    prioritySignal: 'Señal prioritaria',
+    trendLabel: 'Tendencia',
+    signalsLabel: 'Señales',
+    nextStepLabel: 'Siguiente paso',
+    prepareAction: 'Preparar acción',
+    alertsTitle: 'Señales que requieren atención',
+    alertsBody: 'Señales detectadas automáticamente. Revisa la evidencia antes de decidir.',
+    autonomy: 'Configurar autonomía',
+    decisionsTitle: 'Decisiones sugeridas',
+    decisionsBody: 'Dot convierte señales en opciones claras. El responsable mantiene la decisión final.',
+    registered: 'registradas',
+    finalOwner: 'La decisión final permanece con el responsable.',
+    actionsTitle: 'Acciones preparadas',
+    actionsBody: 'Preparar no significa ejecutar. Cada acción sigue el flujo de aprobación.',
+    approveAction: 'Aprobar acción',
+    executeLocal: 'Ejecutar demo',
+    executedLocal: 'Ejecutada solo en el entorno de demostración; ningún sistema externo fue alterado.',
+    followupTitle: 'Seguimiento',
+    pending: 'pendientes',
+    due: 'Próximo retorno',
+    outcome: 'Resultado',
+    investigateTitle: 'Investigar una reclamación',
+    investigateBody: 'Describe la reclamación. Dot verifica qué sostienen los datos y muestra las evidencias encontradas.',
+    evidenceTitle: 'Evidencias encontradas',
+    optionsTitle: 'Opciones de encaminamiento',
+    riskLabel: 'Riesgo',
+    capabilitiesTitle: 'Lo que Dot puede hacer',
+    suggestionsTitle2: 'Preguntas para empezar',
+    detailsGroup: 'Detalles operativos',
   },
 };
 
@@ -152,30 +352,17 @@ function authHeaders(json = true): HeadersInit {
   return json ? { 'Content-Type': 'application/json' } : {};
 }
 
-function dotStatusLabel(value: string): string {
-  const map: Record<string, string> = {
-    pending: 'Pendente',
-    prepared: 'Preparada',
-    approved: 'Aprovada',
-    executing: 'Executando',
-    executed: 'Executada',
-    failed: 'Falhou',
-    cancelled: 'Cancelada',
-    completed: 'Concluído',
-    rejected: 'Rejeitada',
-    confirmed: 'Confirmada',
-    unverified: 'Não confirmada',
-    not_found: 'Não encontrada',
-    baixa: 'Baixa',
-    medio: 'Média',
-    alta: 'Alta',
-    critica: 'Crítica',
+function dotStatusLabel(value: string, locale = 'pt'): string {
+  const maps: Record<string, Record<string, string>> = {
+    pt: { pending: 'Pendente', prepared: 'Preparada', approved: 'Aprovada', executing: 'Executando', executed: 'Executada', failed: 'Falhou', cancelled: 'Cancelada', completed: 'Concluído', rejected: 'Rejeitada', confirmed: 'Confirmada', unverified: 'Não confirmada', not_found: 'Não encontrada', baixa: 'Baixa', medio: 'Média', alta: 'Alta', critica: 'Crítica' },
+    en: { pending: 'Pending', prepared: 'Prepared', approved: 'Approved', executing: 'Running', executed: 'Executed', failed: 'Failed', cancelled: 'Cancelled', completed: 'Completed', rejected: 'Rejected', confirmed: 'Confirmed', unverified: 'Unverified', not_found: 'Not found', baixa: 'Low', medio: 'Medium', alta: 'High', critica: 'Critical' },
+    es: { pending: 'Pendiente', prepared: 'Preparada', approved: 'Aprobada', executing: 'Ejecutando', executed: 'Ejecutada', failed: 'Falló', cancelled: 'Cancelada', completed: 'Completado', rejected: 'Rechazada', confirmed: 'Confirmada', unverified: 'No confirmada', not_found: 'No encontrada', baixa: 'Baja', medio: 'Media', alta: 'Alta', critica: 'Crítica' },
   };
-  return map[value] || value.replace(/_/g, ' ');
+  return maps[locale]?.[value] || value.replace(/_/g, ' ');
 }
 
-function dotPriorityLabel(value: string): string {
-  return dotStatusLabel(value).replace(/^./, (char) => char.toUpperCase());
+function dotPriorityLabel(value: string, locale = 'pt'): string {
+  return dotStatusLabel(value, locale).replace(/^./, (char) => char.toUpperCase());
 }
 
 function localizedSuggestions(locale: string): string[] {
@@ -327,12 +514,12 @@ function DotRichText({ text }: { text: string }) {
 
 function initialMessage(company = 'sua empresa', locale = detectDotLocale()): Message {
   if (locale === 'en') {
-    return { role: 'dot', text: `Hello. I’m Filtra Dot. I’m monitoring the reputation of ${company}. I can analyze signals, explain what changed, and prepare the next step for you.` };
+    return { role: 'dot', text: `Hello. I’m Filtra Dot. I’m monitoring the reputation of ${company}. Ask me what changed, what matters most, or what you should do next. I’ll explain the evidence and prepare the next step when appropriate.` };
   }
   if (locale === 'es') {
-    return { role: 'dot', text: `Hola. Soy Filtra Dot. Estoy siguiendo la reputación de ${company}. Puedo analizar señales, explicar qué cambió y preparar el siguiente paso para ti.` };
+    return { role: 'dot', text: `Hola. Soy Filtra Dot. Estoy siguiendo la reputación de ${company}. Pregúntame qué cambió, qué importa más o qué deberías hacer ahora. Te explicaré la evidencia y prepararé el siguiente paso cuando corresponda.` };
   }
-  return { role: 'dot', text: `Olá. Eu sou o Filtra Dot. Estou acompanhando a reputação de ${company}. Posso analisar sinais, explicar o que mudou e preparar o próximo passo para você.` };
+  return { role: 'dot', text: `Olá. Eu sou o Filtra Dot e estou acompanhando a reputação de ${company}. Pergunte o que mudou, o que merece atenção ou o que fazer agora. Eu explico a evidência e preparo o próximo passo quando fizer sentido.` };
 }
 
 export default function FiltraDotPage() {
@@ -695,30 +882,31 @@ export default function FiltraDotPage() {
                 </button>
               </div>
               <div className="mx-auto mt-2 flex max-w-3xl items-center justify-between gap-3 text-[10px] text-zinc-600">
-                <span>{ui.localDemo}</span>
+                <span>{dotStatus?.demo ? ui.localDemo : ui.protectedActions}</span>
                 <span className="hidden text-right sm:block">{ui.responseLimit}</span>
               </div>
             </div>
           </section>
 
           <aside className="space-y-4 lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
+            <aside className="space-y-4 lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
             <div className="rounded-3xl border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.08] to-white/[0.02] p-5">
               <div className="flex items-start gap-3">
                 <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-indigo-500/15 text-indigo-200"><ChevronRight size={16} /></div>
                 <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-indigo-300">Guia rápido</div>
-                  <div className="mt-1 text-sm font-semibold text-white">Entenda o Dot em etapas</div>
-                  <p className="mt-1 text-[11px] leading-5 text-zinc-500">Comece pelo resumo e avance para sinais, decisões, ações e acompanhamento.</p>
+                  <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-indigo-300">{ui.quickGuideTitle}</div>
+                  <div className="mt-1 text-sm font-semibold text-white">{ui.quickGuideBody}</div>
+                  <p className="mt-1 text-[11px] leading-5 text-zinc-500">{ui.quickGuideSummary}</p>
                 </div>
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {[
-                  ['dot-overview', '1 · Resumo'],
-                  ['dot-alerts', '2 · Sinais'],
-                  ['dot-decisions', '3 · Decisões'],
-                  ['dot-actions', '4 · Ações'],
-                  ['dot-followups', '5 · Acompanhamento'],
-                  ['dot-resolve', '6 · Investigar'],
+                  ['dot-overview', ui.overviewTitle],
+                  ['dot-alerts', ui.alertsTitle],
+                  ['dot-decisions', ui.decisionsTitle],
+                  ['dot-actions', ui.actionsTitle],
+                  ['dot-followups', ui.followupTitle],
+                  ['dot-resolve', ui.investigateTitle],
                 ].map(([id, label]) => (
                   <a key={id} href={`#${id}`} className="rounded-xl border border-white/8 bg-black/20 px-3 py-2 text-[10px] font-medium text-zinc-400 transition hover:border-indigo-400/30 hover:bg-indigo-500/[0.05] hover:text-zinc-200">
                     {label}
@@ -726,21 +914,139 @@ export default function FiltraDotPage() {
                 ))}
               </div>
             </div>
-            <div id="dot-control" className="scroll-mt-5 rounded-3xl border border-white/10 bg-white/[0.02] p-5">
+            
+            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupOverview}</div>
+            <div id="dot-overview" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Resumo de hoje</div>
+              <div className="mt-2 text-[11px] leading-5 text-zinc-600">O que mudou, o que importa e qual próximo passo faz sentido.</div>
+              <div className="mt-4 space-y-3">
+                {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">{ui.prioritySignal}</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> {ui.trendLabel}</div><div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || 'monitorando'}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> {ui.signalsLabel}</div><div className="mt-1 text-xl font-semibold text-white">{events.length || 'nenhum'}</div></div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> {ui.nextStepLabel}</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'O Dot está monitorando sua empresa.'}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">{ui.prepareAction}</button></div>
+              </div>
+            </div>
+            <div id="dot-alerts" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><CircleAlert size={13} className="text-amber-300" /> {ui.alertsTitle}</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">{ui.autonomy}</a></div><div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.alertsBody}</div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>
+            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupDecide}</div>
+            <div id="dot-decisions" className="scroll-mt-5 rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5">
+              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-amber-200"><CheckCircle2 size={13} /> {ui.decisionsTitle}</div><span className="text-[10px] text-zinc-500">{decisions.length} {ui.registered}</span></div>
+              <div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.decisionsBody}</div>
+              <div className="mt-3 space-y-3">
+                {decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
+                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{dotPriorityLabel(d.priority, uiLocale)}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div>
+                  <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
+                  <div className="mt-2 text-[11px] leading-5 text-zinc-500">{ui.nextStepLabel}: {d.recommendation}</div>
+                  {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">{ui.finalOwner}</div>}
+                  <div className="mt-3 grid gap-2">
+                    {(d.options || []).slice(0,2).map(option => <button key={option.id} type="button" onClick={() => void prepareOption(d.id, option.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30">
+                      <div className="text-xs font-semibold text-white">{option.title}</div>
+                      <div className="mt-1 text-[11px] leading-5 text-zinc-500">{option.description}</div>
+                      <div className="mt-1 text-[10px] text-zinc-600">Risco: {option.risk}</div>
+                    </button>)}
+                  </div>
+                  {d.status === 'pending' && <div className="mt-3 flex gap-2">
+                    <button type="button" onClick={() => void updateDecision(d.id,'prepare')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">Preparar</button>
+                    <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">Rejeitar</button>
+                  </div>}
+                </div>)}
+                {decisions.length===0 && <div className="text-xs text-zinc-600">O Dot ainda não registrou uma decisão.</div>}
+              </div>
+            </div>
+            {proposal && (
+              <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.04] p-5">
+                <div className="text-xs font-semibold text-emerald-300">AÇÃO PREPARADA — NÃO EXECUTADA</div>
+                <div className="mt-2 text-sm font-semibold text-white">{proposal.title}</div>
+                <div className="mt-2 text-xs leading-5 text-zinc-400">{proposal.objective}</div>
+                <ol className="mt-3 space-y-2 text-xs text-zinc-400">
+                  {(proposal.steps || []).map((step: string, index: number) => <li key={step}>{index + 1}. {step}</li>)}
+                </ol>
+                <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">Aprovação será obrigatória antes de qualquer ação externa.</div>
+              </div>
+            )}
+            <div id="dot-actions" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
+              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-indigo-200"><Zap size={13} /> {ui.actionsTitle}</div><span className="text-[10px] text-zinc-500">{actions.length} registradas</span></div>
+              <div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.actionsBody}</div>
+              <div className="mt-3 space-y-2">
+                {actions.slice(0,3).map(a => <div key={a.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
+                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{a.action}</span><span className="text-[10px] text-zinc-500">{dotStatusLabel(a.status, uiLocale)}</span></div>
+                  <div className="mt-2 flex gap-2">
+                    {a.status === 'prepared' && <button type="button" onClick={() => void approveAction(a.id)} className="rounded-lg bg-indigo-500 px-2.5 py-1.5 text-[10px] text-white hover:bg-indigo-400">{ui.approveAction}</button>}
+                    {a.status === 'approved' && <button type="button" onClick={() => void runAction(a.id)} className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1.5 text-[10px] text-emerald-200 hover:bg-emerald-400/20">{ui.executeLocal}</button>}
+                  </div>
+                  {a.status === 'executed' && <div className="mt-2 text-[10px] text-emerald-300">{ui.executedLocal}</div>}
+                </div>)}
+                {actions.length===0 && <div className="text-xs text-zinc-600">{ui.noAction}</div>}
+              </div>
+            </div>
+            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTrack}</div>
+            <div id="dot-followups" className="scroll-mt-5 rounded-3xl border border-emerald-400/15 bg-emerald-500/[0.04] p-5">
+              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-emerald-200"><Clock3 size={13} /> {ui.followupTitle}</div><span className="text-[10px] text-zinc-500">{followUps.filter(f => f.status === 'pending').length} {ui.pending}</span></div>
+              <div className="mt-3 space-y-2">
+                {followUps.slice(0,3).map(f => <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
+                  <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status, uiLocale)}</span></div>
+                  <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `{ui.due}: ${new Date(f.due_at).toLocaleString('pt-BR')}` : `{ui.outcome}: ${f.outcome || 'avaliado'}`}</div>
+                  {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão #{r.reassessment.decision_id ?? '—'}{r.reassessment.prepared_action_id ? ` · ação preparada #${r.reassessment.prepared_action_id}` : ''}</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
+                </div>)}
+                {followUps.length === 0 && <div className="text-xs text-zinc-600">O Dot criará o acompanhamento após uma execução.</div>}
+              </div>
+            </div>
+            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTools}</div>
+            <div id="dot-resolve" className="scroll-mt-5 rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Bot size={14} /> {ui.investigateTitle}</div>
+              <div className="mt-2 text-xs leading-5 text-zinc-500">{ui.investigateBody}</div>
+              <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder="Ex.: cliente diz que esperou 40 minutos para ser atendido..." className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
+              <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? ui.verifyingComplaint : ui.verifyComplaint}</button>
+              {resolveResult && (
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-xl border border-white/10 bg-black/20 p-3">
+                    <div className="flex items-center justify-between text-[10px] uppercase tracking-wider">
+                      <span className="text-zinc-500">Verificação</span>
+                      <span className={resolveResult.verification_status === 'confirmed' ? 'text-emerald-300' : 'text-amber-300'}>{dotStatusLabel(resolveResult.verification_status, uiLocale)} · confiança {dotStatusLabel(resolveResult.confidence, uiLocale)}</span>
+                    </div>
+                    <div className="mt-2 text-xs leading-5 text-zinc-300">{resolveResult.problem_summary}</div>
+                  </div>
+                  {resolveResult.facts.map((fact, i) => <div key={i} className="text-[11px] leading-5 text-zinc-500"><span className="text-zinc-300">{fact.source}:</span> {fact.fact}</div>)}
+                  {resolveResult.evidence.length > 0 && <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{ui.evidenceTitle}</div><div className="space-y-2">{resolveResult.evidence.slice(0,5).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-black/20 p-2.5"><div className="flex justify-between text-[10px]"><span className="text-amber-300">Nota {e.rating}/5</span><span className="text-zinc-600">{e.id}</span></div><div className="mt-1 text-[11px] leading-5 text-zinc-400">{e.comment}</div></div>)}</div></div>}
+                  <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{ui.optionsTitle}</div><div className="grid gap-2">{resolveResult.options.slice(0,2).map(o => <button key={o.id} type="button" disabled={!resolveResult.decision_id} onClick={() => resolveResult.decision_id && void prepareOption(resolveResult.decision_id, o.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30 disabled:opacity-40"><div className="text-xs font-semibold text-white">{o.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{o.description}</div><div className="mt-1 text-[10px] text-zinc-600">{ui.riskLabel}: {o.risk}</div></button>)}</div></div>
+                  {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">{ui.decisionOwner} {ui.noExternalAuto}</div>}
+                </div>
+              )}
+            </div>
+            <div id="dot-capabilities" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> {ui.capabilitiesTitle}</div>
+              <ul className="mt-4 space-y-3 text-xs leading-5 text-zinc-400">
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.analyze}</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.explain}</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.prepare}</li>
+              </ul>
+            </div>
+            <div id="dot-suggestions" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
+              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><Sparkles size={13} className="text-indigo-300" /> {ui.suggestionsTitle2}</div>
+              <div className="mt-3 space-y-2">
+                {suggestions.map((suggestion) => (
+                  <button key={suggestion} onClick={() => void send(suggestion)} disabled={busy} className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-indigo-500/[0.03] hover:text-zinc-200 disabled:opacity-40">
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.detailsGroup}</div>
+              <div id="dot-control" className="scroll-mt-5 rounded-3xl border border-white/10 bg-white/[0.02] p-5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-zinc-400"><ShieldCheck size={13} className="text-emerald-300" /> Saúde do monitoramento</div>
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-zinc-400"><ShieldCheck size={13} className="text-emerald-300" /> {ui.healthTitle}</div>
                 <div className={scheduler?.last_error_at ? 'text-[10px] text-amber-300' : 'text-[10px] text-emerald-300'}>
-                  {scheduler?.running ? '● Executando' : scheduler?.timer_active ? '● Monitoramento ativo' : '● Aguardando'}
+                  {scheduler?.running ? '● {ui.running}' : scheduler?.timer_active ? '● {ui.monitoringActive}' : '● {ui.waiting}'}
                 </div>
               </div>
               {scheduler ? (
                 <>
-                  <div className="mt-3 text-xs text-zinc-500">Última rodada: {scheduler.last_success_at ? new Date(scheduler.last_success_at).toLocaleString('pt-BR') : 'ainda não executada'}</div>
+                  <div className="mt-3 text-xs text-zinc-500">{ui.lastRound}: {scheduler.last_success_at ? new Date(scheduler.last_success_at).toLocaleString('pt-BR') : '{ui.notRunYet}'}</div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
-                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Empresas</span><div className="mt-1 text-zinc-200">{scheduler.companies_processed} processadas · {scheduler.companies_skipped} aguardando</div></div>
-                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Follow-ups</span><div className="mt-1 text-zinc-200">{scheduler.followups_processed}</div></div>
-                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Decisões</span><div className="mt-1 text-zinc-200">{scheduler.decisions_created}</div></div>
-                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Ações</span><div className="mt-1 text-zinc-200">{scheduler.actions_prepared} preparadas</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.companies}</span><div className="mt-1 text-zinc-200">{scheduler.companies_processed} {ui.processed} · {scheduler.companies_skipped} {ui.waitingCompanies}</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.followUpsLabel}</span><div className="mt-1 text-zinc-200">{scheduler.followups_processed}</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.decisionsLabel}</span><div className="mt-1 text-zinc-200">{scheduler.decisions_created}</div></div>
+                    <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">Ações</span><div className="mt-1 text-zinc-200">{scheduler.actions_prepared} {ui.preparedLabel}</div></div>
                   </div>
                   {scheduler.last_error && <div className="mt-3 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[10px] text-amber-200">{scheduler.last_error}</div>}
                 </>
@@ -759,114 +1065,6 @@ export default function FiltraDotPage() {
                 <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">Aprovação será obrigatória antes de qualquer ação externa.</div>
               </div>
             )}
-
-
-            <div id="dot-resolve" className="scroll-mt-5 rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Bot size={14} /> Investigar uma reclamação</div>
-              <div className="mt-2 text-xs leading-5 text-zinc-500">Receba uma reclamação, verifique o que os dados da empresa sustentam e deixe a decisão final com o responsável.</div>
-              <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder="Ex.: cliente diz que esperou 40 minutos para ser atendido..." className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
-              <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? ui.verifyingComplaint : ui.verifyComplaint}</button>
-              {resolveResult && (
-                <div className="mt-4 space-y-3">
-                  <div className="rounded-xl border border-white/10 bg-black/20 p-3">
-                    <div className="flex items-center justify-between text-[10px] uppercase tracking-wider">
-                      <span className="text-zinc-500">Verificação</span>
-                      <span className={resolveResult.verification_status === 'confirmed' ? 'text-emerald-300' : 'text-amber-300'}>{dotStatusLabel(resolveResult.verification_status)} · confiança {dotStatusLabel(resolveResult.confidence)}</span>
-                    </div>
-                    <div className="mt-2 text-xs leading-5 text-zinc-300">{resolveResult.problem_summary}</div>
-                  </div>
-                  {resolveResult.facts.map((fact, i) => <div key={i} className="text-[11px] leading-5 text-zinc-500"><span className="text-zinc-300">{fact.source}:</span> {fact.fact}</div>)}
-                  {resolveResult.evidence.length > 0 && <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Evidências encontradas</div><div className="space-y-2">{resolveResult.evidence.slice(0,5).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-black/20 p-2.5"><div className="flex justify-between text-[10px]"><span className="text-amber-300">Nota {e.rating}/5</span><span className="text-zinc-600">{e.id}</span></div><div className="mt-1 text-[11px] leading-5 text-zinc-400">{e.comment}</div></div>)}</div></div>}
-                  <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Duas opções</div><div className="grid gap-2">{resolveResult.options.slice(0,2).map(o => <button key={o.id} type="button" disabled={!resolveResult.decision_id} onClick={() => resolveResult.decision_id && void prepareOption(resolveResult.decision_id, o.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30 disabled:opacity-40"><div className="text-xs font-semibold text-white">{o.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{o.description}</div><div className="mt-1 text-[10px] text-zinc-600">Risco: {o.risk}</div></button>)}</div></div>
-                  {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">{ui.decisionOwner} {ui.noExternalAuto}</div>}
-                </div>
-              )}
-            </div>
-
-            <div id="dot-overview" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Resumo de hoje</div>
-              <div className="mt-2 text-[11px] leading-5 text-zinc-600">O que mudou, o que importa e qual próximo passo faz sentido.</div>
-              <div className="mt-4 space-y-3">
-                {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">Sinal prioritário</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> Tendência</div><div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || 'monitorando'}</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> Sinais</div><div className="mt-1 text-xl font-semibold text-white">{events.length || 'nenhum'}</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> Próximo passo</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || 'O Dot está monitorando sua empresa.'}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">Preparar ação</button></div>
-              </div>
-            </div>
-
-            <div id="dot-alerts" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><CircleAlert size={13} className="text-amber-300" /> Sinais que merecem atenção</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">Configurar autonomia</a></div><div className="mt-2 text-[11px] leading-5 text-zinc-600">Sinais detectados automaticamente. Leia a evidência antes de decidir.</div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>
-
-            <div id="dot-decisions" className="scroll-mt-5 rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5">
-              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-amber-200"><CheckCircle2 size={13} /> Decisões sugeridas</div><span className="text-[10px] text-zinc-500">{decisions.length} registradas</span></div>
-              <div className="mt-2 text-[11px] leading-5 text-zinc-600">O Dot transforma sinais em opções claras. A decisão continua com o responsável.</div>
-              <div className="mt-3 space-y-3">
-                {decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{dotPriorityLabel(d.priority)}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div>
-                  <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
-                  <div className="mt-2 text-[11px] leading-5 text-zinc-500">Recomendação: {d.recommendation}</div>
-                  {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">A decisão final é do empresário.</div>}
-                  <div className="mt-3 grid gap-2">
-                    {(d.options || []).slice(0,2).map(option => <button key={option.id} type="button" onClick={() => void prepareOption(d.id, option.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30">
-                      <div className="text-xs font-semibold text-white">{option.title}</div>
-                      <div className="mt-1 text-[11px] leading-5 text-zinc-500">{option.description}</div>
-                      <div className="mt-1 text-[10px] text-zinc-600">Risco: {option.risk}</div>
-                    </button>)}
-                  </div>
-                  {d.status === 'pending' && <div className="mt-3 flex gap-2">
-                    <button type="button" onClick={() => void updateDecision(d.id,'prepare')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">Preparar</button>
-                    <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">Rejeitar</button>
-                  </div>}
-                </div>)}
-                {decisions.length===0 && <div className="text-xs text-zinc-600">O Dot ainda não registrou uma decisão.</div>}
-              </div>
-            </div>
-
-            <div id="dot-actions" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
-              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-indigo-200"><Zap size={13} /> Ações preparadas</div><span className="text-[10px] text-zinc-500">{actions.length} registradas</span></div>
-              <div className="mt-2 text-[11px] leading-5 text-zinc-600">Preparar não significa executar. Cada ação passa pelo fluxo de aprovação.</div>
-              <div className="mt-3 space-y-2">
-                {actions.slice(0,3).map(a => <div key={a.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{a.action}</span><span className="text-[10px] text-zinc-500">{dotStatusLabel(a.status)}</span></div>
-                  <div className="mt-2 flex gap-2">
-                    {a.status === 'prepared' && <button type="button" onClick={() => void approveAction(a.id)} className="rounded-lg bg-indigo-500 px-2.5 py-1.5 text-[10px] text-white hover:bg-indigo-400">Aprovar ação</button>}
-                    {a.status === 'approved' && <button type="button" onClick={() => void runAction(a.id)} className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1.5 text-[10px] text-emerald-200 hover:bg-emerald-400/20">Executar local</button>}
-                  </div>
-                  {a.status === 'executed' && <div className="mt-2 text-[10px] text-emerald-300">Executada somente no executor local; nenhum sistema externo foi alterado.</div>}
-                </div>)}
-                {actions.length===0 && <div className="text-xs text-zinc-600">{ui.noAction}</div>}
-              </div>
-            </div>
-
-            <div id="dot-followups" className="scroll-mt-5 rounded-3xl border border-emerald-400/15 bg-emerald-500/[0.04] p-5">
-              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-emerald-200"><Clock3 size={13} /> Acompanhamento</div><span className="text-[10px] text-zinc-500">{followUps.filter(f => f.status === 'pending').length} pendentes</span></div>
-              <div className="mt-3 space-y-2">
-                {followUps.slice(0,3).map(f => <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status)}</span></div>
-                  <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `Retorno previsto: ${new Date(f.due_at).toLocaleString('pt-BR')}` : `Resultado: ${f.outcome || 'avaliado'}`}</div>
-                  {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão #{r.reassessment.decision_id ?? '—'}{r.reassessment.prepared_action_id ? ` · ação preparada #${r.reassessment.prepared_action_id}` : ''}</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
-                </div>)}
-                {followUps.length === 0 && <div className="text-xs text-zinc-600">O Dot criará o acompanhamento após uma execução.</div>}
-              </div>
-            </div>
-
-            <div id="dot-capabilities" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> {ui.canDoTitle}</div>
-              <ul className="mt-4 space-y-3 text-xs leading-5 text-zinc-400">
-                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.analyze}</li>
-                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.explain}</li>
-                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.prepare}</li>
-              </ul>
-            </div>
-
-            <div id="dot-suggestions" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><Sparkles size={13} className="text-indigo-300" /> {ui.suggestionsTitle}</div>
-              <div className="mt-3 space-y-2">
-                {suggestions.map((suggestion) => (
-                  <button key={suggestion} onClick={() => void send(suggestion)} disabled={busy} className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-indigo-500/[0.03] hover:text-zinc-200 disabled:opacity-40">
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
             </div>
           </aside>
         </div>
