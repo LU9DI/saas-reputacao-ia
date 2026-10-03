@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 export default function Page() {
   const items = ['reclamações recorrentes', 'elogios que revelam diferenciais', 'problemas operacionais', 'riscos de reputação', 'oportunidades de melhoria', 'temas que impactam a experiência do cliente'];
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
+    <main className="mx-auto max-w-5xl px-6 py-16">\n      <nav className="mb-8 flex justify-end">\n        <LanguageSwitcher />\n      </nav>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
