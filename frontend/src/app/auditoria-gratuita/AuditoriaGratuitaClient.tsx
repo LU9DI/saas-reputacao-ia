@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import type { Language } from '../Contexts/LanguageContext';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
@@ -29,7 +29,7 @@ const auditCopy: Record<Language, { kicker:string; title:string; intro:string; c
 };
 
 
-function Info({ title, children }: { title: string; children: React.ReactNode }) {
+function Info({ title, children }: { title: string; children: ReactNode }) {
   return <div><h2 className="text-3xl font-bold text-zinc-100">{title}</h2><p className="mt-4 max-w-3xl leading-8">{children}</p></div>;
 }
 function InfoGrid({ title, items }: { title: string; items: string[][] }) {
@@ -184,7 +184,7 @@ export function AuditoriaGratuitaClient({ language = 'pt' }: { language?: Langua
           )}
         </section>
 
-p-6 md:grid-cols-2">
+<section className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4 rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
             <label className="block text-sm font-medium">{c.company}</label>
             <input
