@@ -246,6 +246,31 @@ export function mountDotRoutes(app: Express) {
     res.json({ ok: true, action: result, external_side_effect: false });
   });
 
+  app.get('/api/dot/cases', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const db = (await import('../lib/db.js')).getDb();
+    await db.exec(`CREATE TABLE IF NOT EXISTS dot_internal_cases (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      empresa_id TEXT NOT NULL,
+      decision_id INTEGER NOT NULL,
+      action_id INTEGER NOT NULL,
+      event_id INTEGER,
+      action TEXT NOT NULL,
+      status TEXT NOT NULL,
+      priority TEXT NOT NULL,
+      summary TEXT NOT NULL,
+      next_step TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`);
+    const cases = await db.all(
+      'SELECT * FROM dot_internal_cases WHERE empresa_id = ? ORDER BY CASE WHEN status IN (\'prioritized\',\'escalated\') THEN 0 ELSE 1 END, id DESC LIMIT 100',
+      [access.empresaId],
+    );
+    res.json({ ok: true, cases: cases || [] });
+  });
+
   app.get('/api/dot/followups', async (req: Request, res: Response) => {
     const access = await resolveDotAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
