@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import type { Language } from '../../Contexts/LanguageContext';
-import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import type { Language } from '../Contexts/LanguageContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 type Diagnostic = {
   company: string;
