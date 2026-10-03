@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { apiFetch } from '../utils/apiFailover';
 import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000';
 
 const SESSION_KEY = 'filtra-dot-local-session';
 const TOKEN_KEY = 'filtra_token';
@@ -96,11 +95,11 @@ export default function FiltraDotPage() {
     const refreshOperationalState = async () => {
       const headers = authHeaders(false);
       const responses = await Promise.all([
-        fetch(API_URL + '/api/dot/status', { headers }),
-        fetch(API_URL + '/api/dot/events', { headers }),
-        fetch(API_URL + '/api/dot/decisions', { headers }),
-        fetch(API_URL + '/api/dot/actions', { headers }),
-        fetch(API_URL + '/api/dot/followups', { headers }),
+        apiFetch( '/api/dot/status', { headers }),
+        apiFetch( '/api/dot/events', { headers }),
+        apiFetch( '/api/dot/decisions', { headers }),
+        apiFetch( '/api/dot/actions', { headers }),
+        apiFetch( '/api/dot/followups', { headers }),
       ]);
       if (disposed) return;
       const [statusResponse, eventsResponse, decisionsResponse, actionsResponse, followupsResponse] = responses;
@@ -134,7 +133,7 @@ export default function FiltraDotPage() {
   }, []);
 
   useEffect(() => {
-    void fetch(API_URL + '/api/dot/briefing', { headers: authHeaders(false) }).then(async (response) => {
+    void apiFetch( '/api/dot/briefing', { headers: authHeaders(false) }).then(async (response) => {
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.');
       return data;
@@ -146,7 +145,7 @@ export default function FiltraDotPage() {
     if (!complaint || resolveBusy) return;
     setResolveBusy(true);
     try {
-      const response = await fetch(API_URL + '/api/dot/resolve', {
+      const response = await apiFetch( '/api/dot/resolve', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ complaint }),
@@ -156,7 +155,7 @@ export default function FiltraDotPage() {
       setResolveResult(data.result);
       setResolveInput('');
       if (data.result?.decision_id) {
-        const d = await fetch(API_URL + '/api/dot/decisions', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
+        const d = await apiFetch( '/api/dot/decisions', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
         if (d?.decisions) setDecisions(d.decisions);
       }
     } catch (error: any) {
@@ -179,7 +178,7 @@ export default function FiltraDotPage() {
 
   async function prepareOption(decisionId: number, optionId: string) {
     try {
-      const response = await fetch(API_URL + '/api/dot/decisions/' + decisionId + '/prepare-action', {
+      const response = await apiFetch( '/api/dot/decisions/' + decisionId + '/prepare-action', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ optionId }),
@@ -191,7 +190,7 @@ export default function FiltraDotPage() {
 
   async function approveAction(actionId: number) {
     try {
-      const response = await fetch(API_URL + '/api/dot/actions/' + actionId + '/approve', { method: 'POST', headers: authHeaders() });
+      const response = await apiFetch( '/api/dot/actions/' + actionId + '/approve', { method: 'POST', headers: authHeaders() });
       if (!response.ok) return;
       const data = await response.json();
       if (data?.action) setActions(current => current.map(a => a.id === actionId ? { ...a, status: 'approved' } : a));
@@ -200,12 +199,12 @@ export default function FiltraDotPage() {
 
   async function runAction(actionId: number) {
     try {
-      const response = await fetch(API_URL + '/api/dot/actions/' + actionId + '/run', { method: 'POST', headers: authHeaders() });
+      const response = await apiFetch( '/api/dot/actions/' + actionId + '/run', { method: 'POST', headers: authHeaders() });
       if (!response.ok) return;
       const data = await response.json();
       if (data?.action) setActions(current => current.map(a => a.id === actionId ? { ...a, status: data.action.status, executed_at: data.action.executedAt } : a));
       if (data?.action?.status === 'executed') {
-        const follow = await fetch(API_URL + '/api/dot/followups', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
+        const follow = await apiFetch( '/api/dot/followups', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
         if (follow?.followups) setFollowUps(follow.followups);
       }
     } catch {}
@@ -213,7 +212,7 @@ export default function FiltraDotPage() {
 
   async function updateDecision(id: number, action: 'prepare' | 'approve' | 'reject') {
     try {
-      const url = API_URL + '/api/dot/decisions/' + id + '/' + action;
+      const url = '/api/dot/decisions/' + '/api/dot/decisions/' + id + '/' + action;
       const response = await fetch(url, { method: 'POST', headers: authHeaders() });
       if (!response.ok) return;
       setDecisions(current => current.map(d => d.id === id ? { ...d, status: action === 'prepare' ? 'prepared' : action === 'approve' ? 'approved' : 'rejected' } : d));
@@ -222,7 +221,7 @@ export default function FiltraDotPage() {
 
   async function prepareAction() {
     try {
-      const response = await fetch(API_URL + '/api/dot/action/prepare', {
+      const response = await apiFetch( '/api/dot/action/prepare', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ action: briefing?.priority || 'tempo de espera' }),
@@ -235,7 +234,7 @@ export default function FiltraDotPage() {
   }
   async function resetConversation() {
     try {
-      await fetch(`${API_URL}/api/dot/session/${sessionId}`, { method: 'DELETE', headers: authHeaders(false) });
+      await apiFetch(`/api/dot/session/${sessionId}`, { method: 'DELETE', headers: authHeaders(false) });
     } catch {
       // O reset visual continua disponível mesmo se a API local estiver parada.
     }
@@ -281,7 +280,7 @@ export default function FiltraDotPage() {
     setBusy(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/dot/chat`, {
+      const response = await apiFetch(`/api/dot/chat`, {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ message: text, session_id: sessionId }),
