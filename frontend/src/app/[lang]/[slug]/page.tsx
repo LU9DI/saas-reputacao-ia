@@ -16,7 +16,7 @@ type Item = {
   bullets: string[];
   cta: string;
   ctaAudit: string;
-  nav: { title: string; description: string }[] | [string,string][];
+  nav: { title: string; description: string }[];
 };
 
 const base = 'https://filtraai.com';
@@ -158,7 +158,17 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
         <section className="mt-14">
           <h2 className="text-2xl font-semibold">{lang==='en'?'Explore related topics':lang==='es'?'Explora temas relacionados':'探索相关主题'}</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            {item.nav.map((n,i)=>{const navIndexes=[1,2,3,15]; const targetIndex=navIndexes[i]??index; const title=Array.isArray(n)?n[0]:n.title; const description=Array.isArray(n)?n[1]:n.description; return <Link key={title} href={(lang==='en'?'/en':lang==='es'?'/es':'/zh')+sourcePaths[targetIndex]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500/40"><span className="font-medium">{title}</span><span className="mt-1 block text-xs leading-5 text-zinc-500">{description}</span></Link>})}
+            {item.nav.map((n,i) => {
+              const navIndexes = [1, 2, 3, 15];
+              const targetIndex = navIndexes[i] ?? index;
+              const prefix = lang === 'en' ? '/en' : lang === 'es' ? '/es' : '/zh';
+              return (
+                <Link key={n.title} href={prefix + sourcePaths[targetIndex]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500/40">
+                  <span className="font-medium">{n.title}</span>
+                  <span className="mt-1 block text-xs leading-5 text-zinc-500">{n.description}</span>
+                </Link>
+              );
+            })}
           </div>
         </section>
         <section className="mt-14 rounded-3xl border border-indigo-500/20 bg-zinc-950 p-8">
