@@ -8,6 +8,7 @@ import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
 import { resolveDotComplaint } from '../services/dotResolve.js';
 import { createDecisionsForEvents, listDotDecisions, updateDotDecision } from '../services/dotDecision.js';
 import { prepareDotActionFromDecision, approveDotAction, executeDotAction, listDotActions } from '../services/dotActionQueue.js';
+import { listDotFollowUps, completeDotFollowUp } from '../services/dotFollowUp.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -241,6 +242,21 @@ export function mountDotRoutes(app: Express) {
     const result = await executeDotAction(access.empresaId, Number(req.params.id));
     if (!result.ok) return res.status(409).json(result);
     res.json({ ok: true, action: result, external_side_effect: false });
+  });
+
+  app.get('/api/dot/followups', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    res.json({ ok: true, followups: await listDotFollowUps(access.empresaId) });
+  });
+
+  app.post('/api/dot/followups/:id/complete', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const outcome = cleanMessage(req.body?.outcome);
+    const followUp = await completeDotFollowUp(access.empresaId, Number(req.params.id), outcome);
+    if (!followUp) return res.status(409).json({ error: 'Acompanhamento não encontrado ou já concluído.' });
+    res.json({ ok: true, followup: followUp });
   });
 
   app.post('/api/dot/resolve', dotLimiter, async (req: Request, res: Response) => {
