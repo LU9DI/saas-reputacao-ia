@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { apiFetch } from '../utils/apiFailover';
-import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap, Clipboard, ClipboardCheck, Wifi, FlaskConical } from 'lucide-react';
+import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap, Clipboard, ClipboardCheck, Wifi, FlaskConical, ChevronRight, CircleAlert } from 'lucide-react';
 
 const SESSION_KEY = 'filtra-dot-local-session';
 type DotUi = {
@@ -152,6 +152,32 @@ function authHeaders(json = true): HeadersInit {
   return json ? { 'Content-Type': 'application/json' } : {};
 }
 
+function dotStatusLabel(value: string): string {
+  const map: Record<string, string> = {
+    pending: 'Pendente',
+    prepared: 'Preparada',
+    approved: 'Aprovada',
+    executing: 'Executando',
+    executed: 'Executada',
+    failed: 'Falhou',
+    cancelled: 'Cancelada',
+    completed: 'Concluído',
+    rejected: 'Rejeitada',
+    confirmed: 'Confirmada',
+    unverified: 'Não confirmada',
+    not_found: 'Não encontrada',
+    baixa: 'Baixa',
+    medio: 'Média',
+    alta: 'Alta',
+    critica: 'Crítica',
+  };
+  return map[value] || value.replace(/_/g, ' ');
+}
+
+function dotPriorityLabel(value: string): string {
+  return dotStatusLabel(value).replace(/^./, (char) => char.toUpperCase());
+}
+
 function localizedSuggestions(locale: string): string[] {
   if (locale === 'en') return [
     'How is my reputation today?',
@@ -195,12 +221,23 @@ type DotResolve = {
 
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
-    <div className={`relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-indigo-400/30 bg-indigo-500/10 shadow-[0_0_35px_rgba(99,102,241,.22)] ${active ? 'animate-pulse' : ''}`}>
-      <div className="absolute inset-2 rounded-xl border border-indigo-300/20" />
-      <div className="relative grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-indigo-300 via-indigo-500 to-violet-700 shadow-lg">
-        <div className="flex gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-white" />
-          <span className="h-1.5 w-1.5 rounded-full bg-white" />
+    <div
+      className={`relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/[0.16] via-violet-500/[0.08] to-transparent shadow-[0_0_36px_rgba(99,102,241,.24)] ${active ? 'animate-pulse' : ''}`}
+      aria-label="Filtra Dot"
+    >
+      <div className="absolute inset-1.5 rounded-[1.05rem] border border-indigo-300/10" />
+      <div className="absolute inset-0 overflow-hidden rounded-2xl">
+        <span className="absolute -left-1 top-1/2 h-px w-4 rotate-12 bg-indigo-300/25" />
+        <span className="absolute -right-1 top-[42%] h-px w-4 -rotate-12 bg-violet-300/20" />
+        <span className={`absolute left-1/2 top-1.5 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-indigo-200 shadow-[0_0_8px_rgba(165,180,252,.9)] ${active ? 'animate-bounce' : ''}`} />
+      </div>
+      <div className="relative grid h-9 w-9 place-items-center rounded-[1.1rem] border border-white/20 bg-gradient-to-br from-indigo-200 via-indigo-500 to-violet-700 shadow-[inset_0_1px_0_rgba(255,255,255,.35),0_6px_18px_rgba(79,70,229,.35)]">
+        <div className="relative h-5 w-6 rounded-full border border-white/10 bg-black/10">
+          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_7px_rgba(255,255,255,.85)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_7px_rgba(255,255,255,.85)]" />
+          </div>
+          <span className="absolute bottom-0.5 left-1/2 h-px w-2 -translate-x-1/2 rounded-full bg-white/60" />
         </div>
       </div>
     </div>
@@ -665,9 +702,33 @@ export default function FiltraDotPage() {
           </section>
 
           <aside className="space-y-4 lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
-            <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="rounded-3xl border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.08] to-white/[0.02] p-5">
+              <div className="flex items-start gap-3">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-indigo-500/15 text-indigo-200"><ChevronRight size={16} /></div>
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-indigo-300">Guia rápido</div>
+                  <div className="mt-1 text-sm font-semibold text-white">Entenda o Dot em etapas</div>
+                  <p className="mt-1 text-[11px] leading-5 text-zinc-500">Comece pelo resumo e avance para sinais, decisões, ações e acompanhamento.</p>
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {[
+                  ['dot-overview', '1 · Resumo'],
+                  ['dot-alerts', '2 · Sinais'],
+                  ['dot-decisions', '3 · Decisões'],
+                  ['dot-actions', '4 · Ações'],
+                  ['dot-followups', '5 · Acompanhamento'],
+                  ['dot-resolve', '6 · Investigar'],
+                ].map(([id, label]) => (
+                  <a key={id} href={`#${id}`} className="rounded-xl border border-white/8 bg-black/20 px-3 py-2 text-[10px] font-medium text-zinc-400 transition hover:border-indigo-400/30 hover:bg-indigo-500/[0.05] hover:text-zinc-200">
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div id="dot-control" className="scroll-mt-5 rounded-3xl border border-white/10 bg-white/[0.02] p-5">
               <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-400">Dot Control</div>
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-zinc-400"><ShieldCheck size={13} className="text-emerald-300" /> Saúde do monitoramento</div>
                 <div className={scheduler?.last_error_at ? 'text-[10px] text-amber-300' : 'text-[10px] text-emerald-300'}>
                   {scheduler?.running ? '● Executando' : scheduler?.timer_active ? '● Monitoramento ativo' : '● Aguardando'}
                 </div>
@@ -700,8 +761,8 @@ export default function FiltraDotPage() {
             )}
 
 
-            <div className="rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Bot size={14} /> Dot Resolve</div>
+            <div id="dot-resolve" className="scroll-mt-5 rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Bot size={14} /> Investigar uma reclamação</div>
               <div className="mt-2 text-xs leading-5 text-zinc-500">Receba uma reclamação, verifique o que os dados da empresa sustentam e deixe a decisão final com o responsável.</div>
               <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder="Ex.: cliente diz que esperou 40 minutos para ser atendido..." className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
               <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? ui.verifyingComplaint : ui.verifyComplaint}</button>
@@ -710,7 +771,7 @@ export default function FiltraDotPage() {
                   <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                     <div className="flex items-center justify-between text-[10px] uppercase tracking-wider">
                       <span className="text-zinc-500">Verificação</span>
-                      <span className={resolveResult.verification_status === 'confirmed' ? 'text-emerald-300' : 'text-amber-300'}>{resolveResult.verification_status} · confiança {resolveResult.confidence}</span>
+                      <span className={resolveResult.verification_status === 'confirmed' ? 'text-emerald-300' : 'text-amber-300'}>{dotStatusLabel(resolveResult.verification_status)} · confiança {dotStatusLabel(resolveResult.confidence)}</span>
                     </div>
                     <div className="mt-2 text-xs leading-5 text-zinc-300">{resolveResult.problem_summary}</div>
                   </div>
@@ -722,8 +783,9 @@ export default function FiltraDotPage() {
               )}
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Hoje</div>
+            <div id="dot-overview" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> Resumo de hoje</div>
+              <div className="mt-2 text-[11px] leading-5 text-zinc-600">O que mudou, o que importa e qual próximo passo faz sentido.</div>
               <div className="mt-4 space-y-3">
                 {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">Sinal prioritário</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
                 <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> Tendência</div><div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || 'monitorando'}</div></div>
@@ -732,13 +794,14 @@ export default function FiltraDotPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="text-xs font-semibold text-zinc-300">Alertas recentes</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">Configurar autonomia</a></div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>
+            <div id="dot-alerts" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><CircleAlert size={13} className="text-amber-300" /> Sinais que merecem atenção</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">Configurar autonomia</a></div><div className="mt-2 text-[11px] leading-5 text-zinc-600">Sinais detectados automaticamente. Leia a evidência antes de decidir.</div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum alerta novo.</div>}</div></div>
 
-            <div className="rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5">
-              <div className="flex items-center justify-between"><div className="text-xs font-semibold text-amber-200">Decisões do Dot</div><span className="text-[10px] text-zinc-500">{decisions.length} registradas</span></div>
+            <div id="dot-decisions" className="scroll-mt-5 rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5">
+              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-amber-200"><CheckCircle2 size={13} /> Decisões sugeridas</div><span className="text-[10px] text-zinc-500">{decisions.length} registradas</span></div>
+              <div className="mt-2 text-[11px] leading-5 text-zinc-600">O Dot transforma sinais em opções claras. A decisão continua com o responsável.</div>
               <div className="mt-3 space-y-3">
                 {decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{d.priority.toUpperCase()}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{dotPriorityLabel(d.priority)}</span><span className="text-[10px] text-zinc-500">{d.status}</span></div>
                   <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
                   <div className="mt-2 text-[11px] leading-5 text-zinc-500">Recomendação: {d.recommendation}</div>
                   {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">A decisão final é do empresário.</div>}
@@ -758,11 +821,12 @@ export default function FiltraDotPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
-              <div className="flex items-center justify-between"><div className="text-xs font-semibold text-indigo-200">Fila de ações</div><span className="text-[10px] text-zinc-500">{actions.length} registradas</span></div>
+            <div id="dot-actions" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
+              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-indigo-200"><Zap size={13} /> Ações preparadas</div><span className="text-[10px] text-zinc-500">{actions.length} registradas</span></div>
+              <div className="mt-2 text-[11px] leading-5 text-zinc-600">Preparar não significa executar. Cada ação passa pelo fluxo de aprovação.</div>
               <div className="mt-3 space-y-2">
                 {actions.slice(0,3).map(a => <div key={a.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{a.action}</span><span className="text-[10px] text-zinc-500">{a.status}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{a.action}</span><span className="text-[10px] text-zinc-500">{dotStatusLabel(a.status)}</span></div>
                   <div className="mt-2 flex gap-2">
                     {a.status === 'prepared' && <button type="button" onClick={() => void approveAction(a.id)} className="rounded-lg bg-indigo-500 px-2.5 py-1.5 text-[10px] text-white hover:bg-indigo-400">Aprovar ação</button>}
                     {a.status === 'approved' && <button type="button" onClick={() => void runAction(a.id)} className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1.5 text-[10px] text-emerald-200 hover:bg-emerald-400/20">Executar local</button>}
@@ -773,11 +837,11 @@ export default function FiltraDotPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-emerald-400/15 bg-emerald-500/[0.04] p-5">
-              <div className="flex items-center justify-between"><div className="text-xs font-semibold text-emerald-200">Acompanhamento</div><span className="text-[10px] text-zinc-500">{followUps.filter(f => f.status === 'pending').length} pendentes</span></div>
+            <div id="dot-followups" className="scroll-mt-5 rounded-3xl border border-emerald-400/15 bg-emerald-500/[0.04] p-5">
+              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-emerald-200"><Clock3 size={13} /> Acompanhamento</div><span className="text-[10px] text-zinc-500">{followUps.filter(f => f.status === 'pending').length} pendentes</span></div>
               <div className="mt-3 space-y-2">
                 {followUps.slice(0,3).map(f => <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{f.status}</span></div>
+                  <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status)}</span></div>
                   <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `Retorno previsto: ${new Date(f.due_at).toLocaleString('pt-BR')}` : `Resultado: ${f.outcome || 'avaliado'}`}</div>
                   {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão #{r.reassessment.decision_id ?? '—'}{r.reassessment.prepared_action_id ? ` · ação preparada #${r.reassessment.prepared_action_id}` : ''}</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
                 </div>)}
@@ -785,7 +849,7 @@ export default function FiltraDotPage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
+            <div id="dot-capabilities" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
               <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> {ui.canDoTitle}</div>
               <ul className="mt-4 space-y-3 text-xs leading-5 text-zinc-400">
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.analyze}</li>
@@ -794,8 +858,8 @@ export default function FiltraDotPage() {
               </ul>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="text-xs font-semibold text-zinc-300">{ui.suggestionsTitle}</div>
+            <div id="dot-suggestions" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
+              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><Sparkles size={13} className="text-indigo-300" /> {ui.suggestionsTitle}</div>
               <div className="mt-3 space-y-2">
                 {suggestions.map((suggestion) => (
                   <button key={suggestion} onClick={() => void send(suggestion)} disabled={busy} className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-indigo-500/[0.03] hover:text-zinc-200 disabled:opacity-40">
