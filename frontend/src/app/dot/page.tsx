@@ -596,7 +596,7 @@ function DotAccordion({
 
 export default function FiltraDotPage() {
   const [languagePreference, setLanguagePreference] = useState<'auto' | 'pt' | 'en' | 'es'>('auto');
-  const uiLocale = languagePreference === 'auto' ? detectDotLocale() : languagePreference;
+  const [uiLocale, setUiLocale] = useState('pt');
   const ui = dotUi(uiLocale);
   const [suggestions, setSuggestions] = useState<string[]>(() => localizedSuggestions('pt'));
   const [messages, setMessages] = useState<Message[]>([initialMessage('sua empresa', 'pt')]);
@@ -659,16 +659,14 @@ export default function FiltraDotPage() {
   }, [messages, busy]);
 
   useEffect(() => {
+    let preference: 'auto' | 'pt' | 'en' | 'es' = 'auto';
     try {
       const stored = window.localStorage.getItem(DOT_LOCALE_KEY);
-      if (stored === 'pt' || stored === 'en' || stored === 'es' || stored === 'auto') {
-        setLanguagePreference(stored);
-      }
+      if (stored === 'pt' || stored === 'en' || stored === 'es' || stored === 'auto') preference = stored;
     } catch {}
-  }, []);
-
-  useEffect(() => {
-    const locale = languagePreference === 'auto' ? detectDotLocale() : languagePreference;
+    const locale = preference === 'auto' ? detectDotLocale() : preference;
+    setLanguagePreference(preference);
+    setUiLocale(locale);
     const nextUi = dotUi(locale);
     setSuggestions(localizedSuggestions(locale));
     setMessages((current) =>
@@ -679,7 +677,16 @@ export default function FiltraDotPage() {
   }, [languagePreference]);
 
   function changeLanguage(next: 'auto' | 'pt' | 'en' | 'es') {
+    const locale = next === 'auto' ? detectDotLocale() : next;
     setLanguagePreference(next);
+    setUiLocale(locale);
+    const nextUi = dotUi(locale);
+    setSuggestions(localizedSuggestions(locale));
+    setMessages((current) =>
+      current.length === 1 && current[0].role === 'dot'
+        ? [initialMessage(nextUi.companyPlaceholder, locale)]
+        : current
+    );
     try {
       window.localStorage.setItem(DOT_LOCALE_KEY, next);
     } catch {}
