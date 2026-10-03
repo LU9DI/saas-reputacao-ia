@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { apiFetch } from '../utils/apiFailover';
-import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap, Clipboard, ClipboardCheck, Wifi, FlaskConical, ChevronRight, CircleAlert } from 'lucide-react';
+import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, TrendingUp, Zap, Clipboard, ClipboardCheck, Wifi, FlaskConical, ChevronRight, ChevronDown, CircleAlert } from 'lucide-react';
 
 const SESSION_KEY = 'filtra-dot-local-session';
 type DotUi = {
@@ -522,6 +522,57 @@ function initialMessage(company = 'sua empresa', locale = detectDotLocale()): Me
   return { role: 'dot', text: `Olá. Eu sou o Filtra Dot e estou acompanhando a reputação de ${company}. Pergunte o que mudou, o que merece atenção ou o que fazer agora. Eu explico a evidência e preparo o próximo passo quando fizer sentido.` };
 }
 
+type DotPanelId = 'overview' | 'alerts' | 'decisions' | 'actions' | 'followups' | 'resolve' | 'capabilities' | 'suggestions' | 'control';
+
+function DotAccordion({
+  id,
+  title,
+  meta,
+  open,
+  onToggle,
+  icon,
+  children,
+}: {
+  id: DotPanelId;
+  title: string;
+  meta?: string;
+  open: boolean;
+  onToggle: () => void;
+  icon: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <section
+      id={`dot-${id}`}
+      className={`scroll-mt-5 overflow-hidden rounded-3xl border transition-colors ${
+        open ? 'border-white/10 bg-zinc-950' : 'border-white/5 bg-white/[0.02] hover:border-white/10'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-controls={`dot-${id}-content`}
+        className="flex w-full items-center gap-3 px-4 py-4 text-left transition hover:bg-white/[0.02] sm:px-5"
+      >
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/[0.04] text-indigo-200">
+          {icon}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-semibold uppercase tracking-[.16em] text-zinc-300">{title}</span>
+          {meta && <span className="mt-1 block text-[10px] text-zinc-600">{meta}</span>}
+        </span>
+        <ChevronDown size={16} className={`shrink-0 text-zinc-600 transition-transform ${open ? 'rotate-180 text-indigo-300' : ''}`} />
+      </button>
+      {open && (
+        <div id={`dot-${id}-content`} className="border-t border-white/5 px-4 pb-5 pt-4 sm:px-5">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function FiltraDotPage() {
   const [uiLocale, setUiLocale] = useState('pt');
   const ui = dotUi(uiLocale);
@@ -550,6 +601,36 @@ export default function FiltraDotPage() {
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
+  const [openPanel, setOpenPanel] = useState<DotPanelId>('overview');
+  const panelTouchedRef = useRef(false);
+
+  const togglePanel = (panel: DotPanelId) => {
+    panelTouchedRef.current = true;
+    setOpenPanel((current) => current === panel ? 'overview' : panel);
+  };
+
+  useEffect(() => {
+    if (panelTouchedRef.current) return;
+    if (proposal || actions.some((action) => ['prepared', 'approved', 'executing'].includes(action.status))) {
+      setOpenPanel('actions');
+    } else if (decisions.some((decision) => decision.status === 'pending')) {
+      setOpenPanel('decisions');
+    } else if (events.length > 0) {
+      setOpenPanel('alerts');
+    } else if (followUps.some((followUp) => followUp.status === 'pending')) {
+      setOpenPanel('followups');
+    } else {
+      setOpenPanel('overview');
+    }
+  }, [proposal, actions, decisions, events.length, followUps]);
+
+  const focusPanel = (panel: DotPanelId) => {
+    panelTouchedRef.current = true;
+    setOpenPanel(panel);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`dot-${panel}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -900,99 +981,193 @@ export default function FiltraDotPage() {
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2">
                 {[
-                  ['dot-overview', ui.overviewTitle],
-                  ['dot-alerts', ui.alertsTitle],
-                  ['dot-decisions', ui.decisionsTitle],
-                  ['dot-actions', ui.actionsTitle],
-                  ['dot-followups', ui.followupTitle],
-                  ['dot-resolve', ui.investigateTitle],
+                  ['overview', ui.overviewTitle],
+                  ['alerts', ui.alertsTitle],
+                  ['decisions', ui.decisionsTitle],
+                  ['actions', ui.actionsTitle],
+                  ['followups', ui.followupTitle],
+                  ['resolve', ui.investigateTitle],
                 ].map(([id, label]) => (
-                  <a key={id} href={`#${id}`} className="rounded-xl border border-white/8 bg-black/20 px-3 py-2 text-[10px] font-medium text-zinc-400 transition hover:border-indigo-400/30 hover:bg-indigo-500/[0.05] hover:text-zinc-200">
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => focusPanel(id as DotPanelId)}
+                    className="rounded-xl border border-white/8 bg-black/20 px-3 py-2 text-left text-[10px] font-medium text-zinc-400 transition hover:border-indigo-400/30 hover:bg-indigo-500/[0.05] hover:text-zinc-200"
+                  >
                     {label}
-                  </a>
+                  </button>
                 ))}
               </div>
             </div>
-            
-            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupOverview}</div>
-            <div id="dot-overview" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Sparkles size={14} /> {ui.overviewTitle}</div>
-              <div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.overviewBody}</div>
+
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupOverview}</div>
+
+            <DotAccordion
+              id="overview"
+              title={ui.overviewTitle}
+              meta={briefing?.priority || (briefing?.trend ? ui.trendLabel : ui.monitoringActive)}
+              icon={<Sparkles size={15} />}
+              open={openPanel === 'overview'}
+              onToggle={() => togglePanel('overview')}
+            >
+              <div className="text-[11px] leading-5 text-zinc-600">{ui.overviewBody}</div>
               <div className="mt-4 space-y-3">
-                {briefing && <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4"><div className="text-xs font-medium text-amber-200">{ui.prioritySignal}</div><div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div><div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div></div>}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> {ui.trendLabel}</div><div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || ui.waiting}</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> {ui.signalsLabel}</div><div className="mt-1 text-xl font-semibold text-white">{events.length || '—'}</div></div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> {ui.nextStepLabel}</div><div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || ui.monitoringActive}</div><button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">{ui.prepareAction}</button></div>
-              </div>
-            </div>
-            <div id="dot-alerts" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5"><div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><CircleAlert size={13} className="text-amber-300" /> {ui.alertsTitle}</div><a href="/dot/configuracoes" className="text-[11px] text-indigo-300">{ui.autonomy}</a></div><div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.alertsBody}</div><div className="mt-3 space-y-2">{events.slice(0,3).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3"><div className="text-xs font-medium text-white">{e.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div></div>)}{events.length===0 && <div className="text-xs text-zinc-600">Nenhum sinal novo no momento.</div>}</div></div>
-            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupDecide}</div>
-            <div id="dot-decisions" className="scroll-mt-5 rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-5">
-              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-amber-200"><CheckCircle2 size={13} /> {ui.decisionsTitle}</div><span className="text-[10px] text-zinc-500">{decisions.length} {ui.registered}</span></div>
-              <div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.decisionsBody}</div>
-              <div className="mt-3 space-y-3">
-                {decisions.slice(0,3).map(d => <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{dotPriorityLabel(d.priority, uiLocale)}</span><span className="text-[10px] text-zinc-500">{dotStatusLabel(d.status, uiLocale)}</span></div>
-                  <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
-                  <div className="mt-2 text-[11px] leading-5 text-zinc-500">{ui.nextStepLabel}: {d.recommendation}</div>
-                  {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">{ui.finalOwner}</div>}
-                  <div className="mt-3 grid gap-2">
-                    {(d.options || []).slice(0,2).map(option => <button key={option.id} type="button" onClick={() => void prepareOption(d.id, option.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30">
-                      <div className="text-xs font-semibold text-white">{option.title}</div>
-                      <div className="mt-1 text-[11px] leading-5 text-zinc-500">{option.description}</div>
-                      <div className="mt-1 text-[10px] text-zinc-600">Risco: {option.risk}</div>
-                    </button>)}
+                {briefing && (
+                  <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4">
+                    <div className="text-xs font-medium text-amber-200">{ui.prioritySignal}</div>
+                    <div className="mt-1 text-sm font-semibold text-white">{briefing.priority}</div>
+                    <div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div>
                   </div>
-                  {d.status === 'pending' && <div className="mt-3 flex gap-2">
-                    <button type="button" onClick={() => void updateDecision(d.id,'prepare')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">Preparar</button>
-                    <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">Rejeitar</button>
-                  </div>}
-                </div>)}
+                )}
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+                    <div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> {ui.trendLabel}</div>
+                    <div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || ui.waiting}</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+                    <div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> {ui.signalsLabel}</div>
+                    <div className="mt-1 text-xl font-semibold text-white">{events.length || '—'}</div>
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+                  <div className="flex items-center gap-2 text-xs text-zinc-500"><Clock3 size={14} /> {ui.nextStepLabel}</div>
+                  <div className="mt-1 text-sm font-medium text-white">{briefing?.suggestedAction || ui.monitoringActive}</div>
+                  <button type="button" onClick={() => void prepareAction()} className="mt-3 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-500/20">{ui.prepareAction}</button>
+                </div>
+              </div>
+            </DotAccordion>
+
+            <DotAccordion
+              id="alerts"
+              title={ui.alertsTitle}
+              meta={events.length ? `${events.length} sinal(is)` : '0 sinais'}
+              icon={<CircleAlert size={15} />}
+              open={openPanel === 'alerts'}
+              onToggle={() => togglePanel('alerts')}
+            >
+              <div className="text-[11px] leading-5 text-zinc-600">{ui.alertsBody}</div>
+              <div className="mt-3 flex items-center justify-end">
+                <a href="/dot/configuracoes" className="text-[11px] text-indigo-300">{ui.autonomy}</a>
+              </div>
+              <div className="mt-3 space-y-2">
+                {events.slice(0,3).map(e => (
+                  <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+                    <div className="text-xs font-medium text-white">{e.title}</div>
+                    <div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div>
+                  </div>
+                ))}
+                {events.length === 0 && <div className="text-xs text-zinc-600">Nenhum sinal novo no momento.</div>}
+              </div>
+            </DotAccordion>
+
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupDecide}</div>
+
+            <DotAccordion
+              id="decisions"
+              title={ui.decisionsTitle}
+              meta={decisions.length ? `${decisions.length} ${ui.registered}` : '0'}
+              icon={<CheckCircle2 size={15} />}
+              open={openPanel === 'decisions'}
+              onToggle={() => togglePanel('decisions')}
+            >
+              <div className="text-[11px] leading-5 text-zinc-600">{ui.decisionsBody}</div>
+              <div className="mt-3 space-y-3">
+                {decisions.slice(0,3).map(d => (
+                  <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-white">{dotPriorityLabel(d.priority, uiLocale)}</span>
+                      <span className="text-[10px] text-zinc-500">{dotStatusLabel(d.status, uiLocale)}</span>
+                    </div>
+                    <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
+                    <div className="mt-2 text-[11px] leading-5 text-zinc-500">{ui.nextStepLabel}: {d.recommendation}</div>
+                    {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">{ui.finalOwner}</div>}
+                    <div className="mt-3 grid gap-2">
+                      {(d.options || []).slice(0,2).map(option => (
+                        <button key={option.id} type="button" onClick={() => void prepareOption(d.id, option.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30">
+                          <div className="text-xs font-semibold text-white">{option.title}</div>
+                          <div className="mt-1 text-[11px] leading-5 text-zinc-500">{option.description}</div>
+                          <div className="mt-1 text-[10px] text-zinc-600">{ui.riskLabel}: {dotStatusLabel(option.risk, uiLocale)}</div>
+                        </button>
+                      ))}
+                    </div>
+                    {d.status === 'pending' && (
+                      <div className="mt-3 flex gap-2">
+                        <button type="button" onClick={() => void updateDecision(d.id,'prepare')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">Preparar</button>
+                        <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">Rejeitar</button>
+                      </div>
+                    )}
+                  </div>
+                ))}
                 {decisions.length===0 && <div className="text-xs text-zinc-600">Ainda não há decisões sugeridas.</div>}
               </div>
-            </div>
-            {proposal && (
-              <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/[0.04] p-5">
-                <div className="text-xs font-semibold text-emerald-300">Ação preparada · não executada</div>
-                <div className="mt-2 text-sm font-semibold text-white">{proposal.title}</div>
-                <div className="mt-2 text-xs leading-5 text-zinc-400">{proposal.objective}</div>
-                <ol className="mt-3 space-y-2 text-xs text-zinc-400">
-                  {(proposal.steps || []).map((step: string, index: number) => <li key={step}>{index + 1}. {step}</li>)}
-                </ol>
-                <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">A aprovação é obrigatória antes de qualquer ação externa.</div>
-              </div>
-            )}
-            <div id="dot-actions" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
-              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-indigo-200"><Zap size={13} /> {ui.actionsTitle}</div><span className="text-[10px] text-zinc-500">{actions.length} registradas</span></div>
-              <div className="mt-2 text-[11px] leading-5 text-zinc-600">{ui.actionsBody}</div>
+            </DotAccordion>
+
+            <DotAccordion
+              id="actions"
+              title={ui.actionsTitle}
+              meta={proposal ? '1 pendência' : (actions.length ? `${actions.length} ${ui.registered}` : '0')}
+              icon={<Zap size={15} />}
+              open={openPanel === 'actions'}
+              onToggle={() => togglePanel('actions')}
+            >
+              <div className="text-[11px] leading-5 text-zinc-600">{ui.actionsBody}</div>
+              {proposal && (
+                <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-4">
+                  <div className="text-[10px] font-semibold uppercase tracking-[.16em] text-emerald-300">Ação preparada · não executada</div>
+                  <div className="mt-2 text-sm font-semibold text-white">{proposal.title}</div>
+                  <div className="mt-2 text-xs leading-5 text-zinc-400">{proposal.objective}</div>
+                  <ol className="mt-3 space-y-2 text-xs text-zinc-400">{(proposal.steps || []).map((step: string, index: number) => <li key={step}>{index + 1}. {step}</li>)}</ol>
+                  <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">A aprovação é obrigatória antes de qualquer ação externa.</div>
+                </div>
+              )}
               <div className="mt-3 space-y-2">
-                {actions.slice(0,3).map(a => <div key={a.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{a.action}</span><span className="text-[10px] text-zinc-500">{dotStatusLabel(a.status, uiLocale)}</span></div>
-                  <div className="mt-2 flex gap-2">
-                    {a.status === 'prepared' && <button type="button" onClick={() => void approveAction(a.id)} className="rounded-lg bg-indigo-500 px-2.5 py-1.5 text-[10px] text-white hover:bg-indigo-400">{ui.approveAction}</button>}
-                    {a.status === 'approved' && <button type="button" onClick={() => void runAction(a.id)} className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1.5 text-[10px] text-emerald-200 hover:bg-emerald-400/20">{ui.executeLocal}</button>}
+                {actions.slice(0,3).map(a => (
+                  <div key={a.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
+                    <div className="flex items-center justify-between"><span className="text-xs font-semibold text-white">{a.action}</span><span className="text-[10px] text-zinc-500">{dotStatusLabel(a.status, uiLocale)}</span></div>
+                    <div className="mt-2 flex gap-2">
+                      {a.status === 'prepared' && <button type="button" onClick={() => void approveAction(a.id)} className="rounded-lg bg-indigo-500 px-2.5 py-1.5 text-[10px] text-white hover:bg-indigo-400">{ui.approveAction}</button>}
+                      {a.status === 'approved' && <button type="button" onClick={() => void runAction(a.id)} className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1.5 text-[10px] text-emerald-200 hover:bg-emerald-400/20">{ui.executeLocal}</button>}
+                    </div>
+                    {a.status === 'executed' && <div className="mt-2 text-[10px] text-emerald-300">{ui.executedLocal}</div>}
                   </div>
-                  {a.status === 'executed' && <div className="mt-2 text-[10px] text-emerald-300">{ui.executedLocal}</div>}
-                </div>)}
-                {actions.length===0 && <div className="text-xs text-zinc-600">{ui.noAction}</div>}
+                ))}
+                {actions.length===0 && <div className="text-xs text-zinc-600">Nenhuma ação foi preparada ainda.</div>}
               </div>
-            </div>
-            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTrack}</div>
-            <div id="dot-followups" className="scroll-mt-5 rounded-3xl border border-emerald-400/15 bg-emerald-500/[0.04] p-5">
-              <div className="flex items-center justify-between"><div className="flex items-center gap-2 text-xs font-semibold text-emerald-200"><Clock3 size={13} /> {ui.followupTitle}</div><span className="text-[10px] text-zinc-500">{followUps.filter(f => f.status === 'pending').length} {ui.pending}</span></div>
-              <div className="mt-3 space-y-2">
-                {followUps.slice(0,3).map(f => <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
-                  <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Ação #{f.action_id}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status, uiLocale)}</span></div>
-                  <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `{ui.due}: ${new Date(f.due_at).toLocaleString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US')}` : `{ui.outcome}: ${f.outcome || 'avaliado'}`}</div>
-                  {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão #{r.reassessment.decision_id ?? '—'}{r.reassessment.prepared_action_id ? ` · ação preparada #${r.reassessment.prepared_action_id}` : ''}</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
-                </div>)}
+            </DotAccordion>
+
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTrack}</div>
+
+            <DotAccordion
+              id="followups"
+              title={ui.followupTitle}
+              meta={`${followUps.filter(f => f.status === 'pending').length} ${ui.pending}`}
+              icon={<Clock3 size={15} />}
+              open={openPanel === 'followups'}
+              onToggle={() => togglePanel('followups')}
+            >
+              <div className="space-y-2">
+                {followUps.slice(0,3).map(f => (
+                  <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
+                    <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Acompanhamento</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status, uiLocale)}</span></div>
+                    <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `${ui.due}: ${new Date(f.due_at).toLocaleString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US')}` : `${ui.outcome}: ${f.outcome || '—'}`}</div>
+                    {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão gerada.</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
+                  </div>
+                ))}
                 {followUps.length === 0 && <div className="text-xs text-zinc-600">O acompanhamento aparecerá quando houver uma ação executada.</div>}
               </div>
-            </div>
-            <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTools}</div>
-            <div id="dot-resolve" className="scroll-mt-5 rounded-3xl border border-indigo-400/20 bg-indigo-500/[0.04] p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Bot size={14} /> {ui.investigateTitle}</div>
-              <div className="mt-2 text-xs leading-5 text-zinc-500">{ui.investigateBody}</div>
+            </DotAccordion>
+
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTools}</div>
+
+            <DotAccordion
+              id="resolve"
+              title={ui.investigateTitle}
+              meta={resolveResult ? dotStatusLabel(resolveResult.verification_status, uiLocale) : ui.verifyComplaint}
+              icon={<Bot size={15} />}
+              open={openPanel === 'resolve'}
+              onToggle={() => togglePanel('resolve')}
+            >
+              <div className="text-[11px] leading-5 text-zinc-600">{ui.investigateBody}</div>
               <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder="Ex.: cliente diz que esperou 40 minutos para ser atendido..." className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
               <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? ui.verifyingComplaint : ui.verifyComplaint}</button>
               {resolveResult && (
@@ -1005,42 +1180,81 @@ export default function FiltraDotPage() {
                     <div className="mt-2 text-xs leading-5 text-zinc-300">{resolveResult.problem_summary}</div>
                   </div>
                   {resolveResult.facts.map((fact, i) => <div key={i} className="text-[11px] leading-5 text-zinc-500"><span className="text-zinc-300">{fact.source}:</span> {fact.fact}</div>)}
-                  {resolveResult.evidence.length > 0 && <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{ui.evidenceTitle}</div><div className="space-y-2">{resolveResult.evidence.slice(0,5).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-black/20 p-2.5"><div className="flex justify-between text-[10px]"><span className="text-amber-300">Nota {e.rating}/5</span><span className="text-zinc-600">{e.id}</span></div><div className="mt-1 text-[11px] leading-5 text-zinc-400">{e.comment}</div></div>)}</div></div>}
-                  <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{ui.optionsTitle}</div><div className="grid gap-2">{resolveResult.options.slice(0,2).map(o => <button key={o.id} type="button" disabled={!resolveResult.decision_id} onClick={() => resolveResult.decision_id && void prepareOption(resolveResult.decision_id, o.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30 disabled:opacity-40"><div className="text-xs font-semibold text-white">{o.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{o.description}</div><div className="mt-1 text-[10px] text-zinc-600">{ui.riskLabel}: {o.risk}</div></button>)}</div></div>
+                  {resolveResult.evidence.length > 0 && (
+                    <div>
+                      <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{ui.evidenceTitle}</div>
+                      <div className="space-y-2">
+                        {resolveResult.evidence.slice(0,5).map(e => (
+                          <div key={e.id} className="rounded-xl border border-white/5 bg-black/20 p-2.5">
+                            <div className="text-[10px] text-amber-300">Nota {e.rating}/5</div>
+                            <div className="mt-1 text-[11px] leading-5 text-zinc-400">{e.comment}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">{ui.optionsTitle}</div>
+                    <div className="grid gap-2">
+                      {resolveResult.options.slice(0,2).map(o => (
+                        <button key={o.id} type="button" disabled={!resolveResult.decision_id} onClick={() => resolveResult.decision_id && void prepareOption(resolveResult.decision_id, o.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30 disabled:opacity-40">
+                          <div className="text-xs font-semibold text-white">{o.title}</div>
+                          <div className="mt-1 text-[11px] leading-5 text-zinc-500">{o.description}</div>
+                          <div className="mt-1 text-[10px] text-zinc-600">{ui.riskLabel}: {dotStatusLabel(o.risk, uiLocale)}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">{ui.decisionOwner} {ui.noExternalAuto}</div>}
                 </div>
               )}
-            </div>
-            <div id="dot-capabilities" className="scroll-mt-5 rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> {ui.capabilitiesTitle}</div>
-              <ul className="mt-4 space-y-3 text-xs leading-5 text-zinc-400">
+            </DotAccordion>
+
+            <DotAccordion
+              id="capabilities"
+              title={ui.capabilitiesTitle}
+              meta="3 capacidades principais"
+              icon={<Bot size={15} />}
+              open={openPanel === 'capabilities'}
+              onToggle={() => togglePanel('capabilities')}
+            >
+              <ul className="space-y-3 text-xs leading-5 text-zinc-400">
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.analyze}</li>
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.explain}</li>
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.prepare}</li>
               </ul>
-            </div>
-            <div id="dot-suggestions" className="scroll-mt-5 rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="flex items-center gap-2 text-xs font-semibold text-zinc-300"><Sparkles size={13} className="text-indigo-300" /> {ui.suggestionsTitle2}</div>
-              <div className="mt-3 space-y-2">
+            </DotAccordion>
+
+            <DotAccordion
+              id="suggestions"
+              title={ui.suggestionsTitle2}
+              meta={`${suggestions.length}`}
+              icon={<Sparkles size={15} />}
+              open={openPanel === 'suggestions'}
+              onToggle={() => togglePanel('suggestions')}
+            >
+              <div className="space-y-2">
                 {suggestions.map((suggestion) => (
                   <button key={suggestion} onClick={() => void send(suggestion)} disabled={busy} className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:-translate-y-0.5 hover:border-indigo-400/30 hover:bg-indigo-500/[0.03] hover:text-zinc-200 disabled:opacity-40">
                     {suggestion}
                   </button>
                 ))}
               </div>
-            </div>
-            <div>
-              <div className="px-1 pt-2 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.detailsGroup}</div>
-              <div id="dot-control" className="scroll-mt-5 rounded-3xl border border-white/10 bg-white/[0.02] p-5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-zinc-400"><ShieldCheck size={13} className="text-emerald-300" /> {ui.healthTitle}</div>
-                <div className={scheduler?.last_error_at ? 'text-[10px] text-amber-300' : 'text-[10px] text-emerald-300'}>
-                  {scheduler?.running ? '● {ui.running}' : scheduler?.timer_active ? '● {ui.monitoringActive}' : '● {ui.waiting}'}
-                </div>
-              </div>
+            </DotAccordion>
+
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.detailsGroup}</div>
+
+            <DotAccordion
+              id="control"
+              title={ui.healthTitle}
+              meta={scheduler?.timer_active ? ui.monitoringActive : ui.waiting}
+              icon={<ShieldCheck size={15} />}
+              open={openPanel === 'control'}
+              onToggle={() => togglePanel('control')}
+            >
               {scheduler ? (
                 <>
-                  <div className="mt-3 text-xs text-zinc-500">{ui.lastRound}: {scheduler.last_success_at ? new Date(scheduler.last_success_at).toLocaleString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US') : '{ui.notRunYet}'}</div>
+                  <div className="text-xs text-zinc-500">{ui.lastRound}: {scheduler.last_success_at ? new Date(scheduler.last_success_at).toLocaleString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US') : ui.notRunYet}</div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
                     <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.companies}</span><div className="mt-1 text-zinc-200">{scheduler.companies_processed} {ui.processed} · {scheduler.companies_skipped} {ui.waitingCompanies}</div></div>
                     <div className="rounded-xl border border-white/5 bg-black/20 p-2"><span className="text-zinc-600">{ui.followUpsLabel}</span><div className="mt-1 text-zinc-200">{scheduler.followups_processed}</div></div>
@@ -1049,13 +1263,9 @@ export default function FiltraDotPage() {
                   </div>
                   {scheduler.last_error && <div className="mt-3 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[10px] text-amber-200">{scheduler.last_error}</div>}
                 </>
-              ) : <div className="mt-3 text-xs text-zinc-600">{ui.loading}</div>}
-            </div>
-
-
-                        </div>
-          </aside>
-        </div>
+              ) : <div className="text-xs text-zinc-600">{ui.loading}</div>}
+            </DotAccordion>
+          </aside>        </div>
       </div>
     </main>
   );
