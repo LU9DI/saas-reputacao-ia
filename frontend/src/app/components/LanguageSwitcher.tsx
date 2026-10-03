@@ -7,6 +7,7 @@ const localizedSlugs: Record<Exclude<Language,'pt'>,string[]> = {
   es:['ia','feedback-de-clientes','analise-de-avaliacoes-com-ia','gestao-de-reputacao-online','avaliacoes-google','hoteis','restaurantes','clinicas','agencias','franquias','turismo','associacoes','parceiros','como-funciona','pedir-estrela-vs-filtrar','auditoria-gratuita'],
   zh:['ia','feedback-de-clientes','analise-de-avaliacoes-com-ia','gestao-de-reputacao-online','avaliacoes-google','hoteis','restaurantes','clinicas','agencias','franquias','turismo','associacoes','parceiros','como-funciona','pedir-estrela-vs-filtrar','auditoria-gratuita'],
 };
+const blogSlugs=['gestao-reputacao-online-guia','como-responder-avaliacoes-negativas','como-conseguir-avaliacoes-google','velocity-reviews-google-maps-2026','review-1-estrela-primeiras-24-horas','qr-code-balcao-reviews','seo-local-avaliacoes-local-pack','clinica-checklist-avaliacoes-google','agencia-vender-gestao-reputacao','whatsapp-pedir-estrela-vs-filtrar-qr'];
 const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google','/hoteis','/restaurantes','/clinicas','/agencias','/franquias','/turismo','/associacoes','/parceiros','/como-funciona','/pedir-estrela-vs-filtrar','/auditoria-gratuita'];
 
 export function LanguageSwitcher({className='',compact=false,variant='select'}:{className?:string;compact?:boolean;variant?:'select'|'flags'}) {
@@ -20,6 +21,9 @@ export function LanguageSwitcher({className='',compact=false,variant='select'}:{
     if(typeof window==='undefined')return;
     const path=window.location.pathname;
     const sourceIndex=sourcePaths.indexOf(path);
+    const blogIndex=path==='/blog' ? -1 : (path.startsWith('/blog/') ? blogSlugs.indexOf(path.slice(6)) : -2);
+    if(path==='/blog'){ if(code!=='pt') window.location.href='/'+code+'/blog'; return; }
+    if(blogIndex>=0){ if(code==='pt') return; window.location.href='/'+code+'/blog/'+blogSlugs[blogIndex]; return; }
     if(sourceIndex>=0){
       if(code==='pt')return;
       window.location.href='/'+code+'/'+localizedSlugs[code][sourceIndex];
@@ -28,6 +32,7 @@ export function LanguageSwitcher({className='',compact=false,variant='select'}:{
     const parts=path.split('/').filter(Boolean);
     const prefix=parts[0] as Language|undefined;
     const slug=parts[1];
+    if(prefix && ['en','es','zh'].includes(prefix) && slug==='blog'){ const blogSlug=parts[2]; if(!blogSlug){ if(code==='pt'){window.location.href='/blog';return;} window.location.href='/'+code+'/blog';return;} const bi=blogSlugs.indexOf(blogSlug); if(bi>=0){ if(code==='pt'){window.location.href='/blog/'+blogSlugs[bi];return;} window.location.href='/'+code+'/blog/'+blogSlugs[bi];return;} }
     if(prefix && ['en','es','zh'].includes(prefix) && slug){
       const index=localizedSlugs[prefix as Exclude<Language,'pt'>].indexOf(slug);
       if(index>=0){
