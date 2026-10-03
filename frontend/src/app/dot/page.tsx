@@ -206,10 +206,10 @@ function initialMessage(company = 'sua empresa', locale = detectDotLocale()): Me
 }
 
 export default function FiltraDotPage() {
-  const [uiLocale] = useState(() => detectDotLocale());
+  const [uiLocale, setUiLocale] = useState('pt');
   const ui = dotUi(uiLocale);
-  const [suggestions] = useState<string[]>(() => localizedSuggestions(uiLocale));
-  const [messages, setMessages] = useState<Message[]>([initialMessage(ui.companyPlaceholder, uiLocale)]);
+  const [suggestions, setSuggestions] = useState<string[]>(() => localizedSuggestions('pt'));
+  const [messages, setMessages] = useState<Message[]>([initialMessage('sua empresa', 'pt')]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [sessionId] = useState(() => {
@@ -231,6 +231,17 @@ export default function FiltraDotPage() {
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
+
+  useEffect(() => {
+    const locale = detectDotLocale();
+    if (locale === 'pt') return;
+    const nextUi = dotUi(locale);
+    setUiLocale(locale);
+    setSuggestions(localizedSuggestions(locale));
+    setMessages((current) => current.length === 1 && current[0].role === 'dot'
+      ? [initialMessage(nextUi.companyPlaceholder, locale)]
+      : current);
+  }, []);
 
   useEffect(() => {
     let disposed = false;
