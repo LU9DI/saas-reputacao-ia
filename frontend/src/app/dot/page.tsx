@@ -7,6 +7,108 @@ import { ArrowUp, RotateCcw, Bot, CheckCircle2, Clock3, ShieldCheck, Sparkles, T
 const SESSION_KEY = 'filtra-dot-local-session';
 const TOKEN_KEY = 'filtra_token';
 
+type DotUi = {
+  locale: string;
+  earlyAccess: string;
+  earlyAccessTitle: string;
+  earlyAccessBody: string;
+  plan: string;
+  newConversation: string;
+  protectedActions: string;
+  analyzing: string;
+  ask: string;
+  localDemo: string;
+  suggestionsTitle: string;
+  canDoTitle: string;
+  analyze: string;
+  explain: string;
+  prepare: string;
+  verifyComplaint: string;
+  verifyingComplaint: string;
+  decisionOwner: string;
+  noAction: string;
+  loading: string;
+};
+
+const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
+  pt: {
+    earlyAccess: 'Acesso antecipado',
+    earlyAccessTitle: 'O Filtra Dot está reservado aos planos Rei e Corporativo.',
+    earlyAccessBody: 'Sua conta atual não possui acesso ao Dot. O recurso está em acesso antecipado para clientes Rei e Corporativo.',
+    plan: 'Plano identificado',
+    newConversation: 'Nova conversa',
+    protectedActions: 'Ações externas protegidas por aprovação',
+    analyzing: 'Analisando sinais do negócio…',
+    ask: 'Pergunte ao Filtra Dot…',
+    localDemo: 'Protótipo local · dados demonstrativos · nenhuma ação externa é executada.',
+    suggestionsTitle: 'Sugestões',
+    canDoTitle: 'O que posso fazer',
+    analyze: 'Analisar avaliações e padrões',
+    explain: 'Explicar mudanças na reputação',
+    prepare: 'Preparar ações para aprovação',
+    verifyComplaint: 'Verificar reclamação',
+    verifyingComplaint: 'Verificando evidências…',
+    decisionOwner: 'A decisão final permanece com o responsável.',
+    noAction: 'Nenhuma ação preparada.',
+    loading: 'Carregando estado operacional…',
+  },
+  en: {
+    earlyAccess: 'Early access',
+    earlyAccessTitle: 'Filtra Dot is reserved for Rei and Corporativo plans.',
+    earlyAccessBody: 'Your account does not have Dot access. The feature is in early access for Rei and Corporativo customers.',
+    plan: 'Detected plan',
+    newConversation: 'New conversation',
+    protectedActions: 'External actions require approval',
+    analyzing: 'Analyzing business signals…',
+    ask: 'Ask Filtra Dot…',
+    localDemo: 'Local prototype · demo data · no external action is executed.',
+    suggestionsTitle: 'Suggestions',
+    canDoTitle: 'What I can do',
+    analyze: 'Analyze reviews and patterns',
+    explain: 'Explain reputation changes',
+    prepare: 'Prepare actions for approval',
+    verifyComplaint: 'Verify complaint',
+    verifyingComplaint: 'Checking evidence…',
+    decisionOwner: 'The final decision remains with the responsible owner.',
+    noAction: 'No action prepared.',
+    loading: 'Loading operational state…',
+  },
+  es: {
+    earlyAccess: 'Acceso anticipado',
+    earlyAccessTitle: 'Filtra Dot está reservado para los planes Rei y Corporativo.',
+    earlyAccessBody: 'Tu cuenta no tiene acceso a Dot. La función está en acceso anticipado para clientes Rei y Corporativo.',
+    plan: 'Plan detectado',
+    newConversation: 'Nueva conversación',
+    protectedActions: 'Las acciones externas requieren aprobación',
+    analyzing: 'Analizando señales del negocio…',
+    ask: 'Pregunta a Filtra Dot…',
+    localDemo: 'Prototipo local · datos de demostración · no se ejecutan acciones externas.',
+    suggestionsTitle: 'Sugerencias',
+    canDoTitle: 'Lo que puedo hacer',
+    analyze: 'Analizar reseñas y patrones',
+    explain: 'Explicar cambios en la reputación',
+    prepare: 'Preparar acciones para aprobación',
+    verifyComplaint: 'Verificar reclamación',
+    verifyingComplaint: 'Verificando evidencias…',
+    decisionOwner: 'La decisión final permanece con el responsable.',
+    noAction: 'No hay ninguna acción preparada.',
+    loading: 'Cargando estado operativo…',
+  },
+};
+
+function detectDotLocale(): string {
+  if (typeof navigator === 'undefined') return 'pt';
+  const raw = String(navigator.language || 'pt-BR').toLowerCase();
+  if (raw.startsWith('pt')) return 'pt';
+  if (raw.startsWith('es')) return 'es';
+  return 'en';
+}
+
+function dotUi(locale = detectDotLocale()): DotUi {
+  return { locale, ...(DOT_UI[locale] || DOT_UI.en) };
+}
+
+
 function authHeaders(json = true): HeadersInit {
   const headers: Record<string, string> = json ? { 'Content-Type': 'application/json' } : {};
   try {
@@ -18,12 +120,26 @@ function authHeaders(json = true): HeadersInit {
   return headers;
 }
 
-const suggestions = [
-  'Como está minha reputação hoje?',
-  'Encontre o principal problema nas avaliações.',
-  'O que eu deveria resolver primeiro?',
-  'Prepare um plano para melhorar minha nota.',
-];
+function localizedSuggestions(locale: string): string[] {
+  if (locale === 'en') return [
+    'How is my reputation today?',
+    'Find the main problem in the reviews.',
+    'What should I solve first?',
+    'Prepare a plan to improve my rating.',
+  ];
+  if (locale === 'es') return [
+    '¿Cómo está mi reputación hoy?',
+    'Encuentra el principal problema en las reseñas.',
+    '¿Qué debería resolver primero?',
+    'Prepara un plan para mejorar mi puntuación.',
+  ];
+  return [
+    'Como está minha reputação hoje?',
+    'Encontre o principal problema nas avaliações.',
+    'O que eu deveria resolver primeiro?',
+    'Prepare um plano para melhorar minha nota.',
+  ];
+}
 
 type Message = { role: 'dot' | 'user'; text: string };
 type Briefing = { headline: string; trend?: string; rating?: string; reviews?: number; priority?: string; reason?: string; suggestedAction: string };
@@ -59,15 +175,21 @@ function DotAvatar({ active = false }: { active?: boolean }) {
   );
 }
 
-function initialMessage(company = 'sua empresa'): Message {
-  return {
-    role: 'dot',
-    text: `Olá. Eu sou o Filtra Dot. Estou acompanhando a reputação de ${company}. Posso analisar sinais, explicar o que mudou e preparar o próximo passo para você.`,
-  };
+function initialMessage(company = 'sua empresa', locale = detectDotLocale()): Message {
+  if (locale === 'en') {
+    return { role: 'dot', text: `Hello. I’m Filtra Dot. I’m monitoring the reputation of ${company}. I can analyze signals, explain what changed, and prepare the next step for you.` };
+  }
+  if (locale === 'es') {
+    return { role: 'dot', text: `Hola. Soy Filtra Dot. Estoy siguiendo la reputación de ${company}. Puedo analizar señales, explicar qué cambió y preparar el siguiente paso para ti.` };
+  }
+  return { role: 'dot', text: `Olá. Eu sou o Filtra Dot. Estou acompanhando a reputação de ${company}. Posso analisar sinais, explicar o que mudou e preparar o próximo passo para você.` };
 }
 
 export default function FiltraDotPage() {
-  const [messages, setMessages] = useState<Message[]>([initialMessage()]);
+  const [uiLocale] = useState(() => detectDotLocale());
+  const ui = dotUi(uiLocale);
+  const [suggestions] = useState<string[]>(() => localizedSuggestions(uiLocale));
+  const [messages, setMessages] = useState<Message[]>([initialMessage('sua empresa', uiLocale)]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [sessionId] = useState(() => {
@@ -95,11 +217,11 @@ export default function FiltraDotPage() {
     const refreshOperationalState = async () => {
       const headers = authHeaders(false);
       const responses = await Promise.all([
-        apiFetch( '/api/dot/status', { headers }),
-        apiFetch( '/api/dot/events', { headers }),
-        apiFetch( '/api/dot/decisions', { headers }),
-        apiFetch( '/api/dot/actions', { headers }),
-        apiFetch( '/api/dot/followups', { headers }),
+        apiFetch('/api/dot/status', { headers }),
+        apiFetch('/api/dot/events', { headers }),
+        apiFetch('/api/dot/decisions', { headers }),
+        apiFetch('/api/dot/actions', { headers }),
+        apiFetch('/api/dot/followups', { headers }),
       ]);
       if (disposed) return;
       const [statusResponse, eventsResponse, decisionsResponse, actionsResponse, followupsResponse] = responses;
@@ -133,7 +255,7 @@ export default function FiltraDotPage() {
   }, []);
 
   useEffect(() => {
-    void apiFetch( '/api/dot/briefing', { headers: authHeaders(false) }).then(async (response) => {
+    void apiFetch('/api/dot/briefing', { headers: authHeaders(false) }).then(async (response) => {
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Acesso ao Dot não liberado.');
       return data;
@@ -145,7 +267,7 @@ export default function FiltraDotPage() {
     if (!complaint || resolveBusy) return;
     setResolveBusy(true);
     try {
-      const response = await apiFetch( '/api/dot/resolve', {
+      const response = await apiFetch('/api/dot/resolve', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ complaint }),
@@ -155,7 +277,7 @@ export default function FiltraDotPage() {
       setResolveResult(data.result);
       setResolveInput('');
       if (data.result?.decision_id) {
-        const d = await apiFetch( '/api/dot/decisions', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
+        const d = await apiFetch('/api/dot/decisions', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
         if (d?.decisions) setDecisions(d.decisions);
       }
     } catch (error: any) {
@@ -178,7 +300,7 @@ export default function FiltraDotPage() {
 
   async function prepareOption(decisionId: number, optionId: string) {
     try {
-      const response = await apiFetch( '/api/dot/decisions/' + decisionId + '/prepare-action', {
+      const response = await apiFetch('/api/dot/decisions/' + decisionId + '/prepare-action', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ optionId }),
@@ -190,7 +312,7 @@ export default function FiltraDotPage() {
 
   async function approveAction(actionId: number) {
     try {
-      const response = await apiFetch( '/api/dot/actions/' + actionId + '/approve', { method: 'POST', headers: authHeaders() });
+      const response = await apiFetch('/api/dot/actions/' + actionId + '/approve', { method: 'POST', headers: authHeaders() });
       if (!response.ok) return;
       const data = await response.json();
       if (data?.action) setActions(current => current.map(a => a.id === actionId ? { ...a, status: 'approved' } : a));
@@ -199,12 +321,12 @@ export default function FiltraDotPage() {
 
   async function runAction(actionId: number) {
     try {
-      const response = await apiFetch( '/api/dot/actions/' + actionId + '/run', { method: 'POST', headers: authHeaders() });
+      const response = await apiFetch('/api/dot/actions/' + actionId + '/run', { method: 'POST', headers: authHeaders() });
       if (!response.ok) return;
       const data = await response.json();
       if (data?.action) setActions(current => current.map(a => a.id === actionId ? { ...a, status: data.action.status, executed_at: data.action.executedAt } : a));
       if (data?.action?.status === 'executed') {
-        const follow = await apiFetch( '/api/dot/followups', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
+        const follow = await apiFetch('/api/dot/followups', { headers: authHeaders(false) }).then(r => r.ok ? r.json() : null);
         if (follow?.followups) setFollowUps(follow.followups);
       }
     } catch {}
@@ -212,8 +334,8 @@ export default function FiltraDotPage() {
 
   async function updateDecision(id: number, action: 'prepare' | 'approve' | 'reject') {
     try {
-      const url = '/api/dot/decisions/' + '/api/dot/decisions/' + id + '/' + action;
-      const response = await fetch(url, { method: 'POST', headers: authHeaders() });
+      const url = '/api/dot/decisions/' + id + '/' + action;
+      const response = await apiFetch(url, { method: 'POST', headers: authHeaders() });
       if (!response.ok) return;
       setDecisions(current => current.map(d => d.id === id ? { ...d, status: action === 'prepare' ? 'prepared' : action === 'approve' ? 'approved' : 'rejected' } : d));
     } catch {}
@@ -221,7 +343,7 @@ export default function FiltraDotPage() {
 
   async function prepareAction() {
     try {
-      const response = await apiFetch( '/api/dot/action/prepare', {
+      const response = await apiFetch('/api/dot/action/prepare', {
         method: 'POST',
         headers: authHeaders(),
         body: JSON.stringify({ action: briefing?.priority || 'tempo de espera' }),
@@ -238,7 +360,7 @@ export default function FiltraDotPage() {
     } catch {
       // O reset visual continua disponível mesmo se a API local estiver parada.
     }
-    setMessages([initialMessage()]);
+    setMessages([initialMessage('sua empresa', uiLocale)]);
     setInput('');
   }
 
@@ -252,19 +374,19 @@ export default function FiltraDotPage() {
               <DotAvatar />
               <div>
                 <div className="text-sm font-semibold text-white">Filtra Dot</div>
-                <div className="text-xs text-zinc-500">Acesso antecipado</div>
+                <div className="text-xs text-zinc-500">{ui.earlyAccess}</div>
               </div>
             </div>
             <div className="mt-8 text-2xl font-semibold tracking-tight text-white">
-              {featureEnabled ? 'O Filtra Dot está reservado aos planos Rei e Corporativo.' : 'O Filtra Dot está temporariamente indisponível.'}
+              {featureEnabled ? ui.earlyAccessTitle : 'Filtra Dot is temporarily unavailable.'}
             </div>
             <p className="mt-3 text-sm leading-6 text-zinc-400">
               {featureEnabled
-                ? 'Sua conta atual não possui acesso ao Dot. O recurso está em acesso antecipado para clientes Rei e Corporativo.'
-                : 'O recurso ainda não está habilitado neste ambiente.'}
+                ? ui.earlyAccessBody
+                : 'The feature is not enabled in this environment.'}
             </p>
             <div className="mt-6 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.05] p-4 text-xs leading-5 text-zinc-400">
-              Plano identificado: <span className="font-medium text-zinc-200">{dotStatus.plan_label || dotStatus.plan || 'não identificado'}</span>
+              {ui.plan}: <span className="font-medium text-zinc-200">{dotStatus.plan_label || dotStatus.plan || 'não identificado'}</span>
             </div>
           </section>
         </div>
@@ -311,11 +433,11 @@ export default function FiltraDotPage() {
           </div>
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => void resetConversation()} disabled={busy} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200 disabled:opacity-40">
-              <RotateCcw size={13} /> Nova conversa
+              <RotateCcw size={13} /> {ui.newConversation}
             </button>
           </div>
           <div className="hidden items-center gap-2 text-xs text-zinc-500 sm:flex">
-            <ShieldCheck size={14} className="text-emerald-400" /> Ações externas protegidas por aprovação
+            <ShieldCheck size={14} className="text-emerald-400" /> {ui.protectedActions}
           </div>
         </header>
 
@@ -344,7 +466,7 @@ export default function FiltraDotPage() {
                   {busy && (
                     <div className="flex items-center gap-4">
                       <DotAvatar active />
-                      <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs text-zinc-500">Analisando sinais do negócio…</div>
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-xs text-zinc-500">{ui.analyzing}</div>
                     </div>
                   )}
                 </div>
@@ -357,7 +479,7 @@ export default function FiltraDotPage() {
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void send(); } }}
-                  placeholder="Pergunte ao Filtra Dot…"
+                  placeholder={ui.ask}
                   rows={1}
                   className="min-h-11 flex-1 resize-none bg-transparent px-3 py-2.5 text-sm text-white outline-none placeholder:text-zinc-600"
                 />
@@ -371,7 +493,7 @@ export default function FiltraDotPage() {
                   <ArrowUp size={18} />
                 </button>
               </div>
-              <div className="mx-auto mt-2 max-w-3xl text-[10px] text-zinc-600">Protótipo local · dados demonstrativos · nenhuma ação externa é executada.</div>
+              <div className="mx-auto mt-2 max-w-3xl text-[10px] text-zinc-600">{ui.localDemo}</div>
             </div>
           </section>
 
@@ -394,7 +516,7 @@ export default function FiltraDotPage() {
                   </div>
                   {scheduler.last_error && <div className="mt-3 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[10px] text-amber-200">{scheduler.last_error}</div>}
                 </>
-              ) : <div className="mt-3 text-xs text-zinc-600">Carregando estado operacional…</div>}
+              ) : <div className="mt-3 text-xs text-zinc-600">{ui.loading}</div>}
             </div>
 
 
@@ -415,7 +537,7 @@ export default function FiltraDotPage() {
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[.18em] text-indigo-300"><Bot size={14} /> Dot Resolve</div>
               <div className="mt-2 text-xs leading-5 text-zinc-500">Receba uma reclamação, verifique o que os dados da empresa sustentam e deixe a decisão final com o responsável.</div>
               <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder="Ex.: cliente diz que esperou 40 minutos para ser atendido..." className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
-              <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? 'Verificando evidências…' : 'Verificar reclamação'}</button>
+              <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? ui.verifyingComplaint : ui.verifyComplaint}</button>
               {resolveResult && (
                 <div className="mt-4 space-y-3">
                   <div className="rounded-xl border border-white/10 bg-black/20 p-3">
@@ -428,7 +550,7 @@ export default function FiltraDotPage() {
                   {resolveResult.facts.map((fact, i) => <div key={i} className="text-[11px] leading-5 text-zinc-500"><span className="text-zinc-300">{fact.source}:</span> {fact.fact}</div>)}
                   {resolveResult.evidence.length > 0 && <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Evidências encontradas</div><div className="space-y-2">{resolveResult.evidence.slice(0,5).map(e => <div key={e.id} className="rounded-xl border border-white/5 bg-black/20 p-2.5"><div className="flex justify-between text-[10px]"><span className="text-amber-300">Nota {e.rating}/5</span><span className="text-zinc-600">{e.id}</span></div><div className="mt-1 text-[11px] leading-5 text-zinc-400">{e.comment}</div></div>)}</div></div>}
                   <div><div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Duas opções</div><div className="grid gap-2">{resolveResult.options.slice(0,2).map(o => <button key={o.id} type="button" disabled={!resolveResult.decision_id} onClick={() => resolveResult.decision_id && void prepareOption(resolveResult.decision_id, o.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30 disabled:opacity-40"><div className="text-xs font-semibold text-white">{o.title}</div><div className="mt-1 text-[11px] leading-5 text-zinc-500">{o.description}</div><div className="mt-1 text-[10px] text-zinc-600">Risco: {o.risk}</div></button>)}</div></div>
-                  {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">A decisão final permanece com o responsável. Nenhuma ação externa é executada automaticamente.</div>}
+                  {resolveResult.requires_owner_decision && <div className="text-[10px] text-amber-300">{ui.decisionOwner} Nenhuma ação externa é executada automaticamente.</div>}
                 </div>
               )}
             </div>
@@ -480,7 +602,7 @@ export default function FiltraDotPage() {
                   </div>
                   {a.status === 'executed' && <div className="mt-2 text-[10px] text-emerald-300">Executada somente no executor local; nenhum sistema externo foi alterado.</div>}
                 </div>)}
-                {actions.length===0 && <div className="text-xs text-zinc-600">Nenhuma ação preparada.</div>}
+                {actions.length===0 && <div className="text-xs text-zinc-600">{ui.noAction}</div>}
               </div>
             </div>
 
@@ -497,16 +619,16 @@ export default function FiltraDotPage() {
             </div>
 
             <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-5">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> O que posso fazer</div>
+              <div className="flex items-center gap-2 text-sm font-semibold text-white"><Bot size={16} className="text-indigo-300" /> {ui.canDoTitle}</div>
               <ul className="mt-4 space-y-3 text-xs leading-5 text-zinc-400">
-                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> Analisar avaliações e padrões</li>
-                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> Explicar mudanças na reputação</li>
-                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> Preparar ações para aprovação</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.analyze}</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.explain}</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.prepare}</li>
               </ul>
             </div>
 
             <div className="rounded-3xl border border-white/10 bg-zinc-950 p-5">
-              <div className="text-xs font-semibold text-zinc-300">Sugestões</div>
+              <div className="text-xs font-semibold text-zinc-300">{ui.suggestionsTitle}</div>
               <div className="mt-3 space-y-2">
                 {suggestions.map((suggestion) => (
                   <button key={suggestion} onClick={() => void send(suggestion)} disabled={busy} className="w-full rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5 text-left text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200 disabled:opacity-40">
