@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
+import { segmentTranslations } from './segmentTranslations';
 
 type Lang = 'en' | 'es' | 'zh';
 type Section = { heading: string; body: string };
@@ -16,7 +17,7 @@ type Item = {
   bullets: string[];
   cta: string;
   ctaAudit: string;
-  nav: [string, string][] | { title: string; description: string }[];
+  nav: ([string, string] | { title: string; description: string })[];
 };
 
 const base = 'https://filtraai.com';
@@ -164,9 +165,9 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
               const targetIndex = navIndexes[i] ?? index;
               const prefix = lang === 'en' ? '/en' : lang === 'es' ? '/es' : '/zh';
               return (
-                <Link key={n[0]} href={prefix + sourcePaths[targetIndex]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500/40">
-                  <span className="font-medium">{n[0]}</span>
-                  <span className="mt-1 block text-xs leading-5 text-zinc-500">{n[1]}</span>
+                <Link key={Array.isArray(n) ? n[0] : n.title} href={prefix + sourcePaths[targetIndex]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500/40">
+                  <span className="font-medium">{Array.isArray(n) ? n[0] : n.title}</span>
+                  <span className="mt-1 block text-xs leading-5 text-zinc-500">{Array.isArray(n) ? n[1] : n.description}</span>
                 </Link>
               );
             })}
