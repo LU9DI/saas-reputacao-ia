@@ -32,7 +32,8 @@ type DotEvent = { id: number; type: string; severity: string; title: string; det
 type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string; action: string; risk: string };
 type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
 type DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
-type DotSchedulerStatus = { running: boolean; timer_active: boolean; tick_ms: number; last_run_at: string | null; last_success_at: string | null; last_error_at: string | null; last_error: string | null; duration_ms: number | null; companies_processed: number; companies_skipped: number; companies_errors: number; followups_processed: number; events_created: number; decisions_created: number; actions_prepared: number };\ntype DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; result_json?: string | null; created_at: string; completed_at?: string | null };
+type DotSchedulerStatus = { running: boolean; timer_active: boolean; tick_ms: number; last_run_at: string | null; last_success_at: string | null; last_error_at: string | null; last_error: string | null; duration_ms: number | null; companies_processed: number; companies_skipped: number; companies_errors: number; followups_processed: number; events_created: number; decisions_created: number; actions_prepared: number };
+type DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; result_json?: string | null; created_at: string; completed_at?: string | null };
 type DotResolve = {
   problem_summary: string;
   verification_status: 'confirmed' | 'unverified' | 'not_found';
@@ -82,7 +83,8 @@ export default function FiltraDotPage() {
   const [events, setEvents] = useState<DotEvent[]>([]);
   const [decisions, setDecisions] = useState<DotDecision[]>([]);
   const [actions, setActions] = useState<DotAction[]>([]);
-  const [followUps, setFollowUps] = useState<DotFollowUp[]>([]);\n  const [scheduler, setScheduler] = useState<DotSchedulerStatus | null>(null);
+  const [followUps, setFollowUps] = useState<DotFollowUp[]>([]);
+  const [scheduler, setScheduler] = useState<DotSchedulerStatus | null>(null);
   const [resolveInput, setResolveInput] = useState('');
   const [resolveBusy, setResolveBusy] = useState(false);
   const [resolveResult, setResolveResult] = useState<DotResolve | null>(null);
