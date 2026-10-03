@@ -135,7 +135,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
       <header className="border-b border-zinc-800">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <Link href="/"><BrandMark/></Link>
-          <LanguageSwitcher compact/>
+          <LanguageSwitcher />
         </div>
       </header>
       <section className="mx-auto max-w-5xl px-6 py-16">
@@ -172,6 +172,24 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
               );
             })}
           </div>
+        </section>
+        <section className="mt-14 rounded-3xl border border-indigo-500/30 bg-zinc-950 p-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-indigo-400">
+            {lang==='en'?'Free audit':lang==='es'?'Auditoría gratuita':'免费审计'}
+          </p>
+          <h2 className="mt-3 text-2xl font-semibold">
+            {lang==='en'?'See what your customers are saying':lang==='es'?'Descubre lo que dicen tus clientes':'了解客户真正说了什么'}
+          </h2>
+          <p className="mt-3 max-w-3xl text-zinc-300">
+            {lang==='en'
+              ? 'Paste real reviews and receive an initial diagnosis of strengths, risks, recurring themes and suggested actions.'
+              : lang==='es'
+                ? 'Pega reseñas reales y recibe un diagnóstico inicial de fortalezas, riesgos, temas recurrentes y acciones sugeridas.'
+                : '粘贴真实评价，获取关于优势、风险、重复主题和建议行动的初步诊断。'}
+          </p>
+          <Link href={`/${lang}/auditoria-gratuita`} className="mt-6 inline-flex rounded-xl bg-indigo-600 px-5 py-3 font-semibold">
+            {item.ctaAudit}
+          </Link>
         </section>
         <section className="mt-14 rounded-3xl border border-indigo-500/20 bg-zinc-950 p-8">
           <h2 className="text-2xl font-semibold">{lang==='en'?'Ready to test Filtra.AI?':lang==='es'?'¿Listo para probar Filtra.AI?':'准备好测试 Filtra.AI 了吗？'}</h2>
