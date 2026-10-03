@@ -1,6 +1,7 @@
 import { getDb } from '../lib/db.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { runDotMonitor } from './dotMonitor.js';
+import { monitorDueDotFollowUps } from './dotFollowUp.js';
 
 let timer: NodeJS.Timeout | null = null;
 let running = false;
@@ -25,6 +26,7 @@ export async function runDueDotMonitors() {
     let processed = 0;
     let skipped = 0;
     const results = [];
+    const followUpResults = await monitorDueDotFollowUps();
     for (const company of companies || []) {
       const p = await getDotPreferences(company.id);
       const last = company.dot_monitor_last_at ? new Date(company.dot_monitor_last_at).getTime() : 0;
@@ -39,7 +41,7 @@ export async function runDueDotMonitors() {
         results.push({ empresa_id: company.id, ok: false, error: String(error?.message || error) });
       }
     }
-    return { ok: true, processed, skipped, results };
+    return { ok: true, processed, skipped, results, followups: followUpResults };
   } finally {
     running = false;
   }
