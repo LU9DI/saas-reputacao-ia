@@ -97,6 +97,7 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
         throw new DOMException('The operation was aborted.', 'AbortError');
       }
       const res = await fetch(`${base}${pathNorm}`, {
+        credentials: 'include',
         ...fetchInit,
         signal: controller.signal,
       });
