@@ -7,6 +7,7 @@ const localizedSlugs: Record<Exclude<Language,'pt'>,string[]> = {
   es:['ia','feedback-clientes','analisis-resenas-ia','gestion-reputacion-online','resenas-google'],
   zh:['ai','customer-feedback','ai-review-analysis','online-reputation-management','google-reviews'],
 };
+const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google'];
 
 export function LanguageSwitcher({className='',compact=false,variant='select'}:{className?:string;compact?:boolean;variant?:'select'|'flags'}) {
   const {language,setLanguage,tx}=useLanguage();
@@ -16,18 +17,22 @@ export function LanguageSwitcher({className='',compact=false,variant='select'}:{
     const code=String(raw||'').toLowerCase().slice(0,2) as Language;
     if(!['pt','en','es','zh'].includes(code))return;
     setLanguage(code);
-    if(typeof window!=='undefined'){
-      const parts=window.location.pathname.split('/').filter(Boolean);
-      const currentPrefix=parts[0] as Language|undefined;
-      const currentSlug=parts[1];
-      const codes=['en','es','zh'] as const;
-      if(currentPrefix && codes.includes(currentPrefix) && currentSlug){
-        const sourceIndex=codes.map(c=>localizedSlugs[c].indexOf(currentSlug));
-        const index=sourceIndex.find(i=>i>=0);
-        if(index!==undefined){
-          if(code==='pt'){window.location.href=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google'][index];return;}
-          window.location.href='/'+code+'/'+localizedSlugs[code][index];return;
-        }
+    if(typeof window==='undefined')return;
+    const path=window.location.pathname;
+    const sourceIndex=sourcePaths.indexOf(path);
+    if(sourceIndex>=0){
+      if(code==='pt')return;
+      window.location.href='/'+code+'/'+localizedSlugs[code][sourceIndex];
+      return;
+    }
+    const parts=path.split('/').filter(Boolean);
+    const prefix=parts[0] as Language|undefined;
+    const slug=parts[1];
+    if(prefix && ['en','es','zh'].includes(prefix) && slug){
+      const index=localizedSlugs[prefix as Exclude<Language,'pt'>].indexOf(slug);
+      if(index>=0){
+        if(code==='pt'){window.location.href=sourcePaths[index];return;}
+        window.location.href='/'+code+'/'+localizedSlugs[code][index];
       }
     }
   };
