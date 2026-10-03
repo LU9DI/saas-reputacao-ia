@@ -70,7 +70,10 @@ const faqs = [
 
 export default function IAPage() {
   return (
-    <main className="min-h-screen bg-black text-zinc-100">\n      <nav className="mx-auto flex max-w-5xl justify-end px-6 pt-6">\n        <LanguageSwitcher />\n      </nav>
+    <main className="min-h-screen bg-black text-zinc-100">
+      <nav className="mx-auto flex max-w-5xl justify-end px-6 pt-6">
+        <LanguageSwitcher />
+      </nav>
       <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="max-w-3xl">
           <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-indigo-400">
