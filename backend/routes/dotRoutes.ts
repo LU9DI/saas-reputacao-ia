@@ -18,6 +18,7 @@ import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
 import { selectDotModel } from '../services/dotModelRouting.js';
+import { runDotConnector } from '../services/dotConnector.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -57,6 +58,7 @@ type DotAccess = {
   empresaId?: string;
   plan?: string;
   planLabel?: string;
+  userId?: string;
   reason?: string;
 };
 
@@ -245,10 +247,40 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
       empresaId: empresa.id,
       plan,
       planLabel: planLabel(plan),
+      userId: payload.id,
     };
   } catch {
     return { allowed: false, demo: false, reason: 'Token inválido ou expirado.' };
   }
+}
+
+
+async function queryDotCrmReadOnly(access: DotAccess, message: string) {
+  if (!access.empresaId || !access.userId) return null;
+  const text = message.toLowerCase();
+  const explicitCrm =
+    text.includes('hubspot') ||
+    text.includes('crm') ||
+    text.includes('contato no crm') ||
+    text.includes('contatos no crm') ||
+    text.includes('empresa no crm') ||
+    text.includes('negócio no crm') ||
+    text.includes('negocios no crm');
+  if (!explicitCrm) return null;
+
+  let object: 'contacts' | 'companies' | 'deals' = 'contacts';
+  if (text.includes('empresa') || text.includes('empresas')) object = 'companies';
+  if (text.includes('negócio') || text.includes('negocios') || text.includes('deal') || text.includes('deals')) object = 'deals';
+
+  const idMatch = text.match(/(?:id|registro)\\s*[:#]?\\s*(\\d{2,})/);
+  const operation = idMatch ? `${object}.get` : `${object}.list`;
+  const result = await runDotConnector(
+    'crm.hubspot.read',
+    { empresaId: access.empresaId, userId: access.userId },
+    operation,
+    idMatch ? { id: idMatch[1] } : {},
+  );
+  return { object, operation, result };
 }
 
 function deny(res: Response, access: DotAccess) {
@@ -587,6 +619,22 @@ export function mountDotRoutes(app: Express) {
     const sessionId = scopedSessionId(access, requestedSessionId);
     const history = sessionHistory(sessionId);
 
+    const crmRead = !access.demo ? await queryDotCrmReadOnly(access, message) : null;
+    if (crmRead && !crmRead.result.ok) {
+      const errorText = crmRead.result.error || 'O CRM não está conectado para esta empresa.';
+      history.push({ role: 'user', text: message, at: Date.now() });
+      history.push({ role: 'dot', text: `Não consegui consultar o CRM agora: ${errorText}`, at: Date.now() });
+      while (history.length > MAX_HISTORY) history.shift();
+      return res.status(409).json({
+        ok: false,
+        message: `Não consegui consultar o CRM agora: ${errorText}`,
+        code: 'DOT_CRM_READ_UNAVAILABLE',
+        provider: 'crm.hubspot.read',
+        demo: false,
+        session_id: requestedSessionId,
+      });
+    }
+
     const contextResult = access.demo
       ? {
           context: DEMO_CONTEXT,
@@ -712,6 +760,8 @@ export function mountDotRoutes(app: Express) {
 
     try {
       const responseSystem = `${SYSTEM}
+DADOS DE INTEGRAÇÕES: quando houver um bloco CRM abaixo, esses dados vieram de uma consulta real somente leitura. Use-os como evidência e não invente registros. Você não tem permissão para alterar o CRM por esta conversa.
+${crmRead ? `CRM SOMENTE LEITURA (${crmRead.object}/${crmRead.operation}): ${JSON.stringify(crmRead.result.output).slice(0, 12000)}` : 'CRM: nenhuma consulta foi executada nesta mensagem.'}
 ORÇAMENTO DESTA RESPOSTA: até ${tokenBudget.response_limit} tokens de saída.
 CONTEXTO: ${contextResult.decision.mode}. ${contextResult.decision.reason}
 REGRA DE FRESCOR: use fatos persistidos do contexto quando suficientes; quando a pergunta pedir estado atual, causa, impacto, comparação, recomendação ou decisão, raciocine novamente com os dados verificados nesta solicitação.
