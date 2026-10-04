@@ -4,6 +4,8 @@ import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { planLabel } from '../lib/plans.js';
 import { createDotAgentGoal, getDotAgentWorkspace, listDotAgentGoals, updateDotAgentGoal } from '../services/dotAgent.js';
+import { createMissionForGoal } from '../services/dotAgentMissions.js';
+import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 
 type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string };
 
@@ -59,7 +61,9 @@ export function mountDotAgentRoutes(app: Express) {
     if (!access.allowed || !access.empresaId) return deny(res, access);
     try {
       const goal = await createDotAgentGoal(access.empresaId, req.body || {});
-      res.status(201).json({ ok: true, goal });
+      const mission = await createMissionForGoal(access.empresaId, goal.id, goal.title);
+      void wakeDotAgentWorker();
+      res.status(201).json({ ok: true, goal, mission });
     } catch (error) {
       res.status(400).json({ ok: false, error: error instanceof Error ? error.message : 'Não foi possível criar o objetivo.' });
     }
