@@ -12,6 +12,9 @@ type Goal = {
   last_activity_at?: string | null;
 };
 
+type Permission = { resource: string; action: string; granted: number; };
+type Integration = { provider: string; label: string; status: string; scopes: string[] };
+
 type Workspace = {
   goals: Goal[];
   summary: { active: number; paused: number; completed: number; attention: number };
@@ -40,6 +43,11 @@ export function DotAgentSurface() {
   const [missionBusy, setMissionBusy] = useState<number | null>(null);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [steps, setSteps] = useState<Record<number, MissionStep[]>>({});
+  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [integrations, setIntegrations] = useState<Integration[]>([]);
+  const [accessOpen, setAccessOpen] = useState(false);
+  const permissionResources = ['filtra','customers','sales','marketing','operations','crm','email','calendar','whatsapp','erp'];
+  const permissionActions = ['read','update','execute'];
 
   async function load() {
     try {
@@ -50,6 +58,22 @@ export function DotAgentSurface() {
     } catch {
       /* agent surface is optional and must never block the DOT */
     }
+  }
+
+  async function loadAccess() {
+    try {
+      const [pRes, iRes] = await Promise.all([
+        apiFetch('/api/dot/agent/permissions', { credentials: 'include' }),
+        apiFetch('/api/dot/agent/integrations', { credentials: 'include' }),
+      ]);
+      if (pRes.ok) { const data = await pRes.json(); if (data?.ok) setPermissions(data.permissions || []); }
+      if (iRes.ok) { const data = await iRes.json(); if (data?.ok) setIntegrations(data.integrations || []); }
+    } catch { /* access panel is optional */ }
+  }
+
+  async function togglePermission(resource: string, action: string, granted: boolean) {
+    const res = await apiFetch('/api/dot/agent/permissions', { method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'include', body:JSON.stringify({resource, action, granted}) });
+    if (res.ok) await loadAccess();
   }
 
   async function loadMissions() {
@@ -73,6 +97,7 @@ export function DotAgentSurface() {
   useEffect(() => {
     void load();
     void loadMissions();
+    void loadAccess();
   }, []);
 
   async function startMission(goal: Goal) {
@@ -210,6 +235,33 @@ export function DotAgentSurface() {
           </div>
         );
       })}
+
+
+      <div className="mt-3 rounded-xl border border-white/[0.07] bg-black/15 px-3 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">Acesso do DOT</div>
+            <div className="mt-1 text-xs text-zinc-300">Ler é uma permissão. Modificar/executar é outra.</div>
+          </div>
+          <button type="button" onClick={() => setAccessOpen((v) => !v)} className="rounded-lg border border-white/10 px-3 py-1.5 text-[10px] text-zinc-300">{accessOpen ? 'Fechar' : 'Gerenciar'}</button>
+        </div>
+        {!accessOpen && <div className="mt-2 text-[10px] text-zinc-600">{integrations.filter((i) => i.status === 'connected').length} integrações conectadas · ações externas continuam protegidas por aprovação.</div>}
+        {accessOpen && <div className="mt-3 space-y-3">
+          <div className="grid gap-2 md:grid-cols-2">
+            {permissionResources.map((resource) => <div key={resource} className="rounded-lg border border-white/[0.06] p-2">
+              <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-zinc-400">{resource}</div>
+              <div className="flex flex-wrap gap-2">{permissionActions.map((action) => {
+                const granted = Boolean(permissions.find((p) => p.resource === resource && p.action === action && Number(p.granted) === 1));
+                return <button key={action} type="button" onClick={() => void togglePermission(resource, action, !granted)} className={`rounded-md border px-2 py-1 text-[9px] ${granted ? 'border-emerald-400/30 text-emerald-300' : 'border-white/10 text-zinc-600'}`}>{action} {granted ? '✓' : ''}</button>;
+              })}</div>
+            </div>)}
+          </div>
+          <div className="border-t border-white/[0.06] pt-3">
+            <div className="mb-2 text-[10px] uppercase tracking-wide text-zinc-600">Integrações</div>
+            <div className="flex flex-wrap gap-2">{integrations.map((item) => <span key={item.provider} className={`rounded-full border px-2 py-1 text-[9px] ${item.status === 'connected' ? 'border-emerald-400/20 text-emerald-300' : 'border-white/[0.07] text-zinc-600'}`}>{item.label} · {item.status === 'connected' ? 'conectado' : 'não conectado'}</span>)}</div>
+          </div>
+        </div>}
+      </div>
 
       {open && (
         <div className="mt-3 border-t border-white/[0.06] pt-3">
