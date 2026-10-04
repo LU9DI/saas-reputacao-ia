@@ -81,7 +81,6 @@ export async function createMissionForGoal(empresaId: string, goalId: number, ti
   const db = getDb();
   const goal = await db.get('SELECT id FROM dot_agent_goals WHERE id=? AND empresa_id=?', [goalId, empresaId]);
   if (!goal) return null;
-  const now = new Date().toISOString();
   const existing = await db.get(
     "SELECT * FROM dot_agent_missions WHERE goal_id=? AND empresa_id=? AND status IN ('planned','working','waiting_approval') ORDER BY id DESC LIMIT 1",
     [goalId, empresaId],
