@@ -39,7 +39,7 @@ export async function ensureLeadSchema(db: Database = getDb()): Promise<void> {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  await db.exec('CREATE INDEX IF NOT EXISTS idx_leads_status_created ON leads(status, created_at)');
+  // Compatibilidade com a tabela leads legada já existente em produção.\n  await db.exec('ALTER TABLE leads ADD COLUMN IF NOT EXISTS google_review_url TEXT');\n  await db.exec('ALTER TABLE leads ADD COLUMN IF NOT EXISTS whatsapp TEXT');\n  await db.exec("ALTER TABLE leads ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'website'");\n  await db.exec('ALTER TABLE leads ADD COLUMN IF NOT EXISTS consent INTEGER NOT NULL DEFAULT 0');\n  await db.exec('ALTER TABLE leads ADD COLUMN IF NOT EXISTS consent_at TIMESTAMPTZ');\n  await db.exec("ALTER TABLE leads ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'captured'");\n  await db.exec('ALTER TABLE leads ADD COLUMN IF NOT EXISTS trial_empresa_id TEXT');\n  await db.exec('ALTER TABLE leads ADD COLUMN IF NOT EXISTS trial_slug TEXT');\n  await db.exec('ALTER TABLE leads ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP');\n  await db.exec('CREATE INDEX IF NOT EXISTS idx_leads_status_created ON leads(status, created_at)');
   await db.exec('CREATE INDEX IF NOT EXISTS idx_leads_trial_empresa ON leads(trial_empresa_id)');
 }
 
