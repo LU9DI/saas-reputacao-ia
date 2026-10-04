@@ -352,7 +352,7 @@ export function mountDotRoutes(app: Express) {
     const access = await resolveDotAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
     const actionId = Number(req.params.id);
-    const action = await approveDotAction(access.empresaId, actionId);
+    const action = await approveDotAction(access.empresaId, actionId, access.userId || null);
     if (!action) return res.status(409).json({ error: 'Ação não encontrada ou já processada.' });
 
     // A aprovação desbloqueia a missão do DOT imediatamente.
