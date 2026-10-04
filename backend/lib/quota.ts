@@ -13,8 +13,39 @@ function cleanupAiReservations(now = Date.now()) { for (const [empresaId, r] of 
 export function planTemIA(plan: string | null | undefined): boolean { const p = String(plan || '').toLowerCase(); if (p === 'inicial' || p === 'pro') return false; return ['ultra','corporativo','rei','trial','teste'].includes(p); }
 export function getFeedbackLimit(plan: string): number { return PLAN_FEEDBACK_LIMITS[String(plan || 'trial').toLowerCase()] ?? PLAN_FEEDBACK_LIMITS.trial; }
 export function getTokenLimit(plan: string): number { return PLAN_TOKEN_LIMITS[String(plan || 'trial').toLowerCase()] ?? PLAN_TOKEN_LIMITS.trial; }
+
+export function getFeatureTokenLimit(plan: string, feature: string): number {
+  const p = String(plan || 'trial').toLowerCase();
+  const f = String(feature || 'feedback').toLowerCase();
+  if (f !== 'dot') return getTokenLimit(p);
+  const global = getTokenLimit(p);
+  if (global <= 0) return 0;
+  const configured = Number(process.env[`AI_DOT_${p.toUpperCase()}_TOKENS`] || 0);
+  // Reserva inicial do DOT: 20% da cota global, sempre configurável por ambiente.
+  return Math.max(0, configured || Math.floor(global * 0.2));
+}
 function monthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); return `${m}-01T00:00:00.000Z`; }
 function nextMonthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); const [y, mo] = m.split('-').map(Number); return new Date(Date.UTC(y, mo, 1)).toISOString(); }
+
+export async function tokensUsadosFeatureMes(empresaId: string, feature: string): Promise<number> {
+  const db = getDb(); const mes = getCurrentMonth(); const f = String(feature || 'feedback').toLowerCase();
+  try {
+    if (dbEngine() === 'postgres') {
+      const row = await db.get(
+        `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage
+         WHERE empresa_id = ? AND feature = ? AND criado_em >= ? AND criado_em < ?`,
+        [empresaId, f, monthStartIso(mes), nextMonthStartIso(mes)]
+      );
+      return Number(row?.t || 0);
+    }
+    const row = await db.get(
+      `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage
+       WHERE empresa_id = ? AND feature = ? AND substr(criado_em, 1, 7) = ?`,
+      [empresaId, f, mes]
+    );
+    return Number(row?.t || 0);
+  } catch { return 0; }
+}
 
 export async function tokensUsadosMes(empresaId: string): Promise<number> {
   const db = getDb(); const mes = getCurrentMonth();
