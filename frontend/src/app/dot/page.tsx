@@ -538,27 +538,19 @@ type DotResolve = {
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
     <div
-      className={`relative grid h-14 w-14 shrink-0 place-items-center rounded-[1.35rem] border border-indigo-300/20 bg-gradient-to-br from-indigo-500/[0.14] via-violet-500/[0.08] to-transparent shadow-[0_10px_32px_rgba(49,46,129,.22)] ${active ? 'ring-2 ring-indigo-300/20' : ''}`}
+      className={`relative grid h-12 w-12 shrink-0 place-items-center rounded-full border border-sky-300/20 bg-sky-500/[0.08] shadow-[0_8px_24px_rgba(14,165,233,.14)] ${active ? 'ring-2 ring-sky-300/20' : ''}`}
       aria-label="Filtra Dot"
       role="img"
     >
-      <div className="absolute inset-1 rounded-[1.1rem] border border-white/10" />
-      <div className="relative mt-1 h-9 w-8">
-        <div className="absolute left-1/2 top-0 h-7 w-8 -translate-x-1/2 rounded-[48%] border border-white/15 bg-gradient-to-br from-indigo-200 via-indigo-400 to-violet-600 shadow-[inset_0_1px_0_rgba(255,255,255,.45),0_6px_14px_rgba(79,70,229,.28)]">
-          <div className="absolute -top-1 left-1/2 h-3.5 w-7 -translate-x-1/2 rounded-t-full bg-violet-950/80" />
-          <div className="absolute left-[7px] top-[12px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_5px_rgba(255,255,255,.7)]" />
-          <div className="absolute right-[7px] top-[12px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_5px_rgba(255,255,255,.7)]" />
-          <div className="absolute left-1/2 top-[18px] h-1.5 w-3 -translate-x-1/2 rounded-b-full border-b border-white/75" />
-        </div>
-        <div className="absolute left-1/2 top-[25px] h-4 w-9 -translate-x-1/2 rounded-t-[1rem] border border-white/10 bg-gradient-to-r from-violet-700 to-indigo-500">
-          <div className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r border-white/20 bg-indigo-300/30" />
-        </div>
+      <div className="relative h-9 w-9 rounded-full border border-sky-200/35 bg-gradient-to-br from-sky-300 via-blue-500 to-blue-700 shadow-[inset_0_1px_0_rgba(255,255,255,.45),0_5px_14px_rgba(37,99,235,.28)]">
+        <div className="absolute left-[9px] top-[13px] h-1.5 w-1.5 rounded-full bg-white" />
+        <div className="absolute right-[9px] top-[13px] h-1.5 w-1.5 rounded-full bg-white" />
+        <div className="absolute left-1/2 top-[20px] h-1.5 w-3 -translate-x-1/2 rounded-b-full border-b border-white/80" />
       </div>
-      {active && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,.8)]" />}
+      {active && <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,.8)]" />}
     </div>
   );
 }
-
 function inlineMarkdown(value: string): ReactNode[] {
   return value.split(/(\\*\\*[^*]+\\*\\*)/g).map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
