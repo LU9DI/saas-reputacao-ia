@@ -1,4 +1,4 @@
-import { getDb } from './db.js';
+import { getDb } from '../lib/db.js';
 import { getDotCredential, putDotCredential } from './dotCredentialVault.js';
 import { registerDotConnector, type DotConnectorContext } from './dotConnector.js';
 
