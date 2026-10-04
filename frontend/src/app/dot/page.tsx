@@ -1468,7 +1468,7 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="capabilities"
               title={ui.capabilitiesTitle}
-              meta="5"
+              meta="6"
               icon={<Bot size={15} />}
               open={openPanel === 'capabilities'}
               onToggle={() => togglePanel('capabilities')}
