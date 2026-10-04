@@ -25,13 +25,13 @@ describe('validateBody + schemaTrialAtivar', () => {
     const { res, nextCalled } = run(schemaTrialAtivar, {});
     assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(res.body.fields);
   });
-  it('rejeita CNPJ inválido', () => {
-    const { res, nextCalled } = run(schemaTrialAtivar, { cnpj: '11111111111111', nome_empresa: 'Loja Teste', email: 'a@b.com', senha: 'Senha@12' });
-    assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(String(res.body.error).toLowerCase().includes('identificador'));
+  it('rejeita e-mail inválido', () => {
+    const { res, nextCalled } = run(schemaTrialAtivar, { nome_empresa: 'Loja Teste', email: 'invalido', senha: 'Senha@12' });
+    assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(res.body.fields?.email);
   });
   it('aceita payload válido', () => {
-    const { res, nextCalled, req } = run(schemaTrialAtivar, { cnpj: '11.222.333/0001-81', nome_empresa: 'Loja Teste', email: 'Dono@Email.COM', senha: 'Senha@12' });
-    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.cnpj, '11222333000181'); assert.equal(req.body.email, 'dono@email.com');
+    const { res, nextCalled, req } = run(schemaTrialAtivar, { nome_empresa: 'Loja Teste', email: 'Dono@Email.COM', senha: 'Senha@12' });
+    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.email, 'dono@email.com');
   });
 });
 
