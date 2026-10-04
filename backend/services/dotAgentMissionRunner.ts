@@ -60,8 +60,8 @@ export async function runCurrentDotMissionStep(empresaId: string, missionId: num
     );
     if (action) {
       await db.run(
-        "UPDATE dot_agent_missions SET status='waiting_approval',updated_at=? WHERE id=? AND empresa_id=?",
-        [new Date().toISOString(), missionId, empresaId],
+        "UPDATE dot_agent_missions SET status='waiting_approval',approval_action_id=?,updated_at=? WHERE id=? AND empresa_id=?",
+        [Number(action.id), new Date().toISOString(), missionId, empresaId],
       );
       await db.run(
         "UPDATE dot_agent_mission_steps SET status='waiting_approval',output=? WHERE id=? AND empresa_id=?",
