@@ -106,7 +106,21 @@ export async function monitorDueDotFollowUps(empresaId?: string) {
     if (deltaAverage >= 0.15 || deltaRecent >= 0.2 || deltaCritical < 0) outcome = 'melhorou';
     else if (deltaAverage <= -0.15 || deltaRecent <= -0.2 || deltaCritical > 0) outcome = 'piorou';
 
-    const result = {
+    const result: {
+      outcome: string;
+      delta_average: number;
+      delta_recent_average: number;
+      delta_critical: number;
+      baseline: any;
+      current: typeof current;
+      monitored_at: string;
+      reassessment?: {
+        event_id: number;
+        decision_id: number | null;
+        prepared_action_id: number | null;
+        policy: ReturnType<typeof evaluateDotPolicy>;
+      };
+    } = {
       outcome,
       delta_average: deltaAverage,
       delta_recent_average: deltaRecent,
@@ -130,7 +144,8 @@ export async function monitorDueDotFollowUps(empresaId?: string) {
       const preferences = await getDotPreferences(String(row.empresa_id));
       const critical = deltaCritical > 0 || deltaRecent <= -0.2;
       const severity = critical ? 'critical' : 'warning';
-      const policy = evaluateDotPolicy(preferences, severity);
+      const risk = critical ? 'critical' : 'high';
+      const policy = evaluateDotPolicy(preferences, risk);
       const details = [
         `O acompanhamento da ação #${row.action_id} terminou com piora.`,
         `Variação da média: ${deltaAverage >= 0 ? '+' : ''}${deltaAverage.toFixed(2)}.`,
