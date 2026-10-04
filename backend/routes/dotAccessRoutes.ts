@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
-import { listDotPermissions, setDotPermission, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
+import { listDotPermissions, setDotPermission, canManageDotPermissions, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
 
 const resources: DotAccessResource[] = ['filtra','customers','sales','marketing','operations','finance','hr','crm','documents','calendar','email','whatsapp','erp','other'];
 const actions: DotAccessAction[] = ['read','analyze','create','update','execute','external_send'];
@@ -10,7 +10,7 @@ const actions: DotAccessAction[] = ['read','analyze','create','update','execute'
 async function access(req: Request) {
   const token = extrairToken(req);
   if (!token) {
-    if (process.env.NODE_ENV !== 'production') return { ok: true, empresaId: 'demo', userId: null };
+    if (process.env.NODE_ENV !== 'production') return { ok: true, empresaId: 'demo', userId: null, role: 'owner' };
     return { ok: false, reason: 'Autenticação necessária.' };
   }
   try {
@@ -18,7 +18,7 @@ async function access(req: Request) {
     if (isAdminUser({ empresa_id: payload.empresa_id, role: payload.role })) return { ok: false, reason: 'Conta admin não possui permissões do agente de empresa.' };
     const empresa = await findEmpresa(payload.empresa_id);
     if (!empresa || !empresaTemAcesso(empresa)) return { ok: false, reason: 'Assinatura/trial inativo.' };
-    return { ok: true, empresaId: empresa.id, userId: String(payload.user_id || payload.sub || '') || null };
+    return { ok: true, empresaId: empresa.id, userId: String(payload.user_id || payload.sub || payload.id || '') || null, role: payload.role || null };
   } catch {
     return { ok: false, reason: 'Token inválido ou expirado.' };
   }
@@ -34,6 +34,9 @@ export function mountDotAccessRoutes(app: Express) {
   app.put('/api/dot/agent/permissions', async (req: Request, res: Response) => {
     const a = await access(req);
     if (!a.ok || !a.empresaId) return res.status(403).json({ ok: false, error: a.reason });
+    if (!canManageDotPermissions({ id: a.userId, role: a.role })) {
+      return res.status(403).json({ ok: false, error: 'Somente um responsável autorizado pela empresa pode alterar as permissões do DOT.', code: 'DOT_PERMISSION_ADMIN_REQUIRED' });
+    }
     const { resource, action, granted } = req.body || {};
     if (!resources.includes(resource) || !actions.includes(action) || typeof granted !== 'boolean') {
       return res.status(400).json({ ok: false, error: 'Permissão inválida.', resources, actions });
