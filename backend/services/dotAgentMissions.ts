@@ -12,6 +12,17 @@ export type DotAgentMission = {
   updated_at: string;
 };
 
+export type DotAgentMissionStep = {
+  id: number;
+  mission_id: number;
+  type: 'observe' | 'investigate' | 'recommend' | 'prepare' | 'approval' | 'result';
+  status: 'pending' | 'working' | 'completed' | 'waiting_approval';
+  title: string;
+  output: string | null;
+  created_at: string;
+  completed_at: string | null;
+};
+
 async function ensureMissionTables() {
   const db = getDb();
   await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_missions (
@@ -27,6 +38,19 @@ async function ensureMissionTables() {
   )`);
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_dot_agent_missions_empresa
     ON dot_agent_missions (empresa_id, status, updated_at)`);
+  await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_mission_steps (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    mission_id INTEGER NOT NULL,
+    empresa_id TEXT NOT NULL,
+    type TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    title TEXT NOT NULL,
+    output TEXT,
+    created_at TEXT NOT NULL,
+    completed_at TEXT
+  )`);
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_dot_agent_mission_steps_mission
+    ON dot_agent_mission_steps (empresa_id, mission_id, id)`);
 }
 
 function row(row: any): DotAgentMission {
@@ -54,23 +78,86 @@ export async function createMissionForGoal(empresaId: string, goalId: number, ti
   const goal = await db.get('SELECT id FROM dot_agent_goals WHERE id=? AND empresa_id=?', [goalId, empresaId]);
   if (!goal) return null;
   const now = new Date().toISOString();
+  const existing = await db.get(
+    "SELECT * FROM dot_agent_missions WHERE goal_id=? AND empresa_id=? AND status IN ('planned','working','waiting_approval') ORDER BY id DESC LIMIT 1",
+    [goalId, empresaId],
+  );
+  if (existing) return row(existing);
+
+  const now = new Date().toISOString();
   const result = await db.run(
     'INSERT INTO dot_agent_missions (goal_id,empresa_id,title,status,current_step,total_steps,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
-    [goalId, empresaId, title.slice(0, 180), 'planned', 0, 3, now, now],
+    [goalId, empresaId, title.slice(0, 180), 'planned', 0, 6, now, now],
   );
   const id = Number(result?.lastID ?? result?.lastInsertRowid ?? result?.id);
+  const stepTitles = [
+    ['observe', 'Observar o contexto disponível'],
+    ['investigate', 'Investigar o que está impedindo o objetivo'],
+    ['recommend', 'Recomendar o próximo caminho'],
+    ['prepare', 'Preparar o trabalho necessário'],
+    ['approval', 'Aguardar aprovação quando necessário'],
+    ['result', 'Acompanhar o resultado'],
+  ] as const;
+  for (const [type, stepTitle] of stepTitles) {
+    await db.run(
+      'INSERT INTO dot_agent_mission_steps (mission_id,empresa_id,type,status,title,created_at) VALUES (?,?,?,?,?,?)',
+      [id, empresaId, type, 'pending', stepTitle, now],
+    );
+  }
   const created = await db.get('SELECT * FROM dot_agent_missions WHERE id=? AND empresa_id=?', [id, empresaId]);
   return created ? row(created) : null;
 }
 
-export async function advanceMission(empresaId: string, id: number) {
+export async function listDotAgentMissionSteps(empresaId: string, missionId: number) {
+  await ensureMissionTables();
+  const db = getDb();
+  const rows = await db.all(
+    'SELECT id,mission_id,type,status,title,output,created_at,completed_at FROM dot_agent_mission_steps WHERE mission_id=? AND empresa_id=? ORDER BY id ASC',
+    [missionId, empresaId],
+  );
+  return rows || [];
+}
+
+export async function advanceMission(empresaId: string, id: number, output?: string) {
   await ensureMissionTables();
   const db = getDb();
   const mission = await db.get('SELECT * FROM dot_agent_missions WHERE id=? AND empresa_id=?', [id, empresaId]);
   if (!mission) return null;
-  const next = Math.min(Number(mission.current_step || 0) + 1, Number(mission.total_steps || 3));
-  const status = next >= Number(mission.total_steps || 3) ? 'completed' : 'working';
+
+  const current = Number(mission.current_step || 0);
+  const total = Number(mission.total_steps || 6);
   const now = new Date().toISOString();
-  await db.run('UPDATE dot_agent_missions SET current_step=?,status=?,updated_at=? WHERE id=? AND empresa_id=?', [next, status, now, id, empresaId]);
+
+  if (current > 0) {
+    await db.run(
+      "UPDATE dot_agent_mission_steps SET status='completed', output=COALESCE(?, output), completed_at=? WHERE mission_id=? AND empresa_id=? AND id=(SELECT id FROM dot_agent_mission_steps WHERE mission_id=? AND empresa_id=? ORDER BY id ASC LIMIT 1 OFFSET ?)",
+      [output?.trim().slice(0, 4000) || null, now, id, empresaId, id, empresaId, current - 1],
+    );
+  }
+
+  const next = Math.min(current + 1, total);
+  const step = await db.get(
+    'SELECT id,type,title FROM dot_agent_mission_steps WHERE mission_id=? AND empresa_id=? ORDER BY id ASC LIMIT 1 OFFSET ?',
+    [id, empresaId, next - 1],
+  );
+
+  let status: DotAgentMission['status'] = 'working';
+  let stepStatus = 'working';
+  if (next >= total) {
+    status = 'completed';
+    stepStatus = 'completed';
+  } else if (step?.type === 'approval') {
+    status = 'waiting_approval';
+    stepStatus = 'waiting_approval';
+  }
+
+  if (step?.id) {
+    await db.run('UPDATE dot_agent_mission_steps SET status=? WHERE id=? AND empresa_id=?', [stepStatus, step.id, empresaId]);
+  }
+
+  await db.run(
+    'UPDATE dot_agent_missions SET current_step=?,status=?,updated_at=? WHERE id=? AND empresa_id=?',
+    [next, status, now, id, empresaId],
+  );
   return row(await db.get('SELECT * FROM dot_agent_missions WHERE id=? AND empresa_id=?', [id, empresaId]));
 }
