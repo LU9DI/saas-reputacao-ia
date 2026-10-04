@@ -643,8 +643,10 @@ function DotAccordion({
   return (
     <section
       id={`dot-${id}`}
-      className={`scroll-mt-5 overflow-hidden rounded-3xl border transition-colors ${
-        open ? 'border-white/10 bg-zinc-950' : 'border-white/5 bg-white/[0.02] hover:border-white/10'
+      className={`scroll-mt-5 overflow-hidden rounded-[22px] border transition-all ${
+        open
+          ? 'border-indigo-400/20 bg-gradient-to-b from-white/[0.045] to-white/[0.015] shadow-[0_18px_45px_rgba(0,0,0,0.18)]'
+          : 'border-white/[0.07] bg-white/[0.018] hover:border-white/10 hover:bg-white/[0.025]'
       }`}
     >
       <button
@@ -652,19 +654,19 @@ function DotAccordion({
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={`dot-${id}-content`}
-        className="flex w-full items-center gap-3 px-4 py-4 text-left transition hover:bg-white/[0.02] sm:px-5"
+        className="flex w-full items-center gap-3 px-4 py-4 text-left transition hover:bg-white/[0.025] sm:px-5"
       >
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/[0.04] text-indigo-200">
+        <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-[13px] border ${open ? 'border-indigo-400/15 bg-indigo-500/10 text-indigo-200' : 'border-white/5 bg-white/[0.04] text-zinc-400'}`}>
           {icon}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-xs font-semibold uppercase tracking-[.16em] text-zinc-300">{title}</span>
-          {meta && <span className="mt-1 block text-[10px] text-zinc-600">{meta}</span>}
+          <span className="block text-[13px] font-semibold tracking-[-0.01em] text-zinc-200">{title}</span>
+          {meta && <span className="mt-1 block text-[10px] text-zinc-500">{meta}</span>}
         </span>
         <ChevronDown size={16} className={`shrink-0 text-zinc-600 transition-transform ${open ? 'rotate-180 text-indigo-300' : ''}`} />
       </button>
       {open && (
-        <div id={`dot-${id}-content`} className="border-t border-white/5 px-4 pb-5 pt-4 sm:px-5">
+        <div id={`dot-${id}-content`} className="border-t border-white/[0.06] px-4 pb-5 pt-4 sm:px-5">
           {children}
         </div>
       )}
@@ -1065,7 +1067,7 @@ export default function FiltraDotPage() {
 
   return (
     <main className="min-h-screen bg-black text-zinc-100">
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8">
         <header className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <DotAvatar />
@@ -1133,10 +1135,10 @@ export default function FiltraDotPage() {
           </div>
         </header>
 
-        <div className="grid flex-1 gap-6 py-6 lg:grid-cols-[1fr_300px]">
-          <section className="flex min-h-[680px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 shadow-2xl shadow-indigo-950/20">
+        <div className="grid flex-1 gap-5 py-6 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px]">
+          <section className="flex min-h-[760px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 shadow-2xl shadow-indigo-950/20">
             <div className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-7">
-              <div className="mx-auto max-w-3xl">
+              <div className="mx-auto max-w-4xl">
                 <div className="mb-7 flex items-start gap-3 sm:gap-4">
                   <DotAvatar active={busy} />
                   <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-indigo-300/15 bg-gradient-to-br from-indigo-500/[0.08] to-white/[0.02] p-4 text-sm leading-7 text-zinc-200 shadow-[0_12px_40px_rgba(30,27,75,.16)]">
@@ -1199,7 +1201,7 @@ export default function FiltraDotPage() {
             </div>
 
             <div className="border-t border-white/10 bg-black/30 p-4 sm:p-5">
-              <div className="mx-auto flex max-w-3xl items-end gap-3 rounded-2xl border border-white/10 bg-zinc-950 p-2 focus-within:border-indigo-400/40">
+              <div className="mx-auto flex max-w-4xl items-end gap-3 rounded-2xl border border-white/10 bg-zinc-950 p-2 focus-within:border-indigo-400/40">
                 <textarea
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
@@ -1218,24 +1220,24 @@ export default function FiltraDotPage() {
                   <ArrowUp size={18} />
                 </button>
               </div>
-              <div className="mx-auto mt-2 flex max-w-3xl items-center justify-between gap-3 text-[10px] text-zinc-600">
+              <div className="mx-auto mt-2 flex max-w-4xl items-center justify-between gap-3 text-[10px] text-zinc-600">
                 <span>{dotStatus?.demo ? ui.localDemo : ui.protectedActions}</span>
                 <span className="hidden text-right sm:block">{responseMode === 'didatico' ? ui.modeDidacticHint : ui.modeObjectiveHint}</span>
               </div>
             </div>
           </section>
 
-          <aside className="space-y-4 lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
-            <div className="rounded-3xl border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.08] to-white/[0.02] p-5">
+          <aside className="space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
+            <div className="rounded-[26px] border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.11] via-white/[0.025] to-black/20 p-5 shadow-[0_22px_60px_rgba(49,46,129,0.12)]">
               <div className="flex items-start gap-3">
-                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-indigo-500/15 text-indigo-200"><ChevronRight size={16} /></div>
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[13px] border border-indigo-400/15 bg-indigo-500/15 text-indigo-200"><Sparkles size={17} /></div>
                 <div>
                   <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-indigo-300">{ui.quickGuideTitle}</div>
-                  <div className="mt-1 text-sm font-semibold text-white">{ui.quickGuideBody}</div>
-                  <p className="mt-1 text-[11px] leading-5 text-zinc-500">{ui.quickGuideSummary}</p>
+                  <div className="mt-1 text-base font-semibold tracking-tight text-white">{ui.quickGuideBody}</div>
+                  <p className="mt-1 text-xs leading-5 text-zinc-500">{ui.quickGuideSummary}</p>
                 </div>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-5 grid grid-cols-2 gap-2.5">
                 {[
                   ['overview', ui.overviewTitle],
                   ['alerts', ui.alertsTitle],
@@ -1248,15 +1250,20 @@ export default function FiltraDotPage() {
                     key={id}
                     type="button"
                     onClick={() => focusPanel(id as DotPanelId)}
-                    className="rounded-xl border border-white/8 bg-black/20 px-3 py-2 text-left text-[10px] font-medium text-zinc-400 transition hover:border-indigo-400/30 hover:bg-indigo-500/[0.05] hover:text-zinc-200"
+                    className="rounded-2xl border border-white/[0.07] bg-black/20 px-3 py-3 text-left text-[11px] font-medium text-zinc-300 transition hover:-translate-y-0.5 hover:border-indigo-400/25 hover:bg-indigo-500/[0.06] hover:text-white"
                   >
                     {label}
                   </button>
                 ))}
               </div>
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.signalsLabel}</div><div className="mt-1 text-lg font-semibold text-white">{events.length || '0'}</div></div>
+                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.decisionsLabel}</div><div className="mt-1 text-lg font-semibold text-white">{decisions.length || '0'}</div></div>
+                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.followUpsLabel}</div><div className="mt-1 text-lg font-semibold text-white">{followUps.length || '0'}</div></div>
+              </div>
             </div>
 
-            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupOverview}</div>
+            <div className="flex items-center gap-2 px-1 pt-2 text-[9px] font-semibold uppercase tracking-[.2em] text-zinc-600"><span className="h-px w-5 bg-white/10" />{ui.groupOverview}</div>
 
             <DotAccordion
               id="overview"
@@ -1278,11 +1285,11 @@ export default function FiltraDotPage() {
                 <div className="grid gap-2.5 sm:grid-cols-2">
                   <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3.5">
                     <div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> {ui.trendLabel}</div>
-                    <div className="mt-1 text-lg font-semibold text-white">{briefing?.trend || ui.waiting}</div>
+                    <div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || ui.waiting}</div>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
                     <div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> {ui.signalsLabel}</div>
-                    <div className="mt-1 text-xl font-semibold text-white">{events.length || '—'}</div>
+                    <div className="mt-1 text-2xl font-semibold text-white">{events.length || '—'}</div>
                   </div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
@@ -1313,7 +1320,7 @@ export default function FiltraDotPage() {
               </div>
             </DotAccordion>
 
-            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupDecide}</div>
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600"><span className="h-px w-5 bg-white/10" />{ui.groupDecide}</div>
 
             <DotAccordion
               id="decisions"
@@ -1389,7 +1396,7 @@ export default function FiltraDotPage() {
               </div>
             </DotAccordion>
 
-            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTrack}</div>
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600"><span className="h-px w-5 bg-white/10" />{ui.groupTrack}</div>
 
             <DotAccordion
               id="followups"
@@ -1411,7 +1418,7 @@ export default function FiltraDotPage() {
               </div>
             </DotAccordion>
 
-            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.groupTools}</div>
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600"><span className="h-px w-5 bg-white/10" />{ui.groupTools}</div>
 
             <DotAccordion
               id="resolve"
@@ -1500,7 +1507,7 @@ export default function FiltraDotPage() {
               </div>
             </DotAccordion>
 
-            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600">{ui.detailsGroup}</div>
+            <div className="px-1 pt-1 text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-600"><span className="h-px w-5 bg-white/10" />{ui.detailsGroup}</div>
 
             <DotAccordion
               id="control"
