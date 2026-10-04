@@ -17,10 +17,12 @@ async function ensureSchema() {
     approved_at TEXT,
     executed_at TEXT,
     error TEXT,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    approved_by TEXT
   )`);
   await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_decision_option ON dot_action_queue(empresa_id, decision_id, option_id)');
   await db.exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_one_active_decision ON dot_action_queue(empresa_id, decision_id) WHERE status IN ('prepared','approved','executing')");
+  try { await db.exec('ALTER TABLE dot_action_queue ADD COLUMN approved_by TEXT'); } catch { /* coluna já existe */ }
 }
 
 export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string) {
@@ -67,7 +69,7 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
   return prepared;
 }
 
-export async function approveDotAction(empresaId: string, actionId: number) {
+export async function approveDotAction(empresaId: string, actionId: number, approvedBy?: string | null) {
   await ensureSchema();
   const now = new Date().toISOString();
 
@@ -91,8 +93,8 @@ export async function approveDotAction(empresaId: string, actionId: number) {
     if (decisionApproved.changes !== 1) return null;
 
     const updated = await tx.run(
-      "UPDATE dot_action_queue SET status = ?, approved_at = ? WHERE id = ? AND empresa_id = ? AND status = 'prepared'",
-      ['approved', now, actionId, empresaId]
+      "UPDATE dot_action_queue SET status = ?, approved_at = ?, approved_by = ? WHERE id = ? AND empresa_id = ? AND status = 'prepared'",
+      ['approved', now, approvedBy || null, actionId, empresaId]
     );
     if (!updated || updated.changes !== 1) {
       throw new Error('Não foi possível consumir a ação preparada; transação revertida.');
