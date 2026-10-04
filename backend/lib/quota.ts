@@ -47,6 +47,9 @@ export async function tokensUsadosFeatureMes(empresaId: string, feature: string)
   } catch { return 0; }
 }
 
+// Uso global histórico/observabilidade. Não deve ser usado para bloquear feedback:
+// quotas operacionais são calculadas por feature para evitar que uma feature
+// consuma a capacidade de outra.
 export async function tokensUsadosMes(empresaId: string): Promise<number> {
   const db = getDb(); const mes = getCurrentMonth();
   try {
@@ -61,9 +64,11 @@ export async function tokensUsadosMes(empresaId: string): Promise<number> {
 
 export async function assertEmpresaTokenQuota(empresaId: string | null | undefined, plan: string | null | undefined): Promise<{ ok: boolean; used: number; reserved: number; limit: number }> {
   if (!empresaId) return { ok: true, used: 0, reserved: 0, limit: 0 };
+  // O orçamento de feedback é isolado por feature. O DOT possui sua própria
+  // cota e nunca consome o orçamento reservado para análise/resposta de reviews.
   const limit = getTokenLimit(String(plan || 'trial')); if (limit <= 0) return { ok: false, used: 0, reserved: 0, limit: 0 };
   cleanupAiReservations();
-  const used = await tokensUsadosMes(empresaId); const existing = aiReservations.get(empresaId)?.tokens || 0;
+  const used = await tokensUsadosFeatureMes(empresaId, 'feedback'); const existing = aiReservations.get(empresaId)?.tokens || 0;
   if (limit - used - existing < AI_REVIEW_RESERVATION) return { ok: false, used, reserved: existing, limit };
   aiReservations.set(empresaId, { tokens: existing + AI_REVIEW_RESERVATION, expiresAt: Date.now() + AI_RESERVATION_TTL_MS });
   return { ok: true, used, reserved: existing + AI_REVIEW_RESERVATION, limit };
