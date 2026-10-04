@@ -4,6 +4,7 @@ import { evaluateDotPolicy, type DotRisk } from './dotPolicy.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { recordDotActionAudit } from './dotActionAudit.js';
 import { createDotFollowUp } from './dotFollowUp.js';
+import { requireDotAccess, type DotAccessResource } from './dotAccessControl.js';
 
 export type DotExecutionResult = {
   ok: boolean;
@@ -53,6 +54,25 @@ export async function executeDotActionThroughGateway(
   const definition = getDotActionDefinition(String(row.action));
   if (!definition) {
     return { ok: false, id: actionId, status: String(row.status), simulated: true, executor: '', startedAt: '', reason: 'Executor não registrado para esta ação.' };
+  }
+
+  const permissionResource: DotAccessResource = definition.channels.includes('crm') ? 'crm'
+    : definition.channels.includes('email') ? 'email'
+      : definition.channels.includes('whatsapp') ? 'whatsapp'
+        : definition.channels.includes('google_reviews') ? 'marketing'
+          : 'operations';
+  try {
+    await requireDotAccess(empresaId, permissionResource, 'execute', null, { actionId, action: definition.action, executor: definition.executorKey });
+  } catch (error: any) {
+    return {
+      ok: false,
+      id: actionId,
+      status: String(row.status),
+      simulated: true,
+      executor: definition.executorKey,
+      startedAt: '',
+      reason: error?.message || 'Permissão de execução do DOT não concedida.',
+    };
   }
 
   if (!dotActionRequiresApproval(definition.action)) {
