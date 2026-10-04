@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { apiFetch } from '../utils/apiFailover';
 import { DotCommandAside } from './DotCommandAside';
+import { DotAgentSurface } from './DotAgentSurface';
 import {
   ArrowUp,
   RotateCcw,
@@ -657,6 +658,8 @@ export default function FiltraDotPage() {
             </button>
           </div>
         </header>
+
+        <DotAgentSurface />
 
         {budget && budget.limit > 0 && budget.warning && !budget.exhausted && (
           <div className="mb-3 rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-xs text-amber-100">
