@@ -9,6 +9,7 @@ import { resolveDotComplaint } from '../services/dotResolve.js';
 import { createDecisionsForEvents, listDotDecisions, updateDotDecision } from '../services/dotDecision.js';
 import { prepareDotActionFromDecision, approveDotAction, executeDotAction, listDotActions } from '../services/dotActionQueue.js';
 import { listDotFollowUps, completeDotFollowUp } from '../services/dotFollowUp.js';
+import { advanceMission } from '../services/dotAgentMissions.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -349,9 +350,23 @@ export function mountDotRoutes(app: Express) {
   app.post('/api/dot/actions/:id/approve', async (req: Request, res: Response) => {
     const access = await resolveDotAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
-    const action = await approveDotAction(access.empresaId, Number(req.params.id));
+    const actionId = Number(req.params.id);
+    const action = await approveDotAction(access.empresaId, actionId);
     if (!action) return res.status(409).json({ error: 'Ação não encontrada ou já processada.' });
-    res.json({ ok: true, action });
+
+    // A aprovação desbloqueia a missão do DOT imediatamente.
+    // O vínculo é explícito para não acordar uma missão diferente da ação aprovada.
+    const db = (await import('../lib/db.js')).getDb();
+    const mission = await db.get(
+      "SELECT id FROM dot_agent_missions WHERE empresa_id=? AND status='waiting_approval' AND approval_action_id=? ORDER BY id DESC LIMIT 1",
+      [access.empresaId, actionId],
+    );
+    let resumedMission = null;
+    if (mission) {
+      resumedMission = await advanceMission(access.empresaId, Number(mission.id), 'Ação aprovada. Retomando o acompanhamento.');
+    }
+
+    res.json({ ok: true, action, resumed_mission: resumedMission });
   });
 
   app.post('/api/dot/actions/:id/run', async (req: Request, res: Response) => {
