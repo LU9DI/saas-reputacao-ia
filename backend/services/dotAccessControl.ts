@@ -1,6 +1,6 @@
 import { getDb } from '../lib/db.js';
 
-export type DotAccessAction = 'read' | 'analyze' | 'create' | 'update' | 'execute' | 'external_send';
+export type DotAccessAction = 'read' | 'analyze' | 'create' | 'update' | 'approve' | 'execute' | 'external_send';
 export type DotAccessResource =
   | 'filtra'
   | 'customers'
