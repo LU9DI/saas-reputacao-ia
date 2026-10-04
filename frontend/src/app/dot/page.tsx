@@ -1118,6 +1118,28 @@ export default function FiltraDotPage() {
     }
   }
 
+  const dynamicPrompts = (() => {
+    const prompts: Array<{ label: string; message: string; tone?: 'priority' | 'neutral' }> = [];
+    if (events.length > 0) prompts.push({
+      label: ui.investigateTitle,
+      message: uiLocale === 'pt' ? 'Investigue os sinais prioritários e mostre as evidências.' : uiLocale === 'es' ? 'Investiga las señales prioritarias y muestra las evidencias.' : 'Investigate the priority signals and show the evidence.',
+      tone: 'priority',
+    });
+    if (decisions.length > 0 || proposal) prompts.push({
+      label: ui.decisionLabel,
+      message: uiLocale === 'pt' ? 'Qual decisão devo priorizar agora?' : uiLocale === 'es' ? '¿Qué decisión debería priorizar ahora?' : 'Which decision should I prioritize now?',
+    });
+    if (actions.length > 0 || proposal) prompts.push({
+      label: ui.prepareAction,
+      message: uiLocale === 'pt' ? 'Prepare o próximo passo com base nas evidências.' : uiLocale === 'es' ? 'Prepara el siguiente paso según las evidencias.' : 'Prepare the next step based on the evidence.',
+    });
+    prompts.push({
+      label: ui.analyze,
+      message: uiLocale === 'pt' ? 'Resuma o que mudou e o que merece atenção primeiro.' : uiLocale === 'es' ? 'Resume qué cambió y qué merece atención primero.' : 'Summarize what changed and what deserves attention first.',
+    });
+    return prompts.slice(0, 4);
+  })();
+
   return (
     <main className="min-h-screen bg-black text-zinc-100">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8">
@@ -1209,6 +1231,30 @@ export default function FiltraDotPage() {
             </div>
           </div>
         )}
+
+        <div className="mb-2 flex flex-wrap items-center gap-2 px-1">
+          <span className="mr-1 text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-600">{ui.currentTitle}</span>
+          {briefing?.priority && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/15 bg-amber-400/[0.05] px-3 py-1.5 text-[10px] text-amber-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-300" /> {briefing.priority}
+            </span>
+          )}
+          {events.length > 0 && (
+            <button type="button" onClick={() => void send(dynamicPrompts[0]?.message || ui.investigateTitle)} disabled={busy}
+              className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/20 bg-indigo-500/[0.06] px-3 py-1.5 text-[10px] font-medium text-indigo-200 transition hover:border-indigo-300/40 hover:bg-indigo-500/[0.12] disabled:opacity-40">
+              {ui.investigateTitle} <ChevronRight size={11} />
+            </button>
+          )}
+          {dynamicPrompts.filter((item) => item.label !== ui.investigateTitle).map((item) => (
+            <button key={item.label} type="button" onClick={() => void send(item.message)} disabled={busy}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-[10px] text-zinc-300 transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white disabled:opacity-40">
+              {item.label} <ChevronRight size={11} className="text-zinc-600" />
+            </button>
+          ))}
+          <span className="ml-auto hidden text-[10px] text-zinc-600 lg:block">
+            {busy ? ui.analyzing : ui.responseLimit}
+          </span>
+        </div>
 
         <div className="grid flex-1 gap-5 lg:grid-cols-[380px_minmax(0,1fr)] xl:grid-cols-[410px_minmax(0,1fr)]">
           <section className="order-2 flex min-h-[760px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 shadow-2xl shadow-indigo-950/20">
@@ -1331,7 +1377,7 @@ export default function FiltraDotPage() {
               {briefing?.suggestedAction && <button type="button" onClick={() => focusPanel('alerts')} className="mt-2 w-full rounded-xl border border-white/[0.08] px-3 py-2 text-[10px] text-zinc-400 transition hover:border-white/15 hover:text-zinc-200">{ui.alertsTitle}</button>}
             </div>
 
-            <div className="rounded-[20px] border border-white/[0.07] bg-white/[0.015] p-4">
+            <div className="border-b border-white/[0.08] py-4">
               <div className="mb-3 flex items-center justify-between">
                 <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-500">{ui.workflowTitle}</div>
                 <span className="text-[9px] text-zinc-600">● {ui.currentTitle}</span>
@@ -1354,7 +1400,7 @@ export default function FiltraDotPage() {
               </div>
             </div>
 
-            <div className="rounded-[20px] border border-white/[0.07] bg-white/[0.015] p-4">
+            <div className="border-b border-white/[0.08] py-4">
               <div className="mb-3 flex items-center justify-between">
                 <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-500">Fila</div>
                 <span className="text-[9px] text-zinc-600">{decisions.length + actions.length + followUps.length} itens</span>
