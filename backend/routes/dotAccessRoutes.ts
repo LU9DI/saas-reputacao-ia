@@ -5,7 +5,7 @@ import { empresaTemAcesso } from '../services/billingService.js';
 import { listDotPermissions, setDotPermission, canManageDotPermissions, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
 
 const resources: DotAccessResource[] = ['filtra','customers','sales','marketing','operations','finance','hr','crm','documents','calendar','email','whatsapp','erp','other'];
-const actions: DotAccessAction[] = ['read','analyze','create','update','execute','external_send'];
+const actions: DotAccessAction[] = ['read','analyze','create','update','approve','execute','external_send'];
 
 async function access(req: Request) {
   const token = extrairToken(req);
