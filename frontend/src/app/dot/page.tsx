@@ -509,24 +509,23 @@ type DotResolve = {
 function DotAvatar({ active = false }: { active?: boolean }) {
   return (
     <div
-      className={`relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-500/[0.16] via-violet-500/[0.08] to-transparent shadow-[0_0_36px_rgba(99,102,241,.24)] ${active ? 'animate-pulse' : ''}`}
+      className={`relative grid h-14 w-14 shrink-0 place-items-center rounded-[1.35rem] border border-indigo-300/20 bg-gradient-to-br from-indigo-500/[0.14] via-violet-500/[0.08] to-transparent shadow-[0_10px_32px_rgba(49,46,129,.22)] ${active ? 'ring-2 ring-indigo-300/20' : ''}`}
       aria-label="Filtra Dot"
+      role="img"
     >
-      <div className="absolute inset-1.5 rounded-[1.05rem] border border-indigo-300/10" />
-      <div className="absolute inset-0 overflow-hidden rounded-2xl">
-        <span className="absolute -left-1 top-1/2 h-px w-4 rotate-12 bg-indigo-300/25" />
-        <span className="absolute -right-1 top-[42%] h-px w-4 -rotate-12 bg-violet-300/20" />
-        <span className={`absolute left-1/2 top-1.5 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-indigo-200 shadow-[0_0_8px_rgba(165,180,252,.9)] ${active ? 'animate-bounce' : ''}`} />
-      </div>
-      <div className="relative grid h-9 w-9 place-items-center rounded-[1.1rem] border border-white/20 bg-gradient-to-br from-indigo-200 via-indigo-500 to-violet-700 shadow-[inset_0_1px_0_rgba(255,255,255,.35),0_6px_18px_rgba(79,70,229,.35)]">
-        <div className="relative h-5 w-6 rounded-full border border-white/10 bg-black/10">
-          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_7px_rgba(255,255,255,.85)]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_7px_rgba(255,255,255,.85)]" />
-          </div>
-          <span className="absolute bottom-0.5 left-1/2 h-px w-2 -translate-x-1/2 rounded-full bg-white/60" />
+      <div className="absolute inset-1 rounded-[1.1rem] border border-white/10" />
+      <div className="relative mt-1 h-9 w-8">
+        <div className="absolute left-1/2 top-0 h-7 w-8 -translate-x-1/2 rounded-[48%] border border-white/15 bg-gradient-to-br from-indigo-200 via-indigo-400 to-violet-600 shadow-[inset_0_1px_0_rgba(255,255,255,.45),0_6px_14px_rgba(79,70,229,.28)]">
+          <div className="absolute -top-1 left-1/2 h-3.5 w-7 -translate-x-1/2 rounded-t-full bg-violet-950/80" />
+          <div className="absolute left-[7px] top-[12px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_5px_rgba(255,255,255,.7)]" />
+          <div className="absolute right-[7px] top-[12px] h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_5px_rgba(255,255,255,.7)]" />
+          <div className="absolute left-1/2 top-[18px] h-1.5 w-3 -translate-x-1/2 rounded-b-full border-b border-white/75" />
+        </div>
+        <div className="absolute left-1/2 top-[25px] h-4 w-9 -translate-x-1/2 rounded-t-[1rem] border border-white/10 bg-gradient-to-r from-violet-700 to-indigo-500">
+          <div className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 rotate-45 border-b border-r border-white/20 bg-indigo-300/30" />
         </div>
       </div>
+      {active && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,.8)]" />}
     </div>
   );
 }
@@ -992,7 +991,7 @@ export default function FiltraDotPage() {
   const featureEnabled = dotStatus?.feature_enabled ?? dotStatus?.enabled ?? false;
   if (dotStatus && !dotStatus.access) {
     return (
-      <main className="min-h-screen bg-black text-zinc-100">
+      <main className="min-h-screen bg-[#050507] text-zinc-100">
         <div className="mx-auto flex min-h-screen max-w-2xl items-center px-6 py-12">
           <section className="w-full rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl">
             <div className="flex items-center gap-3">
@@ -1066,20 +1065,20 @@ export default function FiltraDotPage() {
 
   return (
     <main className="min-h-screen bg-black text-zinc-100">
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-5 sm:px-6 lg:px-8">
-        <header className="flex items-center justify-between border-b border-white/10 pb-5">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col px-4 py-4 sm:px-6 lg:px-8">
+        <header className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <DotAvatar />
             <div>
               <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
-                <span>Filtra Dot</span>
+                <span className="text-[15px] tracking-[-0.01em]">Filtra Dot</span>
                 <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">{extra.plansBadge}</span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-zinc-400">
                   {dotStatus?.demo ? <FlaskConical size={10} /> : <Wifi size={10} />}
                   {dotStatus?.demo ? ui.demo : ui.online}
                 </span>
               </div>
-              <div className="text-xs text-zinc-500">{extra.agentSubtitle}</div>
+              <div className="text-xs text-zinc-500">{extra.agentSubtitle} · decisões com supervisão humana</div>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {(() => {
                   const hasPendingAction = Boolean(proposal) || actions.some((action) => ['prepared', 'approved', 'executing'].includes(action.status));
@@ -1129,18 +1128,18 @@ export default function FiltraDotPage() {
               <RotateCcw size={13} /> {ui.newConversation}
             </button>
           </div>
-          <div className="hidden items-center gap-2 text-xs text-zinc-500 xl:flex">
+          <div className="hidden items-center gap-2 rounded-full border border-emerald-400/10 bg-emerald-400/[0.03] px-3 py-1.5 text-[11px] text-zinc-500 xl:flex">
             <ShieldCheck size={14} className="text-emerald-400" /> {ui.protectedActions}
           </div>
         </header>
 
         <div className="grid flex-1 gap-6 py-6 lg:grid-cols-[1fr_300px]">
           <section className="flex min-h-[680px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 shadow-2xl shadow-indigo-950/20">
-            <div className="flex-1 space-y-5 overflow-y-auto p-5 sm:p-7">
+            <div className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-7">
               <div className="mx-auto max-w-3xl">
-                <div className="mb-7 flex items-start gap-4">
+                <div className="mb-7 flex items-start gap-3 sm:gap-4">
                   <DotAvatar active={busy} />
-                  <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-indigo-400/15 bg-indigo-500/[0.06] p-4 text-sm leading-7 text-zinc-200">
+                  <div className="max-w-2xl rounded-2xl rounded-tl-sm border border-indigo-300/15 bg-gradient-to-br from-indigo-500/[0.08] to-white/[0.02] p-4 text-sm leading-7 text-zinc-200 shadow-[0_12px_40px_rgba(30,27,75,.16)]">
                     {messages[0].text}
                   </div>
                 </div>
