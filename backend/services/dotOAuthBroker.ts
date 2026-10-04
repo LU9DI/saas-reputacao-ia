@@ -16,11 +16,15 @@ const providers = new Map<DotIntegrationProvider, OAuthProviderConfig>();
 
 function envProvider(provider: DotIntegrationProvider): OAuthProviderConfig | null {
   const p = provider.toUpperCase();
-  const authorizationUrl = process.env[`DOT_OAUTH_${p}_AUTHORIZATION_URL`]?.trim();
-  const tokenUrl = process.env[`DOT_OAUTH_${p}_TOKEN_URL`]?.trim();
+  const authorizationUrl = process.env[`DOT_OAUTH_${p}_AUTHORIZATION_URL`]?.trim()
+    || (provider === 'crm' ? 'https://app.hubspot.com/oauth/authorize' : '');
+  const tokenUrl = process.env[`DOT_OAUTH_${p}_TOKEN_URL`]?.trim()
+    || (provider === 'crm' ? 'https://api.hubapi.com/oauth/2026-03/token' : '');
   const clientId = process.env[`DOT_OAUTH_${p}_CLIENT_ID`]?.trim();
   const clientSecret = process.env[`DOT_OAUTH_${p}_CLIENT_SECRET`]?.trim();
-  const scopes = (process.env[`DOT_OAUTH_${p}_SCOPES`] || '').split(/[ ,]+/).map(s => s.trim()).filter(Boolean);
+  const scopes = (process.env[`DOT_OAUTH_${p}_SCOPES`] || (provider === 'crm'
+    ? 'crm.objects.contacts.read crm.objects.companies.read crm.objects.deals.read'
+    : '')).split(/[ ,]+/).map(s => s.trim()).filter(Boolean);
   if (!authorizationUrl || !tokenUrl || !clientId || !scopes.length) return null;
   return { provider, authorizationUrl, tokenUrl, clientId, clientSecret, scopes };
 }
