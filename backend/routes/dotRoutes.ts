@@ -10,6 +10,7 @@ import { createDecisionsForEvents, listDotDecisions, updateDotDecision } from '.
 import { prepareDotActionFromDecision, approveDotAction, executeDotAction, listDotActions } from '../services/dotActionQueue.js';
 import { listDotFollowUps, completeDotFollowUp } from '../services/dotFollowUp.js';
 import { advanceMission } from '../services/dotAgentMissions.js';
+import { runCurrentDotMissionStep } from '../services/dotAgentMissionRunner.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
@@ -371,6 +372,12 @@ export function mountDotRoutes(app: Express) {
         ? `Ação aprovada e executada pelo gateway: ${execution.reason || 'execução concluída'}`
         : `Ação aprovada, mas a execução ainda não foi concluída: ${execution.reason || 'aguardando executor'}`;
       resumedMission = await advanceMission(access.empresaId, Number(mission.id), executionSummary);
+      // Se a execução já terminou a etapa de aprovação, continua a missão
+      // imediatamente em vez de esperar o próximo ciclo do worker.
+      if (resumedMission?.status === 'working') {
+        const continued = await runCurrentDotMissionStep(access.empresaId, Number(mission.id));
+        resumedMission = continued?.mission || resumedMission;
+      }
     }
 
     res.json({ ok: true, action, execution, resumed_mission: resumedMission });
