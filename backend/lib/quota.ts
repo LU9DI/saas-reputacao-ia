@@ -23,7 +23,7 @@ export function getFeatureTokenLimit(plan: string, feature: string): number {
   const configured = Number(process.env[`AI_DOT_${p.toUpperCase()}_TOKENS`] || 0);
   // DOT tem orçamento próprio e não compete com feedback. Defaults comerciais
   // iniciais: REI 400k e Corporativo 150k tokens/mês. Ambiente pode sobrescrever.
-  const defaults: Record<string, number> = { rei: 400_000, corporativo: 150_000 };
+  const defaults: Record<string, number> = { rei: 600_000, corporativo: 250_000 };
   return Math.max(0, configured || defaults[p] || Math.floor(global * 0.2));
 }
 function monthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); return `${m}-01T00:00:00.000Z`; }
