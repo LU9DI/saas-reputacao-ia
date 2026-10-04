@@ -14,7 +14,7 @@ import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
-import { getTokenLimit, getFeatureTokenLimit, tokensUsadosMes, tokensUsadosFeatureMes } from '../lib/quota.js';
+import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -91,26 +91,38 @@ function dotResponseTokenLimit(plan?: string | null): number {
 async function checkDotTokenBudget(
   empresaId: string | null | undefined,
   plan: string | null | undefined,
-): Promise<{ ok: boolean; used: number; feature_used: number; limit: number; feature_limit: number; response_limit: number; remaining: number; feature_remaining: number }> {
+): Promise<{ ok: boolean; used: number; feature_used: number; limit: number; feature_limit: number; response_limit: number; remaining: number; feature_remaining: number; feedback_limit: number }> {
+  const responseLimit = dotResponseTokenLimit(plan);
   if (!empresaId) {
-    const responseLimit = dotResponseTokenLimit(plan);
-    return { ok: true, used: 0, feature_used: 0, limit: 0, feature_limit: 0, response_limit: responseLimit, remaining: responseLimit, feature_remaining: responseLimit };
+    return { ok: true, used: 0, feature_used: 0, limit: 0, feature_limit: 0, response_limit: responseLimit, remaining: responseLimit, feature_remaining: responseLimit, feedback_limit: 0 };
   }
 
   cleanupDotTokenReservations();
   const normalizedPlan = dotPlanKey(plan);
-  const limit = getTokenLimit(normalizedPlan);
-  const responseLimit = dotResponseTokenLimit(normalizedPlan);
-  const used = await tokensUsadosMes(empresaId);
   const featureLimit = getFeatureTokenLimit(normalizedPlan, 'dot');
+  const feedbackLimit = getTokenLimit(normalizedPlan);
   const featureUsed = await tokensUsadosFeatureMes(empresaId, 'dot');
   const key = empresaId;
   const reserved = dotTokenReservations.get(key)?.tokens || 0;
-  const remaining = Math.max(0, limit - used - reserved);
+
+  // ISOLAMENTO CRÍTICO: DOT verifica somente sua própria cota.
+  // O orçamento de feedback é reservado em outro namespace e nunca é
+  // subtraído aqui. Assim, uma conversa pesada no DOT não bloqueia
+  // análise de reviews, sentimento, tags ou respostas de avaliações.
   const featureRemaining = Math.max(0, featureLimit - featureUsed - reserved);
 
-  if (limit <= 0 || featureLimit <= 0 || remaining < responseLimit || featureRemaining < responseLimit) {
-    return { ok: false, used, feature_used: featureUsed, limit, feature_limit: featureLimit, response_limit: responseLimit, remaining, feature_remaining: featureRemaining };
+  if (featureLimit <= 0 || featureRemaining < responseLimit) {
+    return {
+      ok: false,
+      used: featureUsed,
+      feature_used: featureUsed,
+      limit: featureLimit,
+      feature_limit: featureLimit,
+      response_limit: responseLimit,
+      remaining: featureRemaining,
+      feature_remaining: featureRemaining,
+      feedback_limit: feedbackLimit,
+    };
   }
 
   dotTokenReservations.set(key, {
@@ -118,7 +130,17 @@ async function checkDotTokenBudget(
     expiresAt: Date.now() + DOT_TOKEN_RESERVATION_TTL_MS,
   });
 
-  return { ok: true, used, feature_used: featureUsed, limit, feature_limit: featureLimit, response_limit: responseLimit, remaining: remaining - responseLimit, feature_remaining: featureRemaining - responseLimit };
+  return {
+    ok: true,
+    used: featureUsed,
+    feature_used: featureUsed,
+    limit: featureLimit,
+    feature_limit: featureLimit,
+    response_limit: responseLimit,
+    remaining: featureRemaining - responseLimit,
+    feature_remaining: featureRemaining - responseLimit,
+    feedback_limit: feedbackLimit,
+  };
 }
 
 function releaseDotTokenReservation(empresaId: string | null | undefined, reserved: number) {
@@ -519,8 +541,11 @@ export function mountDotRoutes(app: Express) {
         ok: false,
         error: 'O orçamento de IA do plano para este período foi atingido.',
         code: 'DOT_TOKEN_LIMIT',
-        tokens_used: tokenBudget.used,
-        token_limit: tokenBudget.limit,
+        tokens_used: tokenBudget.feature_used,
+        token_limit: tokenBudget.feature_limit,
+        token_scope: 'dot',
+        feedback_token_limit: tokenBudget.feedback_limit,
+        feedback_isolated: true,
         feature_tokens_used: tokenBudget.feature_used,
         feature_token_limit: tokenBudget.feature_limit,
         response_limit: tokenBudget.response_limit,
@@ -566,6 +591,9 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
         session_id: requestedSessionId,
         memory_turns: Math.floor(history.length / 2),
         token_limit: tokenBudget.limit || null,
+        token_scope: 'dot',
+        feedback_token_limit: tokenBudget.feedback_limit || null,
+        feedback_isolated: true,
         response_token_limit: tokenBudget.response_limit,
         tokens_remaining_estimate: tokenBudget.limit
           ? Math.max(0, tokenBudget.limit - tokenBudget.used - result.tokens)
