@@ -568,6 +568,7 @@ export function mountDotRoutes(app: Express) {
             refreshRequired: true,
             reason: 'Modo demonstração.',
           },
+          fingerprint: '',
           snapshot: null,
           cacheHit: false,
         }
