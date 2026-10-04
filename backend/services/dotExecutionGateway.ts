@@ -4,6 +4,7 @@ import { evaluateDotPolicy, type DotRisk } from './dotPolicy.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { recordDotActionAudit } from './dotActionAudit.js';
 import { createDotFollowUp } from './dotFollowUp.js';
+import { buildDotTaskPlan, assertDotTaskPlanSafe } from './dotTaskContract.js';
 import { requireDotAccess, type DotAccessResource } from './dotAccessControl.js';
 
 export type DotExecutionResult = {
@@ -77,6 +78,20 @@ export async function executeDotActionThroughGateway(
 
   if (!dotActionRequiresApproval(definition.action)) {
     return { ok: false, id: actionId, status: String(row.status), simulated: true, executor: definition.executorKey, startedAt: '', reason: 'A ação não está protegida por aprovação explícita.' };
+  }
+
+  const taskPlan = buildDotTaskPlan({
+    resource: permissionResource,
+    mode: 'execute',
+    risk: riskForAction(definition.risk),
+    externalSideEffect: definition.externalSideEffect,
+    prerequisites: ['tenant_validated', 'permission_granted', 'approval_granted', 'executor_registered'],
+    validation: ['executor_confirmed', 'result_persisted', 'audit_recorded'],
+  });
+  try {
+    assertDotTaskPlanSafe(taskPlan);
+  } catch (error: any) {
+    return { ok: false, id: actionId, status: String(row.status), simulated: true, executor: definition.executorKey, startedAt: '', reason: error?.message || 'Plano de execução inválido.' };
   }
 
   const preferences = await getDotPreferences(empresaId);
