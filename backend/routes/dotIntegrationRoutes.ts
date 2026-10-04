@@ -35,8 +35,15 @@ export function mountDotIntegrationRoutes(app: Express) {
       }
       await requireDotAccess(empresa.id, 'crm', 'read', payload.id, { connector: 'crm.hubspot.read' });
       const operation = String(req.body?.operation || '');
-      const allowed = /^(contacts|companies|deals)\.(list|get)$/.test(operation);
+      const allowed = /^(contacts|companies|deals)\.(list|get|search)$/.test(operation);
       if (!allowed) return res.status(400).json({ok:false,error:'Somente leitura de contatos, empresas e negócios.'});
+      const input = req.body?.input || {};
+      if (operation.endsWith('.get') && !/^\d+$/.test(String(input?.id || ''))) {
+        return res.status(400).json({ok:false,error:'ID CRM inválido.'});
+      }
+      if (operation.endsWith('.search') && typeof input?.query !== 'string') {
+        return res.status(400).json({ok:false,error:'Consulta de busca do CRM inválida.'});
+      }
       const result = await runDotConnector(
         'crm.hubspot.read',
         { empresaId: empresa.id, userId: payload.id },
