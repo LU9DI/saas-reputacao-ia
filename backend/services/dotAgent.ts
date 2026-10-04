@@ -15,7 +15,7 @@ export type DotAgentGoal = {
   last_activity_at: string | null;
 };
 
-async function ensureAgentTables() {
+export async function ensureAgentTables() {
   const db = getDb();
   await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_goals (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -76,7 +76,7 @@ export async function createDotAgentGoal(
   const now = new Date().toISOString();
   const db = getDb();
   const result = await db.run(
-    'INSERT INTO dot_agent_goals (empresa_id,title,description,status,progress,source,created_at,updated_at,last_activity_at) VALUES (?,?,?,?,?,?,?,?,?)',
+    'INSERT INTO dot_agent_goals (empresa_id,title,description,status,progress,source,created_at,updated_at,last_activity_at) VALUES (?,?,?,?,?,?,?,?,?) RETURNING id',
     [empresaId, title, description, 'active', 0, source, now, now, now],
   );
   const id = Number(result?.lastID ?? result?.lastInsertRowid ?? result?.id);
