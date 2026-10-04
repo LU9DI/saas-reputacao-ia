@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { callAI } from '../groqService.js';
 import { prepareDotAction } from '../services/dotTools.js';
-import { loadDotRealContext } from '../services/dotContext.js';
+import { loadDotRealContext, loadDotContextForMessage } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
 import { resolveDotComplaint } from '../services/dotResolve.js';
@@ -557,17 +557,28 @@ export function mountDotRoutes(app: Express) {
     const reservedTokens = tokenBudget.response_limit;
 
     try {
-      const context = access.demo
-        ? DEMO_CONTEXT
-        : await loadDotRealContext(access.empresaId as string);
+      const contextResult = access.demo
+        ? {
+            context: DEMO_CONTEXT,
+            decision: {
+              mode: 'refresh',
+              dataSource: 'database',
+              reasoningRequired: true,
+              refreshRequired: true,
+              reason: 'Modo demonstração.',
+            },
+          }
+        : await loadDotContextForMessage(access.empresaId as string, message);
 
       const responseSystem = `${SYSTEM}
 ORÇAMENTO DESTA RESPOSTA: até ${tokenBudget.response_limit} tokens de saída.
+CONTEXTO: ${contextResult.decision.mode}. ${contextResult.decision.reason}
+REGRA DE FRESCOR: use fatos persistidos do contexto quando suficientes; quando a pergunta pedir estado atual, causa, impacto, comparação, recomendação ou decisão, raciocine novamente com os dados verificados nesta solicitação.
 Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: conclusão, evidências, impacto, recomendação e próximo passo. Evite introduções e repetições desnecessárias.`;
 
       const result = await callAI(
         responseSystem,
-        buildConversation(context, history, message),
+        buildConversation(contextResult.context, history, message),
         tokenBudget.response_limit,
         0.45,
         { empresaId: access.empresaId || null, tipo: 'filtra_dot_chat', feature: 'dot' }
@@ -600,6 +611,10 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
           : null,
         dot_token_limit: tokenBudget.feature_limit || null,
         dot_tokens_used: tokenBudget.feature_used + result.tokens,
+        context_mode: contextResult.decision.mode,
+        context_source: contextResult.decision.dataSource,
+        context_refresh_required: contextResult.decision.refreshRequired,
+        context_reason: contextResult.decision.reason,
         dot_tokens_remaining_estimate: tokenBudget.feature_limit
           ? Math.max(0, tokenBudget.feature_limit - tokenBudget.feature_used - result.tokens)
           : null,
