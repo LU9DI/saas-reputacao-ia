@@ -72,7 +72,11 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
 
 export async function approveDotAction(empresaId: string, actionId: number, approvedBy?: string | null) {
   await ensureSchema();
-  await requireDotAccess(empresaId, 'operations', 'approve', approvedBy || null, { actionId });
+  try {
+    await requireDotAccess(empresaId, 'operations', 'approve', approvedBy || null, { actionId });
+  } catch {
+    return null;
+  }
   const now = new Date().toISOString();
 
   const approved = await withDbTransaction(async (tx) => {
