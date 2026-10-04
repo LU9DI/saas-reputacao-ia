@@ -14,6 +14,7 @@ import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
+import { getTokenLimit, tokensUsadosMes } from '../lib/quota.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -58,6 +59,71 @@ type DotAccess = {
 
 const sessions = new Map<string, ChatItem[]>();
 const MAX_HISTORY = 12;
+
+const DOT_RESPONSE_TOKEN_LIMITS: Record<string, number> = {
+  rei: Math.max(300, Number(process.env.DOT_REI_RESPONSE_TOKENS || 1200)),
+  corporativo: Math.max(300, Number(process.env.DOT_CORPORATIVO_RESPONSE_TOKENS || 1800)),
+};
+
+const DOT_TOKEN_RESERVATION_TTL_MS = Math.max(
+  5_000,
+  Number(process.env.DOT_TOKEN_RESERVATION_TTL_MS || 30_000),
+);
+const dotTokenReservations = new Map<string, { tokens: number; expiresAt: number }>();
+
+function cleanupDotTokenReservations(now = Date.now()) {
+  for (const [key, reservation] of dotTokenReservations) {
+    if (reservation.expiresAt <= now) dotTokenReservations.delete(key);
+  }
+}
+
+function dotPlanKey(plan?: string | null): string {
+  const normalized = String(plan || 'rei').toLowerCase();
+  return normalized === 'corp' ? 'corporativo' : normalized;
+}
+
+function dotResponseTokenLimit(plan?: string | null): number {
+  return DOT_RESPONSE_TOKEN_LIMITS[dotPlanKey(plan)] || 900;
+}
+
+async function checkDotTokenBudget(
+  empresaId: string | null | undefined,
+  plan: string | null | undefined,
+): Promise<{ ok: boolean; used: number; limit: number; response_limit: number; remaining: number }> {
+  if (!empresaId) {
+    const responseLimit = dotResponseTokenLimit(plan);
+    return { ok: true, used: 0, limit: 0, response_limit: responseLimit, remaining: responseLimit };
+  }
+
+  cleanupDotTokenReservations();
+  const normalizedPlan = dotPlanKey(plan);
+  const limit = getTokenLimit(normalizedPlan);
+  const responseLimit = dotResponseTokenLimit(normalizedPlan);
+  const used = await tokensUsadosMes(empresaId);
+  const key = empresaId;
+  const reserved = dotTokenReservations.get(key)?.tokens || 0;
+  const remaining = Math.max(0, limit - used - reserved);
+
+  if (limit <= 0 || remaining < responseLimit) {
+    return { ok: false, used, limit, response_limit: responseLimit, remaining };
+  }
+
+  dotTokenReservations.set(key, {
+    tokens: reserved + responseLimit,
+    expiresAt: Date.now() + DOT_TOKEN_RESERVATION_TTL_MS,
+  });
+
+  return { ok: true, used, limit, response_limit: responseLimit, remaining: remaining - responseLimit };
+}
+
+function releaseDotTokenReservation(empresaId: string | null | undefined, reserved: number) {
+  if (!empresaId) return;
+  const current = dotTokenReservations.get(empresaId);
+  if (!current) return;
+  const next = Math.max(0, current.tokens - Math.max(0, reserved));
+  if (next === 0) dotTokenReservations.delete(empresaId);
+  else dotTokenReservations.set(empresaId, { ...current, tokens: next });
+}
 
 function cleanMessage(value: unknown): string {
   return String(value ?? '').trim().slice(0, 4000);
@@ -442,18 +508,39 @@ export function mountDotRoutes(app: Express) {
     const sessionId = scopedSessionId(access, requestedSessionId);
     const history = sessionHistory(sessionId);
 
+    const tokenBudget = await checkDotTokenBudget(access.empresaId, access.plan);
+    if (!tokenBudget.ok) {
+      return res.status(429).json({
+        ok: false,
+        error: 'O orçamento de IA do plano para este período foi atingido.',
+        code: 'DOT_TOKEN_LIMIT',
+        tokens_used: tokenBudget.used,
+        token_limit: tokenBudget.limit,
+        response_limit: tokenBudget.response_limit,
+        tokens_remaining: tokenBudget.remaining,
+      });
+    }
+
+    const reservedTokens = tokenBudget.response_limit;
+
     try {
       const context = access.demo
         ? DEMO_CONTEXT
         : await loadDotRealContext(access.empresaId as string);
 
+      const responseSystem = `${SYSTEM}
+ORÇAMENTO DESTA RESPOSTA: até ${tokenBudget.response_limit} tokens de saída.
+Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: conclusão, evidências, impacto, recomendação e próximo passo. Evite introduções e repetições desnecessárias.`;
+
       const result = await callAI(
-        SYSTEM,
+        responseSystem,
         buildConversation(context, history, message),
-        700,
+        tokenBudget.response_limit,
         0.45,
         { empresaId: access.empresaId || null, tipo: 'filtra_dot_chat' }
       );
+
+      releaseDotTokenReservation(access.empresaId, reservedTokens);
 
       history.push({ role: 'user', text: message, at: Date.now() });
       history.push({ role: 'dot', text: result.text, at: Date.now() });
@@ -470,8 +557,14 @@ export function mountDotRoutes(app: Express) {
         plan_label: access.planLabel || 'Rei',
         session_id: requestedSessionId,
         memory_turns: Math.floor(history.length / 2),
+        token_limit: tokenBudget.limit || null,
+        response_token_limit: tokenBudget.response_limit,
+        tokens_remaining_estimate: tokenBudget.limit
+          ? Math.max(0, tokenBudget.limit - tokenBudget.used - result.tokens)
+          : null,
       });
     } catch (error: any) {
+      releaseDotTokenReservation(access.empresaId, reservedTokens);
       console.error('[Filtra Dot]', error?.message || error);
       return res.status(503).json({
         error: 'O Filtra Dot está sem um provedor de IA disponível no localhost.',
