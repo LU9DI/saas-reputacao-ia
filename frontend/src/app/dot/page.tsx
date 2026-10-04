@@ -111,6 +111,13 @@ type DotUi = {
   pendingAction: string;
   signalsContext: string;
   calmContext: string;
+  currentTitle: string;
+  currentBody: string;
+  workflowTitle: string;
+  impactLabel: string;
+  evidenceLabel: string;
+  decisionLabel: string;
+  resultLabel: string;
 };
 
 const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
@@ -216,6 +223,13 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     pendingAction: 'Ação pendente',
     signalsContext: 'sinais',
     calmContext: 'Sem pendências críticas',
+    currentTitle: 'Agora',
+    currentBody: 'O que merece sua atenção primeiro.',
+    workflowTitle: 'Ciclo de decisão',
+    impactLabel: 'Impacto',
+    evidenceLabel: 'Evidências',
+    decisionLabel: 'Decisão',
+    resultLabel: 'Resultado',
   },
   en: {
     earlyAccess: 'Early access',
@@ -319,6 +333,13 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     pendingAction: 'Pending action',
     signalsContext: 'signals',
     calmContext: 'No critical pending items',
+    currentTitle: 'Now',
+    currentBody: 'What deserves your attention first.',
+    workflowTitle: 'Decision cycle',
+    impactLabel: 'Impact',
+    evidenceLabel: 'Evidence',
+    decisionLabel: 'Decision',
+    resultLabel: 'Outcome',
   },
   es: {
     earlyAccess: 'Acceso anticipado',
@@ -422,6 +443,13 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     pendingAction: 'Acción pendiente',
     signalsContext: 'señales',
     calmContext: 'Sin pendientes críticos',
+    currentTitle: 'Ahora',
+    currentBody: 'Lo que merece tu atención primero.',
+    workflowTitle: 'Ciclo de decisión',
+    impactLabel: 'Impacto',
+    evidenceLabel: 'Evidencias',
+    decisionLabel: 'Decisión',
+    resultLabel: 'Resultado',
   },
 };
 
@@ -1228,16 +1256,56 @@ export default function FiltraDotPage() {
           </section>
 
           <aside className="space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
-            <div className="rounded-[26px] border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.11] via-white/[0.025] to-black/20 p-5 shadow-[0_22px_60px_rgba(49,46,129,0.12)]">
-              <div className="flex items-start gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[13px] border border-indigo-400/15 bg-indigo-500/15 text-indigo-200"><Sparkles size={17} /></div>
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-indigo-300">{ui.quickGuideTitle}</div>
-                  <div className="mt-1 text-base font-semibold tracking-tight text-white">{ui.quickGuideBody}</div>
-                  <p className="mt-1 text-xs leading-5 text-zinc-500">{ui.quickGuideSummary}</p>
+            <div className="rounded-[26px] border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.12] via-white/[0.025] to-black/20 p-5 shadow-[0_22px_60px_rgba(49,46,129,0.14)]">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] border border-indigo-400/15 bg-indigo-500/15 text-indigo-200"><Sparkles size={18} /></div>
+                  <div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-indigo-300">{ui.currentTitle}</div>
+                    <div className="mt-1 text-lg font-semibold tracking-tight text-white">{briefing?.priority || ui.monitoringActive}</div>
+                    <p className="mt-1 text-xs leading-5 text-zinc-500">{briefing?.reason || ui.currentBody}</p>
+                  </div>
+                </div>
+                <span className="rounded-full border border-emerald-400/15 bg-emerald-400/[0.06] px-2 py-1 text-[9px] font-medium text-emerald-300">{ui.online}</span>
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5">
+                  <div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.impactLabel}</div>
+                  <div className="mt-1 text-sm font-semibold text-white">{briefing?.priority || '—'}</div>
+                </div>
+                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5">
+                  <div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.evidenceLabel}</div>
+                  <div className="mt-1 text-sm font-semibold text-white">{events.length || '0'}</div>
+                </div>
+                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5">
+                  <div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.decisionLabel}</div>
+                  <div className="mt-1 text-sm font-semibold text-white">{decisions.length || '0'}</div>
                 </div>
               </div>
-              <div className="mt-5 grid grid-cols-2 gap-2.5">
+
+              <div className="mt-4 rounded-2xl border border-white/[0.07] bg-black/20 p-4">
+                <div className="mb-3 text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-500">{ui.workflowTitle}</div>
+                <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
+                  {[
+                    [ui.signalsLabel, events.length > 0],
+                    [ui.investigateTitle, Boolean(resolveResult)],
+                    [ui.decisionLabel, decisions.length > 0],
+                    [ui.prepare, Boolean(proposal || actions.length)],
+                    [ui.approveAction, actions.some((a) => ['approved','executing','executed'].includes(a.status))],
+                    [ui.resultLabel, followUps.some((f) => f.status !== 'pending')],
+                  ].map(([label, active], index) => (
+                    <div key={String(label)} className="relative">
+                      <div className={`rounded-xl border px-2 py-2 text-center ${active ? 'border-indigo-400/25 bg-indigo-500/10 text-indigo-200' : 'border-white/[0.06] bg-white/[0.015] text-zinc-600'}`}>
+                        <div className="text-[9px] font-medium leading-4">{label}</div>
+                      </div>
+                      {index < 5 && <ChevronRight size={10} className="absolute -right-2 top-1/2 z-10 -translate-y-1/2 text-zinc-700" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2.5">
                 {[
                   ['overview', ui.overviewTitle],
                   ['alerts', ui.alertsTitle],
@@ -1246,21 +1314,12 @@ export default function FiltraDotPage() {
                   ['followups', ui.followupTitle],
                   ['resolve', ui.investigateTitle],
                 ].map(([id, label]) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => focusPanel(id as DotPanelId)}
-                    className="rounded-2xl border border-white/[0.07] bg-black/20 px-3 py-3 text-left text-[11px] font-medium text-zinc-300 transition hover:-translate-y-0.5 hover:border-indigo-400/25 hover:bg-indigo-500/[0.06] hover:text-white"
-                  >
+                  <button key={id} type="button" onClick={() => focusPanel(id as DotPanelId)} className="rounded-2xl border border-white/[0.07] bg-black/20 px-3 py-3 text-left text-[11px] font-medium text-zinc-300 transition hover:-translate-y-0.5 hover:border-indigo-400/25 hover:bg-indigo-500/[0.06] hover:text-white">
                     {label}
                   </button>
                 ))}
               </div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.signalsLabel}</div><div className="mt-1 text-lg font-semibold text-white">{events.length || '0'}</div></div>
-                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.decisionsLabel}</div><div className="mt-1 text-lg font-semibold text-white">{decisions.length || '0'}</div></div>
-                <div className="rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-600">{ui.followUpsLabel}</div><div className="mt-1 text-lg font-semibold text-white">{followUps.length || '0'}</div></div>
-              </div>
+              <div className="mt-3 text-[10px] leading-5 text-zinc-600">{ui.quickGuideSummary}</div>
             </div>
 
             <div className="flex items-center gap-2 px-1 pt-2 text-[9px] font-semibold uppercase tracking-[.2em] text-zinc-600"><span className="h-px w-5 bg-white/10" />{ui.groupOverview}</div>
