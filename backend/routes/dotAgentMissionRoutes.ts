@@ -4,6 +4,7 @@ import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { createMissionForGoal, listDotAgentMissions, listDotAgentMissionSteps, advanceMission } from '../services/dotAgentMissions.js';
 import { runCurrentDotMissionStep } from '../services/dotAgentMissionRunner.js';
+import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 
 async function access(req: Request) {
   const token = extrairToken(req);
@@ -31,7 +32,7 @@ export function mountDotAgentMissionRoutes(app: Express) {
     const a=await access(req); if(!a.ok) return deny(res,a);
     const goalId=Number(req.body?.goal_id); const title=String(req.body?.title||'').trim();
     if(!Number.isInteger(goalId)||goalId<=0||title.length<3) return res.status(400).json({ok:false,error:'goal_id e título são obrigatórios.'});
-    try { const m=await createMissionForGoal(a.empresaId,goalId,title); if(!m)return res.status(404).json({ok:false,error:'Objetivo não encontrado.'}); res.status(201).json({ok:true,mission:m}); }
+    try { const m=await createMissionForGoal(a.empresaId,goalId,title); if(!m)return res.status(404).json({ok:false,error:'Objetivo não encontrado.'}); void wakeDotAgentWorker(); res.status(201).json({ok:true,mission:m}); }
     catch(e){res.status(400).json({ok:false,error:e instanceof Error?e.message:'Falha ao criar missão.'});}
   });
   app.get('/api/dot/agent/missions/:id/steps', async (req,res) => {
