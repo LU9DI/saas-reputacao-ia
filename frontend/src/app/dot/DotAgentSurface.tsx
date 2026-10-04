@@ -22,6 +22,7 @@ export function DotAgentSurface() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
+  const [missionBusy, setMissionBusy] = useState<number | null>(null);
 
   async function load() {
     try {
@@ -37,6 +38,15 @@ export function DotAgentSurface() {
   useEffect(() => {
     void load();
   }, []);
+
+  async function startMission(goal: Goal) {
+    if (missionBusy) return;
+    setMissionBusy(goal.id);
+    try {
+      const res = await apiFetch('/api/dot/agent/missions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ goal_id: goal.id, title: goal.title }) });
+      if (res.ok) setWorkspace((current) => current ? current : current);
+    } finally { setMissionBusy(null); }
+  }
 
   async function createGoal() {
     const title = draft.trim();
@@ -94,14 +104,14 @@ export function DotAgentSurface() {
             <button
               key={goal.id}
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={() => void startMission(goal)}
               className="min-w-0 rounded-xl border border-white/[0.07] bg-black/20 p-3 text-left hover:border-sky-300/20"
             >
               <div className="truncate text-xs font-medium text-zinc-200">{goal.title}</div>
               <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
                 <div className="h-full rounded-full bg-sky-400/70" style={{ width: goal.progress + '%' }} />
               </div>
-              <div className="mt-1 text-[10px] text-zinc-500">{goal.progress}% · DOT acompanhando</div>
+              <div className="mt-1 text-[10px] text-zinc-500">{missionBusy === goal.id ? 'DOT preparando missão…' : `${goal.progress}% · DOT acompanhando`}</div>
             </button>
           ))}
         </div>
