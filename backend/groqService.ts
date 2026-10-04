@@ -256,7 +256,7 @@ async function callGroq(
   if (!key) throw new Error('GROQ_API_KEY não configurada');
 
   const body = {
-    model: modelOverride || process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
+    model: modelOverride || process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },
