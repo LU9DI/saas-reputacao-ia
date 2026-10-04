@@ -14,7 +14,7 @@ import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
-import { getTokenLimit, tokensUsadosMes } from '../lib/quota.js';
+import { getTokenLimit, getFeatureTokenLimit, tokensUsadosMes, tokensUsadosFeatureMes } from '../lib/quota.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -91,10 +91,10 @@ function dotResponseTokenLimit(plan?: string | null): number {
 async function checkDotTokenBudget(
   empresaId: string | null | undefined,
   plan: string | null | undefined,
-): Promise<{ ok: boolean; used: number; limit: number; response_limit: number; remaining: number }> {
+): Promise<{ ok: boolean; used: number; feature_used: number; limit: number; feature_limit: number; response_limit: number; remaining: number; feature_remaining: number }> {
   if (!empresaId) {
     const responseLimit = dotResponseTokenLimit(plan);
-    return { ok: true, used: 0, limit: 0, response_limit: responseLimit, remaining: responseLimit };
+    return { ok: true, used: 0, feature_used: 0, limit: 0, feature_limit: 0, response_limit: responseLimit, remaining: responseLimit, feature_remaining: responseLimit };
   }
 
   cleanupDotTokenReservations();
@@ -102,12 +102,15 @@ async function checkDotTokenBudget(
   const limit = getTokenLimit(normalizedPlan);
   const responseLimit = dotResponseTokenLimit(normalizedPlan);
   const used = await tokensUsadosMes(empresaId);
+  const featureLimit = getFeatureTokenLimit(normalizedPlan, 'dot');
+  const featureUsed = await tokensUsadosFeatureMes(empresaId, 'dot');
   const key = empresaId;
   const reserved = dotTokenReservations.get(key)?.tokens || 0;
   const remaining = Math.max(0, limit - used - reserved);
+  const featureRemaining = Math.max(0, featureLimit - featureUsed - reserved);
 
-  if (limit <= 0 || remaining < responseLimit) {
-    return { ok: false, used, limit, response_limit: responseLimit, remaining };
+  if (limit <= 0 || featureLimit <= 0 || remaining < responseLimit || featureRemaining < responseLimit) {
+    return { ok: false, used, feature_used: featureUsed, limit, feature_limit: featureLimit, response_limit: responseLimit, remaining, feature_remaining: featureRemaining };
   }
 
   dotTokenReservations.set(key, {
@@ -115,7 +118,7 @@ async function checkDotTokenBudget(
     expiresAt: Date.now() + DOT_TOKEN_RESERVATION_TTL_MS,
   });
 
-  return { ok: true, used, limit, response_limit: responseLimit, remaining: remaining - responseLimit };
+  return { ok: true, used, feature_used: featureUsed, limit, feature_limit: featureLimit, response_limit: responseLimit, remaining: remaining - responseLimit, feature_remaining: featureRemaining - responseLimit };
 }
 
 function releaseDotTokenReservation(empresaId: string | null | undefined, reserved: number) {
@@ -518,8 +521,11 @@ export function mountDotRoutes(app: Express) {
         code: 'DOT_TOKEN_LIMIT',
         tokens_used: tokenBudget.used,
         token_limit: tokenBudget.limit,
+        feature_tokens_used: tokenBudget.feature_used,
+        feature_token_limit: tokenBudget.feature_limit,
         response_limit: tokenBudget.response_limit,
         tokens_remaining: tokenBudget.remaining,
+        feature_tokens_remaining: tokenBudget.feature_remaining,
       });
     }
 
@@ -539,7 +545,7 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
         buildConversation(context, history, message),
         tokenBudget.response_limit,
         0.45,
-        { empresaId: access.empresaId || null, tipo: 'filtra_dot_chat' }
+        { empresaId: access.empresaId || null, tipo: 'filtra_dot_chat', feature: 'dot' }
       );
 
       releaseDotTokenReservation(access.empresaId, reservedTokens);
@@ -563,6 +569,11 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
         response_token_limit: tokenBudget.response_limit,
         tokens_remaining_estimate: tokenBudget.limit
           ? Math.max(0, tokenBudget.limit - tokenBudget.used - result.tokens)
+          : null,
+        dot_token_limit: tokenBudget.feature_limit || null,
+        dot_tokens_used: tokenBudget.feature_used + result.tokens,
+        dot_tokens_remaining_estimate: tokenBudget.feature_limit
+          ? Math.max(0, tokenBudget.feature_limit - tokenBudget.feature_used - result.tokens)
           : null,
       });
     } catch (error: any) {
