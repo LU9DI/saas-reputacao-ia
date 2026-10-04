@@ -2,6 +2,7 @@ import { getDb, withDbTransaction } from '../lib/db.js';
 import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRegistry.js';
 import { recordDotActionAudit } from './dotActionAudit.js';
 import { executeDotActionThroughGateway } from './dotExecutionGateway.js';
+import { requireDotAccess } from './dotAccessControl.js';
 
 export type DotActionStatus = 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled';
 
@@ -71,6 +72,7 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
 
 export async function approveDotAction(empresaId: string, actionId: number, approvedBy?: string | null) {
   await ensureSchema();
+  await requireDotAccess(empresaId, 'operations', 'approve', approvedBy || null, { actionId });
   const now = new Date().toISOString();
 
   const approved = await withDbTransaction(async (tx) => {
