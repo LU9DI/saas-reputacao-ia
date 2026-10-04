@@ -72,6 +72,8 @@ import { anonymizeOldClientWhatsapp, ensureReviewTreatmentColumns } from './lib/
 import { backfillSentiment, countMissingSentiment } from './services/sentimentBackfill.js';
 import { startDotMonitorScheduler } from './services/dotScheduler.js';
 import { startDotAgentWorker } from './services/dotAgentWorker.js';
+import { ensureAgentTables } from './services/dotAgent.js';
+import { ensureMissionTables } from './services/dotAgentMissions.js';
 
 assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
@@ -116,6 +118,7 @@ async function main() {
   try { await ensureReviewTreatmentColumns(getDb()); } catch (e) { console.warn('treatment columns:', e); }
   try { await ensureAcquisitionSchema(getDb()); } catch (e) { console.warn('acquisition schema:', e); }
   try { await ensureLeadSchema(getDb()); } catch (e) { console.warn('lead schema:', e); }
+  try { await ensureAgentTables(); await ensureMissionTables(); } catch (e) { console.warn('ensure DOT agent schema:', e); }
   await runSentimentBackfillOnBoot();
   await runLgpdSweepOnBoot();
   mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app); mountDotRoutes(app); mountDotAgentRoutes(app); mountDotAgentMissionRoutes(app);
