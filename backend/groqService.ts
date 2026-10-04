@@ -356,7 +356,7 @@ export async function callAI(
   user: string,
   maxTokens = 180,
   temperature = 0.6,
-  opts?: { empresaId?: string | null; tipo?: string }
+  opts?: { empresaId?: string | null; tipo?: string; feature?: string }
 ): Promise<AiCallResult> {
   const order = buildAttemptOrder();
   if (!order.length) {
@@ -383,6 +383,7 @@ export async function callAI(
             tipo: opts.tipo || `ai_${provider}`,
             tokens: raw.tokens,
             provider,
+            feature: opts.feature,
           });
         } catch {
           /* */
