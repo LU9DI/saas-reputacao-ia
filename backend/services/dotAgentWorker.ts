@@ -30,8 +30,9 @@ export function startDotAgentWorker() {
               console.log(`🤖 DOT agente: missão ${mission.id} aguardando aprovação.`);
               break;
             }
-            if (result.completed) break;
-            if (result.advanced === false) break;
+            const state = result.mission;
+            if (!state || state.status === 'completed' || state.status === 'waiting_approval' || state.status === 'paused') break;
+            if (Number(state.current_step ?? -1) >= Number(state.total_steps ?? 6)) break;
           }
         } catch (error: any) {
           console.warn(`DOT agente: falha na missão ${mission.id}:`, error?.message || error);
