@@ -3,6 +3,7 @@ import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { createMissionForGoal, listDotAgentMissions, listDotAgentMissionSteps, advanceMission } from '../services/dotAgentMissions.js';
+import { runCurrentDotMissionStep } from '../services/dotAgentMissionRunner.js';
 
 async function access(req: Request) {
   const token = extrairToken(req);
@@ -38,6 +39,15 @@ export function mountDotAgentMissionRoutes(app: Express) {
     const id=Number(req.params.id); if(!Number.isInteger(id)||id<=0)return res.status(400).json({ok:false,error:'ID inválido.'});
     try { res.json({ok:true,steps:await listDotAgentMissionSteps(a.empresaId,id)}); }
     catch(e){res.status(500).json({ok:false,error:e instanceof Error?e.message:'Falha ao carregar etapas.'});}
+  });
+  app.post('/api/dot/agent/missions/:id/run-step', async (req,res) => {
+    const a=await access(req); if(!a.ok) return deny(res,a);
+    const id=Number(req.params.id); if(!Number.isInteger(id)||id<=0)return res.status(400).json({ok:false,error:'ID inválido.'});
+    try {
+      const result=await runCurrentDotMissionStep(a.empresaId,id);
+      if(!result)return res.status(404).json({ok:false,error:'Missão não encontrada.'});
+      res.json({ok:true,...result});
+    } catch(e){res.status(400).json({ok:false,error:e instanceof Error?e.message:'Falha ao executar etapa da missão.'});}
   });
   app.post('/api/dot/agent/missions/:id/advance', async (req,res) => {
     const a=await access(req); if(!a.ok) return deny(res,a);
