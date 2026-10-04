@@ -16,6 +16,21 @@ type Workspace = {
   goals: Goal[];
   summary: { active: number; paused: number; completed: number; attention: number };
 };
+type Mission = {
+  id: number;
+  goal_id: number;
+  title: string;
+  status: 'planned' | 'working' | 'waiting_approval' | 'completed' | 'paused';
+  current_step: number;
+  total_steps: number;
+};
+type MissionStep = {
+  id: number;
+  type: 'observe' | 'investigate' | 'recommend' | 'prepare' | 'approval' | 'result';
+  status: 'pending' | 'working' | 'completed' | 'waiting_approval';
+  title: string;
+  output?: string | null;
+};
 
 export function DotAgentSurface() {
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
@@ -23,6 +38,8 @@ export function DotAgentSurface() {
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [missionBusy, setMissionBusy] = useState<number | null>(null);
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [steps, setSteps] = useState<Record<number, MissionStep[]>>({});
 
   async function load() {
     try {
@@ -35,8 +52,27 @@ export function DotAgentSurface() {
     }
   }
 
+  async function loadMissions() {
+    try {
+      const res = await apiFetch('/api/dot/agent/missions', { credentials: 'include' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data?.ok) {
+        const nextMissions: Mission[] = data.missions || [];
+        setMissions(nextMissions);
+        await Promise.all(nextMissions.slice(0, 4).map(async (mission) => {
+          const stepRes = await apiFetch(`/api/dot/agent/missions/${mission.id}/steps`, { credentials: 'include' });
+          if (!stepRes.ok) return;
+          const stepData = await stepRes.json();
+          if (stepData?.ok) setSteps((current) => ({ ...current, [mission.id]: stepData.steps || [] }));
+        }));
+      }
+    } catch { /* mission surface is optional */ }
+  }
+
   useEffect(() => {
     void load();
+    void loadMissions();
   }, []);
 
   async function startMission(goal: Goal) {
@@ -44,7 +80,17 @@ export function DotAgentSurface() {
     setMissionBusy(goal.id);
     try {
       const res = await apiFetch('/api/dot/agent/missions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify({ goal_id: goal.id, title: goal.title }) });
-      if (res.ok) setWorkspace((current) => current ? current : current);
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data?.mission) {
+          setMissions((current) => [data.mission, ...current.filter((item) => item.id !== data.mission.id)]);
+          const stepRes = await apiFetch(`/api/dot/agent/missions/${data.mission.id}/steps`, { credentials: 'include' });
+          if (stepRes.ok) {
+            const stepData = await stepRes.json();
+            if (stepData?.ok) setSteps((current) => ({ ...current, [data.mission.id]: stepData.steps || [] }));
+          }
+        }
+      }
     } finally { setMissionBusy(null); }
   }
 
@@ -116,6 +162,30 @@ export function DotAgentSurface() {
           ))}
         </div>
       )}
+
+      {missions.filter((mission) => mission.status !== 'completed').slice(0, 2).map((mission) => {
+        const missionSteps = steps[mission.id] || [];
+        const activeStep = missionSteps.find((step) => step.status === 'working' || step.status === 'waiting_approval') || missionSteps[mission.current_step - 1];
+        return (
+          <div key={mission.id} className="mt-3 rounded-xl border border-white/[0.07] bg-black/15 px-3 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">Missão ativa</div>
+                <div className="mt-1 truncate text-xs font-medium text-zinc-200">{mission.title}</div>
+              </div>
+              <span className="text-[10px] text-sky-300">{mission.status === 'waiting_approval' ? 'aguardando você' : 'DOT trabalhando'}</span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {missionSteps.map((step) => (
+                <span key={step.id} className={`rounded-full border px-2 py-1 text-[10px] ${step.status === 'completed' ? 'border-emerald-400/20 text-emerald-300' : step.status === 'waiting_approval' ? 'border-amber-400/20 text-amber-300' : step.status === 'working' ? 'border-sky-400/20 text-sky-300' : 'border-white/[0.07] text-zinc-600'}`}>
+                  {step.title}
+                </span>
+              ))}
+            </div>
+            {activeStep && <div className="mt-2 text-[11px] text-zinc-500">{activeStep.title}{activeStep.output ? ` · ${activeStep.output}` : ''}</div>}
+          </div>
+        );
+      })}
 
       {open && (
         <div className="mt-3 border-t border-white/[0.06] pt-3">
