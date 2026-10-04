@@ -1,5 +1,5 @@
 import { getDb } from './lib/db.js';
-import { getDotCredential } from './dotCredentialVault.js';
+import { getDotCredential, putDotCredential } from './dotCredentialVault.js';
 import { registerDotConnector, type DotConnectorContext } from './dotConnector.js';
 
 const BASE_URL = 'https://api.hubapi.com';
@@ -7,8 +7,38 @@ const OBJECTS = new Set(['contacts', 'companies', 'deals']);
 
 async function token(empresaId: string) {
   const credential = await getDotCredential(empresaId, 'crm', 'access_token');
-  if (!credential) throw new Error('Token CRM indisponível ou expirado.');
-  return credential.value;
+  if (credential) return credential.value;
+
+  const refresh = await getDotCredential(empresaId, 'crm', 'refresh_token', { allowExpired: true });
+  const clientId = process.env.DOT_OAUTH_CRM_CLIENT_ID?.trim();
+  if (!refresh || !clientId) throw new Error('Sessão OAuth CRM indisponível.');
+
+  const body = new URLSearchParams({
+    grant_type: 'refresh_token',
+    refresh_token: refresh.value,
+    client_id: clientId,
+  });
+  const secret = process.env.DOT_OAUTH_CRM_CLIENT_SECRET?.trim();
+  if (secret) body.set('client_secret', secret);
+
+  const response = await fetch(
+    process.env.DOT_OAUTH_CRM_TOKEN_URL?.trim() || 'https://api.hubapi.com/oauth/2026-03/token',
+    { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded', accept: 'application/json' }, body },
+  );
+  const data: any = await response.json().catch(() => ({}));
+  if (!response.ok || !data.access_token) throw new Error('Não foi possível renovar a sessão do CRM.');
+
+  await putDotCredential({
+    empresaId,
+    provider: 'crm',
+    kind: 'access_token',
+    value: String(data.access_token),
+    expiresAt: data.expires_in ? new Date(Date.now() + Number(data.expires_in) * 1000).toISOString() : null,
+  });
+  if (data.refresh_token) {
+    await putDotCredential({ empresaId, provider: 'crm', kind: 'refresh_token', value: String(data.refresh_token) });
+  }
+  return String(data.access_token);
 }
 
 async function read(empresaId: string, object: string, id?: string) {
