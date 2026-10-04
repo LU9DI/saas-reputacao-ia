@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { callAI } from '../groqService.js';
 import { prepareDotAction } from '../services/dotTools.js';
-import { loadDotRealContext, loadDotContextForMessage } from '../services/dotContext.js';
+import { loadDotRealContext, loadDotContextForMessage, buildCachedDotAnswer } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
 import { resolveDotComplaint } from '../services/dotResolve.js';
@@ -535,6 +535,59 @@ export function mountDotRoutes(app: Express) {
     const sessionId = scopedSessionId(access, requestedSessionId);
     const history = sessionHistory(sessionId);
 
+    const contextResult = access.demo
+      ? {
+          context: DEMO_CONTEXT,
+          decision: {
+            mode: 'refresh',
+            dataSource: 'database',
+            reasoningRequired: true,
+            refreshRequired: true,
+            reason: 'Modo demonstração.',
+          },
+          snapshot: null,
+          cacheHit: false,
+        }
+      : await loadDotContextForMessage(access.empresaId as string, message);
+
+    // Perguntas puramente factuais podem sair do cache sem consumir a cota de IA.
+    // Raciocínio, explicação, comparação e estado temporal continuam passando pela IA.
+    if (!access.demo && contextResult.cacheHit && contextResult.decision.mode === 'cached') {
+      const cachedAnswer = buildCachedDotAnswer(message, contextResult.snapshot);
+      if (cachedAnswer) {
+        history.push({ role: 'user', text: message, at: Date.now() });
+        history.push({ role: 'dot', text: cachedAnswer, at: Date.now() });
+        while (history.length > MAX_HISTORY) history.shift();
+        return res.json({
+          ok: true,
+          message: cachedAnswer,
+          provider: 'cache',
+          latency_ms: 0,
+          tokens_used: 0,
+          demo: false,
+          plan: access.plan || 'rei',
+          plan_label: access.planLabel || 'Rei',
+          session_id: requestedSessionId,
+          memory_turns: Math.floor(history.length / 2),
+          token_scope: 'dot',
+          feedback_token_limit: getTokenLimit(access.plan || 'rei'),
+          feedback_isolated: true,
+          response_token_limit: 0,
+          context_mode: 'cached',
+          context_source: 'cache',
+          context_refresh_required: false,
+          context_reason: contextResult.decision.reason,
+          dot_token_limit: getFeatureTokenLimit(access.plan || 'rei', 'dot'),
+          dot_tokens_used: await tokensUsadosFeatureMes(access.empresaId as string, 'dot'),
+          dot_tokens_remaining_estimate: Math.max(
+            0,
+            getFeatureTokenLimit(access.plan || 'rei', 'dot') -
+              await tokensUsadosFeatureMes(access.empresaId as string, 'dot'),
+          ),
+        });
+      }
+    }
+
     const tokenBudget = await checkDotTokenBudget(access.empresaId, access.plan);
     if (!tokenBudget.ok) {
       return res.status(429).json({
@@ -557,19 +610,6 @@ export function mountDotRoutes(app: Express) {
     const reservedTokens = tokenBudget.response_limit;
 
     try {
-      const contextResult = access.demo
-        ? {
-            context: DEMO_CONTEXT,
-            decision: {
-              mode: 'refresh',
-              dataSource: 'database',
-              reasoningRequired: true,
-              refreshRequired: true,
-              reason: 'Modo demonstração.',
-            },
-          }
-        : await loadDotContextForMessage(access.empresaId as string, message);
-
       const responseSystem = `${SYSTEM}
 ORÇAMENTO DESTA RESPOSTA: até ${tokenBudget.response_limit} tokens de saída.
 CONTEXTO: ${contextResult.decision.mode}. ${contextResult.decision.reason}
