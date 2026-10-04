@@ -183,6 +183,30 @@ export function DotAgentSurface() {
               ))}
             </div>
             {activeStep && <div className="mt-2 text-[11px] text-zinc-500">{activeStep.title}{activeStep.output ? ` · ${activeStep.output}` : ''}</div>}
+            {activeStep && mission.status !== 'waiting_approval' && (
+              <button
+                type="button"
+                disabled={missionBusy === mission.id}
+                onClick={async () => {
+                  setMissionBusy(mission.id);
+                  try {
+                    const res = await apiFetch(`/api/dot/agent/missions/${mission.id}/run-step`, {
+                      method: 'POST',
+                      credentials: 'include',
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.ok && data?.ok) {
+                      await loadMissions();
+                    }
+                  } finally {
+                    setMissionBusy(null);
+                  }
+                }}
+                className="mt-3 rounded-lg border border-sky-400/20 px-3 py-1.5 text-[10px] text-sky-300 disabled:opacity-50"
+              >
+                {missionBusy === mission.id ? 'DOT trabalhando…' : 'Executar próxima etapa'}
+              </button>
+            )}
           </div>
         );
       })}
