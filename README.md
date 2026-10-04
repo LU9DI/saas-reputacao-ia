@@ -70,3 +70,5 @@ git pull origin main
 ```
 
 No VS Code: abra a **raiz** do repo (`saas-reputacao-ia`), não uma subpasta. Settings em `.vscode/`.
+
+<!-- Vercel deployment sync: 2026-10-04T03:11:58.966Z -->
