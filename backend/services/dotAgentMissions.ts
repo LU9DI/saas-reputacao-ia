@@ -38,6 +38,10 @@ async function ensureMissionTables() {
   )`);
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_dot_agent_missions_empresa
     ON dot_agent_missions (empresa_id, status, updated_at)`);
+  const missionColumns = await db.all('PRAGMA table_info(dot_agent_missions)');
+  if (!(missionColumns || []).some((column: any) => column.name === 'approval_action_id')) {
+    await db.exec('ALTER TABLE dot_agent_missions ADD COLUMN approval_action_id INTEGER');
+  }
   await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_mission_steps (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     mission_id INTEGER NOT NULL,
