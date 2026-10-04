@@ -37,7 +37,7 @@ export async function executeDotActionThroughGateway(
 ): Promise<DotExecutionResult> {
   const db = getDb();
   const row = await db.get(
-    `SELECT a.*, d.status AS decision_status, d.requires_approval
+    `SELECT a.*, a.approved_by, d.status AS decision_status, d.requires_approval
        FROM dot_action_queue a
        JOIN dot_decisions d ON d.id = a.decision_id AND d.empresa_id = a.empresa_id
       WHERE a.id = ? AND a.empresa_id = ? AND a.status = 'approved' LIMIT 1`,
@@ -63,7 +63,7 @@ export async function executeDotActionThroughGateway(
         : definition.channels.includes('google_reviews') ? 'marketing'
           : 'operations';
   try {
-    await requireDotAccess(empresaId, permissionResource, 'execute', null, { actionId, action: definition.action, executor: definition.executorKey });
+    await requireDotAccess(empresaId, permissionResource, 'execute', row.approved_by || null, { actionId, action: definition.action, executor: definition.executorKey, approvedBy: row.approved_by || null });
   } catch (error: any) {
     return {
       ok: false,
