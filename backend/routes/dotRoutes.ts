@@ -275,7 +275,7 @@ export function mountDotRoutes(app: Express) {
       priority_access: ['rei', 'corporativo'],
       scheduler: getDotSchedulerStatus(),
       token_budget: await getDotTokenUsage(access.empresaId, access.plan),
-      token_warning_threshold: DOT_TOKEN_WARNING_THRESHOLD,
+      token_warning_threshold: 0.8,
       capabilities: [
         'analisar_reputacao',
         'detectar_padroes',
