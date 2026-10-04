@@ -50,6 +50,7 @@ import { mountDotAccessRoutes } from './routes/dotAccessRoutes.js';
 import { mountDotCapabilityRoutes } from './routes/dotCapabilityRoutes.js';
 import { mountDotIntegrationRoutes } from './routes/dotIntegrationRoutes.js';
 import { mountDotOAuthRoutes } from './routes/dotOAuthRoutes.js';
+import './services/dotHubSpotConnector.js';
 import { mountDotAgentMissionRoutes } from './routes/dotAgentMissionRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
