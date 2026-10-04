@@ -166,6 +166,25 @@ async function checkDotTokenBudget(
   };
 }
 
+const DOT_TOKEN_WARNING_THRESHOLD = 0.8;
+
+async function getDotTokenUsage(empresaId: string | null | undefined, plan: string | null | undefined) {
+  const limit = getFeatureTokenLimit(dotPlanKey(plan), 'dot');
+  if (!empresaId || limit <= 0) {
+    return { used: 0, limit, percent: 0, warning: false, exhausted: false, remaining: Math.max(0, limit) };
+  }
+  const used = await tokensUsadosFeatureMes(empresaId, 'dot');
+  const percent = limit > 0 ? used / limit : 0;
+  return {
+    used,
+    limit,
+    percent,
+    warning: percent >= DOT_TOKEN_WARNING_THRESHOLD && percent < 1,
+    exhausted: used >= limit,
+    remaining: Math.max(0, limit - used),
+  };
+}
+
 function releaseDotTokenReservation(empresaId: string | null | undefined, reserved: number) {
   if (!empresaId) return;
   const current = dotTokenReservations.get(empresaId);
@@ -274,6 +293,8 @@ export function mountDotRoutes(app: Express) {
       plan_label: access.planLabel || 'Rei',
       priority_access: ['rei', 'corporativo'],
       scheduler: getDotSchedulerStatus(),
+      token_budget: await getDotTokenUsage(access.empresaId, access.plan),
+      token_warning_threshold: DOT_TOKEN_WARNING_THRESHOLD,
       capabilities: [
         'analisar_reputacao',
         'detectar_padroes',
@@ -656,6 +677,9 @@ export function mountDotRoutes(app: Express) {
       }
     }
 
+    // Trava final: antes de chamar qualquer modelo, reservamos o máximo de saída
+    // permitido. Assim, uma resposta nunca pode iniciar se o orçamento restante
+    // for menor que o teto da própria resposta.
     const tokenBudget = await checkDotTokenBudget(access.empresaId, access.plan);
     if (!tokenBudget.ok) {
       return res.status(429).json({
@@ -734,6 +758,8 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
         feedback_token_limit: tokenBudget.feedback_limit || null,
         feedback_isolated: true,
         response_token_limit: tokenBudget.response_limit,
+        token_warning_threshold: 0.8,
+        token_warning: tokenBudget.feature_limit > 0 && ((tokenBudget.feature_used + result.tokens) / tokenBudget.feature_limit) >= 0.8,
         tokens_remaining_estimate: tokenBudget.limit
           ? Math.max(0, tokenBudget.limit - tokenBudget.used - result.tokens)
           : null,
