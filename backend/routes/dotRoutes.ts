@@ -61,8 +61,10 @@ const sessions = new Map<string, ChatItem[]>();
 const MAX_HISTORY = 12;
 
 const DOT_RESPONSE_TOKEN_LIMITS: Record<string, number> = {
-  rei: Math.max(300, Number(process.env.DOT_REI_RESPONSE_TOKENS || 1200)),
-  corporativo: Math.max(300, Number(process.env.DOT_CORPORATIVO_RESPONSE_TOKENS || 1800)),
+  // REI é o plano de maior profundidade de inteligência.
+  // Corporativo privilegia escala/governança, sem superar o REI em profundidade por resposta.
+  rei: Math.max(300, Number(process.env.DOT_REI_RESPONSE_TOKENS || 1800)),
+  corporativo: Math.max(300, Number(process.env.DOT_CORPORATIVO_RESPONSE_TOKENS || 1200)),
 };
 
 const DOT_TOKEN_RESERVATION_TTL_MS = Math.max(
