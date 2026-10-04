@@ -24,6 +24,11 @@ type DotUi = {
   analyze: string;
   explain: string;
   prepare: string;
+  detectPatterns: string;
+  memory: string;
+  investigate: string;
+  internalExecution: string;
+  notAvailable: string;
   verifyComplaint: string;
   verifyingComplaint: string;
   decisionOwner: string;
@@ -115,7 +120,7 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     earlyAccessBody: 'Sua conta atual não possui acesso ao Dot. O recurso está em acesso antecipado para clientes Rei e Corporativo.',
     plan: 'Plano identificado',
     newConversation: 'Nova conversa',
-    protectedActions: 'Ações externas protegidas por aprovação',
+    protectedActions: 'Ações internas somente após aprovação',
     analyzing: 'Analisando sinais do negócio…',
     ask: 'Pergunte ao Filtra Dot…',
     localDemo: 'Protótipo local · dados demonstrativos · nenhuma ação externa é executada.',
@@ -123,7 +128,12 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     canDoTitle: 'O que posso fazer',
     analyze: 'Analisar avaliações e padrões',
     explain: 'Explicar mudanças na reputação',
-    prepare: 'Preparar ações para aprovação',
+    prepare: 'Preparar ações internas para aprovação',
+    detectPatterns: 'Detectar padrões recorrentes',
+    memory: 'Manter memória da conversa',
+    investigate: 'Investigar reclamações com evidências disponíveis',
+    internalExecution: 'Registrar e acompanhar ações internamente após aprovação',
+    notAvailable: 'Não executa integrações externas, publica respostas, envia mensagens ou exporta arquivos.',
     verifyComplaint: 'Verificar reclamação',
     verifyingComplaint: 'Verificando evidências…',
     decisionOwner: 'A decisão final permanece com o responsável.',
@@ -164,10 +174,10 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     trendLabel: 'Tendência',
     signalsLabel: 'Sinais',
     nextStepLabel: 'Próximo passo',
-    prepareAction: 'Preparar ação',
+    prepareAction: 'Preparar plano',
     alertsTitle: 'Sinais que merecem atenção',
     alertsBody: 'Sinais detectados automaticamente. Leia a evidência antes de decidir.',
-    autonomy: 'Configurar autonomia',
+    autonomy: 'Preferências do monitoramento',
     decisionsTitle: 'Decisões sugeridas',
     decisionsBody: 'O Dot transforma sinais em opções claras. A decisão continua com o responsável.',
     registered: 'registradas',
@@ -175,8 +185,8 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     actionsTitle: 'Ações preparadas',
     actionsBody: 'Preparar não significa executar. Cada ação passa pelo fluxo de aprovação.',
     approveAction: 'Aprovar ação',
-    executeLocal: 'Executar demonstração',
-    executedLocal: 'Executada somente no ambiente de demonstração; nenhum sistema externo foi alterado.',
+    executeLocal: 'Registrar ação interna',
+    executedLocal: 'Ação registrada internamente para acompanhamento; nenhum sistema externo foi alterado.',
     followupTitle: 'Acompanhamento',
     pending: 'pendentes',
     due: 'Retorno previsto',
@@ -213,7 +223,7 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     earlyAccessBody: 'Your account does not have Dot access. The feature is in early access for Rei and Corporativo customers.',
     plan: 'Detected plan',
     newConversation: 'New conversation',
-    protectedActions: 'External actions require approval',
+    protectedActions: 'Internal actions require approval',
     analyzing: 'Analyzing business signals…',
     ask: 'Ask Filtra Dot…',
     localDemo: 'Local prototype · demo data · no external action is executed.',
@@ -221,7 +231,12 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     canDoTitle: 'What I can do',
     analyze: 'Analyze reviews and patterns',
     explain: 'Explain reputation changes',
-    prepare: 'Prepare actions for approval',
+    prepare: 'Prepare internal actions for approval',
+    detectPatterns: 'Detect recurring patterns',
+    memory: 'Keep conversation memory',
+    investigate: 'Investigate complaints using available evidence',
+    internalExecution: 'Register and track internal actions after approval',
+    notAvailable: 'Does not execute external integrations, publish replies, send messages, or export files.',
     verifyComplaint: 'Verify complaint',
     verifyingComplaint: 'Checking evidence…',
     decisionOwner: 'The final decision remains with the responsible owner.',
@@ -262,10 +277,10 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     trendLabel: 'Trend',
     signalsLabel: 'Signals',
     nextStepLabel: 'Next step',
-    prepareAction: 'Prepare action',
+    prepareAction: 'Prepare plan',
     alertsTitle: 'Signals that need attention',
     alertsBody: 'Signals detected automatically. Review the evidence before deciding.',
-    autonomy: 'Configure autonomy',
+    autonomy: 'Monitoring preferences',
     decisionsTitle: 'Suggested decisions',
     decisionsBody: 'Dot turns signals into clear options. The responsible owner keeps the final decision.',
     registered: 'registered',
@@ -273,8 +288,8 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     actionsTitle: 'Prepared actions',
     actionsBody: 'Preparing does not mean executing. Each action follows the approval flow.',
     approveAction: 'Approve action',
-    executeLocal: 'Run demo',
-    executedLocal: 'Executed only in the demo environment; no external system was changed.',
+    executeLocal: 'Register internal action',
+    executedLocal: 'Action recorded internally for follow-up; no external system was changed.',
     followupTitle: 'Follow-up',
     pending: 'pending',
     due: 'Due',
@@ -311,7 +326,7 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     earlyAccessBody: 'Tu cuenta no tiene acceso a Dot. La función está en acceso anticipado para clientes Rei y Corporativo.',
     plan: 'Plan detectado',
     newConversation: 'Nueva conversación',
-    protectedActions: 'Las acciones externas requieren aprobación',
+    protectedActions: 'Las acciones internas requieren aprobación',
     analyzing: 'Analizando señales del negocio…',
     ask: 'Pregunta a Filtra Dot…',
     localDemo: 'Prototipo local · datos de demostración · no se ejecutan acciones externas.',
@@ -319,7 +334,12 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     canDoTitle: 'Lo que puedo hacer',
     analyze: 'Analizar reseñas y patrones',
     explain: 'Explicar cambios en la reputación',
-    prepare: 'Preparar acciones para aprobación',
+    prepare: 'Preparar acciones internas para aprobación',
+    detectPatterns: 'Detectar patrones recurrentes',
+    memory: 'Mantener memoria de la conversación',
+    investigate: 'Investigar reclamaciones con las evidencias disponibles',
+    internalExecution: 'Registrar y dar seguimiento a acciones internas tras la aprobación',
+    notAvailable: 'No ejecuta integraciones externas, publica respuestas, envía mensajes ni exporta archivos.',
     verifyComplaint: 'Verificar reclamación',
     verifyingComplaint: 'Verificando evidencias…',
     decisionOwner: 'La decisión final permanece con el responsable.',
@@ -360,10 +380,10 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     trendLabel: 'Tendencia',
     signalsLabel: 'Señales',
     nextStepLabel: 'Siguiente paso',
-    prepareAction: 'Preparar acción',
+    prepareAction: 'Preparar plan',
     alertsTitle: 'Señales que requieren atención',
     alertsBody: 'Señales detectadas automáticamente. Revisa la evidencia antes de decidir.',
-    autonomy: 'Configurar autonomía',
+    autonomy: 'Preferencias de monitoreo',
     decisionsTitle: 'Decisiones sugeridas',
     decisionsBody: 'Dot convierte señales en opciones claras. El responsable mantiene la decisión final.',
     registered: 'registradas',
@@ -371,8 +391,8 @@ const DOT_UI: Record<string, Omit<DotUi, 'locale'>> = {
     actionsTitle: 'Acciones preparadas',
     actionsBody: 'Preparar no significa ejecutar. Cada acción sigue el flujo de aprobación.',
     approveAction: 'Aprobar acción',
-    executeLocal: 'Ejecutar demo',
-    executedLocal: 'Ejecutada solo en el entorno de demostración; ningún sistema externo fue alterado.',
+    executeLocal: 'Registrar acción interna',
+    executedLocal: 'Acción registrada internamente para seguimiento; ningún sistema externo fue alterado.',
     followupTitle: 'Seguimiento',
     pending: 'pendientes',
     due: 'Próximo retorno',
@@ -1283,9 +1303,6 @@ export default function FiltraDotPage() {
               onToggle={() => togglePanel('alerts')}
             >
               <div className="text-[11px] leading-5 text-zinc-600">{ui.alertsBody}</div>
-              <div className="mt-3 flex items-center justify-end">
-                <a href="/dot/configuracoes" className="text-[11px] text-indigo-300">{ui.autonomy}</a>
-              </div>
               <div className="mt-3 space-y-2">
                 {events.slice(0,3).map(e => (
                   <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
@@ -1348,6 +1365,7 @@ export default function FiltraDotPage() {
               onToggle={() => togglePanel('actions')}
             >
               <div className="text-[11px] leading-5 text-zinc-600">{ui.actionsBody}</div>
+              <div className="mt-2 text-[10px] leading-5 text-zinc-600">{ui.internalExecution}</div>
               {proposal && (
                 <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-4">
                   <div className="text-[10px] font-semibold uppercase tracking-[.16em] text-emerald-300">{extra.preparedNotExecuted}</div>
@@ -1450,16 +1468,20 @@ export default function FiltraDotPage() {
             <DotAccordion
               id="capabilities"
               title={ui.capabilitiesTitle}
-              meta="3"
+              meta="5"
               icon={<Bot size={15} />}
               open={openPanel === 'capabilities'}
               onToggle={() => togglePanel('capabilities')}
             >
               <ul className="space-y-3 text-xs leading-5 text-zinc-400">
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.analyze}</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.detectPatterns}</li>
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.explain}</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.investigate}</li>
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.prepare}</li>
+                <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.memory}</li>
               </ul>
+              <div className="mt-4 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[11px] leading-5 text-amber-200">{ui.notAvailable}</div>
             </DotAccordion>
 
             <DotAccordion
