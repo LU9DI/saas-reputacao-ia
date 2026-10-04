@@ -521,7 +521,8 @@ type DotOption = { id: 'opcao_1' | 'opcao_2'; title: string; description: string
 type DotDecision = { id: number; priority: string; severity: string; reason: string; recommendation: string; requiresApproval: boolean; status: string; options: DotOption[] };
 type DotAction = { id: number; decision_id: number; option_id: string; action: string; status: string; approved_at?: string | null; executed_at?: string | null; error?: string | null };
 type DotSchedulerStatus = { running: boolean; timer_active: boolean; tick_ms: number; last_run_at: string | null; last_success_at: string | null; last_error_at: string | null; last_error: string | null; duration_ms: number | null; companies_processed: number; companies_skipped: number; companies_errors: number; followups_processed: number; events_created: number; decisions_created: number; actions_prepared: number };
-type DotStatus = { access: boolean; enabled: boolean; demo: boolean; feature_enabled?: boolean; plan?: string; plan_label?: string; scheduler?: DotSchedulerStatus };
+type DotTokenBudget = { used: number; limit: number; percent: number; warning: boolean; exhausted: boolean; remaining: number };
+type DotStatus = { access: boolean; enabled: boolean; demo: boolean; feature_enabled?: boolean; plan?: string; plan_label?: string; scheduler?: DotSchedulerStatus; token_budget?: DotTokenBudget; token_warning_threshold?: number };
 type DotFollowUp = { id: number; decision_id: number; action_id: number; status: 'pending' | 'completed' | 'cancelled'; due_at: string; outcome?: string | null; result_json?: string | null; created_at: string; completed_at?: string | null };
 type DotResolve = {
   problem_summary: string;
@@ -828,6 +829,15 @@ export default function FiltraDotPage() {
         plan: status.plan,
         plan_label: status.plan_label,
         scheduler: status.scheduler,
+        token_budget: status.token_budget ? {
+          used: Number(status.token_budget.used || 0),
+          limit: Number(status.token_budget.limit || 0),
+          percent: Number(status.token_budget.percent || 0),
+          warning: Boolean(status.token_budget.warning),
+          exhausted: Boolean(status.token_budget.exhausted),
+          remaining: Number(status.token_budget.remaining || 0),
+        } : undefined,
+        token_warning_threshold: Number(status.token_warning_threshold || 0.8),
       });
       if (status?.scheduler) setScheduler(status.scheduler);
 
@@ -1163,7 +1173,21 @@ export default function FiltraDotPage() {
           </div>
         </header>
 
-        <div className="grid flex-1 gap-5 py-6 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px]">
+        {dotStatus?.token_budget?.warning && !dotStatus.token_budget.exhausted && (
+          <div className="mb-1 rounded-2xl border border-amber-400/25 bg-amber-400/[0.08] px-4 py-3 shadow-[0_12px_35px_rgba(245,158,11,.08)] lg:col-span-2">
+            <div className="flex items-start gap-3">
+              <CircleAlert size={17} className="mt-0.5 shrink-0 text-amber-300" />
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-amber-200">Atenção: uso de inteligência do Dot em {Math.round(dotStatus.token_budget.percent * 100)}%</div>
+                <div className="mt-1 text-[11px] leading-5 text-amber-100/70">
+                  Seu plano {dotStatus.plan_label || dotStatus.plan || ''} já utilizou {dotStatus.token_budget.used.toLocaleString('pt-BR')} de {dotStatus.token_budget.limit.toLocaleString('pt-BR')} tokens neste mês. O Dot continuará disponível, mas novas respostas de IA serão bloqueadas automaticamente ao atingir 100%.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px]">
           <section className="flex min-h-[760px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 shadow-2xl shadow-indigo-950/20">
             <div className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-7">
               <div className="mx-auto max-w-4xl">
@@ -1248,6 +1272,15 @@ export default function FiltraDotPage() {
                   <ArrowUp size={18} />
                 </button>
               </div>
+              {dotStatus?.token_budget && dotStatus.token_budget.limit > 0 && (
+                <div className="mx-auto mb-2 flex max-w-4xl items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[10px] text-zinc-500">
+                  <span>Uso do Dot neste mês</span>
+                  <span className={dotStatus.token_budget.warning ? 'font-semibold text-amber-300' : 'text-zinc-400'}>
+                    {Math.round(dotStatus.token_budget.percent * 100)}% · {dotStatus.token_budget.remaining.toLocaleString('pt-BR')} tokens restantes
+                  </span>
+                </div>
+              )}
+
               <div className="mx-auto mt-2 flex max-w-4xl items-center justify-between gap-3 text-[10px] text-zinc-600">
                 <span>{dotStatus?.demo ? ui.localDemo : ui.protectedActions}</span>
                 <span className="hidden text-right sm:block">{responseMode === 'didatico' ? ui.modeDidacticHint : ui.modeObjectiveHint}</span>
