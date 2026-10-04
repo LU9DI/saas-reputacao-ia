@@ -1147,6 +1147,14 @@ export default function FiltraDotPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {dotStatus?.token_budget && dotStatus.token_budget.limit > 0 && (
+              <div className={`hidden items-center gap-2 rounded-xl border px-3 py-2 text-[10px] sm:flex ${dotStatus.token_budget.warning ? 'border-amber-400/20 bg-amber-400/[0.06] text-amber-200' : 'border-white/[0.08] bg-white/[0.02] text-zinc-400'}`}>
+                <span>Uso</span>
+                <span className="font-semibold">{Math.round(dotStatus.token_budget.percent * 100)}%</span>
+                <span className="text-zinc-600">·</span>
+                <span>{dotStatus.token_budget.remaining.toLocaleString('pt-BR')} restantes</span>
+              </div>
+            )}
             <label className="relative inline-flex items-center rounded-xl border border-white/10 bg-white/[0.02] px-2.5 py-2 text-xs text-zinc-400 transition hover:border-indigo-400/30 hover:text-zinc-200">
               <span className="sr-only">{ui.languageLabel}</span>
               <span className="mr-2 text-[10px] uppercase tracking-[.12em] text-zinc-600">{ui.languageLabel}</span>
