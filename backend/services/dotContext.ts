@@ -335,10 +335,20 @@ export async function loadDotContextForMessage(empresaId: string, message: strin
   const decision = classifyDotRequest(message);
   const db = getDb();
   const fp = await fingerprint(empresaId);
-  if (!decision.refreshRequired) {
-    const cached = await getCached(db, empresaId, fp);
-    if (cached) return { context:toText(cached,'cached'), decision, fingerprint:fp, snapshot:cached, cacheHit:true };
+  // Primeiro tentamos sempre reutilizar o snapshot persistido.
+  // A classificação da pergunta nunca deve impedir uma resposta factual
+  // quando o cache já contém todos os dados necessários.
+  const cached = await getCached(db, empresaId, fp);
+  if (cached) {
+    return {
+      context: toText(cached, 'cached'),
+      decision,
+      fingerprint: fp,
+      snapshot: cached,
+      cacheHit: true,
+    };
   }
+
   const snapshot = await buildSnapshot(empresaId);
   await putCached(db, empresaId, fp, snapshot);
   const refreshedDecision = decision.mode === 'cached'
