@@ -152,7 +152,9 @@ export async function completeDotOAuth(input: { code: string; state: string }) {
   if (payload.refresh_token) {
     await putDotCredential({ empresaId, provider, kind: 'refresh_token', value: String(payload.refresh_token) });
   }
-  const grantedScopes = String(payload.scope || session.scopes).split(/[ ,]+/).filter(Boolean);
+  const grantedScopes = Array.isArray(payload.scopes)
+    ? payload.scopes.map((scope: unknown) => String(scope)).filter(Boolean)
+    : String(payload.scope || session.scopes).split(/[ ,]+/).filter(Boolean);
   const existingIntegration = await db.get(
     'SELECT id FROM dot_integrations WHERE empresa_id=? AND provider=? LIMIT 1',
     [empresaId, provider],
@@ -161,12 +163,12 @@ export async function completeDotOAuth(input: { code: string; state: string }) {
   if (existingIntegration) {
     await db.run(
       'UPDATE dot_integrations SET provider_account_id=?, status=?, scopes=?, token_ref=?, updated_at=? WHERE id=? AND empresa_id=?',
-      [null, 'connected', grantedScopes.join(','), 'vault', nowIso, existingIntegration.id, empresaId],
+      [payload.hub_id ? String(payload.hub_id) : null, 'connected', grantedScopes.join(','), 'vault', nowIso, existingIntegration.id, empresaId],
     );
   } else {
     await db.run(
       'INSERT INTO dot_integrations (empresa_id,provider,provider_account_id,status,scopes,token_ref,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
-      [empresaId, provider, null, 'connected', grantedScopes.join(','), 'vault', nowIso, nowIso],
+      [empresaId, provider, payload.hub_id ? String(payload.hub_id) : null, 'connected', grantedScopes.join(','), 'vault', nowIso, nowIso],
     );
   }
   await db.run('UPDATE dot_oauth_sessions SET status=?, consumed_at=? WHERE id=?', ['consumed', new Date().toISOString(), session.id]);
