@@ -1202,8 +1202,8 @@ export default function FiltraDotPage() {
           </div>
         )}
 
-        <div className="grid flex-1 gap-5 lg:grid-cols-[380px_minmax(0,1fr)] xl:grid-cols-[410px_minmax(0,1fr)]">
-          <section className="order-2 flex min-h-[760px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 shadow-2xl shadow-indigo-950/20">
+        <div className="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
+          <section className="order-1 flex min-h-[760px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/80 shadow-2xl shadow-indigo-950/20">
             <div className="flex-1 space-y-5 overflow-y-auto p-4 sm:p-7">
               <div className="mx-auto max-w-4xl">
                 <div className="mb-7 flex items-start gap-3 sm:gap-4">
@@ -1303,76 +1303,52 @@ export default function FiltraDotPage() {
             </div>
           </section>
 
-          <aside className="order-1 space-y-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
-            <div className="rounded-[24px] border border-indigo-400/15 bg-gradient-to-br from-indigo-500/[0.10] via-white/[0.025] to-black/20 p-5 shadow-[0_18px_50px_rgba(49,46,129,0.12)]">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-indigo-300">{ui.currentTitle}</div>
-                  <div className="mt-1 text-lg font-semibold tracking-tight text-white">{briefing?.headline || briefing?.priority || ui.monitoringActive}</div>
-                  <p className="mt-1 text-xs leading-5 text-zinc-400">{briefing?.reason || ui.currentBody}</p>
+          <aside className="order-2 space-y-3 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto lg:pr-1">
+            <div className="rounded-[22px] border border-white/[0.08] bg-white/[0.02] p-4">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,.7)]" />
+                <span className="text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-500">{ui.currentTitle}</span>
+              </div>
+              <div className="mt-3 text-base font-semibold tracking-tight text-white">{briefing?.headline || briefing?.priority || ui.monitoringActive}</div>
+              <p className="mt-1.5 text-xs leading-5 text-zinc-400">{briefing?.reason || ui.currentBody}</p>
+              <div className="mt-4 flex flex-wrap gap-1.5 text-[10px]">
+                {events.length > 0 && <span className="rounded-full border border-amber-400/15 bg-amber-500/10 px-2 py-1 text-amber-200">{events.length} {ui.signalsContext}</span>}
+                {decisions.length > 0 && <span className="rounded-full border border-indigo-400/15 bg-indigo-500/10 px-2 py-1 text-indigo-200">{decisions.length} {ui.pendingDecision.toLowerCase()}</span>}
+                {actions.length > 0 && <span className="rounded-full border border-white/10 bg-white/[0.03] px-2 py-1 text-zinc-300">{actions.length} {ui.pendingAction.toLowerCase()}</span>}
+                {events.length === 0 && decisions.length === 0 && actions.length === 0 && <span className="text-zinc-500">{ui.calmContext}</span>}
+              </div>
+              {briefing?.suggestedAction && (
+                <button type="button" onClick={() => void prepareAction()} disabled={busy} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-40">
+                  <Zap size={13} /> {briefing.suggestedAction}
+                </button>
+              )}
+            </div>
+
+            {(decisions.length > 0 || actions.length > 0 || followUps.length > 0) && (
+              <div className="rounded-[22px] border border-white/[0.08] bg-white/[0.02] p-4">
+                <div className="text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-500">{ui.workflowTitle}</div>
+                <div className="mt-3 space-y-2.5">
+                  {decisions.slice(0, 1).map((decision) => (
+                    <button key={`decision-${decision.id}`} type="button" onClick={() => focusPanel('decisions')} className="w-full rounded-xl border border-white/[0.07] bg-black/20 px-3 py-2.5 text-left transition hover:border-indigo-400/20">
+                      <div className="text-[10px] uppercase tracking-wide text-zinc-600">{ui.decisionLabel}</div>
+                      <div className="mt-1 line-clamp-2 text-xs text-zinc-200">{decision.recommendation}</div>
+                    </button>
+                  ))}
+                  {actions.slice(0, 1).map((action) => (
+                    <button key={`action-${action.id}`} type="button" onClick={() => focusPanel('actions')} className="w-full rounded-xl border border-white/[0.07] bg-black/20 px-3 py-2.5 text-left transition hover:border-indigo-400/20">
+                      <div className="text-[10px] uppercase tracking-wide text-zinc-600">{ui.actionsTitle}</div>
+                      <div className="mt-1 line-clamp-2 text-xs text-zinc-200">{action.action}</div>
+                    </button>
+                  ))}
+                  {followUps.slice(0, 1).map((followUp) => (
+                    <button key={`followup-${followUp.id}`} type="button" onClick={() => focusPanel('followups')} className="w-full rounded-xl border border-white/[0.07] bg-black/20 px-3 py-2.5 text-left transition hover:border-indigo-400/20">
+                      <div className="text-[10px] uppercase tracking-wide text-zinc-600">{ui.followupTitle}</div>
+                      <div className="mt-1 text-xs text-zinc-200">{new Date(followUp.due_at).toLocaleDateString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US')}</div>
+                    </button>
+                  ))}
                 </div>
-                <span className="shrink-0 rounded-full border border-emerald-400/15 bg-emerald-400/[0.06] px-2 py-1 text-[9px] font-medium text-emerald-300">{ui.online}</span>
               </div>
-              <div className="mt-3 text-[10px] text-zinc-500">
-                {events.length > 0 ? <>Evidências: <span className="text-zinc-300">{events.length}</span> · </> : null}
-                {decisions.length > 0 ? <><span className="text-zinc-300">{decisions.length}</span> {ui.pendingDecision.toLowerCase()}</> : ui.calmContext}
-              </div>
-              <button type="button" onClick={() => void prepareAction()} disabled={busy || (!proposal && decisions.length === 0 && actions.length === 0)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 text-xs font-semibold text-white shadow-lg shadow-indigo-950/20 transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-40">
-                <Zap size={14} /> {briefing?.suggestedAction || ui.prepareAction}
-              </button>
-              {briefing?.suggestedAction && <button type="button" onClick={() => focusPanel('alerts')} className="mt-2 w-full rounded-xl border border-white/[0.08] px-3 py-2 text-[10px] text-zinc-400 transition hover:border-white/15 hover:text-zinc-200">{ui.alertsTitle}</button>}
-            </div>
-
-            <div className="rounded-[20px] border border-white/[0.07] bg-white/[0.015] p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-500">{ui.workflowTitle}</div>
-                <span className="text-[9px] text-zinc-600">● {ui.currentTitle}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                {[
-                  [ui.signalsLabel, events.length > 0, 'alerts'],
-                  [ui.investigateTitle, Boolean(resolveResult), 'resolve'],
-                  [ui.decisionLabel, decisions.length > 0, 'decisions'],
-                  [ui.prepare, Boolean(proposal || actions.length), 'actions'],
-                  [ui.approveAction, actions.some((a) => ['approved','executing','executed'].includes(a.status)), 'actions'],
-                  [ui.resultLabel, followUps.some((f) => f.status !== 'pending'), 'followups'],
-                ].map(([label, active, panel], index) => (
-                  <button key={String(label)} type="button" onClick={() => focusPanel(panel as DotPanelId)} title={String(label)} className="group relative flex min-w-0 flex-1 flex-col items-center">
-                    <span className={`h-2.5 w-2.5 rounded-full border ${active ? 'border-indigo-300 bg-indigo-400' : 'border-zinc-700 bg-zinc-900'}`} />
-                    {index < 5 && <span className="absolute left-1/2 top-1.5 h-px w-full translate-x-1 bg-white/[0.08]" />}
-                    <span className={`mt-2 w-full truncate text-center text-[8px] ${active ? 'text-indigo-200' : 'text-zinc-600'}`}>{label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[20px] border border-white/[0.07] bg-white/[0.015] p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <div className="text-[10px] font-semibold uppercase tracking-[.18em] text-zinc-500">Fila</div>
-                <span className="text-[9px] text-zinc-600">{decisions.length + actions.length + followUps.length} itens</span>
-              </div>
-              <div className="space-y-2">
-                {decisions.slice(0, 2).map((decision) => (
-                  <div key={`decision-${decision.id}`} className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-black/20 px-3 py-2.5">
-                    <div className="min-w-0"><div className="text-[10px] font-medium text-zinc-200 truncate">{ui.decisionLabel} · {decision.recommendation}</div><div className="mt-0.5 text-[9px] text-zinc-600">{dotStatusLabel(decision.status, uiLocale)}</div></div>
-                    <button type="button" onClick={() => focusPanel('decisions')} className="shrink-0 text-[9px] font-semibold text-indigo-300 hover:text-indigo-200">{decision.requiresApproval ? ui.prepare : 'Abrir'}</button>
-                  </div>
-                ))}
-                {actions.slice(0, 2).map((action) => (
-                  <div key={`action-${action.id}`} className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-black/20 px-3 py-2.5">
-                    <div className="min-w-0"><div className="text-[10px] font-medium text-zinc-200 truncate">{ui.actionsTitle} · {action.action}</div><div className="mt-0.5 text-[9px] text-zinc-600">{dotStatusLabel(action.status, uiLocale)}</div></div>
-                    <button type="button" onClick={() => focusPanel('actions')} className="shrink-0 text-[9px] font-semibold text-indigo-300 hover:text-indigo-200">{action.status === 'prepared' ? ui.approveAction : 'Abrir'}</button>
-                  </div>
-                ))}
-                {followUps.slice(0, 1).map((followUp) => (
-                  <div key={`followup-${followUp.id}`} className="flex items-center justify-between gap-2 rounded-xl border border-white/[0.06] bg-black/20 px-3 py-2.5">
-                    <div className="min-w-0"><div className="text-[10px] font-medium text-zinc-200 truncate">{ui.followupTitle}</div><div className="mt-0.5 text-[9px] text-zinc-600">{new Date(followUp.due_at).toLocaleDateString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US')}</div></div>
-                    <button type="button" onClick={() => focusPanel('followups')} className="shrink-0 text-[9px] font-semibold text-indigo-300 hover:text-indigo-200">Abrir</button>
-                  </div>
-                ))}
-                {decisions.length === 0 && actions.length === 0 && followUps.length === 0 && <div className="rounded-xl border border-dashed border-white/[0.08] px-3 py-4 text-[10px] leading-5 text-zinc-600">{ui.calmContext}</div>}
-              </div>
-            </div>
+            )}
 
             <div className="rounded-[20px] border border-white/[0.06] bg-black/10 px-4 py-3 text-[10px] leading-5 text-zinc-600">
               {dotStatus?.demo ? ui.localDemo : ui.protectedActions}
