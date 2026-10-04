@@ -170,20 +170,44 @@ function toText(s: Snapshot, mode: DotContextMode) {
   ].join('\n');
 }
 
+export function buildCachedDotAnswer(message: string, snapshot: Snapshot | null | undefined): string | null {
+  if (!snapshot) return null;
+  const q = normalize(message);
+  if (/\b(nota|rating|media)\b/.test(q)) {
+    return `A nota média registrada é ${snapshot.metrics.average}/5, com ${snapshot.metrics.review_count} avaliações reais. Essa é uma leitura factual do estado persistido; se quiser, posso investigar por que ela mudou.`;
+  }
+  if (/\b(quantas|quantos|numero|total)\b/.test(q) && /\b(avaliacoes|reviews)\b/.test(q)) {
+    return `Há ${snapshot.metrics.review_count} avaliações reais registradas. ${snapshot.metrics.positive} estão em 4–5★ e ${snapshot.metrics.critical} em 1–3★.`;
+  }
+  if (/\b(principais temas|temas principais|assuntos|reclamacoes|elogios)\b/.test(q)) {
+    const themes = snapshot.themes.slice(0, 5).map((t) => `${t.tag} (${t.count})`).join(', ');
+    return themes ? `Os principais temas já calculados são: ${themes}. Se quiser entender causa ou prioridade, essa parte precisa de análise ao vivo.` : 'Ainda não há temas calculados suficientes no contexto persistido.';
+  }
+  if (/\b(alertas)\b/.test(q)) {
+    const open = snapshot.alerts.filter((a: any) => !a.acknowledged_at).length;
+    return `Existem ${snapshot.alerts.length} alertas persistidos no histórico recente, dos quais ${open} ainda não estão reconhecidos.`;
+  }
+  if (/\b(decisoes)\b/.test(q)) {
+    const pending = snapshot.decisions.filter((d: any) => ['pending','prepared'].includes(String(d.status))).length;
+    return `Há ${snapshot.decisions.length} decisões persistidas no histórico recente; ${pending} ainda estão pendentes ou preparadas.`;
+  }
+  return null;
+}
+
 export async function loadDotContextForMessage(empresaId: string, message: string) {
   const decision = classifyDotRequest(message);
   const db = getDb();
   const fp = await fingerprint(empresaId);
   if (!decision.refreshRequired) {
     const cached = await getCached(db, empresaId, fp);
-    if (cached) return { context:toText(cached,'cached'), decision, fingerprint:fp };
+    if (cached) return { context:toText(cached,'cached'), decision, fingerprint:fp, snapshot:cached, cacheHit:true };
   }
   const snapshot = await buildSnapshot(empresaId);
   await putCached(db, empresaId, fp, snapshot);
   const refreshedDecision = decision.mode === 'cached'
     ? { ...decision, mode: 'refresh' as const, dataSource: 'database' as const, refreshRequired: true }
     : decision;
-  return { context:toText(snapshot,refreshedDecision.mode), decision:refreshedDecision, fingerprint:fp };
+  return { context:toText(snapshot,refreshedDecision.mode), decision:refreshedDecision, fingerprint:fp, snapshot, cacheHit:false };
 }
 
 export async function loadDotRealContext(empresaId: string): Promise<string> {
