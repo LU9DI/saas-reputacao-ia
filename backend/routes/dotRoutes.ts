@@ -15,6 +15,7 @@ import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
+import { selectDotModel } from '../services/dotModelRouting.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -67,28 +68,6 @@ const DOT_RESPONSE_TOKEN_LIMITS: Record<string, number> = {
   corporativo: Math.max(300, Number(process.env.DOT_CORPORATIVO_RESPONSE_TOKENS || 1200)),
 };
 
-function selectDotModel(message: string): { model: string; tier: '20b' | '120b' } {
-  const q = String(message || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
-
-  // High-impact or genuinely analytical requests stay on the stronger model.
-  const complex = [
-    /\\b(por que|porque|causa|origem|motivo|diagnostique|diagnosticar|investigue|investigar)\\b/,
-    /\\b(estrategia|estrategico|estrategica|plano|planeje|planejar|priorize|prioridade|recomende|recomendacao|decisao|decida)\\b/,
-    /\\b(impacto|risco|previsao|preveja|cenarios|cenario|comparar|comparacao|analise profunda|diagnostico)\\b/,
-  ].some((pattern) => pattern.test(q));
-
-  if (complex) {
-    return {
-      model: process.env.DOT_GROQ_COMPLEX_MODEL || 'openai/gpt-oss-120b',
-      tier: '120b',
-    };
-  }
-
-  return {
-    model: process.env.DOT_GROQ_SIMPLE_MODEL || 'openai/gpt-oss-20b',
-    tier: '20b',
-  };
-}
 
 const DOT_TOKEN_RESERVATION_TTL_MS = Math.max(
   5_000,
