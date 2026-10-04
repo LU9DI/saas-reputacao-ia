@@ -1092,6 +1092,21 @@ export default function FiltraDotPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Falha ao falar com o Dot.');
+      if (typeof data.dot_token_limit === 'number') {
+        const used = Number(data.dot_tokens_used || 0);
+        const limit = Number(data.dot_token_limit || 0);
+        setDotStatus((current) => current ? {
+          ...current,
+          token_budget: {
+            used,
+            limit,
+            percent: limit > 0 ? used / limit : 0,
+            warning: Boolean(data.token_warning),
+            exhausted: limit > 0 && used >= limit,
+            remaining: Math.max(0, limit - used),
+          },
+        } : current);
+      }
       setMessages((current) => [...current, { role: 'dot', text: data.message }]);
     } catch (error: any) {
       setMessages((current) => [...current, {
