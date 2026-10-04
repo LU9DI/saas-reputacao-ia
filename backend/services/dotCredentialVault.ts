@@ -81,14 +81,14 @@ export async function putDotCredential(input: {
   }
 }
 
-export async function getDotCredential(empresaId: string, provider: DotIntegrationProvider, kind: DotCredentialKind) {
+export async function getDotCredential(empresaId: string, provider: DotIntegrationProvider, kind: DotCredentialKind, options?: { allowExpired?: boolean }) {
   await ensureDotCredentialVaultSchema();
   const row = await getDb().get(
     'SELECT ciphertext, iv, auth_tag, expires_at, revoked_at FROM dot_integration_credentials WHERE empresa_id=? AND provider=? AND kind=? LIMIT 1',
     [empresaId, provider, kind],
   );
   if (!row || row.revoked_at) return null;
-  if (row.expires_at && new Date(String(row.expires_at)).getTime() <= Date.now()) return null;
+  if (!options?.allowExpired && row.expires_at && new Date(String(row.expires_at)).getTime() <= Date.now()) return null;
   return { value: decrypt(row), expiresAt: row.expires_at || null };
 }
 
