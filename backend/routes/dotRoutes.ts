@@ -552,7 +552,7 @@ export function mountDotRoutes(app: Express) {
 
     // Perguntas puramente factuais podem sair do cache sem consumir a cota de IA.
     // Raciocínio, explicação, comparação e estado temporal continuam passando pela IA.
-    if (!access.demo && contextResult.cacheHit && contextResult.decision.mode === 'cached') {
+    if (!access.demo && contextResult.cacheHit) {
       const cachedAnswer = buildCachedDotAnswer(message, contextResult.snapshot);
       if (cachedAnswer) {
         history.push({ role: 'user', text: message, at: Date.now() });
@@ -591,7 +591,7 @@ export function mountDotRoutes(app: Express) {
     // Reutiliza respostas de raciocínio quando a intenção é semanticamente equivalente
     // e o fingerprint dos dados é idêntico. Isso evita gastar tokens novamente
     // para perguntas repetidas ou parafraseadas sem sacrificar frescor.
-    if (!access.demo && contextResult.decision.mode === 'live_ai' && contextResult.fingerprint) {
+    if (!access.demo && contextResult.fingerprint) {
       const semanticCached = await getDotResponseCache(
         access.empresaId as string,
         message,
