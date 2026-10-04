@@ -1267,7 +1267,7 @@ export default function FiltraDotPage() {
               onToggle={() => togglePanel('overview')}
             >
               <div className="text-[11px] leading-5 text-zinc-600">{ui.overviewBody}</div>
-              <div className="mt-4 space-y-3">
+              <div className="mt-3 space-y-2.5">
                 {briefing && (
                   <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.04] p-4">
                     <div className="text-xs font-medium text-amber-200">{ui.prioritySignal}</div>
@@ -1275,10 +1275,10 @@ export default function FiltraDotPage() {
                     <div className="mt-1 text-xs leading-5 text-zinc-500">{briefing.reason}</div>
                   </div>
                 )}
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+                <div className="grid gap-2.5 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-3.5">
                     <div className="flex items-center gap-2 text-xs text-zinc-500"><TrendingUp size={14} /> {ui.trendLabel}</div>
-                    <div className="mt-1 text-xl font-semibold text-white">{briefing?.trend || ui.waiting}</div>
+                    <div className="mt-1 text-lg font-semibold text-white">{briefing?.trend || ui.waiting}</div>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
                     <div className="flex items-center gap-2 text-xs text-zinc-500"><Zap size={14} /> {ui.signalsLabel}</div>
@@ -1302,7 +1302,7 @@ export default function FiltraDotPage() {
               onToggle={() => togglePanel('alerts')}
             >
               <div className="text-[11px] leading-5 text-zinc-600">{ui.alertsBody}</div>
-              <div className="mt-3 space-y-2">
+              <div className="mt-2.5 space-y-2">
                 {events.slice(0,3).map(e => (
                   <div key={e.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
                     <div className="text-xs font-medium text-white">{e.title}</div>
@@ -1324,7 +1324,7 @@ export default function FiltraDotPage() {
               onToggle={() => togglePanel('decisions')}
             >
               <div className="text-[11px] leading-5 text-zinc-600">{ui.decisionsBody}</div>
-              <div className="mt-3 space-y-3">
+              <div className="mt-2.5 space-y-2.5">
                 {decisions.slice(0,3).map(d => (
                   <div key={d.id} className="rounded-2xl border border-white/5 bg-black/20 p-3">
                     <div className="flex items-center justify-between">
@@ -1334,7 +1334,7 @@ export default function FiltraDotPage() {
                     <div className="mt-1 text-xs text-zinc-400">{d.reason}</div>
                     <div className="mt-2 text-[11px] leading-5 text-zinc-500">{ui.nextStepLabel}: {d.recommendation}</div>
                     {d.requiresApproval && <div className="mt-2 text-[10px] text-amber-300">{ui.finalOwner}</div>}
-                    <div className="mt-3 grid gap-2">
+                    <div className="mt-2.5 grid gap-2">
                       {(d.options || []).slice(0,2).map(option => (
                         <button key={option.id} type="button" onClick={() => void prepareOption(d.id, option.id)} className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-left hover:border-indigo-400/30">
                           <div className="text-xs font-semibold text-white">{option.title}</div>
@@ -1366,7 +1366,7 @@ export default function FiltraDotPage() {
               <div className="text-[11px] leading-5 text-zinc-600">{ui.actionsBody}</div>
               <div className="mt-2 text-[10px] leading-5 text-zinc-600">{ui.internalExecution}</div>
               {proposal && (
-                <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-4">
+                <div className="mt-3 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-4">
                   <div className="text-[10px] font-semibold uppercase tracking-[.16em] text-emerald-300">{extra.preparedNotExecuted}</div>
                   <div className="mt-2 text-sm font-semibold text-white">{proposal.title}</div>
                   <div className="mt-2 text-xs leading-5 text-zinc-400">{proposal.objective}</div>
@@ -1480,7 +1480,7 @@ export default function FiltraDotPage() {
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.prepare}</li>
                 <li className="flex gap-2"><CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" /> {ui.memory}</li>
               </ul>
-              <div className="mt-4 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[11px] leading-5 text-amber-200">{ui.notAvailable}</div>
+              <div className="mt-3 rounded-xl border border-amber-400/15 bg-amber-400/[0.04] px-3 py-2 text-[11px] leading-5 text-amber-200">{ui.notAvailable}</div>
             </DotAccordion>
 
             <DotAccordion
