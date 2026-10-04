@@ -67,6 +67,29 @@ const DOT_RESPONSE_TOKEN_LIMITS: Record<string, number> = {
   corporativo: Math.max(300, Number(process.env.DOT_CORPORATIVO_RESPONSE_TOKENS || 1200)),
 };
 
+function selectDotModel(message: string): { model: string; tier: '20b' | '120b' } {
+  const q = String(message || '').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '');
+
+  // High-impact or genuinely analytical requests stay on the stronger model.
+  const complex = [
+    /\\b(por que|porque|causa|origem|motivo|diagnostique|diagnosticar|investigue|investigar)\\b/,
+    /\\b(estrategia|estrategico|estrategica|plano|planeje|planejar|priorize|prioridade|recomende|recomendacao|decisao|decida)\\b/,
+    /\\b(impacto|risco|previsao|preveja|cenarios|cenario|comparar|comparacao|analise profunda|diagnostico)\\b/,
+  ].some((pattern) => pattern.test(q));
+
+  if (complex) {
+    return {
+      model: process.env.DOT_GROQ_COMPLEX_MODEL || 'openai/gpt-oss-120b',
+      tier: '120b',
+    };
+  }
+
+  return {
+    model: process.env.DOT_GROQ_SIMPLE_MODEL || 'openai/gpt-oss-20b',
+    tier: '20b',
+  };
+}
+
 const DOT_TOKEN_RESERVATION_TTL_MS = Math.max(
   5_000,
   Number(process.env.DOT_TOKEN_RESERVATION_TTL_MS || 30_000),
@@ -661,12 +684,18 @@ CONTEXTO: ${contextResult.decision.mode}. ${contextResult.decision.reason}
 REGRA DE FRESCOR: use fatos persistidos do contexto quando suficientes; quando a pergunta pedir estado atual, causa, impacto, comparação, recomendação ou decisão, raciocine novamente com os dados verificados nesta solicitação.
 Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: conclusão, evidências, impacto, recomendação e próximo passo. Evite introduções e repetições desnecessárias.`;
 
+      const routing = selectDotModel(message);
       const result = await callAI(
         responseSystem,
         buildConversation(contextResult.context, history, message),
         tokenBudget.response_limit,
         0.45,
-        { empresaId: access.empresaId || null, tipo: 'filtra_dot_chat', feature: 'dot' }
+        {
+          empresaId: access.empresaId || null,
+          tipo: 'filtra_dot_chat',
+          feature: 'dot',
+          model: routing.model,
+        }
       );
 
       releaseDotTokenReservation(access.empresaId, reservedTokens);
@@ -679,7 +708,7 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
           message,
           contextResult.fingerprint,
           result.text,
-          { tokens_used: result.tokens, provider: result.provider },
+          { tokens_used: result.tokens, provider: result.provider, model: result.model },
         );
       }
 
@@ -691,6 +720,8 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
         ok: true,
         message: result.text,
         provider: result.provider,
+        model: result.model,
+        routing_tier: routing.tier,
         latency_ms: result.latency_ms,
         tokens_used: result.tokens,
         demo: access.demo,
