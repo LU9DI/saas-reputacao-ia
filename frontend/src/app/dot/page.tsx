@@ -418,6 +418,16 @@ function dotUi(locale = detectDotLocale()): DotUi {
 }
 
 
+
+function dotExtra(locale: string) {
+  const maps: Record<string, Record<string, string>> = {
+    pt: { plansBadge:'REI / CORPORATIVO', agentSubtitle:'Agente de reputação e crescimento', sendMessage:'Enviar mensagem', prepare:'Preparar', reject:'Rejeitar', verification:'Verificação', confidence:'confiança', followupItem:'Acompanhamento', note:'Nota', criticalDetected:'Piora detectada: nova decisão gerada.', policy:'Política', approvalRequiredWord:'aprovação obrigatória', preparedNotExecuted:'Ação preparada · não executada', approvalRequired:'A aprovação é obrigatória antes de qualquer ação externa.', complaintPlaceholder:'Ex.: cliente diz que esperou 40 minutos para ser atendido...', noSignals:'Nenhum sinal novo no momento.', noDecisions:'Ainda não há decisões sugeridas.', noPreparedActions:'Nenhuma ação foi preparada ainda.', followupEmpty:'O acompanhamento aparecerá quando houver uma ação executada.' },
+    en: { plansBadge:'REI / CORPORATE', agentSubtitle:'Reputation and growth agent', sendMessage:'Send message', prepare:'Prepare', reject:'Reject', verification:'Verification', confidence:'confidence', followupItem:'Follow-up', note:'Rating', criticalDetected:'Deterioration detected: a new decision was generated.', policy:'Policy', approvalRequiredWord:'approval required', preparedNotExecuted:'Prepared action · not executed', approvalRequired:'Approval is required before any external action.', complaintPlaceholder:'E.g. a customer says they waited 40 minutes to be served...', noSignals:'No new signals at the moment.', noDecisions:'There are no suggested decisions yet.', noPreparedActions:'No action has been prepared yet.', followupEmpty:'Follow-up will appear after an action is executed.' },
+    es: { plansBadge:'REI / CORPORATIVO', agentSubtitle:'Agente de reputación y crecimiento', sendMessage:'Enviar mensaje', prepare:'Preparar', reject:'Rechazar', verification:'Verificación', confidence:'confianza', followupItem:'Seguimiento', note:'Calificación', criticalDetected:'Empeoramiento detectado: se generó una nueva decisión.', policy:'Política', approvalRequiredWord:'aprobación obligatoria', preparedNotExecuted:'Acción preparada · no ejecutada', approvalRequired:'La aprobación es obligatoria antes de cualquier acción externa.', complaintPlaceholder:'Ej.: un cliente dice que esperó 40 minutos para ser atendido...', noSignals:'No hay señales nuevas en este momento.', noDecisions:'Todavía no hay decisiones sugeridas.', noPreparedActions:'Todavía no hay ninguna acción preparada.', followupEmpty:'El seguimiento aparecerá cuando se ejecute una acción.' },
+  };
+  return maps[locale] || maps.en;
+}
+
 function authHeaders(json = true): HeadersInit {
   return json ? { 'Content-Type': 'application/json' } : {};
 }
@@ -648,6 +658,7 @@ export default function FiltraDotPage() {
   const [responseMode, setResponseMode] = useState<'objetivo' | 'didatico'>('objetivo');
   const [uiLocale, setUiLocale] = useState('pt');
   const ui = dotUi(uiLocale);
+  const extra = dotExtra(uiLocale);
   const [suggestions, setSuggestions] = useState<string[]>(() => localizedSuggestions('pt'));
   const [messages, setMessages] = useState<Message[]>([initialMessage('sua empresa', 'pt')]);
   const [input, setInput] = useState('');
@@ -755,34 +766,65 @@ export default function FiltraDotPage() {
     let disposed = false;
     const refreshOperationalState = async () => {
       const headers = authHeaders(false);
-      const responses = await Promise.all([
-        apiFetch('/api/dot/status', { headers }),
+      const statusResponse = await apiFetch('/api/dot/status', { headers });
+      if (disposed) return;
+      const status = statusResponse.ok ? await statusResponse.json() : null;
+      if (!status) return;
+
+      setDotStatus({
+        access: Boolean(status.access),
+        enabled: Boolean(status.enabled),
+        demo: Boolean(status.demo),
+        feature_enabled: typeof status.feature_enabled === 'boolean' ? status.feature_enabled : undefined,
+        plan: status.plan,
+        plan_label: status.plan_label,
+        scheduler: status.scheduler,
+      });
+      if (status?.scheduler) setScheduler(status.scheduler);
+
+      if (status.demo) {
+        try {
+          const monitorResponse = await apiFetch('/api/dot/monitor/run', {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({}),
+          });
+          if (monitorResponse.ok) {
+            const monitorData = await monitorResponse.json();
+            const result = monitorData?.result;
+            if (result?.events) {
+              setEvents(result.events.map((event: any, index: number) => ({
+                ...event,
+                id: Number(event.id ?? index + 1),
+                created_at: event.created_at || new Date().toISOString(),
+              })));
+            }
+            if (result?.decisions) {
+              setDecisions(result.decisions.map((decision: any) => ({
+                ...decision,
+                id: Number(decision.id),
+                options: decision.options || [],
+              })));
+            }
+          }
+        } catch {}
+        return;
+      }
+
+      if (!status.access) return;
+      const [eventsResponse, decisionsResponse, actionsResponse, followupsResponse] = await Promise.all([
         apiFetch('/api/dot/events', { headers }),
         apiFetch('/api/dot/decisions', { headers }),
         apiFetch('/api/dot/actions', { headers }),
         apiFetch('/api/dot/followups', { headers }),
       ]);
       if (disposed) return;
-      const [statusResponse, eventsResponse, decisionsResponse, actionsResponse, followupsResponse] = responses;
-      const [status, eventsData, decisionsData, actionsData, followupsData] = await Promise.all([
-        statusResponse.ok ? statusResponse.json() : null,
+      const [eventsData, decisionsData, actionsData, followupsData] = await Promise.all([
         eventsResponse.ok ? eventsResponse.json() : null,
         decisionsResponse.ok ? decisionsResponse.json() : null,
         actionsResponse.ok ? actionsResponse.json() : null,
         followupsResponse.ok ? followupsResponse.json() : null,
       ]);
-      if (status) {
-        setDotStatus({
-          access: Boolean(status.access),
-          enabled: Boolean(status.enabled),
-          demo: Boolean(status.demo),
-          feature_enabled: typeof status.feature_enabled === 'boolean' ? status.feature_enabled : undefined,
-          plan: status.plan,
-          plan_label: status.plan_label,
-          scheduler: status.scheduler,
-        });
-      }
-      if (status?.scheduler) setScheduler(status.scheduler);
       if (eventsData?.events) setEvents(eventsData.events);
       if (decisionsData?.decisions) setDecisions(decisionsData.decisions);
       if (actionsData?.actions) setActions(actionsData.actions);
@@ -845,6 +887,15 @@ export default function FiltraDotPage() {
         body: JSON.stringify({ optionId }),
       });
       if (!response.ok) return;
+      const data = await response.json();
+      if (data?.action) {
+        setActions(current => {
+          const exists = current.some(action => action.id === Number(data.action.id));
+          return exists
+            ? current.map(action => action.id === Number(data.action.id) ? { ...action, ...data.action } : action)
+            : [data.action, ...current];
+        });
+      }
       setDecisions(current => current.map(d => d.id === decisionId ? { ...d, status: 'prepared' } : d));
     } catch {}
   }
@@ -854,7 +905,12 @@ export default function FiltraDotPage() {
       const response = await apiFetch('/api/dot/actions/' + actionId + '/approve', { method: 'POST', headers: authHeaders() });
       if (!response.ok) return;
       const data = await response.json();
-      if (data?.action) setActions(current => current.map(a => a.id === actionId ? { ...a, status: 'approved' } : a));
+      if (data?.action) {
+        setActions(current => current.map(a => a.id === actionId ? { ...a, status: 'approved', approved_at: data.action.approvedAt || data.action.approved_at } : a));
+        if (data.action.decisionId) {
+          setDecisions(current => current.map(d => d.id === Number(data.action.decisionId) ? { ...d, status: 'approved' } : d));
+        }
+      }
     } catch {}
   }
 
@@ -997,13 +1053,13 @@ export default function FiltraDotPage() {
             <div>
               <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
                 <span>Filtra Dot</span>
-                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">REI / CORPORATIVO</span>
+                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">{extra.plansBadge}</span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-zinc-400">
                   {dotStatus?.demo ? <FlaskConical size={10} /> : <Wifi size={10} />}
                   {dotStatus?.demo ? ui.demo : ui.online}
                 </span>
               </div>
-              <div className="text-xs text-zinc-500">Agente de reputação e crescimento</div>
+              <div className="text-xs text-zinc-500">{extra.agentSubtitle}</div>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {(() => {
                   const hasPendingAction = Boolean(proposal) || actions.some((action) => ['prepared', 'approved', 'executing'].includes(action.status));
@@ -1138,7 +1194,7 @@ export default function FiltraDotPage() {
                   onClick={() => void send()}
                   disabled={!input.trim() || busy}
                   className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-indigo-500 text-white transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-30"
-                  aria-label="Enviar mensagem"
+                  aria-label={extra.sendMessage}
                 >
                   <ArrowUp size={18} />
                 </button>
@@ -1237,7 +1293,7 @@ export default function FiltraDotPage() {
                     <div className="mt-1 text-[11px] leading-5 text-zinc-500">{e.details}</div>
                   </div>
                 ))}
-                {events.length === 0 && <div className="text-xs text-zinc-600">Nenhum sinal novo no momento.</div>}
+                {events.length === 0 && <div className="text-xs text-zinc-600">{extra.noSignals}</div>}
               </div>
             </DotAccordion>
 
@@ -1273,13 +1329,13 @@ export default function FiltraDotPage() {
                     </div>
                     {d.status === 'pending' && (
                       <div className="mt-3 flex gap-2">
-                        <button type="button" onClick={() => void updateDecision(d.id,'prepare')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">Preparar</button>
-                        <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">Rejeitar</button>
+                        <button type="button" onClick={() => d.options?.[0] && void prepareOption(d.id, d.options[0].id)} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-300 hover:border-indigo-400/30">{extra.prepare}</button>
+                        <button type="button" onClick={() => void updateDecision(d.id,'reject')} className="rounded-lg border border-white/10 px-2.5 py-1.5 text-[10px] text-zinc-500 hover:text-zinc-300">{extra.reject}</button>
                       </div>
                     )}
                   </div>
                 ))}
-                {decisions.length===0 && <div className="text-xs text-zinc-600">Ainda não há decisões sugeridas.</div>}
+                {decisions.length===0 && <div className="text-xs text-zinc-600">{extra.noDecisions}</div>}
               </div>
             </DotAccordion>
 
@@ -1294,11 +1350,11 @@ export default function FiltraDotPage() {
               <div className="text-[11px] leading-5 text-zinc-600">{ui.actionsBody}</div>
               {proposal && (
                 <div className="mt-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.04] p-4">
-                  <div className="text-[10px] font-semibold uppercase tracking-[.16em] text-emerald-300">Ação preparada · não executada</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-[.16em] text-emerald-300">{extra.preparedNotExecuted}</div>
                   <div className="mt-2 text-sm font-semibold text-white">{proposal.title}</div>
                   <div className="mt-2 text-xs leading-5 text-zinc-400">{proposal.objective}</div>
                   <ol className="mt-3 space-y-2 text-xs text-zinc-400">{(proposal.steps || []).map((step: string, index: number) => <li key={step}>{index + 1}. {step}</li>)}</ol>
-                  <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">A aprovação é obrigatória antes de qualquer ação externa.</div>
+                  <div className="mt-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.04] px-3 py-2 text-[11px] text-amber-200">{extra.approvalRequired}</div>
                 </div>
               )}
               <div className="mt-3 space-y-2">
@@ -1312,7 +1368,7 @@ export default function FiltraDotPage() {
                     {a.status === 'executed' && <div className="mt-2 text-[10px] text-emerald-300">{ui.executedLocal}</div>}
                   </div>
                 ))}
-                {actions.length===0 && <div className="text-xs text-zinc-600">Nenhuma ação foi preparada ainda.</div>}
+                {actions.length===0 && <div className="text-xs text-zinc-600">{extra.noPreparedActions}</div>}
               </div>
             </DotAccordion>
 
@@ -1329,12 +1385,12 @@ export default function FiltraDotPage() {
               <div className="space-y-2">
                 {followUps.slice(0,3).map(f => (
                   <div key={f.id} className="rounded-xl border border-white/5 bg-black/20 p-3">
-                    <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">Acompanhamento</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status, uiLocale)}</span></div>
+                    <div className="flex items-center justify-between text-[10px]"><span className="text-zinc-300">{extra.followupItem}</span><span className={f.status === 'pending' ? 'text-amber-300' : 'text-emerald-300'}>{dotStatusLabel(f.status, uiLocale)}</span></div>
                     <div className="mt-1 text-[11px] text-zinc-500">{f.status === 'pending' ? `${ui.due}: ${new Date(f.due_at).toLocaleString(uiLocale === 'pt' ? 'pt-BR' : uiLocale === 'es' ? 'es-ES' : 'en-US')}` : `${ui.outcome}: ${f.outcome || '—'}`}</div>
-                    {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>Nota: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">Piora detectada: nova decisão gerada.</div>}{r.reassessment?.policy && <div>Política: {r.reassessment.policy.autonomy} · aprovação obrigatória</div>}</div>; } catch { return null; } })()}
+                    {f.result_json && (() => { try { const r = JSON.parse(f.result_json); return <div className="mt-1 space-y-1 text-[10px] text-zinc-600"><div>{extra.note}: {r.current?.average ?? '—'} · críticas: {r.current?.critical_count ?? '—'} · variação: {r.delta_average > 0 ? '+' : ''}{r.delta_average ?? 0}</div>{r.reassessment?.event_id && <div className="text-amber-300">{extra.criticalDetected}</div>}{r.reassessment?.policy && <div>{extra.policy}: {r.reassessment.policy.autonomy} · {extra.approvalRequiredWord}</div>}</div>; } catch { return null; } })()}
                   </div>
                 ))}
-                {followUps.length === 0 && <div className="text-xs text-zinc-600">O acompanhamento aparecerá quando houver uma ação executada.</div>}
+                {followUps.length === 0 && <div className="text-xs text-zinc-600">{extra.followupEmpty}</div>}
               </div>
             </DotAccordion>
 
@@ -1349,14 +1405,14 @@ export default function FiltraDotPage() {
               onToggle={() => togglePanel('resolve')}
             >
               <div className="text-[11px] leading-5 text-zinc-600">{ui.investigateBody}</div>
-              <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder="Ex.: cliente diz que esperou 40 minutos para ser atendido..." className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
+              <textarea value={resolveInput} onChange={e => setResolveInput(e.target.value)} rows={3} placeholder={extra.complaintPlaceholder} className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white outline-none placeholder:text-zinc-600 focus:border-indigo-400/40" />
               <button type="button" onClick={() => void resolveComplaint()} disabled={!resolveInput.trim() || resolveBusy} className="mt-2 w-full rounded-xl bg-indigo-500 px-3 py-2.5 text-xs font-medium text-white hover:bg-indigo-400 disabled:opacity-40">{resolveBusy ? ui.verifyingComplaint : ui.verifyComplaint}</button>
               {resolveResult && (
                 <div className="mt-4 space-y-3">
                   <div className="rounded-xl border border-white/10 bg-black/20 p-3">
                     <div className="flex items-center justify-between text-[10px] uppercase tracking-wider">
-                      <span className="text-zinc-500">Verificação</span>
-                      <span className={resolveResult.verification_status === 'confirmed' ? 'text-emerald-300' : 'text-amber-300'}>{dotStatusLabel(resolveResult.verification_status, uiLocale)} · confiança {dotStatusLabel(resolveResult.confidence, uiLocale)}</span>
+                      <span className="text-zinc-500">{extra.verification}</span>
+                      <span className={resolveResult.verification_status === 'confirmed' ? 'text-emerald-300' : 'text-amber-300'}>{dotStatusLabel(resolveResult.verification_status, uiLocale)} · {extra.confidence} {dotStatusLabel(resolveResult.confidence, uiLocale)}</span>
                     </div>
                     <div className="mt-2 text-xs leading-5 text-zinc-300">{resolveResult.problem_summary}</div>
                   </div>
