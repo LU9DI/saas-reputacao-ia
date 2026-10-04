@@ -361,12 +361,19 @@ export function mountDotRoutes(app: Express) {
       "SELECT id FROM dot_agent_missions WHERE empresa_id=? AND status='waiting_approval' AND approval_action_id=? ORDER BY id DESC LIMIT 1",
       [access.empresaId, actionId],
     );
+    // A aprovação autoriza a execução pelo gateway. O gateway continua
+    // bloqueando qualquer efeito externo que ainda não tenha executor homologado.
+    const execution = await executeDotAction(access.empresaId, actionId);
+
     let resumedMission = null;
     if (mission) {
-      resumedMission = await advanceMission(access.empresaId, Number(mission.id), 'Ação aprovada. Retomando o acompanhamento.');
+      const executionSummary = execution.ok
+        ? `Ação aprovada e executada pelo gateway: ${execution.reason || 'execução concluída'}`
+        : `Ação aprovada, mas a execução ainda não foi concluída: ${execution.reason || 'aguardando executor'}`;
+      resumedMission = await advanceMission(access.empresaId, Number(mission.id), executionSummary);
     }
 
-    res.json({ ok: true, action, resumed_mission: resumedMission });
+    res.json({ ok: true, action, execution, resumed_mission: resumedMission });
   });
 
   app.post('/api/dot/actions/:id/run', async (req: Request, res: Response) => {
