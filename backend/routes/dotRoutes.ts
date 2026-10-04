@@ -2,7 +2,7 @@ import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { callAI } from '../groqService.js';
 import { prepareDotAction } from '../services/dotTools.js';
-import { loadDotRealContext, loadDotContextForMessage, buildCachedDotAnswer } from '../services/dotContext.js';
+import { loadDotRealContext, loadDotContextForMessage, buildCachedDotAnswer, getDotResponseCache, putDotResponseCache } from '../services/dotContext.js';
 import { getDotPreferences, saveDotPreferences } from '../services/dotPreferences.js';
 import { listDotEvents, runDotMonitor } from '../services/dotMonitor.js';
 import { resolveDotComplaint } from '../services/dotResolve.js';
@@ -588,6 +588,51 @@ export function mountDotRoutes(app: Express) {
       }
     }
 
+    // Reutiliza respostas de raciocínio quando a intenção é semanticamente equivalente
+    // e o fingerprint dos dados é idêntico. Isso evita gastar tokens novamente
+    // para perguntas repetidas ou parafraseadas sem sacrificar frescor.
+    if (!access.demo && contextResult.decision.mode === 'live_ai' && contextResult.fingerprint) {
+      const semanticCached = await getDotResponseCache(
+        access.empresaId as string,
+        message,
+        contextResult.fingerprint,
+      );
+      if (semanticCached) {
+        history.push({ role: 'user', text: message, at: Date.now() });
+        history.push({ role: 'dot', text: semanticCached.answer, at: Date.now() });
+        while (history.length > MAX_HISTORY) history.shift();
+        const dotLimit = getFeatureTokenLimit(access.plan || 'rei', 'dot');
+        const dotUsed = await tokensUsadosFeatureMes(access.empresaId as string, 'dot');
+        return res.json({
+          ok: true,
+          message: semanticCached.answer,
+          provider: 'cache',
+          cache_type: 'semantic_response',
+          cache_key: semanticCached.cache_key,
+          cache_source_provider: semanticCached.provider,
+          latency_ms: 0,
+          tokens_used: 0,
+          tokens_saved_estimate: semanticCached.tokens_used,
+          demo: false,
+          plan: access.plan || 'rei',
+          plan_label: access.planLabel || 'Rei',
+          session_id: requestedSessionId,
+          memory_turns: Math.floor(history.length / 2),
+          token_scope: 'dot',
+          feedback_token_limit: getTokenLimit(access.plan || 'rei'),
+          feedback_isolated: true,
+          response_token_limit: 0,
+          context_mode: 'cached',
+          context_source: 'semantic_response_cache',
+          context_refresh_required: false,
+          context_reason: 'Resposta semanticamente equivalente encontrada com os mesmos dados verificados.',
+          dot_token_limit: dotLimit,
+          dot_tokens_used: dotUsed,
+          dot_tokens_remaining_estimate: Math.max(0, dotLimit - dotUsed),
+        });
+      }
+    }
+
     const tokenBudget = await checkDotTokenBudget(access.empresaId, access.plan);
     if (!tokenBudget.ok) {
       return res.status(429).json({
@@ -625,6 +670,18 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
       );
 
       releaseDotTokenReservation(access.empresaId, reservedTokens);
+
+      // Guarda somente respostas geradas por IA e vinculadas ao fingerprint atual.
+      // Uma nova avaliação ou mudança relevante invalida esse cache.
+      if (!access.demo && contextResult.fingerprint && result.text) {
+        await putDotResponseCache(
+          access.empresaId as string,
+          message,
+          contextResult.fingerprint,
+          result.text,
+          { tokens_used: result.tokens, provider: result.provider },
+        );
+      }
 
       history.push({ role: 'user', text: message, at: Date.now() });
       history.push({ role: 'dot', text: result.text, at: Date.now() });
