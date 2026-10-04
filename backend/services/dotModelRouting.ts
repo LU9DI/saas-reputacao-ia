@@ -18,8 +18,8 @@ export function selectDotModel(message: string): DotModelSelection {
 
   const highImpact = [
     /\b(por que|porque|causa|origem|motivo|diagnostique|diagnosticar|investigue|investigar)\b/,
-    /\b(estrategia|estrategico|estrategica|plano|planeje|planejar|priorize|prioridade|recomende|recomendacao|decisao|decida)\b/,
-    /\b(impacto|risco|previsao|preveja|cenarios|cenario|comparar|comparacao|analise profunda|diagnostico)\b/,
+    /\b(estrategia|estrategico|estrategica|plano|planeje|planejar|priorize|priorizar|prioridade|recomende|recomendar|recomendacao|decisao|decida)\b/,
+    /\b(impacto|risco|previsao|preveja|cenarios|cenario|comparar|compare|comparacao|analise profunda|diagnostico)\b/,
   ];
 
   const tier: DotModelTier = highImpact.some((pattern) => pattern.test(q)) ? '120b' : '20b';
