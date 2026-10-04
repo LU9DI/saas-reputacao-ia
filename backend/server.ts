@@ -48,6 +48,7 @@ import { mountDotRoutes } from './routes/dotRoutes.js';
 import { mountDotAgentRoutes } from './routes/dotAgentRoutes.js';
 import { mountDotAccessRoutes } from './routes/dotAccessRoutes.js';
 import { mountDotCapabilityRoutes } from './routes/dotCapabilityRoutes.js';
+import { mountDotIntegrationRoutes } from './routes/dotIntegrationRoutes.js';
 import { mountDotAgentMissionRoutes } from './routes/dotAgentMissionRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
@@ -76,6 +77,7 @@ import { startDotMonitorScheduler } from './services/dotScheduler.js';
 import { startDotAgentWorker } from './services/dotAgentWorker.js';
 import { ensureAgentTables } from './services/dotAgent.js';
 import { ensureDotAccessSchema } from './services/dotAccessControl.js';
+import { ensureDotIntegrationSchema } from './services/dotIntegrationRegistry.js';
 import { ensureMissionTables } from './services/dotAgentMissions.js';
 
 assertEnvOrExit();
@@ -121,10 +123,10 @@ async function main() {
   try { await ensureReviewTreatmentColumns(getDb()); } catch (e) { console.warn('treatment columns:', e); }
   try { await ensureAcquisitionSchema(getDb()); } catch (e) { console.warn('acquisition schema:', e); }
   try { await ensureLeadSchema(getDb()); } catch (e) { console.warn('lead schema:', e); }
-  try { await ensureAgentTables(); await ensureMissionTables(); await ensureDotAccessSchema(); } catch (e) { console.warn('ensure DOT agent schema:', e); }
+  try { await ensureAgentTables(); await ensureMissionTables(); await ensureDotAccessSchema(); await ensureDotIntegrationSchema(); } catch (e) { console.warn('ensure DOT agent schema:', e); }
   await runSentimentBackfillOnBoot();
   await runLgpdSweepOnBoot();
-  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app); mountDotRoutes(app); mountDotAgentRoutes(app); mountDotAgentMissionRoutes(app); mountDotAccessRoutes(app); mountDotCapabilityRoutes(app);
+  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app); mountDotRoutes(app); mountDotAgentRoutes(app); mountDotAgentMissionRoutes(app); mountDotAccessRoutes(app); mountDotCapabilityRoutes(app); mountDotIntegrationRoutes(app);
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET }); mountAdminPasswordResetRoutes(app, getDb); mountMfaRoutes(app, getDb, { JWT_SECRET, setAuthCookie, autenticarToken }); mountPasswordResetRoutes(app, getDb); mountStripeRoutes(app, getDb);
   app.use(notFoundHandler); app.use(errorHandler);
   console.log(`📦 build ${BUILD.version} marker=${BUILD.marker}`); console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF'} | Pix: ${mpConfigured() ? 'ok' : 'OFF'} | PayPal: ${paypalConfigured() ? 'ok' : 'OFF'} | WeChat: ${wechatConfigured() ? 'ok' : 'OFF'}`); console.log(`📧 SMTP: ${smtpConfigured() ? 'configurado' : 'OFF — defina SMTP_* no Render'}`); console.log('🔌 MCP: POST /mcp (Grok custom connector)'); if (!wechatConfigured()) console.log('⚠️  WeChat Pay OFF — defina WECHAT_APP_ID / WECHAT_MCH_ID / WECHAT_API_KEY para ligar.');
