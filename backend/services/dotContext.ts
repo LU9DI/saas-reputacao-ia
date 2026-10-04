@@ -180,7 +180,10 @@ export async function loadDotContextForMessage(empresaId: string, message: strin
   }
   const snapshot = await buildSnapshot(empresaId);
   await putCached(db, empresaId, fp, snapshot);
-  return { context:toText(snapshot,decision.mode), decision, fingerprint:fp };
+  const refreshedDecision = decision.mode === 'cached'
+    ? { ...decision, mode: 'refresh' as const, dataSource: 'database' as const, refreshRequired: true }
+    : decision;
+  return { context:toText(snapshot,refreshedDecision.mode), decision:refreshedDecision, fingerprint:fp };
 }
 
 export async function loadDotRealContext(empresaId: string): Promise<string> {
