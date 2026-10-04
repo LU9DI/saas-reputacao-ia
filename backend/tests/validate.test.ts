@@ -48,9 +48,9 @@ describe('schemaReview', () => {
 });
 
 describe('schemaLoginEmpresa', () => {
-  it('deixa a validação do identificador para ensureLoginIdentifier', () => {
-    const { res, nextCalled, req } = run(schemaLoginEmpresa, { cnpj: '123', senha: 'x' });
-    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.cnpj, '123');
+  it('exige e-mail e preserva a senha', () => {
+    const { res, nextCalled, req } = run(schemaLoginEmpresa, { email: 'Dono@Email.COM', senha: 'x' });
+    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.email, 'dono@email.com'); assert.equal(req.body.senha, 'x');
   });
 });
 
