@@ -17,6 +17,8 @@ export type DotAccessResource =
   | 'erp'
   | 'other';
 
+const DEFAULT_PERMISSION_ADMIN_ROLES = ['owner', 'admin', 'gestor', 'manager'];
+
 export type DotPermission = {
   resource: DotAccessResource;
   action: DotAccessAction;
@@ -54,6 +56,19 @@ export async function ensureDotAccessSchema() {
     created_at TEXT NOT NULL
   )`);
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_access_audit_empresa ON dot_access_audit(empresa_id, created_at)');
+}
+
+export function dotPermissionAdminRoles(): string[] {
+  const configured = (process.env.DOT_PERMISSION_ADMIN_ROLES || '')
+    .split(',')
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+  return configured.length ? configured : DEFAULT_PERMISSION_ADMIN_ROLES;
+}
+
+export function canManageDotPermissions(user?: { id?: string | null; role?: string | null }): boolean {
+  const role = String(user?.role || '').trim().toLowerCase();
+  return Boolean(role && dotPermissionAdminRoles().includes(role));
 }
 
 export async function listDotPermissions(empresaId: string, userId?: string | null) {
