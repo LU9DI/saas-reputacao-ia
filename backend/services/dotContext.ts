@@ -1,4 +1,5 @@
 import { getDb, findEmpresa } from '../lib/db.js';
+import { createHash } from 'node:crypto';
 
 export type DotContextMode = 'cached' | 'refresh' | 'live_ai';
 export type DotContextDecision = {
@@ -168,6 +169,142 @@ function toText(s: Snapshot, mode: DotContextMode) {
     `Avaliações recentes: ${JSON.stringify(s.recent_reviews)}`,
     'REGRA: fatos persistidos podem ser reutilizados; causa, impacto, prioridade, recomendação, previsão e decisão devem ser raciocinados novamente.',
   ].join('\n');
+}
+
+
+const RESPONSE_CACHE_TTL_MS = Math.max(60_000, Number(process.env.DOT_RESPONSE_CACHE_TTL_MS || 1_800_000));
+
+const CONCEPT_ALIASES: Array<[RegExp, string]> = [
+  [/\b(nota|rating|media|pontuacao|pontuação)\b/g, 'nota'],
+  [/\b(caiu|cair|queda|diminu[iu]|diminuiu|piorou|baixa|baixou|reduziu|reduzindo)\b/g, 'queda'],
+  [/\b(subiu|subir|alta|aumentou|melhorou|cresceu|crescimento)\b/g, 'alta'],
+  [/\b(avaliacoes|avaliacao|reviews|review)\b/g, 'avaliacoes'],
+  [/\b(reclamacoes|reclamacao|queixas|problemas)\b/g, 'reclamacoes'],
+  [/\b(elogios|elogio|positivos|positivo)\b/g, 'elogios'],
+  [/\b(atendimento|servico|serviço|equipe)\b/g, 'atendimento'],
+  [/\b(demora|espera|atraso|lento|lentidao|lentidão)\b/g, 'espera'],
+  [/\b(unidade|filial|loja|hotel|clinica|clínica|restaurante)\b/g, 'unidade'],
+];
+
+function dotSemanticIntent(message: string): string {
+  const q = normalize(message);
+  if (/\b(por que|porque|causa|origem|motivo|explica|explique)\b/.test(q)) return 'causa';
+  if (/\b(compare|comparar|comparacao|comparação|diferenca|diferença)\b/.test(q)) return 'comparacao';
+  if (/\b(priorize|prioridade|mais importante|principal|foco)\b/.test(q)) return 'prioridade';
+  if (/\b(o que devo|o que fazer|como agir|recomende|recomendacao|recomendação|sugira|estrategia|estratégia|plano|planeje)\b/.test(q)) return 'recomendacao';
+  if (/\b(analise|analisar|avalie|diagnostique|interprete|interpretar)\b/.test(q)) return 'analise';
+  if (/\b(preveja|previsao|previsão|tendencia|tendência|proximo|próximo)\b/.test(q)) return 'previsao';
+  return 'geral';
+}
+
+export function buildDotSemanticKey(message: string): string {
+  let q = normalize(message);
+  const concepts = new Set<string>();
+  for (const [pattern, concept] of CONCEPT_ALIASES) {
+    if (pattern.test(q)) {
+      concepts.add(concept);
+      q = q.replace(pattern, ' ');
+    }
+    pattern.lastIndex = 0;
+  }
+  const stop = new Set(['qual','quais','quanto','quantos','como','minha','meu','minhas','meus','a','o','as','os','de','da','do','das','dos','em','no','na','nos','nas','para','por','que','e','é','foi','tem','tenho','está','esta','estao','estão','isso','isso']);
+  const terms = q.split(/[^a-z0-9]+/).filter((x) => x.length >= 4 && !stop.has(x)).sort().slice(0, 8);
+  return [dotSemanticIntent(message), ...Array.from(concepts).sort(), ...terms].join('|');
+}
+
+export function hashDotSemanticKey(message: string): string {
+  return createHash('sha256').update(buildDotSemanticKey(message)).digest('hex');
+}
+
+async function ensureResponseCache(db: any) {
+  await db.exec(`CREATE TABLE IF NOT EXISTS dot_response_cache (
+    cache_key TEXT PRIMARY KEY,
+    empresa_id TEXT NOT NULL,
+    semantic_key TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    answer TEXT NOT NULL,
+    provider TEXT,
+    model TEXT,
+    tokens_used INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    hit_count INTEGER NOT NULL DEFAULT 0,
+    last_hit_at TEXT
+  )`);
+}
+
+export async function getDotResponseCache(
+  empresaId: string,
+  message: string,
+  fp: string,
+): Promise<{ answer: string; tokens_used: number; provider: string | null; model: string | null; cache_key: string } | null> {
+  try {
+    const db = getDb();
+    await ensureResponseCache(db);
+    const cacheKey = hashDotSemanticKey(message);
+    const row = await db.get(
+      'SELECT answer,tokens_used,provider,model,expires_at FROM dot_response_cache WHERE cache_key=? AND empresa_id=? AND fingerprint=? LIMIT 1',
+      [cacheKey, empresaId, fp],
+    );
+    if (!row || new Date(String(row.expires_at)).getTime() <= Date.now()) return null;
+    await db.run(
+      'UPDATE dot_response_cache SET hit_count=hit_count+1,last_hit_at=? WHERE cache_key=? AND empresa_id=?',
+      [new Date().toISOString(), cacheKey, empresaId],
+    );
+    return {
+      answer: String(row.answer),
+      tokens_used: Number(row.tokens_used || 0),
+      provider: row.provider ? String(row.provider) : null,
+      model: row.model ? String(row.model) : null,
+      cache_key: cacheKey,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function putDotResponseCache(
+  empresaId: string,
+  message: string,
+  fp: string,
+  answer: string,
+  meta: { tokens_used: number; provider?: string | null; model?: string | null },
+) {
+  try {
+    const db = getDb();
+    await ensureResponseCache(db);
+    const cacheKey = hashDotSemanticKey(message);
+    const now = Date.now();
+    await db.run(`INSERT INTO dot_response_cache
+      (cache_key,empresa_id,semantic_key,fingerprint,answer,provider,model,tokens_used,created_at,expires_at,hit_count,last_hit_at)
+      VALUES (?,?,?,?,?,?,?,?,?,?,0,NULL)
+      ON CONFLICT(cache_key) DO UPDATE SET
+        empresa_id=excluded.empresa_id,
+        semantic_key=excluded.semantic_key,
+        fingerprint=excluded.fingerprint,
+        answer=excluded.answer,
+        provider=excluded.provider,
+        model=excluded.model,
+        tokens_used=excluded.tokens_used,
+        created_at=excluded.created_at,
+        expires_at=excluded.expires_at`,
+      [
+        cacheKey, empresaId, buildDotSemanticKey(message), fp, answer,
+        meta.provider || null, meta.model || null, Math.max(0, Number(meta.tokens_used || 0)),
+        new Date(now).toISOString(), new Date(now + RESPONSE_CACHE_TTL_MS).toISOString(),
+      ],
+    );
+  } catch {
+    // Response cache is optional and can never block DOT or Feedback.
+  }
+}
+
+export async function invalidateDotResponseCache(empresaId: string) {
+  try {
+    const db = getDb();
+    await ensureResponseCache(db);
+    await db.run('DELETE FROM dot_response_cache WHERE empresa_id=?', [empresaId]);
+  } catch {}
 }
 
 export function buildCachedDotAnswer(message: string, snapshot: Snapshot | null | undefined): string | null {
