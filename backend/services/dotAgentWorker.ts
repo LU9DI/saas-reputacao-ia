@@ -21,8 +21,18 @@ export function startDotAgentWorker() {
 
       for (const mission of missions || []) {
         try {
-          const result = await runCurrentDotMissionStep(String(mission.empresa_id), Number(mission.id));
-          if (result?.blocked) console.log(`🤖 DOT agente: missão ${mission.id} aguardando aprovação.`);
+          // Uma rodada pode atravessar várias etapas determinísticas da mesma missão.
+          // Paramos imediatamente quando a missão pede aprovação ou não avança mais.
+          for (let step = 0; step < 6; step += 1) {
+            const result = await runCurrentDotMissionStep(String(mission.empresa_id), Number(mission.id));
+            if (!result) break;
+            if (result.blocked) {
+              console.log(`🤖 DOT agente: missão ${mission.id} aguardando aprovação.`);
+              break;
+            }
+            if (result.completed) break;
+            if (result.advanced === false) break;
+          }
         } catch (error: any) {
           console.warn(`DOT agente: falha na missão ${mission.id}:`, error?.message || error);
         }
