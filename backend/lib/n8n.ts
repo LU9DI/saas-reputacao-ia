@@ -12,6 +12,7 @@
 
 export type N8nEvent =
   | 'trial.ativado'
+  | 'trial.verificacao_pendente'
   | 'payment.confirmado'
   | 'payment.cancelado'
   | 'review.critica'
