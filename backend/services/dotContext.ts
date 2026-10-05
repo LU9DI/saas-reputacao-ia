@@ -1,3 +1,4 @@
+import { protectDotText } from './dotDataProtection.js';
 import { getDb, findEmpresa } from '../lib/db.js';
 import { createHash } from 'node:crypto';
 
@@ -142,7 +143,7 @@ async function buildSnapshot(empresaId: string): Promise<Snapshot> {
     empresa: { id:String(empresa.id), nome:String(empresa.nome_empresa||'Empresa'), plan:String(empresa.plan||'trial') },
     metrics: { review_count:total, average, positive, critical },
     themes:Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([tag,count])=>({tag,count})),
-    recent_reviews:reviews.slice(0,8).map((r:any)=>({id:r.id,rating:Number(r.rating||0),comment:String(r.comment||'').slice(0,700),created_at:r.createdAt||r.created_at||null})),
+    recent_reviews:reviews.slice(0,8).map((r:any)=>({id:r.id,rating:Number(r.rating||0),comment:protectDotText(r.comment,700),created_at:r.createdAt||r.created_at||null})),
     alerts:await all(db,'SELECT id,type,severity,title,details,created_at,acknowledged_at FROM dot_events WHERE empresa_id=? ORDER BY id DESC LIMIT 20',[empresaId]),
     decisions:await all(db,'SELECT id,event_id,type,priority,severity,reason,recommendation,status,created_at FROM dot_decisions WHERE empresa_id=? ORDER BY id DESC LIMIT 20',[empresaId]),
     actions:await all(db,'SELECT id,decision_id,option_id,action,status,approved_at,executed_at,error,created_at FROM dot_action_queue WHERE empresa_id=? ORDER BY id DESC LIMIT 20',[empresaId]),
@@ -155,15 +156,15 @@ function toText(s: Snapshot, mode: DotContextMode) {
     mode==='cached'
       ? 'CONTEXTO DO DOT: cache seguro de fatos persistidos; não contém raciocínio novo.'
       : 'CONTEXTO DO DOT: dados verificados no banco nesta solicitação; raciocínio deve ser feito agora.',
-    `Empresa: ${s.empresa.nome}`,
+    `Empresa: ${protectDotText(s.empresa.nome,200)}`,
     `Plano: ${s.empresa.plan}`,
     `Avaliações reais: ${s.metrics.review_count}`,
     `Nota média calculada: ${s.metrics.average}/5`,
     `Positivas (4–5★): ${s.metrics.positive}`,
     `Críticas (1–3★): ${s.metrics.critical}`,
     `Temas já calculados: ${JSON.stringify(s.themes)}`,
-    `Alertas persistidos: ${JSON.stringify(s.alerts)}`,
-    `Decisões persistidas: ${JSON.stringify(s.decisions)}`,
+    `Alertas persistidos: ${JSON.stringify(s.alerts.map((x:any) => ({...x, title:protectDotText(x.title,300), details:protectDotText(x.details,1000)})))}`,
+    `Decisões persistidas: ${JSON.stringify(s.decisions.map((x:any) => ({...x, reason:protectDotText(x.reason,1000), recommendation:protectDotText(x.recommendation,1000)})))}`,
     `Ações persistidas: ${JSON.stringify(s.actions)}`,
     `Acompanhamentos persistidos: ${JSON.stringify(s.followups)}`,
     `Avaliações recentes: ${JSON.stringify(s.recent_reviews)}`,
