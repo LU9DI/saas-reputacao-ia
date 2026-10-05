@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 
 const base = 'https://filtraai.com';
 
-const localized = {
+const localized: Record<string, string[]> = {
   en: ['ai', 'customer-feedback', 'ai-review-analysis', 'online-reputation-management', 'google-reviews'],
   es: ['ia', 'feedback-clientes', 'analisis-resenas-ia', 'gestion-reputacion-online', 'resenas-google'],
   zh: ['ai', 'customer-feedback', 'ai-review-analysis', 'online-reputation-management', 'google-reviews'],
@@ -39,9 +39,9 @@ const paths = [
   '/ia',
   '/termos',
   '/privacidade',
-];
+] as const;
 
-const highPriority = new Set([
+const highPriority = new Set<string>([
   '/feedback-de-clientes',
   '/analise-de-avaliacoes-com-ia',
   '/gestao-de-reputacao-online',
@@ -49,22 +49,26 @@ const highPriority = new Set([
   '/ia',
 ]);
 
-const baseEntries: MetadataRoute.Sitemap = paths.map((path) => ({
-  url: base + path,
-  changeFrequency: path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly',
-  priority: path === '' ? 1 : highPriority.has(path) ? 0.95 : path.startsWith('/blog') ? 0.8 : 0.7,
-}));
-
-const localizedEntries: MetadataRoute.Sitemap = (
-  Object.entries(localized) as [keyof typeof localized, string[]][]
-).flatMap(([lang, slugs]) =>
-  slugs.map((slug) => ({
-    url: `${base}/${lang}/${slug}`,
-    changeFrequency: 'monthly' as const,
-    priority: 0.9,
-  })),
-);
+function entry(
+  path: string,
+  changeFrequency: 'weekly' | 'monthly',
+  priority: number,
+): MetadataRoute.Sitemap[number] {
+  return { url: base + path, changeFrequency, priority };
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseEntries: MetadataRoute.Sitemap = paths.map((path) => {
+    const freq: 'weekly' | 'monthly' =
+      path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly';
+    const priority =
+      path === '' ? 1 : highPriority.has(path) ? 0.95 : path.startsWith('/blog') ? 0.8 : 0.7;
+    return entry(path, freq, priority);
+  });
+
+  const localizedEntries: MetadataRoute.Sitemap = Object.entries(localized).flatMap(
+    ([lang, slugs]) => slugs.map((slug) => entry(`/${lang}/${slug}`, 'monthly', 0.9)),
+  );
+
   return [...baseEntries, ...localizedEntries];
 }
