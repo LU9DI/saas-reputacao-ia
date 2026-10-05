@@ -1,57 +1,42 @@
-# Postgres em produção (Filtra.IA)
+# Postgres em produção (Filtra.AI)
 
-## Comportamento atual do código
+## Comportamento do código
 
 `backend/lib/db.ts` escolhe o motor assim:
 
-| Ambiente | `DATABASE_URL` | Resultado |
-|----------|----------------|-----------|
-| development / test | ausente | **SQLite** |
-| qualquer | `postgresql://...` | **Postgres** (`lib/db.pg.ts`) |
-| production | ausente | SQLite + **aviso** (use `SQLITE_ALLOW_PROD=1` para silenciar) |
+| Ambiente | DATABASE_URL | Resultado |
+| --- | --- | --- |
+| development / test | ausente | SQLite |
+| qualquer | `postgresql://...` | Postgres |
+| production | ausente | SQLite + aviso |
 
-## Subir em produção (Railway / Neon / Supabase)
+**Produção deve usar Postgres.** O banco não deve depender do filesystem do serviço.
 
-1. Crie um Postgres e copie a URL.
+## Provedores
 
-2. No painel da API:
+Os provedores aceitos para produção são **Supabase** ou **Neon**.
+
+1. Crie o projeto Postgres.
+2. Copie a connection string.
+3. Configure `DATABASE_URL` no serviço Render.
+4. Use SSL/TLS conforme a connection string fornecida.
+5. Aplique o schema/migrações do projeto.
+6. Reinicie a API e confirme no log que o adapter Postgres foi selecionado.
+
+Exemplo:
 
 ```env
 NODE_ENV=production
 DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB?sslmode=require
 JWT_SECRET=...
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-APP_URL=https://seu-frontend
-FRONTEND_URL=https://seu-frontend
+APP_URL=https://filtraai.com
+FRONTEND_URL=https://filtraai.com
 ```
 
-3. Aplique o schema base (primeira vez):
+## Dev local
 
-```bash
-psql "$DATABASE_URL" -f docs/schema.postgres.sql
-```
+O desenvolvimento pode continuar em SQLite quando `DATABASE_URL` estiver ausente. Testes de integração usam banco temporário.
 
-O `initDB()` também tenta `CREATE TABLE IF NOT EXISTS` via adapter.
+## Regra operacional
 
-4. Reinicie a API. No log deve aparecer:
-
-```text
-🐘 Postgres conectado (DATABASE_URL)
-```
-
-## Adapter (`lib/db.pg.ts`)
-
-- API compatível: `get / run / all / exec`
-- `?` → `$1, $2…`
-- `PRAGMA table_info` → `information_schema.columns`
-- `datetime('now')` → `NOW()`
-- `IFNULL` → `COALESCE`
-- `INSERT OR IGNORE` → `ON CONFLICT DO NOTHING`
-
-**Limitação:** SQL muito específico do SQLite em scripts legados pode precisar de ajuste pontual. O caminho feliz (empresas, usuários, reviews, billing) está coberto.
-
-## Dev local continua em SQLite
-
-Não defina `DATABASE_URL` no `.env` de desenvolvimento.  
-Testes de integração usam arquivo temporário em `/tmp`.
+Render hospeda a API; Supabase ou Neon hospeda o Postgres. Não usar banco persistente no filesystem do serviço web.
