@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
 };
 
-const entitySchema = {
+const webpageSchema = {\n  '@context': 'https://schema.org',\n  '@type': 'WebPage',\n  '@id': 'https://filtraai.com/filtra-ai#webpage',\n  url: 'https://filtraai.com/filtra-ai',\n  name: 'Filtra.AI — Gestão de reputação online com IA',\n  description: 'Filtra.AI: plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.',\n  isPartOf: { '@id': 'https://filtraai.com/#website' },\n  about: { '@id': 'https://filtraai.com/#organization' },\n  inLanguage: 'pt-BR',\n};\n\nconst breadcrumbSchema = {\n  '@context': 'https://schema.org',\n  '@type': 'BreadcrumbList',\n  itemListElement: [\n    { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://filtraai.com/' },\n    { '@type': 'ListItem', position: 2, name: 'Filtra.AI', item: 'https://filtraai.com/filtra-ai' },\n  ],\n};\n\nconst entitySchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   '@id': 'https://filtraai.com/#organization',
