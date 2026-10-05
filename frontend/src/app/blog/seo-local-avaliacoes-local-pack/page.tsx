@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Pacotes de SEO local: guia completo para empresas e agências | Filtra.AI',
+  title: 'Pacotes de SEO local: guia completo | Filtra.AI',
   description:
     'Pacotes de SEO local para empresas e agências: veja o que incluir, como conectar Google Business Profile, avaliações, reputação e oportunidades no Google Maps.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' },
