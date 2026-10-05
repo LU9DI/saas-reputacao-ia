@@ -11,7 +11,7 @@ export function LanguageSwitcher({className='',compact=false,variant='select'}:{
     if(!['pt','en','es','zh'].includes(code))return;
     setLanguage(code);
     if(typeof window==='undefined')return;
-    // SEO pages use the same route in every language. Keep the current URL.\n    // The shared LanguageContext controls the visible language.\n  };
+    // SEO pages keep the same URL; the LanguageContext controls the visible language.\n  };
 
   if(variant==='flags') return <div className={`inline-flex items-center gap-1 ${className}`} role="group" aria-label={tx('language','Idioma')}>{SUPPORTED_LANGUAGES.map(l=><button key={l.code} type="button" onClick={()=>onChange(l.code)} title={l.label} aria-label={l.label} aria-pressed={current===l.code} className={`text-sm px-2 py-1 rounded-lg border ${current===l.code?'border-indigo-500 bg-indigo-500/20 text-zinc-50':'border-zinc-700 bg-zinc-900 text-zinc-400'}`}><span aria-hidden>{l.flag}</span>{!compact&&<span className="ml-1 hidden sm:inline">{l.code.toUpperCase()}</span>}</button>)}</div>;
 
