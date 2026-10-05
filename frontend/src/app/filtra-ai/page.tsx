@@ -5,7 +5,16 @@ export const metadata: Metadata = {
   title: 'Filtra.AI — Gestão de reputação online com IA',
   description:
     'Filtra.AI: plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.',
-  alternates: { canonical: 'https://filtraai.com/filtra-ai' },
+  alternates: {
+    canonical: 'https://filtraai.com/filtra-ai',
+    languages: {
+      'pt-BR': 'https://filtraai.com/filtra-ai',
+      en: 'https://filtraai.com/en/filtra-ai',
+      es: 'https://filtraai.com/es/filtra-ai',
+      zh: 'https://filtraai.com/zh/filtra-ai',
+      'x-default': 'https://filtraai.com/filtra-ai',
+    },
+  },
   openGraph: {
     type: 'website',
     url: 'https://filtraai.com/filtra-ai',
