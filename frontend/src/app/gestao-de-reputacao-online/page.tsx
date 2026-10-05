@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online para empresas',
-  description: 'Monitore avaliações, responda sinais importantes e transforme a reputação online em uma rotina de gestão e melhoria contínua.',
+  title: 'Gestão de reputação online: guia e plataforma para empresas | Filtra.AI',
+  description: 'Gestão de reputação online para empresas: monitore avaliações, analise feedback, encontre padrões e transforme reputação em crescimento com a Filtra.AI.',
   alternates: { canonical: 'https://filtraai.com/gestao-de-reputacao-online' },
   openGraph: {
     type: 'website',
@@ -28,11 +28,12 @@ export default function Page() {
         ],
       }) }} />
       <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI · Reputação online</p>
-      <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">Sua reputação online é uma fonte de crescimento.</h1>
-      <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">Cada avaliação pública influencia a percepção de futuros clientes e também revela informações sobre a experiência de quem já comprou. A Filtra.AI transforma esse fluxo de avaliações em inteligência para gestão.</p>
+      <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">Gestão de reputação online: transforme sua reputação em crescimento.</h1>
+      <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">A gestão de reputação online reúne avaliações, feedback e sinais da experiência do cliente para mostrar o que sua empresa deve preservar, corrigir e acompanhar. A Filtra.AI transforma esse fluxo em inteligência para gestão.</p>
       <div className="mt-8 flex flex-wrap gap-3"><Link href="/auditoria-gratuita" className="rounded-xl bg-indigo-500 px-5 py-3 font-semibold">Teste a Filtra.AI</Link><Link href="/ia" className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold">Filtra.AI para IA</Link></div>
 
       <section className="mt-16 space-y-10">
+        <div><h2 className="text-3xl font-bold">O que é gestão de reputação online?</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">É o processo contínuo de acompanhar avaliações e feedbacks, identificar padrões, responder clientes, corrigir problemas e medir se a percepção melhora. Para empresas que dependem do Google e de descoberta local, reputação também faz parte da jornada de aquisição.</p><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Veja também o <Link href="/blog/seo-local-avaliacoes-local-pack" className="underline">guia de SEO local e avaliações</Link> e a <Link href="/avaliacoes-google" className="underline">gestão de avaliações Google</Link>.</p></div>
         <div><h2 className="text-3xl font-bold">O que acompanhar na reputação online</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Não basta olhar a nota média. A gestão precisa acompanhar volume de avaliações, recorrência de temas, mudanças na percepção e diferenças entre unidades, serviços ou períodos. Esses sinais ajudam a separar um problema pontual de uma tendência operacional.</p><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Também vale observar a velocidade com que novas avaliações chegam, a distribuição das notas e os temas associados a cada faixa. Uma mudança pequena na média pode esconder uma mudança grande na natureza das reclamações.</p></div>
         <div><h2 className="text-3xl font-bold">Da avaliação para a ação</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Uma avaliação negativa pode indicar atrito no atendimento, prazo, comunicação ou entrega. Avaliações positivas também mostram o que merece ser preservado. Ao organizar esses padrões, a equipe consegue transformar comentários dispersos em prioridades concretas.</p><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Uma rotina simples é classificar o sinal, investigar a causa, definir uma ação e acompanhar novas avaliações. O objetivo não é apagar críticas, mas entender o que elas revelam e reduzir problemas repetidos enquanto os pontos fortes continuam sendo reforçados.</p></div>
         <div><h2 className="text-3xl font-bold">Reputação em empresas com várias unidades</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Redes de hotéis, restaurantes, clínicas, franquias e outras operações distribuídas precisam enxergar tanto a reputação da marca quanto as diferenças locais. Comparar unidades por temas e períodos ajuda a encontrar boas práticas e pontos de atenção sem tratar todos os locais como se fossem iguais.</p></div>
@@ -46,8 +47,24 @@ export default function Page() {
         <div><h2 className="text-3xl font-bold">Reputação e aquisição</h2><p className="mt-4 max-w-3xl leading-8 text-zinc-400">Avaliações fazem parte da informação que potenciais clientes encontram antes de comprar. Por isso, gerir reputação não é apenas responder comentários: é criar um ciclo em que experiência, feedback, melhoria operacional e presença pública se reforçam.</p></div>
       </section>
 
+
+      <section className="mt-16">
+        <h2 className="text-3xl font-bold">Perguntas frequentes sobre gestão de reputação online</h2>
+        <div className="mt-6 space-y-4">
+          {[
+            ['O que é gestão de reputação online?', 'É o processo de monitorar avaliações e feedbacks, identificar padrões, responder clientes e transformar sinais de reputação em ações de melhoria e crescimento.'],
+            ['Por que a gestão de reputação online é importante?', 'Porque avaliações e feedback influenciam a percepção de potenciais clientes e também revelam problemas e diferenciais da operação.'],
+            ['A Filtra.AI analisa avaliações com IA?', 'Sim. A Filtra.AI ajuda a organizar avaliações e identificar temas, padrões, riscos e oportunidades para apoiar decisões de gestão.'],
+          ].map(([question, answer]) => (
+            <details key={question} className="rounded-2xl border border-zinc-800 p-5">
+              <summary className="cursor-pointer font-semibold">{question}</summary>
+              <p className="mt-3 leading-7 text-zinc-400">{answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
       <section className="mt-16 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-8"><h2 className="text-2xl font-bold">Transforme reputação em rotina de gestão</h2><p className="mt-3 leading-7 text-zinc-300">Use a Filtra.AI para organizar sinais das avaliações e descobrir onde sua empresa deve concentrar atenção.</p><Link href="/auditoria-gratuita" className="mt-6 inline-block rounded-xl bg-indigo-500 px-5 py-3 font-semibold">Começar com uma auditoria</Link></section>
-      <nav className="mt-12 flex flex-wrap gap-4 text-sm"><Link href="/feedback-de-clientes" className="underline">Feedback de clientes</Link><Link href="/analise-de-avaliacoes-com-ia" className="underline">Análise de avaliações com IA</Link><Link href="/ia" className="underline">Filtra.AI para IA</Link><Link href="/auditoria-gratuita" className="underline">Auditoria gratuita</Link><Link href="/blog/gestao-reputacao-online-guia" className="underline">Guia de gestão de reputação</Link><Link href="/blog/como-responder-avaliacoes-negativas" className="underline">Guia de respostas a avaliações negativas</Link><Link href="/avaliacoes-google" className="underline">Gestão de avaliações Google</Link></nav>
+      <nav className="mt-12 flex flex-wrap gap-4 text-sm"><Link href="/feedback-de-clientes" className="underline">Feedback de clientes</Link><Link href="/analise-de-avaliacoes-com-ia" className="underline">Análise de avaliações com IA</Link><Link href="/ia" className="underline">Filtra.AI para IA</Link><Link href="/auditoria-gratuita" className="underline">Auditoria gratuita</Link><Link href="/blog/seo-local-avaliacoes-local-pack" className="underline">SEO local e avaliações</Link><Link href="/blog/gestao-reputacao-online-guia" className="underline">Guia de gestão de reputação</Link><Link href="/blog/como-responder-avaliacoes-negativas" className="underline">Guia de respostas a avaliações negativas</Link><Link href="/avaliacoes-google" className="underline">Gestão de avaliações Google</Link></nav>
     </main>
     </>
   );
