@@ -19,6 +19,7 @@ export default function ClinicasPage() {
         { href: '/analise-de-avaliacoes-com-ia', title: 'Analisar avaliações com IA', description: 'Identifique temas recorrentes em atendimento, espera e comunicação.' },
         { href: '/blog/clinica-checklist-avaliacoes-google', title: 'Checklist de avaliações para clínicas', description: 'Um guia prático para estruturar o processo de avaliação.' },
         { href: '/feedback-de-clientes', title: 'Feedback de pacientes', description: 'Transforme opiniões em insumos para melhoria contínua.' },
+        { href: '/filtra-ai', title: 'Conheça a Filtra.AI', description: 'Plataforma brasileira de gestão de reputação, avaliações Google e feedback com IA.' },
       ]}
       sections={[
         {
