@@ -1,0 +1,67 @@
+name: Failover Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply Vercel -> Cloudflare failover to production"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  production:
+    if: inputs.apply == true
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform init
+        working-directory: infra/cloudflare
+        run: terraform init -backend=false -input=false
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive infra/cloudflare
+
+      - name: Terraform validate
+        working-directory: infra/cloudflare
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        working-directory: infra/cloudflare
+        env:
+          TF_VAR_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_primary_origin: ${{ secrets.FAILOVER_PRIMARY_ORIGIN }}
+          TF_VAR_vercel_webhook_secret: ${{ secrets.VERCEL_WEBHOOK_SECRET }}
+          TF_VAR_failover_monitor_secret: ${{ secrets.FAILOVER_MONITOR_SECRET }}
+          TF_VAR_worker_name: filtra-ai-failover
+          TF_VAR_route_pattern: filtraai.com/*
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Terraform apply
+        working-directory: infra/cloudflare
+        env:
+          TF_VAR_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_primary_origin: ${{ secrets.FAILOVER_PRIMARY_ORIGIN }}
+          TF_VAR_vercel_webhook_secret: ${{ secrets.VERCEL_WEBHOOK_SECRET }}
+          TF_VAR_failover_monitor_secret: ${{ secrets.FAILOVER_MONITOR_SECRET }}
+          TF_VAR_worker_name: filtra-ai-failover
+          TF_VAR_route_pattern: filtraai.com/*
+        run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Production post-check
+        run: |
+          echo "Production failover applied."
+          echo "Verify https://filtraai.com and webhook endpoint before declaring complete."
