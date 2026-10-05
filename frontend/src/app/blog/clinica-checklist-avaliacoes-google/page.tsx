@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Clínica e reputação online: checklist de avaliações Google',
+  title: 'Clínicas: checklist de avaliações Google | Filtra.AI',
   description:
     'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
   alternates: { canonical: '/blog/clinica-checklist-avaliacoes-google' },
@@ -12,7 +12,7 @@ export default function Page() {
   return (
     <BlogArticle
       kicker="Segmento · Clínicas"
-      title="Clínica e reputação online: checklist de avaliações Google"
+      title="Clínicas: checklist de avaliações Google"
       lead="Paciente pesquisa nota antes de agendar. Um fluxo estruturado de feedback ajuda a clínica a identificar problemas, responder avaliações e transformar experiência em melhoria operacional."
     >
       <H2>1. Antes de pedir uma avaliação</H2>
@@ -87,7 +87,9 @@ export default function Page() {
         decisões de operação, atendimento e crescimento.
       </p>
       <p>
-        Se quiser avaliar a situação atual da sua reputação, comece pela{' '}
+        A <a href="/filtra-ai" className="underline">Filtra.AI</a> é uma plataforma brasileira de gestão de
+        reputação online, avaliações Google e feedback de clientes com inteligência artificial. Se quiser avaliar
+        a situação atual da sua reputação, comece pela{' '}
         <a href="/auditoria-gratuita" className="underline">auditoria gratuita</a>.
       </p>
     </BlogArticle>
