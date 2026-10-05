@@ -1,58 +1,36 @@
-# GitHub Actions — Filtra.IA
+# GitHub Actions — Filtra.AI
 
 ## Workflows
 
 | Arquivo | Quando roda | O que faz |
-|---------|-------------|----------|
-| `ci.yml` | push/PR em `main` | Testes backend (unit + integration), typecheck, build do frontend |
-| `deploy.yml` | após CI verde em `main`, ou manual | Template de deploy (Railway / Vercel / VPS) |
+| --- | --- | --- |
+| `ci.yml` | push/PR em `main` | Testes backend, typecheck e build frontend |
+| `deploy.yml` | após CI / manual | Deploy do frontend na Vercel conforme secrets configurados |
 
-## CI (já ativo)
+## Produção
 
-### Backend
-- `npm run test:unit`
-- `npm run test:integration` (banco SQLite temporário)
-- `tsc --noEmit`
+- **API:** Render
+- **Frontend:** Vercel
+- **Banco:** Supabase ou Neon
 
-### Frontend
-- `tsc --noEmit`
-- `next build` (com `NEXT_PUBLIC_API_URL` de CI)
+Secrets do frontend:
 
-## Ativar CD
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
 
-1. Escolha onde vai hospedar:
-   - **API:** Railway, Render, Fly.io ou VPS
-   - **Frontend:** Vercel (recomendado para Next.js) ou mesmo host da API
+Segredos de banco, API e billing devem ficar no provedor correspondente e nunca no repositório.
 
-2. No GitHub: **Settings → Secrets and variables → Actions**
-
-   Exemplos de secrets:
-   - `RAILWAY_TOKEN`
-   - `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
-   - `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`
-
-3. Edite `.github/workflows/deploy.yml` e **descomente** o job do provedor escolhido.
-
-4. Variáveis de produção necessárias no host:
-   - `JWT_SECRET` (forte, único)
-   - `SQLITE_DB_PATH` ou migrate para Postgres
-   - `APP_URL` / `FRONTEND_URL`
-   - `NEXT_PUBLIC_API_URL` (URL pública da API)
-   - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (se usar billing)
-   - SMTP (`SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`) para e-mails
-
-## Rodar localmente o que o CI faz
+## CI local
 
 ```bash
-# Backend
 cd backend
 npm ci
 npm run test:unit
 npm run test:integration
 npx tsc --noEmit
 
-# Frontend
-cd frontend
+cd ../frontend
 npm ci
 npx tsc --noEmit
 NEXT_PUBLIC_API_URL=http://127.0.0.1:5000 npm run build
