@@ -16,11 +16,11 @@ resource "cloudflare_workers_kv" "active_origin" {
 }
 
 resource "cloudflare_workers_script" "failover" {
-  account_id      = var.account_id
-  script_name     = var.worker_name
-  content_file    = "${path.module}/worker.js"
-  content_sha256  = filesha256("${path.module}/worker.js")
-  main_module     = "worker.js"
+  account_id        = var.account_id
+  script_name       = var.worker_name
+  content_file      = "${path.module}/worker.js"
+  content_sha256    = filesha256("${path.module}/worker.js")
+  main_module       = "worker.js"
   compatibility_date = "2026-10-05"
 
   bindings = [
@@ -33,6 +33,16 @@ resource "cloudflare_workers_script" "failover" {
       type = "plain_text"
       name = "PRIMARY_ORIGIN"
       text = var.primary_origin
+    },
+    {
+      type        = "secret_text"
+      name        = "VERCEL_WEBHOOK_SECRET"
+      text        = var.vercel_webhook_secret
+    },
+    {
+      type        = "secret_text"
+      name        = "FAILOVER_MONITOR_SECRET"
+      text        = var.failover_monitor_secret
     },
     {
       type = "plain_text"
