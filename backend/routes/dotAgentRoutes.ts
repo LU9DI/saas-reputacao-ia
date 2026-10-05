@@ -6,6 +6,7 @@ import { planLabel } from '../lib/plans.js';
 import { createDotAgentGoal, getDotAgentWorkspace, listDotAgentGoals, updateDotAgentGoal } from '../services/dotAgent.js';
 import { createMissionForGoal } from '../services/dotAgentMissions.js';
 import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
+import { verifyDotCapabilities } from '../services/dotCapabilityVerifier.js';
 
 type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string };
 
@@ -36,6 +37,18 @@ function deny(res: Response, access: DotAgentAccess) {
 }
 
 export function mountDotAgentRoutes(app: Express) {
+  app.get('/api/dot/agent/capabilities', async (req: Request, res: Response) => {
+    const access = await resolveDotAgentAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    try {
+      const result = await verifyDotCapabilities(access.empresaId);
+      res.setHeader('Cache-Control', 'no-store');
+      res.status(result.ok ? 200 : 409).json(result);
+    } catch {
+      res.status(500).json({ ok: false, error: 'Falha na verificação das capacidades do DOT.' });
+    }
+  });
+
   app.get('/api/dot/agent/workspace', async (req: Request, res: Response) => {
     const access = await resolveDotAgentAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
