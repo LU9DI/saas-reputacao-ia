@@ -8,13 +8,31 @@ class FakeKV {
   async put(key: string, value: string) { this.data.set(key, value); }
 }
 
+class FakeCache {
+  private data = new Map<string, Response>();
+  async match(request: Request) {
+    const hit = this.data.get(request.url);
+    return hit ? new Response(hit.body, hit) : undefined;
+  }
+  async put(request: Request, response: Response) {
+    this.data.set(request.url, response);
+  }
+}
+
+function installCaches(cache: FakeCache) {
+  (globalThis as any).caches = { default: cache };
+}
+
 function request(path = '/health') {
   return new Request('https://filtraai.com' + path, { method: 'GET' });
 }
 
-test('primary origin is used when KV says primary', async () => {
+test('primary response is used and warmed into Cloudflare cache', async () => {
   const kv = new FakeKV();
-  await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test' }));
+  const cache = new FakeCache();
+  installCaches(cache);
+  await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test', nextProbeAt: 0 }));
+
   const original = globalThis.fetch;
   globalThis.fetch = async (input: RequestInfo | URL) => {
     const url = String(input instanceof Request ? input.url : input);
@@ -22,40 +40,45 @@ test('primary origin is used when KV says primary', async () => {
   };
 
   try {
-    const response = await worker.fetch(request('/page'), {
+    const response = await worker.fetch(request('/filtra-ai'), {
       FAILOVER_ORIGIN: kv,
       PRIMARY_ORIGIN: 'https://primary.example.com',
-      FALLBACK_ORIGIN: 'https://fallback.example.com',
       RECOVERY_PROBE_INTERVAL_MS: '300000',
     } as any);
+
     assert.equal(response.status, 200);
     assert.match(await response.text(), /primary\.example\.com/);
+    const cached = await cache.match(request('/filtra-ai'));
+    assert.ok(cached);
   } finally {
     globalThis.fetch = original;
   }
 });
 
-test('primary failure switches request to fallback and persists state', async () => {
+test('primary failure serves cached page and persists fallback state', async () => {
   const kv = new FakeKV();
-  await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test' }));
-  const calls: string[] = [];
+  const cache = new FakeCache();
+  installCaches(cache);
+  await cache.put(request('/filtra-ai'), new Response('<html>cached</html>', {
+    status: 200,
+    headers: { 'content-type': 'text/html' },
+  }));
+  await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test', nextProbeAt: 0 }));
+
   const original = globalThis.fetch;
-  globalThis.fetch = async (input: RequestInfo | URL) => {
-    const url = String(input instanceof Request ? input.url : input);
-    calls.push(url);
-    if (url.includes('primary.example.com')) return new Response('down', { status: 503 });
-    return new Response('fallback', { status: 200 });
-  };
+  globalThis.fetch = async () => new Response('down', { status: 503 });
 
   try {
-    const response = await worker.fetch(request('/page'), {
+    const response = await worker.fetch(request('/filtra-ai'), {
       FAILOVER_ORIGIN: kv,
       PRIMARY_ORIGIN: 'https://primary.example.com',
-      FALLBACK_ORIGIN: 'https://fallback.example.com',
       RECOVERY_PROBE_INTERVAL_MS: '300000',
     } as any);
+
     assert.equal(response.status, 200);
-    assert.equal(calls.length, 2);
+    assert.match(await response.text(), /cached/);
+    assert.equal(response.headers.get('x-filtra-failover-origin'), 'cloudflare-cache');
+
     const state = JSON.parse((await kv.get('active_origin'))!);
     assert.equal(state.origin, 'fallback');
   } finally {
@@ -65,29 +88,30 @@ test('primary failure switches request to fallback and persists state', async ()
 
 test('fallback mode probes primary and recovers', async () => {
   const kv = new FakeKV();
+  const cache = new FakeCache();
+  installCaches(cache);
   await kv.put('active_origin', JSON.stringify({
     origin: 'fallback',
     changedAt: Date.now() - 600_000,
     reason: 'test',
     nextProbeAt: 0,
   }));
-  const calls: string[] = [];
+
   const original = globalThis.fetch;
   globalThis.fetch = async (input: RequestInfo | URL) => {
     const url = String(input instanceof Request ? input.url : input);
-    calls.push(url);
-    return new Response(url, { status: 200 });
+    return new Response('recovered:' + url, { status: 200 });
   };
 
   try {
-    const response = await worker.fetch(request('/page'), {
+    const response = await worker.fetch(request('/filtra-ai'), {
       FAILOVER_ORIGIN: kv,
       PRIMARY_ORIGIN: 'https://primary.example.com',
-      FALLBACK_ORIGIN: 'https://fallback.example.com',
       RECOVERY_PROBE_INTERVAL_MS: '300000',
     } as any);
+
     assert.equal(response.status, 200);
-    assert.equal(calls.some((u) => u.includes('primary.example.com')), true);
+    assert.match(await response.text(), /primary\.example\.com/);
     const state = JSON.parse((await kv.get('active_origin'))!);
     assert.equal(state.origin, 'primary');
   } finally {
