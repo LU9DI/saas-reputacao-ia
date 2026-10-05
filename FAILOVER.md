@@ -31,6 +31,7 @@ O diretório infra/cloudflare provisiona:
 - chave active_origin;
 - Worker;
 - binding KV;
+- secrets do webhook e monitor;
 - Route filtraai.com/*.
 
 Nenhuma credencial é gravada no repositório.
