@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SeoPageHeader } from 'components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Gestão de avaliações Google com IA | Filtra.AI',
@@ -40,7 +41,9 @@ export default function Page() {
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
+    <>
+      <SeoPageHeader />
+      <main className="mx-auto max-w-5xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI · Google Reviews</p>
@@ -114,5 +117,6 @@ export default function Page() {
         <Link href="/blog/clinica-checklist-avaliacoes-google" className="underline">Checklist de avaliações Google</Link>
       </nav>
     </main>
+    </>
   );
 }
