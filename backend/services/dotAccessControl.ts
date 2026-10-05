@@ -66,6 +66,14 @@ export function dotPermissionAdminRoles(): string[] {
   return configured.length ? configured : DEFAULT_PERMISSION_ADMIN_ROLES;
 }
 
+export function dotPermissionMatchesScope(permission: { empresa_id: string; user_id?: string | null; resource: string; action: string; granted: number | boolean; revoked_at?: string | null }, scope: { empresaId: string; userId?: string | null; resource: string; action: string }): boolean {
+  if (permission.empresa_id !== scope.empresaId) return false;
+  if (permission.resource !== scope.resource || permission.action !== scope.action) return false;
+  if (!(permission.granted === 1 || permission.granted === true)) return false;
+  if (permission.revoked_at) return false;
+  return permission.user_id == null || permission.user_id === (scope.userId || null);
+}
+
 export function canManageDotPermissions(user?: { id?: string | null; role?: string | null }): boolean {
   const role = String(user?.role || '').trim().toLowerCase();
   return Boolean(role && dotPermissionAdminRoles().includes(role));
