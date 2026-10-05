@@ -180,6 +180,12 @@ export async function completeDotOAuth(input: { code: string; state: string }) {
       resource: 'crm', action: 'read', granted: true,
       userId: String(session.user_id), grantedBy: String(session.user_id),
     });
+    // OAuth também precisa conceder a mesma leitura mínima ao principal
+    // autônomo do DOT; isso não amplia para usuários humanos da empresa.
+    await setDotPermission(empresaId, {
+      resource: 'crm', action: 'read', granted: true,
+      userId: 'agent', grantedBy: String(session.user_id),
+    });
   }
   return { empresaId, provider, scopes: grantedScopes };
 }
