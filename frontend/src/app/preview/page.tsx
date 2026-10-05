@@ -288,7 +288,7 @@ export default function LandingPreview() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(79,70,229,.24),transparent_30%),radial-gradient(circle_at_15%_20%,rgba(14,165,233,.12),transparent_25%)]" />
         <nav className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-6 lg:px-8">
           <BrandMark size="md" subtitle="Reputação" href="/" />
-          <div className="hidden items-center gap-7 text-sm text-zinc-400 md:flex">
+          <div className="flex items-center gap-3"><div className="hidden items-center gap-7 text-sm text-zinc-400 md:flex">
             <a href="#como-funciona" className="hover:text-white">{c.howEyebrow}</a>
             <a href="#recursos" className="hover:text-white">{c.featuresEyebrow}</a>
             <a href="#planos" className="hover:text-white">{c.plansEyebrow}</a>
