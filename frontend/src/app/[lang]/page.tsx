@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 type Lang='en'|'es'|'zh';
 
@@ -52,12 +53,7 @@ export default async function LocalizedHome({params}:{params:Promise<{lang:strin
     <header className="border-b border-zinc-800">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <a href="/" className="font-semibold tracking-tight text-white">Filtra.AI</a>
-        <nav aria-label="Language alternatives" className="flex gap-4 text-xs text-zinc-400">
-          <a href="/" className="hover:text-white">Português</a>
-          <a href="/en" className={lang==='en'?'text-white':'hover:text-white'}>English</a>
-          <a href="/es" className={lang==='es'?'text-white':'hover:text-white'}>Español</a>
-          <a href="/zh" className={lang==='zh'?'text-white':'hover:text-white'}>中文</a>
-        </nav>
+        <LanguageSwitcher compact />
       </div>
     </header>
     <section className="mx-auto max-w-4xl px-6 py-20">
