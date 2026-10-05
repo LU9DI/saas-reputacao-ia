@@ -1,4 +1,13 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
-export const metadata: Metadata={title:'Avaliações Google: gestão de reputação com IA | Filtra.AI',description:'Gestão de avaliações Google, feedback de clientes e reputação no Google Maps com a Filtra.AI. Analise padrões e transforme avaliações em decisões.',alternates:{canonical:'https://filtraai.com/avaliacoes-google'},openGraph:{title:'Avaliações Google: gestão de reputação com IA | Filtra.AI',description:'Gestão de avaliações Google, feedback de clientes e reputação no Google Maps com a Filtra.AI.',url:'https://filtraai.com/avaliacoes-google',siteName:'Filtra.AI',type:'website'}};
+export const metadata: Metadata={title:'Avaliações Google: gestão de reputação com IA | Filtra.AI',description:'Gestão de avaliações Google, feedback de clientes e reputação no Google Maps com a Filtra.AI. Analise padrões e transforme avaliações em decisões.',alternates: {
+    canonical: 'https://filtraai.com/avaliacoes-google',
+    languages: {
+      'pt-BR': 'https://filtraai.com/avaliacoes-google',
+      en: 'https://filtraai.com/en/google-reviews',
+      es: 'https://filtraai.com/es/resenas-google',
+      zh: 'https://filtraai.com/zh/google-reviews',
+      'x-default': 'https://filtraai.com/avaliacoes-google',
+    },
+  },openGraph:{title:'Avaliações Google: gestão de reputação com IA | Filtra.AI',description:'Gestão de avaliações Google, feedback de clientes e reputação no Google Maps com a Filtra.AI.',url:'https://filtraai.com/avaliacoes-google',siteName:'Filtra.AI',type:'website'}};
 export default function Page(){return <SeoLanding h1="Gestão de avaliações Google com IA" lead="Transforme avaliações Google e feedback de clientes em uma rotina de gestão. Organize solicitações, identifique padrões e acompanhe os sinais que influenciam a percepção da sua empresa." breadcrumbHref="/avaliacoes-google" sections={[{heading:'Por que as avaliações Google importam?',body:'Avaliações mostram experiências reais e também são fonte de sinais sobre atendimento, prazo, comunicação, ambiente e produto.'},{heading:'Do feedback à avaliação pública',body:'A Filtra.AI organiza uma jornada em que a empresa coleta feedback e cria um caminho claro para manifestação pública, enquanto problemas podem seguir para um canal adequado.'},{heading:'Análise de avaliações com IA',body:'A análise com IA ajuda a agrupar temas e encontrar padrões que podem passar despercebidos quando a equipe lê cada comentário isoladamente.'},{heading:'Google Maps, reputação e SEO local',body:'Avaliações fazem parte do ecossistema de presença local. Google Maps, reputação, experiência e conteúdo local são partes conectadas da operação.'},{heading:'Perguntas frequentes sobre avaliações Google',body:'A Filtra.AI organiza o fluxo de feedback e avaliação e ajuda a analisar padrões. O Google continua sendo o ambiente público das avaliações.'}]}/>}
