@@ -2,6 +2,7 @@ import { getDb } from '../lib/db.js';
 import { runDotMonitor } from './dotMonitor.js';
 import { createDotFollowUp } from './dotFollowUp.js';
 import { advanceMission } from './dotAgentMissions.js';
+import { runDotConnector } from './dotConnector.js';
 
 export async function runCurrentDotMissionStep(empresaId: string, missionId: number) {
   const db = getDb();
@@ -34,9 +35,20 @@ export async function runCurrentDotMissionStep(empresaId: string, missionId: num
       [empresaId],
     );
     const latest = events?.[0];
-    output = latest
-      ? `Investiguei os sinais recentes. O principal é "${latest.title}" (${latest.severity}): ${latest.details}`
-      : 'Investiguei os sinais recentes e não encontrei um evento persistido suficiente para priorização.';
+    const evidence = latest
+      ? `Sinal principal: "${latest.title}" (${latest.severity}). ${latest.details}`
+      : 'Não encontrei um evento persistido suficiente para priorização.';
+
+    // O agente pode enriquecer a investigação com CRM conectado, sem virar um
+    // chat que só consulta quando alguém pergunta. O principal "agent" possui
+    // uma permissão própria, concedida explicitamente ao conectar a integração.
+    const crm = await runDotConnector('crm.hubspot.read', { empresaId, userId: 'agent' }, 'contacts.list', { limit: 5 });
+    if (crm.ok) {
+      const rows = Array.isArray(crm.output?.results) ? crm.output.results.length : 0;
+      output = `${evidence} CRM conectado: consultei ${rows} contato(s) como evidência complementar.`;
+    } else {
+      output = `${evidence} CRM não utilizado nesta etapa: ${crm.error || 'sem permissão/conexão'}.`;
+    }
   } else if (step.type === 'recommend') {
     const decision = await db.get(
       "SELECT recommendation,priority FROM dot_decisions WHERE empresa_id=? AND status IN ('pending','prepared','approved') ORDER BY id DESC LIMIT 1",
