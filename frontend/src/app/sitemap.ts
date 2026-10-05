@@ -2,14 +2,11 @@ import type { MetadataRoute } from 'next';
 
 const base = 'https://filtraai.com';
 
-const localized: Record<string, string[]> = {
-  en: ['ai', 'customer-feedback', 'ai-review-analysis', 'online-reputation-management', 'google-reviews'],
-  es: ['ia', 'feedback-clientes', 'analisis-resenas-ia', 'gestion-reputacion-online', 'resenas-google'],
-  zh: ['ai', 'customer-feedback', 'ai-review-analysis', 'online-reputation-management', 'google-reviews'],
-};
-
 const paths = [
   '',
+  '/filtra-ai',
+  '/filtra-ai',
+  '/filtra-ai',
   '/filtra-ai',
   '/feedback-de-clientes',
   '/analise-de-avaliacoes-com-ia',
@@ -75,10 +72,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
       path === '' ? 1 : highPriority.has(path) ? 0.95 : path.startsWith('/blog') ? 0.8 : 0.7;
     return entry(path, freq, priority);
   });
-
-  const localizedEntries: MetadataRoute.Sitemap = Object.entries(localized).flatMap(
-    ([lang, slugs]) => slugs.map((slug) => entry('/' + lang + '/' + slug, 'monthly', 0.9)),
-  );
-
-  return [...baseEntries, ...localizedEntries];
+  return baseEntries;
 }
