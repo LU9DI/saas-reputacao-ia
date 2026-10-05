@@ -2,6 +2,13 @@ import { getDb } from '../lib/db.js';
 import { getDotCredential, putDotCredential } from './dotCredentialVault.js';
 import { registerDotConnector, type DotConnectorContext } from './dotConnector.js';
 import { requireDotAccess } from './dotAccessControl.js';
+import { protectDotObject } from './dotDataProtection.js';
+
+const SAFE_PROPERTIES: Record<string, string[]> = {
+  contacts: ['hs_object_id','company','createdate','lastmodifieddate'],
+  companies: ['hs_object_id','name','domain','industry','createdate','lastmodifieddate'],
+  deals: ['hs_object_id','dealname','amount','dealstage','pipeline','closedate','createdate','lastmodifieddate'],
+};
 
 const BASE_URL = 'https://api.hubapi.com';
 const OBJECTS = new Set(['contacts', 'companies', 'deals']);
@@ -58,13 +65,14 @@ async function read(empresaId: string, object: string, id?: string, input: any =
     params.set('limit', String(boundedLimit(input?.limit)));
     const after = boundedAfter(input?.after);
     if (after) params.set('after', after);
+    params.set('properties', SAFE_PROPERTIES[object].join(','));
   }
   const query = params.toString();
   return hubspotRequest(empresaId, '/crm/v3/objects/' + object + suffix + (query ? '?' + query : ''));
 }
 
 async function search(empresaId: string, object: string, input: any = {}) {
-  const body: any = { limit: boundedLimit(input?.limit), query: typeof input?.query === 'string' ? input.query.slice(0, 200) : '' };
+  const body: any = { limit: boundedLimit(input?.limit), query: typeof input?.query === 'string' ? input.query.slice(0, 200) : '', properties: SAFE_PROPERTIES[object] };
   const after = boundedAfter(input?.after);
   if (after) body.after = after;
   if (Array.isArray(input?.properties)) body.properties = input.properties.map((p: unknown) => String(p).trim()).filter(Boolean).slice(0, 50);
@@ -107,10 +115,10 @@ export const hubSpotDotConnector = {
       if (mode === 'get') {
         const id = String(input?.id || '');
         if (!/^\d+$/.test(id)) return { ok: false, error: 'ID CRM inválido.' };
-        return { ok: true, output: await read(ctx.empresaId, object, id, input) };
+        return { ok: true, output: protectDotObject(await read(ctx.empresaId, object, id, input)) };
       }
-      if (mode === 'search') return { ok: true, output: await search(ctx.empresaId, object, input) };
-      return { ok: true, output: await read(ctx.empresaId, object, undefined, input) };
+      if (mode === 'search') return { ok: true, output: protectDotObject(await search(ctx.empresaId, object, input)) };
+      return { ok: true, output: protectDotObject(await read(ctx.empresaId, object, undefined, input)) };
     } catch (error: any) {
       return { ok: false, error: String(error?.message || error) };
     }
