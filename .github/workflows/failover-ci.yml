@@ -5,12 +5,16 @@ on:
     paths:
       - 'infra/cloudflare/**'
       - 'frontend/src/app/api/failover/**'
+      - 'frontend/src/app/lib/failoverState.ts'
+      - 'frontend/src/lib/failoverCore.ts'
+      - 'infra/monitor/**'
       - 'backend/tests/**'
       - 'package.json'
       - 'package-lock.json'
       - 'backend/package.json'
       - 'backend/package-lock.json'
       - 'pnpm-lock.yaml'
+  workflow_dispatch:
 
 permissions:
   contents: read
