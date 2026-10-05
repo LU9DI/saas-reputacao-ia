@@ -9,13 +9,6 @@ const paths = [
   '/como-melhorar-avaliacoes-google',
   '/monitoramento-reputacao-online',
   '/gestao-de-feedback',
-  '/filtra-ai',
-  '/filtra-ai',
-  '/filtra-ai',
-  '/reputacao-google',
-  '/como-melhorar-avaliacoes-google',
-  '/monitoramento-reputacao-online',
-  '/gestao-de-feedback',
   '/feedback-de-clientes',
   '/analise-de-avaliacoes-com-ia',
   '/gestao-de-reputacao-online',
@@ -48,6 +41,11 @@ const paths = [
 ] as const;
 
 const highPriority = new Set<string>([
+  '/filtra-ai',
+  '/reputacao-google',
+  '/como-melhorar-avaliacoes-google',
+  '/monitoramento-reputacao-online',
+  '/gestao-de-feedback',
   '/feedback-de-clientes',
   '/analise-de-avaliacoes-com-ia',
   '/gestao-de-reputacao-online',
@@ -73,12 +71,11 @@ function entry(
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseEntries: MetadataRoute.Sitemap = paths.map((path) => {
+  return paths.map((path) => {
     const freq: 'weekly' | 'monthly' =
       path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly';
     const priority =
       path === '' ? 1 : highPriority.has(path) ? 0.95 : path.startsWith('/blog') ? 0.8 : 0.7;
     return entry(path, freq, priority);
   });
-  return baseEntries;
 }
