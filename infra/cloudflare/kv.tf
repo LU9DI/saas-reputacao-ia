@@ -54,6 +54,6 @@ resource "cloudflare_workers_script" "failover" {
 
 resource "cloudflare_workers_route" "production" {
   zone_id = var.zone_id
-  pattern = "filtraai.com/*"
+  pattern = var.route_pattern
   script  = cloudflare_workers_script.failover.script_name
 }
