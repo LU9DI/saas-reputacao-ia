@@ -1,6 +1,6 @@
 import type { Language } from '../Contexts/LanguageContext';
 
-type PageBodies = Partial<Record<Exclude<Language,'pt'>, string[]>>;
+type PageBodies = Partial<Record<Language, string[]>>;
 
 export const SEO_BODIES: Record<string, PageBodies> = {
   '/hoteis': {
