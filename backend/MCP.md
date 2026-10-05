@@ -77,7 +77,7 @@ curl -s -X POST https://<api>/mcp \
 
 ## Deploy
 
-1. Faça deploy do **backend** com este código (Render/Railway).  
+1. Faça deploy do **backend** no Render.  
 2. Confirme `GET /mcp` responde em HTTPS público.  
 3. Não use `localhost` no Grok — a URL precisa ser alcançável pela internet.
 
