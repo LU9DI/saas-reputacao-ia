@@ -46,6 +46,9 @@ export function DotAgentSurface() {
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [accessOpen, setAccessOpen] = useState(false);
+  const [hubSpotServiceKey, setHubSpotServiceKey] = useState('');
+  const [hubSpotBusy, setHubSpotBusy] = useState(false);
+  const [hubSpotMessage, setHubSpotMessage] = useState('');
   const permissionResources = ['filtra','customers','sales','marketing','operations','crm','email','calendar','whatsapp','erp'];
   const permissionActions = ['read','update','execute'];
 
@@ -69,6 +72,31 @@ export function DotAgentSurface() {
       if (pRes.ok) { const data = await pRes.json(); if (data?.ok) setPermissions(data.permissions || []); }
       if (iRes.ok) { const data = await iRes.json(); if (data?.ok) setIntegrations(data.integrations || []); }
     } catch { /* access panel is optional */ }
+  }
+
+  async function connectHubSpotServiceKey() {
+    const serviceKey = hubSpotServiceKey.trim();
+    if (!serviceKey || hubSpotBusy) return;
+    setHubSpotBusy(true);
+    setHubSpotMessage('');
+    try {
+      const res = await apiFetch('/api/dot/agent/integrations/crm/service-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ serviceKey }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.ok) {
+        setHubSpotServiceKey('');
+        setHubSpotMessage('HubSpot conectado em modo somente leitura.');
+        await loadAccess();
+      } else {
+        setHubSpotMessage(String(data?.error || 'Não foi possível conectar o HubSpot.'));
+      }
+    } finally {
+      setHubSpotBusy(false);
+    }
   }
 
   async function togglePermission(resource: string, action: string, granted: boolean) {
@@ -259,6 +287,29 @@ export function DotAgentSurface() {
           <div className="border-t border-white/[0.06] pt-3">
             <div className="mb-2 text-[10px] uppercase tracking-wide text-zinc-600">Integrações</div>
             <div className="flex flex-wrap gap-2">{integrations.map((item) => <span key={item.provider} className={`rounded-full border px-2 py-1 text-[9px] ${item.status === 'connected' ? 'border-emerald-400/20 text-emerald-300' : 'border-white/[0.07] text-zinc-600'}`}>{item.label} · {item.status === 'connected' ? 'conectado' : 'não conectado'}</span>)}</div>
+            <div className="mt-3 rounded-lg border border-white/[0.06] bg-black/10 p-3">
+              <div className="text-[10px] font-medium text-zinc-300">HubSpot · Service Key</div>
+              <div className="mt-1 text-[10px] text-zinc-600">A chave é validada pelo HubSpot e armazenada no cofre criptografado do DOT. Ela não é exibida novamente.</div>
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                <input
+                  type="password"
+                  value={hubSpotServiceKey}
+                  onChange={(e) => setHubSpotServiceKey(e.target.value)}
+                  placeholder="Cole a Service Key aqui"
+                  autoComplete="off"
+                  className="min-h-9 flex-1 rounded-lg border border-white/10 bg-zinc-900/80 px-3 text-xs text-zinc-100 placeholder:text-zinc-600 focus:border-sky-400/40 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  disabled={hubSpotBusy || !hubSpotServiceKey.trim()}
+                  onClick={() => void connectHubSpotServiceKey()}
+                  className="min-h-9 rounded-lg bg-sky-500 px-3 text-[10px] font-semibold text-white disabled:opacity-40"
+                >
+                  {hubSpotBusy ? 'Validando…' : 'Conectar HubSpot'}
+                </button>
+              </div>
+              {hubSpotMessage && <div className="mt-2 text-[10px] text-zinc-500">{hubSpotMessage}</div>}
+            </div>
           </div>
         </div>}
       </div>
