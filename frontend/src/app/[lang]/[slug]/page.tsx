@@ -136,7 +136,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
   const topic=found.item;
   const related=relatedIndexes(found.index,4);
   const relatedCopy=related.map(i=>pages[lang][i]);
-  const primary=sourcePaths[found.index];
+  const primary=localizedPath(lang,found.index);
 
   const sectionCopy={
     en:{
