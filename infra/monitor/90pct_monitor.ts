@@ -1,6 +1,6 @@
 const usageUrl = process.env.VERCEL_USAGE_URL?.trim();
 const token = process.env.VERCEL_API_TOKEN?.trim();
-const webhookUrl = process.env.WEBHOOK_URL?.trim();
+const webhookUrl = process.env.WEBHOOK_URL?.trim() || 'https://filtraai.com/_failover/vercel';
 const secret = process.env.FAILOVER_MONITOR_SECRET?.trim();
 const enabled = String(process.env.ENABLE_90_MONITOR || '').toLowerCase() === 'true';
 
