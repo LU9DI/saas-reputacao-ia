@@ -20,6 +20,12 @@ const posts = [
   { href: '/blog/clinica-checklist-avaliacoes-google', title: 'Clínica e reputação online: checklist de avaliações Google', intent: 'Segmento' },
   { href: '/blog/agencia-vender-gestao-reputacao', title: 'Agência: como vender gestão de reputação como serviço recorrente', intent: 'B2B' },
   { href: '/blog/whatsapp-pedir-estrela-vs-filtrar-qr', title: 'Pedir estrela no WhatsApp vs filtrar no QR: comparativo', intent: 'Comparação' },
+  { href: '/blog/google-business-profile-avaliacoes', title: 'Google Business Profile e avaliações: como criar uma rotina que funciona', intent: 'Google Business Profile' },
+  { href: '/blog/reputacao-online-clinicas', title: 'Reputação online para clínicas: guia prático de avaliações e feedback', intent: 'Segmento · Clínicas' },
+  { href: '/blog/reputacao-online-hoteis', title: 'Reputação online para hotéis: como aprender com avaliações de hóspedes', intent: 'Segmento · Hotéis' },
+  { href: '/blog/reputacao-franquias-multilocal', title: 'Reputação para franquias multilocal: como comparar unidades', intent: 'Segmento · Franquias' },
+  { href: '/blog/avaliacoes-google-restaurantes', title: 'Avaliações Google para restaurantes: rotina prática de feedback', intent: 'Segmento · Restaurantes' },
+  { href: '/blog/feedback-cliente-para-reputacao', title: 'Feedback do cliente para reputação: como fechar o ciclo', intent: 'Framework · Feedback' },
 ];
 
 export default function BlogIndexPage() {
