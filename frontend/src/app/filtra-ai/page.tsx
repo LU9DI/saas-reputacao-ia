@@ -16,7 +16,28 @@ export const metadata: Metadata = {
   },
 };
 
-const webpageSchema = {\n  '@context': 'https://schema.org',\n  '@type': 'WebPage',\n  '@id': 'https://filtraai.com/filtra-ai#webpage',\n  url: 'https://filtraai.com/filtra-ai',\n  name: 'Filtra.AI — Gestão de reputação online com IA',\n  description: 'Filtra.AI: plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.',\n  isPartOf: { '@id': 'https://filtraai.com/#website' },\n  about: { '@id': 'https://filtraai.com/#organization' },\n  inLanguage: 'pt-BR',\n};\n\nconst breadcrumbSchema = {\n  '@context': 'https://schema.org',\n  '@type': 'BreadcrumbList',\n  itemListElement: [\n    { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://filtraai.com/' },\n    { '@type': 'ListItem', position: 2, name: 'Filtra.AI', item: 'https://filtraai.com/filtra-ai' },\n  ],\n};\n\nconst entitySchema = {
+const webpageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  '@id': 'https://filtraai.com/filtra-ai#webpage',
+  url: 'https://filtraai.com/filtra-ai',
+  name: 'Filtra.AI — Gestão de reputação online com IA',
+  description: 'Filtra.AI: plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.',
+  isPartOf: { '@id': 'https://filtraai.com/#website' },
+  about: { '@id': 'https://filtraai.com/#organization' },
+  inLanguage: 'pt-BR',
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Início', item: 'https://filtraai.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Filtra.AI', item: 'https://filtraai.com/filtra-ai' },
+  ],
+};
+
+const entitySchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   '@id': 'https://filtraai.com/#organization',
@@ -45,6 +66,14 @@ const webpageSchema = {\n  '@context': 'https://schema.org',\n  '@type': 'WebPag
 export default function FiltraAiPage() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-16 text-zinc-100">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(entitySchema) }}
