@@ -22,12 +22,4 @@ services:
       - key: CORS_ORIGINS
         sync: false
       - key: DATABASE_URL
-        fromDatabase:
-          name: filtra-db
-          property: connectionString
-
-databases:
-  - name: filtra-db
-    plan: free
-    databaseName: filtra
-    user: filtra
+        sync: false
