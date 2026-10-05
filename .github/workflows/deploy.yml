@@ -29,9 +29,6 @@ jobs:
   deploy-web-vercel:
     name: Frontend → Vercel
     needs: gate
-    # Deploy manual/opt-in: evita publicar mudanças automaticamente.
-    # Habilite com Repository Variable ENABLE_VERCEL_DEPLOY=true.
-    if: ${{ vars.ENABLE_VERCEL_DEPLOY == 'true' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -54,10 +51,10 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
+          set -e
           if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "Secrets da Vercel incompletos — pulando deploy do frontend."
-            echo "Configure VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID. Veja DEPLOY.md."
-            exit 0
+            echo "::error::Secrets da Vercel incompletos: VERCEL_TOKEN, VERCEL_ORG_ID e VERCEL_PROJECT_ID são obrigatórios."
+            exit 1
           fi
           vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
           vercel build --prod --token="$VERCEL_TOKEN"
