@@ -6,7 +6,16 @@ export const metadata: Metadata = {
   title: 'Auditoria gratuita de avaliações e reputação online | Filtra.AI',
   description:
     'Faça uma auditoria gratuita das avaliações da sua empresa. Identifique pontos fortes, riscos e temas recorrentes e veja oportunidades de melhoria.',
-  alternates: { canonical: 'https://filtraai.com/auditoria-gratuita' },
+  alternates: {
+    canonical: 'https://filtraai.com/auditoria-gratuita',
+    languages: {
+      'pt-BR': 'https://filtraai.com/auditoria-gratuita',
+      en: 'https://filtraai.com/en/free-review-audit',
+      es: 'https://filtraai.com/es/auditoria-gratuita',
+      zh: 'https://filtraai.com/zh/free-review-audit',
+      'x-default': 'https://filtraai.com/auditoria-gratuita',
+    },
+  },
   openGraph: {
     title: 'Auditoria gratuita de avaliações e reputação online | Filtra.AI',
     description:
