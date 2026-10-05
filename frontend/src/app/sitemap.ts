@@ -41,6 +41,7 @@ const paths = [
 ] as const;
 
 const localizedPaths = [
+  '/en','/es','/zh',
   '/en/ai','/en/customer-feedback','/en/ai-review-analysis','/en/online-reputation-management','/en/google-reviews',
   '/es/ia','/es/feedback-clientes','/es/analisis-resenas-ia','/es/gestion-reputacion-online','/es/resenas-google',
   '/zh/ai','/zh/customer-feedback','/zh/ai-review-analysis','/zh/online-reputation-management','/zh/google-reviews',
