@@ -16,6 +16,18 @@ variable "primary_origin" {
   description = "Current production Vercel origin URL. Required."
 }
 
+variable "vercel_webhook_secret" {
+  type        = string
+  sensitive   = true
+  description = "Vercel Spend Management webhook signing secret."
+}
+
+variable "failover_monitor_secret" {
+  type        = string
+  sensitive   = true
+  description = "Signing secret for the internal 90 percent monitor."
+}
+
 variable "worker_name" {
   type    = string
   default = "filtra-ai-failover"
