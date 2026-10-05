@@ -116,7 +116,7 @@ const copy: Record<Language, Copy> = {
     plansText: 'The current plans remain here; this version only changes how visitors reach them.',
     finalTitle: 'Start understanding your reputation today.',
     finalText: 'Try Filtra.AI for 7 days and see how feedback can become useful information for your business.',
-    footer: 'Filtra.AI',
+    footer: 'Filtra.AI · Redesign preview · Does not change the current landing',
     panelEyebrow: 'Customer dashboard', panelTitle: 'A dashboard that helps managers decide, not just look at numbers.', panelText: 'The current dashboard already brings together metrics, reviews, AI, reports, alerts, QR Code, WhatsApp, and plan management. The visual evolution can make those actions clearer and faster.', panelRating: 'Average rating', panelReviews: 'Reviews', panelPositive: 'Positive', panelAttention: 'Attention', panelAi: 'AI found 3 themes', panelReport: 'Intelligent report updated', privacy: 'Privacy Policy', terms: 'Terms of Use',
   },
   es: {
@@ -149,7 +149,7 @@ const copy: Record<Language, Copy> = {
     plansText: 'Los planes actuales siguen aquí; esta versión solo cambia la forma en que el visitante llega a ellos.',
     finalTitle: 'Empieza a entender tu reputación hoy.',
     finalText: 'Prueba Filtra.AI durante 7 días y descubre cómo los comentarios pueden convertirse en información útil para tu empresa.',
-    footer: 'Filtra.AI',
+    footer: 'Filtra.AI · Vista previa del rediseño · No cambia la landing actual',
     panelEyebrow: 'Panel del cliente', panelTitle: 'Un panel que ayuda al gestor a decidir, no solo a mirar números.', panelText: 'El panel actual ya reúne métricas, reseñas, IA, informes, alertas, QR Code, WhatsApp y gestión del plan. La evolución visual puede hacer estas acciones más claras y rápidas.', panelRating: 'Calificación media', panelReviews: 'Reseñas', panelPositive: 'Positivas', panelAttention: 'Atención', panelAi: 'La IA encontró 3 temas', panelReport: 'Informe inteligente actualizado', privacy: 'Política de Privacidad', terms: 'Términos de Uso',
   },
   zh: {
@@ -182,7 +182,7 @@ const copy: Record<Language, Copy> = {
     plansText: '现有方案保持不变；这个版本只是改变访客到达方案页面的方式。',
     finalTitle: '今天就开始了解您的声誉。',
     finalText: '免费试用 Filtra.AI 7 天，看看客户反馈如何成为企业有价值的信息。',
-    footer: 'Filtra.AI',
+    footer: 'Filtra.AI · 重设计预览 · 不改变当前首页',
     panelEyebrow: '客户面板', panelTitle: '帮助管理者做决定，而不只是查看数字。', panelText: '当前面板已经整合指标、评价、AI、报告、提醒、二维码、WhatsApp 和方案管理。视觉升级可以让这些操作更清晰、更快速。', panelRating: '平均评分', panelReviews: '评价', panelPositive: '正面', panelAttention: '需关注', panelAi: 'AI 发现 3 个主题', panelReport: '智能报告已更新', privacy: '隐私政策', terms: '使用条款',
   },
 };
@@ -274,153 +274,11 @@ function ClientPanelMockup({ c }: { c: Copy }) {
   );
 }
 
-const seoCopy: Record<Language, {
-  eyebrow: string;
-  title: string;
-  text: string;
-  learnMore: string;
-  segmentTitle: string;
-  guidesTitle: string;
-  items: [string, string, string][];
-  segments: [string, string, string][];
-  guides: [string, string][];
-}> = {
-  pt: {
-    eyebrow: 'SEO & reputação',
-    title: 'Entenda e melhore a reputação da sua empresa.',
-    text: 'Conteúdos e ferramentas para transformar feedback, avaliações e reputação online em ações de crescimento.',
-    learnMore: 'Saiba mais →',
-    segmentTitle: 'Soluções por segmento',
-    guidesTitle: 'Guias para aprofundar',
-    items: [
-      ['/ia', 'Filtra.AI para IA', 'Leve análise de reputação, avaliações e feedback para ChatGPT, Claude e Grok.'],
-      ['/feedback-de-clientes', 'Feedback de clientes', 'Transforme opiniões em sinais claros para melhorar a experiência.'],
-      ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA', 'Encontre temas, sentimentos e pontos de atenção em escala.'],
-      ['/gestao-de-reputacao-online', 'Gestão de reputação online', 'Acompanhe avaliações, respostas, tendências e evolução.'],
-      ['/auditoria-gratuita', 'Auditoria gratuita', 'Faça um diagnóstico inicial da reputação da sua empresa.'],
-    ],
-    segments: [
-      ['/hoteis', 'Hotéis', 'Avaliações de hóspedes e reputação hoteleira.'],
-      ['/restaurantes', 'Restaurantes', 'Feedback, avaliações e experiência no atendimento.'],
-      ['/clinicas', 'Clínicas', 'Reputação e experiência de pacientes.'],
-      ['/franquias', 'Franquias', 'Visão da reputação por unidade e rede.'],
-      ['/associacoes', 'Associações', 'Feedback de associados e entidades setoriais.'],
-      ['/turismo', 'Turismo', 'Reputação para operações e negócios turísticos.'],
-      ['/agencias', 'Agências', 'Gestão de reputação para carteiras de clientes.'],
-      ['/parceiros', 'Parceiros', 'Programa para consultorias, agências e entidades.'],
-    ],
-    guides: [
-      ['/blog/como-conseguir-avaliacoes-google', 'Como conseguir avaliações no Google'],
-      ['/blog/seo-local-avaliacoes-local-pack', 'SEO local e avaliações'],
-      ['/blog/review-1-estrela-primeiras-24-horas', 'Como agir diante de uma avaliação de 1 estrela'],
-      ['/blog/clinica-checklist-avaliacoes-google', 'Checklist de avaliações para clínicas'],
-    ],
-  },
-  en: {
-    eyebrow: 'SEO & reputation',
-    title: 'Understand and improve your company reputation.',
-    text: 'Content and tools to turn feedback, reviews, and online reputation into growth actions.',
-    learnMore: 'Learn more →',
-    segmentTitle: 'Solutions by segment',
-    guidesTitle: 'Guides to go deeper',
-    items: [
-      ['/ia', 'Filtra.AI for AI', 'Bring reputation, review, and feedback analysis to ChatGPT, Claude, and Grok.'],
-      ['/feedback-de-clientes', 'Customer feedback', 'Turn opinions into clear signals to improve the customer experience.'],
-      ['/analise-de-avaliacoes-com-ia', 'AI review analysis', 'Find themes, sentiment, and attention points at scale.'],
-      ['/gestao-de-reputacao-online', 'Online reputation management', 'Track reviews, responses, trends, and progress.'],
-      ['/auditoria-gratuita', 'Free reputation audit', 'Get an initial diagnosis of your company reputation.'],
-    ],
-    segments: [
-      ['/hoteis', 'Hotels', 'Guest reviews and hotel reputation management.'],
-      ['/restaurantes', 'Restaurants', 'Feedback, reviews, and service experience.'],
-      ['/clinicas', 'Clinics', 'Patient experience and reputation management.'],
-      ['/franquias', 'Franchises', 'Reputation visibility across units and the network.'],
-      ['/associacoes', 'Associations', 'Member feedback and industry organizations.'],
-      ['/turismo', 'Tourism', 'Reputation management for tourism businesses.'],
-      ['/agencias', 'Agencies', 'Reputation management for client portfolios.'],
-      ['/parceiros', 'Partners', 'Program for consultancies, agencies, and organizations.'],
-    ],
-    guides: [
-      ['/blog/como-conseguir-avaliacoes-google', 'How to get Google reviews'],
-      ['/blog/seo-local-avaliacoes-local-pack', 'Local SEO and reviews'],
-      ['/blog/review-1-estrela-primeiras-24-horas', 'What to do after a 1-star review'],
-      ['/blog/clinica-checklist-avaliacoes-google', 'Google review checklist for clinics'],
-    ],
-  },
-  es: {
-    eyebrow: 'SEO y reputación',
-    title: 'Entiende y mejora la reputación de tu empresa.',
-    text: 'Contenido y herramientas para convertir comentarios, reseñas y reputación online en acciones de crecimiento.',
-    learnMore: 'Saber más →',
-    segmentTitle: 'Soluciones por segmento',
-    guidesTitle: 'Guías para profundizar',
-    items: [
-      ['/ia', 'Filtra.AI para IA', 'Lleva el análisis de reputación, reseñas y comentarios a ChatGPT, Claude y Grok.'],
-      ['/feedback-de-clientes', 'Comentarios de clientes', 'Convierte opiniones en señales claras para mejorar la experiencia.'],
-      ['/analise-de-avaliacoes-com-ia', 'Análisis de reseñas con IA', 'Encuentra temas, sentimientos y puntos de atención a escala.'],
-      ['/gestao-de-reputacao-online', 'Gestión de reputación online', 'Acompaña reseñas, respuestas, tendencias y evolución.'],
-      ['/auditoria-gratuita', 'Auditoría gratuita', 'Obtén un diagnóstico inicial de la reputación de tu empresa.'],
-    ],
-    segments: [
-      ['/hoteis', 'Hoteles', 'Reseñas de huéspedes y reputación hotelera.'],
-      ['/restaurantes', 'Restaurantes', 'Comentarios, reseñas y experiencia de atención.'],
-      ['/clinicas', 'Clínicas', 'Reputación y experiencia de pacientes.'],
-      ['/franquias', 'Franquicias', 'Visibilidad de la reputación por unidad y red.'],
-      ['/associacoes', 'Asociaciones', 'Comentarios de miembros y entidades sectoriales.'],
-      ['/turismo', 'Turismo', 'Reputación para negocios y operaciones turísticas.'],
-      ['/agencias', 'Agencias', 'Gestión de reputación para carteras de clientes.'],
-      ['/parceiros', 'Socios', 'Programa para consultorías, agencias y organizaciones.'],
-    ],
-    guides: [
-      ['/blog/como-conseguir-avaliacoes-google', 'Cómo conseguir reseñas en Google'],
-      ['/blog/seo-local-avaliacoes-local-pack', 'SEO local y reseñas'],
-      ['/blog/review-1-estrela-primeiras-24-horas', 'Qué hacer ante una reseña de 1 estrella'],
-      ['/blog/clinica-checklist-avaliacoes-google', 'Checklist de reseñas para clínicas'],
-    ],
-  },
-  zh: {
-    eyebrow: 'SEO 与声誉',
-    title: '了解并改善您的企业声誉。',
-    text: '通过内容与工具，将客户反馈、评价和在线声誉转化为增长行动。',
-    learnMore: '了解更多 →',
-    segmentTitle: '按行业查看解决方案',
-    guidesTitle: '深入阅读指南',
-    items: [
-      ['/ia', 'Filtra.AI 与 AI', '将声誉、评价和反馈分析带入 ChatGPT、Claude 和 Grok。'],
-      ['/feedback-de-clientes', '客户反馈', '将客户意见转化为改善体验的清晰信号。'],
-      ['/analise-de-avaliacoes-com-ia', 'AI 评价分析', '大规模发现主题、情绪和需要关注的问题。'],
-      ['/gestao-de-reputacao-online', '在线声誉管理', '跟踪评价、回复、趋势和变化。'],
-      ['/auditoria-gratuita', '免费声誉审计', '获取企业声誉的初步诊断。'],
-    ],
-    segments: [
-      ['/hoteis', '酒店', '宾客评价与酒店声誉管理。'],
-      ['/restaurantes', '餐厅', '反馈、评价与服务体验。'],
-      ['/clinicas', '诊所', '患者体验与声誉管理。'],
-      ['/franquias', '连锁品牌', '查看各门店及整个网络的声誉。'],
-      ['/associacoes', '协会', '会员反馈与行业组织声誉。'],
-      ['/turismo', '旅游', '旅游企业与运营的声誉管理。'],
-      ['/agencias', '代理机构', '为客户组合提供声誉管理。'],
-      ['/parceiros', '合作伙伴', '面向咨询公司、代理机构和组织的合作计划。'],
-    ],
-    guides: [
-      ['/blog/como-conseguir-avaliacoes-google', '如何获得 Google 评价'],
-      ['/blog/seo-local-avaliacoes-local-pack', '本地 SEO 与评价'],
-      ['/blog/review-1-estrela-primeiras-24-horas', '收到 1 星评价后该怎么做'],
-      ['/blog/clinica-checklist-avaliacoes-google', '诊所 Google 评价清单'],
-    ],
-  },
-};
-
-function localizedPath(language: Language, path: string) {
-  return language === 'pt' ? path : `/${language}${path}`;
-}
-
 const icons = [Sparkles, MessageSquare, BarChart3, ShieldCheck];
 
 export default function LandingPreview() {
   const { language } = useLanguage();
   const c = copy[language];
-  const seo = seoCopy[language];
 
   return (
     <>
@@ -493,24 +351,39 @@ export default function LandingPreview() {
       <section className="border-y border-white/[0.06] bg-black/20">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
           <div className="max-w-2xl">
-            <span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{seo.eyebrow}</span>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{seo.title}</h2>
-            <p className="mt-4 text-base leading-7 text-zinc-400">{seo.text}</p>
+            <span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">SEO & reputação</span>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Entenda e melhore a reputação da sua empresa.</h2>
+            <p className="mt-4 text-base leading-7 text-zinc-400">Conteúdos e ferramentas para transformar feedback, avaliações e reputação online em ações de crescimento.</p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {seo.items.map(([href, title, description]) => (
-              <Link key={href} href={localizedPath(language, href)} className="group rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-indigo-400/30 hover:bg-white/[0.04]">
+            {[
+              ['/ia', 'Filtra.AI para IA', 'Leve análise de reputação, avaliações e feedback para ChatGPT, Claude e Grok.'],
+              ['/feedback-de-clientes', 'Feedback de clientes', 'Transforme opiniões em sinais claros para melhorar a experiência.'],
+              ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA', 'Encontre temas, sentimentos e pontos de atenção em escala.'],
+              ['/gestao-de-reputacao-online', 'Gestão de reputação online', 'Acompanhe avaliações, respostas, tendências e evolução.'],
+              ['/auditoria-gratuita', 'Auditoria gratuita', 'Faça um diagnóstico inicial da reputação da sua empresa.'],
+            ].map(([href, title, description]) => (
+              <Link key={href} href={href} className="group rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-indigo-400/30 hover:bg-white/[0.04]">
                 <h3 className="font-semibold text-zinc-100 group-hover:text-indigo-200">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p>
-                <span className="mt-4 inline-block text-xs font-medium text-indigo-300">{seo.learnMore}</span>
+                <span className="mt-4 inline-block text-xs font-medium text-indigo-300">Saiba mais →</span>
               </Link>
             ))}
           </div>
           <div className="mt-8">
-            <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">{seo.segmentTitle}</p>
+            <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">Soluções por segmento</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {seo.segments.map(([href, title, description]) => (
-                <Link key={href} href={localizedPath(language, href)} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 transition hover:border-indigo-400/30">
+              {[
+                ['/hoteis', 'Hotéis', 'Avaliações de hóspedes e reputação hoteleira.'],
+                ['/restaurantes', 'Restaurantes', 'Feedback, avaliações e experiência no atendimento.'],
+                ['/clinicas', 'Clínicas', 'Reputação e experiência de pacientes.'],
+                ['/franquias', 'Franquias', 'Visão da reputação por unidade e rede.'],
+                ['/associacoes', 'Associações', 'Feedback de associados e entidades setoriais.'],
+                ['/turismo', 'Turismo', 'Reputação para operações e negócios turísticos.'],
+                ['/agencias', 'Agências', 'Gestão de reputação para carteiras de clientes.'],
+                ['/parceiros', 'Parceiros', 'Programa para consultorias, agências e entidades.'],
+              ].map(([href, title, description]) => (
+                <Link key={href} href={href} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 transition hover:border-indigo-400/30">
                   <h3 className="font-medium text-zinc-100">{title}</h3>
                   <p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p>
                 </Link>
@@ -518,11 +391,12 @@ export default function LandingPreview() {
             </div>
           </div>
           <div className="mt-8 border-t border-white/10 pt-6">
-            <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">{seo.guidesTitle}</p>
+            <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">Guias para aprofundar</p>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-              {seo.guides.map(([href, title]) => (
-                <Link key={href} href={localizedPath(language, href)} className="text-indigo-300 hover:text-indigo-200">{title}</Link>
-              ))}
+              <Link href="/blog/como-conseguir-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">Como conseguir avaliações no Google</Link>
+              <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 hover:text-indigo-200">SEO local e avaliações</Link>
+              <Link href="/blog/review-1-estrela-primeiras-24-horas" className="text-indigo-300 hover:text-indigo-200">Como agir diante de uma avaliação de 1 estrela</Link>
+              <Link href="/blog/clinica-checklist-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">Checklist de avaliações para clínicas</Link>
             </div>
           </div>
         </div>

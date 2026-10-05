@@ -210,13 +210,10 @@ export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Languag
   useEffect(() => {
     let next: Language = initial || "pt";
     try {
-      const pathLang = typeof window !== "undefined"
-        ? normalizeLang(window.location.pathname.split("/").filter(Boolean)[0])
-        : null;
       const stored = normalizeLang(localStorage.getItem(STORAGE_KEY));
       const cookie = readCookie();
-      // Em URLs localizadas, a URL é a fonte de verdade. Na home, preserva a escolha salva.
-      next = pathLang || stored || cookie || initial || "pt";
+      // Só usa o que o usuário escolheu e salvou — nunca o idioma do Chrome
+      next = stored || cookie || initial || "pt";
     } catch {
       next = initial || "pt";
     }

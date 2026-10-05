@@ -162,8 +162,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
         const adapted = adaptSql(sql);
         const q = convertPlaceholders(adapted);
         const r = await c.query(q, params);
-        const returnedId = (r.rows?.[0] && (r.rows[0].id ?? r.rows[0].ID)) as number | undefined;
-        return { changes: r.rowCount || 0, lastID: returnedId };
+        return { changes: r.rowCount || 0, lastID: undefined };
       } finally {
         c.release();
       }
@@ -207,59 +206,6 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
   };
 
   return db;
-}
-
-export type PgTransaction = Pick<PgDatabase, 'exec' | 'run' | 'get' | 'all'>;
-
-export async function withPgTransaction<T>(fn: (tx: PgTransaction) => Promise<T>): Promise<T> {
-  if (!pool) throw new Error('Postgres ainda não inicializado.');
-  const client = await pool.connect();
-
-  const tx: PgTransaction = {
-    async exec(sql: string) {
-      const adapted = adaptSql(sql);
-      const statements = adapted.split(';').map((x) => x.trim()).filter(Boolean);
-      for (const st of statements) {
-        if (/^PRAGMA/i.test(st)) continue;
-        await client.query(st);
-      }
-    },
-    async run(sql: string, params: any[] = []) {
-      const adapted = adaptSql(sql);
-      const q = convertPlaceholders(adapted);
-      const r = await client.query(q, params);
-      const returnedId = (r.rows?.[0] && (r.rows[0].id ?? r.rows[0].ID)) as number | undefined;
-      return { changes: r.rowCount || 0, lastID: returnedId };
-    },
-    async get<T = any>(sql: string, params: any[] = []) {
-      const adapted = adaptSql(sql);
-      const q = convertPlaceholders(adapted);
-      const r = await client.query(q, params);
-      return r.rows[0] as T | undefined;
-    },
-    async all<T = any>(sql: string, params: any[] = []) {
-      const adapted = adaptSql(sql);
-      const q = convertPlaceholders(adapted);
-      const r = await client.query(q, params);
-      return r.rows as T[];
-    },
-  };
-
-  try {
-    await client.query('BEGIN');
-    const result = await fn(tx);
-    await client.query('COMMIT');
-    return result;
-  } catch (error) {
-    try {
-      await client.query('ROLLBACK');
-    } catch {
-      /* preserve original error */
-    }
-    throw error;
-  } finally {
-    client.release();
-  }
 }
 
 export function isPostgresUrl(url?: string | null): boolean {

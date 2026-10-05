@@ -37,18 +37,6 @@ export function validateEnv(): EnvReport {
   }
 
   if (isProd) {
-    const integrationKey = process.env.DOT_INTEGRATION_ENCRYPTION_KEY?.trim() || '';
-    if (!integrationKey) {
-      errors.push('DOT_INTEGRATION_ENCRYPTION_KEY é obrigatório em produção para o vault do DOT.');
-    } else {
-      try {
-        const bytes = Buffer.from(integrationKey, 'base64');
-        if (bytes.length !== 32) errors.push('DOT_INTEGRATION_ENCRYPTION_KEY deve ser base64 de 32 bytes.');
-      } catch {
-        errors.push('DOT_INTEGRATION_ENCRYPTION_KEY inválida.');
-      }
-    }
-
     const cors =
       (process.env.CORS_ORIGINS || '').trim() ||
       process.env.APP_URL ||

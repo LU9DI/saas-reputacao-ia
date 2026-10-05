@@ -44,14 +44,6 @@ import { mountAuditRoutes } from './routes/auditRoutes.js';
 import { mountLegalAcceptRoutes } from './routes/legalAcceptRoutes.js';
 import { mountSmtpTestRoutes } from './routes/smtpTestRoutes.js';
 import { mountMcpRoutes } from './routes/mcpRoutes.js';
-import { mountDotRoutes } from './routes/dotRoutes.js';
-import { mountDotAgentRoutes } from './routes/dotAgentRoutes.js';
-import { mountDotAccessRoutes } from './routes/dotAccessRoutes.js';
-import { mountDotCapabilityRoutes } from './routes/dotCapabilityRoutes.js';
-import { mountDotIntegrationRoutes } from './routes/dotIntegrationRoutes.js';
-import { mountDotOAuthRoutes } from './routes/dotOAuthRoutes.js';
-import './services/dotHubSpotConnector.js';
-import { mountDotAgentMissionRoutes } from './routes/dotAgentMissionRoutes.js';
 import { mountPasswordResetRoutes } from './passwordResetRoutes.js';
 import { mountAdminLoginRoute } from './adminLoginRoute.js';
 import { mountAdminPasswordResetRoutes } from './adminPasswordReset.js';
@@ -75,21 +67,12 @@ import { allowPlanSwitch } from './lib/plans.js';
 import { smtpConfigured } from './lib/mailer.js';
 import { anonymizeOldClientWhatsapp, ensureReviewTreatmentColumns } from './lib/lgpd.js';
 import { backfillSentiment, countMissingSentiment } from './services/sentimentBackfill.js';
-import { startDotMonitorScheduler } from './services/dotScheduler.js';
-import { startDotAgentWorker } from './services/dotAgentWorker.js';
-import { ensureAgentTables } from './services/dotAgent.js';
-import { ensureDotAccessSchema } from './services/dotAccessControl.js';
-import { ensureDotIntegrationSchema } from './services/dotIntegrationRegistry.js';
-import { ensureDotCredentialVaultSchema } from './services/dotCredentialVault.js';
-import { ensureDotOAuthSchema } from './services/dotOAuthBroker.js';
-import { ensureMissionTables } from './services/dotAgentMissions.js';
 
 assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
 const BUILD = { version: '1.1.7', marker: 'mcp-connector-v1', started_at: new Date().toISOString() };
 const app = express();
 app.set('trust proxy', 1);
-app.disable('x-powered-by');
 app.use(requestIdMiddleware);
 app.use(securityHeaders);
 app.use(cookieParser());
@@ -102,22 +85,13 @@ app.get('/api/ready', async (_req, res) => {
   catch (e: any) { return res.status(503).json({ ok: false, ready: false, error: String(e?.message || e), build: BUILD }); }
 });
 app.get('/api/health', async (_req, res) => {
+  const ai = getAiLoadStats();
   let dbPing: { ok: boolean; engine: string; error?: string } = { ok: false, engine: 'unknown' };
   try { dbPing = await pingDb(); } catch (e: any) { dbPing = { ok: false, engine: 'unknown', error: String(e?.message || e) }; }
-  // Health pública deve informar apenas disponibilidade. Segredos, providers,
-  // flags internas, JWT e configuração de pagamentos não pertencem a este endpoint.
-  const body = { ok: dbPing.ok, db_ok: dbPing.ok, build: BUILD, time: new Date().toISOString() };
+  const body = { ok: dbPing.ok, db: dbPing.engine || (typeof dbEngine === 'function' ? dbEngine() : 'sqlite'), db_ok: dbPing.ok, build: BUILD, stripe: stripeConfigured(), paypal: paypalConfigured(), pix: mpConfigured(), wechat: wechatConfigured(), ai: aiConfigured(), ai_providers: listAiProviders(), plan_switch: allowPlanSwitch(), jwt: jwtRotationStatus(), webauthn: webauthnConfig(), push: pushConfigured(), smtp: smtpConfigured(), ai_latency: { groq: ai.stats.groq.latency, gemini: ai.stats.gemini.latency }, http_latency: getHttpMetrics().global, env: process.env.NODE_ENV || 'development', time: new Date().toISOString() };
   res.status(dbPing.ok ? 200 : 503).json(body);
 });
-app.get('/api/metrics', (req, res) => {
-  const secret = process.env.JOBS_SECRET?.trim();
-  if (process.env.NODE_ENV === 'production') {
-    if (!secret) return res.status(503).json({ error: 'Métricas não configuradas.' });
-    if (String(req.headers['x-jobs-secret'] || '') !== secret) return res.status(401).json({ error: 'Não autorizado.' });
-  }
-  res.setHeader('Cache-Control', 'no-store');
-  res.json({ time: new Date().toISOString(), build: BUILD, http: getHttpMetrics(), ai: getAiLoadStats() });
-});
+app.get('/api/metrics', (req, res) => { const secret = process.env.JOBS_SECRET?.trim(); if (process.env.NODE_ENV === 'production' && secret && String(req.headers['x-jobs-secret'] || '') !== secret) return res.status(401).json({ error: 'Não autorizado.' }); res.json({ time: new Date().toISOString(), build: BUILD, http: getHttpMetrics(), ai: getAiLoadStats() }); });
 const PORT = Number(process.env.PORT || 5000);
 let server: Server | null = null;
 let shuttingDown = false;
@@ -137,16 +111,12 @@ async function main() {
   try { await ensureReviewTreatmentColumns(getDb()); } catch (e) { console.warn('treatment columns:', e); }
   try { await ensureAcquisitionSchema(getDb()); } catch (e) { console.warn('acquisition schema:', e); }
   try { await ensureLeadSchema(getDb()); } catch (e) { console.warn('lead schema:', e); }
-  try { await ensureAgentTables(); await ensureMissionTables(); await ensureDotAccessSchema(); await ensureDotIntegrationSchema();
-  await ensureDotCredentialVaultSchema(); await ensureDotOAuthSchema(); } catch (e) { console.warn('ensure DOT agent schema:', e); }
   await runSentimentBackfillOnBoot();
   await runLgpdSweepOnBoot();
-  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app); mountDotRoutes(app); mountDotAgentRoutes(app); mountDotAgentMissionRoutes(app); mountDotAccessRoutes(app); mountDotCapabilityRoutes(app); mountDotIntegrationRoutes(app); mountDotOAuthRoutes(app);
+  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app);
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET }); mountAdminPasswordResetRoutes(app, getDb); mountMfaRoutes(app, getDb, { JWT_SECRET, setAuthCookie, autenticarToken }); mountPasswordResetRoutes(app, getDb); mountStripeRoutes(app, getDb);
   app.use(notFoundHandler); app.use(errorHandler);
   console.log(`📦 build ${BUILD.version} marker=${BUILD.marker}`); console.log(`💳 Stripe: ${stripeConfigured() ? 'ok' : 'OFF'} | Pix: ${mpConfigured() ? 'ok' : 'OFF'} | PayPal: ${paypalConfigured() ? 'ok' : 'OFF'} | WeChat: ${wechatConfigured() ? 'ok' : 'OFF'}`); console.log(`📧 SMTP: ${smtpConfigured() ? 'configurado' : 'OFF — defina SMTP_* no Render'}`); console.log('🔌 MCP: POST /mcp (Grok custom connector)'); if (!wechatConfigured()) console.log('⚠️  WeChat Pay OFF — defina WECHAT_APP_ID / WECHAT_MCH_ID / WECHAT_API_KEY para ligar.');
-  startDotMonitorScheduler();
-  startDotAgentWorker();
   server = app.listen(PORT, () => console.log(`🚀 API Filtra.AI em http://localhost:${PORT}`)); server.keepAliveTimeout = 65_000; server.headersTimeout = 66_000; process.on('SIGTERM', () => gracefulShutdown('SIGTERM')); process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 }
 main().catch((e) => { console.error(e); process.exit(1); });
