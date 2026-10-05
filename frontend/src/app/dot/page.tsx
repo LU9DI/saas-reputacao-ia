@@ -670,65 +670,84 @@ export default function FiltraDotPage() {
         )}
 
         <div className="grid flex-1 gap-5 lg:grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px]">
-          <section className="flex min-h-[70vh] flex-col rounded-[22px] border border-white/[0.08] bg-white/[0.02]">
-            <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:px-5">
-              {messages.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div
-                    className={`max-w-[90%] rounded-2xl px-3.5 py-2.5 text-sm leading-6 ${
-                      msg.role === 'user'
-                        ? 'bg-indigo-500 text-white'
-                        : 'border border-white/[0.08] bg-black/30 text-zinc-200'
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                </div>
-              ))}
-              {busy && <div className="text-xs text-zinc-500">{ui.analyzing}</div>}
-              <div ref={messagesEndRef} />
-            </div>
-            <div className="border-t border-white/[0.06] p-3 sm:p-4">
-              <div className="flex items-end gap-2">
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      void sendMessage();
-                    }
-                  }}
-                  rows={2}
-                  placeholder={ui.ask}
-                  className="min-h-[44px] flex-1 resize-none rounded-xl border border-white/10 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-indigo-400/40 focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => void sendMessage()}
-                  disabled={busy || !input.trim()}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-500 text-white hover:bg-indigo-400 disabled:opacity-40"
-                  aria-label="Send"
-                >
-                  <ArrowUp size={16} />
-                </button>
+          <section className="min-h-[70vh] rounded-[22px] border border-white/[0.08] bg-white/[0.02] p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-600">Centro operacional</div>
+                <h1 className="mt-1 text-lg font-semibold text-zinc-100">O DOT trabalha para a empresa — não espera uma mensagem.</h1>
+                <p className="mt-1 max-w-3xl text-xs leading-5 text-zinc-500">
+                  O agente monitora sinais, investiga, prioriza, prepara ações, pede aprovação quando necessário e acompanha o resultado.
+                </p>
               </div>
-              <div className="mt-2 flex items-center justify-between gap-2 text-[10px] text-zinc-600">
-                <span>{dotStatus.demo ? ui.localDemo : ui.protectedActions}</span>
-                <div className="flex items-center gap-2">
-                  {budget && budget.limit > 0 && (
-                    <span className={budget.warning ? 'font-semibold text-amber-300' : ''}>
-                      {Math.round(budget.percent * 100)}% · {budget.remaining.toLocaleString('pt-BR')} restantes
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => void copyLast()}
-                    className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-300"
-                  >
-                    {copied ? <ClipboardCheck size={12} /> : <Clipboard size={12} />}
-                    {copied ? ui.copiedResponse : ui.copyResponse}
-                  </button>
+              <span className="rounded-full border border-emerald-400/20 bg-emerald-500/5 px-2.5 py-1 text-[10px] text-emerald-300">agente ativo</span>
+            </div>
+
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-xl border border-white/[0.07] bg-black/20 p-3">
+                <div className="text-[10px] uppercase tracking-wide text-zinc-600">Sinais</div>
+                <div className="mt-1 text-2xl font-semibold text-zinc-100">{events.length}</div>
+                <div className="mt-1 text-[10px] text-zinc-500">contexto observado pelo agente</div>
+              </div>
+              <div className="rounded-xl border border-white/[0.07] bg-black/20 p-3">
+                <div className="text-[10px] uppercase tracking-wide text-zinc-600">Decisões</div>
+                <div className="mt-1 text-2xl font-semibold text-zinc-100">{decisions.filter((d) => ['pending','prepared','approved'].includes(d.status)).length}</div>
+                <div className="mt-1 text-[10px] text-zinc-500">itens ainda em fluxo</div>
+              </div>
+              <div className="rounded-xl border border-white/[0.07] bg-black/20 p-3">
+                <div className="text-[10px] uppercase tracking-wide text-zinc-600">Ações</div>
+                <div className="mt-1 text-2xl font-semibold text-zinc-100">{actions.filter((a) => !['executed','cancelled'].includes(a.status)).length}</div>
+                <div className="mt-1 text-[10px] text-zinc-500">preparadas ou aguardando aprovação</div>
+              </div>
+              <div className="rounded-xl border border-white/[0.07] bg-black/20 p-3">
+                <div className="text-[10px] uppercase tracking-wide text-zinc-600">Acompanhamentos</div>
+                <div className="mt-1 text-2xl font-semibold text-zinc-100">{followUps.filter((f) => f.status === 'pending').length}</div>
+                <div className="mt-1 text-[10px] text-zinc-500">resultados que o DOT precisa verificar</div>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-white/[0.07] bg-black/15 p-4">
+              <div className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">Estado atual</div>
+              <div className="mt-2 text-sm font-medium text-zinc-200">{briefing?.headline || 'O agente está observando os dados da empresa.'}</div>
+              <div className="mt-2 text-xs leading-5 text-zinc-500">{briefing?.reason || 'Quando surgir um sinal relevante, o DOT cria uma missão e conduz o ciclo operacional.'}</div>
+              {briefing?.suggestedAction && (
+                <div className="mt-3 rounded-lg border border-sky-400/15 bg-sky-500/5 px-3 py-2 text-xs text-sky-200">
+                  Próximo passo do agente: {briefing.suggestedAction}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+              <div className="rounded-xl border border-white/[0.07] bg-black/15 p-4">
+                <div className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">Últimos sinais</div>
+                <div className="mt-3 space-y-2">
+                  {events.slice(0, 5).map((event) => (
+                    <div key={event.id} className="rounded-lg border border-white/[0.06] px-3 py-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-medium text-zinc-200">{event.title}</span>
+                        <span className="text-[9px] uppercase text-zinc-600">{event.severity}</span>
+                      </div>
+                      <div className="mt-1 text-[10px] leading-4 text-zinc-500">{event.details}</div>
+                    </div>
+                  ))}
+                  {events.length === 0 && <div className="text-xs text-zinc-600">Nenhum sinal crítico pendente.</div>}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.07] bg-black/15 p-4">
+                <div className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">Fluxo do agente</div>
+                <div className="mt-3 space-y-2 text-xs">
+                  {[
+                    ['1', 'Observar', 'monitoramento contínuo'],
+                    ['2', 'Investigar', 'evidência e causa'],
+                    ['3', 'Decidir', 'prioridade e impacto'],
+                    ['4', 'Agir', 'ação preparada / aprovada'],
+                    ['5', 'Verificar', 'resultado e acompanhamento'],
+                  ].map(([n, title, desc]) => (
+                    <div key={n} className="flex items-center gap-3 rounded-lg border border-white/[0.06] px-3 py-2">
+                      <span className="grid h-6 w-6 place-items-center rounded-full border border-sky-400/20 text-[10px] text-sky-300">{n}</span>
+                      <div><div className="text-zinc-300">{title}</div><div className="text-[10px] text-zinc-600">{desc}</div></div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
