@@ -1,0 +1,55 @@
+name: Failover Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply Terraform to the Cloudflare staging environment"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform init
+        working-directory: infra/cloudflare
+        run: terraform init -backend=false -input=false
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive infra/cloudflare
+
+      - name: Terraform validate
+        working-directory: infra/cloudflare
+        run: terraform validate -no-color
+
+      - name: Terraform plan
+        working-directory: infra/cloudflare
+        env:
+          TF_VAR_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_primary_origin: ${{ secrets.FAILOVER_PRIMARY_ORIGIN }}
+        run: |
+          terraform plan -input=false -out=tfplan
+
+      - name: Terraform apply (staging only)
+        if: inputs.apply == true
+        working-directory: infra/cloudflare
+        env:
+          TF_VAR_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_primary_origin: ${{ secrets.FAILOVER_PRIMARY_ORIGIN }}
+        run: terraform apply -input=false -auto-approve tfplan
