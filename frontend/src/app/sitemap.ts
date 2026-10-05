@@ -10,6 +10,8 @@ const localized: Record<string, string[]> = {
 
 const paths = [
   '',
+  '/filtra-ai',
+  '/filtra-ai',
   '/feedback-de-clientes',
   '/analise-de-avaliacoes-com-ia',
   '/gestao-de-reputacao-online',
