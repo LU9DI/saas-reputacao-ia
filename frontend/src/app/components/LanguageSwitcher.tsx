@@ -3,17 +3,17 @@
 import { usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
-const LEGACY_SEO_SLUGS: Record<Language, Record<string,string>> = {
-  en: { ai:'ai', 'customer-feedback':'customer-feedback', 'ai-review-analysis':'ai-review-analysis', 'online-reputation-management':'online-reputation-management', 'google-reviews':'google-reviews' },
-  es: { ia:'ia', 'feedback-clientes':'feedback-clientes', 'analisis-resenas-ia':'analisis-resenas-ia', 'gestion-reputacion-online':'gestion-reputacion-online', 'resenas-google':'resenas-google' },
-  zh: { ai:'ai', 'customer-feedback':'customer-feedback', 'ai-review-analysis':'ai-review-analysis', 'online-reputation-management':'online-reputation-management', 'google-reviews':'google-reviews' },
-};
+const LEGACY_SEO_FAMILIES: Array<Record<Language, string>> = [
+  { pt:'/ia', en:'/en/ai', es:'/es/ia', zh:'/zh/ai' },
+  { pt:'/feedback-de-clientes', en:'/en/customer-feedback', es:'/es/feedback-clientes', zh:'/zh/customer-feedback' },
+  { pt:'/analise-de-avaliacoes-com-ia', en:'/en/ai-review-analysis', es:'/es/analisis-resenas-ia', zh:'/zh/ai-review-analysis' },
+  { pt:'/gestao-de-reputacao-online', en:'/en/online-reputation-management', es:'/es/gestion-reputacion-online', zh:'/zh/online-reputation-management' },
+  { pt:'/avaliacoes-google', en:'/en/google-reviews', es:'/es/resenas-google', zh:'/zh/google-reviews' },
+];
 
 function legacySeoTarget(pathname: string, language: Language): string | null {
-  const match = pathname.match(/^\/(en|es|zh)\/([^/]+)\/?$/);
-  if (!match) return null;
-  const slug = LEGACY_SEO_SLUGS[language][match[2]];
-  return slug ? `/${language}/${slug}` : null;
+  const family = LEGACY_SEO_FAMILIES.find(item => Object.values(item).includes(pathname));
+  return family?.[language] || null;
 }
 
 export function LanguageSwitcher({className='',compact=false,variant='select'}:{className?:string;compact?:boolean;variant?:'select'|'flags'}) {
