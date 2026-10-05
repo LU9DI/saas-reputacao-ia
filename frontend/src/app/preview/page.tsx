@@ -383,6 +383,13 @@ export default function LandingPreview() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-6 pb-8 lg:px-8">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-sm text-zinc-400">
+          <p><strong className="text-white">Filtra.AI</strong> é a plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.</p>
+          <Link href="/filtra-ai" className="mt-2 inline-block text-indigo-300 underline">Conheça a Filtra.AI e saiba como ela funciona →</Link>
+        </div>
+      </section>
+
       <section id="planos" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
         <div className="mb-10 max-w-2xl"><span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.plansEyebrow}</span><h2 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{c.plansTitle}</h2><p className="mt-5 text-zinc-400">{c.plansText}</p></div>
         <PlanCards />
