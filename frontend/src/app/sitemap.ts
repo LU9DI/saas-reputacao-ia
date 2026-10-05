@@ -40,6 +40,17 @@ const paths = [
   '/privacidade',
 ] as const;
 
+const localizedPaths = [
+  '/en/ai','/en/customer-feedback','/en/ai-review-analysis','/en/online-reputation-management','/en/google-reviews',
+  '/es/ia','/es/feedback-clientes','/es/analisis-resenas-ia','/es/gestion-reputacion-online','/es/resenas-google',
+  '/zh/ai','/zh/customer-feedback','/zh/ai-review-analysis','/zh/online-reputation-management','/zh/google-reviews',
+  '/en/filtra-ai','/es/filtra-ai','/zh/filtra-ai',
+  '/en/google-reputation','/es/reputacion-google','/zh/google-reputation',
+  '/en/improve-google-reviews','/es/mejorar-resenas-google','/zh/improve-google-reviews',
+  '/en/online-reputation-monitoring','/es/monitoreo-reputacion-online','/zh/online-reputation-monitoring',
+  '/en/customer-feedback-management','/es/gestion-feedback-clientes','/zh/customer-feedback-management',
+] as const;
+
 const highPriority = new Set<string>([
   '/filtra-ai',
   '/reputacao-google',
@@ -71,7 +82,7 @@ function entry(
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return paths.map((path) => {
+  return [...paths, ...localizedPaths].map((path) => {
     const freq: 'weekly' | 'monthly' =
       path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly';
     const priority =
