@@ -2,28 +2,36 @@ import type { MetadataRoute } from 'next';
 
 const base = 'https://filtraai.com';
 
-const paths = [
+type Lang = 'pt-BR' | 'en' | 'es' | 'zh';
+
+const SEO_FAMILIES: Record<string, Record<Lang, string>> = {
+  '/': { 'pt-BR':'/', en:'/en', es:'/es', zh:'/zh' },
+  '/ia': { 'pt-BR':'/ia', en:'/en/ai', es:'/es/ia', zh:'/zh/ai' },
+  '/filtra-ai': { 'pt-BR':'/filtra-ai', en:'/en/filtra-ai', es:'/es/filtra-ai', zh:'/zh/filtra-ai' },
+  '/feedback-de-clientes': { 'pt-BR':'/feedback-de-clientes', en:'/en/customer-feedback', es:'/es/feedback-clientes', zh:'/zh/customer-feedback' },
+  '/analise-de-avaliacoes-com-ia': { 'pt-BR':'/analise-de-avaliacoes-com-ia', en:'/en/ai-review-analysis', es:'/es/analisis-resenas-ia', zh:'/zh/ai-review-analysis' },
+  '/gestao-de-reputacao-online': { 'pt-BR':'/gestao-de-reputacao-online', en:'/en/online-reputation-management', es:'/es/gestion-reputacion-online', zh:'/zh/online-reputation-management' },
+  '/avaliacoes-google': { 'pt-BR':'/avaliacoes-google', en:'/en/google-reviews', es:'/es/resenas-google', zh:'/zh/google-reviews' },
+  '/reputacao-google': { 'pt-BR':'/reputacao-google', en:'/en/google-reputation', es:'/es/reputacion-google', zh:'/zh/google-reputation' },
+  '/como-melhorar-avaliacoes-google': { 'pt-BR':'/como-melhorar-avaliacoes-google', en:'/en/improve-google-reviews', es:'/es/mejorar-resenas-google', zh:'/zh/improve-google-reviews' },
+  '/monitoramento-reputacao-online': { 'pt-BR':'/monitoramento-reputacao-online', en:'/en/online-reputation-monitoring', es:'/es/monitoreo-reputacion-online', zh:'/zh/online-reputation-monitoring' },
+  '/gestao-de-feedback': { 'pt-BR':'/gestao-de-feedback', en:'/en/customer-feedback-management', es:'/es/gestion-feedback-clientes', zh:'/zh/customer-feedback-management' },
+  '/auditoria-gratuita': { 'pt-BR':'/auditoria-gratuita', en:'/en/free-review-audit', es:'/es/auditoria-gratuita', zh:'/zh/free-review-audit' },
+  '/hoteis': { 'pt-BR':'/hoteis', en:'/en/hotels', es:'/es/hoteles', zh:'/zh/hotels' },
+  '/turismo': { 'pt-BR':'/turismo', en:'/en/tourism', es:'/es/turismo', zh:'/zh/tourism' },
+  '/agencias': { 'pt-BR':'/agencias', en:'/en/agencies', es:'/es/agencias', zh:'/zh/agencies' },
+  '/clinicas': { 'pt-BR':'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinics' },
+  '/franquias': { 'pt-BR':'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franchises' },
+  '/associacoes': { 'pt-BR':'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/associations' },
+  '/restaurantes': { 'pt-BR':'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurants' },
+  '/como-funciona': { 'pt-BR':'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
+  '/parceiros': { 'pt-BR':'/parceiros', en:'/en/partners', es:'/es/socios', zh:'/zh/partners' },
+  '/pedir-estrela-vs-filtrar': { 'pt-BR':'/pedir-estrela-vs-filtrar', en:'/en/ask-for-stars-vs-filtering', es:'/es/pedir-estrellas-vs-filtrar', zh:'/zh/request-stars-vs-filter' },
+};
+
+const canonicalPaths = [
   '',
-  '/filtra-ai',
-  '/reputacao-google',
-  '/como-melhorar-avaliacoes-google',
-  '/monitoramento-reputacao-online',
-  '/gestao-de-feedback',
-  '/feedback-de-clientes',
-  '/analise-de-avaliacoes-com-ia',
-  '/gestao-de-reputacao-online',
-  '/avaliacoes-google',
-  '/como-funciona',
-  '/auditoria-gratuita',
-  '/hoteis',
-  '/parceiros',
-  '/associacoes',
-  '/turismo',
-  '/franquias',
-  '/restaurantes',
-  '/clinicas',
-  '/agencias',
-  '/pedir-estrela-vs-filtrar',
+  ...Object.keys(SEO_FAMILIES).filter((p) => p !== '/'),
   '/blog',
   '/blog/gestao-reputacao-online-guia',
   '/blog/como-responder-avaliacoes-negativas',
@@ -35,25 +43,16 @@ const paths = [
   '/blog/clinica-checklist-avaliacoes-google',
   '/blog/agencia-vender-gestao-reputacao',
   '/blog/whatsapp-pedir-estrela-vs-filtrar-qr',
-  '/ia',
   '/termos',
   '/privacidade',
-] as const;
+];
 
-const localizedPaths = [
-  '/en','/es','/zh',
-  '/en/ai','/en/customer-feedback','/en/ai-review-analysis','/en/online-reputation-management','/en/google-reviews',
-  '/es/ia','/es/feedback-clientes','/es/analisis-resenas-ia','/es/gestion-reputacion-online','/es/resenas-google',
-  '/zh/ai','/zh/customer-feedback','/zh/ai-review-analysis','/zh/online-reputation-management','/zh/google-reviews',
-  '/en/filtra-ai','/es/filtra-ai','/zh/filtra-ai',
-  '/en/google-reputation','/es/reputacion-google','/zh/google-reputation',
-  '/en/improve-google-reviews','/es/mejorar-resenas-google','/zh/improve-google-reviews',
-  '/en/online-reputation-monitoring','/es/monitoreo-reputacion-online','/zh/online-reputation-monitoring',
-  '/en/customer-feedback-management','/es/gestion-feedback-clientes','/zh/customer-feedback-management',
-  '/en/free-review-audit','/es/auditoria-gratuita','/zh/free-review-audit',
-] as const;
+const localizedPaths = Object.values(SEO_FAMILIES).flatMap((family) =>
+  Object.values(family).map((path) => path).filter((path) => path !== family['pt-BR']),
+);
 
-const highPriority = new Set<string>([
+const highPriority = new Set([
+  '/',
   '/filtra-ai',
   '/reputacao-google',
   '/como-melhorar-avaliacoes-google',
@@ -68,27 +67,43 @@ const highPriority = new Set<string>([
   '/clinicas',
   '/restaurantes',
   '/franquias',
+  '/hoteis',
+  '/turismo',
+  '/associacoes',
+  '/parceiros',
   '/pedir-estrela-vs-filtrar',
+  '/como-funciona',
   '/ia',
-  '/blog/gestao-reputacao-online-guia',
-  '/blog/como-conseguir-avaliacoes-google',
-  '/blog/seo-local-avaliacoes-local-pack',
 ]);
 
-function entry(
-  path: string,
-  changeFrequency: 'weekly' | 'monthly',
-  priority: number,
-): MetadataRoute.Sitemap[number] {
-  return { url: base + path, changeFrequency, priority };
+function localizedAlternates(path: string) {
+  for (const family of Object.values(SEO_FAMILIES)) {
+    if (Object.values(family).includes(path)) {
+      return {
+        languages: Object.fromEntries(
+          Object.entries(family).map(([lang, target]) => [lang, base + target]),
+        ),
+      };
+    }
+  }
+  return undefined;
 }
 
+function entry(path: string): MetadataRoute.Sitemap[number] {
+  const canonical = path === '' ? '/' : path;
+  const isBlog = canonical === '/blog' || canonical.startsWith('/blog/');
+  const isHome = canonical === '/';
+  const priority = isHome ? 1 : highPriority.has(canonical) ? 0.95 : isBlog ? 0.8 : 0.7;
+  return {
+    url: base + canonical,
+    changeFrequency: isHome || isBlog ? 'weekly' : 'monthly',
+    priority,
+    alternates: localizedAlternates(canonical),
+  };
+}
+
+const allPaths = [...canonicalPaths, ...localizedPaths].filter((path, index, arr) => arr.indexOf(path) === index);
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [...paths, ...localizedPaths].map((path) => {
-    const freq: 'weekly' | 'monthly' =
-      path === '' || path.startsWith('/blog') ? 'weekly' : 'monthly';
-    const priority =
-      path === '' ? 1 : highPriority.has(path) ? 0.95 : path.startsWith('/blog') ? 0.8 : 0.7;
-    return entry(path, freq, priority);
-  });
+  return allPaths.map(entry);
 }
