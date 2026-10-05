@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
 import { SeoPageHeader } from './SeoPageHeader';
+import { SEO_BODIES } from './SeoTranslations';
 
 type Section={heading:string;body:string};
 type ContextLink={href:string;title:string;description:string};
@@ -37,14 +38,14 @@ zh:{'/feedback-de-clientes':'客户反馈','/analise-de-avaliacoes-com-ia':'AI �
 export function SeoLanding({h1,lead,sections,ctaHref='/preview/teste',ctaLabel,breadcrumbHref,contextLinks=[]}:{h1:string;lead:string;sections:Section[];ctaHref?:string;ctaLabel?:string;breadcrumbHref?:string;contextLinks?:ContextLink[]}){
  const pathname=usePathname(); const {language}=useLanguage(); const t=UI[language]; const tr=language==='pt'?undefined:P[pathname]?.[language];
  const title=tr?.h1||h1, intro=tr?.lead||lead;
- const localizedSections=tr?.heads?sections.map((s,i)=>({...s,heading:tr.heads[i]||s.heading})):sections;
+ const localizedSections=sections.map((s,i)=>({...s,heading:tr?.heads?.[i]||s.heading,body:SEO_BODIES[pathname]?.[language]?.[i]||s.body}));
  const nav=Object.keys(NAV.pt);
  return <div className="min-h-screen bg-black text-zinc-100 font-sans"><SeoPageHeader/>
  {breadcrumbHref&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:t.home,item:'https://filtraai.com/'},{'@type':'ListItem',position:2,name:title,item:`https://filtraai.com${breadcrumbHref}`}]})}}/>}
  <main className="max-w-3xl mx-auto px-4 pb-16 space-y-8"><nav aria-label="Breadcrumb" className="text-xs text-zinc-500"><Link href="/">{t.home}</Link><span className="mx-2">/</span><span>{title}</span></nav>
  <div className="space-y-3"><h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">{title}</h1><p className="text-zinc-400 leading-relaxed text-sm sm:text-base">{intro}</p></div>
  {localizedSections.map(s=><section key={s.heading} className="space-y-2"><h2 className="text-lg font-semibold text-zinc-100">{s.heading}</h2><p className="text-sm text-zinc-300 leading-relaxed">{s.body}</p></section>)}
- <section className="border-t border-zinc-800 pt-8"><h2 className="text-lg font-semibold">{t.deep}</h2><p className="mt-2 text-sm text-zinc-400">{t.deepBody}</p><div className="mt-5 grid gap-3 sm:grid-cols-2">{(contextLinks.length?contextLinks:[{href:'/feedback-de-clientes',title:'Feedback de clientes',description:'Transforme opiniões em informação útil para o negócio.'},{href:'/analise-de-avaliacoes-com-ia',title:'Análise de avaliações com IA',description:'Identifique padrões e temas recorrentes nas avaliações.'},{href:'/gestao-de-reputacao-online',title:'Gestão de reputação online',description:'Organize monitoramento, respostas e evolução da reputação.'},{href:'/auditoria-gratuita',title:'Auditoria gratuita',description:'Faça um diagnóstico inicial e descubra pontos de atenção.'}]).map(x=><Link key={x.href} href={x.href} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4"><span className="font-medium">{NAV[language][x.href]||x.title}</span><span className="mt-1 block text-xs text-zinc-500">{x.description}</span></Link>)}</div></section>
+ <section className="border-t border-zinc-800 pt-8"><h2 className="text-lg font-semibold">{t.deep}</h2><p className="mt-2 text-sm text-zinc-400">{t.deepBody}</p><div className="mt-5 grid gap-3 sm:grid-cols-2">{(contextLinks.length?contextLinks:[{href:'/feedback-de-clientes',title:'Feedback de clientes',description:'Transforme opiniões em informação útil para o negócio.'},{href:'/analise-de-avaliacoes-com-ia',title:'Análise de avaliações com IA',description:'Identifique padrões e temas recorrentes nas avaliações.'},{href:'/gestao-de-reputacao-online',title:'Gestão de reputação online',description:'Organize monitoramento, respostas e evolução da reputação.'},{href:'/auditoria-gratuita',title:'Auditoria gratuita',description:'Faça um diagnóstico inicial e descubra pontos de atenção.'}]).map(x=><Link key={x.href} href={x.href} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4"><span className="font-medium">{NAV[language][x.href]||x.title}</span><span className="mt-1 block text-xs text-zinc-500">{(language==='pt'?x.description:({en:'Explore this topic in your selected language.',es:'Explora este tema en el idioma seleccionado.',zh:'使用您选择的语言继续了解此主题。'}[language]||x.description))}</span></Link>)}</div></section>
  <div className="pt-4"><Link href={ctaHref} className="inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white">{language==='pt'?(ctaLabel||t.cta):t.cta}</Link></div>
  <nav className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500 pt-6 border-t border-zinc-800">{nav.map(href=><Link key={href} href={href}>{NAV[language][href]||NAV.pt[href]}</Link>)}</nav></main></div>;
 }
