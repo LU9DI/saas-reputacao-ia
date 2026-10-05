@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
-import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Gestão de reputação para franquias e redes | Filtra.AI',
