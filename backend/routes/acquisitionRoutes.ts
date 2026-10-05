@@ -100,7 +100,7 @@ async function processAcquisitionBatch(options: { limit: number; source: string 
     [nowIso, nowIso]
   );
 
-  const appUrl = (process.env.APP_URL || process.env.FRONTEND_URL || 'https://filtraai.com').replace(/\\/$/, '');
+  const appUrl = (process.env.APP_URL || process.env.FRONTEND_URL || 'https://filtraai.com').replace(/\/$/, '');
   let sent = 0;
   let failed = 0;
   let skipped = 0;
