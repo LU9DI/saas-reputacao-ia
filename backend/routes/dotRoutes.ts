@@ -19,6 +19,15 @@ import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
 import { selectDotModel } from '../services/dotModelRouting.js';
 import { runDotConnector } from '../services/dotConnector.js';
+import { requireDotAccess } from '../services/dotAccessControl.js';
+
+const dotGlobalLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Muitas requisições ao DOT. Aguarde um momento.' },
+});
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -183,7 +192,11 @@ function cleanMessage(value: unknown): string {
 
 function scopedSessionId(access: DotAccess, id: string): string {
   const safeId = id || 'local-demo';
-  return access.empresaId ? `${access.empresaId}:${safeId}` : `demo:${safeId}`;
+  // Isola a memória por empresa E usuário. Um session_id fornecido pelo
+  // cliente não pode permitir que outro usuário da mesma empresa descubra
+  // o histórico de uma conversa alheia.
+  if (access.empresaId) return `${access.empresaId}:${access.userId || 'unknown'}:${safeId}`;
+  return `demo:${safeId}`;
 }
 
 function sessionHistory(id: string): ChatItem[] {
@@ -274,6 +287,14 @@ async function queryDotCrmReadOnly(access: DotAccess, message: string) {
 
   const idMatch = text.match(/(?:id|registro)\\s*[:#]?\\s*(\\d{2,})/);
   const operation = idMatch ? `${object}.get` : `${object}.list`;
+  // CRM é um recurso sensível: o plano, sozinho, não concede leitura.
+  // A permissão explícita é verificada no servidor antes de tocar no HubSpot.
+  try {
+    await requireDotAccess(access.empresaId, 'crm', 'read', access.userId, { connector: 'crm.hubspot.read', operation });
+  } catch {
+    return { object, operation, result: { ok: false, error: 'Você não possui permissão para consultar o CRM pelo DOT.' } };
+  }
+
   const result = await runDotConnector(
     'crm.hubspot.read',
     { empresaId: access.empresaId, userId: access.userId },
@@ -293,6 +314,9 @@ function deny(res: Response, access: DotAccess) {
 }
 
 export function mountDotRoutes(app: Express) {
+  // Limite global para impedir abuso de endpoints menos óbvios do DOT.
+  app.use('/api/dot', dotGlobalLimiter);
+
   app.get('/api/dot/status', async (req: Request, res: Response) => {
     const access = await resolveDotAccess(req);
     res.json({
