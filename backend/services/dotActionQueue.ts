@@ -124,7 +124,7 @@ async function dbAll(empresaId: string) {
   return getDb().all('SELECT * FROM dot_action_queue WHERE empresa_id = ? ORDER BY id DESC LIMIT 50', [empresaId]);
 }
 
-export async function executeDotAction(empresaId: string, actionId: number) {
+export async function executeDotAction(empresaId: string, actionId: number, actorUserId?: string | null) {
   await ensureSchema();
-  return executeDotActionThroughGateway(empresaId, actionId);
+  return executeDotActionThroughGateway(empresaId, actionId, actorUserId);
 }
