@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { useLanguage } from '../Contexts/LanguageContext';
+import { SeoPageHeader } from '../components/SeoPageHeader';
 
 type Diagnostic = {
   company: string;
@@ -20,6 +22,7 @@ type Diagnostic = {
 const API = process.env.NEXT_PUBLIC_API_URL || '';
 
 export function AuditoriaGratuitaClient() {
+  const { language } = useLanguage();
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
@@ -87,7 +90,7 @@ export function AuditoriaGratuitaClient() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             company,
-            locale: 'pt',
+            locale: language,
             reviews,
             lead_id: consentData?.lead_id || '',
           }),
@@ -104,7 +107,9 @@ export function AuditoriaGratuitaClient() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-zinc-100 px-6 py-12">
+    <>
+      <SeoPageHeader />
+      <main className="min-h-screen bg-black text-zinc-100 px-6 py-12">
       <div className="mx-auto max-w-5xl space-y-10">
         <header className="space-y-4">
           <p className="text-sm font-semibold uppercase tracking-widest text-indigo-400">
@@ -343,6 +348,7 @@ export function AuditoriaGratuitaClient() {
           </Link>
         </nav>
       </div>
-    </main>
+      </main>
+    </>
   );
 }
