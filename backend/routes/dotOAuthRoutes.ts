@@ -25,12 +25,19 @@ async function validateHubSpotReadScopes(key: string) {
     '/crm/v3/objects/companies?limit=1',
     '/crm/v3/objects/deals?limit=1',
   ];
-  const results = await Promise.all(endpoints.map((endpoint) =>
-    fetch('https://api.hubapi.com' + endpoint, {
-      headers: { Accept: 'application/json', Authorization: 'Bearer ' + key },
-    })
-  ));
-  return results.every((response) => response.ok);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8_000);
+  try {
+    const results = await Promise.all(endpoints.map((endpoint) =>
+      fetch('https://api.hubapi.com' + endpoint, {
+        headers: { Accept: 'application/json', Authorization: 'Bearer ' + key },
+        signal: controller.signal,
+      })
+    ));
+    return results.every((response) => response.ok);
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function provider(value: string): DotIntegrationProvider | null {
@@ -66,7 +73,7 @@ export function mountDotOAuthRoutes(app: Express) {
       return res.status(403).json({ok:false,error:'Somente owner/admin/gestor/manager pode conectar integrações.'});
     }
     const key = String(req.body?.serviceKey || '').trim();
-    if (!key || key.length < 20) return res.status(400).json({ok:false,error:'Service Key do HubSpot inválida.'});
+    if (!key || key.length < 20 || key.length > 256 || /\s/.test(key)) return res.status(400).json({ok:false,error:'Service Key do HubSpot inválida.'});
     try {
       const valid = await validateHubSpotReadScopes(key);
       if (!valid) return res.status(400).json({ok:false,error:'A Service Key foi recusada pelo HubSpot ou não possui os três escopos de leitura necessários.'});
@@ -85,6 +92,12 @@ export function mountDotOAuthRoutes(app: Express) {
       await setDotPermission(payload.empresa_id, {
         resource: 'crm', action: 'read', granted: true,
         userId: payload.id, grantedBy: payload.id,
+      });
+      // O agente é um principal separado do usuário: a integração concede
+      // somente a leitura explicitamente necessária para o trabalhador autônomo.
+      await setDotPermission(payload.empresa_id, {
+        resource: 'crm', action: 'read', granted: true,
+        userId: 'agent', grantedBy: payload.id,
       });
       res.setHeader('Cache-Control', 'no-store');
       res.json({ok:true,status:'connected',provider:'crm',scopes:scopes.split(',')});
