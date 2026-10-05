@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useLanguage, type Language } from '../Contexts/LanguageContext';
 import { SeoPageHeader } from './SeoPageHeader';
 import { SEO_BODIES } from './SeoTranslations';
 
@@ -45,7 +44,7 @@ zh:{'/filtra-ai':'Filtra.AI — 声誉管理','/avaliacoes-google':'Google 评�
 };
 
 export function SeoLanding({h1,lead,sections,ctaHref='/preview/teste',ctaLabel,breadcrumbHref,contextLinks=[]}:{h1:string;lead:string;sections:Section[];ctaHref?:string;ctaLabel?:string;breadcrumbHref?:string;contextLinks?:ContextLink[]}){
- const pathname=usePathname(); const {language}=useLanguage(); const t=UI[language]; const tr=language==='pt'?undefined:P[pathname]?.[language];
+ const pathname=usePathname(); const language='pt' as const; const t=UI[language]; const tr=undefined;
  const title=tr?.h1||h1, intro=tr?.lead||lead;
  const localizedSections=sections.map((s,i)=>({...s,heading:tr?.heads?.[i]||s.heading,body:SEO_BODIES[pathname]?.[language]?.[i]||s.body}));
  const nav=['/filtra-ai','/avaliacoes-google',...Object.keys(NAV.pt).filter(x=>x!=='/filtra-ai'&&x!=='/avaliacoes-google')];
