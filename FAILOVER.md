@@ -1,82 +1,56 @@
-# Failover automático de API (Render → Oracle / backup)
+# Filtra.AI — failover automático Vercel → Cloudflare
 
-Funciona **no frontend**, como Groq → Gemini: se a API principal cair, tenta a de backup.
+## Arquitetura
 
-## Variáveis na Vercel (Frontend)
+filtraai.com fica atrás de uma Cloudflare Worker Route. A Worker usa Workers KV para manter o estado de origem:
 
-```env
-# Principal (Render)
-NEXT_PUBLIC_API_URL=https://filtra-api.onrender.com
+- PRIMARY: Vercel
+- FALLBACK: origin Cloudflare configurado por Terraform
 
-# Stand-by (Oracle, segundo Render, Fly, etc.)
-NEXT_PUBLIC_API_URL_BACKUP=https://api.seudominio-oracle.com
+A troca acontece dentro do Worker, sem alteração manual de DNS.
 
-# Opcional: mais bases, separadas por vírgula
-# NEXT_PUBLIC_API_URLS=https://extra1.com,https://extra2.com
-```
+## Failover por saúde
 
-Redeploy o front depois de salvar.
+A Worker tenta a origem primária. Em erros HTTP 502/503/504/521/522/523/524 ou falha de rede, tenta o fallback e grava o estado fallback.
 
-## Como o código decide
+Enquanto estiver em fallback, a Worker faz sondagens controladas à Vercel. Quando a origem primária volta a responder, o estado retorna automaticamente para primary.
 
-Arquivo: `frontend/src/app/utils/apiFailover.ts`
+## Failover por orçamento
 
-1. Tenta a base **sticky** (última que funcionou, 5 min)
-2. Depois `NEXT_PUBLIC_API_URL`
-3. Depois `NEXT_PUBLIC_API_URL_BACKUP`
-4. Depois lista `NEXT_PUBLIC_API_URLS`
+O Spend Management da Vercel envia webhook com budgetAmount, currentSpend, teamId e thresholdPercent. Os thresholds nativos documentados são 50%, 75% e 100%.
 
-Troca se:
-- erro de rede / timeout (~12s)
-- HTTP **502, 503, 504, 521, 522**
+A assinatura do webhook é validada com x-vercel-signature usando HMAC-SHA1.
 
-Uso recomendado:
+O monitor próprio de 90% permanece desativado por padrão. Ele exige uma URL explícita de uso configurada em VERCEL_USAGE_URL e secrets fornecidos pelo operador.
 
-```ts
-import { apiFetch } from './utils/apiFailover';
+## Terraform
 
-const res = await apiFetch('/api/trial/ativar', {
-  method: 'POST',
-  credentials: 'include',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(payload),
-});
-```
+O diretório infra/cloudflare provisiona:
 
-`getEnv('NEXT_PUBLIC_API_URL')` já devolve a base sticky/primary (compatível com código antigo).
+- namespace KV FAILOVER_ORIGIN;
+- chave active_origin;
+- Worker;
+- binding KV;
+- Route filtraai.com/*.
 
-## Dados iguais nos dois servidores (obrigatório de verdade)
+Nenhuma credencial é gravada no repositório.
 
-Se cada host tiver **SQLite próprio**, o failover sobe a API, mas o **login/trial do outro some**.
+## Estado atual
 
-Solução:
+Este código não aplica Terraform, não cria recursos na Cloudflare, não altera DNS e não configura Spend Management.
 
-| Host | `DATABASE_URL` |
-|------|----------------|
-| Render | mesma URL Postgres |
-| Oracle | **a mesma** URL Postgres (ex.: Neon free, Supabase, Render Postgres external) |
+Próxima sequência segura:
 
-Ambos também com o **mesmo** `JWT_SECRET`.
+1. CI verde.
+2. Terraform plan/validate em staging.
+3. Aplicar staging.
+4. Testar failover e recovery.
+5. Configurar Spend Management.
+6. Só então preparar produção.
 
-## CORS
+Comandos locais:
 
-Nos **dois** backends:
-
-```env
-CORS_ORIGINS=https://seu-app.vercel.app
-FRONTEND_URL=https://seu-app.vercel.app
-APP_URL=https://seu-app.vercel.app
-```
-
-## Checklist rápido
-
-1. [ ] API principal no ar (`/api/health`)
-2. [ ] API backup no ar (`/api/health`)
-3. [ ] Mesmo `DATABASE_URL` + `JWT_SECRET` nos dois
-4. [ ] Vercel com `NEXT_PUBLIC_API_URL` + `NEXT_PUBLIC_API_URL_BACKUP`
-5. [ ] Redeploy front
-6. [ ] Teste: desligue a principal e faça login / trial — deve cair na backup
-
-## Limitação
-
-Cookies `HttpOnly` são **por domínio**. Token em `localStorage` (`filtra_token`) + header `Authorization` continua válido em qualquer base. Cookie de sessão de um host **não** vale no outro — por isso o front já grava `filtra_token`.
+    npm test
+    terraform -chdir=infra/cloudflare fmt -check -recursive
+    terraform -chdir=infra/cloudflare init -backend=false
+    terraform -chdir=infra/cloudflare validate
