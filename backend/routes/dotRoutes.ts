@@ -73,6 +73,20 @@ type DotAccess = {
 
 const sessions = new Map<string, ChatItem[]>();
 const MAX_HISTORY = 12;
+const SESSION_TTL_MS = Math.max(5 * 60_000, Number(process.env.DOT_SESSION_TTL_MS || 30 * 60_000));
+const SESSION_MAX_COUNT = Math.max(100, Number(process.env.DOT_SESSION_MAX_COUNT || 2000));
+
+function cleanupDotSessions(now = Date.now()) {
+  for (const [key, history] of sessions) {
+    const last = history[history.length - 1]?.at || 0;
+    if (!last || now - last > SESSION_TTL_MS) sessions.delete(key);
+  }
+  while (sessions.size > SESSION_MAX_COUNT) {
+    const oldest = sessions.keys().next().value;
+    if (!oldest) break;
+    sessions.delete(oldest);
+  }
+}
 
 const DOT_RESPONSE_TOKEN_LIMITS: Record<string, number> = {
   // REI é o plano de maior profundidade de inteligência.
@@ -200,6 +214,7 @@ function scopedSessionId(access: DotAccess, id: string): string {
 }
 
 function sessionHistory(id: string): ChatItem[] {
+  cleanupDotSessions();
   const current = sessions.get(id);
   if (current) return current;
   const created: ChatItem[] = [];
