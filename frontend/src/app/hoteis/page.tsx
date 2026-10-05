@@ -5,7 +5,16 @@ export const metadata: Metadata = {
   title: 'Gestão de avaliações e reputação para hotéis | Filtra.AI',
   description:
     'Organize avaliações de hóspedes, identifique padrões de experiência e transforme feedback em ações para melhorar a reputação do hotel.',
-  alternates: { canonical: 'https://filtraai.com/hoteis' },
+  alternates: {
+    canonical: 'https://filtraai.com/hoteis',
+    languages: {
+      'pt-BR': 'https://filtraai.com/hoteis',
+      en: 'https://filtraai.com/en/hotels',
+      es: 'https://filtraai.com/es/hoteles',
+      zh: 'https://filtraai.com/zh/hotels',
+      'x-default': 'https://filtraai.com/hoteis',
+    },
+  },
   openGraph: {
     type: 'website',
     url: 'https://filtraai.com/hoteis',
