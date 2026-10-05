@@ -10,73 +10,36 @@ const ogImage = `${siteUrl}/og-image.svg`;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Filtra.AI — Transforme a voz do cliente em crescimento',
+    default: 'Filtra.AI | Filtra — Gestão de reputação online com IA',
     template: '%s · Filtra.AI',
   },
   description:
-    'Filtra.AI transforma avaliações e feedback de clientes em inteligência para crescimento, reputação, retenção e decisões de gestão. Teste grátis por 7 dias.',
+    'Filtra.AI é a plataforma brasileira de gestão de reputação online com IA: monitore avaliações Google, analise feedback de clientes e transforme a voz do cliente em crescimento.',
   applicationName: 'Filtra.AI',
-  keywords: [
-    'feedback de clientes',
-    'análise de avaliações com IA',
-    'gestão de reputação online',
-    'customer feedback analytics',
-    'review analysis',
-    'AI reputation management',
-    'experiência do cliente',
-    'satisfação do cliente',
-    'gestão de avaliações',
-    'reputação online',
-    'crescimento empresarial',
-    'Filtra.AI',
-    'software de gestão de reputação',
-    'monitoramento de avaliações Google',
-    'gestão de reviews',
-    'customer experience',
-    'reputação empresarial',
-    'reputação para hotéis',
-    'reputação para restaurantes',
-    'reputação para clínicas',
-    'reputação para franquias',
-  ],
+  keywords: ['Filtra','Filtra.AI','Filtra AI','gestão de reputação online','gestão de avaliações','avaliações Google','análise de avaliações com IA','feedback de clientes','customer feedback analytics','review analysis','AI reputation management','experiência do cliente','satisfação do cliente','reputação online','monitoramento de avaliações Google','gestão de reviews','software de gestão de reputação','reputação empresarial','reputação para hotéis','reputação para restaurantes','reputação para clínicas','reputação para franquias'],
   authors: [{ name: 'Filtra.AI' }],
   creator: 'Filtra.AI',
   publisher: 'Filtra.AI',
   manifest: '/manifest.webmanifest',
-  alternates: { canonical: 'https://filtraai.com/' },
+  alternates: { canonical: `${siteUrl}/` },
   category: 'BusinessApplication',
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
     url: siteUrl,
     siteName: 'Filtra.AI',
-    title: 'Filtra.AI — Transforme a voz do cliente em crescimento',
-    description:
-      'Descubra padrões nas avaliações, identifique problemas e oportunidades e transforme a voz do consumidor em decisões de crescimento. Teste grátis por 7 dias.',
-    images: [{ url: ogImage, width: 1200, height: 630, alt: 'Filtra.AI — Gestão de avaliações Google' }],
+    title: 'Filtra.AI | Filtra — Gestão de reputação online com IA',
+    description: 'Gestão de reputação online, avaliações Google e análise de feedback com inteligência artificial.',
+    images: [{ url: ogImage, width: 1200, height: 630, alt: 'Filtra.AI — Gestão de reputação online com IA' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Filtra.AI — A voz do cliente pode mostrar onde sua empresa cresce',
-    description:
-      'Analise avaliações e feedback com IA e transforme sinais de clientes em prioridades de ação. Teste grátis por 7 dias.',
+    title: 'Filtra.AI | Filtra — Gestão de reputação online com IA',
+    description: 'Monitore avaliações, analise feedback com IA e transforme sinais de clientes em prioridades de ação.',
     images: [ogImage],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'Filtra.AI',
-  },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Filtra.AI' },
   formatDetection: { telephone: false },
   icons: {
     icon: [
@@ -89,21 +52,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
-    { media: '(prefers-color-scheme: light)', color: '#4f46e5' },
-  ],
+  themeColor: [{ media: '(prefers-color-scheme: dark)', color: '#000000' }, { media: '(prefers-color-scheme: light)', color: '#4f46e5' }],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
   viewportFit: 'cover',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className="h-full" suppressHydrationWarning>
       <body className="min-h-full bg-black text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
