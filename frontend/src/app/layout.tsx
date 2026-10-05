@@ -10,11 +10,11 @@ const ogImage = `${siteUrl}/og-image.svg`;
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'Filtra.AI | Filtra — Gestão de reputação online com IA',
+    default: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
     template: '%s · Filtra.AI',
   },
   description:
-    'Filtra.AI é a plataforma brasileira de gestão de reputação online com IA: monitore avaliações Google, analise feedback de clientes e transforme a voz do cliente em crescimento.',
+    'Filtra.AI é a plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA. Monitore sinais, encontre padrões e transforme feedback em ação.',
   applicationName: 'Filtra.AI',
   keywords: ['Filtra','Filtra.AI','Filtra AI','gestão de reputação online','gestão de avaliações','avaliações Google','análise de avaliações com IA','feedback de clientes','customer feedback analytics','review analysis','AI reputation management','experiência do cliente','satisfação do cliente','reputação online','monitoramento de avaliações Google','gestão de reviews','software de gestão de reputação','reputação empresarial','reputação para hotéis','reputação para restaurantes','reputação para clínicas','reputação para franquias'],
   authors: [{ name: 'Filtra.AI' }],
@@ -28,13 +28,13 @@ export const metadata: Metadata = {
     locale: 'pt_BR',
     url: siteUrl,
     siteName: 'Filtra.AI',
-    title: 'Filtra.AI | Filtra — Gestão de reputação online com IA',
-    description: 'Gestão de reputação online, avaliações Google e análise de feedback com inteligência artificial.',
-    images: [{ url: ogImage, width: 1200, height: 630, alt: 'Filtra.AI — Gestão de reputação online com IA' }],
+    title: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
+    description: 'Monitore avaliações Google, organize feedback e transforme sinais de reputação em decisões práticas com inteligência artificial.',
+    images: [{ url: ogImage, width: 1200, height: 630, alt: 'Filtra.AI — Gestão de reputação online e avaliações Google com IA' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Filtra.AI | Filtra — Gestão de reputação online com IA',
+    title: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
     description: 'Monitore avaliações, analise feedback com IA e transforme sinais de clientes em prioridades de ação.',
     images: [ogImage],
   },
