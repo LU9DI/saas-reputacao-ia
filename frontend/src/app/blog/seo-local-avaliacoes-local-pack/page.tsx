@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'SEO local e avaliações Google: o que ranqueia no Local Pack | Filtra.AI',
+  title: 'Pacotes de SEO local: avaliações Google e Local Pack | Filtra.AI',
   description:
     'SEO local, Google Business Profile e avaliações: entenda relevância, distância, destaque, recência e como estruturar pacotes de SEO local para empresas.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' },
@@ -21,8 +21,10 @@ export default function Page() {
     <BlogArticle
       kicker="SEO local"
       title="SEO local e avaliações Google: o que realmente ranqueia no Local Pack"
-      lead="SEO local não é só site: presença local, relevância e reputação precisam trabalhar juntas para transformar buscas próximas em clientes."
+      lead="Pacotes de SEO local ficam mais completos quando conectam presença local, avaliações Google, reputação e acompanhamento de oportunidades no Maps."
     >
+      <H2>O que deve entrar em um pacote de SEO local?</H2><p>Um pacote de SEO local pode combinar presença local, conteúdo útil, otimização do perfil empresarial, acompanhamento de avaliações, análise de reputação e recomendações mensais. A prioridade é criar um processo que gere melhoria mensurável, não apenas uma lista de tarefas.</p>
+
       <H2>Três pilares clássicos</H2>
       <p>
         Relevância, distância e destaque são os fundamentos mais conhecidos do resultado local.
