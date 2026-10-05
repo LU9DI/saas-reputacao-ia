@@ -22,7 +22,7 @@ function targetFor(pathname: string, language: Language): string {
   const family = SEO_FAMILIES.find(item => Object.values(item).includes(pathname));
   if (family) return family[language];
 
-  // Non-SEO/application pages keep their current URL and only change UI language.
+  // SEO pages navigate to their localized canonical route; app pages keep the current URL.
   return pathname || '/';
 }
 
