@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { getDb } from '../lib/db.js';
 import { putDotCredential, revokeDotCredentials } from './dotCredentialVault.js';
 import { listDotIntegrations, type DotIntegrationProvider } from './dotIntegrationRegistry.js';
+import { setDotPermission } from './dotAccessControl.js';
 
 type OAuthProviderConfig = {
   provider: DotIntegrationProvider;
@@ -172,6 +173,14 @@ export async function completeDotOAuth(input: { code: string; state: string }) {
     );
   }
   await db.run('UPDATE dot_oauth_sessions SET status=?, consumed_at=? WHERE id=?', ['consumed', new Date().toISOString(), session.id]);
+  // A autorização OAuth concede CRM.read somente ao usuário que iniciou a conexão.
+  // Novos usuários precisam de uma concessão explícita, evitando expansão lateral.
+  if (provider === 'crm') {
+    await setDotPermission(empresaId, {
+      resource: 'crm', action: 'read', granted: true,
+      userId: String(session.user_id), grantedBy: String(session.user_id),
+    });
+  }
   return { empresaId, provider, scopes: grantedScopes };
 }
 
