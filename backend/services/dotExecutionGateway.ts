@@ -34,6 +34,7 @@ function riskForAction(risk: string): DotRisk {
 export async function executeDotActionThroughGateway(
   empresaId: string,
   actionId: number,
+  actorUserId?: string | null,
 ): Promise<DotExecutionResult> {
   const db = getDb();
   const row = await db.get(
