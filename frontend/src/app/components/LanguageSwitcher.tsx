@@ -54,7 +54,8 @@ export function LanguageSwitcher({
   const { language, setLanguage, tx } = useLanguage();
   const pathname = usePathname();
   const router = useRouter();
-  const current = ((pathname || '/').match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined) || 'pt';
+  const pathLang = (pathname || '/').match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
+  const current = pathLang || language;
 
   const choose = (code: Language) => {
     setLanguage(code);
