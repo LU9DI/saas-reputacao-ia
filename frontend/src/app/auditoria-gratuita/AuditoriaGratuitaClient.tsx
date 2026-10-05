@@ -37,6 +37,7 @@ const API = process.env.NEXT_PUBLIC_API_URL || '';
 
 export function AuditoriaGratuitaClient() {
   const { language } = useLanguage();
+  const c = { ...COPY[language], ...cExtra(language) };
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
