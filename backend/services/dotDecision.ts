@@ -23,7 +23,7 @@ export type DotDecision = {
   createdAt?: string;
 };
 
-async function ensureSchema() {
+export async function ensureDotDecisionSchema() {
   const db = getDb();
   await db.exec(`CREATE TABLE IF NOT EXISTS dot_decisions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,7 +73,7 @@ function classify(event: any): DotDecision {
 }
 
 export async function createDecisionsForEvents(empresaId: string, events: any[]) {
-  await ensureSchema();
+  await ensureDotDecisionSchema();
   const db = getDb();
   const created = [];
   for (const event of events || []) {
@@ -90,7 +90,7 @@ export async function createDecisionsForEvents(empresaId: string, events: any[])
 }
 
 export async function updateDotDecision(empresaId: string, id: number, status: 'prepared' | 'approved' | 'rejected') {
-  await ensureSchema();
+  await ensureDotDecisionSchema();
   const db = getDb();
   const row = await db.get('SELECT id, status FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [id, empresaId]);
   if (!row) return null;
@@ -111,7 +111,7 @@ export async function updateDotDecision(empresaId: string, id: number, status: '
 }
 
 export async function listDotDecisions(empresaId: string) {
-  await ensureSchema();
+  await ensureDotDecisionSchema();
   const rows = await getDb().all('SELECT * FROM dot_decisions WHERE empresa_id = ? ORDER BY id DESC LIMIT 50',[empresaId]);
   return (rows || []).map((r:any) => ({...r, evidence: JSON.parse(r.evidence_json || '[]'), options: JSON.parse(r.options_json || '[]'), requiresApproval: Boolean(r.requires_approval), createdAt: r.created_at}));
 }
