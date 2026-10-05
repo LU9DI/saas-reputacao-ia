@@ -1,13 +1,27 @@
 const STATE_KEY = 'active_origin';
 const RETRYABLE = new Set([502, 503, 504, 521, 522, 523, 524]);
-const CACHEABLE_PREFIXES = ['/','/en','/es','/zh','/filtra-ai','/avaliacoes-google','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/reputacao-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback','/blog'];
+const WEBHOOK_PATH = '/_failover/vercel';
+const CACHEABLE_PREFIXES = [
+  '/',
+  '/en', '/es', '/zh',
+  '/filtra-ai', '/avaliacoes-google', '/feedback-de-clientes',
+  '/analise-de-avaliacoes-com-ia', '/gestao-de-reputacao-online',
+  '/reputacao-google', '/como-melhorar-avaliacoes-google',
+  '/monitoramento-reputacao-online', '/gestao-de-feedback', '/blog',
+];
 
 function normalizeOrigin(value) {
   return new URL(value).origin;
 }
 
 function publicPath(pathname) {
-  if (pathname.startsWith('/api/') || pathname.startsWith('/painel') || pathname.startsWith('/admin') || pathname.startsWith('/login')) return false;
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/painel') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/login') ||
+    pathname === WEBHOOK_PATH
+  ) return false;
   return CACHEABLE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'));
 }
 
@@ -29,6 +43,7 @@ async function readState(env) {
       changedAt: Number(state.changedAt) || 0,
       reason: String(state.reason || 'unknown'),
       nextProbeAt: Number(state.nextProbeAt) || 0,
+      eventId: state.eventId ? String(state.eventId) : undefined,
     };
   } catch {
     return { origin: 'primary', changedAt: 0, reason: 'invalid-state', nextProbeAt: 0 };
@@ -39,9 +54,154 @@ async function writeState(env, state) {
   await env.FAILOVER_ORIGIN.put(STATE_KEY, JSON.stringify(state));
 }
 
+async function eventProcessed(env, eventId) {
+  if (!eventId) return false;
+  return (await env.FAILOVER_ORIGIN.get('processed_event:' + eventId)) !== null;
+}
+
+async function markEventProcessed(env, eventId) {
+  if (!eventId) return;
+  await env.FAILOVER_ORIGIN.put(
+    'processed_event:' + eventId,
+    JSON.stringify({ processedAt: Date.now() }),
+    { expirationTtl: 86400 },
+  );
+}
+
+function safeEqualHex(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
+function bytesToHex(bytes) {
+  return Array.from(new Uint8Array(bytes))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+async function hmacSha1(body, secret) {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-1' },
+    false,
+    ['sign'],
+  );
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    new TextEncoder().encode(body),
+  );
+  return bytesToHex(signature);
+}
+
+async function handleFailoverWebhook(request, env) {
+  const body = await request.text();
+  let payload;
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    return new Response(JSON.stringify({ error: 'invalid_json' }), {
+      status: 400,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+
+  const vercelSignature = request.headers.get('x-vercel-signature');
+  const monitorSignature = request.headers.get('x-filtra-monitor-secret');
+
+  let source = 'vercel';
+  let valid = false;
+
+  if (monitorSignature && env.FAILOVER_MONITOR_SECRET) {
+    valid = safeEqualHex(
+      await hmacSha1(body, env.FAILOVER_MONITOR_SECRET),
+      monitorSignature,
+    );
+    source = '90pct-monitor';
+  } else if (vercelSignature && env.VERCEL_WEBHOOK_SECRET) {
+    valid = safeEqualHex(
+      await hmacSha1(body, env.VERCEL_WEBHOOK_SECRET),
+      vercelSignature,
+    );
+  }
+
+  if (!valid) {
+    return new Response(JSON.stringify({ error: 'invalid_signature' }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+
+  const eventId = String(
+    payload.eventId ||
+    await sha256(body),
+  );
+
+  if (await eventProcessed(env, eventId)) {
+    return new Response(JSON.stringify({ ok: true, duplicate: true }), {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+
+  const threshold = Number(payload.thresholdPercent);
+  let action = 'ignore';
+
+  if (threshold >= 90) action = 'failover';
+  else if (threshold === 50 || threshold === 75) action = 'observe';
+
+  if (action === 'failover') {
+    const current = await readState(env);
+    const cooldownMs = 300000;
+    const inCooldown =
+      current.changedAt > 0 &&
+      Date.now() - current.changedAt < cooldownMs;
+
+    if (current.origin !== 'fallback' || !inCooldown) {
+      await writeState(env, {
+        origin: 'fallback',
+        changedAt: Date.now(),
+        reason: source === '90pct-monitor'
+          ? 'spend-90-monitor'
+          : 'spend-threshold-' + String(threshold),
+        nextProbeAt: Date.now() + cooldownMs,
+        eventId,
+      });
+    }
+  }
+
+  await markEventProcessed(env, eventId);
+
+  return new Response(JSON.stringify({
+    ok: true,
+    action,
+    source,
+    thresholdPercent: Number.isFinite(threshold) ? threshold : null,
+  }), {
+    status: 200,
+    headers: { 'content-type': 'application/json' },
+  });
+}
+
+async function sha256(value) {
+  const digest = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(value),
+  );
+  return bytesToHex(digest);
+}
+
 async function fetchPrimary(request, env) {
   try {
-    const response = await fetch(buildTarget(env.PRIMARY_ORIGIN, request.url), new Request(request));
+    const response = await fetch(
+      buildTarget(env.PRIMARY_ORIGIN, request.url),
+      new Request(request),
+    );
     return { response, retryable: RETRYABLE.has(response.status) };
   } catch {
     return { response: null, retryable: true };
@@ -50,17 +210,25 @@ async function fetchPrimary(request, env) {
 
 async function cacheResponse(request, response) {
   if (request.method !== 'GET' || !response || !response.ok) return;
-  const clone = new Response(response.body, response);
-  const headers = new Headers(clone.headers);
+  if (!publicPath(new URL(request.url).pathname)) return;
+
+  const cached = response.clone();
+  const headers = new Headers(cached.headers);
   if (!headers.has('cache-control')) {
-    headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
+    headers.set(
+      'cache-control',
+      'public, max-age=60, s-maxage=300, stale-while-revalidate=86400',
+    );
   }
-  headers.set('x-filtra-failover-cache', 'warm');
-  await caches.default.put(request, new Response(clone.body, {
-    status: clone.status,
-    statusText: clone.statusText,
-    headers,
-  }));
+
+  await caches.default.put(
+    request,
+    new Response(cached.body, {
+      status: cached.status,
+      statusText: cached.statusText,
+      headers,
+    }),
+  );
 }
 
 async function readCache(request) {
@@ -79,12 +247,11 @@ function decorate(response, origin) {
   });
 }
 
-async function fallbackResponse(request, env, reason) {
+async function fallbackResponse(request, reason) {
   if (publicPath(new URL(request.url).pathname)) {
     const cached = await readCache(request);
     if (cached) {
       const headers = new Headers(cached.headers);
-      headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
       headers.set('x-filtra-failover-origin', 'cloudflare-cache');
       headers.set('x-filtra-failover-reason', reason);
       return new Response(cached.body, {
@@ -94,32 +261,56 @@ async function fallbackResponse(request, env, reason) {
       });
     }
   }
+
   return new Response('Filtra.AI temporarily unavailable', {
     status: 503,
-    headers: { 'content-type': 'text/plain; charset=utf-8', 'x-filtra-failover-origin': 'cloudflare-fallback' },
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'x-filtra-failover-origin': 'cloudflare-fallback',
+    },
   });
 }
 
 export default {
   async fetch(request, env) {
-    const probeInterval = Math.max(60_000, Number(env.RECOVERY_PROBE_INTERVAL_MS || 300_000));
+    const url = new URL(request.url);
+
+    if (url.pathname === WEBHOOK_PATH && request.method === 'POST') {
+      return handleFailoverWebhook(request, env);
+    }
+
+    const probeInterval = Math.max(
+      60000,
+      Number(env.RECOVERY_PROBE_INTERVAL_MS || 300000),
+    );
     let state = await readState(env);
 
     if (state.origin === 'fallback') {
       if (Date.now() >= state.nextProbeAt) {
-        state = { ...state, nextProbeAt: Date.now() + probeInterval };
+        state = {
+          ...state,
+          nextProbeAt: Date.now() + probeInterval,
+        };
         await writeState(env, state);
+
         const primary = await fetchPrimary(request, env);
         if (primary.response && !primary.retryable) {
-          await writeState(env, { origin: 'primary', changedAt: Date.now(), reason: 'automatic-recovery', nextProbeAt: 0 });
+          await writeState(env, {
+            origin: 'primary',
+            changedAt: Date.now(),
+            reason: 'automatic-recovery',
+            nextProbeAt: 0,
+          });
           await cacheResponse(request, primary.response);
           return decorate(primary.response, 'primary');
         }
       }
-      return fallbackResponse(request, env, 'configured-fallback');
+
+      return fallbackResponse(request, 'configured-fallback');
     }
 
     const primary = await fetchPrimary(request, env);
+
     if (primary.response && !primary.retryable) {
       await cacheResponse(request, primary.response);
       return decorate(primary.response, 'primary');
@@ -128,10 +319,17 @@ export default {
     await writeState(env, {
       origin: 'fallback',
       changedAt: Date.now(),
-      reason: primary.response ? 'primary-http-' + primary.response.status : 'primary-network-error',
+      reason: primary.response
+        ? 'primary-http-' + primary.response.status
+        : 'primary-network-error',
       nextProbeAt: Date.now() + probeInterval,
     });
 
-    return fallbackResponse(request, env, primary.response ? 'primary-http-' + primary.response.status : 'primary-network-error');
+    return fallbackResponse(
+      request,
+      primary.response
+        ? 'primary-http-' + primary.response.status
+        : 'primary-network-error',
+    );
   },
 };
