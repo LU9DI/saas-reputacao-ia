@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SeoPageHeader } from 'components/SeoPageHeader';
+import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Filtra.AI para ChatGPT, Claude e Grok | IA',
