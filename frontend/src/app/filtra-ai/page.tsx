@@ -26,6 +26,15 @@ const entitySchema = {
   logo: 'https://filtraai.com/icons/icon-512.png',
   description:
     'Plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.',
+  disambiguatingDescription:
+    'Filtra.AI é a plataforma brasileira da Filtra Ai Tecnologia LTDA para gestão de reputação, avaliações Google e inteligência de feedback.',
+  knowsAbout: [
+    'gestão de reputação online',
+    'avaliações Google',
+    'feedback de clientes',
+    'análise de avaliações com inteligência artificial',
+    'SEO local',
+  ],
   identifier: {
     '@type': 'PropertyValue',
     propertyID: 'CNPJ',
@@ -57,8 +66,9 @@ export default function FiltraAiPage() {
           acompanha sinais de atenção e transforma essas informações em prioridades para a gestão.
         </p>
         <p className="leading-8 text-zinc-400">
-          O foco da Filtra.AI é reputação empresarial, avaliações Google, experiência do cliente
-          e inteligência de feedback — não edição de fotos ou filtros de imagem.
+          O foco do produto é ajudar empresas a entender o que clientes estão dizendo,
+          acompanhar a percepção pública e transformar sinais de reputação em decisões de operação,
+          atendimento, marketing e crescimento.
         </p>
       </section>
 
@@ -95,6 +105,33 @@ export default function FiltraAiPage() {
         <p className="leading-8 text-zinc-400">
           Essa página existe para deixar inequívoca a identidade da marca: quando alguém pesquisa por Filtra ou Filtra.AI, a referência que queremos construir é a plataforma brasileira de gestão de reputação online — e não ferramentas de filtros de fotografia.
         </p>
+      </section>
+
+      <section className="mt-12 space-y-5">
+        <h2 className="text-2xl font-bold">Para quem é a Filtra.AI?</h2>
+        <p className="leading-8 text-zinc-400">
+          A plataforma foi pensada para empresas que dependem da confiança do cliente antes da compra,
+          do agendamento ou da visita. Isso inclui operações locais, redes de clínicas, hotéis,
+          restaurantes, franquias e agências que administram reputação para seus clientes.
+        </p>
+        <p className="leading-8 text-zinc-400">
+          Em operações com várias unidades, a visão consolidada ajuda a encontrar diferenças entre locais.
+          Para agências, a rotina pode apoiar a entrega de{' '}
+          <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação como serviço</Link>.
+          Para negócios locais, o processo se conecta a{' '}
+          <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local e presença no Google Maps</Link>.
+        </p>
+      </section>
+
+      <section className="mt-12 space-y-5">
+        <h2 className="text-2xl font-bold">Como a Filtra.AI transforma feedback em gestão</h2>
+        <ol className="list-decimal space-y-2 pl-6 leading-8 text-zinc-400">
+          <li>captura e organiza sinais de experiência e avaliações;</li>
+          <li>identifica padrões e temas recorrentes;</li>
+          <li>prioriza pontos que merecem atenção da equipe;</li>
+          <li>acompanha a evolução da reputação ao longo do tempo;</li>
+          <li>conecta aprendizado de clientes a ações de melhoria.</li>
+        </ol>
       </section>
 
       <section className="mt-12 grid gap-4 sm:grid-cols-2">
