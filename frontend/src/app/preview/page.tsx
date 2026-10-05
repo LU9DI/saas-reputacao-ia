@@ -300,7 +300,7 @@ export default function LandingPreview() {
             <a href="#planos" className="hover:text-white">{c.plansEyebrow}</a>
           </div>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
+            <div className="fixed right-4 top-4 z-[60] sm:right-6 sm:top-5"><LanguageSwitcher /></div>
             <a href="/teste" className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
           </div>
           </div>
