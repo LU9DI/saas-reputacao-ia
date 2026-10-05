@@ -89,6 +89,7 @@ const JWT_SECRET = requireJwtSecret();
 const BUILD = { version: '1.1.7', marker: 'mcp-connector-v1', started_at: new Date().toISOString() };
 const app = express();
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
 app.use(requestIdMiddleware);
 app.use(securityHeaders);
 app.use(cookieParser());
@@ -101,13 +102,22 @@ app.get('/api/ready', async (_req, res) => {
   catch (e: any) { return res.status(503).json({ ok: false, ready: false, error: String(e?.message || e), build: BUILD }); }
 });
 app.get('/api/health', async (_req, res) => {
-  const ai = getAiLoadStats();
   let dbPing: { ok: boolean; engine: string; error?: string } = { ok: false, engine: 'unknown' };
   try { dbPing = await pingDb(); } catch (e: any) { dbPing = { ok: false, engine: 'unknown', error: String(e?.message || e) }; }
-  const body = { ok: dbPing.ok, db: dbPing.engine || (typeof dbEngine === 'function' ? dbEngine() : 'sqlite'), db_ok: dbPing.ok, build: BUILD, stripe: stripeConfigured(), paypal: paypalConfigured(), pix: mpConfigured(), wechat: wechatConfigured(), ai: aiConfigured(), ai_providers: listAiProviders(), plan_switch: allowPlanSwitch(), jwt: jwtRotationStatus(), webauthn: webauthnConfig(), push: pushConfigured(), smtp: smtpConfigured(), ai_latency: { groq: ai.stats.groq.latency, gemini: ai.stats.gemini.latency }, http_latency: getHttpMetrics().global, env: process.env.NODE_ENV || 'development', time: new Date().toISOString() };
+  // Health pública deve informar apenas disponibilidade. Segredos, providers,
+  // flags internas, JWT e configuração de pagamentos não pertencem a este endpoint.
+  const body = { ok: dbPing.ok, db_ok: dbPing.ok, build: BUILD, time: new Date().toISOString() };
   res.status(dbPing.ok ? 200 : 503).json(body);
 });
-app.get('/api/metrics', (req, res) => { const secret = process.env.JOBS_SECRET?.trim(); if (process.env.NODE_ENV === 'production' && secret && String(req.headers['x-jobs-secret'] || '') !== secret) return res.status(401).json({ error: 'Não autorizado.' }); res.json({ time: new Date().toISOString(), build: BUILD, http: getHttpMetrics(), ai: getAiLoadStats() }); });
+app.get('/api/metrics', (req, res) => {
+  const secret = process.env.JOBS_SECRET?.trim();
+  if (process.env.NODE_ENV === 'production') {
+    if (!secret) return res.status(503).json({ error: 'Métricas não configuradas.' });
+    if (String(req.headers['x-jobs-secret'] || '') !== secret) return res.status(401).json({ error: 'Não autorizado.' });
+  }
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({ time: new Date().toISOString(), build: BUILD, http: getHttpMetrics(), ai: getAiLoadStats() });
+});
 const PORT = Number(process.env.PORT || 5000);
 let server: Server | null = null;
 let shuttingDown = false;
