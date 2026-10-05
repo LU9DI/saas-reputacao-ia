@@ -165,7 +165,7 @@ export async function generateStaticParams() {
   return LOCALES.flatMap((locale) =>
     Object.keys(ROUTES).map((slug) => ({
       locale,
-      slug: slug ? slug.split('/') : [],
+      slug: slug ? slug.split('/') : undefined,
     })),
   );
 }
