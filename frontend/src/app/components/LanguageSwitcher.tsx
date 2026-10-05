@@ -31,7 +31,7 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
 function normalizePath(pathname: string): string {
   if (!pathname || pathname === '/') return '/';
   const clean = pathname.split('?')[0].split('#')[0];
-  return clean.replace(/\\/+$/, '') || '/';
+  return clean.replace(/\/+$/, '') || '/';
 }
 
 function targetFor(pathname: string, language: Language): string {
@@ -54,7 +54,7 @@ export function LanguageSwitcher({
   const { language, setLanguage, tx } = useLanguage();
   const pathname = usePathname();
   const router = useRouter();
-  const current = ((pathname || '/').match(/^\\/(en|es|zh)(?:\\/|$)/)?.[1] as Language | undefined) || 'pt';
+  const current = ((pathname || '/').match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined) || 'pt';
 
   const choose = (code: Language) => {
     setLanguage(code);
