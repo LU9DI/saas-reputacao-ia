@@ -47,6 +47,7 @@ export default function Page() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI · Google Reviews</p>
+      <p className="mt-3 text-sm text-zinc-400">A <Link href="/filtra-ai" className="underline text-indigo-300">Filtra.AI</Link> é uma plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.</p>
       <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">Gestão de avaliações Google com IA</h1>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">Transforme avaliações Google e feedback de clientes em uma rotina de gestão. Organize solicitações, identifique padrões e acompanhe os sinais que influenciam a percepção da sua empresa no Google Maps.</p>
       <div className="mt-8 flex flex-wrap gap-3">
