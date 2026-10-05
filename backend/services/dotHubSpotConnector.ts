@@ -1,6 +1,7 @@
 import { getDb } from '../lib/db.js';
 import { getDotCredential, putDotCredential } from './dotCredentialVault.js';
 import { registerDotConnector, type DotConnectorContext } from './dotConnector.js';
+import { requireDotAccess } from './dotAccessControl.js';
 
 const BASE_URL = 'https://api.hubapi.com';
 const OBJECTS = new Set(['contacts', 'companies', 'deals']);
@@ -98,6 +99,9 @@ export const hubSpotDotConnector = {
     const match = operation.match(/^(contacts|companies|deals)\.(list|get|search)$/);
     if (!match || !OBJECTS.has(match[1])) return { ok: false, error: 'Operação não permitida: CRM é somente leitura.' };
     try {
+      // Defesa em profundidade: mesmo que outro chamador do conector apareça
+      // no futuro, a camada de integração não confia apenas na rota HTTP.
+      await requireDotAccess(ctx.empresaId, 'crm', 'read', ctx.userId || null, { connector: 'crm.hubspot.read', operation: match[0] });
       const object = match[1];
       const mode = match[2];
       if (mode === 'get') {
