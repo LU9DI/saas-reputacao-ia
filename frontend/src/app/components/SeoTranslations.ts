@@ -219,4 +219,97 @@ export const SEO_BODIES: Record<string, PageBodies> = {
   '/avaliacoes-google': { en:['Google reviews show real experiences and operational signals.','A structured feedback journey gives customers a clear path to public expression while issues can be handled appropriately.','AI groups themes and finds patterns missed in isolated reading.','Google Maps, reputation, experience and local content are connected.','Filtra.AI organizes workflows; Google remains the public review environment.'], es:['Las reseñas de Google muestran experiencias reales y señales operativas.','Un flujo estructurado facilita la expresión pública mientras los problemas se tratan por el canal adecuado.','La IA agrupa temas y encuentra patrones que se pierden al leer comentarios por separado.','Google Maps, reputación, experiencia y contenido local están conectados.','Filtra.AI organiza los flujos; Google sigue siendo el entorno público.'], zh:['Google 评价展示真实体验并提供运营信号。','结构化反馈流程为公开表达提供清晰路径，同时让问题进入合适渠道。','AI 可以聚合主题并发现单独阅读时容易错过的模式。','Google Maps、声誉、体验和本地内容相互连接。','Filtra.AI 整理流程，Google 仍是公开评价平台。'] },
   '/parceiros':{en:['Agencies, local SEO teams, consultants and associations can add review and feedback management to their services.','A partnership can start by identifying businesses, presenting the audit and feedback workflow, then following the signals.','Start with one pilot client, use the 7-day trial and observe recurring themes before expanding.'],es:['Agencias, SEO local, consultores y asociaciones pueden añadir gestión de reseñas y feedback a sus servicios.','Una alianza puede empezar identificando empresas, presentando la auditoría y siguiendo las señales.','Empieza con un cliente piloto, usa la prueba de 7 días y observa los temas recurrentes antes de ampliar.'],zh:['代理机构、本地 SEO、咨询顾问和协会可以增加评价与反馈管理服务。','合作可以从寻找企业、展示审计和反馈流程并跟踪信号开始。','从一个试点客户开始，使用 7 天试用，观察重复主题后再扩大。']},
   '/ia':{en:['Filtra.AI can audit reviews, identify strengths and risks, find recurring themes and support professional replies.','One remote MCP core can serve compatible AI clients without duplicating analysis logic.','Reviews connect customer experience, reputation and growth decisions.'],es:['Filtra.AI puede auditar reseñas, identificar fortalezas y riesgos, encontrar temas recurrentes y apoyar respuestas profesionales.','Un único núcleo MCP remoto puede atender clientes de IA compatibles sin duplicar la lógica.','Las reseñas conectan experiencia, reputación y decisiones de crecimiento.'],zh:['Filtra.AI 可以审计评价、识别优势和风险、发现重复主题并支持专业回复。','一个远程 MCP 核心可以服务兼容的 AI 客户端，无需重复分析逻辑。','评价将客户体验、声誉和增长决策连接起来。']},
+  '/reputacao-google': {
+    en: [
+      'Google reputation is shaped by the consistency of customer experience, the volume and quality of reviews, and how recurring themes are addressed.',
+      'Make review collection easy without turning it into a generic request. Use natural moments after delivery, service or checkout.',
+      'Look beyond star ratings: recurring themes about service, speed, quality, price and communication explain what customers actually experience.',
+      'Route recurring signals to the team responsible and connect review patterns to operational improvements instead of treating each comment in isolation.',
+      'Track review volume, recurring themes and changes in perception over time to understand whether improvements are reaching customers.'
+    ],
+    es: [
+      'La reputación en Google depende de la consistencia de la experiencia, del volumen y calidad de las reseñas y de cómo se tratan los temas recurrentes.',
+      'Haz que dejar una reseña sea fácil sin convertirlo en una petición genérica. Aprovecha momentos naturales después del servicio o la compra.',
+      'Mira más allá de las estrellas: los temas repetidos sobre atención, rapidez, calidad, precio y comunicación explican la experiencia real.',
+      'Lleva las señales recurrentes al equipo responsable y conecta los patrones de reseñas con mejoras operativas.',
+      'Sigue el volumen de reseñas, los temas recurrentes y los cambios de percepción a lo largo del tiempo.'
+    ],
+    zh: [
+      'Google 声誉取决于客户体验的一致性、评价的数量与质量，以及企业如何处理重复出现的主题。',
+      '让客户留下评价变得容易，但不要把流程变成机械式请求。应在服务、交付或付款后的自然时机提出。',
+      '不要只看星级：关于服务、速度、质量、价格和沟通的重复主题，才能解释真实体验。',
+      '将重复信号交给负责团队，并把评价中的模式连接到运营改进，而不是逐条孤立处理。',
+      '持续观察评价数量、重复主题和感知变化，判断改进是否真正到达客户。'
+    ]
+  },
+  '/como-melhorar-avaliacoes-google': {
+    en: [
+      'Start with the customer experience. More review requests cannot compensate for recurring service problems.',
+      'Reduce friction with a direct review link or QR code placed where the interaction naturally ends.',
+      'Ask at a moment when the customer can clearly recall the experience, without pressure or incentives for a positive rating.',
+      'Treat recurring criticism as an operating signal: identify the responsible area, act on it and observe subsequent feedback.',
+      'Measure more than quantity. Review quality, theme diversity and sustained improvement matter alongside volume.'
+    ],
+    es: [
+      'Empieza por la experiencia del cliente. Pedir más reseñas no compensa problemas de servicio que se repiten.',
+      'Reduce la fricción con un enlace directo o un QR colocado donde la interacción termina de forma natural.',
+      'Pregunta cuando el cliente todavía puede recordar claramente la experiencia, sin presión ni incentivos para una nota positiva.',
+      'Trata las críticas recurrentes como señales operativas: identifica el área responsable, actúa y observa el feedback posterior.',
+      'Mide más que la cantidad. La calidad de las reseñas, la diversidad de temas y la mejora sostenida también importan.'
+    ],
+    zh: [
+      '先从客户体验开始。增加评价请求无法弥补反复出现的服务问题。',
+      '在交互自然结束的位置放置直接评价链接或二维码，降低客户留下评价的摩擦。',
+      '在客户仍能清楚回忆体验时请求评价，不施压，也不以正面评分为条件提供激励。',
+      '把重复出现的批评当作运营信号：找到负责团队、采取措施，再观察后续反馈。',
+      '不要只衡量数量。评价质量、主题多样性和持续改善同样重要。'
+    ]
+  },
+  '/monitoramento-reputacao-online': {
+    en: [
+      'Monitor review volume, rating changes, recurring themes and unusual shifts in customer perception.',
+      'A meaningful change is usually more useful than a single negative comment. Look for patterns that persist or accelerate.',
+      'Prioritize themes by frequency, business impact and the teams that can act on them.',
+      'For multiple locations, compare signals by unit while keeping enough context to avoid misleading comparisons.',
+      'A weekly routine is often enough to turn scattered reviews into a consistent management signal.'
+    ],
+    es: [
+      'Monitorea el volumen de reseñas, cambios de puntuación, temas recurrentes y variaciones inusuales de percepción.',
+      'Un cambio significativo suele ser más útil que un comentario negativo aislado. Busca patrones persistentes o acelerados.',
+      'Prioriza los temas por frecuencia, impacto en el negocio y equipos capaces de actuar.',
+      'En varias ubicaciones, compara señales por unidad sin perder el contexto necesario para evitar comparaciones engañosas.',
+      'Una rutina semanal puede convertir reseñas dispersas en una señal constante para la gestión.'
+    ],
+    zh: [
+      '监测评价数量、评分变化、重复主题以及客户感知的异常波动。',
+      '有意义的变化通常比单条负面评价更重要。重点关注持续存在或快速增加的模式。',
+      '根据频率、业务影响和可执行团队对主题进行优先级排序。',
+      '多门店场景下可以按门店比较信号，同时保留必要上下文，避免产生误导性比较。',
+      '每周建立一次固定检查，就能把分散评价转化为稳定的管理信号。'
+    ]
+  },
+  '/gestao-de-feedback': {
+    en: [
+      'Collect feedback close to the experience, while the details are fresh and the business can still act on them.',
+      'Organize comments by theme, urgency and owner so useful signals do not disappear inside a generic inbox.',
+      'Separate public reputation signals from private operational feedback that needs internal follow-up.',
+      'Close the loop by recording the action taken and checking whether later feedback reflects the change.',
+      'Over time, track recurring themes and unresolved issues to learn whether the feedback process is improving the operation.'
+    ],
+    es: [
+      'Recoge el feedback cerca de la experiencia, cuando los detalles están frescos y la empresa todavía puede actuar.',
+      'Organiza los comentarios por tema, urgencia y responsable para que las señales útiles no desaparezcan en una bandeja genérica.',
+      'Separa las señales públicas de reputación del feedback operativo privado que requiere seguimiento interno.',
+      'Cierra el ciclo registrando la acción tomada y comprobando si el feedback posterior refleja el cambio.',
+      'Con el tiempo, sigue los temas recurrentes y problemas sin resolver para saber si el proceso de feedback mejora la operación.'
+    ],
+    zh: [
+      '在体验发生后及时收集反馈，让细节仍然清晰，也让企业能够及时行动。',
+      '按主题、紧急程度和负责人整理评论，避免有价值的信号淹没在通用收件箱中。',
+      '将公开声誉信号与需要内部跟进的私密运营反馈区分开来。',
+      '记录采取的行动并观察后续反馈是否体现变化，从而完成闭环。',
+      '持续追踪重复主题和未解决问题，判断反馈流程是否真正改善了运营。'
+    ]
+  },
+
 };
