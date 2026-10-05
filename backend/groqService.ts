@@ -31,7 +31,6 @@ export type LoadBalanceMode = 'round_robin' | 'weighted' | 'failover';
 export type AiCallResult = {
   text: string;
   provider: AiProvider;
-  model: string;
   latency_ms: number;
   tokens: number;
 };
@@ -249,14 +248,13 @@ async function callGroq(
   system: string,
   user: string,
   maxTokens: number,
-  temperature: number,
-  modelOverride?: string
+  temperature: number
 ): Promise<ProviderRaw> {
   const key = groqKey();
   if (!key) throw new Error('GROQ_API_KEY não configurada');
 
   const body = {
-    model: modelOverride || process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+    model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },
@@ -346,11 +344,10 @@ async function invokeProvider(
   system: string,
   user: string,
   maxTokens: number,
-  temperature: number,
-  modelOverride?: string
+  temperature: number
 ): Promise<ProviderRaw> {
   return provider === 'groq'
-    ? callGroq(system, user, maxTokens, temperature, modelOverride)
+    ? callGroq(system, user, maxTokens, temperature)
     : callGemini(system, user, maxTokens, temperature);
 }
 
@@ -359,7 +356,7 @@ export async function callAI(
   user: string,
   maxTokens = 180,
   temperature = 0.6,
-  opts?: { empresaId?: string | null; tipo?: string; feature?: string; model?: string }
+  opts?: { empresaId?: string | null; tipo?: string }
 ): Promise<AiCallResult> {
   const order = buildAttemptOrder();
   if (!order.length) {
@@ -374,10 +371,7 @@ export async function callAI(
     const provider = order[i];
     const t0 = process.hrtime.bigint();
     try {
-      const model = provider === 'groq'
-        ? (opts?.model || process.env.GROQ_MODEL || 'openai/gpt-oss-120b')
-        : (process.env.GEMINI_MODEL || 'gemini-2.0-flash');
-      const raw = await invokeProvider(provider, system, user, maxTokens, temperature, opts?.model);
+      const raw = await invokeProvider(provider, system, user, maxTokens, temperature);
       const ms = Math.round(Number(process.hrtime.bigint() - t0) / 1e6);
       markSuccess(provider, ms);
       if (i > 0) console.warn(`[IA] Fallback: ${provider} (${ms}ms)`);
@@ -389,14 +383,13 @@ export async function callAI(
             tipo: opts.tipo || `ai_${provider}`,
             tokens: raw.tokens,
             provider,
-            feature: opts.feature,
           });
         } catch {
           /* */
         }
       }
 
-      return { text: raw.text, provider, model, latency_ms: ms, tokens: raw.tokens };
+      return { text: raw.text, provider, latency_ms: ms, tokens: raw.tokens };
     } catch (e: any) {
       const ms = Math.round(Number(process.hrtime.bigint() - t0) / 1e6);
       markFail(provider, e, ms);

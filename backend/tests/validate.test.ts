@@ -25,13 +25,13 @@ describe('validateBody + schemaTrialAtivar', () => {
     const { res, nextCalled } = run(schemaTrialAtivar, {});
     assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(res.body.fields);
   });
-  it('rejeita e-mail inválido', () => {
-    const { res, nextCalled } = run(schemaTrialAtivar, { nome_empresa: 'Loja Teste', email: 'invalido', senha: 'Senha@12' });
-    assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(res.body.fields?.email);
+  it('rejeita CNPJ inválido', () => {
+    const { res, nextCalled } = run(schemaTrialAtivar, { cnpj: '11111111111111', nome_empresa: 'Loja Teste', email: 'a@b.com', senha: 'Senha@12' });
+    assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(String(res.body.error).toLowerCase().includes('identificador'));
   });
   it('aceita payload válido', () => {
-    const { res, nextCalled, req } = run(schemaTrialAtivar, { nome_empresa: 'Loja Teste', email: 'Dono@Email.COM', senha: 'Senha@12' });
-    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.email, 'dono@email.com');
+    const { res, nextCalled, req } = run(schemaTrialAtivar, { cnpj: '11.222.333/0001-81', nome_empresa: 'Loja Teste', email: 'Dono@Email.COM', senha: 'Senha@12' });
+    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.cnpj, '11222333000181'); assert.equal(req.body.email, 'dono@email.com');
   });
 });
 
@@ -48,9 +48,9 @@ describe('schemaReview', () => {
 });
 
 describe('schemaLoginEmpresa', () => {
-  it('exige e-mail e preserva a senha', () => {
-    const { res, nextCalled, req } = run(schemaLoginEmpresa, { email: 'Dono@Email.COM', senha: 'x' });
-    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.email, 'dono@email.com'); assert.equal(req.body.senha, 'x');
+  it('deixa a validação do identificador para ensureLoginIdentifier', () => {
+    const { res, nextCalled, req } = run(schemaLoginEmpresa, { cnpj: '123', senha: 'x' });
+    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.cnpj, '123');
   });
 });
 

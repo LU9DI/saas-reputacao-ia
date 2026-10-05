@@ -3,6 +3,7 @@ import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 import { JsonLd } from './components/JsonLd';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 
 const siteUrl = 'https://filtraai.com';
 const ogImage = `${siteUrl}/og-image.svg`;
@@ -109,6 +110,9 @@ export default function RootLayout({
       <body className="min-h-full bg-black text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
         <JsonLd />
         <Providers>
+          <div className="fixed right-4 top-4 z-[100]">
+            <LanguageSwitcher compact />
+          </div>
           {children}
           <PwaRegister />
         </Providers>

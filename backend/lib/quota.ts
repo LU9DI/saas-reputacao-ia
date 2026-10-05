@@ -13,45 +13,9 @@ function cleanupAiReservations(now = Date.now()) { for (const [empresaId, r] of 
 export function planTemIA(plan: string | null | undefined): boolean { const p = String(plan || '').toLowerCase(); if (p === 'inicial' || p === 'pro') return false; return ['ultra','corporativo','rei','trial','teste'].includes(p); }
 export function getFeedbackLimit(plan: string): number { return PLAN_FEEDBACK_LIMITS[String(plan || 'trial').toLowerCase()] ?? PLAN_FEEDBACK_LIMITS.trial; }
 export function getTokenLimit(plan: string): number { return PLAN_TOKEN_LIMITS[String(plan || 'trial').toLowerCase()] ?? PLAN_TOKEN_LIMITS.trial; }
-
-export function getFeatureTokenLimit(plan: string, feature: string): number {
-  const p = String(plan || 'trial').toLowerCase();
-  const f = String(feature || 'feedback').toLowerCase();
-  if (f !== 'dot') return getTokenLimit(p);
-  const global = getTokenLimit(p);
-  if (global <= 0) return 0;
-  const configured = Number(process.env[`AI_DOT_${p.toUpperCase()}_TOKENS`] || 0);
-  // DOT tem orçamento próprio e não compete com feedback. Limites comerciais:
-  // REI 850k e Corporativo 450k tokens/mês. Ambiente pode sobrescrever.
-  const defaults: Record<string, number> = { rei: 850_000, corporativo: 450_000 };
-  return Math.max(0, configured || defaults[p] || Math.floor(global * 0.2));
-}
 function monthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); return `${m}-01T00:00:00.000Z`; }
 function nextMonthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); const [y, mo] = m.split('-').map(Number); return new Date(Date.UTC(y, mo, 1)).toISOString(); }
 
-export async function tokensUsadosFeatureMes(empresaId: string, feature: string): Promise<number> {
-  const db = getDb(); const mes = getCurrentMonth(); const f = String(feature || 'feedback').toLowerCase();
-  try {
-    if (dbEngine() === 'postgres') {
-      const row = await db.get(
-        `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage
-         WHERE empresa_id = ? AND feature = ? AND criado_em >= ? AND criado_em < ?`,
-        [empresaId, f, monthStartIso(mes), nextMonthStartIso(mes)]
-      );
-      return Number(row?.t || 0);
-    }
-    const row = await db.get(
-      `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage
-       WHERE empresa_id = ? AND feature = ? AND substr(criado_em, 1, 7) = ?`,
-      [empresaId, f, mes]
-    );
-    return Number(row?.t || 0);
-  } catch { return 0; }
-}
-
-// Uso global histórico/observabilidade. Não deve ser usado para bloquear feedback:
-// quotas operacionais são calculadas por feature para evitar que uma feature
-// consuma a capacidade de outra.
 export async function tokensUsadosMes(empresaId: string): Promise<number> {
   const db = getDb(); const mes = getCurrentMonth();
   try {
@@ -66,11 +30,9 @@ export async function tokensUsadosMes(empresaId: string): Promise<number> {
 
 export async function assertEmpresaTokenQuota(empresaId: string | null | undefined, plan: string | null | undefined): Promise<{ ok: boolean; used: number; reserved: number; limit: number }> {
   if (!empresaId) return { ok: true, used: 0, reserved: 0, limit: 0 };
-  // O orçamento de feedback é isolado por feature. O DOT possui sua própria
-  // cota e nunca consome o orçamento reservado para análise/resposta de reviews.
   const limit = getTokenLimit(String(plan || 'trial')); if (limit <= 0) return { ok: false, used: 0, reserved: 0, limit: 0 };
   cleanupAiReservations();
-  const used = await tokensUsadosFeatureMes(empresaId, 'feedback'); const existing = aiReservations.get(empresaId)?.tokens || 0;
+  const used = await tokensUsadosMes(empresaId); const existing = aiReservations.get(empresaId)?.tokens || 0;
   if (limit - used - existing < AI_REVIEW_RESERVATION) return { ok: false, used, reserved: existing, limit };
   aiReservations.set(empresaId, { tokens: existing + AI_REVIEW_RESERVATION, expiresAt: Date.now() + AI_RESERVATION_TTL_MS });
   return { ok: true, used, reserved: existing + AI_REVIEW_RESERVATION, limit };

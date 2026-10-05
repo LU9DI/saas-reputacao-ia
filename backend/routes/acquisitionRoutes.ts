@@ -100,7 +100,7 @@ async function processAcquisitionBatch(options: { limit: number; source: string 
     [nowIso, nowIso]
   );
 
-  const appUrl = (process.env.APP_URL || process.env.FRONTEND_URL || 'https://filtraai.com').replace(/\/$/, '');
+  const appUrl = (process.env.APP_URL || process.env.FRONTEND_URL || 'https://filtraai.com').replace(/\\/$/, '');
   let sent = 0;
   let failed = 0;
   let skipped = 0;
@@ -450,6 +450,14 @@ export function mountAcquisitionRoutes(app: Express) {
     if (!secretOk(req)) return res.status(401).json({ error: 'Unauthorized' });
     const db = (await import('../lib/db.js')).getDb();
     await ensureAcquisitionSchema(db);
+    const row = await db.get(
+      `SELECT
+        (SELECT COUNT(*) FROM acquisition_leads) AS total_leads,
+        (SELECT COUNT(*) FROM acquisition_leads WHERE consent=1 AND acquisition_suppressed=0) AS eligible_leads,
+        (SELECT COUNT(*) FROM acquisition_events) AS events,
+        (SELECT COUNT(*) FROM acquisition_events WHERE event_type='outreach.sent' AND occurred_at >= ?) AS sent_today,
+        (SELECT COUNT(*) FROM acquisition_content) AS content_items`
+    );
     const startOfDay = new Date();
     startOfDay.setUTCHours(0, 0, 0, 0);
     const row = await db.get(

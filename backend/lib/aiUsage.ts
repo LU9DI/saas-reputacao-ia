@@ -8,16 +8,12 @@ export async function ensureAiUsageSchema(db: Database) {
       empresa_id TEXT,
       tipo TEXT NOT NULL,
       tokens INTEGER NOT NULL DEFAULT 0,
-      criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
-      feature TEXT NOT NULL DEFAULT 'feedback'
+      criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
   const cols = (await db.all(`PRAGMA table_info(ai_usage)`)).map((c: any) => c.name);
   if (!cols.includes('provider')) {
     await db.exec(`ALTER TABLE ai_usage ADD COLUMN provider TEXT`);
-  }
-  if (!cols.includes('feature')) {
-    await db.exec(`ALTER TABLE ai_usage ADD COLUMN feature TEXT NOT NULL DEFAULT 'feedback'`);
   }
 }
 
@@ -28,7 +24,6 @@ export async function recordAiUsage(
     tipo: string;
     tokens: number;
     provider?: string;
-    feature?: string;
   }
 ) {
   const tokens = Math.max(0, Math.round(Number(opts.tokens) || 0));
@@ -36,38 +31,18 @@ export async function recordAiUsage(
   try {
     await ensureAiUsageSchema(db);
     await db.run(
-      `INSERT INTO ai_usage (empresa_id, tipo, tokens, provider, feature, criado_em)
-       VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+      `INSERT INTO ai_usage (empresa_id, tipo, tokens, provider, criado_em)
+       VALUES (?, ?, ?, ?, datetime('now'))`,
       [
         opts.empresaId || null,
         String(opts.tipo).slice(0, 40),
         tokens,
         opts.provider ? String(opts.provider).slice(0, 20) : null,
-        String(opts.feature || inferAiFeature(opts.tipo)).slice(0, 40),
       ]
     );
   } catch (e: any) {
     console.warn('[ai_usage]', e?.message || e);
   }
-}
-
-export function inferAiFeature(tipo?: string | null): string {
-  const t = String(tipo || '').toLowerCase();
-  if (t === 'filtra_dot_chat' || t.startsWith('dot_') || t.includes('dot')) return 'dot';
-  if (t.includes('relatorio') || t.includes('report')) return 'relatorios';
-  if (t.includes('autom')) return 'automacao';
-  return 'feedback';
-}
-
-export async function tokensUsadosFeatureMes(db: Database, empresaId: string, feature: string): Promise<number> {
-  await ensureAiUsageSchema(db);
-  const row = await db.get(
-    `SELECT COALESCE(SUM(tokens),0) as t
-     FROM ai_usage
-     WHERE empresa_id = ? AND feature = ? AND criado_em >= datetime('now','start of month')`,
-    [empresaId, String(feature).slice(0, 40)]
-  );
-  return Number(row?.t || 0);
 }
 
 export function estimateTokens(system: string, user: string, output: string): number {

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -42,7 +41,6 @@ export default function Page() {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
-      <nav className="mb-8 flex justify-end"><LanguageSwitcher /></nav>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI · Google Reviews</p>
