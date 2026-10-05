@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
 const SEO_FAMILIES: Array<Record<Language, string>> = [
@@ -20,7 +20,7 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/turismo', en:'/en/tourism', es:'/es/turismo', zh:'/zh/tourism' },
   { pt:'/agencias', en:'/en/agencies', es:'/es/agencias', zh:'/zh/agencies' },
   { pt:'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinics' },
-  { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franchises' },
+  { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franquicias' },
   { pt:'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/associations' },
   { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurants' },
   { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
@@ -28,9 +28,18 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/pedir-estrela-vs-filtrar', en:'/en/ask-for-stars-vs-filtering', es:'/es/pedir-estrellas-vs-filtrar', zh:'/zh/request-stars-vs-filter' },
 ];
 
+function normalizePath(pathname: string): string {
+  if (!pathname || pathname === '/') return '/';
+  const clean = pathname.split('?')[0].split('#')[0];
+  return clean.replace(/\\/+$/, '') || '/';
+}
+
 function targetFor(pathname: string, language: Language): string {
-  const family = SEO_FAMILIES.find((item) => Object.values(item).includes(pathname));
-  return family?.[language] || pathname || '/';
+  const normalized = normalizePath(pathname);
+  const family = SEO_FAMILIES.find((item) =>
+    Object.values(item).some((path) => normalizePath(path) === normalized)
+  );
+  return family?.[language] || normalized;
 }
 
 export function LanguageSwitcher({
@@ -44,18 +53,24 @@ export function LanguageSwitcher({
 }) {
   const { language, setLanguage, tx } = useLanguage();
   const pathname = usePathname();
-  const pathLang = (pathname || '/').match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
-  const current = pathLang || 'pt';
+  const router = useRouter();
+  const current = ((pathname || '/').match(/^\\/(en|es|zh)(?:\\/|$)/)?.[1] as Language | undefined) || 'pt';
 
-  const choose = (code: Language) => setLanguage(code);
+  const choose = (code: Language) => {
+    setLanguage(code);
+    const target = targetFor(pathname || '/', code);
+    if (target !== normalizePath(pathname || '/')) {
+      router.push(target);
+    }
+  };
 
   if (variant === 'flags') {
     return (
       <nav className={`inline-flex items-center gap-1 ${className}`} aria-label={tx('language', 'Idioma')}>
         {SUPPORTED_LANGUAGES.map((l) => (
-          <a
+          <button
             key={l.code}
-            href={targetFor(pathname || '/', l.code)}
+            type="button"
             onClick={() => choose(l.code)}
             title={l.label}
             aria-label={l.label}
@@ -64,40 +79,28 @@ export function LanguageSwitcher({
           >
             <span aria-hidden>{l.flag}</span>
             {!compact && <span className="ml-1 hidden sm:inline">{l.code.toUpperCase()}</span>}
-          </a>
+          </button>
         ))}
       </nav>
     );
   }
 
   return (
-    <details className={`relative inline-block ${className}`}>
-      <summary
+    <label className={`inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 ${className}`}>
+      <span aria-hidden>{SUPPORTED_LANGUAGES.find((l) => l.code === current)?.flag}</span>
+      <span className={compact ? 'sr-only' : 'text-sm'}>{tx('language', 'Idioma')}</span>
+      <select
+        value={current}
+        onChange={(e) => choose(e.target.value as Language)}
         aria-label={tx('language', 'Idioma')}
-        className="list-none cursor-pointer select-none rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100"
-      >
-        <span aria-hidden>{SUPPORTED_LANGUAGES.find((l) => l.code === current)?.flag}</span>
-        {!compact && <span className="ml-1">{SUPPORTED_LANGUAGES.find((l) => l.code === current)?.label}</span>}
-        <span aria-hidden className="ml-1 text-zinc-500">⌄</span>
-      </summary>
-      <nav
-        aria-label={tx('language', 'Idioma')}
-        className="absolute right-0 top-full z-[60] mt-2 min-w-44 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 p-1 shadow-2xl"
+        className="cursor-pointer bg-transparent text-sm text-zinc-100 outline-none"
       >
         {SUPPORTED_LANGUAGES.map((l) => (
-          <a
-            key={l.code}
-            href={targetFor(pathname || '/', l.code)}
-            onClick={() => choose(l.code)}
-            aria-current={current === l.code ? 'page' : undefined}
-            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-200 hover:bg-white/10"
-          >
-            <span aria-hidden>{l.flag}</span>
-            <span>{l.label}</span>
-            {current === l.code && <span className="ml-auto text-indigo-400">✓</span>}
-          </a>
+          <option key={l.code} value={l.code} className="bg-zinc-950 text-zinc-100">
+            {l.label}
+          </option>
         ))}
-      </nav>
-    </details>
+      </select>
+    </label>
   );
 }
