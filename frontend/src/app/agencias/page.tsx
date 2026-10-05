@@ -5,7 +5,16 @@ export const metadata: Metadata = {
   title: 'Filtra.AI para agências: gestão de reputação e SEO local',
   description:
     'Ofereça gestão de reputação, avaliações Google e análise de feedback como serviço recorrente para clientes de SEO local e marketing digital.',
-  alternates: { canonical: 'https://filtraai.com/agencias' },
+  alternates: {
+    canonical: 'https://filtraai.com/agencias',
+    languages: {
+      'pt-BR': 'https://filtraai.com/agencias',
+      en: 'https://filtraai.com/en/agencies',
+      es: 'https://filtraai.com/es/agencias',
+      zh: 'https://filtraai.com/zh/agencies',
+      'x-default': 'https://filtraai.com/agencias',
+    },
+  },
 };
 
 export default function AgenciasPage() {
