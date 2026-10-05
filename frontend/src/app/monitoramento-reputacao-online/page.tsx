@@ -5,7 +5,16 @@ export const metadata: Metadata = {
   title: 'Monitoramento de reputação online para empresas | Filtra.AI',
   description:
     'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.',
-  alternates: { canonical: 'https://filtraai.com/monitoramento-reputacao-online' },
+  alternates: {
+    canonical: 'https://filtraai.com/monitoramento-reputacao-online',
+    languages: {
+      'pt-BR': 'https://filtraai.com/monitoramento-reputacao-online',
+      en: 'https://filtraai.com/en/online-reputation-monitoring',
+      es: 'https://filtraai.com/es/monitoreo-reputacion-online',
+      zh: 'https://filtraai.com/zh/online-reputation-monitoring',
+      'x-default': 'https://filtraai.com/monitoramento-reputacao-online',
+    },
+  },
 };
 
 export default function Page() {
