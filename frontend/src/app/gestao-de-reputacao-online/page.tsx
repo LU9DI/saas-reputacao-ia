@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: guia e plataforma para empresas | Filtra.AI',
+  title: 'Gestão de reputação online para empresas | Filtra.AI',
   description: 'Gestão de reputação online para empresas: monitore avaliações, analise feedback, encontre padrões e transforme reputação em crescimento com a Filtra.AI.',
   alternates: { canonical: 'https://filtraai.com/gestao-de-reputacao-online' },
   openGraph: {
