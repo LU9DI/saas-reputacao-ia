@@ -32,3 +32,9 @@ variable "worker_name" {
   type    = string
   default = "filtra-ai-failover"
 }
+
+variable "route_pattern" {
+  type        = string
+  description = "Cloudflare Worker route pattern. Production is filtraai.com/*; staging uses a separate hostname."
+  default     = "filtraai.com/*"
+}
