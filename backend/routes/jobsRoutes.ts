@@ -8,8 +8,8 @@ import {
   notificarTrialExpirando,
   notificarAssinaturaExpirando,
   notificarAcessoExpirado,
-  smtpConfigured,
 } from '../lib/notifications.js';
+import { smtpConfigured } from '../lib/mailer.js';
 import { enforcarExpiracoes } from '../services/billingService.js';
 import { processRetryQueue, retryQueueStats } from '../lib/retryQueue.js';
 import { createSqliteBackup } from '../lib/backup.js';
