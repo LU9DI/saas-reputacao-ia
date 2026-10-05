@@ -70,3 +70,6 @@ git pull origin main
 ```
 
 No VS Code: abra a **raiz** do repo (`saas-reputacao-ia`), não uma subpasta. Settings em `.vscode/`.
+
+
+<!-- Vercel production deployment trigger: Filtra.AI SEO entity update -->
