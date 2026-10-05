@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Programa de parceiros Filtra.AI | Reputação e feedback',
@@ -21,7 +22,9 @@ export const metadata: Metadata = {
 
 export default function ParceirosPage() {
   return (
-    <main className="min-h-screen bg-black text-zinc-100 px-6 py-16">
+    <>
+      <SeoPageHeader />
+      <main className="min-h-screen bg-black text-zinc-100 px-6 py-16">
       <div className="mx-auto max-w-5xl space-y-14">
         <header className="space-y-6">
           <p className="text-sm uppercase tracking-widest text-indigo-400">Programa de parceiros</p>
@@ -90,5 +93,6 @@ export default function ParceirosPage() {
         </a>
       </div>
     </main>
+    </>
   );
 }
