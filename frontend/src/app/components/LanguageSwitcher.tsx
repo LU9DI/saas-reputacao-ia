@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
 const LEGACY_SEO_FAMILIES: Array<Record<Language, string>> = [
+  { pt:'/', en:'/en', es:'/es', zh:'/zh' },
   { pt:'/ia', en:'/en/ai', es:'/es/ia', zh:'/zh/ai' },
   { pt:'/filtra-ai', en:'/en/filtra-ai', es:'/es/filtra-ai', zh:'/zh/filtra-ai' },
   { pt:'/feedback-de-clientes', en:'/en/customer-feedback', es:'/es/feedback-clientes', zh:'/zh/customer-feedback' },
