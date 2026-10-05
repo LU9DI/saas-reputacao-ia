@@ -230,9 +230,9 @@ function slugForLocale(root: string, locale: Language): string {
 export default async function LocalizedPage({
   params,
 }: {
-  params: Promise<{ locale: string; slug?: string[] }>;
+  params: { locale: string; slug?: string[] };
 }) {
-  const { locale, slug = [] } = await params;
+  const { locale, slug = [] } = params;
   if (!LOCALES.includes(locale as Language)) notFound();
 
   const config = configFor(slug);
