@@ -135,8 +135,6 @@ export function AuditoriaGratuitaClient() {
           </h1>
           <p className="max-w-3xl text-lg leading-8 text-zinc-400">
             {c.lead}
-            em prioridades de melhoria. Cole avaliações reais e receba um diagnóstico inicial gratuito, sem precisar
-            contratar nada para ver o resultado.
           </p>
         </header>
 
@@ -144,10 +142,7 @@ export function AuditoriaGratuitaClient() {
           <div>
             <h2 className="text-3xl font-bold text-zinc-100">{c.s1}</h2>
             <p className="mt-4 max-w-3xl leading-8">
-              Uma auditoria é uma leitura estruturada da reputação apresentada pelo conjunto de avaliações analisado.
-              Em vez de olhar somente para uma nota média, o diagnóstico procura distribuição das notas, pontos
-              fortes, riscos e temas que se repetem. O resultado depende das evidências fornecidas e não substitui uma
-              análise completa de todas as fontes da empresa.
+              {c.p1}
             </p>
           </div>
           <div>
@@ -172,45 +167,25 @@ export function AuditoriaGratuitaClient() {
           <div>
             <h2 className="text-3xl font-bold text-zinc-100">{c.s3}</h2>
             <p className="mt-4 max-w-3xl leading-8">
-              É útil para empresas que recebem avaliações em Google e outros canais e precisam entender rapidamente o
-              que os clientes estão percebendo. Também pode servir como primeiro diagnóstico para hotéis,
-              restaurantes, clínicas, agências, franquias, lojas e operações com várias unidades.
+              {c.p3}
             </p>
           </div>
           <div>
             <h2 className="text-3xl font-bold text-zinc-100">{c.s4}</h2>
             <ol className="mt-4 max-w-3xl space-y-3 leading-8">
-              <li>
-                {c.p4}
-              </li>
-              <li>
-                {c.p4}
-              </li>
-              <li>
-                {c.p4}
-              </li>
-              <li>
-                <strong className="text-zinc-200">4.</strong> acompanhe novas avaliações para verificar se a percepção
-                mudou.
-              </li>
+              <li>{c.p4}</li>
             </ol>
           </div>
           <div>
             <h2 className="text-3xl font-bold text-zinc-100">{c.s5}</h2>
             <p className="mt-4 max-w-3xl leading-8">
-              Uma nota média resume um conjunto, mas não explica o motivo da percepção. Duas empresas com a mesma
-              média podem ter problemas completamente diferentes. Por isso, o diagnóstico procura contexto e
-              recorrência: quais assuntos aparecem, quais pontos são elogiados e quais situações merecem
-              investigação.
+              {c.p5}
             </p>
           </div>
           <div>
             <h2 className="text-3xl font-bold text-zinc-100">{c.s6}</h2>
             <p className="mt-4 max-w-3xl leading-8">
-              Use apenas conteúdo que sua empresa possa compartilhar para análise e não inclua dados pessoais
-              desnecessários dos clientes. Quanto mais representativo for o conjunto de avaliações, mais útil tende a
-              ser o diagnóstico. Uma amostra pequena pode indicar sinais, mas não deve ser tratada como retrato
-              completo da empresa.
+              {c.p6}
             </p>
           </div>
         </section>
@@ -241,8 +216,7 @@ export function AuditoriaGratuitaClient() {
                 className="mt-1"
               />
               <span>
-                Quero receber da Filtra.AI informações sobre o diagnóstico, o teste de 7 dias e seus serviços. O
-                consentimento é opcional e posso cancelar a qualquer momento.
+                {c.consentText}
               </span>
             </label>
             <label className="block text-sm font-medium">{c.reviews}</label>
@@ -284,8 +258,7 @@ export function AuditoriaGratuitaClient() {
                 <div>
                   <h2 className="text-2xl font-semibold">{diagnostic.company}</h2>
                   <p className="mt-2 text-zinc-400">
-                    {diagnostic.review_count} avaliações · média {diagnostic.average_rating.toFixed(2)} ·{' '}
-                    {diagnostic.positive_count} positivas · {diagnostic.negative_count} negativas
+                    {diagnostic.review_count} {c.reviewsLabel} · {c.positive} {diagnostic.positive_count} · {c.negative} {diagnostic.negative_count}
                   </p>
                 </div>
                 <div>
@@ -334,8 +307,7 @@ export function AuditoriaGratuitaClient() {
                 ) : null}
                 <div className="rounded-xl border border-indigo-900 bg-indigo-950/30 p-4">
                   <p className="text-sm text-zinc-300">
-                    Este é um diagnóstico inicial. Para acompanhar avaliações, tendências e ações continuamente,
-                    conheça o teste de 7 dias da Filtra.AI.
+                    {c.result}
                   </p>
                   <Link
                     href="/login?trial=7"
