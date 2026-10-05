@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
-export const metadata: Metadata={title:'Feedback de clientes: transforme opiniões em crescimento | Filtra.AI',description:'Entenda o que seus clientes estão dizendo, encontre padrões e transforme feedback em decisões de crescimento.',alternates: {
+
+export const metadata: Metadata = {
+  title: 'Gestão de feedback de clientes com IA | Filtra.AI',
+  description:
+    'Centralize feedback de clientes, encontre padrões e transforme opiniões em prioridades de crescimento com inteligência artificial.',
+  alternates: {
     canonical: 'https://filtraai.com/feedback-de-clientes',
     languages: {
       'pt-BR': 'https://filtraai.com/feedback-de-clientes',
@@ -9,5 +14,53 @@ export const metadata: Metadata={title:'Feedback de clientes: transforme opiniõ
       zh: 'https://filtraai.com/zh/customer-feedback',
       'x-default': 'https://filtraai.com/feedback-de-clientes',
     },
-  }};
-export default function Page(){return <SeoLanding h1="Feedback de clientes não é só opinião. É dado de crescimento." lead="Seus clientes já estão mostrando o que funciona, o que afasta compradores e onde sua empresa pode melhorar. A Filtra.AI organiza avaliações e feedback em prioridades práticas." breadcrumbHref="/feedback-de-clientes" sections={[{heading:'Por que feedback de clientes é um ativo',body:'Comentários e avaliações registram a experiência depois da compra e, quando analisados em conjunto, revelam padrões que podem passar despercebidos.'},{heading:'O que procurar nas avaliações',body:'Observe temas recorrentes em notas baixas, elogios que mostram diferenciais, problemas de atendimento, prazo, preço ou entrega e diferenças entre unidades e canais.'},{heading:'Como transformar feedback em ação',body:'Reúna avaliações, agrupe comentários por tema e observe frequência, nota, período e contexto. Depois transforme os padrões em ações verificáveis.'},{heading:'Feedback público e privado',body:'Avaliações públicas mostram como o mercado percebe a empresa. Feedback privado ajuda a descobrir atritos que o cliente talvez não publique.'},{heading:'Quais indicadores acompanhar',body:'Além da nota média, acompanhe volume, distribuição por nota, temas recorrentes, evolução por período e diferenças entre unidades ou serviços.'}]}/>}
+  },
+};
+
+export default function Page() {
+  return (
+    <SeoLanding
+      h1="Gestão de feedback de clientes: transforme opiniões em crescimento"
+      lead="Clientes já estão mostrando o que funciona, o que gera atrito e onde sua empresa pode melhorar. A Filtra.AI organiza feedback e avaliações para transformar opiniões dispersas em prioridades práticas."
+      breadcrumbHref="/feedback-de-clientes"
+      contextLinks={[
+        { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões automaticamente.' },
+        { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Conecte feedback e sinais públicos.' },
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Leve insights para a reputação.' },
+        { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação', description: 'Acompanhe tendências.' },
+        { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial.' },
+        { href: '/filtra-ai', title: 'Filtra.AI', description: 'Conheça a plataforma.' },
+      ]}
+      sections={[
+        {
+          heading: 'Por que feedback de clientes é um ativo',
+          body: 'Avaliações e comentários registram experiências reais. Quando reunidos em volume suficiente, ajudam a identificar recorrências que uma equipe não perceberia olhando cada interação separadamente.'
+        },
+        {
+          heading: 'Feedback público e privado',
+          body: 'Avaliações públicas mostram como o mercado percebe a empresa. Canais privados ajudam a descobrir atritos que o cliente talvez nunca publique. Os dois sinais são complementares.'
+        },
+        {
+          heading: 'O que procurar nos comentários',
+          body: 'Observe temas recorrentes relacionados a atendimento, prazo, preço, qualidade, produto, comunicação, ambiente e suporte. Frequência e evolução ajudam a separar caso isolado de padrão.'
+        },
+        {
+          heading: 'Como transformar feedback em ação',
+          body: 'Agrupe comentários por tema, escolha prioridades, encaminhe cada tema para a área responsável e defina uma ação que possa ser verificada nas avaliações seguintes.'
+        },
+        {
+          heading: 'Feedback em operações multilocais',
+          body: 'Quando existem várias unidades, compare padrões sem ignorar o contexto local. Um problema de uma unidade pode ser específico; uma recorrência em várias unidades pode apontar para uma mudança sistêmica.'
+        },
+        {
+          heading: 'Como a IA acelera a análise',
+          body: 'IA pode classificar, resumir e encontrar padrões em grandes volumes de texto. O objetivo é reduzir o trabalho mecânico de triagem e aumentar a velocidade com que a equipe encontra aquilo que merece atenção.'
+        },
+        {
+          heading: 'Métricas para acompanhar',
+          body: 'Volume de feedback, distribuição por nota, temas recorrentes, evolução por período e diferenças entre unidades formam uma visão mais útil do que uma única nota média.'
+        },
+      ]}
+    />
+  );
+}
