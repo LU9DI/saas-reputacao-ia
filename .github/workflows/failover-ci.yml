@@ -1,0 +1,56 @@
+name: Failover CI
+
+on:
+  push:
+    paths:
+      - 'infra/cloudflare/**'
+      - 'frontend/src/app/api/failover/**'
+      - 'backend/tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+      - 'pnpm-lock.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        run: npm ci --prefix backend
+
+      - name: Run unit + integration tests
+        run: npm test
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive infra/cloudflare
+
+      - name: Terraform init
+        working-directory: infra/cloudflare
+        run: terraform init -backend=false -input=false
+
+      - name: Terraform validate
+        working-directory: infra/cloudflare
+        run: terraform validate -no-color
