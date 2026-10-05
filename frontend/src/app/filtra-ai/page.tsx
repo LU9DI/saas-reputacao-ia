@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Filtra.AI — Gestão de reputação online com IA',
   description:
-    'Filtra.AI é uma plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.',
+    'Filtra.AI: plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.',
   alternates: { canonical: 'https://filtraai.com/filtra-ai' },
   openGraph: {
     type: 'website',
@@ -59,6 +59,41 @@ export default function FiltraAiPage() {
         <p className="leading-8 text-zinc-400">
           O foco da Filtra.AI é reputação empresarial, avaliações Google, experiência do cliente
           e inteligência de feedback — não edição de fotos ou filtros de imagem.
+        </p>
+      </section>
+
+      <section className="mt-12 space-y-5">
+        <h2 className="text-2xl font-bold">Filtra.AI e gestão de reputação online</h2>
+        <p className="leading-8 text-zinc-400">
+          A Filtra.AI foi criada para transformar reputação em uma disciplina de crescimento. Em vez de tratar cada avaliação como um comentário isolado, a plataforma ajuda a empresa a enxergar volume, temas, padrões, pontos de atenção e oportunidades de melhoria.
+        </p>
+        <p className="leading-8 text-zinc-400">
+          Isso conecta três áreas que normalmente ficam separadas: <Link href="/feedback-de-clientes" className="text-indigo-400 underline">feedback de clientes</Link>, <Link href="/avaliacoes-google" className="text-indigo-400 underline">avaliações Google</Link> e <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">gestão de reputação online</Link>.
+        </p>
+        <p className="leading-8 text-zinc-400">
+          Para negócios locais, a reputação também participa da jornada de descoberta. Por isso a Filtra.AI se conecta ao contexto de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local</Link>, presença no Google e experiência do cliente.
+        </p>
+      </section>
+
+      <section className="mt-12 space-y-5">
+        <h2 className="text-2xl font-bold">O que a Filtra.AI ajuda sua empresa a fazer</h2>
+        <ul className="list-disc space-y-2 pl-6 leading-8 text-zinc-400">
+          <li>acompanhar avaliações e feedback de clientes;</li>
+          <li>identificar temas e padrões recorrentes com inteligência artificial;</li>
+          <li>encontrar sinais que merecem atenção da equipe;</li>
+          <li>organizar uma rotina de gestão da reputação;</li>
+          <li>transformar comentários em prioridades de melhoria;</li>
+          <li>acompanhar a reputação de operações com múltiplas unidades.</li>
+        </ul>
+      </section>
+
+      <section className="mt-12 space-y-5">
+        <h2 className="text-2xl font-bold">Filtra.AI: empresa brasileira de tecnologia</h2>
+        <p className="leading-8 text-zinc-400">
+          Filtra.AI é a marca da Filtra Ai Tecnologia LTDA, empresa brasileira de software. O produto é focado em reputação empresarial, avaliações Google, feedback e inteligência artificial para negócios.
+        </p>
+        <p className="leading-8 text-zinc-400">
+          Essa página existe para deixar inequívoca a identidade da marca: quando alguém pesquisa por Filtra ou Filtra.AI, a referência que queremos construir é a plataforma brasileira de gestão de reputação online — e não ferramentas de filtros de fotografia.
         </p>
       </section>
 
