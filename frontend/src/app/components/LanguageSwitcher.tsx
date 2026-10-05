@@ -1,6 +1,5 @@
 'use client';
 
-import type { MouseEvent } from 'react';
 import { usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
@@ -17,14 +16,21 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/monitoramento-reputacao-online', en:'/en/online-reputation-monitoring', es:'/es/monitoreo-reputacion-online', zh:'/zh/online-reputation-monitoring' },
   { pt:'/gestao-de-feedback', en:'/en/customer-feedback-management', es:'/es/gestion-feedback-clientes', zh:'/zh/customer-feedback-management' },
   { pt:'/auditoria-gratuita', en:'/en/free-review-audit', es:'/es/auditoria-gratuita', zh:'/zh/free-review-audit' },
+  { pt:'/hoteis', en:'/en/hotels', es:'/es/hoteles', zh:'/zh/hotels' },
+  { pt:'/turismo', en:'/en/tourism', es:'/es/turismo', zh:'/zh/tourism' },
+  { pt:'/agencias', en:'/en/agencies', es:'/es/agencias', zh:'/zh/agencies' },
+  { pt:'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinics' },
+  { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franchises' },
+  { pt:'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/associations' },
+  { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurants' },
+  { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
+  { pt:'/parceiros', en:'/en/partners', es:'/es/socios', zh:'/zh/partners' },
+  { pt:'/pedir-estrela-vs-filtrar', en:'/en/ask-for-stars-vs-filtering', es:'/es/pedir-estrellas-vs-filtrar', zh:'/zh/request-stars-vs-filter' },
 ];
 
 function targetFor(pathname: string, language: Language): string {
-  const family = SEO_FAMILIES.find(item => Object.values(item).includes(pathname));
-  if (family) return family[language];
-
-  // SEO pages navigate to their localized canonical route; app pages keep the current URL.
-  return pathname || '/';
+  const family = SEO_FAMILIES.find((item) => Object.values(item).includes(pathname));
+  return family?.[language] || pathname || '/';
 }
 
 export function LanguageSwitcher({
@@ -41,16 +47,11 @@ export function LanguageSwitcher({
   const pathLang = (pathname || '/').match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || 'pt';
 
-  const choose = (code: Language) => {
-    setLanguage(code);
-  };
+  const choose = (code: Language) => setLanguage(code);
 
   if (variant === 'flags') {
     return (
-      <nav
-        className={`inline-flex items-center gap-1 ${className}`}
-        aria-label={tx('language', 'Idioma')}
-      >
+      <nav className={`inline-flex items-center gap-1 ${className}`} aria-label={tx('language', 'Idioma')}>
         {SUPPORTED_LANGUAGES.map((l) => (
           <a
             key={l.code}
