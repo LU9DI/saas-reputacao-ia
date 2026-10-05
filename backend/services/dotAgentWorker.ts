@@ -2,6 +2,7 @@ import { getDb } from '../lib/db.js';
 import { runCurrentDotMissionStep } from './dotAgentMissionRunner.js';
 import { createDotAgentGoal, listDotAgentGoals } from './dotAgent.js';
 import { createMissionForGoal } from './dotAgentMissions.js';
+import { ensureDotDecisionSchema } from './dotDecision.js';
 
 let timer: NodeJS.Timeout | null = null;
 let running = false;
@@ -25,6 +26,7 @@ async function runTick() {
   running = true;
   try {
     const db = getDb();
+    await ensureDotDecisionSchema();
     await ensureAutonomousMissions(db);
     const missions = await db.all(
       "SELECT id, empresa_id FROM dot_agent_missions WHERE status IN ('planned','working') ORDER BY updated_at ASC LIMIT 25",
