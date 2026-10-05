@@ -2,16 +2,16 @@
 
 ## Arquitetura
 
-filtraai.com fica atrás de uma Cloudflare Worker Route. A Worker usa Workers KV para manter o estado de origem:
+filtraai.com fica atrás de uma Cloudflare Worker Route. A Worker usa Workers KV para manter o estado e Cloudflare Cache para manter uma cópia recente das páginas públicas.
 
 - PRIMARY: Vercel
-- FALLBACK: origin Cloudflare configurado por Terraform
+- FALLBACK: cache da Cloudflare Worker
 
 A troca acontece dentro do Worker, sem alteração manual de DNS.
 
 ## Failover por saúde
 
-A Worker tenta a origem primária. Em erros HTTP 502/503/504/521/522/523/524 ou falha de rede, tenta o fallback e grava o estado fallback.
+A Worker tenta a origem primária. Respostas públicas bem-sucedidas aquecem o cache da Cloudflare. Em erros HTTP 502/503/504/521/522/523/524 ou falha de rede, a Worker grava o estado fallback e serve a cópia em cache quando existir.
 
 Enquanto estiver em fallback, a Worker faz sondagens controladas à Vercel. Quando a origem primária volta a responder, o estado retorna automaticamente para primary.
 
