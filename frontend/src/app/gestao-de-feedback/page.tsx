@@ -5,7 +5,16 @@ export const metadata: Metadata = {
   title: 'Gestão de feedback de clientes: método e ferramentas | Filtra.AI',
   description:
     'Como estruturar coleta, análise e acompanhamento de feedback de clientes para transformar opiniões em melhoria operacional.',
-  alternates: { canonical: 'https://filtraai.com/gestao-de-feedback' },
+  alternates: {
+    canonical: 'https://filtraai.com/gestao-de-feedback',
+    languages: {
+      'pt-BR': 'https://filtraai.com/gestao-de-feedback',
+      en: 'https://filtraai.com/en/customer-feedback-management',
+      es: 'https://filtraai.com/es/gestion-feedback-clientes',
+      zh: 'https://filtraai.com/zh/customer-feedback-management',
+      'x-default': 'https://filtraai.com/gestao-de-feedback',
+    },
+  },
 };
 
 export default function Page() {
