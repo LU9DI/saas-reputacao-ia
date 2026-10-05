@@ -14,7 +14,9 @@ async function ensureAutonomousMissions(db: any) {
     const goals = await listDotAgentGoals(empresaId);
     let goal = goals.find((item) => item.status === 'active');
     if (!goal) goal = await createDotAgentGoal(empresaId, { title: 'Proteger e acelerar o crescimento da empresa', description: 'Objetivo operacional criado automaticamente pelo DOT para transformar sinais reais em investigação, ação e acompanhamento.', source: 'dot_autonomous' });
-    await createMissionForGoal(empresaId, goal.id, `Atuar sobre o sinal prioritário #${decision.id}`);
+    const title = `Atuar sobre o sinal prioritário #${decision.id}`;
+    const existingMission = await db.get('SELECT id FROM dot_agent_missions WHERE empresa_id=? AND goal_id=? AND title=? LIMIT 1', [empresaId, goal.id, title]);
+    if (!existingMission) await createMissionForGoal(empresaId, goal.id, title);
   }
 }
 
