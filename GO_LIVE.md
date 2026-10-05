@@ -1,83 +1,63 @@
-# Checklist de go-live — Filtra.IA
+# Checklist de go-live — Filtra.AI
 
-Siga na ordem. Marque cada item.
-
-## 0. Pré-requisitos locais
+## 0. Pré-requisitos
 
 - [ ] `git pull origin main`
-- [ ] Backend sobe: `cd backend && npm run dev` → `http://localhost:5000/api/health`
-- [ ] Frontend sobe: `cd frontend && npm run dev`
-- [ ] Trial local funciona (CNPJ válido → QR → painel)
+- [ ] Backend sobe localmente e `/api/health` responde
+- [ ] Frontend sobe localmente
+- [ ] Trial local funciona
 
-## 1. Railway (API)
+## 1. Render (API)
 
-- [ ] Projeto criado + repo conectado
-- [ ] Dockerfile path: `backend/Dockerfile`
-- [ ] Volume em `/data`
-- [ ] Variáveis:
-  - `NODE_ENV=production`
-  - `JWT_SECRET` (≥ 32 chars, único)
-  - `SQLITE_DB_PATH=/data/database.sqlite`
-  - `APP_URL=https://SEU-FRONT.vercel.app`
-  - `FRONTEND_URL=https://SEU-FRONT.vercel.app`
-  - `CORS_ORIGINS=https://SEU-FRONT.vercel.app`
-  - `ADMIN_EMAIL` / `ADMIN_PASSWORD`
-- [ ] Domain gerado → anote `https://xxx.up.railway.app`
+- [ ] Web Service conectado ao repositório
+- [ ] Root: `backend`
+- [ ] Start: `npm start`
+- [ ] `NODE_ENV=production`
+- [ ] `JWT_SECRET` forte e exclusivo
+- [ ] `DATABASE_URL` aponta para Supabase ou Neon
+- [ ] `APP_URL`, `FRONTEND_URL` e `CORS_ORIGINS` configurados
 - [ ] `GET /api/health` retorna `{ ok: true }`
 
 ## 2. Vercel (frontend)
 
-- [ ] Root Directory: `frontend`
-- [ ] Env: `NEXT_PUBLIC_API_URL=https://xxx.up.railway.app`
-- [ ] Env: `NEXT_PUBLIC_APP_URL=https://seu-app.vercel.app`
+- [ ] Root: `frontend`
+- [ ] `NEXT_PUBLIC_API_URL` aponta para a API Render
+- [ ] `NEXT_PUBLIC_APP_URL=https://filtraai.com`
 - [ ] Deploy concluído
-- [ ] Página inicial carrega sem erro de API
+- [ ] Página inicial carrega sem erros
 
-## 3. Cookies / login cross-domain
+## 3. Banco
 
-Já configurado no código (`SameSite=None` + `Secure` em prod + `trust proxy`).
+- [ ] Postgres em Supabase ou Neon
+- [ ] Migrações/schema aplicados
+- [ ] Backup e acesso administrativo protegidos
+- [ ] Nenhum segredo commitado
 
-- [ ] Login no front de produção autentica e o painel carrega dados
-- [ ] Se falhar: confira HTTPS nos dois lados e `CORS_ORIGINS`
-- [ ] (Opcional) domínio próprio + `COOKIE_DOMAIN=.seudominio.com`
+## 4. Cookies / login
 
-## 4. Stripe
+- [ ] Login em produção autentica
+- [ ] Painel carrega os dados corretos
+- [ ] HTTPS ativo nos domínios
+- [ ] CORS restrito aos domínios necessários
 
-- [ ] `STRIPE_SECRET_KEY` (modo test primeiro) no Railway
-- [ ] Webhook no Stripe Dashboard:
-  - URL: `https://xxx.up.railway.app/api/webhook/stripe`
-  - Eventos: `checkout.session.completed`, `customer.subscription.*`, `invoice.paid`, `charge.refunded`
-- [ ] `STRIPE_WEBHOOK_SECRET` no Railway
-- [ ] Teste: assinar plano Inicial com cartão de teste `4242…`
-- [ ] Empresa muda para `status=ativo` e `plan=inicial`
-- [ ] E-mail de ativação chega (se SMTP configurado)
+## 5. Billing e e-mail
 
-## 5. E-mail
+- [ ] Stripe configurado somente quando ativado
+- [ ] SMTP/Resend configurado quando necessário
+- [ ] Teste de recuperação de senha concluído
 
-- [ ] SMTP no Railway (Resend / SES / etc.)
-- [ ] Teste: “esqueci a senha” e ativação de plano
+## 6. Segurança
 
-## 6. Segurança final
+- [ ] Segredos de desenvolvimento substituídos
+- [ ] JWT_SECRET exclusivo
+- [ ] Banco SQLite local não usado como produção
+- [ ] CI verde na última commit
 
-- [ ] Admin password trocada
-- [ ] JWT_SECRET não é o de desenvolvimento
-- [ ] Banco `*.db` / `*.sqlite` fora do Git (`git ls-files | findstr db`)
-- [ ] CI verde na última commit da `main`
+## 7. Smoke de produção
 
-## 7. Smoke test produção (15 min)
-
-1. Ativar trial no site público  
-2. Abrir link de avaliação e enviar nota 2 com comentário  
-3. Login no painel → ver crítica  
-4. Checkout plano Pro (test mode)  
-5. Confirmar plano ativo na API `/api/empresa/{id}/assinatura`  
-6. Logout / login de novo  
-
-## Se algo falhar
-
-| Sintoma | Causa comum |
-| CORS no browser | `CORS_ORIGINS` sem a URL exata do Vercel |
-| Login não gruda | Cookie sem HTTPS ou `SameSite` |
-| Checkout 503 | `STRIPE_SECRET_KEY` ausente |
-| Webhook 400 | `STRIPE_WEBHOOK_SECRET` errado ou body parseado como JSON |
-| Banco zera no redeploy | Volume `/data` não montado |
+1. Abrir o site.
+2. Iniciar trial.
+3. Enviar uma avaliação de teste.
+4. Conferir painel.
+5. Testar logout/login.
+6. Confirmar saúde da API e persistência do Postgres.
