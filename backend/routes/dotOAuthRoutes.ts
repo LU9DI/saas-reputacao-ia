@@ -6,8 +6,32 @@ import { canManageDotPermissions } from '../services/dotAccessControl.js';
 import { completeDotOAuth, disconnectDotOAuth, startDotOAuth } from '../services/dotOAuthBroker.js';
 import { putDotCredential } from '../services/dotCredentialVault.js';
 import type { DotIntegrationProvider } from '../services/dotIntegrationRegistry.js';
+import { setDotPermission } from '../services/dotAccessControl.js';
+import rateLimit from 'express-rate-limit';
 
 const providers = new Set(['crm','email','calendar','erp','whatsapp','marketing']);
+
+const integrationMutationLimiter = rateLimit({
+  windowMs: 15 * 60_000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Muitas tentativas de integração. Aguarde alguns minutos.' },
+});
+
+async function validateHubSpotReadScopes(key: string) {
+  const endpoints = [
+    '/crm/v3/objects/contacts?limit=1',
+    '/crm/v3/objects/companies?limit=1',
+    '/crm/v3/objects/deals?limit=1',
+  ];
+  const results = await Promise.all(endpoints.map((endpoint) =>
+    fetch('https://api.hubapi.com' + endpoint, {
+      headers: { Accept: 'application/json', Authorization: 'Bearer ' + key },
+    })
+  ));
+  return results.every((response) => response.ok);
+}
 
 function provider(value: string): DotIntegrationProvider | null {
   return providers.has(value) ? value as DotIntegrationProvider : null;
@@ -26,7 +50,7 @@ async function authCompany(req: Request, res: Response) {
 }
 
 export function mountDotOAuthRoutes(app: Express) {
-  app.post('/api/dot/agent/integrations/:provider/connect', async (req: Request, res: Response) => {
+  app.post('/api/dot/agent/integrations/:provider/connect', integrationMutationLimiter, async (req: Request, res: Response) => {
     const payload = await authCompany(req,res); if (!payload) return;
     const p = provider(req.params.provider); if (!p) return res.status(404).json({ok:false,error:'Provedor não suportado.'});
     if (!canManageDotPermissions({empresa_id: payload.empresa_id, role: payload.role})) return res.status(403).json({ok:false,error:'Somente owner/admin/gestor/manager pode conectar integrações.'});
@@ -36,7 +60,7 @@ export function mountDotOAuthRoutes(app: Express) {
     } catch (e:any) { res.status(400).json({ok:false,error:String(e?.message || e)}); }
   });
 
-  app.post('/api/dot/agent/integrations/crm/service-key', async (req: Request, res: Response) => {
+  app.post('/api/dot/agent/integrations/crm/service-key', integrationMutationLimiter, async (req: Request, res: Response) => {
     const payload = await authCompany(req,res); if (!payload) return;
     if (!canManageDotPermissions({empresa_id: payload.empresa_id, role: payload.role})) {
       return res.status(403).json({ok:false,error:'Somente owner/admin/gestor/manager pode conectar integrações.'});
@@ -44,10 +68,8 @@ export function mountDotOAuthRoutes(app: Express) {
     const key = String(req.body?.serviceKey || '').trim();
     if (!key || key.length < 20) return res.status(400).json({ok:false,error:'Service Key do HubSpot inválida.'});
     try {
-      const response = await fetch('https://api.hubapi.com/crm/v3/objects/contacts?limit=1', {
-        headers: { Accept: 'application/json', Authorization: 'Bearer ' + key },
-      });
-      if (!response.ok) return res.status(400).json({ok:false,error:'A Service Key foi recusada pelo HubSpot. Verifique a chave e os três escopos de leitura.'});
+      const valid = await validateHubSpotReadScopes(key);
+      if (!valid) return res.status(400).json({ok:false,error:'A Service Key foi recusada pelo HubSpot ou não possui os três escopos de leitura necessários.'});
       const db = (await import('../lib/db.js')).getDb();
       const nowIso = new Date().toISOString();
       await putDotCredential({ empresaId: payload.empresa_id, provider: 'crm', kind: 'access_token', value: key, expiresAt: null });
@@ -58,6 +80,13 @@ export function mountDotOAuthRoutes(app: Express) {
       } else {
         await db.run('INSERT INTO dot_integrations (empresa_id,provider,provider_account_id,status,scopes,token_ref,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)', [payload.empresa_id, 'crm', null, 'connected', scopes, 'vault', nowIso, nowIso]);
       }
+      // O usuário que conectou a conta recebe apenas a permissão CRM.read.
+      // Não abrimos acesso automaticamente para todos os usuários da empresa.
+      await setDotPermission(payload.empresa_id, {
+        resource: 'crm', action: 'read', granted: true,
+        userId: payload.id, grantedBy: payload.id,
+      });
+      res.setHeader('Cache-Control', 'no-store');
       res.json({ok:true,status:'connected',provider:'crm',scopes:scopes.split(',')});
     } catch (e:any) {
       res.status(400).json({ok:false,error:String(e?.message || e)});
@@ -76,7 +105,7 @@ export function mountDotOAuthRoutes(app: Express) {
     } catch (e:any) { res.status(400).send(`Falha na conexão OAuth: ${String(e?.message || e)}`); }
   });
 
-  app.delete('/api/dot/agent/integrations/:provider/connect', async (req: Request, res: Response) => {
+  app.delete('/api/dot/agent/integrations/:provider/connect', integrationMutationLimiter, async (req: Request, res: Response) => {
     const payload = await authCompany(req,res); if (!payload) return;
     const p = provider(req.params.provider); if (!p) return res.status(404).json({ok:false,error:'Provedor não suportado.'});
     if (!canManageDotPermissions({empresa_id: payload.empresa_id, role: payload.role})) return res.status(403).json({ok:false,error:'Somente owner/admin/gestor/manager pode desconectar integrações.'});
