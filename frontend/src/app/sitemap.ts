@@ -50,6 +50,7 @@ const localizedPaths = [
   '/en/improve-google-reviews','/es/mejorar-resenas-google','/zh/improve-google-reviews',
   '/en/online-reputation-monitoring','/es/monitoreo-reputacion-online','/zh/online-reputation-monitoring',
   '/en/customer-feedback-management','/es/gestion-feedback-clientes','/zh/customer-feedback-management',
+  '/en/free-review-audit','/es/auditoria-gratuita','/zh/free-review-audit',
 ] as const;
 
 const highPriority = new Set<string>([
