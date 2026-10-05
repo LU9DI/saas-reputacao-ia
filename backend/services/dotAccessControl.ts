@@ -155,7 +155,7 @@ export async function dotAccessAllowed(
 ): Promise<boolean> {
   const db = getDb();
   const row = await db.get(
-    `SELECT granted FROM dot_agent_permissions
+    `SELECT empresa_id, user_id, resource, action, granted, revoked_at FROM dot_agent_permissions
       WHERE empresa_id = ? AND resource = ? AND action = ? AND granted = 1
         AND (user_id IS NULL OR user_id = ?)
         AND revoked_at IS NULL
@@ -163,7 +163,7 @@ export async function dotAccessAllowed(
       LIMIT 1`,
     [empresaId, resource, action, userId || null, userId || null],
   );
-  const allowed = Boolean(row);
+  const allowed = Boolean(row && dotPermissionMatchesScope(row, { empresaId, userId, resource, action }));
   await recordAccess(empresaId, userId, resource, action, allowed, allowed ? 'permission_granted' : 'permission_denied', context);
   return allowed;
 }
