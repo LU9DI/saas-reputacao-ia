@@ -38,6 +38,12 @@ export function BlogArticle({
           </Link>
         </div>
         <nav className="flex flex-wrap gap-3 text-xs text-zinc-500 pt-4 border-t border-zinc-800">
+          <Link href="/filtra-ai" className="hover:text-zinc-300">
+            Filtra.AI
+          </Link>
+          <Link href="/avaliacoes-google" className="hover:text-zinc-300">
+            Avaliações Google
+          </Link>
           <Link href="/feedback-de-clientes" className="hover:text-zinc-300">
             Feedback de clientes
           </Link>
