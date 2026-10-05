@@ -4,15 +4,24 @@ import { SeoLanding } from '../components/SeoLanding';
 export const metadata: Metadata = {
   title: 'Avaliações Google para restaurantes | Filtra.AI',
   description:
-    'QR na mesa, filtro 4–5★ para o Google e feedback ruim no painel. Aumente a velocidade de reviews positivos sem perder controle da reputação. Trial 7 dias.',
-  alternates: { canonical: '/restaurantes' },
+    'QR na mesa, pedido de feedback e convite para avaliações genuínas no Google. Organize comentários, identifique padrões e transforme a experiência do cliente em ações. Trial de 7 dias.',
+  alternates: {
+    canonical: 'https://filtraai.com/restaurantes',
+    languages: {
+      'pt-BR': 'https://filtraai.com/restaurantes',
+      en: 'https://filtraai.com/en/restaurants',
+      es: 'https://filtraai.com/es/restaurantes',
+      zh: 'https://filtraai.com/zh/restaurants',
+      'x-default': 'https://filtraai.com/restaurantes',
+    },
+  },
 };
 
 export default function RestaurantesPage() {
   return (
     <SeoLanding
       h1="Reputação no Google para restaurantes e food service"
-      lead="Uma review 1★ no horário de pico pode custar semanas de anúncio. O Filtra.AI coloca o pedido de avaliação no fluxo da mesa — e separa o que deve ir ao Google do que deve ser tratado na cozinha e no salão."
+      lead="Uma avaliação não começa no Maps: ela nasce da experiência. O Filtra.AI coloca o pedido de feedback no ponto de contato da mesa, conta ou delivery e ajuda a equipe a transformar comentários em ações."
       breadcrumbHref="/restaurantes"
       contextLinks={[
         { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação para restaurantes', description: 'Monitore avaliações e transforme sinais do salão e do delivery em ações.' },
@@ -31,11 +40,11 @@ export default function RestaurantesPage() {
         },
         {
           heading: 'Velocity de reviews',
-          body: 'No SEO local, reviews recentes pesam. Um fluxo estável de avaliações 4–5★ no Google ajuda mais do que um pico artificial seguido de silêncio.',
+          body: 'No SEO local, consistência e experiência real importam. Um fluxo legítimo de convites para avaliações genuínas é mais sustentável do que picos artificiais de pedidos.',
         },
         {
           heading: 'Quando a nota é baixa',
-          body: '1–3★ ficam no painel: você vê o padrão (atraso, tempero, atendimento) antes de virar crise pública e pode agir com a equipe no mesmo dia.',
+          body: 'Todo feedback recebido pelo fluxo pode ser analisado no painel. Quando surgir insatisfação, a equipe entende o motivo — atraso, tempero, atendimento — e pode agir no mesmo dia, sem depender de criar uma rota baseada na nota.',
         },
         {
           heading: 'Comece em minutos',
