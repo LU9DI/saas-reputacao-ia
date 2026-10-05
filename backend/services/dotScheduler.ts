@@ -2,6 +2,7 @@ import { getDb } from '../lib/db.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { runDotMonitor } from './dotMonitor.js';
 import { monitorDueDotFollowUps } from './dotFollowUp.js';
+import { wakeDotAgentWorker } from './dotAgentWorker.js';
 
 type DotSchedulerStatus = {
   running: boolean;
@@ -106,6 +107,10 @@ export async function runDueDotMonitors() {
         results.push({ empresa_id: company.id, ok: false, error: String(error?.message || error) });
       }
     }
+
+    // O monitor alimenta o agente: novos sinais/decisões acordam o loop de missão
+    // sem depender de o usuário abrir o chat ou clicar em qualquer botão.
+    void wakeDotAgentWorker();
 
     schedulerStatus.last_success_at = new Date().toISOString();
     schedulerStatus.last_error_at = companyErrors ? new Date().toISOString() : null;
