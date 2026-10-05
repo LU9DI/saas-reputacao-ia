@@ -13,12 +13,7 @@ variable "cloudflare_api_token" {
 
 variable "primary_origin" {
   type        = string
-  description = "Current production Vercel origin URL. Required; do not hardcode a deployment URL in Terraform."
-}
-
-variable "fallback_origin" {
-  type        = string
-  description = "Cloudflare fallback origin URL. Required; do not use a placeholder in staging or production."
+  description = "Current production Vercel origin URL. Required."
 }
 
 variable "worker_name" {
