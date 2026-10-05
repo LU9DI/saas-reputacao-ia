@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
-export const metadata: Metadata={title:'Gestão de reputação online para empresas | Filtra.AI',description:'Monitore avaliações, analise feedback e transforme reputação em crescimento.',alternates: {
+
+export const metadata: Metadata = {
+  title: 'Gestão de reputação online: monitore avaliações e feedback | Filtra.AI',
+  description: 'Aprenda a estruturar gestão de reputação online com avaliações, feedback, monitoramento de temas e ações de melhoria. Filtra.AI organiza o ciclo em um só lugar.',
+  alternates: {
     canonical: 'https://filtraai.com/gestao-de-reputacao-online',
     languages: {
       'pt-BR': 'https://filtraai.com/gestao-de-reputacao-online',
@@ -9,5 +13,57 @@ export const metadata: Metadata={title:'Gestão de reputação online para empre
       zh: 'https://filtraai.com/zh/online-reputation-management',
       'x-default': 'https://filtraai.com/gestao-de-reputacao-online',
     },
-  }};
-export default function Page(){return <SeoLanding h1="Gestão de reputação online: transforme sua reputação em crescimento." lead="A gestão de reputação reúne avaliações, feedback e sinais da experiência para mostrar o que preservar, corrigir e acompanhar." breadcrumbHref="/gestao-de-reputacao-online" contextLinks={[{href:'/filtra-ai',title:'Conheça a Filtra.AI',description:'Plataforma brasileira de gestão de reputação online, avaliações Google e feedback com IA.'},{href:'/avaliacoes-google',title:'Gestão de avaliações Google',description:'Acompanhe avaliações e transforme sinais públicos em rotina de gestão.'},{href:'/analise-de-avaliacoes-com-ia',title:'Análise de avaliações com IA',description:'Identifique temas e padrões recorrentes nos comentários.'}]} sections={[{heading:'O que é gestão de reputação online?',body:'É o processo contínuo de acompanhar avaliações e feedbacks, identificar padrões, responder clientes, corrigir problemas e medir se a percepção melhora.'},{heading:'O que acompanhar na reputação online',body:'Não basta olhar a nota média. Acompanhe volume, recorrência de temas, mudanças na percepção, velocidade das avaliações e diferenças entre unidades.'},{heading:'Da avaliação para a ação',body:'Avaliações negativas podem indicar atritos no atendimento, prazo, comunicação ou entrega. Avaliações positivas mostram o que merece ser preservado.'},{heading:'Reputação em empresas com várias unidades',body:'Redes de hotéis, restaurantes, clínicas e franquias precisam enxergar tanto a reputação da marca quanto as diferenças locais.'},{heading:'Reputação e aquisição',body:'Avaliações fazem parte da informação que potenciais clientes encontram antes de comprar. Experiência, feedback, melhoria e presença pública devem trabalhar juntos.'}]}/>}
+  },
+};
+
+export default function Page() {
+  return (
+    <SeoLanding
+      h1="Gestão de reputação online: transforme avaliações em crescimento"
+      lead="Gestão de reputação online é o processo contínuo de acompanhar avaliações, feedback e sinais da experiência, entender causas, agir sobre problemas e medir se a percepção melhora."
+      breadcrumbHref="/gestao-de-reputacao-online"
+      contextLinks={[
+        { href: '/filtra-ai', title: 'Filtra.AI — plataforma de reputação', description: 'Centralize avaliações Google, feedback, análise por IA e rotina de reputação.' },
+        { href: '/avaliacoes-google', title: 'Gestão de avaliações Google', description: 'Organize avaliações e os sinais que aparecem no Google Maps.' },
+        { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Acompanhe mudanças, temas recorrentes e prioridades.' },
+        { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre temas, padrões, riscos e oportunidades em escala.' },
+        { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Use a voz do cliente como dado para decisões de crescimento.' },
+        { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece com um diagnóstico da presença e dos principais sinais de reputação.' },
+      ]}
+      sections={[
+        {
+          heading: 'O que é gestão de reputação online?',
+          body: 'É uma disciplina operacional que conecta percepção pública e melhoria interna. Em vez de olhar apenas a nota média, a empresa acompanha avaliações novas, temas recorrentes, distribuição de notas, respostas, diferenças entre unidades e evolução ao longo do tempo.'
+        },
+        {
+          heading: 'O que realmente precisa ser monitorado',
+          body: 'Volume de avaliações, mudanças bruscas na nota, recorrência de reclamações, elogios que representam diferenciais, tempo de resposta, temas ligados a atendimento, prazo, preço, produto, ambiente e comunicação. Em redes, compare unidades com contexto para não confundir realidades diferentes.'
+        },
+        {
+          heading: 'De avaliação isolada para sinal de gestão',
+          body: 'Uma crítica pode ser pontual. Muitas críticas semelhantes em pouco tempo indicam um padrão mais útil para a gestão. A análise estruturada permite separar ruído, recorrência e mudança de comportamento, criando uma fila de prioridades em vez de uma caixa de comentários.'
+        },
+        {
+          heading: 'Reputação e aquisição de clientes',
+          body: 'Antes de comprar, potenciais clientes pesquisam a empresa e encontram avaliações, respostas, presença local e sinais de confiança. Por isso, reputação não é apenas comunicação: ela participa do processo de decisão. Conteúdo útil, experiência consistente e avaliações acompanhadas formam um mesmo ciclo.'
+        },
+        {
+          heading: 'Como transformar reputação em melhoria operacional',
+          body: 'Registre os temas mais frequentes, associe cada tema a uma área responsável, defina uma ação verificável e acompanhe as avaliações seguintes. Quando o mesmo problema deixa de aparecer, existe um sinal de melhoria que pode ser comparado por período, unidade ou serviço.'
+        },
+        {
+          heading: 'Gestão de reputação para empresas com várias unidades',
+          body: 'Hotéis, restaurantes, clínicas, franquias e operações multilocais precisam de uma visão consolidada da marca e também de detalhe por unidade. A gestão correta mantém os dois níveis: visão executiva para priorização e evidência local para a equipe que pode agir.'
+        },
+        {
+          heading: 'Por que usar IA nesse processo',
+          body: 'Quando o volume cresce, ler tudo manualmente fica caro e inconsistente. IA pode agrupar comentários, encontrar padrões e resumir sinais para acelerar a triagem. O julgamento final continua com a equipe, especialmente quando existe contexto operacional ou ironia no comentário.'
+        },
+        {
+          heading: 'O que medir toda semana',
+          body: 'Acompanhe nota e distribuição das avaliações, volume novo, temas que subiram ou caíram, problemas recorrentes, elogios mais frequentes e evolução por unidade. O objetivo não é produzir outro relatório: é descobrir o que merece ação agora e verificar se a ação funcionou.'
+        },
+      ]}
+    />
+  );
+}
