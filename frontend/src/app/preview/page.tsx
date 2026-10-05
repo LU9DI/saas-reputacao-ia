@@ -297,6 +297,7 @@ export default function LandingPreview() {
             <LanguageSwitcher />
             <a href="/teste" className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
           </div>
+          </div>
         </nav>
 
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-14 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:pb-32 lg:pt-20">
