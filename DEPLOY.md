@@ -1,120 +1,67 @@
-# Deploy — Filtra.IA
+# Deploy — Filtra.AI
 
-Arquitetura recomendada:
+Arquitetura de produção:
 
-| Parte              | Host       | Motivo                                         |
-| ------------------ | ---------- | ---------------------------------------------- |
-| Frontend (Next.js) | **Vercel** | Nativo para Next, HTTPS, CDN                   |
-| API (Express)      | **Railway**| Docker fácil, volume para SQLite, healthcheck  |
+| Parte | Host | Motivo |
+| --- | --- | --- |
+| Frontend (Next.js) | **Vercel** | Next.js, HTTPS e CDN |
+| API (Express) | **Render** | Serviço web com healthcheck |
+| Banco | **Supabase ou Neon** | Postgres gerenciado, separado do app |
 
----
+## 1. API no Render
 
-## 1. API no Railway (5–10 min)
-
-1. Crie conta em [railway.app](https://railway.app) e um **New Project**.
-2. **Add Service → GitHub Repo** → selecione `saas-reputacao-ia`.
-3. Em **Settings → Build**:
-   - Builder: **Dockerfile**
-   - Dockerfile path: `backend/Dockerfile`
-4. **Variables** (Settings → Variables) — mínimo:
+1. Crie um **Web Service** apontando para o repositório.
+2. Root do serviço: `backend`.
+3. Build: `npm ci` ou o comando definido pelo projeto.
+4. Start: `npm start`.
+5. Configure as variáveis de produção:
 
 ```env
-JWT_SECRET=gere-um-segredo-longo-aleatorio-32+
 NODE_ENV=production
 PORT=5000
-APP_URL=https://SEU-FRONTEND.vercel.app
-FRONTEND_URL=https://SEU-FRONTEND.vercel.app
-SQLITE_DB_PATH=/data/database.sqlite
-ADMIN_EMAIL=seu@email.com
-ADMIN_PASSWORD=SenhaForte@123
+DATABASE_URL=postgresql://...
+JWT_SECRET=segredo-longo-e-aleatorio
+APP_URL=https://filtraai.com
+FRONTEND_URL=https://filtraai.com
 ```
 
-Opcionais depois: `GROQ_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, SMTP.
+Para produção, use Postgres via `DATABASE_URL`; não dependa de SQLite local.
 
-. **Volume**: Add Volume montado em `/data` (persistência do SQLite).
-. **Networking**: Generate Domain → anote a URL da API (`https://xxx.up.railway.app`).
-. Healthcheck: path `/api/health` (já no `railway.toml`).
+Healthcheck: `GET /api/health`.
 
-### Token para GitHub Actions
+## 2. Frontend na Vercel
 
-1. Railway → Account → Tokens → Create
-2. GitHub repo → **Settings → Secrets and variables → Actions**:
-   - `RAILWAY_TOKEN` = token criado
+- Root Directory: `frontend`
+- Framework: Next.js
+- `NEXT_PUBLIC_API_URL`: URL pública da API Render
+- `NEXT_PUBLIC_APP_URL`: `https://filtraai.com`
 
-Deploy manual no Railway já funciona pelo GitHub connect. O workflow só reforça o `railway up` após CI.
+O deploy automático usa os secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID`.
 
----
+## 3. Banco
 
-## 2. Frontend na Vercel (5 min)
+Use Supabase ou Neon como Postgres gerenciado. A URL deve ser configurada apenas no ambiente de produção da API.
 
-1. [vercel.com](https://vercel.com) → **Add New Project** → importe `saas-reputacao-ia`.
-2. **Root Directory**: `frontend`
-3. Framework: Next.js (detecta sozinho)
-4. **Environment Variables**:
+Consulte `docs/POSTGRES.md` para o procedimento.
 
-```env
-NEXT_PUBLIC_API_URL=https://SUA-API.up.railway.app
-NEXT_PUBLIC_APP_URL=https://SEU-PROJETO.vercel.app
-```
+## 4. CORS e cookies
 
-. Deploy.
+Garanta que `APP_URL`, `FRONTEND_URL` e `CORS_ORIGINS` apontem para o domínio de produção. Em domínio separado, cookies de autenticação devem usar HTTPS e as políticas SameSite adequadas.
 
-### Secrets para GitHub Actions (deploy automático)
+## 5. Stripe
 
-No Vercel: Project → Settings → General → Project ID  
-Account/Team → Settings → Tokens
+Quando billing estiver ativo, configure `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` no Render e aponte o webhook para a URL pública da API.
 
-No GitHub (**Settings → Secrets**):
+## 6. Checklist pós-deploy
 
-| Secret | Onde pegar |
-| `VERCEL_TOKEN` | Vercel → Account → Tokens |
-| `VERCEL_ORG_ID` | `vercel link` local ou Team ID nas settings |
-| `VERCEL_PROJECT_ID` | Project Settings → General |
+- [ ] `GET /api/health` retorna `{ ok: true }`
+- [ ] Frontend abre sem erro
+- [ ] Trial funciona
+- [ ] Login funciona
+- [ ] Avaliação e painel funcionam
+- [ ] Banco Postgres permanece íntegro após redeploy
+- [ ] Sitemap público responde em `/sitemap.xml`
 
-Atalho local (gera os IDs):
+## 7. Fluxo
 
-```bash
-cd frontend
-npx vercel link
-# cria .vercel/project.json com orgId e projectId
-```
-
----
-
-## 3. CORS e cookies em produção
-
-No backend, o CORS já está com `origin: true` e `credentials: true`.  
-Garanta que:
-
-- `APP_URL` / `FRONTEND_URL` apontam para o domínio Vercel
-- Cookie JWT: se for cross-domain (Vercel ≠ Railway), em produção use `SameSite=None; Secure` no `setAuthCookie`
-
-Se o login falhar só em produção, ajuste `backend/lib/auth.ts` para cookies cross-site.
-
----
-
-## 4. Stripe webhook (quando ativar billing)
-
-1. Stripe Dashboard → Webhooks → Add endpoint  
-   URL: `https://SUA-API.up.railway.app/api/webhook/stripe`
-2. Copie o signing secret → `STRIPE_WEBHOOK_SECRET` no Railway
-
----
-
-## 5. Checklist pós-deploy
-
-- [ ] `GET https://API/api/health` → `{ ok: true }`
-- [ ] Frontend abre e o formulário de trial responde
-- [ ] Login cliente funciona
-- [ ] Página `/avaliacao/[slug]` carrega
-- [ ] Volume `/data` existe no Railway (banco não zera a cada redeploy)
-
----
-
-## 6. Fluxo automático
-
-push main → CI (testes + build) → se verde → Deploy workflow
-                                      ├─ Railway API (se RAILWAY_TOKEN)
-                                      └─ Vercel web (se secrets Vercel)
-
-Sem secrets, o job **pula** com aviso (não quebra o pipeline).
+push em `main` → CI → deploy do backend no Render e frontend na Vercel conforme configuração dos provedores.
