@@ -3,15 +3,15 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Pacotes de SEO local: avaliações Google e Local Pack | Filtra.AI',
+  title: 'Pacotes de SEO local: guia completo para empresas e agências | Filtra.AI',
   description:
-    'SEO local, Google Business Profile e avaliações: entenda relevância, distância, destaque, recência e como estruturar pacotes de SEO local para empresas.',
+    'Pacotes de SEO local para empresas e agências: veja o que incluir, como conectar Google Business Profile, avaliações, reputação e oportunidades no Google Maps.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' },
   openGraph: {
     type: 'article',
-    title: 'SEO local e avaliações Google: o que ranqueia no Local Pack',
+    title: 'Pacotes de SEO local: avaliações Google e Local Pack',
     description:
-      'Como conectar avaliações, reputação e SEO local para empresas e agências.',
+      'Como estruturar pacotes de SEO local conectando presença local, avaliações Google, reputação e oportunidades no Maps.',
     url: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack',
   },
 };
@@ -20,10 +20,15 @@ export default function Page() {
   return (
     <BlogArticle
       kicker="SEO local"
-      title="SEO local e avaliações Google: o que realmente ranqueia no Local Pack"
-      lead="Pacotes de SEO local ficam mais completos quando conectam presença local, avaliações Google, reputação e acompanhamento de oportunidades no Maps."
+      title="Pacotes de SEO local: o que incluir para gerar crescimento"
+      lead="Um pacote de SEO local forte conecta presença local, Google Business Profile, avaliações, reputação e acompanhamento de oportunidades no Maps."
     >
-      <H2>O que deve entrar em um pacote de SEO local?</H2><p>Um pacote de SEO local pode combinar presença local, conteúdo útil, otimização do perfil empresarial, acompanhamento de avaliações, análise de reputação e recomendações mensais. A prioridade é criar um processo que gere melhoria mensurável, não apenas uma lista de tarefas.</p>
+      <H2>O que deve entrar em um pacote de SEO local?</H2>
+      <p>
+        Um pacote de SEO local pode combinar presença local, conteúdo útil, otimização do perfil empresarial,
+        acompanhamento de avaliações, análise de reputação e recomendações mensais. A prioridade é criar um
+        processo que gere melhoria mensurável, não apenas uma lista de tarefas.
+      </p>
 
       <H2>Três pilares clássicos</H2>
       <p>
@@ -31,17 +36,27 @@ export default function Page() {
         Categoria, serviços, localização, autoridade e avaliações ajudam a formar esse contexto.
       </p>
 
-      <H2>O papel das avaliações</H2>
+      <H2>Google Business Profile + site</H2>
+      <p>
+        Mantenha informações da empresa consistentes, serviços claros, páginas locais úteis e um perfil
+        empresarial completo. Reviews não substituem isso: devem fazer parte de uma estratégia integrada.
+      </p>
+
+      <H2>O papel das avaliações Google</H2>
       <p>
         Quantidade, nota média, recência, texto relacionado aos serviços e respostas do negócio são sinais
         úteis para entender a força da reputação. Reviews não substituem um perfil local bem estruturado,
         mas fazem parte da experiência que o usuário encontra antes de escolher uma empresa.
       </p>
-
-      <H2>Site + Google Business Profile</H2>
       <p>
-        Mantenha informações da empresa consistentes, serviços claros, páginas locais úteis e um perfil
-        empresarial completo. Reviews não substituem isso: devem fazer parte de uma estratégia integrada.
+        Para uma operação completa, veja também a{' '}
+        <Link href="/avaliacoes-google" className="text-indigo-400 underline">
+          gestão de avaliações Google
+        </Link>{' '}
+        e a{' '}
+        <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">
+          gestão de reputação online
+        </Link>.
       </p>
 
       <H2>Pacotes de SEO local: onde a reputação entra</H2>
@@ -51,15 +66,25 @@ export default function Page() {
         recomendações para o cliente.
       </p>
       <p>
-        Para agências, isso cria uma oferta mais completa de <Link href="/agencias" className="text-indigo-400 underline">
-        gestão de reputação como serviço</Link>, conectando SEO, experiência do cliente e presença local.
+        Para agências, isso cria uma oferta mais completa de{' '}
+        <Link href="/agencias" className="text-indigo-400 underline">
+          gestão de reputação como serviço
+        </Link>
+        , conectando SEO, experiência do cliente e presença local.
       </p>
 
-      <H2>Reputação como rotina de crescimento</H2>
+      <H2>Como transformar o pacote em rotina</H2>
       <p>
-        O objetivo não é manipular avaliações. É facilitar feedback autêntico, resolver problemas e tornar
-        a empresa mais consistente. A <Link href="/avaliacoes-google" className="text-indigo-400 underline">
-        gestão de avaliações Google</Link> ajuda a transformar esse processo em rotina.
+        Uma rotina mensal pode acompanhar presença local, novas avaliações, temas recorrentes, pontos de
+        atenção e próximos testes. O objetivo não é manipular avaliações: é facilitar feedback autêntico,
+        resolver problemas e tornar a experiência mais consistente.
+      </p>
+      <p>
+        Empresas podem começar com uma{' '}
+        <Link href="/auditoria-gratuita" className="text-indigo-400 underline">
+          auditoria gratuita
+        </Link>{' '}
+        para identificar oportunidades de reputação e presença local.
       </p>
     </BlogArticle>
   );
