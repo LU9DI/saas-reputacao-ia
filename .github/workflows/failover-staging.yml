@@ -41,6 +41,8 @@ jobs:
           TF_VAR_zone_id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           TF_VAR_primary_origin: ${{ secrets.FAILOVER_PRIMARY_ORIGIN }}
+          TF_VAR_vercel_webhook_secret: ${{ secrets.VERCEL_WEBHOOK_SECRET }}
+          TF_VAR_failover_monitor_secret: ${{ secrets.FAILOVER_MONITOR_SECRET }}
         run: |
           terraform plan -input=false -out=tfplan
 
