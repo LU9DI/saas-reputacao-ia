@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SeoPageHeader } from 'components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Feedback de clientes: transforme opiniões em crescimento',
@@ -15,7 +16,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
+    <>
+      <SeoPageHeader />
+      <main className="mx-auto max-w-5xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
@@ -41,5 +44,6 @@ export default function Page() {
       <section className="mt-16 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-8"><h2 className="text-2xl font-bold">O que seus clientes estão dizendo que você ainda não percebeu?</h2><p className="mt-3 leading-7 text-zinc-300">A Filtra.AI ajuda empresas a transformar avaliações em informação acionável, em vez de deixar milhares de comentários parados em plataformas diferentes.</p><Link href="/auditoria-gratuita" className="mt-6 inline-block rounded-xl bg-indigo-500 px-5 py-3 font-semibold text-white">Analisar minhas avaliações</Link></section>
       <nav className="mt-12 flex flex-wrap gap-4 text-sm"><Link href="/analise-de-avaliacoes-com-ia" className="underline">Análise de avaliações com IA</Link><Link href="/gestao-de-reputacao-online" className="underline">Gestão de reputação online</Link><Link href="/auditoria-gratuita" className="underline">Auditoria gratuita</Link><Link href="/blog/gestao-reputacao-online-guia" className="underline">Guia de gestão de reputação</Link><Link href="/blog/como-responder-avaliacoes-negativas" className="underline">Guia de avaliações negativas</Link><Link href="/avaliacoes-google" className="underline">Gestão de avaliações Google</Link></nav>
     </main>
+    </>
   );
 }
