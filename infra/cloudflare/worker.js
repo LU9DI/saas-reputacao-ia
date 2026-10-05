@@ -1,8 +1,14 @@
 const STATE_KEY = 'active_origin';
 const RETRYABLE = new Set([502, 503, 504, 521, 522, 523, 524]);
+const CACHEABLE_PREFIXES = ['/','/en','/es','/zh','/filtra-ai','/avaliacoes-google','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/reputacao-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback','/blog'];
 
 function normalizeOrigin(value) {
   return new URL(value).origin;
+}
+
+function publicPath(pathname) {
+  if (pathname.startsWith('/api/') || pathname.startsWith('/painel') || pathname.startsWith('/admin') || pathname.startsWith('/login')) return false;
+  return CACHEABLE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'));
 }
 
 function buildTarget(origin, requestUrl) {
@@ -23,7 +29,6 @@ async function readState(env) {
       changedAt: Number(state.changedAt) || 0,
       reason: String(state.reason || 'unknown'),
       nextProbeAt: Number(state.nextProbeAt) || 0,
-      eventId: state.eventId ? String(state.eventId) : undefined,
     };
   } catch {
     return { origin: 'primary', changedAt: 0, reason: 'invalid-state', nextProbeAt: 0 };
@@ -34,16 +39,37 @@ async function writeState(env, state) {
   await env.FAILOVER_ORIGIN.put(STATE_KEY, JSON.stringify(state));
 }
 
-async function callOrigin(request, origin) {
+async function fetchPrimary(request, env) {
   try {
-    const response = await fetch(buildTarget(origin, request.url), new Request(request));
+    const response = await fetch(buildTarget(env.PRIMARY_ORIGIN, request.url), new Request(request));
     return { response, retryable: RETRYABLE.has(response.status) };
   } catch {
     return { response: null, retryable: true };
   }
 }
 
-function responseFrom(response, origin) {
+async function cacheResponse(request, response) {
+  if (request.method !== 'GET' || !response || !response.ok) return;
+  const clone = new Response(response.body, response);
+  const headers = new Headers(clone.headers);
+  if (!headers.has('cache-control')) {
+    headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
+  }
+  headers.set('x-filtra-failover-cache', 'warm');
+  await caches.default.put(request, new Response(clone.body, {
+    status: clone.status,
+    statusText: clone.statusText,
+    headers,
+  }));
+}
+
+async function readCache(request) {
+  if (request.method !== 'GET') return null;
+  const cached = await caches.default.match(request);
+  return cached ? new Response(cached.body, cached) : null;
+}
+
+function decorate(response, origin) {
   const headers = new Headers(response.headers);
   headers.set('x-filtra-failover-origin', origin);
   return new Response(response.body, {
@@ -53,10 +79,29 @@ function responseFrom(response, origin) {
   });
 }
 
+async function fallbackResponse(request, env, reason) {
+  if (publicPath(new URL(request.url).pathname)) {
+    const cached = await readCache(request);
+    if (cached) {
+      const headers = new Headers(cached.headers);
+      headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
+      headers.set('x-filtra-failover-origin', 'cloudflare-cache');
+      headers.set('x-filtra-failover-reason', reason);
+      return new Response(cached.body, {
+        status: cached.status,
+        statusText: cached.statusText,
+        headers,
+      });
+    }
+  }
+  return new Response('Filtra.AI temporarily unavailable', {
+    status: 503,
+    headers: { 'content-type': 'text/plain; charset=utf-8', 'x-filtra-failover-origin': 'cloudflare-fallback' },
+  });
+}
+
 export default {
   async fetch(request, env) {
-    const primary = normalizeOrigin(env.PRIMARY_ORIGIN);
-    const fallback = normalizeOrigin(env.FALLBACK_ORIGIN);
     const probeInterval = Math.max(60_000, Number(env.RECOVERY_PROBE_INTERVAL_MS || 300_000));
     let state = await readState(env);
 
@@ -64,45 +109,29 @@ export default {
       if (Date.now() >= state.nextProbeAt) {
         state = { ...state, nextProbeAt: Date.now() + probeInterval };
         await writeState(env, state);
-
-        const primaryAttempt = await callOrigin(request, primary);
-        if (primaryAttempt.response && !primaryAttempt.retryable) {
-          await writeState(env, {
-            origin: 'primary',
-            changedAt: Date.now(),
-            reason: 'automatic-recovery',
-            nextProbeAt: 0,
-          });
-          return responseFrom(primaryAttempt.response, 'primary');
+        const primary = await fetchPrimary(request, env);
+        if (primary.response && !primary.retryable) {
+          await writeState(env, { origin: 'primary', changedAt: Date.now(), reason: 'automatic-recovery', nextProbeAt: 0 });
+          await cacheResponse(request, primary.response);
+          return decorate(primary.response, 'primary');
         }
       }
-
-      const fallbackAttempt = await callOrigin(request, fallback);
-      if (!fallbackAttempt.response) {
-        return new Response('Fallback unavailable', { status: 503 });
-      }
-      return responseFrom(fallbackAttempt.response, 'fallback');
+      return fallbackResponse(request, env, 'configured-fallback');
     }
 
-    const primaryAttempt = await callOrigin(request, primary);
-    if (primaryAttempt.response && !primaryAttempt.retryable) {
-      return responseFrom(primaryAttempt.response, 'primary');
-    }
-
-    const fallbackAttempt = await callOrigin(request, fallback);
-    if (!fallbackAttempt.response) {
-      return new Response('Both origins unavailable', { status: 503 });
+    const primary = await fetchPrimary(request, env);
+    if (primary.response && !primary.retryable) {
+      await cacheResponse(request, primary.response);
+      return decorate(primary.response, 'primary');
     }
 
     await writeState(env, {
       origin: 'fallback',
       changedAt: Date.now(),
-      reason: primaryAttempt.response
-        ? 'primary-http-' + primaryAttempt.response.status
-        : 'primary-network-error',
+      reason: primary.response ? 'primary-http-' + primary.response.status : 'primary-network-error',
       nextProbeAt: Date.now() + probeInterval,
     });
 
-    return responseFrom(fallbackAttempt.response, 'fallback');
+    return fallbackResponse(request, env, primary.response ? 'primary-http-' + primary.response.status : 'primary-network-error');
   },
 };
