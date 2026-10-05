@@ -420,7 +420,7 @@ export function mountDotRoutes(app: Express) {
     );
     // A aprovação autoriza a execução pelo gateway. O gateway continua
     // bloqueando qualquer efeito externo que ainda não tenha executor homologado.
-    const execution = await executeDotAction(access.empresaId, actionId);
+    const execution = await executeDotAction(access.empresaId, actionId, access.userId || null);
 
     let resumedMission = null;
     if (mission) {
@@ -442,7 +442,7 @@ export function mountDotRoutes(app: Express) {
   app.post('/api/dot/actions/:id/run', async (req: Request, res: Response) => {
     const access = await resolveDotAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
-    const result = await executeDotAction(access.empresaId, Number(req.params.id));
+    const result = await executeDotAction(access.empresaId, Number(req.params.id), access.userId || null);
     if (!result.ok) return res.status(409).json(result);
     res.json({ ok: true, action: result, external_side_effect: false });
   });
