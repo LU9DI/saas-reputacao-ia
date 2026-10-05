@@ -13,6 +13,10 @@ const graph = {
       description: 'Plataforma brasileira de gestão de reputação online, avaliações e feedback de clientes com inteligência artificial. O site oficial é filtraai.com.',
       disambiguatingDescription: 'Filtra.AI é uma plataforma SaaS brasileira de gestão de reputação, avaliações e feedback de clientes. Não confundir com outras empresas ou marcas chamadas FiltrAI/Filtra AI.',
       logo: `${siteUrl}/icons/icon-512.png`,
+      legalName: 'Filtra Ai Tecnologia LTDA',
+      brand: { '@type': 'Brand', name: 'Filtra.AI', url: siteUrl },
+      identifier: { '@type': 'PropertyValue', propertyID: 'CNPJ', value: '69.113.166/0001-10' },
+      knowsAbout: ['gestão de reputação online', 'avaliações Google', 'feedback de clientes', 'SEO local', 'inteligência artificial'],
     },
     {
       '@type': 'WebSite',
