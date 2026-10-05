@@ -1,60 +1,150 @@
-'use client';
-
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useLanguage, type Language } from '../Contexts/LanguageContext';
 import { SeoPageHeader } from './SeoPageHeader';
-import { SEO_BODIES } from './SeoTranslations';
 
-type Section={heading:string;body:string};
-type ContextLink={href:string;title:string;description:string};
+type Section = { heading: string; body: string };
+type ContextLink = { href: string; title: string; description: string };
 
-const UI={
-pt:{home:'Início',deep:'Aprofunde sua análise de reputação',deepBody:'Continue por estes caminhos para entender feedback, avaliações, reputação e diagnóstico.',cta:'Começar teste gratuito (7 dias)'},
-en:{home:'Home',deep:'Deepen your reputation analysis',deepBody:'Explore these paths to understand feedback, reviews, reputation and diagnostics.',cta:'Start your free 7-day trial'},
-es:{home:'Inicio',deep:'Profundiza tu análisis de reputación',deepBody:'Explora estos caminos para entender feedback, reseñas, reputación y diagnóstico.',cta:'Comenzar prueba gratuita de 7 días'},
-zh:{home:'首页',deep:'深入分析您的在线声誉',deepBody:'进一步了解客户反馈、评价、声誉和诊断。',cta:'开始 7 天免费试用'}
-} satisfies Record<Language,{home:string;deep:string;deepBody:string;cta:string}>;
-
-const P:Record<string,Partial<Record<'en'|'es'|'zh',{h1:string;lead:string;heads:string[]}>>> = {
-'/hoteis':{en:{h1:'Hotels: turn guest reviews into improvement',lead:'Filtra.AI organizes guest feedback to identify experience patterns, friction points and opportunities for improvement.',heads:['What guests are saying','Reputation and experience go together','From front desk to management','Hotels, inns and chains','Start with a 7-day pilot']},es:{h1:'Hoteles: convierte las reseñas de huéspedes en mejora',lead:'Filtra.AI organiza el feedback de huéspedes para identificar patrones, fricciones y oportunidades de mejora.',heads:['Lo que dicen los huéspedes','Reputación y experiencia van juntas','De recepción a dirección','Hoteles, posadas y cadenas','Empieza con un piloto de 7 días']},zh:{h1:'酒店：将宾客评价转化为服务改进',lead:'Filtra.AI 整理宾客反馈，帮助发现体验模式、摩擦点和改进机会。',heads:['宾客在说什么','声誉与体验密不可分','从前台到管理层','酒店、旅馆与连锁','从 7 天试点开始']}},
-'/turismo':{en:{h1:'Tourism: turn reviews into better experiences',lead:'Filtra.AI organizes tourism reviews and feedback to reveal experience patterns and improvement opportunities.',heads:['Capture feedback at the right moment','Separate public signals from internal issues','See patterns by operation','From hotel to operator','Start with a pilot']},es:{h1:'Turismo: convierte reseñas en una mejor experiencia',lead:'Filtra.AI organiza reseñas y feedback para revelar patrones y oportunidades de mejora.',heads:['Captura feedback en el momento adecuado','Separa señales públicas de problemas internos','Observa patrones por operación','Del hotel al operador','Empieza con un piloto']},zh:{h1:'旅游业：将评价转化为更好的体验',lead:'Filtra.AI 整理旅游评价与反馈，帮助发现体验模式和改进机会。',heads:['在正确的时机收集反馈','区分公开信号与内部问题','按业务查看模式','从酒店到运营商','从试点开始']}},
-'/agencias':{en:{h1:'Offer reputation operations to your clients',lead:'Filtra.AI completes the local SEO and marketing stack with a review channel, dashboard and reporting.',heads:['Why it sells','Onboard in one meeting','Local SEO narrative','Client reporting','Start with a pilot client']},es:{h1:'Ofrece gestión operativa de reputación a tus clientes',lead:'Filtra.AI completa el stack de SEO local y marketing con canal de reseñas, panel e informes.',heads:['Por qué se vende','Onboarding en una reunión','Narrativa de SEO local','Informe para el cliente','Empieza con un cliente piloto']},zh:{h1:'为客户提供声誉运营服务',lead:'Filtra.AI 通过评价渠道、面板和报告补齐本地 SEO 与营销服务体系。',heads:['为什么它有商业价值','一次会议完成接入','本地 SEO 叙事','向客户汇报','从一个试点客户开始']}},
-'/clinicas':{en:{h1:'Clinics: manage reputation before Google',lead:'Filtra.AI organizes feedback requests and separates public reviews from issues that need internal care.',heads:['The right moment to ask','Private feedback','Tone and response','Multiple locations','Trial without a card']},es:{h1:'Clínicas: controla la reputación antes de Google',lead:'Filtra.AI organiza el feedback y separa lo público de lo que necesita cuidado interno.',heads:['El momento adecuado para pedir','Feedback privado','Tono y respuesta','Multiunidad','Prueba sin tarjeta']},zh:{h1:'诊所：在 Google 之前管理声誉',lead:'Filtra.AI 整理反馈请求，将公开内容与需要内部处理的问题分开。',heads:['在正确时机请求反馈','私密反馈','语气与回复','多门店','无需信用卡试用']}},
-'/franquias':{en:{h1:'Franchises and chains: reputation by location',lead:'Filtra.AI helps networks organize reviews, identify patterns and see where experience needs attention.',heads:['Location-level visibility','Compare experience patterns','Support franchisees','Scale without losing context','Test one location first']},es:{h1:'Franquicias y redes: visión de reputación por unidad',lead:'Filtra.AI ayuda a organizar reseñas, detectar patrones y ver dónde la experiencia necesita atención.',heads:['Visión por unidad','Compara patrones de experiencia','Apoya a los franquiciados','Escala sin perder contexto','Prueba una unidad primero']},zh:{h1:'连锁与加盟：按门店查看声誉',lead:'Filtra.AI 帮助连锁企业整理评价、发现模式并找到需要改进的门店。',heads:['按门店查看','比较体验模式','支持加盟商','规模化且保留上下文','先测试一个门店']}},
-'/associacoes':{en:{h1:'Associations and federations: turn feedback into management',lead:'Filtra.AI organizes feedback from members, companies and different audiences so teams know where to focus.',heads:['Listen to members and companies','Find patterns by segment','Connect reputation and experience','Useful for federations and networks','Try it for 7 days']},es:{h1:'Asociaciones y federaciones: convierte feedback en gestión',lead:'Filtra.AI organiza el feedback de asociados, empresas y públicos distintos para saber dónde concentrar la atención.',heads:['Escucha a asociados y empresas','Encuentra patrones por segmento','Relaciona reputación y experiencia','Útil para federaciones y redes','Prueba durante 7 días']},zh:{h1:'协会与联合会：将反馈转化为管理能力',lead:'Filtra.AI 整理会员、企业和不同受众的反馈，让团队明确关注重点。',heads:['倾听会员与企业','按细分发现模式','连接声誉与体验','适合联合会与网络组织','试用 7 天']}},
-'/restaurantes':{en:{h1:'Google reputation for restaurants and food service',lead:'Filtra.AI puts review requests into the table flow and separates public reviews from internal issues.',heads:['The dining-room problem','QR at the table and delivery','Review velocity','When the score is low','Start in minutes']},es:{h1:'Reputación en Google para restaurantes y food service',lead:'Filtra.AI integra el pedido de reseña en el flujo de la mesa y separa lo público de lo interno.',heads:['El problema del salón','QR en mesa y delivery','Velocidad de reseñas','Cuando la nota es baja','Empieza en minutos']},zh:{h1:'餐厅与餐饮：管理 Google 声誉',lead:'Filtra.AI 将评价请求融入桌台流程，并区分公开评价与内部问题。',heads:['餐厅现场的难题','桌台与配送二维码','评价速度','低评分时','几分钟即可开始']}},
-'/como-funciona':{en:{h1:'How Filtra.AI protects your Google reputation',lead:'Filtra.AI guides positive experiences to Google and handles dissatisfaction privately with a dashboard and AI support.',heads:['1. Review channel','2. Rating capture','3. High ratings (4–5★): Google Reviews','4. Low ratings (1–3★): private dashboard','5. AI and reporting','6. 7-day trial']},es:{h1:'Cómo Filtra.AI protege tu reputación en Google',lead:'Filtra.AI orienta las experiencias positivas a Google y trata las insatisfacciones de forma privada con panel y apoyo de IA.',heads:['1. Canal de evaluación','2. Registro de la nota','3. Notas altas (4–5★): Google Reviews','4. Notas bajas (1–3★): panel privado','5. IA e informe','6. Prueba de 7 días']},zh:{h1:'Filtra.AI 如何保护您的 Google 声誉',lead:'Filtra.AI 将积极体验引导至 Google，并通过面板和 AI 私下处理不满意反馈。',heads:['1. 评价渠道','2. 记录评分','3. 高评分（4–5 星）：Google Reviews','4. 低评分（1–3 星）：私密面板','5. AI 与报告','6. 7 天试用']}},
-'/pedir-estrela-vs-filtrar':{en:{h1:'Asking for a review is not the same as managing reputation',lead:'Filtering the first step gives businesses a better way to address issues while encouraging honest reviews.',heads:['The “just ask for 5 stars” problem','What the filter does','Transparency with responsibility','Quick FAQ','Test both models']},es:{h1:'Pedir una reseña no es lo mismo que gestionar la reputación',lead:'Filtrar el primer paso permite tratar problemas y facilitar reseñas honestas.',heads:['El problema de “solo pide 5 estrellas”','Qué hace el filtro','Transparencia con responsabilidad','FAQ rápido','Prueba ambos modelos']},zh:{h1:'请求评价不等于管理声誉',lead:'优化评价的第一步，可以更好地处理问题，同时鼓励真实评价。',heads:['“只请求 5 星”的问题','筛选如何工作','负责任的透明度','快速 FAQ','测试两种模式']}},
-'/feedback-de-clientes':{en:{h1:'Customer feedback: turn opinions into growth',lead:'Filtra.AI organizes customer feedback and reviews to reveal patterns, priorities and growth opportunities.',heads:['Why customer feedback is an asset','What to look for in reviews','Turn feedback into action','Public and private feedback','Metrics to track']},es:{h1:'Feedback de clientes: convierte opiniones en crecimiento',lead:'Filtra.AI organiza feedback y reseñas para revelar patrones, prioridades y oportunidades de crecimiento.',heads:['Por qué el feedback es un activo','Qué buscar en las reseñas','Convertir feedback en acción','Feedback público y privado','Indicadores a seguir']},zh:{h1:'客户反馈：将意见转化为增长',lead:'Filtra.AI 整理客户反馈和评价，帮助发现模式、优先级和增长机会。',heads:['为什么客户反馈是一项资产','评价中应该关注什么','把反馈转化为行动','公开与私密反馈','应该跟踪的指标']}},
-'/analise-de-avaliacoes-com-ia':{en:{h1:'AI review analysis: turn reviews into growth decisions',lead:'Filtra.AI uses AI to organize customer reviews, identify themes and show what deserves attention.',heads:['How review analysis helps management','What AI can reveal in your reviews','From isolated comments to recurring themes','How to use analysis day to day','AI does not replace context']},es:{h1:'Análisis de reseñas con IA: convierte reseñas en decisiones de crecimiento',lead:'Filtra.AI usa IA para organizar reseñas, identificar temas y mostrar qué merece atención.',heads:['Cómo ayuda el análisis de reseñas','Qué puede revelar la IA','De comentarios aislados a temas recurrentes','Cómo usar el análisis','La IA no sustituye el contexto']},zh:{h1:'AI 评价分析：将评价转化为增长决策',lead:'Filtra.AI 使用 AI 整理客户评价、发现主题并帮助确定关注重点。',heads:['评价分析如何帮助管理','AI 可以发现什么','从零散评论到重复主题','日常如何使用分析','AI 不能替代上下文']}},
-'/gestao-de-reputacao-online':{en:{h1:'Online reputation management: turn reputation into growth',lead:'Filtra.AI turns reviews, feedback and experience signals into practical reputation management intelligence.',heads:['What is online reputation management?','What to monitor','From review to action','Reputation across multiple locations','Reputation and acquisition']},es:{h1:'Gestión de reputación online: convierte tu reputación en crecimiento',lead:'Filtra.AI convierte reseñas, feedback y señales de experiencia en inteligencia práctica para gestionar la reputación.',heads:['Qué es la gestión de reputación online','Qué seguir','De la reseña a la acción','Reputación en varias unidades','Reputación y captación']},zh:{h1:'在线声誉管理：将声誉转化为增长',lead:'Filtra.AI 将评价、反馈和体验信号转化为可执行的声誉管理洞察。',heads:['什么是在线声誉管理','应该跟踪什么','从评价到行动','多门店声誉管理','声誉与获客']}},
-'/avaliacoes-google':{en:{h1:'AI-powered Google review management',lead:'Turn Google reviews and customer feedback into a management routine with Filtra.AI.',heads:['Why Google reviews matter','From feedback to public review','AI review analysis','Google Maps, reputation and local SEO','Frequently asked questions']},es:{h1:'Gestión de reseñas de Google con IA',lead:'Convierte reseñas de Google y feedback de clientes en una rutina de gestión con Filtra.AI.',heads:['Por qué importan las reseñas de Google','Del feedback a la reseña pública','Análisis de reseñas con IA','Google Maps, reputación y SEO local','Preguntas frecuentes']},zh:{h1:'AI 驱动的 Google 评价管理',lead:'使用 Filtra.AI 将 Google 评价和客户反馈转化为管理流程。',heads:['为什么 Google 评价重要','从反馈到公开评价','AI 评价分析','Google Maps、声誉与本地 SEO','常见问题']}},
-'/parceiros':{en:{h1:'Bring reputation management to more businesses',lead:'Consultancies, agencies, associations and professionals can add Filtra.AI to their offer.',heads:['Who it is for','How a partnership can work','Start with one pilot client']},es:{h1:'Lleva la gestión de reputación a más empresas',lead:'Consultoras, agencias, asociaciones y profesionales pueden incorporar Filtra.AI a su oferta.',heads:['Para quién es','Cómo puede funcionar','Empieza con un cliente piloto']},zh:{h1:'将声誉管理带给更多企业',lead:'咨询公司、代理机构、协会和专业人士可以将 Filtra.AI 纳入服务。',heads:['适合谁','合作如何开展','从一个试点客户开始']}},
-'/ia':{en:{h1:'Bring your company reputation into AI',lead:'Use Filtra.AI with ChatGPT, Claude, Grok and other MCP-compatible clients.',heads:['What Filtra.AI can do inside an agent','One MCP','Reputation connected to growth']},es:{h1:'Lleva la reputación de tu empresa a las IAs',lead:'Usa Filtra.AI con ChatGPT, Claude, Grok y otros clientes compatibles con MCP.',heads:['Qué puede hacer Filtra.AI dentro de un agente','Un único MCP','Reputación conectada al crecimiento']},zh:{h1:'将企业声誉带入 AI',lead:'使用 Filtra.AI 连接 ChatGPT、Claude、Grok 等兼容 MCP 的客户端。',heads:['Filtra.AI 可以在智能代理中做什么','一个 MCP','连接声誉与增长']}},
-};
-'/reputacao-google':{en:{h1:'Google reputation: turn reviews into management',lead:'Filtra.AI organizes Google reviews and customer feedback so teams can see patterns and act.',heads:['What shapes Google reputation','Create a consistent review flow','Read themes beyond stars','Turn signals into action','Measure progress']},es:{h1:'Reputación en Google: convierte reseñas en gestión',lead:'Filtra.AI organiza reseñas de Google y feedback de clientes para detectar patrones y actuar.',heads:['Qué forma la reputación en Google','Crea un flujo constante de reseñas','Lee temas más allá de las estrellas','Convierte señales en acciones','Mide el progreso']},zh:{h1:'Google 声誉：将评价转化为管理',lead:'Filtra.AI 整理 Google 评价和客户反馈，帮助团队发现模式并采取行动。',heads:['影响 Google 声誉的因素','建立稳定的评价流程','关注星级之外的主题','把信号转化为行动','衡量进展']}},
-'/como-melhorar-avaliacoes-google':{en:{h1:'How to improve a company’s Google reviews',lead:'Improve the experience first, then make it easier for satisfied customers to leave honest reviews.',heads:['Start with the experience','Remove friction from review collection','Ask at the right moment','Learn from recurring criticism','Measure review quality']},es:{h1:'Cómo mejorar las reseñas de Google de una empresa',lead:'Mejora primero la experiencia y después facilita que los clientes satisfechos dejen reseñas honestas.',heads:['Empieza por la experiencia','Reduce la fricción al pedir reseñas','Pregunta en el momento adecuado','Aprende de las críticas recurrentes','Mide la calidad de las reseñas']},zh:{h1:'如何改善企业的 Google 评价',lead:'先改善体验，再让满意客户更容易留下真实评价。',heads:['从客户体验开始','降低评价收集摩擦','在合适时机请求评价','从重复批评中学习','衡量评价质量']}},
-'/monitoramento-reputacao-online':{en:{h1:'Online reputation monitoring for companies',lead:'Monitor changes in reviews, themes and customer perception without relying on scattered spreadsheets.',heads:['What to monitor','Spot meaningful changes','Prioritize recurring themes','Compare locations','Build a weekly routine']},es:{h1:'Monitoreo de reputación online para empresas',lead:'Monitorea cambios en reseñas, temas y percepción de clientes sin depender de hojas de cálculo dispersas.',heads:['Qué monitorear','Detecta cambios relevantes','Prioriza temas recurrentes','Compara ubicaciones','Crea una rutina semanal']},zh:{h1:'企业在线声誉监测',lead:'持续监测评价、主题和客户感知变化，不再依赖分散的电子表格。',heads:['应该监测什么','发现有意义的变化','优先处理重复主题','比较不同门店','建立每周例行机制']}},
-'/gestao-de-feedback':{en:{h1:'Customer feedback management: from opinion to action',lead:'A useful feedback process routes the right signal to the right team and closes the loop with measurable action.',heads:['Collect feedback close to the experience','Organize by theme and priority','Separate public and private signals','Close the action loop','Track improvement over time']},es:{h1:'Gestión del feedback de clientes: de la opinión a la acción',lead:'Un buen proceso lleva cada señal al equipo adecuado y cierra el ciclo con acciones medibles.',heads:['Recoge feedback cerca de la experiencia','Organiza por tema y prioridad','Separa señales públicas y privadas','Cierra el ciclo de acción','Mide la mejora en el tiempo']},zh:{h1:'客户反馈管理：从意见到行动',lead:'有效的反馈流程将正确的信号交给正确的团队，并通过可衡量的行动闭环。',heads:['在体验附近收集反馈','按主题和优先级整理','区分公开与私密信号','完成行动闭环','持续衡量改进']}},
-const NAV:Record<Language,Record<string,string>>={
-pt:{'/filtra-ai':'Filtra.AI — gestão de reputação','/avaliacoes-google':'Avaliações Google','/reputacao-google':'Reputação no Google','/como-melhorar-avaliacoes-google':'Como melhorar avaliações Google','/monitoramento-reputacao-online':'Monitoramento de reputação online','/gestao-de-feedback':'Gestão de feedback','/feedback-de-clientes':'Feedback de clientes','/analise-de-avaliacoes-com-ia':'Análise de avaliações com IA','/gestao-de-reputacao-online':'Reputação online','/auditoria-gratuita':'Auditoria gratuita','/como-funciona':'Como funciona','/restaurantes':'Restaurantes','/clinicas':'Clínicas','/agencias':'Agências','/hoteis':'Hotéis','/turismo':'Turismo','/associacoes':'Associações','/franquias':'Franquias','/parceiros':'Parceiros','/pedir-estrela-vs-filtrar':'Pedir vs filtrar'},
-en:{'/filtra-ai':'Filtra.AI — reputation management','/avaliacoes-google':'Google reviews','/reputacao-google':'Google reputation','/como-melhorar-avaliacoes-google':'Improve Google reviews','/monitoramento-reputacao-online':'Reputation monitoring','/gestao-de-feedback':'Customer feedback management','/feedback-de-clientes':'Customer feedback','/analise-de-avaliacoes-com-ia':'AI review analysis','/gestao-de-reputacao-online':'Online reputation','/auditoria-gratuita':'Free audit','/como-funciona':'How it works','/restaurantes':'Restaurants','/clinicas':'Clinics','/agencias':'Agencies','/hoteis':'Hotels','/turismo':'Tourism','/associacoes':'Associations','/franquias':'Franchises','/parceiros':'Partners','/pedir-estrela-vs-filtrar':'Ask vs filter'},
-es:{'/filtra-ai':'Filtra.AI — gestión de reputación','/avaliacoes-google':'Reseñas de Google','/reputacao-google':'Reputación en Google','/como-melhorar-avaliacoes-google':'Mejorar reseñas de Google','/monitoramento-reputacao-online':'Monitoreo de reputación','/gestao-de-feedback':'Gestión de feedback','/feedback-de-clientes':'Feedback de clientes','/analise-de-avaliacoes-com-ia':'Análisis de reseñas con IA','/gestao-de-reputacao-online':'Gestión de reputación','/auditoria-gratuita':'Auditoría gratuita','/como-funciona':'Cómo funciona','/restaurantes':'Restaurantes','/clinicas':'Clínicas','/agencias':'Agencias','/hoteis':'Hoteles','/turismo':'Turismo','/associacoes':'Asociaciones','/franquias':'Franquicias','/parceiros':'Socios','/pedir-estrela-vs-filtrar':'Pedir vs filtrar'},
-zh:{'/filtra-ai':'Filtra.AI — 声誉管理','/avaliacoes-google':'Google 评价','/reputacao-google':'Google 声誉','/como-melhorar-avaliacoes-google':'改善 Google 评价','/monitoramento-reputacao-online':'声誉监测','/gestao-de-feedback':'客户反馈管理','/feedback-de-clientes':'客户反馈','/analise-de-avaliacoes-com-ia':'AI 评价分析','/gestao-de-reputacao-online':'在线声誉','/auditoria-gratuita':'免费审计','/como-funciona':'工作方式','/restaurantes':'餐厅','/clinicas':'诊所','/agencias':'机构','/hoteis':'酒店','/turismo':'旅游','/associacoes':'协会','/franquias':'连锁与加盟','/parceiros':'合作伙伴','/pedir-estrela-vs-filtrar':'请求 vs 筛选'}
+const UI = {
+  home: 'Início',
+  deep: 'Aprofunde sua análise de reputação',
+  deepBody: 'Continue por estes caminhos para entender feedback, avaliações, reputação e diagnóstico.',
+  cta: 'Começar teste gratuito (7 dias)',
 };
 
-export function SeoLanding({h1,lead,sections,ctaHref='/preview/teste',ctaLabel,breadcrumbHref,contextLinks=[]}:{h1:string;lead:string;sections:Section[];ctaHref?:string;ctaLabel?:string;breadcrumbHref?:string;contextLinks?:ContextLink[]}){
- const pathname=usePathname(); const {language}=useLanguage(); const t=UI[language]; const tr=language==='pt'?undefined:P[pathname]?.[language];
- const title=tr?.h1||h1, intro=tr?.lead||lead;
- const localizedSections=sections.map((s,i)=>({...s,heading:tr?.heads?.[i]||s.heading,body:SEO_BODIES[pathname]?.[language]?.[i]||s.body}));
- const nav=['/filtra-ai','/avaliacoes-google',...Object.keys(NAV.pt).filter(x=>x!=='/filtra-ai'&&x!=='/avaliacoes-google')];
- return <div className="min-h-screen bg-black text-zinc-100 font-sans"><SeoPageHeader/>
- {breadcrumbHref&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({'@context':'https://schema.org','@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:t.home,item:'https://filtraai.com/'},{'@type':'ListItem',position:2,name:title,item:`https://filtraai.com${breadcrumbHref}`}]})}}/>}
- <main className="max-w-3xl mx-auto px-4 pb-16 space-y-8"><nav aria-label="Breadcrumb" className="text-xs text-zinc-500"><Link href="/">{t.home}</Link><span className="mx-2">/</span><span>{title}</span></nav>
- <div className="space-y-3"><h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">{title}</h1><p className="text-zinc-400 leading-relaxed text-sm sm:text-base">{intro}</p></div>
- {localizedSections.map(s=><section key={s.heading} className="space-y-2"><h2 className="text-lg font-semibold text-zinc-100">{s.heading}</h2><p className="text-sm text-zinc-300 leading-relaxed">{s.body}</p></section>)}
- <section className="border-t border-zinc-800 pt-8"><h2 className="text-lg font-semibold">{t.deep}</h2><p className="mt-2 text-sm text-zinc-400">{t.deepBody}</p><div className="mt-5 grid gap-3 sm:grid-cols-2">{(contextLinks.length?contextLinks:[{href:'/filtra-ai',title:'Filtra.AI — gestão de reputação',description:'Conheça a plataforma brasileira de gestão de reputação, avaliações Google e feedback com IA.'},{href:'/avaliacoes-google',title:'Avaliações Google',description:'Entenda como transformar avaliações Google e feedback em uma rotina de gestão.'},{href:'/feedback-de-clientes',title:'Feedback de clientes',description:'Transforme opiniões em informação útil para o negócio.'},{href:'/analise-de-avaliacoes-com-ia',title:'Análise de avaliações com IA',description:'Identifique padrões e temas recorrentes nas avaliações.'},{href:'/gestao-de-reputacao-online',title:'Gestão de reputação online',description:'Organize monitoramento, respostas e evolução da reputação.'},{href:'/auditoria-gratuita',title:'Auditoria gratuita',description:'Faça um diagnóstico inicial e descubra pontos de atenção.'}]).map(x=><Link key={x.href} href={x.href} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4"><span className="font-medium">{NAV[language][x.href]||x.title}</span><span className="mt-1 block text-xs text-zinc-500">{(language==='pt'?x.description:({en:'Explore this topic in your selected language.',es:'Explora este tema en el idioma seleccionado.',zh:'使用您选择的语言继续了解此主题。'}[language]||x.description))}</span></Link>)}</div></section>
- <div className="pt-4"><Link href={ctaHref} className="inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white">{language==='pt'?(ctaLabel||t.cta):t.cta}</Link></div>
- <nav className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-zinc-500 pt-6 border-t border-zinc-800">{nav.map(href=><Link key={href} href={href}>{NAV[language][href]||NAV.pt[href]}</Link>)}</nav></main></div>;
+const DEFAULT_CONTEXT_LINKS: ContextLink[] = [
+  {
+    href: '/filtra-ai',
+    title: 'Filtra.AI — gestão de reputação',
+    description: 'Conheça a plataforma de gestão de reputação, avaliações Google e feedback com IA.',
+  },
+  {
+    href: '/avaliacoes-google',
+    title: 'Avaliações Google',
+    description: 'Entenda como transformar avaliações Google e feedback em uma rotina de gestão.',
+  },
+  {
+    href: '/feedback-de-clientes',
+    title: 'Feedback de clientes',
+    description: 'Transforme opiniões em informação útil para o negócio.',
+  },
+  {
+    href: '/analise-de-avaliacoes-com-ia',
+    title: 'Análise de avaliações com IA',
+    description: 'Identifique padrões e temas recorrentes nas avaliações.',
+  },
+  {
+    href: '/gestao-de-reputacao-online',
+    title: 'Gestão de reputação online',
+    description: 'Organize monitoramento, respostas e evolução da reputação.',
+  },
+  {
+    href: '/auditoria-gratuita',
+    title: 'Auditoria gratuita',
+    description: 'Faça um diagnóstico inicial e descubra pontos de atenção.',
+  },
+];
+
+export function SeoLanding({
+  h1,
+  lead,
+  sections,
+  ctaHref = '/preview/teste',
+  ctaLabel,
+  breadcrumbHref,
+  contextLinks = DEFAULT_CONTEXT_LINKS,
+}: {
+  h1: string;
+  lead: string;
+  sections: Section[];
+  ctaHref?: string;
+  ctaLabel?: string;
+  breadcrumbHref?: string;
+  contextLinks?: ContextLink[];
+}) {
+  return (
+    <div className="min-h-screen bg-black text-zinc-100 font-sans">
+      <SeoPageHeader />
+
+      {breadcrumbHref && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: UI.home,
+                  item: 'https://filtraai.com/',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: h1,
+                  item: `https://filtraai.com${breadcrumbHref}`,
+                },
+              ],
+            }),
+          }}
+        />
+      )}
+
+      <main className="mx-auto max-w-3xl space-y-8 px-4 pb-16">
+        <nav aria-label="Breadcrumb" className="pt-2 text-xs text-zinc-500">
+          <Link href="/">{UI.home}</Link>
+          <span className="mx-2">/</span>
+          <span>{h1}</span>
+        </nav>
+
+        <div className="space-y-3">
+          <h1 className="text-2xl font-bold tracking-tight text-zinc-50 sm:text-3xl">{h1}</h1>
+          <p className="text-sm leading-relaxed text-zinc-400 sm:text-base">{lead}</p>
+        </div>
+
+        {sections.map((section) => (
+          <section key={section.heading} className="space-y-2">
+            <h2 className="text-lg font-semibold text-zinc-100">{section.heading}</h2>
+            <p className="text-sm leading-relaxed text-zinc-300">{section.body}</p>
+          </section>
+        ))}
+
+        <section className="border-t border-zinc-800 pt-8">
+          <h2 className="text-lg font-semibold">{UI.deep}</h2>
+          <p className="mt-2 text-sm text-zinc-400">{UI.deepBody}</p>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {contextLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-700"
+              >
+                <span className="font-medium">{link.title}</span>
+                <span className="mt-1 block text-xs text-zinc-500">{link.description}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <div className="pt-4">
+          <Link
+            href={ctaHref}
+            className="inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white"
+          >
+            {ctaLabel || UI.cta}
+          </Link>
+        </div>
+
+        <nav className="flex flex-wrap gap-x-4 gap-y-2 border-t border-zinc-800 pt-6 text-xs text-zinc-500">
+          {DEFAULT_CONTEXT_LINKS.map((link) => (
+            <Link key={link.href} href={link.href} className="hover:text-zinc-300">
+              {link.title}
+            </Link>
+          ))}
+        </nav>
+      </main>
+    </div>
+  );
 }
