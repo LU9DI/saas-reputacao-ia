@@ -4,6 +4,7 @@ import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { canManageDotPermissions } from '../services/dotAccessControl.js';
 import { completeDotOAuth, disconnectDotOAuth, startDotOAuth } from '../services/dotOAuthBroker.js';
+import { putDotCredential } from '../services/dotCredentialVault.js';
 import type { DotIntegrationProvider } from '../services/dotIntegrationRegistry.js';
 
 const providers = new Set(['crm','email','calendar','erp','whatsapp','marketing']);
@@ -33,6 +34,34 @@ export function mountDotOAuthRoutes(app: Express) {
       const result = await startDotOAuth(payload.empresa_id, payload.id, p);
       res.json({ok:true,...result});
     } catch (e:any) { res.status(400).json({ok:false,error:String(e?.message || e)}); }
+  });
+
+  app.post('/api/dot/agent/integrations/crm/service-key', async (req: Request, res: Response) => {
+    const payload = await authCompany(req,res); if (!payload) return;
+    if (!canManageDotPermissions({empresa_id: payload.empresa_id, role: payload.role})) {
+      return res.status(403).json({ok:false,error:'Somente owner/admin/gestor/manager pode conectar integrações.'});
+    }
+    const key = String(req.body?.serviceKey || '').trim();
+    if (!key || key.length < 20) return res.status(400).json({ok:false,error:'Service Key do HubSpot inválida.'});
+    try {
+      const response = await fetch('https://api.hubapi.com/crm/v3/objects/contacts?limit=1', {
+        headers: { Accept: 'application/json', Authorization: 'Bearer ' + key },
+      });
+      if (!response.ok) return res.status(400).json({ok:false,error:'A Service Key foi recusada pelo HubSpot. Verifique a chave e os três escopos de leitura.'});
+      const db = (await import('../lib/db.js')).getDb();
+      const nowIso = new Date().toISOString();
+      await putDotCredential({ empresaId: payload.empresa_id, provider: 'crm', kind: 'access_token', value: key, expiresAt: null });
+      const existing = await db.get('SELECT id FROM dot_integrations WHERE empresa_id=? AND provider=? LIMIT 1', [payload.empresa_id, 'crm']);
+      const scopes = 'crm.objects.contacts.read,crm.objects.companies.read,crm.objects.deals.read';
+      if (existing) {
+        await db.run('UPDATE dot_integrations SET status=?, scopes=?, token_ref=?, updated_at=? WHERE id=? AND empresa_id=?', ['connected', scopes, 'vault', nowIso, existing.id, payload.empresa_id]);
+      } else {
+        await db.run('INSERT INTO dot_integrations (empresa_id,provider,provider_account_id,status,scopes,token_ref,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)', [payload.empresa_id, 'crm', null, 'connected', scopes, 'vault', nowIso, nowIso]);
+      }
+      res.json({ok:true,status:'connected',provider:'crm',scopes:scopes.split(',')});
+    } catch (e:any) {
+      res.status(400).json({ok:false,error:String(e?.message || e)});
+    }
   });
 
   app.get('/api/dot/agent/oauth/callback', async (req: Request, res: Response) => {
