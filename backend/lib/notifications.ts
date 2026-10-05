@@ -2,7 +2,7 @@
  * Notificações automáticas por e-mail (SMTP via mailer).
  * Links do painel passam por /login?next=... para o usuário autenticar.
  */
-import { enviarEmail, mailConfigured } from './mailer.js';
+import { enviarEmail, mailConfigured, smtpConfigured } from './mailer.js';
 
 const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
   /\/$/,
@@ -491,40 +491,24 @@ export async function notificarTrialVerificacao(opts: {
   verificationUrl: string;
   locale?: string;
 }): Promise<void> {
-  if (!opts.email || !mailConfigured()) return;
+  if (!opts.email || !opts.verificationUrl) return;
   const locale = normLocale(opts.locale);
   const subject =
     locale === 'en'
-      ? `${BRAND} — confirm your email to start the 7-day trial`
-      : locale === 'es'
-        ? `${BRAND} — confirma tu correo para activar la prueba`
-        : `${BRAND} — confirme seu e-mail para ativar os 7 dias grátis`;
-  const intro =
+      ? `${BRAND} — confirm your email to start the trial`
+      : `${BRAND} — confirme seu e-mail para ativar o trial`;
+  const text =
     locale === 'en'
-      ? `Confirm the email for ${opts.nomeEmpresa} to activate your 7-day trial.`
-      : locale === 'es'
-        ? `Confirma el correo de ${opts.nomeEmpresa} para activar tu prueba de 7 días.`
-        : `Confirme o e-mail de ${opts.nomeEmpresa} para ativar seu teste de 7 dias.`;
-  const button =
-    locale === 'en' ? 'Confirm email' : locale === 'es' ? 'Confirmar correo' : 'Confirmar e-mail';
-  const text = [
-    intro,
-    '',
-    opts.verificationUrl,
-    '',
-    locale === 'en'
-      ? 'This link expires in 30 minutes and can only be used once.'
-      : locale === 'es'
-        ? 'Este enlace expira en 30 minutos y solo puede utilizarse una vez.'
-        : 'Este link expira em 30 minutos e só pode ser usado uma vez.',
-  ].join('\n');
-  const html = wrapHtml(
-    locale === 'en' ? 'Confirm your email' : locale === 'es' ? 'Confirma tu correo' : 'Confirme seu e-mail',
-    `<p>${intro}</p><p><a href="${opts.verificationUrl}" style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:600">${button}</a></p><p style="font-size:12px;color:#71717a">${text.split('\n').at(-1)}</p>`
-  );
-  const result = await enviarEmail({ to: opts.email, subject, text, html });
-  if (!result.ok) {
-    throw new Error(result.error || 'Falha no envio do e-mail de confirmação.');
-  }
+      ? `Confirm your email for ${opts.nomeEmpresa}:\n${opts.verificationUrl}`
+      : `Confirme o e-mail de ${opts.nomeEmpresa}:\n${opts.verificationUrl}`;
+  await enviarEmail({
+    to: opts.email,
+    subject,
+    text,
+    html: wrapHtml(
+      locale === 'en' ? 'Confirm email' : 'Confirmar e-mail',
+      `<p>Para ativar o trial de <strong style="color:#fafafa">${opts.nomeEmpresa}</strong>, confirme o e-mail:</p>
+       <p><a href="${opts.verificationUrl}" style="display:inline-block;background:#4f46e5;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:600">Confirmar e-mail</a></p>`
+    ),
+  });
 }
-
