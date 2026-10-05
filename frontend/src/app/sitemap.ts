@@ -43,6 +43,12 @@ const canonicalPaths = [
   '/blog/clinica-checklist-avaliacoes-google',
   '/blog/agencia-vender-gestao-reputacao',
   '/blog/whatsapp-pedir-estrela-vs-filtrar-qr',
+  '/blog/google-business-profile-avaliacoes',
+  '/blog/reputacao-online-clinicas',
+  '/blog/reputacao-online-hoteis',
+  '/blog/reputacao-franquias-multilocal',
+  '/blog/avaliacoes-google-restaurantes',
+  '/blog/feedback-cliente-para-reputacao',
   '/termos',
   '/privacidade',
 ];
