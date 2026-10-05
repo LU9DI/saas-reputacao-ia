@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AuditoriaGratuitaClient } from './AuditoriaGratuitaClient';
-import { SeoPageHeader } from 'components/SeoPageHeader';
+import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Auditoria gratuita de avaliações e reputação online | Filtra.AI',
