@@ -173,9 +173,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locale: string; slug?: string[] }>;
+  params: { locale: string; slug?: string[] };
 }): Promise<Metadata> {
-  const { locale, slug = [] } = await params;
+  const { locale, slug = [] } = params;
   if (!LOCALES.includes(locale as Language)) return {};
   const config = configFor(slug);
   if (!config) return {};
