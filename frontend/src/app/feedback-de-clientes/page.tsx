@@ -1,4 +1,13 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
-export const metadata: Metadata={title:'Feedback de clientes: transforme opiniões em crescimento | Filtra.AI',description:'Entenda o que seus clientes estão dizendo, encontre padrões e transforme feedback em decisões de crescimento.',alternates:{canonical:'https://filtraai.com/feedback-de-clientes'}};
+export const metadata: Metadata={title:'Feedback de clientes: transforme opiniões em crescimento | Filtra.AI',description:'Entenda o que seus clientes estão dizendo, encontre padrões e transforme feedback em decisões de crescimento.',alternates: {
+    canonical: 'https://filtraai.com/feedback-de-clientes',
+    languages: {
+      'pt-BR': 'https://filtraai.com/feedback-de-clientes',
+      en: 'https://filtraai.com/en/customer-feedback',
+      es: 'https://filtraai.com/es/feedback-clientes',
+      zh: 'https://filtraai.com/zh/customer-feedback',
+      'x-default': 'https://filtraai.com/feedback-de-clientes',
+    },
+  }};
 export default function Page(){return <SeoLanding h1="Feedback de clientes não é só opinião. É dado de crescimento." lead="Seus clientes já estão mostrando o que funciona, o que afasta compradores e onde sua empresa pode melhorar. A Filtra.AI organiza avaliações e feedback em prioridades práticas." breadcrumbHref="/feedback-de-clientes" sections={[{heading:'Por que feedback de clientes é um ativo',body:'Comentários e avaliações registram a experiência depois da compra e, quando analisados em conjunto, revelam padrões que podem passar despercebidos.'},{heading:'O que procurar nas avaliações',body:'Observe temas recorrentes em notas baixas, elogios que mostram diferenciais, problemas de atendimento, prazo, preço ou entrega e diferenças entre unidades e canais.'},{heading:'Como transformar feedback em ação',body:'Reúna avaliações, agrupe comentários por tema e observe frequência, nota, período e contexto. Depois transforme os padrões em ações verificáveis.'},{heading:'Feedback público e privado',body:'Avaliações públicas mostram como o mercado percebe a empresa. Feedback privado ajuda a descobrir atritos que o cliente talvez não publique.'},{heading:'Quais indicadores acompanhar',body:'Além da nota média, acompanhe volume, distribuição por nota, temas recorrentes, evolução por período e diferenças entre unidades ou serviços.'}]}/>}
