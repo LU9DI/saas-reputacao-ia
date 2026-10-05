@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Clínicas: checklist de avaliações Google | Filtra.AI',
   description:
     'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
-  alternates: { canonical: '/blog/clinica-checklist-avaliacoes-google' },
+  alternates: { canonical: 'https://filtraai.com/blog/clinica-checklist-avaliacoes-google' },
 };
 
 export default function Page() {
@@ -79,7 +79,19 @@ export default function Page() {
         <li>Registrar ações e verificar se os indicadores melhoraram.</li>
       </ul>
 
-      <H2>8. Da reputação para o crescimento</H2>
+      <H2>8. Google Business Profile e jornada do paciente</H2>
+      <p>
+        A reputação da clínica não começa quando o paciente chega à recepção. Muitas jornadas começam
+        na pesquisa local, quando a pessoa compara nome, localização, serviços, horário e avaliações.
+        Por isso, mantenha as informações públicas da unidade consistentes e trate o perfil da empresa
+        no Google como parte da experiência digital, junto com o site e os canais de atendimento.
+      </p>
+      <p>
+        Para uma visão mais ampla da presença local, veja o guia de{' '}
+        <a href="/blog/seo-local-avaliacoes-local-pack" className="underline">SEO local e avaliações</a>.
+      </p>
+
+      <H2>9. Da reputação para o crescimento</H2>
       <p>
         Reputação não precisa ser acompanhada apenas quando surge uma reclamação. Uma rotina contínua de coleta,
         análise e resposta cria uma visão mais clara da experiência do paciente e dos pontos que afetam a percepção
