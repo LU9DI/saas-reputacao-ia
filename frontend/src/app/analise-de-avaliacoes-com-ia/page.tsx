@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SeoPageHeader } from 'components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Análise de avaliações com IA para empresas',
@@ -16,7 +17,9 @@ export const metadata: Metadata = {
 export default function Page() {
   const items = ['reclamações recorrentes', 'elogios que revelam diferenciais', 'problemas operacionais', 'riscos de reputação', 'oportunidades de melhoria', 'temas que impactam a experiência do cliente'];
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
+    <>
+      <SeoPageHeader />
+      <main className="mx-auto max-w-5xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
@@ -45,5 +48,6 @@ export default function Page() {
       <section className="mt-16 rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-8"><h2 className="text-2xl font-bold">Veja o que existe por trás das notas</h2><p className="mt-3 leading-7 text-zinc-300">Comece com uma auditoria gratuita e descubra os temas, riscos e oportunidades presentes nas avaliações que você fornecer.</p><Link href="/auditoria-gratuita" className="mt-6 inline-block rounded-xl bg-indigo-500 px-5 py-3 font-semibold">Fazer auditoria gratuita</Link></section>
       <nav className="mt-12 flex flex-wrap gap-4 text-sm"><Link href="/feedback-de-clientes" className="underline">Feedback de clientes</Link><Link href="/gestao-de-reputacao-online" className="underline">Gestão de reputação online</Link><Link href="/avaliacoes-google" className="underline">Avaliações Google</Link><Link href="/ia" className="underline">Filtra.AI para IA</Link><Link href="/auditoria-gratuita" className="underline">Auditoria gratuita</Link><Link href="/blog/gestao-reputacao-online-guia" className="underline">Guia de gestão de reputação</Link><Link href="/blog/como-responder-avaliacoes-negativas" className="underline">Guia de avaliações negativas</Link></nav>
     </main>
+    </>
   );
 }
