@@ -29,6 +29,7 @@ export default function BlogAvaliacoesGooglePage() {
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">
             Como conseguir mais avaliações no Google (sem parecer spam)
           </h1>
+          <p className="text-xs text-zinc-500">Conteúdo da <Link href="/filtra-ai" className="text-indigo-400 underline">Filtra.AI</Link>, plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.</p>
           <p className="text-zinc-400">
             Volume importa — mas o jeito de pedir importa mais. Este guia é para donos de restaurante,
             clínica e varejo local que querem reviews reais e consistentes.
