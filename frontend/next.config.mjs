@@ -3,6 +3,14 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
 
+  // Dot ainda não validado em localhost — não publicar a rota em produção.
+  async redirects() {
+    return [
+      { source: '/dot', destination: '/', permanent: false },
+      { source: '/dot/:path*', destination: '/', permanent: false },
+    ];
+  },
+
   // Em dev: proxy /api → backend local.
   // Em produção (Vercel): o front chama NEXT_PUBLIC_API_URL (Render) direto — sem rewrite.
   async rewrites() {
