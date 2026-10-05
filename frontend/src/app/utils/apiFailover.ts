@@ -28,7 +28,7 @@ export function listApiBases(): string[] {
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) ||
     (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
       ? 'http://127.0.0.1:5000'
-      : '');
+      : 'https://filtra-ai-dot-api.onrender.com');
   const backup =
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL_BACKUP) || '';
   const extras =
