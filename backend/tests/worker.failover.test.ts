@@ -118,3 +118,76 @@ test('fallback mode probes primary and recovers', async () => {
     globalThis.fetch = original;
   }
 });
+
+
+async function hmacSha1(body: string, secret: string) {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-1' },
+    false,
+    ['sign'],
+  );
+  const sig = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    new TextEncoder().encode(body),
+  );
+  return Array.from(new Uint8Array(sig)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+test('Cloudflare worker verifies spend webhook and switches to fallback', async () => {
+  const kv = new FakeKV();
+  const cache = new FakeCache();
+  installCaches(cache);
+  const payload = JSON.stringify({
+    eventId: 'evt-100',
+    budgetAmount: 100,
+    currentSpend: 100,
+    thresholdPercent: 100,
+  });
+  const signature = await hmacSha1(payload, 'vercel-secret');
+
+  const response = await worker.fetch(
+    new Request('https://filtraai.com/_failover/vercel', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-vercel-signature': signature,
+      },
+      body: payload,
+    }),
+    {
+      FAILOVER_ORIGIN: kv,
+      PRIMARY_ORIGIN: 'https://primary.example.com',
+      VERCEL_WEBHOOK_SECRET: 'vercel-secret',
+      FAILOVER_MONITOR_SECRET: 'monitor-secret',
+      RECOVERY_PROBE_INTERVAL_MS: '300000',
+    } as any,
+  );
+
+  assert.equal(response.status, 200);
+  const state = JSON.parse((await kv.get('active_origin'))!);
+  assert.equal(state.origin, 'fallback');
+
+  const duplicate = await worker.fetch(
+    new Request('https://filtraai.com/_failover/vercel', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-vercel-signature': signature,
+      },
+      body: payload,
+    }),
+    {
+      FAILOVER_ORIGIN: kv,
+      PRIMARY_ORIGIN: 'https://primary.example.com',
+      VERCEL_WEBHOOK_SECRET: 'vercel-secret',
+      FAILOVER_MONITOR_SECRET: 'monitor-secret',
+      RECOVERY_PROBE_INTERVAL_MS: '300000',
+    } as any,
+  );
+
+  assert.equal(duplicate.status, 200);
+  assert.match(await duplicate.text(), /duplicate/);
+});
