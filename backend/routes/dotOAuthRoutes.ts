@@ -106,16 +106,16 @@ export function mountDotOAuthRoutes(app: Express) {
     }
   });
 
-  app.get('/api/dot/agent/oauth/callback', async (req: Request, res: Response) => {
+  app.get('/api/dot/agent/oauth/callback', integrationMutationLimiter, async (req: Request, res: Response) => {
     try {
-      const code = String(req.query.code || '');
-      const state = String(req.query.state || '');
+      const code = String(req.query.code || '').slice(0, 4096);
+      const state = String(req.query.state || '').slice(0, 512);
       if (req.query.error) return res.status(400).send('Autorização OAuth cancelada.');
       const result = await completeDotOAuth({code,state});
       const redirect = process.env.DOT_OAUTH_SUCCESS_REDIRECT?.trim() || '/dot';
       res.redirect(redirect);
       void result;
-    } catch (e:any) { res.status(400).send(`Falha na conexão OAuth: ${String(e?.message || e)}`); }
+    } catch { res.status(400).send('Não foi possível concluir a conexão OAuth. Tente novamente.'); }
   });
 
   app.delete('/api/dot/agent/integrations/:provider/connect', integrationMutationLimiter, async (req: Request, res: Response) => {
