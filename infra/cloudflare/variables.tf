@@ -12,13 +12,13 @@ variable "cloudflare_api_token" {
 }
 
 variable "primary_origin" {
-  type    = string
-  default = "https://saas-reputacao-q0poey5um-lu9di.vercel.app"
+  type        = string
+  description = "Current production Vercel origin URL. Required; do not hardcode a deployment URL in Terraform."
 }
 
 variable "fallback_origin" {
-  type    = string
-  default = "https://filtra-ai-fallback.example.workers.dev"
+  type        = string
+  description = "Cloudflare fallback origin URL. Required; do not use a placeholder in staging or production."
 }
 
 variable "worker_name" {
