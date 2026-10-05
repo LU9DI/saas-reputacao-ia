@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SeoPageHeader } from 'components/SeoPageHeader';
+import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Gestão de reputação online para empresas',
