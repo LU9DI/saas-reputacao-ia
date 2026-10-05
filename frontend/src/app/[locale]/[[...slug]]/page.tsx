@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { ComponentType } from 'react';
 import { notFound } from 'next/navigation';
 import { LanguageProvider, type Language } from '../../Contexts/LanguageContext';
 
@@ -139,7 +140,7 @@ const ROUTES: Record<string, RouteConfig> = {
   },
 };
 
-const COMPONENTS: Record<string, React.ComponentType> = {
+const COMPONENTS: Record<string, ComponentType> = {
   '/': HomePage,
   '/ia': IaPage,
   '/filtra-ai': FiltraAiPage,
@@ -181,8 +182,6 @@ export async function generateMetadata({
 
   const lang = locale as Language;
   const currentPath = `/${locale}${slug.length ? `/${slug.join('/')}` : ''}`;
-  const family = Object.values(ROUTES).find((r) => r.root === config.root);
-
   const localized = Object.fromEntries(
     LOCALES.map((l) => [l, `https://filtraai.com/${l}${slugForLocale(config.root, l)}`]),
   );
