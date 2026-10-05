@@ -45,8 +45,17 @@ const highPriority = new Set<string>([
   '/feedback-de-clientes',
   '/analise-de-avaliacoes-com-ia',
   '/gestao-de-reputacao-online',
+  '/avaliacoes-google',
   '/auditoria-gratuita',
+  '/agencias',
+  '/clinicas',
+  '/restaurantes',
+  '/franquias',
+  '/pedir-estrela-vs-filtrar',
   '/ia',
+  '/blog/gestao-reputacao-online-guia',
+  '/blog/como-conseguir-avaliacoes-google',
+  '/blog/seo-local-avaliacoes-local-pack',
 ]);
 
 function entry(
@@ -67,7 +76,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
 
   const localizedEntries: MetadataRoute.Sitemap = Object.entries(localized).flatMap(
-    ([lang, slugs]) => slugs.map((slug) => entry(`/${lang}/${slug}`, 'monthly', 0.9)),
+    ([lang, slugs]) => slugs.map((slug) => entry('/' + lang + '/' + slug, 'monthly', 0.9)),
   );
 
   return [...baseEntries, ...localizedEntries];
