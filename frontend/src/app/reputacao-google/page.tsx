@@ -5,7 +5,16 @@ export const metadata: Metadata = {
   title: 'Reputação no Google: gestão de avaliações e confiança | Filtra.AI',
   description:
     'Como gerir reputação no Google, organizar avaliações e transformar feedback em ações de crescimento com a Filtra.AI.',
-  alternates: { canonical: 'https://filtraai.com/reputacao-google' },
+  alternates: {
+    canonical: 'https://filtraai.com/reputacao-google',
+    languages: {
+      'pt-BR': 'https://filtraai.com/reputacao-google',
+      en: 'https://filtraai.com/en/google-reputation',
+      es: 'https://filtraai.com/es/reputacion-google',
+      zh: 'https://filtraai.com/zh/google-reputation',
+      'x-default': 'https://filtraai.com/reputacao-google',
+    },
+  },
 };
 
 export default function Page() {
