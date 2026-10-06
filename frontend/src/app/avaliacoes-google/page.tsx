@@ -36,6 +36,8 @@ export default function Page() {
         { href: '/como-melhorar-avaliacoes-google', title: 'Como melhorar avaliações Google', description: 'Melhore experiência, reduza fricção e construa uma rotina de coleta.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial da reputação e dos pontos de atenção.' },
         { href: '/filtra-ai', title: 'Conheça a Filtra.AI', description: 'Plataforma para gestão de reputação, avaliações e feedback com IA.' },
+        { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Estruture avaliações e reputação como serviço para clientes.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como avaliações e reputação entram em uma oferta de SEO local.' },
       ]}
       sections={[
         {
