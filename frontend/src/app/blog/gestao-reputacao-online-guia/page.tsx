@@ -6,10 +6,10 @@ const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
 const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
-  title: 'Guia de reputação online: avaliações, feedback e melhoria',
+  title: 'Guia de reputação online para empresas: avaliações, feedback e melhoria',
   description:
     'Guia para empresas que querem monitorar avaliações, responder clientes, analisar feedback e transformar reputação em melhoria contínua.',
-  alternates: { canonical },
+  alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/online-reputation-management-guide', es: 'https://filtraai.com/es/blog/guia-gestion-reputacion-online', zh: 'https://filtraai.com/zh/blog/online-reputation-management-guide', 'x-default': canonical } },
   openGraph: {
     title: 'Guia de reputação online: avaliações, feedback e melhoria para empresas',
     description:
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'Gestão de reputação online: guia completo para empresas',
+  headline: 'Guia de reputação online para empresas: avaliações, feedback e melhoria',
   description:
     'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
@@ -54,7 +54,7 @@ export default function BlogReputacaoOnlinePage() {
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · Reputação online</p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Guia de reputação online: avaliações, feedback e melhoria para empresas</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Guia de reputação online para empresas: avaliações, feedback e melhoria</h1>
           <p className="text-zinc-400">Gerir a reputação de uma empresa é acompanhar o que clientes dizem, entender padrões, responder publicamente e transformar sinais recorrentes em melhorias reais.</p>
         </div>
 
