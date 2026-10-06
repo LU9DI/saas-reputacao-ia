@@ -21,7 +21,7 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/agencias', en:'/en/agencies', es:'/es/agencias', zh:'/zh/agencias' },
   { pt:'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinicas' },
   { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franchises' },
-  { pt:'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/asociaciones' },
+  { pt:'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/associations' },
   { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurantes' },
   { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
   { pt:'/parceiros', en:'/en/partners', es:'/es/socios', zh:'/zh/partners' },
