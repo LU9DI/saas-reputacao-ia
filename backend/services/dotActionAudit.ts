@@ -30,6 +30,17 @@ export async function ensureDotActionAuditSchema() {
     metadata TEXT,
     created_at TEXT NOT NULL
   )`);
+  // Compatibilidade com bancos criados antes do campo metadata.
+  // CREATE TABLE IF NOT EXISTS não altera uma tabela já existente.
+  try {
+    await db.exec('ALTER TABLE dot_action_audit ADD COLUMN metadata TEXT');
+  } catch (error: any) {
+    const message = String(error?.message || error).toLowerCase();
+    if (!message.includes('duplicate column') && !message.includes('already exists')) {
+      throw error;
+    }
+  }
+
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_action_audit_empresa ON dot_action_audit(empresa_id, created_at)');
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_action_audit_action ON dot_action_audit(empresa_id, action_id, created_at)');
 }
