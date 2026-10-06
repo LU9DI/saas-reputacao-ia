@@ -205,8 +205,8 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
   const found=get(lang,slug);
   if(!found)notFound();
   const labels=localizedLabels[lang];
-  const relatedIndex=(found.index+1)%articles[lang].length;
-  const related=articles[lang][relatedIndex];
+  const related=articles[lang][(found.index+1)%articles[lang].length];
+  const relatedFamily=familyFor(lang,related.slug);
   const solutionPath=solutionPaths[lang][slug] || (lang==='en'?'/en':lang==='es'?'/es':'/zh');
   const articleUrl=base+'/'+lang+'/blog/'+slug;
   const blogPosting={
@@ -260,7 +260,7 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
       </section>
       <nav aria-label={labels.topics} className="mt-16 border-t border-zinc-800 pt-10">
         <h2 className="text-2xl font-bold tracking-tight">{labels.topics}</h2>
-        <Link href={familyPath(lang,related.slug)} className="mt-5 block rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+        <Link href={relatedFamily ? familyPath(lang,related.slug) : (lang==='en'?'/en/blog':lang==='es'?'/es/blog':'/zh/blog')} className="mt-5 block rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
           <span className="block font-semibold">{related.title}</span>
           <span className="mt-2 block text-sm leading-6 text-zinc-400">{related.description}</span>
         </Link>
