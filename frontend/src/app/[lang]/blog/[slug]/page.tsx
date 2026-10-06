@@ -163,8 +163,20 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
   const lang=raw as Lang;
   const found=get(lang,slug);
   if(!found)return{};
-  const familyIndex=found.index;
-  const family=families.find(item => item[lang] === '/'+lang+'/blog/'+slug) || families[familyIndex];
+  const family=familyFor(lang,slug);
+  if(!family)return {
+    title:found.item.title,
+    description:found.item.description,
+    alternates:{canonical:base+'/'+lang+'/blog/'+slug},
+    openGraph:{
+      type:'article',
+      url:base+'/'+lang+'/blog/'+slug,
+      siteName:'Filtra.AI',
+      title:found.item.title,
+      description:found.item.description
+    },
+    robots:{index:true,follow:true}
+  };
   const languages:Record<string,string>={
     'pt-BR':base+family.pt,
     en:base+family.en,
