@@ -339,6 +339,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (url.pathname === '/filtraai-seo-20261006-a8c2f9d7.txt' && request.method === 'GET') {
+      return new Response('filtraai-seo-20261006-a8c2f9d7\\n', { status: 200, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
+    }
+
     if (url.pathname === WEBHOOK_PATH && request.method === 'POST') {
       return handleFailoverWebhook(request, env);
     }
