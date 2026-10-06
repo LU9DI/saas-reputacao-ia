@@ -154,7 +154,7 @@ export default async function LocalizedHome({params}:{params:Promise<{lang:strin
         </div>
       </nav>
 
-      <Link href="/teste" className="mt-10 inline-flex rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white">{t.cta}</Link>
+      <Link href="/" className="mt-10 inline-flex rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white">{t.cta}</Link>
     </section>
   </main>;
 }
