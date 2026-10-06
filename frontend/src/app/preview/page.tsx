@@ -3,6 +3,7 @@
 import { ArrowRight, BarChart3, Bot, Check, MessageSquare, ShieldCheck, Sparkles, Star, Zap } from 'lucide-react';
 import { BrandMark } from '../components/BrandMark';
 import { PreviewNavigator } from '../components/PreviewNavigator';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { PlanCards } from '../components/PlanCards';
 import Link from 'next/link';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
@@ -302,7 +303,7 @@ export default function LandingPreview() {
           </div>
           <div className="flex items-center gap-3">
             <div className="fixed right-4 top-4 z-[60] sm:right-6 sm:top-5"><LanguageSwitcher /></div>
-            <a href="/teste" className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
+            <a href={TRIAL_HREF} className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
           </div>
           </div>
         </nav>
@@ -381,13 +382,6 @@ export default function LandingPreview() {
               <Link href="/blog/clinica-checklist-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Checklist de avaliações para clínicas':language==='en'?'Review checklist for clinics':language==='es'?'Checklist de reseñas para clínicas':'诊所 Google 评价清单'}</Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 pb-8 lg:px-8">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 text-sm text-zinc-400">
-          <p><strong className="text-white">Filtra.AI</strong> é a plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.</p>
-          <Link href="/filtra-ai" className="mt-2 inline-block text-indigo-300 underline">Conheça a Filtra.AI e saiba como ela funciona →</Link>
         </div>
       </section>
 
