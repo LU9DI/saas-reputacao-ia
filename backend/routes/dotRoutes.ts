@@ -59,7 +59,7 @@ type DotAccess = {
   plan?: string;
   planLabel?: string;
   reason?: string;
-  userId?: string | null;
+  userId: string | null;
 };
 
 const sessions = new Map<string, ChatItem[]>();
@@ -214,7 +214,7 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
   // Localhost continua permitindo o protótipo demonstrativo sem login.
   if (!token) {
     if (process.env.DOT_DEMO_MODE === '1' && process.env.NODE_ENV !== 'production') {
-      return { allowed: true, demo: true, plan: 'rei', planLabel: 'Rei' };
+      return { allowed: true, demo: true, plan: 'rei', planLabel: 'Rei', userId: null };
     }
     return { allowed: false, demo: false, reason: 'Autenticação necessária.' };
   }
