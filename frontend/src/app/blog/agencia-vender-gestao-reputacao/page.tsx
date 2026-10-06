@@ -69,6 +69,80 @@ export default function Page() {
       <p>
         Antes de iniciar, registre a situação existente: quantidade de avaliações, recência, nota, principais temas e problemas já conhecidos. No fechamento do ciclo, compare os mesmos sinais e acrescente as ações tomadas. Se um indicador não mudou, mostre isso; transparência é parte do serviço.
       </p>
+      <H2>Como montar três níveis de oferta</H2>
+      <p>
+        Uma agência pode separar a oferta por profundidade, sem criar promessas diferentes. O nível de entrada pode
+        cobrir diagnóstico, configuração do fluxo e uma leitura mensal. O recorrente acrescenta acompanhamento
+        contínuo de avaliações, classificação de temas e relatório de prioridades. Para carteiras maiores, a camada
+        multiunidade pode incluir comparação entre locais, priorização de exceções e uma rotina específica por conta.
+      </p>
+      <p>
+        A regra é simples: cada nível precisa dizer quantas unidades entram, qual frequência de análise existe, quem
+        recebe o relatório, quais sinais são acompanhados e o que fica fora do escopo. Isso reduz negociação baseada
+        apenas em preço e facilita a renovação porque o cliente consegue enxergar a rotina que está comprando.
+      </p>
+
+      <H2>Onboarding: o que fazer no primeiro mês</H2>
+      <p>
+        O primeiro ciclo deve produzir uma linha de base. Registre avaliações existentes, recência, nota, temas
+        recorrentes, canais usados para receber feedback e problemas já conhecidos pela equipe. Em seguida, configure
+        o fluxo de coleta, defina responsáveis e estabeleça a cadência de análise.
+      </p>
+      <p>
+        No fechamento do mês, não tente provar sucesso a qualquer custo. Compare os mesmos indicadores, documente
+        as ações tomadas e destaque o que ainda precisa de intervenção. Uma operação confiável também mostra quando
+        um indicador não mudou.
+      </p>
+
+      <H2>Como apresentar o serviço na reunião comercial</H2>
+      <p>
+        Em vez de começar pela ferramenta, comece pelo problema: a agência já acompanha presença no Google, mas as
+        avaliações e o feedback ficam espalhados e muitas vezes não viram informação para a estratégia. A proposta
+        resolve essa lacuna com uma rotina de coleta, organização, análise e decisão.
+      </p>
+      <p>
+        A demonstração deve seguir o mesmo caminho: sinal recebido, classificação ou tema encontrado, interpretação
+        e próxima ação. Isso torna o valor concreto e evita que a conversa fique presa a uma lista de funcionalidades.
+      </p>
+
+      <H2>Objeções comuns do cliente</H2>
+      <p>
+        “Já respondemos avaliações” não encerra a necessidade. Responder é apenas uma parte; a operação também precisa
+        descobrir padrões, registrar problemas e acompanhar se as ações mudaram a percepção. “Minha equipe já lê as
+        avaliações” também pode ser válido em volumes pequenos, mas a agência precisa explicar o ganho de processo,
+        consistência e escala quando o número de clientes cresce.
+      </p>
+      <p>
+        Outra objeção é “isso garante mais avaliações ou melhor posição?”. A resposta deve ser transparente: nenhuma
+        ferramenta deve prometer uma posição fixa no Google, e a coleta deve buscar avaliações autênticas. O serviço
+        entrega processo, análise e acompanhamento; os resultados precisam ser medidos no contexto de cada negócio.
+      </p>
+
+      <H2>Como transformar o primeiro ciclo em renovação</H2>
+      <p>
+        A renovação fica mais natural quando o relatório mensal não termina no número de estrelas. Mostre quais temas
+        apareceram, quais foram encaminhados, o que mudou desde a linha de base e quais decisões ficam para o próximo
+        período. O cliente passa a comprar continuidade porque existe uma fila de prioridades, não apenas uma tarefa
+        repetida.
+      </p>
+      <p>
+        Para a agência, isso também cria uma ponte com outros serviços: um tema recorrente de atendimento pode virar
+        recomendação operacional; uma dúvida frequente pode orientar conteúdo; uma diferença entre unidades pode virar
+        prioridade de SEO local. O valor está em transformar reputação em informação para a conta inteira.
+      </p>
+
+      <H2>Checklist de uma operação recorrente</H2>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Definir unidades, canais e responsáveis.</li>
+        <li>Registrar a linha de base antes do primeiro ciclo.</li>
+        <li>Coletar feedback de forma autêntica e não seletiva.</li>
+        <li>Acompanhar novas avaliações e temas recorrentes.</li>
+        <li>Separar exceções de problemas que se repetem.</li>
+        <li>Registrar ações e responsáveis do lado do cliente.</li>
+        <li>Comparar os mesmos indicadores mês a mês.</li>
+        <li>Fechar cada relatório com prioridades para o próximo ciclo.</li>
+      </ul>
+
       <H2>Métricas que o cliente entende</H2>
       <p>
         Novas avaliações no mês, nota média, recência, temas de reclamação, tempo de resposta e melhorias
