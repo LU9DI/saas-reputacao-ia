@@ -1,11 +1,10 @@
-name: Deploy Frontend to Cloudflare Pages
-# trigger: keep direct Pages deployment path active
+name: Deploy Filtra.AI frontend to Cloudflare Pages
+# Build once in GitHub Actions and publish only the static artifact to Pages.
 
 on:
   push:
     branches:
       - main
-      - seo-top3-20261005
     paths:
       - 'frontend/**'
       - '.github/workflows/deploy-cloudflare.yml'
@@ -13,7 +12,7 @@ on:
 
 jobs:
   deploy:
-    name: Frontend → Cloudflare Pages
+    name: Build → Cloudflare Pages
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,14 +21,17 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_PAGES: '1'
+      NEXT_PUBLIC_API_URL: https://filtra-ia-api.onrender.com
+      NEXT_PUBLIC_APP_URL: https://filtraai.com
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -37,33 +39,45 @@ jobs:
         run: npm ci
 
       - name: Temporarily exclude Vercel-only cron route
+        shell: bash
         run: |
-          set -e
+          set -euo pipefail
           if [ -d src/app/api/cron/keep-warm ]; then
             mv src/app/api/cron/keep-warm /tmp/filtra-keep-warm
-            echo 'moved=1' >> "$GITHUB_ENV"
+            echo "moved=1" >> "$GITHUB_ENV"
           else
-            echo 'moved=0' >> "$GITHUB_ENV"
+            echo "moved=0" >> "$GITHUB_ENV"
           fi
 
       - name: Build static export
         run: npm run build
 
+      - name: Verify static artifact
+        run: |
+          set -euo pipefail
+          test -d out
+          test -f out/index.html
+          test -f out/404.html
+          echo "Static artifact ready: $(du -sh out | cut -f1)"
+
       - name: Restore Vercel-only cron route
         if: always() && env.moved == '1'
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p src/app/api/cron
           rm -rf src/app/api/cron/keep-warm
           mv /tmp/filtra-keep-warm src/app/api/cron/keep-warm
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy static artifact to Cloudflare Pages
         if: success()
+        working-directory: frontend
         run: |
-          set -e
-          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo '::error::Configure CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN in GitHub Actions secrets.'
-            exit 1
-          fi
-          npx wrangler@latest pages deploy out             --project-name=filtra-ai-fallback-direct             --branch=main             --commit-message="Cloudflare deploy ${GITHUB_SHA}"             --commit-hash="${GITHUB_SHA}"
-
-# deployment trigger: 2026-10-06
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          npx wrangler@latest pages deploy out \
+            --project-name=filtra-ai-fallback-direct \
+            --branch=main \
+            --commit-message="Cloudflare Pages \${GITHUB_SHA}" \
+            --commit-hash="\${GITHUB_SHA}"
