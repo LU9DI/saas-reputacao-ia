@@ -33,7 +33,20 @@ export default function Page() {
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Use análise de avaliações como parte de uma oferta recorrente.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Entenda como análise e reputação complementam SEO local.' },
       ]}
-      sections={[
+      sections=[
+        {
+          heading: 'Como analisar avaliações com IA passo a passo',
+          body: 'Primeiro reúna avaliações e feedback em uma base consistente. Depois classifique temas, compare frequência e evolução, revise casos ambíguos e transforme os achados em prioridades. A IA acelera a triagem, mas a equipe deve validar interpretações que dependem de contexto.'
+        },
+        {
+          heading: 'Análise de reviews com IA para operações multilocais',
+          body: 'Quando existem várias unidades, a análise pode mostrar temas comuns à rede e problemas concentrados em locais específicos. Essa separação ajuda a decidir o que precisa de uma ação central e o que deve ser tratado localmente.'
+        },
+        {
+          heading: 'O que medir depois da análise',
+          body: 'Não pare no resumo gerado. Registre temas prioritários, responsáveis, ações e evolução nos ciclos seguintes. O ganho aparece quando a análise muda uma decisão ou reduz um problema recorrente.'
+        },
+        {
         {
           heading: 'O que a análise de avaliações revela',
           body: 'Além da nota, os comentários podem revelar padrões de atendimento, tempo de espera, qualidade, preço, produto, ambiente e comunicação. A primeira função da análise é transformar texto disperso em temas que possam ser comparados.'
