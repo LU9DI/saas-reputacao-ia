@@ -30,6 +30,7 @@ export default function Page() {
       lead="Transforme avaliações Google e feedback de clientes em uma rotina de gestão: acompanhe o que mudou, identifique padrões e conecte os comentários às decisões da equipe."
       breadcrumbHref="/avaliacoes-google"
       contextLinks={[
+        { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Acompanhe mudanças e temas recorrentes depois das avaliações.' },
         { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Conecte avaliações, feedback, monitoramento e melhoria contínua.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Agrupe temas e encontre padrões em escala.' },
         { href: '/reputacao-google', title: 'Reputação no Google', description: 'Entenda o papel das avaliações na confiança e presença local.' },
