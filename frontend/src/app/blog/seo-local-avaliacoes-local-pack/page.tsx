@@ -3,13 +3,13 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Pacotes de SEO local: guia completo ',
+  title: 'Pacotes de SEO local: guia completo',
   description:
     'Pacotes de SEO local para empresas e agências: o que incluir em Google Business Profile, site, avaliações, reputação, conteúdo local e acompanhamento no Google Maps.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' },
   openGraph: {
     type: 'article',
-    title: 'Pacotes de SEO local: o que incluir ',
+    title: 'Pacotes de SEO local: o que incluir',
     description:
       'Como estruturar pacotes de SEO local conectando presença local, avaliações Google, reputação, conteúdo e acompanhamento de oportunidades no Maps.',
     url: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack',
@@ -45,6 +45,14 @@ export default function Page() {
         Para negócios com várias unidades, o pacote também precisa considerar diferenças entre localidades. Uma
         unidade pode ter ótima avaliação e outra concentrar reclamações; tratar a rede como se fosse uma única
         operação pode esconder oportunidades importantes.
+      </p>
+
+      <H2>Pacotes de SEO local: quais níveis fazem sentido?</H2>
+      <p>
+        Um pacote básico pode cobrir diagnóstico, Google Business Profile, correções essenciais e acompanhamento. Um pacote recorrente pode acrescentar conteúdo local, análise de avaliações, reputação e relatórios. Em operações multilocais, o escopo precisa considerar quantidade de unidades, prioridades por localidade e frequência de revisão.
+      </p>
+      <p>
+        Ao comparar pacotes de SEO local, verifique se o fornecedor explica claramente o que será feito, quais ativos serão acompanhados, quais indicadores serão usados e como as recomendações viram ações. Preço sem escopo comparável dificulta medir valor.
       </p>
 
       <H2>Google Business Profile + site</H2>
