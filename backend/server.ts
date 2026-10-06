@@ -73,6 +73,7 @@ import { mountDotAgentMissionRoutes } from './routes/dotAgentMissionRoutes.js';
 import { mountDotAccessRoutes } from './routes/dotAccessRoutes.js';
 import { ensureDotAccessSchema } from './services/dotAccessControl.js';
 import { ensureMissionTables } from './services/dotAgentMissions.js';
+import { startDotAgentWorker } from './services/dotAgentWorker.js';
 
 assertEnvOrExit();
 const JWT_SECRET = requireJwtSecret();
@@ -106,6 +107,7 @@ async function runLgpdSweepOnBoot() { if (process.env.LGPD_SWEEP !== '1') return
 function gracefulShutdown(signal: string) { if (shuttingDown) return; shuttingDown = true; console.log(`⏹  ${signal} — encerrando...`); const force = setTimeout(() => { console.error('Force exit após timeout de shutdown'); process.exit(1); }, 10_000); force.unref(); if (server) server.close(() => { console.log('HTTP fechado.'); process.exit(0); }); else process.exit(0); }
 async function main() {
   await initDB();
+  try { await ensureMissionTables(); startDotAgentWorker(); } catch (e) { console.warn('DOT agent worker:', e); }
   try { await ensureUnidadesSchema(getDb()); } catch (e) { console.warn('ensureUnidadesSchema:', e); }
   try { await ensureWebAuthnSchema(getDb()); } catch (e) { console.warn('ensureWebAuthnSchema:', e); }
   try { await ensurePushSchema(getDb()); initWebPush(); } catch (e) { console.warn('ensurePushSchema:', e); }
