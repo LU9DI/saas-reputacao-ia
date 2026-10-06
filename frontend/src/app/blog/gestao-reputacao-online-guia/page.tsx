@@ -8,7 +8,7 @@ const logo = 'https://filtraai.com/icons/icon-512.png';
 export const metadata: Metadata = {
   title: 'Guia de reputação online: avaliações, feedback e melhoria',
   description:
-    'Gestão de reputação online: como monitorar avaliações, responder clientes, analisar feedback e transformar a reputação da empresa em crescimento.',
+    'Guia para empresas que querem monitorar avaliações, responder clientes, analisar feedback e transformar reputação em melhoria contínua.',
   alternates: { canonical },
   openGraph: {
     title: 'Guia de reputação online: avaliações, feedback e melhoria para empresas',
