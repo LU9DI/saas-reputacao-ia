@@ -162,7 +162,7 @@ const SEO_EDGE = {
   "/feedback-de-clientes": {title:"Gestão de feedback de clientes com IA | Filtra.AI",description:"Centralize feedback de clientes, encontre padrões e transforme opiniões em prioridades de crescimento com IA.",links:[["/analise-de-avaliacoes-com-ia","Análise de avaliações com IA"],["/avaliacoes-google","Avaliações Google"],["/gestao-de-reputacao-online","Gestão de reputação online"],["/monitoramento-reputacao-online","Monitoramento de reputação"],["/auditoria-gratuita","Auditoria gratuita"]]},
   "/monitoramento-reputacao-online": {title:"Monitoramento de reputação online e avaliações | Filtra.AI",description:"Monitore avaliações, feedback e sinais de reputação online para identificar mudanças, padrões e prioridades de ação.",links:[["/gestao-de-reputacao-online","Gestão de reputação online"],["/avaliacoes-google","Avaliações Google"],["/analise-de-avaliacoes-com-ia","Análise com IA"],["/feedback-de-clientes","Feedback de clientes"],["/agencias","Para agências"]]},
   "/reputacao-google": {title:"Reputação no Google: gestão de avaliações e confiança | Filtra.AI",description:"Organize avaliações Google e feedback para transformar reputação no Google em decisões de melhoria e crescimento.",links:[["/avaliacoes-google","Gestão de avaliações Google"],["/gestao-de-reputacao-online","Gestão de reputação online"],["/blog/seo-local-avaliacoes-local-pack","SEO local e avaliações"],["/como-melhorar-avaliacoes-google","Como melhorar avaliações Google"],["/monitoramento-reputacao-online","Monitoramento de reputação"],["/filtra-ai","Filtra.AI"]]},
-  "/blog/seo-local-avaliacoes-local-pack": {title:"Pacotes de SEO local: guia para empresas e agências | Filtra.AI",description:"Como estruturar pacotes de SEO local conectando Google Business Profile, site, avaliações, reputação, conteúdo e acompanhamento.",links:[["/agencias","Gestão de reputação para agências"],["/gestao-de-reputacao-online","Gestão de reputação online"],["/avaliacoes-google","Gestão de avaliações Google"],["/reputacao-google","Reputação no Google"],["/auditoria-gratuita","Auditoria gratuita"]]}
+  "/blog/seo-local-avaliacoes-local-pack": {title:"Pacotes de SEO local: guia para empresas | Filtra.AI",description:"Como estruturar pacotes de SEO local conectando Google Business Profile, site, avaliações, reputação, conteúdo e acompanhamento.",links:[["/agencias","Gestão de reputação para agências"],["/gestao-de-reputacao-online","Gestão de reputação online"],["/avaliacoes-google","Gestão de avaliações Google"],["/reputacao-google","Reputação no Google"],["/auditoria-gratuita","Auditoria gratuita"]]}
 };
 function seoConfig(pathname){return SEO_EDGE[pathname]||null;}
 
@@ -276,8 +276,9 @@ function rewriteSeoResponse(request,response){
   headers.delete('content-encoding');
   let titleSeen=false;
   const title=escHtml(cfg.title),description=escHtml(cfg.description),canonical='https://filtraai.com'+pathname;
+  const relatedHtml=(cfg.links||[]).map(([href,label])=>'<a href="'+href+'" style="display:block;padding:14px 16px;border:1px solid #27272a;border-radius:14px;background:#09090b;color:#e4e4e7;text-decoration:none"><span style="font-weight:600">'+escHtml(label)+'</span></a>').join('');
   const transformed=new HTMLRewriter()
-    .on('title',{text(text){if(!titleSeen && !text.lastInTextNode){text.replace(cfg.title);titleSeen=true;}else if(!titleSeen){text.replace(cfg.title);titleSeen=true;}}})
+    .on('title',{text(text){if(!titleSeen){text.replace(cfg.title);titleSeen=true;}}})
     .on('meta',{element(el){
       const name=String(el.getAttribute('name')||'').toLowerCase();
       if(name==='description')el.setAttribute('content',cfg.description);
@@ -286,7 +287,9 @@ function rewriteSeoResponse(request,response){
       const rel=String(el.getAttribute('rel')||'').toLowerCase();
       if(rel==='canonical')el.setAttribute('href',canonical);
     }})
-    ;
+    .on('body',{element(el){
+      if(relatedHtml)el.append('<section id="filtra-seo-edge-links" style="max-width:1040px;margin:44px auto 0;padding:24px"><h2 style="font-size:20px;color:#fafafa;margin:0 0 14px">Conteúdos relacionados</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">'+relatedHtml+'</div></section>',{html:true});
+    }});
   return transformed.transform(new Response(response.body,{status:response.status,statusText:response.statusText,headers}));
 }
 
