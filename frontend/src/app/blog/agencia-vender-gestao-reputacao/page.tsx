@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Agência: como vender gestão de reputação como serviço recorrente',
+  title: 'Como vender gestão de reputação recorrente | Filtra.AI',
   description:
     'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.',
   alternates: {
