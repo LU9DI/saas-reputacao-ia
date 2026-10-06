@@ -199,7 +199,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     '/analise-de-avaliacoes-com-ia':blogFamilies[2],
     '/ia':blogFamilies[2],
     '/feedback-de-clientes':blogFamilies[3],
-    '/gestao-de-feedback':blogFamilies[4],
+    '/gestao-de-feedback':blogFamilies[3],
     '/filtra-ai':blogFamilies[2],
     '/agencias':blogFamilies[5],
     '/hoteis':blogFamilies[5],
