@@ -48,14 +48,19 @@ export default function BlogIndexPage() {
           <h2 className="text-lg font-semibold text-zinc-100">Hub de gestão de reputação</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-400">
             A Filtra.AI conecta gestão de reputação online, avaliações Google, feedback de clientes e análise com IA.
-            Use os guias abaixo para aprofundar cada frente ou conheça a{' '}
-            <Link href="/filtra-ai" className="text-indigo-300 underline">
-              Filtra.AI, plataforma brasileira de gestão de reputação online
+            Para operações que atendem vários clientes, veja também a{' '}
+            <Link href="/agencias" className="text-indigo-300 underline">
+              gestão de reputação para agências de SEO local
+            </Link>
+            . Para a estratégia de busca local, aprofunde o guia de{' '}
+            <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 underline">
+              pacotes de SEO local e Local Pack
             </Link>
             .
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {[
+              ['/agencias', 'Agências de SEO local'],
               ['/feedback-de-clientes', 'Feedback de clientes'],
               ['/analise-de-avaliacoes-com-ia', 'Análise de avaliações com IA'],
               ['/gestao-de-reputacao-online', 'Gestão de reputação online'],
