@@ -39,7 +39,20 @@ export default function Page() {
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Estruture avaliações e reputação como serviço para clientes.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como avaliações e reputação entram em uma oferta de SEO local.' },
       ]}
-      sections={[
+      sections=[
+        {
+          heading: 'Como fazer gestão de avaliações Google na prática',
+          body: 'Comece por uma linha de base: volume de avaliações, nota, recência, distribuição por nota e principais temas. Depois defina uma cadência para acompanhar novas avaliações, responder quando necessário e encaminhar problemas recorrentes para a equipe responsável. A Filtra.AI apoia a triagem e análise; a decisão continua com a empresa.'
+        },
+        {
+          heading: 'Gestão de avaliações Google para empresas locais e redes',
+          body: 'Em uma unidade, a prioridade costuma ser entender experiência e recorrência. Em redes e franquias, compare unidades com contexto, identifique exceções e mantenha uma visão consolidada da marca. Isso transforma reviews em uma rotina de gestão, não apenas em uma caixa de comentários.'
+        },
+        {
+          heading: 'Como responder avaliações sem perder o foco operacional',
+          body: 'Respostas públicas devem ser específicas e profissionais, mas responder não substitui corrigir a causa. Use os temas recorrentes para orientar atendimento, treinamento, comunicação ou processos e depois acompanhe se o problema volta a aparecer.'
+        },
+        {
         {
           heading: 'Por que as avaliações Google importam?',
           body: 'Avaliações registram experiências reais e ajudam a explicar como o mercado percebe atendimento, prazo, produto, preço, ambiente e comunicação. A nota é um resumo; os comentários trazem o contexto que a operação precisa para melhorar.'
