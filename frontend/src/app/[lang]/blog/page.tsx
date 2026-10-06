@@ -47,6 +47,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
       {slug:'google-reviews-guide',title:'如何获得更多真实的 Google 评价',description:'如何让真实评价更容易发生，同时避免按评分选择客户。'},
       {slug:'online-reputation-management-guide',title:'在线声誉管理：企业实用指南',description:'围绕评价、反馈、分析和行动建立可重复流程。'},
       {slug:'ai-review-analysis-guide',title:'AI 评论分析：如何把评论转化为管理决策',description:'使用 AI 发现重复主题并确定运营优先级。'},
+      {slug:'agency-reputation-management',title:'代理商声誉管理：如何建立可重复的本地 SEO 服务',description:'为 SEO 代理商提供持续性的声誉管理服务指南。'},
       {slug:'local-seo-google-reviews',title:'本地 SEO 与 Google 评价：企业应该监测什么',description:'把本地 SEO、客户体验和评价连接成持续流程。'}
     ],
     cta:'开始 7 天免费试用'
