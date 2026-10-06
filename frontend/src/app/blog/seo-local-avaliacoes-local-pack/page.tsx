@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Pacotes de SEO local: guia completo',
   description:
     'Pacotes de SEO local para empresas e agências: o que incluir em Google Business Profile, site, avaliações, reputação, conteúdo local e acompanhamento no Google Maps.',
-  alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' },
+  alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', languages: { 'pt-BR': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', en: 'https://filtraai.com/en/blog/local-seo-google-reviews', es: 'https://filtraai.com/es/blog/seo-local-resenas-google', zh: 'https://filtraai.com/zh/blog/local-seo-google-reviews', 'x-default': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' } },
   openGraph: {
     type: 'article',
     title: 'Pacotes de SEO local: o que incluir',
