@@ -127,10 +127,31 @@ const localizedLabels={
   zh:{topics:'继续探索',solution:'深入了解 Filtra.AI',home:'Filtra.AI',cta:'开始 7 天免费试用'}
 };
 
-const solutionPaths:Record<Lang,string[]>={
-  en:['/en/google-reviews','/en/online-reputation-management','/en/ai-review-analysis','/en/google-reviews'],
-  es:['/es/resenas-google','/es/gestion-reputacion-online','/es/analisis-resenas-ia','/es/resenas-google'],
-  zh:['/zh/google-reviews','/zh/online-reputation-management','/zh/ai-review-analysis','/zh/google-reviews']
+const solutionPaths:Record<Lang,Record<string,string>>={
+  en:{
+    'agency-reputation-management':'/en/agencies',
+    'get-google-reviews':'/en/google-reviews',
+    'online-reputation-management-guide':'/en/online-reputation-management',
+    'ai-review-analysis-guide':'/en/ai-review-analysis',
+    'customer-feedback-reputation':'/en/customer-feedback',
+    'local-seo-google-reviews':'/en/google-reviews'
+  },
+  es:{
+    'agencia-gestion-reputacion':'/es/agencias',
+    'conseguir-resenas-google':'/es/resenas-google',
+    'guia-gestion-reputacion-online':'/es/gestion-reputacion-online',
+    'analisis-resenas-ia':'/es/analisis-resenas-ia',
+    'feedback-clientes-reputacion':'/es/feedback-clientes',
+    'seo-local-resenas-google':'/es/resenas-google'
+  },
+  zh:{
+    'agency-reputation-management':'/zh/agencies',
+    'google-reviews-guide':'/zh/google-reviews',
+    'online-reputation-management-guide':'/zh/online-reputation-management',
+    'ai-review-analysis-guide':'/zh/ai-review-analysis',
+    'customer-feedback-reputation':'/zh/customer-feedback',
+    'local-seo-google-reviews':'/zh/google-reviews'
+  }
 };
 
 export function generateStaticParams(){
@@ -174,7 +195,7 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
   const labels=localizedLabels[lang];
   const relatedIndex=(found.index+1)%articles[lang].length;
   const related=articles[lang][relatedIndex];
-  const solutionPath=solutionPaths[lang][Math.min(found.index, solutionPaths[lang].length-1)];
+  const solutionPath=solutionPaths[lang][slug] || (lang==='en'?'/en':lang==='es'?'/es':'/zh');
   const articleUrl=base+'/'+lang+'/blog/'+slug;
   const blogPosting={
     '@context':'https://schema.org',
@@ -227,7 +248,7 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
       </section>
       <nav aria-label={labels.topics} className="mt-16 border-t border-zinc-800 pt-10">
         <h2 className="text-2xl font-bold tracking-tight">{labels.topics}</h2>
-        <Link href={familyPath(lang,relatedIndex)} className="mt-5 block rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+        <Link href={familyPath(lang,related.slug)} className="mt-5 block rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
           <span className="block font-semibold">{related.title}</span>
           <span className="mt-2 block text-sm leading-6 text-zinc-400">{related.description}</span>
         </Link>
