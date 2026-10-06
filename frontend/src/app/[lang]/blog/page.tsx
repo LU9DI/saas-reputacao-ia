@@ -33,6 +33,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
       {slug:'conseguir-resenas-google',title:'Cómo conseguir más reseñas genuinas en Google',description:'Cómo facilitar reseñas honestas sin seleccionar clientes por valoración.'},
       {slug:'guia-gestion-reputacion-online',title:'Gestión de reputación online: guía práctica',description:'Crea un proceso repetible de reseñas, feedback, análisis y acción.'},
       {slug:'analisis-resenas-ia',title:'Análisis de reseñas con IA: de los comentarios a las decisiones',description:'Usa IA para detectar temas recurrentes y priorizar acciones.'},
+      {slug:'agencia-gestion-reputacion',title:'Gestión de reputación para agencias: cómo crear un servicio recurrente de SEO local',description:'Guía práctica para agencias SEO que ofrecen gestión de reputación como servicio recurrente.'},
       {slug:'seo-local-resenas-google',title:'SEO local y reseñas de Google: qué debe monitorizar una empresa',description:'Conecta SEO local, experiencia del cliente y reputación.'}
     ],
     cta:'Comenzar prueba gratuita de 7 días'
