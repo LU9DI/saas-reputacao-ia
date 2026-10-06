@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Monitoramento de reputação online para empresas | Filtra.AI',
+  title: 'Monitoramento de reputação online para empresas ',
   description:
     'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.',
   alternates: {
