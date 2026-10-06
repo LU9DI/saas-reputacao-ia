@@ -119,6 +119,11 @@ function familyForPage(lang:Lang,slug:string){
   return Object.values(pageFamilies).find(family=>family[lang]===path);
 }
 
+function sourcePathForPage(lang:Lang,slug:string){
+  const family=familyForPage(lang,slug);
+  return family?.pt;
+}
+
 function localizedPath(lang:Lang,index:number){
   const source=sourcePaths[index];
   return pageFamilies[source]?.[lang] || '/'+lang+'/'+pages[lang][index].slug;
@@ -202,7 +207,8 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     '/associacoes':blogFamilies[3],
     '/restaurantes':blogFamilies[3]
   };
-  const resourceArticle=resourceByPage[sourcePaths[found.index]] || blogFamilies[0];
+  const sourcePath=sourcePathForPage(lang,slug) || sourcePaths[found.index];
+  const resourceArticle=resourceByPage[sourcePath] || blogFamilies[0];
   const sectionCopy={
     en:{
       why:`Businesses searching for ${topic.title.toLowerCase()} need a repeatable way to understand customer signals and turn them into decisions, not just collect more comments.`,
