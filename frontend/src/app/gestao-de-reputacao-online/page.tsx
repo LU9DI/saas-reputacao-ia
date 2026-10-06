@@ -16,9 +16,39 @@ export const metadata: Metadata = {
   },
 };
 
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'O que é gestão de reputação online?',
+      acceptedAnswer: { '@type': 'Answer', text: 'É o processo contínuo de acompanhar avaliações, feedback e sinais da experiência, identificar padrões, agir sobre problemas e medir a evolução da percepção pública.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Como gerir a reputação de uma empresa?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Monitore avaliações e feedback, agrupe temas recorrentes, responda com contexto, encaminhe problemas para a operação e acompanhe se os temas críticos diminuem ao longo do tempo.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'O que uma ferramenta de gestão de reputação online deve acompanhar?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Volume de avaliações, distribuição de notas, temas recorrentes, respostas, evolução por período e diferenças entre unidades ou serviços quando aplicável.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Como a IA ajuda na gestão de reputação?',
+      acceptedAnswer: { '@type': 'Answer', text: 'A IA pode classificar comentários, agrupar temas, resumir padrões e acelerar a triagem de grandes volumes de feedback, com revisão humana para situações que exigem contexto.' },
+    },
+  ],
+};
+
 export default function Page() {
   return (
-    <SeoLanding
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <SeoLanding
       h1="Gestão de reputação online: transforme avaliações em crescimento"
       lead="Gestão de reputação online é o processo contínuo de acompanhar avaliações, feedback e sinais da experiência, entender causas, agir sobre problemas e medir se a percepção melhora."
       breadcrumbHref="/gestao-de-reputacao-online"
@@ -69,10 +99,15 @@ export default function Page() {
           body: 'Para empresas locais, reputação e presença no Google fazem parte da mesma jornada de descoberta. Acompanhe avaliações, temas recorrentes e percepção por unidade junto da estratégia de presença local, conteúdo e Google Maps.',
         },
         {
+          heading: 'Perguntas frequentes sobre gestão de reputação online',
+          body: 'Gestão de reputação online combina monitoramento de avaliações e feedback, identificação de padrões, respostas contextualizadas e acompanhamento das melhorias. Para empresas com várias unidades, a análise deve preservar tanto a visão da marca quanto o contexto local.'
+        },
+        {
           heading: 'O que medir toda semana',
           body: 'Acompanhe nota e distribuição das avaliações, volume novo, temas que subiram ou caíram, problemas recorrentes, elogios mais frequentes e evolução por unidade. O objetivo não é produzir outro relatório: é descobrir o que merece ação agora e verificar se a ação funcionou.'
         },
       ]}
-    />
+      />
+    </>
   );
 }
