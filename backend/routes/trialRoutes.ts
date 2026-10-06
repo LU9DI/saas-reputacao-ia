@@ -62,6 +62,9 @@ export function mountTrialRoutes(app: Express) {
             whatsapp: req.body.whatsapp ? String(req.body.whatsapp) : undefined,
             locale: req.body.locale ? String(req.body.locale) : undefined,
             signup_ip: clientIp(req),
+            // Apenas testes locais podem solicitar ativação imediata; produção nunca aceita esse atalho.
+            skip_email_verification:
+              process.env.NODE_ENV === 'test' && req.body?.skip_email_verification === true,
           },
           undefined,
           res
