@@ -18,7 +18,7 @@ type HomeCopy={
 
 const content:Record<Lang,HomeCopy>={
   en:{
-    title:'Filtra.AI | AI online reputation management',
+    title:'AI online reputation management',
     description:'Manage online reputation, Google reviews and customer feedback with AI. Turn customer voice into growth decisions.',
     h1:'Turn customer voice into growth with AI',
     intro:'Filtra.AI organizes reviews and customer feedback so businesses can identify patterns, improve experience and manage reputation as a growth discipline.',
@@ -40,7 +40,7 @@ const content:Record<Lang,HomeCopy>={
     cta:'Start your 7-day free trial'
   },
   es:{
-    title:'Filtra.AI | Gestión de reputación online con IA',
+    title:'Gestión de reputación online con IA',
     description:'Gestiona reputación online, reseñas de Google y feedback de clientes con IA. Convierte la voz del cliente en decisiones de crecimiento.',
     h1:'Convierte la voz del cliente en crecimiento con IA',
     intro:'Filtra.AI organiza reseñas y feedback para identificar patrones, mejorar la experiencia y gestionar la reputación como una disciplina de crecimiento.',
@@ -62,7 +62,7 @@ const content:Record<Lang,HomeCopy>={
     cta:'Comenzar prueba gratuita de 7 días'
   },
   zh:{
-    title:'Filtra.AI | AI 在线声誉管理',
+    title:'AI 在线声誉管理',
     description:'使用 AI 管理在线声誉、Google 评价和客户反馈，将客户声音转化为增长决策。',
     h1:'用 AI 将客户声音转化为业务增长',
     intro:'Filtra.AI 整理评价和客户反馈，帮助企业发现模式、改善体验，并把声誉管理变成持续的增长能力。',
