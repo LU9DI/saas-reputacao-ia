@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
@@ -35,6 +36,15 @@ export default function Page() {
       <p>
         Uma avaliação isolada dói; o padrão dói mais. Ajuste o processo que gerou a reclamação e monitore a
         semana seguinte.
+      </p>
+      <H2>5. Conecte a crise a uma rotina de reputação</H2>
+      <p>
+        Uma resposta isolada resolve o episódio, mas a gestão precisa observar recorrência, temas e mudanças na
+        percepção. Para estruturar essa rotina em uma operação local, veja o guia de{' '}
+        <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">
+          pacotes de SEO local e avaliações
+        </Link>
+        .
       </p>
     </BlogArticle>
   );
