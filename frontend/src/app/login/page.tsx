@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Mail, Lock, AlertCircle } from 'lucide-react';
-import { PlanCards } from '../components/PlanCards';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { BrandMark } from '../components/BrandMark';
 import { readApiError } from '../utils/apiError';
@@ -188,10 +187,10 @@ export default function LoginPage() {
               </form>
 
               <div className="mt-7 flex flex-col gap-3 text-center text-sm">
-                <a href="/" className="font-medium text-indigo-300 hover:text-indigo-200">
+                <a href="/preview/teste" className="font-medium text-indigo-300 hover:text-indigo-200">
                   {t.trial_cta || 'Começar 7 dias grátis'}
                 </a>
-                <a href="/preview" className="text-zinc-500 hover:text-zinc-300">
+                <a href="/" className="text-zinc-500 hover:text-zinc-300">
                   Voltar
                 </a>
               </div>
