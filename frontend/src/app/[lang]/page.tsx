@@ -34,7 +34,8 @@ const content:Record<Lang,HomeCopy>={
       {href:'/en/ai-review-analysis',label:'AI review analysis'},
       {href:'/en/agencies',label:'Agencies'},
       {href:'/en/clinics',label:'Clinics'},
-      {href:'/en/restaurants',label:'Restaurants'}
+      {href:'/en/restaurants',label:'Restaurants'},
+      {href:'/en/blog',label:'Reviews & reputation guides'}
     ],
     cta:'Start your 7-day free trial'
   },
@@ -55,7 +56,8 @@ const content:Record<Lang,HomeCopy>={
       {href:'/es/analisis-resenas-ia',label:'Análisis de reseñas con IA'},
       {href:'/es/agencias',label:'Agencias'},
       {href:'/es/clinicas',label:'Clínicas'},
-      {href:'/es/restaurantes',label:'Restaurantes'}
+      {href:'/es/restaurantes',label:'Restaurantes'},
+      {href:'/es/blog',label:'Guías de reseñas y reputación'}
     ],
     cta:'Comenzar prueba gratuita de 7 días'
   },
@@ -76,7 +78,8 @@ const content:Record<Lang,HomeCopy>={
       {href:'/zh/ai-review-analysis',label:'AI 评论分析'},
       {href:'/zh/agencies',label:'代理机构'},
       {href:'/zh/clinics',label:'诊所'},
-      {href:'/zh/restaurants',label:'餐厅'}
+      {href:'/zh/restaurants',label:'餐厅'},
+      {href:'/zh/blog',label:'评价与声誉指南'}
     ],
     cta:'开始 7 天免费试用'
   }
