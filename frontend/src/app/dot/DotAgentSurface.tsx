@@ -10,7 +10,6 @@ import { apiFetch } from '../utils/apiFailover';
 type Goal = { id: number; title: string; description?: string; status: 'active' | 'paused' | 'completed' | 'archived'; progress: number };
 type DotStatus = { access: boolean; enabled: boolean; demo: boolean; plan?: string; plan_label?: string };
 type Permission = { resource: string; action: string; granted: number };
-type Integration = { provider: string; label: string; status: string };
 type Mission = { id: number; goal_id: number; title: string; status: 'planned' | 'working' | 'waiting_approval' | 'completed' | 'paused' | string; current_step: number; total_steps: number };
 type MissionStep = { id: number; mission_id: number; type: 'observe' | 'investigate' | 'recommend' | 'prepare' | 'approval' | 'result' | string; status: 'pending' | 'working' | 'completed' | 'waiting_approval' | string; title: string; output?: string | null };
 type Action = { id: number; decisionId: number; optionId: string; action: string; status: 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled' | string; approvedAt?: string | null; executedAt?: string | null; error?: string | null };
@@ -40,7 +39,6 @@ export function DotAgentSurface() {
   const [open, setOpen] = useState(false);
   const [workspace, setWorkspace] = useState<{ goals: Goal[]; summary?: { active: number; attention: number } } | null>(null);
   const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [missions, setMissions] = useState<Mission[]>([]);
   const [steps, setSteps] = useState<MissionStep[]>([]);
   const [actions, setActions] = useState<Action[]>([]);
@@ -213,7 +211,6 @@ export function DotAgentSurface() {
   }
 
   const selectedMission = missions.find((mission) => mission.id === selectedMissionId) || activeMission;
-  const connectedIntegrations = integrations.filter((item) => item.status === 'connected').length;
   const pendingFollowups = followups.filter((item) => item.status === 'pending').length;
 
   return (
@@ -357,7 +354,7 @@ export function DotAgentSurface() {
                     {settingsOpen && <div className="border-t border-white/[0.06] px-4 pb-4 pt-3">
                       <div className="grid grid-cols-2 gap-2">
                         <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Execução</div><div className="mt-1 text-[10px] text-zinc-500">{canActionExecute ? 'Autorizada internamente' : 'Bloqueada'}</div></div>
-                        <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Integrações</div><div className="mt-1 text-[10px] text-zinc-500">{connectedIntegrations} conectadas</div></div>
+                        <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Escopo</div><div className="mt-1 text-[10px] text-zinc-500">Isolado por empresa</div></div>
                       </div>
                       <p className="mt-3 text-[10px] leading-4 text-zinc-700">O DOT não envia nada para fora automaticamente. Ações externas permanecem fora do gateway de execução.</p>
                     </div>}
