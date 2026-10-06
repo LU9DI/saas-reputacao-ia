@@ -362,7 +362,7 @@ export default function LandingPreview() {
           <div className="max-w-2xl">
             <span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{seo.eyebrow}</span>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{seo.title}</h2>
-            <p className="mt-4 text-base leading-7 text-zinc-400">{seo.text}</p><p className="mt-3 text-sm leading-6 text-zinc-500">Filtra.AI é a plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.</p>
+            <p className="mt-4 text-base leading-7 text-zinc-400">{seo.text}</p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {seo.links.map(([href,title,description]) => <Link key={href} href={href} className="group rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-indigo-400/30 hover:bg-white/[0.04]"><h3 className="font-semibold text-zinc-100 group-hover:text-indigo-200">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p><span className="mt-4 inline-block text-xs font-medium text-indigo-300">{seo.more}</span></Link>)}
