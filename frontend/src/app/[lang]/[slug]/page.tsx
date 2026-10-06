@@ -187,6 +187,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     {en:'/en/blog/get-google-reviews',es:'/es/blog/conseguir-resenas-google',zh:'/zh/blog/google-reviews-guide',label:{en:'How to get genuine Google reviews',es:'Cómo conseguir reseñas genuinas en Google',zh:'如何获得更多真实的 Google 评价'}},
     {en:'/en/blog/online-reputation-management-guide',es:'/es/blog/guia-gestion-reputacion-online',zh:'/zh/blog/online-reputation-management-guide',label:{en:'Online reputation management guide',es:'Guía de gestión de reputación online',zh:'在线声誉管理指南'}},
     {en:'/en/blog/ai-review-analysis-guide',es:'/es/blog/analisis-resenas-ia',zh:'/zh/blog/ai-review-analysis-guide',label:{en:'AI review analysis guide',es:'Guía de análisis de reseñas con IA',zh:'AI 评论分析指南'}},
+    {en:'/en/blog/customer-feedback-reputation',es:'/es/blog/feedback-clientes-reputacion',zh:'/zh/blog/customer-feedback-reputation',label:{en:'Customer feedback and reputation',es:'Feedback de clientes y reputación',zh:'客户反馈与声誉'}},
     {en:'/en/blog/local-seo-google-reviews',es:'/es/blog/seo-local-resenas-google',zh:'/zh/blog/local-seo-google-reviews',label:{en:'Local SEO and Google reviews',es:'SEO local y reseñas de Google',zh:'本地 SEO 与 Google 评价'}}
   ];
   const resourceByPage:Record<string,typeof blogFamilies[number]>={
@@ -198,13 +199,19 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     '/analise-de-avaliacoes-com-ia':blogFamilies[2],
     '/ia':blogFamilies[2],
     '/feedback-de-clientes':blogFamilies[3],
-    '/agencias':blogFamilies[3],
-    '/hoteis':blogFamilies[3],
-    '/turismo':blogFamilies[3],
-    '/clinicas':blogFamilies[3],
-    '/franquias':blogFamilies[3],
-    '/associacoes':blogFamilies[3],
-    '/restaurantes':blogFamilies[3]
+    '/gestao-de-feedback':blogFamilies[4],
+    '/filtra-ai':blogFamilies[2],
+    '/agencias':blogFamilies[5],
+    '/hoteis':blogFamilies[5],
+    '/turismo':blogFamilies[5],
+    '/clinicas':blogFamilies[5],
+    '/franquias':blogFamilies[5],
+    '/associacoes':blogFamilies[5],
+    '/restaurantes':blogFamilies[5],
+    '/como-funciona':blogFamilies[1],
+    '/parceiros':blogFamilies[5],
+    '/pedir-estrela-vs-filtrar':blogFamilies[0],
+    '/auditoria-gratuita':blogFamilies[2]
   };
   const sourcePath=sourcePathForPage(lang,slug) || sourcePaths[found.index];
   const resourceArticle=resourceByPage[sourcePath] || blogFamilies[0];
