@@ -60,6 +60,8 @@ export default function Page() {
         { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Use a voz do cliente como dado para decisões de crescimento.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece com um diagnóstico da presença e dos principais sinais de reputação.' },
         { href: '/blog/gestao-reputacao-online-guia', title: 'Guia de reputação online', description: 'Aprofunde conceitos, indicadores e rotinas para gerir a reputação.' },
+        { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Leve a operação de reputação para uma carteira de clientes.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Conecte reputação, avaliações e descoberta local.' },
       ]}
       sections={[
         {
