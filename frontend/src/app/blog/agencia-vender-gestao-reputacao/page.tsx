@@ -1,11 +1,21 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
   title: 'Agência: como vender gestão de reputação como serviço recorrente',
   description:
-    'Como posicionar avaliações Google, feedback e reputação como serviço recorrente de SEO local, com onboarding, métricas e melhoria contínua.',
-  alternates: { canonical: '/blog/agencia-vender-gestao-reputacao' },
+    'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.',
+  alternates: {
+    canonical: 'https://filtraai.com/blog/agencia-vender-gestao-reputacao',
+    languages: {
+      'pt-BR': 'https://filtraai.com/blog/agencia-vender-gestao-reputacao',
+      en: 'https://filtraai.com/en/blog/agency-reputation-management',
+      es: 'https://filtraai.com/es/blog/agencia-gestion-reputacion',
+      zh: 'https://filtraai.com/zh/blog/agency-reputation-management',
+      'x-default': 'https://filtraai.com/blog/agencia-vender-gestao-reputacao',
+    },
+  },
 };
 
 export default function Page() {
@@ -30,10 +40,22 @@ export default function Page() {
         Use o trial Filtra.AI em um cliente piloto. Mostre o painel, o fluxo de feedback e os indicadores de
         reputação. Depois padronize a rotina na carteira.
       </p>
+      <p>
+        Para estruturar a oferta por serviço, escopo e entregáveis, veja também{' '}
+        <Link href="/agencias" className="text-indigo-400 underline">
+          gestão de reputação para agências de SEO local
+        </Link>
+        .
+      </p>
       <H2>Métricas que o cliente entende</H2>
       <p>
         Novas avaliações no mês, nota média, recência, temas de reclamação, tempo de resposta e melhorias
-        implementadas. Menos vanity, mais operação.
+        implementadas. Menos vanity, mais operação. Para aprofundar a relação entre avaliações, reputação e
+        presença local, consulte o guia de{' '}
+        <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">
+          pacotes de SEO local e Local Pack
+        </Link>
+        .
       </p>
     </BlogArticle>
   );
