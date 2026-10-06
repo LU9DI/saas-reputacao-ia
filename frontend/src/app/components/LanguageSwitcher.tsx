@@ -3,7 +3,8 @@
 import { usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
-const SEO_FAMILIES: Array<Record<Language, string>> = [
+/** Pares de rotas SEO PT ↔ EN/ES/ZH. */
+export const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt: '/', en: '/en', es: '/es', zh: '/zh' },
   { pt: '/ia', en: '/en/ai', es: '/es/ia', zh: '/zh/ai' },
   { pt: '/filtra-ai', en: '/en/filtra-ai', es: '/es/filtra-ai', zh: '/zh/filtra-ai' },
@@ -40,7 +41,7 @@ function normalizePath(pathname: string): string {
   return clean.replace(/\/+$/, '') || '/';
 }
 
-function targetFor(pathname: string, language: Language): string {
+export function targetFor(pathname: string, language: Language): string {
   const normalized = normalizePath(pathname);
   const family = SEO_FAMILIES.find((item) =>
     Object.values(item).some((path) => normalizePath(path) === normalized),
@@ -54,15 +55,20 @@ function targetFor(pathname: string, language: Language): string {
     return `/${language}${rest}`;
   }
 
-  if (language === 'pt') return normalized;
-  // Páginas não-SEO: mantém a rota; o contexto de idioma cuida do restante.
   return normalized;
+}
+
+function isSeoPath(pathname: string): boolean {
+  const normalized = normalizePath(pathname);
+  return SEO_FAMILIES.some((item) =>
+    Object.values(item).some((path) => normalizePath(path) === normalized),
+  );
 }
 
 export function LanguageSwitcher({
   className = '',
   compact = false,
-  variant = 'select',
+  variant = 'flags',
 }: {
   className?: string;
   compact?: boolean;
@@ -72,50 +78,69 @@ export function LanguageSwitcher({
   const pathname = usePathname() || '/';
   const pathLang = pathname.match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || language;
+  const seo = isSeoPath(pathname);
 
-  const goToLanguage = (next: Language) => {
-    if (!next || next === current) return;
+  const persistAndGo = (next: Language, href: string) => {
     setLanguage(next);
-    const href = targetFor(pathname, next);
     if (normalizePath(href) !== normalizePath(pathname)) {
       window.location.assign(href);
+      return;
+    }
+    // Mesma rota (páginas de app): só recarrega para aplicar dicionário
+    if (next !== language) {
+      window.location.reload();
     }
   };
 
-  if (variant === 'flags') {
+  // Flags com <a href> reais: funciona em SEO mesmo sem hidratação JS
+  if (variant === 'flags' || seo) {
     return (
-      <nav className={`inline-flex items-center gap-1 ${className}`} aria-label={tx('language', 'Idioma')}>
-        {SUPPORTED_LANGUAGES.map((item) => (
-          <a
-            key={item.code}
-            href={targetFor(pathname, item.code)}
-            title={item.label}
-            aria-label={item.label}
-            aria-current={current === item.code ? 'page' : undefined}
-            onClick={(e) => {
-              e.preventDefault();
-              goToLanguage(item.code);
-            }}
-            className={`text-sm px-2 py-1 rounded-lg border ${
-              current === item.code
-                ? 'border-indigo-500 bg-indigo-500/20 text-zinc-50'
-                : 'border-zinc-700 bg-zinc-900 text-zinc-400'
-            }`}
-          >
-            <span aria-hidden>{item.flag}</span>
-            {!compact && <span className="ml-1 hidden sm:inline">{item.code.toUpperCase()}</span>}
-          </a>
-        ))}
+      <nav
+        className={`inline-flex items-center gap-1 ${className}`}
+        aria-label={tx('language', 'Idioma')}
+        data-lang-switcher="seo-v2"
+      >
+        {SUPPORTED_LANGUAGES.map((item) => {
+          const href = targetFor(pathname, item.code);
+          const active = current === item.code;
+          return (
+            <a
+              key={item.code}
+              href={href}
+              title={item.label}
+              aria-label={item.label}
+              aria-current={active ? 'page' : undefined}
+              onClick={(e) => {
+                // Garante persistência do idioma antes da navegação
+                e.preventDefault();
+                persistAndGo(item.code, href);
+              }}
+              className={`text-sm px-2 py-1 rounded-lg border ${
+                active
+                  ? 'border-indigo-500 bg-indigo-500/20 text-zinc-50'
+                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <span aria-hidden>{item.flag}</span>
+              {!compact && (
+                <span className="ml-1 hidden sm:inline">{item.code.toUpperCase()}</span>
+              )}
+            </a>
+          );
+        })}
       </nav>
     );
   }
 
   return (
-    <div className={`inline-flex items-center gap-1.5 ${className}`}>
+    <div className={`inline-flex items-center gap-1.5 ${className}`} data-lang-switcher="select-v2">
       <select
         aria-label={tx('language', 'Idioma')}
         value={current}
-        onChange={(e) => goToLanguage(e.target.value as Language)}
+        onChange={(e) => {
+          const next = e.target.value as Language;
+          persistAndGo(next, targetFor(pathname, next));
+        }}
         className="cursor-pointer rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
         {SUPPORTED_LANGUAGES.map((item) => (
