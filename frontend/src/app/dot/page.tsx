@@ -1,4 +1,4 @@
-import DotAgentSurface from './DotAgentSurface';
+import { DotAgentSurface } from './DotAgentSurface';
 
 export default function DotPage() {
   return <DotAgentSurface />;
