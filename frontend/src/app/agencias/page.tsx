@@ -59,6 +59,10 @@ export default function AgenciasPage() {
           body: 'Além de tráfego e posições, um relatório de SEO local pode mostrar volume e recência de avaliações, temas recorrentes, pontos de atenção, mudanças na percepção e prioridades para o próximo ciclo. O valor está em conectar dados a decisões, não em acumular métricas.'
         },
         {
+          heading: 'Modelo de escopo para gestão de reputação em agências',
+          body: <>Uma forma prática de transformar a gestão de reputação em serviço é separar o escopo em quatro entregas: diagnóstico inicial, rotina de acompanhamento, análise periódica e reunião ou relatório de decisão. O diagnóstico define a linha de base; o acompanhamento registra novas avaliações e feedback; a análise identifica temas e exceções; e o relatório mostra o que mudou e qual ação vem depois. Esse desenho evita vender uma promessa vaga de “melhorar a reputação” e facilita comparar o serviço entre clientes. Para estruturar preço, frequência e entregáveis, use também o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local</Link>.</>
+        },
+        {
           heading: 'Um piloto por cliente antes de escalar',
           body: 'Comece com um restaurante, clínica, hotel ou outra operação da carteira. Configure o fluxo, acompanhe a entrada de feedback e use uma primeira leitura de temas para demonstrar valor. Depois, padronize onboarding, análise e relatórios para expandir a oferta para outras contas.'
         },
