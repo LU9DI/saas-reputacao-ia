@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Reputação online para turismo e hotelaria | Filtra.AI',
+  title: 'Reputação online para turismo e hotelaria',
   description:
     'Monitore avaliações e feedback de hóspedes, clientes e visitantes no turismo. Organize padrões de experiência e ações com o Filtra.AI.',
   alternates: {
