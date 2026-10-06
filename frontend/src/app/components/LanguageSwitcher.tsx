@@ -105,21 +105,45 @@ export function LanguageSwitcher({
 
   if (compact || variant === 'select') {
     return (
-      <label className={`inline-flex shrink-0 items-center ${className}`} data-lang-switcher="select-v5">
-        <span className="sr-only">{tx('language', 'Idioma')}</span>
-        <select
-          aria-label={tx('language', 'Idioma')}
-          value={current}
-          onChange={(e) => goToLanguage(e.target.value as Language)}
-          className="inline-flex h-8 max-w-[150px] cursor-pointer items-center rounded-lg border border-zinc-700 bg-zinc-900 px-2 text-xs font-medium text-zinc-200 outline-none transition hover:border-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-        >
-          {SUPPORTED_LANGUAGES.map((item) => (
-            <option key={item.code} value={item.code}>
-              {item.flag} {item.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      <nav
+        className={`inline-flex shrink-0 items-center gap-1 ${className}`}
+        aria-label={tx('language', 'Idioma')}
+        data-lang-switcher="compact"
+      >
+        {SUPPORTED_LANGUAGES.map((item) => {
+          const active = current === item.code;
+          const href = seoArticle ? targetFor(pathname, item.code) : undefined;
+
+          if (seoArticle && href) {
+            return (
+              <a
+                key={item.code}
+                href={href}
+                title={item.label}
+                aria-label={item.label}
+                aria-current={active ? 'page' : undefined}
+                className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-[11px] font-semibold transition ${active ? 'bg-white/10 text-white' : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-200'}`}
+              >
+                {item.code.toUpperCase()}
+              </a>
+            );
+          }
+
+          return (
+            <button
+              key={item.code}
+              type="button"
+              title={item.label}
+              aria-label={item.label}
+              aria-pressed={active}
+              onClick={() => goToLanguage(item.code)}
+              className={`inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-[11px] font-semibold transition ${active ? 'bg-white/10 text-white' : 'text-zinc-500 hover:bg-white/5 hover:text-zinc-200'}`}
+            >
+              {item.code.toUpperCase()}
+            </button>
+          );
+        })}
+      </nav>
     );
   }
 
