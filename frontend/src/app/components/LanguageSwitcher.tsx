@@ -23,7 +23,7 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franchises' },
   { pt:'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/associations' },
   { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurants' },
-  { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/como-funciona' },
+  { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
   { pt:'/parceiros', en:'/en/partners', es:'/es/socios', zh:'/zh/partners' },
   { pt:'/pedir-estrela-vs-filtrar', en:'/en/ask-for-stars-vs-filtering', es:'/es/pedir-estrellas-vs-filtrar', zh:'/zh/request-stars-vs-filter' },
 ];
