@@ -248,7 +248,7 @@ export default function Page() {
         <Link href="/auditoria-gratuita" className="text-indigo-400 underline">
           auditoria gratuita
         </Link>{' '}
-        para identificar oportunidades de reputação e presença local. A{' '}
+        para identificar oportunidades de reputação e presença local. Antes de fechar o pacote, valide se o escopo tem responsável, frequência, entregável e critério de medição para cada frente. A{' '}
         <Link href="/filtra-ai" className="text-indigo-400 underline">
           Filtra.AI
         </Link>{' '}
