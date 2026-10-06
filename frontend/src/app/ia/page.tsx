@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'; import { SeoLanding } from '../components/SeoLanding'; export const metadata:Metadata={title:'Filtra.AI para ChatGPT, Claude e Grok | IA',description:'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação.',alternates: {
+import type { Metadata } from 'next'; import { SeoLanding } from '../components/SeoLanding'; export const metadata:Metadata={title:'IA para ChatGPT, Claude e Grok | Análise de reputação',description:'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação.',alternates: {
     canonical: 'https://filtraai.com/ia',
     languages: {
       'pt-BR': 'https://filtraai.com/ia',
