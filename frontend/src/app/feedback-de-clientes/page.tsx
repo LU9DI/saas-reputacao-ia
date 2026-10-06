@@ -37,6 +37,10 @@ export default function Page() {
           body: 'Avaliações e comentários registram experiências reais. Quando reunidos em volume suficiente, ajudam a identificar recorrências que uma equipe não perceberia olhando cada interação separadamente.'
         },
         {
+          heading: 'Gestão de feedback de clientes para empresas',
+          body: 'Uma operação de feedback de clientes precisa transformar opiniões em dados de gestão: identificar o que se repete, definir responsáveis, acompanhar a resposta e medir se o tema volta a aparecer. Isso vale para empresas locais, redes e operações com vários canais de atendimento.',
+        },
+        {
           heading: 'Feedback público e privado',
           body: 'Avaliações públicas mostram como o mercado percebe a empresa. Canais privados ajudam a descobrir atritos que o cliente talvez nunca publique. Os dois sinais são complementares.'
         },
