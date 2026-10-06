@@ -301,7 +301,7 @@ export default function LandingPreview() {
           </div>
           <div className="flex items-center gap-3">
             <div className="fixed right-4 top-4 z-[60] sm:right-6 sm:top-5"><LanguageSwitcher /></div>
-            <a href="/teste" className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
+            <a href="/" className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
           </div>
           </div>
         </nav>
@@ -312,7 +312,7 @@ export default function LandingPreview() {
             <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-.045em] sm:text-6xl lg:text-7xl">{c.heroTitle} <span className="bg-gradient-to-r from-sky-300 via-indigo-300 to-violet-300 bg-clip-text text-transparent">{c.heroAccent}</span></h1>
             <p className="mt-7 max-w-xl text-lg leading-8 text-zinc-400 sm:text-xl">{c.heroText}</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <a href="/teste" className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 font-semibold shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.start} <ArrowRight size={17} /></a>
+              <a href="/" className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 font-semibold shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.start} <ArrowRight size={17} /></a>
               <a href="#como-funciona" className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-6 py-3.5 font-medium text-zinc-200 hover:bg-white/[0.06]">{c.howCta}</a>
             </div>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-500"><span>✓ {c.noCard}</span><span>✓ {c.quick}</span><span>✓ {c.cancel}</span></div>
@@ -400,7 +400,7 @@ export default function LandingPreview() {
           <Star className="mx-auto text-indigo-300" size={26} fill="currentColor" />
           <h2 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">{c.finalTitle}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-zinc-400">{c.finalText}</p>
-          <a href="/teste" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 font-semibold text-black hover:bg-zinc-200">{c.start} <ArrowRight size={17} /></a>
+          <a href="/" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 font-semibold text-black hover:bg-zinc-200">{c.start} <ArrowRight size={17} /></a>
         </div>
       </section>
 
