@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Programa de parceiros Filtra.AI | Reputação e feedback',
+  title: 'Programa de parceiros | Reputação e feedback',
   description:
     'Programa para consultorias, agências, profissionais e entidades que querem incluir gestão de reputação, avaliações e feedback em sua oferta.',
   alternates: {
