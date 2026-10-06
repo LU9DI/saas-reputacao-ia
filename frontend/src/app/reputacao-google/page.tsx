@@ -28,6 +28,7 @@ export default function Page() {
         { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Organize avaliações e feedback para uma rotina de gestão.' },
         { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Estruture monitoramento, aprendizado e ação.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Conecte reputação, Google Maps e presença local.' },
+        { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Transforme reputação em uma oferta recorrente para sua carteira de clientes.' },
       ]}
       sections={[
         { heading: 'O que constrói reputação no Google', body: 'Reputação é resultado da experiência percebida, do volume e da consistência das avaliações e da capacidade da empresa de aprender com o que os clientes relatam.' },
