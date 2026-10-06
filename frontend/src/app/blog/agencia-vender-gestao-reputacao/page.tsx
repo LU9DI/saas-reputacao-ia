@@ -25,6 +25,8 @@ export default function Page() {
       title="Agência: como vender gestão de reputação como serviço recorrente"
       lead="Cliente de SEO local já paga por presença no Google. Reputação operacional transforma avaliações e feedback em uma rotina que aparece todo mês na reunião."
     >
+      <H2>Como vender gestão de reputação online para clientes de SEO local</H2>
+      <p>Apresente a oferta como uma operação recorrente: diagnóstico inicial, coleta autêntica de feedback, acompanhamento de avaliações, análise de temas e reunião de prioridades. O argumento comercial fica mais forte quando o cliente entende exatamente o que acontece no primeiro mês e nos meses seguintes.</p>
       <H2>A promessa em uma frase</H2>
       <p>
         “Organizamos convites para avaliações genuínas, monitoramos os temas que os clientes citam e ajudamos
@@ -69,6 +71,8 @@ export default function Page() {
       <p>
         Antes de iniciar, registre a situação existente: quantidade de avaliações, recência, nota, principais temas e problemas já conhecidos. No fechamento do ciclo, compare os mesmos sinais e acrescente as ações tomadas. Se um indicador não mudou, mostre isso; transparência é parte do serviço.
       </p>
+      <H2>Como precificar a gestão de reputação como serviço recorrente</H2>
+      <p>Parta do esforço real: número de unidades, volume de avaliações, frequência de análise, profundidade do relatório e nível de participação da agência. Separe setup de mensalidade e deixe explícito o que depende do cliente. Não use posição no Google ou nota mínima como unidade de entrega.</p>
       <H2>Como montar três níveis de oferta</H2>
       <p>
         Uma agência pode separar a oferta por profundidade, sem criar promessas diferentes. O nível de entrada pode
