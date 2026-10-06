@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
   title: 'Filtra.AI — Gestão de reputação online com IA',
@@ -74,7 +75,9 @@ const entitySchema = {
 
 export default function FiltraAiPage() {
   return (
-    <main className="mx-auto max-w-4xl px-6 py-16 text-zinc-100">
+    <div className="min-h-screen bg-black text-zinc-100">
+      <SeoPageHeader />
+      <main className="mx-auto max-w-4xl px-6 py-16 text-zinc-100">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
@@ -200,6 +203,7 @@ export default function FiltraAiPage() {
           Começar 7 dias grátis
         </Link>
       </section>
-    </main>
+      </main>
+    </div>
   );
 }
