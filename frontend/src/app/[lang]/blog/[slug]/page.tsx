@@ -110,9 +110,15 @@ function familyPath(lang:Lang,index:number){
 }
 
 const localizedLabels={
-  en:{topics:'Continue exploring',home:'Filtra.AI',cta:'Start your 7-day free trial'},
-  es:{topics:'Sigue explorando',home:'Filtra.AI',cta:'Comenzar prueba gratuita de 7 días'},
-  zh:{topics:'继续探索',home:'Filtra.AI',cta:'开始 7 天免费试用'}
+  en:{topics:'Continue exploring',solution:'Go deeper with Filtra.AI',home:'Filtra.AI',cta:'Start your 7-day free trial'},
+  es:{topics:'Sigue explorando',solution:'Profundiza con Filtra.AI',home:'Filtra.AI',cta:'Comenzar prueba gratuita de 7 días'},
+  zh:{topics:'继续探索',solution:'深入了解 Filtra.AI',home:'Filtra.AI',cta:'开始 7 天免费试用'}
+};
+
+const solutionPaths:Record<Lang,string[]>={
+  en:['/en/google-reviews','/en/online-reputation-management','/en/ai-review-analysis','/en/google-reviews'],
+  es:['/es/resenas-google','/es/gestion-reputacion-online','/es/analisis-resenas-ia','/es/resenas-google'],
+  zh:['/zh/google-reviews','/zh/online-reputation-management','/zh/ai-review-analysis','/zh/google-reviews']
 };
 
 export function generateStaticParams(){
@@ -154,6 +160,18 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
   const labels=localizedLabels[lang];
   const relatedIndex=(found.index+1)%families.length;
   const related=articles[lang][relatedIndex];
+  const solutionPath=solutionPaths[lang][found.index];
+  const articleUrl=base+'/'+lang+'/blog/'+slug;
+  const blogPosting={
+    '@context':'https://schema.org',
+    '@type':'BlogPosting',
+    headline:found.item.title,
+    description:found.item.description,
+    url:articleUrl,
+    mainEntityOfPage:articleUrl,
+    author:{'@type':'Organization',name:'Filtra.AI',url:base},
+    publisher:{'@type':'Organization',name:'Filtra.AI',url:base}
+  };
 
   return <main lang={lang} className="min-h-screen bg-black text-zinc-100">
     <header className="border-b border-zinc-800">
@@ -163,6 +181,7 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
       </div>
     </header>
     <article className="mx-auto max-w-4xl px-6 py-16">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(blogPosting)}} />
       <p className="text-sm font-semibold uppercase tracking-widest text-indigo-400">{found.item.kicker}</p>
       <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">{found.item.title}</h1>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">{found.item.lead}</p>
@@ -173,6 +192,11 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
           {section.bullets && <ul className="mt-5 list-disc space-y-2 pl-5 text-zinc-300">{section.bullets.map(b=><li key={b}>{b}</li>)}</ul>}
         </section>)}
       </div>
+      <section className="mt-14 rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
+        <h2 className="text-2xl font-bold tracking-tight">{labels.solution}</h2>
+        <p className="mt-3 text-sm leading-6 text-zinc-400">{found.item.description}</p>
+        <Link href={solutionPath} className="mt-5 inline-flex rounded-xl border border-zinc-700 px-5 py-3 font-semibold hover:border-indigo-500">Filtra.AI</Link>
+      </section>
       <nav aria-label={labels.topics} className="mt-16 border-t border-zinc-800 pt-10">
         <h2 className="text-2xl font-bold tracking-tight">{labels.topics}</h2>
         <Link href={familyPath(lang,relatedIndex)} className="mt-5 block rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
