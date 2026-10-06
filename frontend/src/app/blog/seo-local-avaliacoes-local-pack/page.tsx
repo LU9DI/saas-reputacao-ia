@@ -117,6 +117,14 @@ export default function Page() {
         Ao comparar pacotes de SEO local, verifique se o fornecedor explica claramente o que será feito, quais ativos serão acompanhados, quais indicadores serão usados e como as recomendações viram ações. Preço sem escopo comparável dificulta medir valor.
       </p>
 
+      <H2>O que diferencia um pacote de SEO local que tem operação</H2>
+      <p>
+        O pacote deixa de ser uma lista genérica quando cada entrega tem responsável, frequência e critério de revisão. Para a camada de reputação, por exemplo, defina quem acompanha novas avaliações, quem classifica temas, como problemas são encaminhados e quando o cliente recebe a leitura do período. A Filtra.AI pode apoiar essa triagem e análise; não substitui a equipe que conhece o negócio.
+      </p>
+      <p>
+        Para agências, esse desenho também evita uma promessa comum e difícil de sustentar: garantir posição no Local Pack. O serviço deve vender processo, acompanhamento e decisões baseadas em sinais reais.
+      </p>
+
       <H2>Google Business Profile + site</H2>
       <p>
         O perfil empresarial deve apresentar informações corretas e úteis, com categoria, serviços, descrição,
