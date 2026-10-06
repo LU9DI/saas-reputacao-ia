@@ -188,7 +188,8 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     {en:'/en/blog/online-reputation-management-guide',es:'/es/blog/guia-gestion-reputacion-online',zh:'/zh/blog/online-reputation-management-guide',label:{en:'Online reputation management guide',es:'Guía de gestión de reputación online',zh:'在线声誉管理指南'}},
     {en:'/en/blog/ai-review-analysis-guide',es:'/es/blog/analisis-resenas-ia',zh:'/zh/blog/ai-review-analysis-guide',label:{en:'AI review analysis guide',es:'Guía de análisis de reseñas con IA',zh:'AI 评论分析指南'}},
     {en:'/en/blog/customer-feedback-reputation',es:'/es/blog/feedback-clientes-reputacion',zh:'/zh/blog/customer-feedback-reputation',label:{en:'Customer feedback and reputation',es:'Feedback de clientes y reputación',zh:'客户反馈与声誉'}},
-    {en:'/en/blog/local-seo-google-reviews',es:'/es/blog/seo-local-resenas-google',zh:'/zh/blog/local-seo-google-reviews',label:{en:'Local SEO and Google reviews',es:'SEO local y reseñas de Google',zh:'本地 SEO 与 Google 评价'}}
+    {en:'/en/blog/local-seo-google-reviews',es:'/es/blog/seo-local-resenas-google',zh:'/zh/blog/local-seo-google-reviews',label:{en:'Local SEO and Google reviews',es:'SEO local y reseñas de Google',zh:'本地 SEO 与 Google 评价'}},
+    {en:'/en/blog/agency-reputation-management',es:'/es/blog/agencia-gestion-reputacion',zh:'/zh/blog/agency-reputation-management',label:{en:'Agency reputation management',es:'Gestión de reputación para agencias',zh:'代理机构声誉管理'}}
   ];
   const resourceByPage:Record<string,typeof blogFamilies[number]>={
     '/avaliacoes-google':blogFamilies[0],
