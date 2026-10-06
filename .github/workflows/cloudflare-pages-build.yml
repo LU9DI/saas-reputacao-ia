@@ -1,14 +1,14 @@
-name: cloudflare-pages-build
+name: cloudflare-pages-deploy
 
 on:
   push:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,11 +26,8 @@ jobs:
           CLOUDFLARE_PAGES: "1"
           NEXT_PUBLIC_APP_URL: "https://filtraai.com"
           NEXT_PUBLIC_API_URL: "https://filtra-ia-api.onrender.com"
-      - name: Package static export
-        working-directory: .
-        run: tar -czf cloudflare-pages-out.tar.gz -C frontend/out .
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cloudflare-pages-out
-          path: cloudflare-pages-out.tar.gz
-          retention-days: 1
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: aece1b8443957c1c37b4fd48f933379b
+        run: npx wrangler@4 pages deploy out --project-name=filtra-ai-fallback-direct --branch=main --commit-hash="$GITHUB_SHA" --commit-message="$GITHUB_SHA"
