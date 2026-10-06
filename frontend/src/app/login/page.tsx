@@ -117,9 +117,13 @@ export default function LoginPage() {
           </section>
 
           <section className="p-6 sm:p-10">
-            <div className="mb-8 flex items-center justify-between gap-3">
-              <BrandMark size="sm" href="/" subtitle="Online Reputation" />
-              <LanguageSwitcher variant="select" className="shrink-0" />
+            <div className="mb-8 space-y-4">
+              <div className="flex items-center">
+                <BrandMark size="sm" href="/" subtitle="Online Reputation" />
+              </div>
+              <div className="flex justify-end">
+                <LanguageSwitcher variant="select" className="shrink-0" />
+              </div>
             </div>
 
             <div className="mx-auto max-w-md">
