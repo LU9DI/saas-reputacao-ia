@@ -76,7 +76,7 @@ async function ensureMissionApprovalAction(empresaId: string, missionId: number,
       'SELECT approval_action_id FROM dot_agent_missions WHERE id=? AND empresa_id=? LIMIT 1',
       [missionId, empresaId],
     );
-    if (mission?.approval_action_id) { release(Number(mission.approval_action_id)); return Number(mission.approval_action_id); }
+    if (mission?.approval_action_id) { const id = Number(mission.approval_action_id); release(id); return id; }
 
     await db.exec(`CREATE TABLE IF NOT EXISTS dot_events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
