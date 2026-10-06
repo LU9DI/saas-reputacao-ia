@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
@@ -34,6 +35,10 @@ export default function PedirVsFiltrarPage() {
         {
           heading: 'Transparência com responsabilidade',
           body: 'O objetivo não é selecionar notas. É facilitar a manifestação de opiniões reais, criar contexto para a equipe resolver falhas operacionais e tornar mais simples que clientes que desejarem deixem avaliações públicas.',
+        },
+        {
+          heading: 'Como isso se conecta ao SEO local',
+          body: 'Avaliações são apenas uma parte da presença local. Para entender como conectar avaliações, Perfil da Empresa no Google, site, conteúdo e acompanhamento em uma oferta operacional, veja o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local e avaliações</Link>.',
         },
         {
           heading: 'FAQ rápido',
