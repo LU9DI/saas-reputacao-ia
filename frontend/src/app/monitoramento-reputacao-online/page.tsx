@@ -35,7 +35,7 @@ export default function Page() {
         { heading: 'Monitoramento de reputação para agências de SEO local', body: 'Para agências, o valor está em transformar monitoramento em uma entrega recorrente e comparável entre clientes. Padronize linha de base, temas, indicadores e relatório, mantendo espaço para exceções de cada negócio.' },
         { heading: 'O que fazer quando aparece um sinal crítico', body: 'Confirme se o sinal é isolado ou recorrente, identifique a unidade ou etapa da jornada envolvida, encaminhe para o responsável e acompanhe as avaliações seguintes. Evite tratar todo alerta como crise.' },
         {
-        { heading: 'O que monitorar', body: 'Acompanhe volume de avaliações, variações de nota, temas recorrentes, novos problemas e mudanças relevantes na percepção dos clientes.' },
+         heading: 'O que monitorar', body: 'Acompanhe volume de avaliações, variações de nota, temas recorrentes, novos problemas e mudanças relevantes na percepção dos clientes.' },
         { heading: 'Separe ruído de mudança real', body: 'Um comentário isolado merece atenção, mas uma tendência persistente ou acelerada normalmente fornece um sinal mais forte para a gestão.' },
         { heading: 'Priorize o que pode virar ação', body: 'Classifique temas por frequência, impacto no negócio e capacidade da equipe responsável de agir sobre eles.' },
         { heading: 'Compare unidades com contexto', body: 'Empresas com várias unidades precisam enxergar diferenças locais sem transformar realidades distintas em uma comparação enganosa.' },
