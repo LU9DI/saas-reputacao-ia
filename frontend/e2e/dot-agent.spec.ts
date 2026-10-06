@@ -19,9 +19,8 @@ test.describe('DOT global agent surface', () => {
     await expect(page.getByTestId('dot-agent-panel')).toBeVisible();
   });
 
-  test('keeps the DOT route usable while the launcher remains global', async ({ page }) => {
+  test('does not expose a standalone DOT route', async ({ page }) => {
     const response = await page.goto('/dot');
-    expect(response?.status()).toBe(200);
-    await expect(page.getByTestId('dot-agent-launcher')).toBeVisible();
+    expect(response?.status()).toBe(404);
   });
 });
