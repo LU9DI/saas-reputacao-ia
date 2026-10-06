@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Pacotes de SEO local: guia completo',
+  title: 'Pacotes de SEO local para empresas e agências | Filtra.AI',
   description:
-    'Pacotes de SEO local para empresas e agências: o que incluir em Google Business Profile, site, avaliações, reputação, conteúdo local e acompanhamento no Google Maps.',
+    'Pacotes de SEO local para empresas e agências: Google Business Profile, site, avaliações, reputação, conteúdo local, citações e acompanhamento no Google Maps.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', languages: { 'pt-BR': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', en: 'https://filtraai.com/en/blog/local-seo-google-reviews', es: 'https://filtraai.com/es/blog/seo-local-resenas-google', zh: 'https://filtraai.com/zh/blog/local-seo-google-reviews', 'x-default': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' } },
   openGraph: {
     type: 'article',
@@ -16,9 +16,23 @@ export const metadata: Metadata = {
   },
 };
 
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    { '@type': 'Question', name: 'O que é um pacote de SEO local?', acceptedAnswer: { '@type': 'Answer', text: 'É uma oferta organizada para melhorar e acompanhar a presença de uma empresa nas buscas relacionadas à sua região, conectando Perfil da Empresa no Google, site, páginas locais, avaliações, reputação e monitoramento.' } },
+    { '@type': 'Question', name: 'Quanto custa um pacote de SEO local?', acceptedAnswer: { '@type': 'Answer', text: 'O valor depende do número de unidades, do escopo, da frequência das atividades e da profundidade do acompanhamento.' } },
+    { '@type': 'Question', name: 'SEO local inclui avaliações Google?', acceptedAnswer: { '@type': 'Answer', text: 'Pode incluir acompanhamento e análise de avaliações, respostas e processos para facilitar feedback autêntico, respeitando as políticas da plataforma.' } },
+    { '@type': 'Question', name: 'Uma agência pode oferecer SEO local e gestão de reputação juntos?', acceptedAnswer: { '@type': 'Answer', text: 'Sim. A combinação conecta presença no Google, experiência do cliente, avaliações e acompanhamento em uma entrega contínua.' } }
+  ]
+};
+
 export default function Page() {
   return (
-    <BlogArticle
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <BlogArticle
       kicker="SEO local"
       title="Pacotes de SEO local: o que incluir para gerar crescimento"
       lead="Um pacote de SEO local forte conecta presença local, Google Business Profile, site, avaliações, reputação e acompanhamento de oportunidades no Google Maps."
@@ -45,6 +59,30 @@ export default function Page() {
         Para negócios com várias unidades, o pacote também precisa considerar diferenças entre localidades. Uma
         unidade pode ter ótima avaliação e outra concentrar reclamações; tratar a rede como se fosse uma única
         operação pode esconder oportunidades importantes.
+      </p>
+
+      <H2>O que deve entrar em um pacote de SEO local?</H2>
+      <p>
+        Um pacote bem definido deve explicar o que será feito no Perfil da Empresa no Google, no site, nas páginas locais,
+        nas avaliações, nas citações e no acompanhamento. Também precisa deixar claro a frequência das atividades, quais
+        unidades estão incluídas, quais indicadores serão observados e quais entregáveis o cliente recebe.
+      </p>
+      <p>
+        O objetivo não é acumular tarefas. É conectar os sinais que ajudam o negócio a ser encontrado e escolhido:
+        informação correta, relevância para a busca, presença local, avaliações e uma rotina de análise.
+      </p>
+
+      <H2>Pacote de SEO local: básico, recorrente ou multiunidade?</H2>
+      <p>
+        Um pacote inicial pode concentrar diagnóstico, correções do Perfil da Empresa no Google, consistência de
+        informações e prioridades on-page. Um pacote recorrente pode adicionar conteúdo local, acompanhamento de
+        avaliações, análise de temas e relatórios. Para redes, o escopo precisa incluir gestão por unidade, comparação
+        de desempenho e priorização por localidade.
+      </p>
+      <p>
+        A diferença entre níveis deve estar no escopo e na profundidade, não em promessas de posição garantida.
+        Rankings locais variam conforme consulta, localização e outros sinais; o trabalho deve medir mudanças e
+        oportunidades em vez de vender uma posição fixa.
       </p>
 
       <H2>Pacotes de SEO local: quais níveis fazem sentido?</H2>
@@ -132,6 +170,26 @@ export default function Page() {
         .
       </p>
 
+      <H2>Perguntas frequentes sobre pacotes de SEO local</H2>
+      <p>
+        <strong>O que é um pacote de SEO local?</strong> É uma oferta organizada para melhorar e acompanhar a presença
+        de uma empresa nas buscas relacionadas à sua região, conectando Perfil da Empresa no Google, site, páginas locais,
+        avaliações, reputação e monitoramento.
+      </p>
+      <p>
+        <strong>Quanto custa um pacote de SEO local?</strong> O valor depende do número de unidades, do escopo, da
+        frequência das atividades e da profundidade do acompanhamento. Por isso, comparar apenas preço mensal pode
+        esconder diferenças importantes entre propostas.
+      </p>
+      <p>
+        <strong>SEO local inclui avaliações Google?</strong> Pode incluir acompanhamento e análise de avaliações,
+        respostas e processos para facilitar feedback autêntico, sempre respeitando as políticas da plataforma.
+      </p>
+      <p>
+        <strong>Uma agência pode oferecer SEO local e gestão de reputação juntos?</strong> Sim. Essa combinação conecta
+        presença no Google, experiência do cliente, avaliações e relatório de evolução em uma entrega contínua.
+      </p>
+
       <H2>Como transformar o pacote em rotina</H2>
       <p>
         Uma rotina eficiente começa pelo diagnóstico, passa por prioridades e termina com uma revisão do que mudou.
@@ -149,6 +207,7 @@ export default function Page() {
         </Link>{' '}
         reúne gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.
       </p>
-    </BlogArticle>
+      </BlogArticle>
+    </>
   );
 }
