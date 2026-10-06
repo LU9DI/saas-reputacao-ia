@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { BrandMark } from '../../components/BrandMark';
-import { LanguageSwitcher } from '../../components/LanguageSwitcher';
+import { BrandMark } from '../../../components/BrandMark';
+import { LanguageSwitcher } from '../../../components/LanguageSwitcher';
 
 type Lang='en'|'es'|'zh';
 type Section={heading:string;body:string;bullets?:string[]};
