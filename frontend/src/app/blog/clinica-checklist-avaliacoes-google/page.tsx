@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Clínicas: checklist de avaliações Google | Filtra.AI',
+  title: 'Clínicas: checklist de avaliações Google ',
   description:
     'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
   alternates: { canonical: 'https://filtraai.com/blog/clinica-checklist-avaliacoes-google' },

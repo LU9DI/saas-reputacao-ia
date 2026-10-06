@@ -2,10 +2,19 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação para franquias e redes | Filtra.AI',
+  title: 'Gestão de reputação para franquias e redes ',
   description:
     'Organize avaliações e feedback de várias unidades, identifique padrões e acompanhe reputação local com o Filtra.AI para franquias e redes.',
-  alternates: { canonical: 'https://filtraai.com/franquias' },
+  alternates: {
+    canonical: 'https://filtraai.com/franquias',
+    languages: {
+      'pt-BR': 'https://filtraai.com/franquias',
+      en: 'https://filtraai.com/en/franchises',
+      es: 'https://filtraai.com/es/franquicias',
+      zh: 'https://filtraai.com/zh/franchises',
+      'x-default': 'https://filtraai.com/franquias',
+    },
+  },
   openGraph: {
     type: 'website',
     url: 'https://filtraai.com/franquias',

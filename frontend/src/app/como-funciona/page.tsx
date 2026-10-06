@@ -2,10 +2,19 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Como funciona o Filtra.AI | Filtro de avaliações Google',
+  title: 'Como funciona a Filtra.AI | Feedback, avaliações Google e reputação',
   description:
-    'Veja o passo a passo: QR ou link, nota de 1 a 5, 4–5★ vão ao Google Reviews e 1–3★ ficam no painel privado com apoio de IA. Trial 7 dias grátis.',
-  alternates: { canonical: 'https://filtraai.com/como-funciona' },
+    'Veja como o Filtra.AI organiza feedback, facilita convites para avaliações genuínas no Google e ajuda a equipe a transformar insatisfação em melhoria. Trial de 7 dias grátis.',
+  alternates: {
+    canonical: 'https://filtraai.com/como-funciona',
+    languages: {
+      'pt-BR': 'https://filtraai.com/como-funciona',
+      en: 'https://filtraai.com/en/how-it-works',
+      es: 'https://filtraai.com/es/como-funciona',
+      zh: 'https://filtraai.com/zh/how-it-works',
+      'x-default': 'https://filtraai.com/como-funciona',
+    },
+  },
   openGraph: {
     type: 'website',
     url: 'https://filtraai.com/como-funciona',
@@ -18,23 +27,23 @@ export default function ComoFuncionaPage() {
   return (
     <SeoLanding
       h1="Como o Filtra.AI protege sua reputação no Google"
-      lead="O Filtra.AI não substitui o Google Reviews. Ele orienta experiências positivas para lá e trata insatisfações em ambiente privado, com painel e apoio de IA."
+      lead="O Filtra.AI não substitui o Google Reviews. Ele cria um fluxo de feedback próximo à experiência, facilita convites não seletivos para avaliações genuínas e ajuda a equipe a tratar insatisfações com discrição."
       sections={[
         {
           heading: '1. Canal de avaliação',
-          body: 'Após ativar a conta, você recebe um link exclusivo e um QR Code para balcão, cardápio, embalagem ou WhatsApp. O cliente avalia primeiro no seu ambiente controlado.',
+          body: 'Após ativar a conta, você recebe um link e um QR Code para balcão, cardápio, embalagem ou WhatsApp. O cliente inicia o fluxo de feedback próximo à experiência e decide como deseja compartilhar sua opinião.',
         },
         {
           heading: '2. Registro da nota',
           body: 'O cliente escolhe de 1 a 5 estrelas. O sistema decide automaticamente o próximo caminho — sem você precisar intervir em cada avaliação.',
         },
         {
-          heading: '3. Notas altas (4–5★): Google Reviews',
-          body: 'Avaliações positivas são direcionadas à página oficial no Google. A publicação final depende da confirmação do cliente no Google, como em qualquer fluxo legítimo.',
+          heading: '3. Convite para uma avaliação genuína no Google',
+          body: 'Depois da experiência, a empresa pode convidar o cliente a compartilhar uma avaliação honesta no Google. O cliente decide se avalia, qual nota dá e o que escreve.',
         },
         {
-          heading: '4. Notas baixas (1–3★): painel privado',
-          body: 'Notas 3 ou menos permanecem no painel, sem redirecionamento automático ao Google, para a equipe analisar, corrigir processos e responder com discrição.',
+          heading: '4. Feedback privado para acompanhamento',
+          body: 'O cliente também pode preferir deixar feedback direto para a empresa. Esse relato pode ficar no painel para análise, encaminhamento e acompanhamento. O tratamento privado não depende de uma nota específica.',
         },
         {
           heading: '5. IA e relatório',

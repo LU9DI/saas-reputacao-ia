@@ -5,12 +5,12 @@ import { BrandMark } from '../../components/BrandMark';
 export const metadata: Metadata = {
   title: 'Como conseguir mais avaliações no Google (sem parecer spam)',
   description:
-    'Guia prático: quando pedir review, o que evitar nas políticas do Google, velocity de avaliações e como um QR com filtro ajuda restaurantes e clínicas. Trial Filtra.AI 7 dias.',
+    'Guia prático para convidar avaliações honestas: momento, canal, boas práticas e como organizar feedback de clientes sem pressionar por uma nota específica.',
   alternates: { canonical: '/blog/como-conseguir-avaliacoes-google' },
   openGraph: {
     title: 'Como conseguir mais avaliações no Google sem parecer spam',
     description:
-      'Pedidos no momento certo, tom honesto e um canal próprio antes do Maps. O que funciona em 2026.',
+      'Pedidos no momento certo, tom honesto e um canal de feedback estruturado antes e depois do convite público.',
   },
 };
 
@@ -37,10 +37,11 @@ export default function BlogAvaliacoesGooglePage() {
         </div>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-zinc-100">1. Peça no pico de satisfação</h2>
+          <h2 className="text-lg font-semibold text-zinc-100">1. Peça no momento da experiência</h2>
           <p>
-            O melhor momento é logo após uma boa experiência: conta paga no salão, consulta concluída,
-            entrega no prazo. Mensagens genéricas semanas depois convertem pouco e soam automáticas.
+            Um bom momento é logo após uma experiência real: conta paga no salão, consulta concluída,
+            entrega no prazo ou serviço encerrado. A proximidade reduz atrito e aumenta a chance de o cliente
+            registrar uma opinião ainda fresca.
           </p>
         </section>
 
@@ -48,50 +49,51 @@ export default function BlogAvaliacoesGooglePage() {
           <h2 className="text-lg font-semibold text-zinc-100">2. Facilite o caminho</h2>
           <p>
             QR no balcão, link curto no WhatsApp ou no comprovante. Quanto menos toques até a tela de
-            avaliação, maior a taxa de conclusão. Se o cliente precisa “caçar” seu perfil no Maps, a
-            maioria desiste.
+            avaliação, mais simples fica compartilhar uma experiência. Não é necessário criar uma rota que
+            force uma nota específica.
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">3. Não compre review e não force 5★</h2>
           <p>
-            Avaliações pagas e incentivos que exijam nota máxima violam políticas do Google e corroem
-            confiança. Peça feedback honesto. Clientes satisfeitos naturalmente tendem a notas altas;
-            o trabalho da operação é gerar essa satisfação — e capturar o momento.
+            Avaliações pagas e incentivos que exijam nota máxima corroem confiança e podem contrariar regras
+            da plataforma. Peça feedback honesto e deixe o cliente decidir se avalia, qual nota dá e o que
+            escreve.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-zinc-100">4. Velocity bate estoque parado</h2>
+          <h2 className="text-lg font-semibold text-zinc-100">4. Constância bate pico artificial</h2>
           <p>
-            No Local Pack e em recomendações assistidas por IA, reviews recentes pesam. Cinco a quinze
-            avaliações novas por mês, de forma estável, costumam comunicar mais “negócio ativo” do que
-            200 reviews antigas e zero movimento há um trimestre.
+            Uma rotina estável facilita acompanhar a percepção atual dos clientes. Em vez de um pico de pedidos
+            seguido de silêncio, mantenha um processo contínuo de convites honestos, respostas e melhorias na
+            operação.
           </p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-zinc-100">5. Separe o que é público do que é processo</h2>
+          <h2 className="text-lg font-semibold text-zinc-100">5. Separe público de privado sem selecionar por nota</h2>
           <p>
-            Nem todo feedback precisa nascer no Google. Um canal próprio (QR/link) permite que notas
-            altas sigam para o Google Reviews e que insatisfações sejam tratadas no painel — com tempo
-            para corrigir atraso, atendimento ou produto antes de virar crise pública.
+            Nem todo feedback precisa ser publicado no Google. Um canal próprio (QR/link) permite que o cliente
+            deixe um comentário diretamente para a empresa, enquanto quem desejar pode seguir para a avaliação
+            pública. A escolha deve continuar com o cliente, independentemente da nota.
           </p>
           <p>
-            É exatamente o modelo do{' '}
+            É esse equilíbrio que o{' '}
             <Link href="/como-funciona" className="text-indigo-400 underline">
               Filtra.AI
             </Link>
-            : 4–5★ orientadas ao Google; 1–3★ no painel com apoio de IA.
+            {' '}busca oferecer: feedback estruturado, convite para avaliações genuínas e contexto para a equipe
+            melhorar a operação.
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">6. Responda o que já está público</h2>
           <p>
-            Reviews antigas no Google ainda merecem resposta curta e profissional. Isso mostra cuidado
-            a quem está pesquisando agora e reforça sinais de perfil ativo.
+            Reviews antigas no Google ainda merecem resposta curta e profissional. Isso ajuda a mostrar que a
+            empresa acompanha o que os clientes publicam e continua disponível para resolver problemas.
           </p>
         </section>
 
@@ -99,17 +101,17 @@ export default function BlogAvaliacoesGooglePage() {
           <h2 className="text-lg font-semibold text-zinc-100">Checklist da primeira semana</h2>
           <ul className="list-disc pl-5 space-y-1">
             <li>QR ou link em um ponto de contato real (mesa, recepção, WhatsApp)</li>
-            <li>Meta modestável: poucas avaliações honestas, não um pico artificial</li>
-            <li>Alguém responsável por ler o painel todo dia</li>
-            <li>Uma melhoria de processo a partir dos feedbacks 1–3★</li>
+            <li>Convite para opiniões honestas, sem pedido de nota específica</li>
+            <li>Alguém responsável por ler o feedback e as avaliações públicas</li>
+            <li>Uma melhoria de processo a partir dos temas recorrentes</li>
           </ul>
         </section>
 
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
           <p className="text-zinc-100 font-medium">Teste o fluxo completo em 7 dias</p>
           <p>
-            No Filtra.AI você ativa o trial sem cartão, gera o QR e vê na prática quantos feedbacks
-            entram — e quantos 4–5★ seguem para o Google.
+            No Filtra.AI você ativa o trial sem cartão, gera o QR e acompanha feedback, temas e convites para
+            avaliações genuínas no Google.
           </p>
           <Link
             href="/"
@@ -127,7 +129,7 @@ export default function BlogAvaliacoesGooglePage() {
             Para clínicas
           </Link>
           <Link href="/pedir-estrela-vs-filtrar" className="hover:text-zinc-300">
-            Pedir vs filtrar
+            Pedir vs feedback
           </Link>
           <Link href="/como-funciona" className="hover:text-zinc-300">
             Como funciona

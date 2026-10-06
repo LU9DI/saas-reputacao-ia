@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Por que a velocidade de reviews importa no Google Maps em 2026',
+  title: 'Como manter avaliações recentes no Google Maps em 2026',
   description:
-    'Reviews recentes pesam mais que estoque antigo no Local Pack. Entenda velocity, frescor e como manter fluxo mensal de avaliações Google.',
+    'Entenda por que uma rotina consistente de pedidos honestos, respostas e acompanhamento ajuda na gestão de avaliações e no SEO local.',
   alternates: { canonical: '/blog/velocity-reviews-google-maps-2026' },
 };
 
@@ -12,29 +12,32 @@ export default function Page() {
   return (
     <BlogArticle
       kicker="SEO local · 2026"
-      title="Por que a velocidade de reviews importa no Google Maps em 2026"
-      lead="Ter 200 avaliações de 2022 e zero nos últimos meses envia um sinal fraco. O Google — e as respostas de IA — valorizam negócio ativo."
+      title="Como manter avaliações recentes no Google Maps em 2026"
+      lead="Ter avaliações antigas sem novas interações dificulta acompanhar a percepção atual dos clientes. O objetivo é criar uma rotina consistente e autêntica."
     >
       <H2>O que é velocity</H2>
       <p>
-        Velocity é a cadência de reviews novas (por exemplo, 5 a 15 por mês). Não substitui nota média nem
-        volume total, mas complementa: mostra que clientes reais continuam interagindo com o perfil.
+        Velocity é a cadência de novas avaliações ao longo do tempo. Ela não substitui nota média, volume,
+        qualidade do atendimento ou outros sinais de presença local, mas ajuda a mostrar a percepção mais
+        recente dos clientes.
       </p>
-      <H2>Por que isso subiu de importância</H2>
+      <H2>Por que a consistência importa</H2>
       <p>
-        No Local Pack, sinais de Google Business Profile e reviews estão entre os mais citados por estudos
-        de ranking local. Em paralelo, resumos de IA usam texto e recência de avaliações para decidir o que
-        recomendar.
+        Em SEO local, não existe uma única métrica que garanta posição. Uma rotina consistente facilita
+        monitorar mudanças na experiência, responder avaliações novas e manter o perfil atualizado com sinais
+        recentes da operação.
       </p>
-      <H2>Como operar velocity de forma saudável</H2>
+      <H2>Como operar de forma saudável</H2>
       <p>
-        Peça avaliação no momento da satisfação (mesa, consulta, entrega). Use QR ou link próprio. Evite
-        picos artificiais seguidos de silêncio — o padrão estável vence o “rajada e some”.
+        Convide clientes de forma não seletiva para compartilhar uma avaliação honesta após experiências reais.
+        Use QR ou link próprio para reduzir atrito, sem comprar avaliações, oferecer incentivo por nota ou
+        pedir uma classificação específica.
       </p>
-      <H2>Papel do filtro</H2>
+      <H2>O papel do feedback privado</H2>
       <p>
-        Um canal como o Filtra.AI aumenta a chance de capturar o cliente satisfeito (4–5★ → Google) e trata
-        1–3★ no painel, sem depender só da sorte no Maps.
+        Um canal próprio também pode receber feedback de quem prefere falar diretamente com a empresa. Isso
+        cria contexto para corrigir atendimento, prazo ou produto, enquanto o cliente continua livre para
+        decidir se publica uma avaliação no Google.
       </p>
     </BlogArticle>
   );

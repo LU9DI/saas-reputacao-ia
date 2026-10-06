@@ -5,7 +5,7 @@ import { BlogArticle, H2 } from '../../components/BlogArticle';
 const canonical = 'https://filtraai.com/blog/google-business-profile-avaliacoes';
 
 export const metadata: Metadata = {
-  title: 'Google Business Profile e avaliações: como criar uma rotina que funciona | Filtra.AI',
+  title: 'Google Business Profile e avaliações: como criar uma rotina que funciona',
   description:
     'Como organizar uma rotina de avaliações no Google Business Profile sem depender de pedidos aleatórios: momento, canal, feedback e acompanhamento.',
   alternates: { canonical },

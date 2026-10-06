@@ -2,7 +2,9 @@ name: Deploy Frontend to Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - seo-top3-20261005
     paths:
       - 'frontend/**'
       - '.github/workflows/deploy-cloudflare.yml'

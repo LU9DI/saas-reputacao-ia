@@ -2,10 +2,19 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação para associações e federações | Filtra.AI',
+  title: 'Gestão de reputação para associações e federações ',
   description:
     'Organize feedback, avaliações e sinais de reputação de associados, empresas e unidades em um fluxo centralizado com o Filtra.AI.',
-  alternates: { canonical: 'https://filtraai.com/associacoes' },
+  alternates: {
+    canonical: 'https://filtraai.com/associacoes',
+    languages: {
+      'pt-BR': 'https://filtraai.com/associacoes',
+      en: 'https://filtraai.com/en/associations',
+      es: 'https://filtraai.com/es/asociaciones',
+      zh: 'https://filtraai.com/zh/associations',
+      'x-default': 'https://filtraai.com/associacoes',
+    },
+  },
   openGraph: {
     type: 'website',
     url: 'https://filtraai.com/associacoes',

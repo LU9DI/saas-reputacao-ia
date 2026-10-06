@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Monitoramento de reputação online para empresas | Filtra.AI',
+  title: 'Monitoramento de reputação online para empresas',
   description:
     'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.',
   alternates: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <SeoLanding
-      h1="Monitoramento de reputação online sem depender de planilhas"
+      h1="Monitoramento de reputação online para empresas sem depender de planilhas"
       lead="Monitorar reputação é acompanhar mudanças, entender causas e agir. A Filtra.AI organiza avaliações e feedback para transformar sinais dispersos em prioridades."
       breadcrumbHref="/monitoramento-reputacao-online"
       contextLinks={[

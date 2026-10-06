@@ -2,10 +2,19 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Reputação online para turismo e hotelaria | Filtra.AI',
+  title: 'Reputação online para turismo e hotelaria',
   description:
     'Monitore avaliações e feedback de hóspedes, clientes e visitantes no turismo. Organize padrões de experiência e ações com o Filtra.AI.',
-  alternates: { canonical: 'https://filtraai.com/turismo' },
+  alternates: {
+    canonical: 'https://filtraai.com/turismo',
+    languages: {
+      'pt-BR': 'https://filtraai.com/turismo',
+      en: 'https://filtraai.com/en/tourism',
+      es: 'https://filtraai.com/es/turismo',
+      zh: 'https://filtraai.com/zh/tourism',
+      'x-default': 'https://filtraai.com/turismo',
+    },
+  },
   openGraph: {
     type: 'website',
     url: 'https://filtraai.com/turismo',

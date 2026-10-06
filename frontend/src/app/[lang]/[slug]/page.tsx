@@ -83,16 +83,179 @@ const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia'
 
 export function generateStaticParams(){return (Object.entries(pages) as [Lang,Item[]][]).flatMap(([lang,items])=>items.map(x=>({lang,slug:x.slug})));}
 
-function get(lang:string,slug:string){const items=pages[lang as Lang];if(!items)return null;const index=items.findIndex(x=>x.slug===slug);return index<0?null:{item:items[index],index};}
+function get(lang:string,slug:string){
+  const items=pages[lang as Lang];
+  if(!items)return null;
+  const index=items.findIndex(x=>x.slug===slug);
+  return index<0?null:{item:items[index],index};
+}
+
+function localizedPath(lang:Lang,index:number){
+  return '/'+lang+'/'+pages[lang][index].slug;
+}
+
+const labels={
+  en:{topics:'Explore related topics',resources:'Guides and resources',why:'What this page helps you solve',how:'A practical workflow',benefits:'What to look for',next:'Continue with Filtra.AI',back:'See the full strategy'},
+  es:{topics:'Explora temas relacionados',resources:'Guías y recursos',why:'Qué problema ayuda a resolver esta página',how:'Un flujo de trabajo práctico',benefits:'Qué debes observar',next:'Continúa con Filtra.AI',back:'Ver la estrategia completa'},
+  zh:{topics:'探索相关主题',resources:'指南与资源',why:'本页面可以帮助解决什么问题',how:'实用的管理流程',benefits:'重点关注什么',next:'继续了解 Filtra.AI',back:'查看完整策略'}
+};
+
+function relatedIndexes(index:number,count:number){
+  const total=sourcePaths.length;
+  const result:number[]=[];
+  for(let offset=1;result.length<count && offset<total;offset++){
+    const candidate=(index+offset)%total;
+    if(candidate!==index)result.push(candidate);
+  }
+  return result;
+}
 
 export async function generateMetadata({params}:{params:Promise<{lang:string;slug:string}>}):Promise<Metadata>{
- const {lang,slug}=await params; const found=get(lang,slug); if(!found)return{};
- const languages:Record<string,string>={ 'pt-BR': base+sourcePaths[found.index] }; (['en','es','zh'] as Lang[]).forEach(code=>{languages[code]=base+'/'+code+'/'+pages[code][found.index].slug;});
- return {title:found.item.title,description:found.item.description,alternates:{canonical:base+'/'+lang+'/'+slug,languages:{...languages,'x-default':base+sourcePaths[found.index]}},openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},robots:{index:true,follow:true}};
+  const {lang,slug}=await params;
+  const found=get(lang,slug);
+  if(!found)return{};
+  const languages:Record<string,string>={'pt-BR':base+sourcePaths[found.index]};
+  (['en','es','zh'] as Lang[]).forEach(code=>{
+    languages[code]=base+localizedPath(code,found.index);
+  });
+  return {
+    title:found.item.title,
+    description:found.item.description,
+    alternates:{canonical:base+'/'+lang+'/'+slug,languages:{...languages,'x-default':base+sourcePaths[found.index]}},
+    openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},
+    robots:{index:true,follow:true}
+  };
 }
 
 export default async function Page({params}:{params:Promise<{lang:string;slug:string}>}){
- const {lang,slug}=await params; const found=get(lang,slug); if(!found)notFound();
- const href=sourcePaths[found.index];
- return <main className="min-h-screen bg-black text-zinc-100"><header className="border-b border-zinc-800"><div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5"><Link href="/"><BrandMark/></Link><LanguageSwitcher compact/></div></header><section className="mx-auto max-w-5xl px-6 py-20"><p className="mb-4 text-sm font-medium text-indigo-400">Filtra.AI</p><h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{found.item.h1}</h1><p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">{found.item.intro}</p><div className="mt-10 grid gap-4 sm:grid-cols-2">{found.item.bullets.map(x=><div key={x} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">{x}</div>)}</div><Link href={href} className="mt-10 inline-flex rounded-xl bg-indigo-500 px-6 py-3 font-semibold">{found.item.cta}</Link></section></main>;
+  const {lang,slug}=await params;
+  const found=get(lang,slug);
+  if(!found)notFound();
+
+  const t=labels[lang];
+  const topic=found.item;
+  const related=relatedIndexes(found.index,4);
+  const relatedCopy=related.map(i=>pages[lang][i]);
+  const primary=localizedPath(lang,found.index);
+  const blogHub=lang==='en'?'/en/blog':lang==='es'?'/es/blog':'/zh/blog';
+  const blogFamilies=[
+    {en:'/en/blog/get-google-reviews',es:'/es/blog/conseguir-resenas-google',zh:'/zh/blog/google-reviews-guide',label:{en:'How to get genuine Google reviews',es:'Cómo conseguir reseñas genuinas en Google',zh:'如何获得更多真实的 Google 评价'}},
+    {en:'/en/blog/online-reputation-management-guide',es:'/es/blog/guia-gestion-reputacion-online',zh:'/zh/blog/online-reputation-management-guide',label:{en:'Online reputation management guide',es:'Guía de gestión de reputación online',zh:'在线声誉管理指南'}},
+    {en:'/en/blog/ai-review-analysis-guide',es:'/es/blog/analisis-resenas-ia',zh:'/zh/blog/ai-review-analysis-guide',label:{en:'AI review analysis guide',es:'Guía de análisis de reseñas con IA',zh:'AI 评论分析指南'}},
+    {en:'/en/blog/local-seo-google-reviews',es:'/es/blog/seo-local-resenas-google',zh:'/zh/blog/local-seo-google-reviews',label:{en:'Local SEO and Google reviews',es:'SEO local y reseñas de Google',zh:'本地 SEO 与 Google 评价'}}
+  ];
+  const resourceArticle=blogFamilies[found.index % blogFamilies.length];
+  const sectionCopy={
+    en:{
+      why:`Businesses searching for ${topic.title.toLowerCase()} need a repeatable way to understand customer signals and turn them into decisions, not just collect more comments.`,
+      how:`Start with the customer experience, organize the relevant signals, identify recurring patterns, route the right issue to the right team and monitor whether the change improves perception over time.`
+    },
+    es:{
+      why:`Las empresas que buscan ${topic.title.toLowerCase()} necesitan una forma repetible de entender las señales de los clientes y convertirlas en decisiones, no solo acumular comentarios.`,
+      how:`Empieza por la experiencia del cliente, organiza las señales relevantes, identifica patrones recurrentes, lleva cada problema al equipo adecuado y comprueba si la mejora cambia la percepción con el tiempo.`
+    },
+    zh:{
+      why:`${topic.title} 需要的不只是收集更多评论，而是建立可重复的方法来理解客户信号，并把这些信号转化为管理决策。`,
+      how:`从客户体验开始，整理相关信号，识别重复模式，把问题交给合适团队处理，并持续观察改进是否改变客户感知。`
+    }
+  }[lang];
+
+  const benefits={
+    en:'Use the themes below as management signals: frequency, customer impact, recurrence and the team responsible for the next action.',
+    es:'Usa los temas siguientes como señales de gestión: frecuencia, impacto en el cliente, recurrencia y equipo responsable de la siguiente acción.',
+    zh:'把下面的主题当作管理信号：出现频率、客户影响、重复程度以及负责下一步行动的团队。'
+  }[lang];
+
+  return <main lang={lang} className="min-h-screen bg-black text-zinc-100">
+    <header className="border-b border-zinc-800">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <Link href="/" className="font-semibold tracking-tight text-white"><BrandMark/></Link>
+        <LanguageSwitcher compact/>
+      </div>
+    </header>
+
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{__html:JSON.stringify({
+        '@context':'https://schema.org',
+        '@type':'WebPage',
+        name:topic.title,
+        description:topic.description,
+        url:base+'/'+lang+'/'+slug,
+        inLanguage:lang,
+        isPartOf:{
+          '@type':'WebSite',
+          name:'Filtra.AI',
+          url:base+'/'
+        }
+      })}}
+    />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{__html:JSON.stringify({
+        '@context':'https://schema.org',
+        '@type':'BreadcrumbList',
+        itemListElement:[
+          {'@type':'ListItem',position:1,name:'Filtra.AI',item:base+'/'+lang},
+          {'@type':'ListItem',position:2,name:topic.title,item:base+'/'+lang+'/'+slug}
+        ]
+      })}}
+    />
+    <section className="mx-auto max-w-5xl px-6 py-20">
+      <p className="mb-4 text-sm font-medium text-indigo-400">Filtra.AI</p>
+      <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{topic.h1}</h1>
+      <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">{topic.intro}</p>
+
+      <section className="mt-12">
+        <h2 className="text-2xl font-bold tracking-tight">{t.why}</h2>
+        <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{sectionCopy.why}</p>
+      </section>
+
+      <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        {topic.bullets.map(x=><div key={x} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 leading-7">{x}</div>)}
+      </div>
+
+      <section className="mt-14">
+        <h2 className="text-2xl font-bold tracking-tight">{t.benefits}</h2>
+        <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{benefits}</p>
+      </section>
+
+      <section className="mt-14">
+        <h2 className="text-2xl font-bold tracking-tight">{t.how}</h2>
+        <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{sectionCopy.how}</p>
+      </section>
+
+      <nav aria-label={t.topics} className="mt-16">
+        <h2 className="text-2xl font-bold tracking-tight">{t.next}</h2>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {relatedCopy.map((item,pos)=>{
+            const i=related[pos];
+            return <Link key={item.slug} href={localizedPath(lang,i)} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500">
+              <span className="block text-sm font-semibold text-zinc-100">{item.title}</span>
+              <span className="mt-1 block text-xs leading-5 text-zinc-400">{item.description}</span>
+            </Link>;
+          })}
+        </div>
+      </nav>
+
+      <section className="mt-16">
+        <h2 className="text-2xl font-bold tracking-tight">{t.resources}</h2>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <Link href={blogHub} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500">
+            <span className="block text-sm font-semibold text-zinc-100">{lang==='en'?'Reviews & reputation blog':lang==='es'?'Blog de reseñas y reputación':'评价与声誉博客'}</span>
+            <span className="mt-1 block text-xs leading-5 text-zinc-400">{lang==='en'?'Browse localized guides and practical resources.':lang==='es'?'Explora guías localizadas y recursos prácticos.':'浏览本地化指南与实用资源。'}</span>
+          </Link>
+          <Link href={resourceArticle[lang]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500">
+            <span className="block text-sm font-semibold text-zinc-100">{resourceArticle.label[lang]}</span>
+            <span className="mt-1 block text-xs leading-5 text-zinc-400">{topic.description}</span>
+          </Link>
+        </div>
+      </section>
+
+      <div className="mt-12 flex flex-wrap gap-3">
+        <Link href={primary} className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold text-zinc-200">{t.back}</Link>
+        <Link href={primary} className="rounded-xl bg-indigo-500 px-5 py-3 font-semibold text-white">{topic.cta}</Link>
+      </div>
+    </section>
+  </main>;
 }

@@ -29,7 +29,7 @@ export function BlogArticle({
         {children}
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
           <p className="text-zinc-100 font-medium">Teste o Filtra.AI por 7 dias</p>
-          <p>QR, filtro 4–5★ → Google e 1–3★ no painel. Sem cartão no trial.</p>
+          <p>Feedback estruturado, análise de avaliações e convite para avaliações genuínas. Sem cartão no trial.</p>
           <Link
             href="/"
             className="inline-flex rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2.5 text-sm"
