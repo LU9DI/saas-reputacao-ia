@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
@@ -35,6 +36,11 @@ export default function Page() {
       <p>
         Escolha uma mesa ou um turno, meça quantos scans viram feedback e acompanhe quais temas aparecem.
         Ajuste o posicionamento do QR antes de escalar para toda a operação.
+      </p>
+      <H2>Como o QR entra em um pacote de SEO local</H2>
+      <p>
+        O QR é uma peça operacional, não uma estratégia isolada. Para definir frequência, entregáveis e métricas
+        junto de avaliações, reputação e presença local, veja o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local</Link>.
       </p>
     </BlogArticle>
   );
