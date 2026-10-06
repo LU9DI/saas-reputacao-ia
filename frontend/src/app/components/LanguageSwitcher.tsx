@@ -3,9 +3,8 @@
 import { usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
-/** Pares de rotas SEO PT ↔ EN/ES/ZH. */
+/** Pares de rotas SEO PT ↔ EN/ES/ZH (artigos / landing localizadas). */
 export const SEO_FAMILIES: Array<Record<Language, string>> = [
-  { pt: '/', en: '/en', es: '/es', zh: '/zh' },
   { pt: '/ia', en: '/en/ai', es: '/es/ia', zh: '/zh/ai' },
   { pt: '/filtra-ai', en: '/en/filtra-ai', es: '/es/filtra-ai', zh: '/zh/filtra-ai' },
   { pt: '/feedback-de-clientes', en: '/en/customer-feedback', es: '/es/feedback-clientes', zh: '/zh/customer-feedback' },
@@ -41,8 +40,24 @@ function normalizePath(pathname: string): string {
   return clean.replace(/\/+$/, '') || '/';
 }
 
+/** Home e landings de idioma raiz: só troca dicionário, sem mudar de rota. */
+function isAppLanguageOnlyPath(pathname: string): boolean {
+  const n = normalizePath(pathname);
+  if (n === '/' || n === '/en' || n === '/es' || n === '/zh') return true;
+  // páginas de app (login, painel, etc.) — não são artigos SEO
+  const seo = SEO_FAMILIES.some((item) =>
+    Object.values(item).some((path) => normalizePath(path) === n),
+  );
+  return !seo;
+}
+
 export function targetFor(pathname: string, language: Language): string {
   const normalized = normalizePath(pathname);
+  // Home: permanece na mesma URL
+  if (normalized === '/' || normalized === '/en' || normalized === '/es' || normalized === '/zh') {
+    return normalized === '/' || language === 'pt' ? '/' : `/${language}`;
+  }
+  // Na prática a home principal (/) nunca navega — ver goToLanguage
   const family = SEO_FAMILIES.find((item) =>
     Object.values(item).some((path) => normalizePath(path) === normalized),
   );
@@ -58,7 +73,7 @@ export function targetFor(pathname: string, language: Language): string {
   return normalized;
 }
 
-function isSeoPath(pathname: string): boolean {
+function isSeoArticlePath(pathname: string): boolean {
   const normalized = normalizePath(pathname);
   return SEO_FAMILIES.some((item) =>
     Object.values(item).some((path) => normalizePath(path) === normalized),
@@ -78,43 +93,44 @@ export function LanguageSwitcher({
   const pathname = usePathname() || '/';
   const pathLang = pathname.match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || language;
-  const seo = isSeoPath(pathname);
+  const seoArticle = isSeoArticlePath(pathname);
+  const appOnly = isAppLanguageOnlyPath(pathname);
 
-  const persistAndGo = (next: Language, href: string) => {
+  const goToLanguage = (next: Language) => {
     setLanguage(next);
-    if (normalizePath(href) !== normalizePath(pathname)) {
-      window.location.assign(href);
+    // Página principal e app: NÃO muda de rota — só idioma da UI
+    if (appOnly || normalizePath(pathname) === '/') {
+      if (next !== language) window.location.reload();
       return;
     }
-    // Mesma rota (páginas de app): só recarrega para aplicar dicionário
-    if (next !== language) {
-      window.location.reload();
+    // Artigos SEO: navega para a URL localizada correspondente
+    if (seoArticle) {
+      const href = targetFor(pathname, next);
+      if (normalizePath(href) !== normalizePath(pathname)) {
+        window.location.assign(href);
+        return;
+      }
     }
+    if (next !== language) window.location.reload();
   };
 
-  // Flags com <a href> reais: funciona em SEO mesmo sem hidratação JS
-  if (variant === 'flags' || seo) {
+  if (variant === 'flags') {
     return (
       <nav
-        className={`inline-flex items-center gap-1 ${className}`}
+        className={`inline-flex shrink-0 items-center gap-1 ${className}`}
         aria-label={tx('language', 'Idioma')}
-        data-lang-switcher="seo-v2"
+        data-lang-switcher="flags-v3"
       >
         {SUPPORTED_LANGUAGES.map((item) => {
-          const href = targetFor(pathname, item.code);
           const active = current === item.code;
           return (
-            <a
+            <button
               key={item.code}
-              href={href}
+              type="button"
               title={item.label}
               aria-label={item.label}
-              aria-current={active ? 'page' : undefined}
-              onClick={(e) => {
-                // Garante persistência do idioma antes da navegação
-                e.preventDefault();
-                persistAndGo(item.code, href);
-              }}
+              aria-pressed={active}
+              onClick={() => goToLanguage(item.code)}
               className={`text-sm px-2 py-1 rounded-lg border ${
                 active
                   ? 'border-indigo-500 bg-indigo-500/20 text-zinc-50'
@@ -125,7 +141,7 @@ export function LanguageSwitcher({
               {!compact && (
                 <span className="ml-1 hidden sm:inline">{item.code.toUpperCase()}</span>
               )}
-            </a>
+            </button>
           );
         })}
       </nav>
@@ -133,14 +149,11 @@ export function LanguageSwitcher({
   }
 
   return (
-    <div className={`inline-flex items-center gap-1.5 ${className}`} data-lang-switcher="select-v2">
+    <div className={`inline-flex shrink-0 items-center gap-1.5 ${className}`} data-lang-switcher="select-v3">
       <select
         aria-label={tx('language', 'Idioma')}
         value={current}
-        onChange={(e) => {
-          const next = e.target.value as Language;
-          persistAndGo(next, targetFor(pathname, next));
-        }}
+        onChange={(e) => goToLanguage(e.target.value as Language)}
         className="cursor-pointer rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
         {SUPPORTED_LANGUAGES.map((item) => (
