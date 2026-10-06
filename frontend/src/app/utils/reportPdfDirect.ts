@@ -155,6 +155,36 @@ function makeHtml(p: ClientReportPayload): string {
 </body></html>`;
 }
 
+type Html2PdfFactory = (() => any) & { default?: () => any };
+
+function loadHtml2Pdf(): Promise<any> {
+  if (typeof window === 'undefined') return Promise.reject(new Error('PDF generation requires a browser'));
+  const current = (window as any).html2pdf as Html2PdfFactory | undefined;
+  if (current) return Promise.resolve(current);
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-filtra-html2pdf="1"]') as HTMLScriptElement | null;
+    if (existing) {
+      const onReady = () => {
+        const factory = (window as any).html2pdf;
+        if (factory) resolve(factory); else reject(new Error('html2pdf não carregou'));
+      };
+      existing.addEventListener('load', onReady, { once: true });
+      existing.addEventListener('error', () => reject(new Error('Falha ao carregar html2pdf')), { once: true });
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.14.0/html2pdf.bundle.min.js';
+    script.async = true;
+    script.dataset.filtraHtml2pdf = '1';
+    script.onload = () => {
+      const factory = (window as any).html2pdf;
+      if (factory) resolve(factory); else reject(new Error('html2pdf não carregou'));
+    };
+    script.onerror = () => reject(new Error('Falha ao carregar html2pdf'));
+    document.head.appendChild(script);
+  });
+}
+
 async function waitImages(root: HTMLElement) {
   const imgs = Array.from(root.querySelectorAll('img'));
   await Promise.all(
@@ -204,7 +234,7 @@ export async function createReportPdfBlob(payload: ClientReportPayload): Promise
       reportEl.style.minHeight = '1123px';
       reportEl.style.height = '1123px';
     }
-    const html2pdf = (await import('html2pdf.js')).default;
+    const html2pdf = await loadHtml2Pdf();
     const opt = {
       margin: 0,
       filename: `filtra-relatorio-${slug(payload.companyName || 'empresa')}.pdf`,
