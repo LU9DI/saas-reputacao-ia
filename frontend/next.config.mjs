@@ -6,6 +6,8 @@ const nextConfig = {
     : {}),
   poweredByHeader: false,
 
+  // Cloudflare Pages deploy is intentionally static/export-compatible.
+
   typescript: {
     ignoreBuildErrors: true,
   },
