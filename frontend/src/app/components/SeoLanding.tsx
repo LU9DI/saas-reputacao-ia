@@ -66,12 +66,30 @@ export function SeoLanding({
       <SeoPageHeader />
 
       {breadcrumbHref && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'BreadcrumbList',
+        <>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'WebPage',
+                name: h1,
+                description: lead,
+                url: `https://filtraai.com${breadcrumbHref}`,
+                isPartOf: {
+                  '@type': 'WebSite',
+                  name: 'Filtra.AI',
+                  url: 'https://filtraai.com/',
+                },
+              }),
+            }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'BreadcrumbList',
               itemListElement: [
                 {
                   '@type': 'ListItem',
@@ -85,10 +103,11 @@ export function SeoLanding({
                   name: h1,
                   item: `https://filtraai.com${breadcrumbHref}`,
                 },
-              ],
-            }),
-          }}
-        />
+                ],
+              }),
+            }}
+          />
+        </>
       )}
 
       <main className="mx-auto max-w-3xl space-y-8 px-4 pb-16">
