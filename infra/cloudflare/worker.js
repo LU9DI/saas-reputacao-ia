@@ -273,19 +273,19 @@ function rewriteSeoResponse(request,response){
   const headers=new Headers(response.headers);
   headers.delete('content-length');
   headers.delete('content-encoding');
-  let titleSeen=false,descriptionSeen=false,canonicalSeen=false;
+  let titleSeen=false;
   const title=escHtml(cfg.title),description=escHtml(cfg.description),canonical='https://filtraai.com'+pathname;
   const transformed=new HTMLRewriter()
     .on('title',{text(text){if(!titleSeen && !text.lastInTextNode){text.replace(cfg.title);titleSeen=true;}else if(!titleSeen){text.replace(cfg.title);titleSeen=true;}}})
     .on('meta',{element(el){
       const name=String(el.getAttribute('name')||'').toLowerCase();
-      if(name==='description'){el.setAttribute('content',cfg.description);descriptionSeen=true;}
+      if(name==='description')el.setAttribute('content',cfg.description);
     }})
     .on('link',{element(el){
       const rel=String(el.getAttribute('rel')||'').toLowerCase();
-      if(rel==='canonical'){el.setAttribute('href',canonical);canonicalSeen=true;}
+      if(rel==='canonical')el.setAttribute('href',canonical);
     }})
-    .on('head',{element(el)=>{}});
+    ;
   return transformed.transform(new Response(response.body,{status:response.status,statusText:response.statusText,headers}));
 }
 
