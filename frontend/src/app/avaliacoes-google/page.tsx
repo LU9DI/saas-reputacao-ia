@@ -53,7 +53,7 @@ export default function Page() {
           body: 'Respostas públicas devem ser específicas e profissionais, mas responder não substitui corrigir a causa. Use os temas recorrentes para orientar atendimento, treinamento, comunicação ou processos e depois acompanhe se o problema volta a aparecer.'
         },
         {
-        {
+        
           heading: 'Por que as avaliações Google importam?',
           body: 'Avaliações registram experiências reais e ajudam a explicar como o mercado percebe atendimento, prazo, produto, preço, ambiente e comunicação. A nota é um resumo; os comentários trazem o contexto que a operação precisa para melhorar.'
         },
