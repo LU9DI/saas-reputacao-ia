@@ -103,6 +103,26 @@ export function LanguageSwitcher({
         : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:border-zinc-500'
     }`;
 
+  if (compact || variant === 'select') {
+    return (
+      <label className={`inline-flex shrink-0 items-center ${className}`} data-lang-switcher="select-v5">
+        <span className="sr-only">{tx('language', 'Idioma')}</span>
+        <select
+          aria-label={tx('language', 'Idioma')}
+          value={current}
+          onChange={(e) => goToLanguage(e.target.value as Language)}
+          className="inline-flex h-8 max-w-[150px] cursor-pointer items-center rounded-lg border border-zinc-700 bg-zinc-900 px-2 text-xs font-medium text-zinc-200 outline-none transition hover:border-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+        >
+          {SUPPORTED_LANGUAGES.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.flag} {item.label}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
   if (variant === 'flags' || seoArticle) {
     return (
       <nav
