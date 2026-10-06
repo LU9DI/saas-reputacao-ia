@@ -10,7 +10,7 @@
     "start": "tsx server.ts",
     "start:prod": "tsx server.ts",
     "smtp:test": "tsx scripts/smtp-connectivity-test.ts",
-    "test": "find tests -type f -name '*.test.ts' -print0 | xargs -0 -r tsx --test",
+    "test": "node scripts/run-tests.mjs",
     "audit": "npm audit --omit=dev"
   },
   "engines": {

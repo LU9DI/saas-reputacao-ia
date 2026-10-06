@@ -84,34 +84,31 @@ describe('GET /api/health', () => {
 });
 
 describe('POST /api/trial/ativar', () => {
-  it('rejeita body inválido (sem CNPJ)', async () => {
+  it('rejeita body inválido (sem e-mail)', async () => {
     const { status, data } = await post('/api/trial/ativar', {
       nome_empresa: 'Teste SA',
-      email: 'a@b.com',
       senha: 'Senha@12x',
     });
     assert.equal(status, 400);
     assert.ok(data.error);
   });
 
-  it('rejeita CNPJ inválido', async () => {
+  it('rejeita e-mail inválido', async () => {
     const { status, data } = await post('/api/trial/ativar', {
-      cnpj: '11111111111111',
       nome_empresa: 'Teste SA',
-      email: 'valido@teste.com',
+      email: 'invalido',
       senha: 'Senha@12x',
     });
     assert.equal(status, 400);
     assert.ok(data.error);
   });
 
-  it('ativa trial com CNPJ válido', async () => {
-    // 11.222.333/0001-81 é válido nos testes unitários de CNPJ
+  it('ativa trial com dados válidos', async () => {
     const { status, data } = await post('/api/trial/ativar', {
-      cnpj: '11222333000181',
       nome_empresa: 'Empresa Integração Teste',
       email: `trial-${Date.now()}@teste.com`,
       senha: 'Senha@12x',
+      skip_email_verification: true,
     });
     assert.equal(status, 201);
     assert.equal(data.success, true);
@@ -120,15 +117,13 @@ describe('POST /api/trial/ativar', () => {
     assert.ok(String(data.link_acesso).includes('/avaliacao/'));
   });
 
-  it('bloqueia CNPJ duplicado', async () => {
+  it('bloqueia segundo trial no mesmo IP', async () => {
     const email = `dup-${Date.now()}@teste.com`;
-    // usa outro CNPJ válido gerado com base diferente — se o anterior já ocupou 11222333000181,
-    // este segundo request com o mesmo CNPJ deve ser 409
     const { status } = await post('/api/trial/ativar', {
-      cnpj: '11222333000181',
       nome_empresa: 'Duplicada',
       email,
       senha: 'Senha@12x',
+      skip_email_verification: true,
     });
     assert.equal(status, 409);
   });

@@ -204,3 +204,21 @@ export async function slugUnico(base: string): Promise<string> {
     slug = `${base}-${n}`;
   }
 }
+
+
+export async function withDbTransaction<T>(work: (tx: Database) => Promise<T>): Promise<T> {
+  const db = getDb();
+  await db.exec('BEGIN');
+  try {
+    const result = await work(db);
+    await db.exec('COMMIT');
+    return result;
+  } catch (error) {
+    try {
+      await db.exec('ROLLBACK');
+    } catch {
+      /* preserve the original transaction error */
+    }
+    throw error;
+  }
+}
