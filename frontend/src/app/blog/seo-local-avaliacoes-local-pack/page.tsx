@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Pacotes de SEO local: o que incluir, preço e entregáveis | Filtra.AI',
+  title: 'Pacotes de SEO local: o que incluir e preço | Filtra.AI',
   description:
-    'Como montar pacotes de SEO local para empresas e agências: Google Business Profile, site, avaliações, reputação, conteúdo local, citações, entregáveis e acompanhamento no Google Maps.',
+    'Pacotes de SEO local: o que incluir, como precificar e quais entregáveis oferecer, com Google Business Profile, avaliações, reputação, conteúdo e acompanhamento.'
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', languages: { 'pt-BR': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', en: 'https://filtraai.com/en/blog/local-seo-google-reviews', es: 'https://filtraai.com/es/blog/seo-local-resenas-google', zh: 'https://filtraai.com/zh/blog/local-seo-google-reviews', 'x-default': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' } },
   openGraph: {
     type: 'article',
