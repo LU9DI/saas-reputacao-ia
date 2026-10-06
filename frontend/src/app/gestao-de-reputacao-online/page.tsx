@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online | Avaliações Google e feedback com IA | Filtra.AI',
+  title: 'Gestão de reputação online para empresas | Avaliações Google e IA | Filtra.AI',
   description: 'Gestão de reputação online para empresas: monitore avaliações Google, feedback de clientes, temas recorrentes e oportunidades de melhoria com IA.',
   alternates: {
     canonical: 'https://filtraai.com/gestao-de-reputacao-online',
