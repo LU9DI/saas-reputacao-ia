@@ -47,7 +47,7 @@ export default function Page() {
           body: 'Não pare no resumo gerado. Registre temas prioritários, responsáveis, ações e evolução nos ciclos seguintes. O ganho aparece quando a análise muda uma decisão ou reduz um problema recorrente.'
         },
         {
-        {
+        
           heading: 'O que a análise de avaliações revela',
           body: 'Além da nota, os comentários podem revelar padrões de atendimento, tempo de espera, qualidade, preço, produto, ambiente e comunicação. A primeira função da análise é transformar texto disperso em temas que possam ser comparados.'
         },
