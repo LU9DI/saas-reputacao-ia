@@ -178,6 +178,22 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
       type="application/ld+json"
       dangerouslySetInnerHTML={{__html:JSON.stringify({
         '@context':'https://schema.org',
+        '@type':'WebPage',
+        name:topic.title,
+        description:topic.description,
+        url:base+'/'+lang+'/'+slug,
+        inLanguage:lang,
+        isPartOf:{
+          '@type':'WebSite',
+          name:'Filtra.AI',
+          url:base+'/'
+        }
+      })}}
+    />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{__html:JSON.stringify({
+        '@context':'https://schema.org',
         '@type':'BreadcrumbList',
         itemListElement:[
           {'@type':'ListItem',position:1,name:'Filtra.AI',item:base+'/'+lang},
