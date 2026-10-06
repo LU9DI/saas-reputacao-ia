@@ -105,7 +105,7 @@ export default function BlogReputacaoOnlinePage() {
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">7. Para negócios com várias unidades</h2>
           <p>Centralize indicadores por unidade, mas preserve o contexto local. Uma média geral pode esconder uma clínica, loja, restaurante ou franquia com um problema específico.</p>
-          <p>Veja também <Link href="/franquias" className="text-indigo-400 underline">franquias</Link>, <Link href="/hoteis" className="text-indigo-400 underline">hotéis</Link>, <Link href="/restaurantes" className="text-indigo-400 underline">restaurantes</Link> e <Link href="/clinicas" className="text-indigo-400 underline">clínicas</Link>.</p>
+          <p>Para quem gerencia múltiplos clientes de SEO local, essa mesma lógica precisa ser organizada em escala. Veja também a <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências de SEO local</Link>, além de <Link href="/franquias" className="text-indigo-400 underline">franquias</Link>, <Link href="/hoteis" className="text-indigo-400 underline">hotéis</Link>, <Link href="/restaurantes" className="text-indigo-400 underline">restaurantes</Link> e <Link href="/clinicas" className="text-indigo-400 underline">clínicas</Link>.</p>
         </section>
 
         <section className="space-y-3">
@@ -129,6 +129,7 @@ export default function BlogReputacaoOnlinePage() {
 
         <nav className="flex flex-wrap gap-3 text-xs text-zinc-500 pt-4 border-t border-zinc-800">
           <Link href="/gestao-de-reputacao-online">Gestão de reputação</Link>
+          <Link href="/agencias">Agências de SEO local</Link>
           <Link href="/avaliacoes-google">Avaliações Google</Link>
           <Link href="/analise-de-avaliacoes-com-ia">Análise com IA</Link>
           <Link href="/feedback-de-clientes">Feedback de clientes</Link>
