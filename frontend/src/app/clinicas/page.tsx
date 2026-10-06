@@ -29,6 +29,7 @@ export default function ClinicasPage() {
         { href: '/feedback-de-clientes', title: 'Feedback de pacientes', description: 'Transforme opiniões em insumos para a operação.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise com IA', description: 'Encontre temas recorrentes em escala.' },
         { href: '/blog/clinica-checklist-avaliacoes-google', title: 'Checklist de avaliações para clínicas', description: 'Guia prático para organizar o processo.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Conecte reputação, avaliações e descoberta local no Google.' },
         { href: '/filtra-ai', title: 'Conheça a Filtra.AI', description: 'Gestão de reputação, avaliações e feedback com IA.' },
       ]}
       sections={[
