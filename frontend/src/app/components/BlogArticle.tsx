@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BrandMark } from './BrandMark';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function BlogArticle({
   kicker,
@@ -16,9 +17,12 @@ export function BlogArticle({
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Blog" href="/" />
-        <Link href="/" className="text-sm text-indigo-400 hover:text-indigo-300">
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher compact />
+          <Link href="/" className="text-sm text-indigo-400 hover:text-indigo-300">
           Trial 7 dias
-        </Link>
+          </Link>
+        </div>
       </header>
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
