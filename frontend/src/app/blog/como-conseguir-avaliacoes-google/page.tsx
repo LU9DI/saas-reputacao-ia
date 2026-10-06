@@ -107,6 +107,18 @@ export default function BlogAvaliacoesGooglePage() {
           </ul>
         </section>
 
+        <p>
+          Se você gerencia reputação de vários clientes, veja também{' '}
+          <Link href="/agencias" className="text-indigo-400 underline">
+            gestão de reputação para agências de SEO local
+          </Link>{' '}
+          e o guia sobre{' '}
+          <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">
+            SEO local e avaliações no Local Pack
+          </Link>
+          .
+        </p>
+
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
           <p className="text-zinc-100 font-medium">Teste o fluxo completo em 7 dias</p>
           <p>
