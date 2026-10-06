@@ -6,12 +6,12 @@ const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
 const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: guia completo ',
+  title: 'Guia de reputação online: avaliações, feedback e melhoria',
   description:
     'Gestão de reputação online: como monitorar avaliações, responder clientes, analisar feedback e transformar a reputação da empresa em crescimento.',
   alternates: { canonical },
   openGraph: {
-    title: 'Gestão de reputação online: guia completo para empresas',
+    title: 'Guia de reputação online: avaliações, feedback e melhoria para empresas',
     description:
       'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
     url: canonical,
@@ -54,13 +54,13 @@ export default function BlogReputacaoOnlinePage() {
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · Reputação online</p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Gestão de reputação online: guia completo para empresas</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Guia de reputação online: avaliações, feedback e melhoria para empresas</h1>
           <p className="text-zinc-400">Gerir a reputação de uma empresa é acompanhar o que clientes dizem, entender padrões, responder publicamente e transformar sinais recorrentes em melhorias reais.</p>
         </div>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">O que é gestão de reputação online?</h2>
-          <p>Gestão de reputação online é o processo contínuo de monitorar avaliações, feedbacks e menções públicas, identificar riscos e oportunidades e transformar esses sinais em ações. Não é apenas responder a comentários: é entender por que a percepção do cliente muda e acompanhar se a operação melhora.</p>
+          <p>Gerir reputação online é acompanhar avaliações, feedbacks e menções públicas, identificar riscos e oportunidades e transformar esses sinais em ações. Não é apenas responder a comentários: é entender por que a percepção do cliente muda e acompanhar se a operação melhora.</p>
           <p>Para empresas que dependem de descoberta no Google, reputação, avaliações e experiência do cliente fazem parte da mesma jornada de aquisição. Por isso, a gestão deve conectar feedback, atendimento, presença pública e indicadores.</p>
         </section>
 
