@@ -6,12 +6,12 @@ const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
 const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
-  title: 'Guia de reputação online para empresas: avaliações, feedback e melhoria',
+  title: 'Gestão de reputação online: guia para empresas',
   description:
-    'Guia para empresas que querem monitorar avaliações, responder clientes, analisar feedback e transformar reputação em melhoria contínua.',
+    'Guia de gestão de reputação online para empresas: avaliações, feedback, respostas, indicadores e melhoria contínua.',
   alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/online-reputation-management-guide', es: 'https://filtraai.com/es/blog/guia-gestion-reputacion-online', zh: 'https://filtraai.com/zh/blog/online-reputation-management-guide', 'x-default': canonical } },
   openGraph: {
-    title: 'Guia de reputação online: avaliações, feedback e melhoria para empresas',
+    title: 'Gestão de reputação online: avaliações, feedback e melhoria',
     description:
       'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
     url: canonical,
@@ -22,12 +22,12 @@ export const metadata: Metadata = {
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'Guia de reputação online para empresas: avaliações, feedback e melhoria',
+  headline: 'Gestão de reputação online: guia para empresas',
   description:
     'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   datePublished: '2026-09-30',
-  dateModified: '2026-10-05',
+  dateModified: '2026-10-06',
   author: {
     '@type': 'Organization',
     name: 'Filtra.AI',
@@ -53,8 +53,8 @@ export default function BlogReputacaoOnlinePage() {
       </header>
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
-          <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · Reputação online</p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Guia de reputação online para empresas: avaliações, feedback e melhoria</h1>
+          <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · Gestão de reputação online</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Gestão de reputação online: guia para empresas</h1>
           <p className="text-zinc-400">Gerir a reputação de uma empresa é acompanhar o que clientes dizem, entender padrões, responder publicamente e transformar sinais recorrentes em melhorias reais.</p>
         </div>
 
@@ -62,6 +62,14 @@ export default function BlogReputacaoOnlinePage() {
           <h2 className="text-lg font-semibold text-zinc-100">O que é gestão de reputação online?</h2>
           <p>Gerir reputação online é acompanhar avaliações, feedbacks e menções públicas, identificar riscos e oportunidades e transformar esses sinais em ações. Não é apenas responder a comentários: é entender por que a percepção do cliente muda e acompanhar se a operação melhora.</p>
           <p>Para empresas que dependem de descoberta no Google, reputação, avaliações e experiência do cliente fazem parte da mesma jornada de aquisição. Por isso, a gestão deve conectar feedback, atendimento, presença pública e indicadores.</p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Como fazer gestão de reputação online na prática?</h2>
+          <p>Uma gestão de reputação online consistente começa com uma linha de base: reúna avaliações e feedback, identifique os temas que mais aparecem, defina responsáveis e registre quais ações serão acompanhadas. Depois, repita a leitura em uma cadência definida para saber se os problemas recorrentes diminuíram e se novos sinais surgiram.</p>
+          <p>Para empresas locais, esse processo deve conectar avaliações Google, experiência do cliente e presença na busca. Para redes, clínicas, restaurantes, hotéis e franquias, a comparação por unidade ajuda a encontrar problemas que ficam escondidos quando toda a operação é analisada apenas pela média da marca.</p>
+          <p>A Filtra.AI pode apoiar a triagem e análise de avaliações e feedback com IA, mas a decisão operacional continua com a equipe que conhece o negócio. O objetivo é reduzir trabalho manual e transformar sinais dispersos em prioridades verificáveis.</p>
+          <p>Se a operação precisa de uma ferramenta para acompanhar esse processo, veja <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">gestão de reputação online</Link> e a <Link href="/auditoria-gratuita" className="text-indigo-400 underline">auditoria gratuita</Link>.</p>
         </section>
 
         <section className="space-y-3">
