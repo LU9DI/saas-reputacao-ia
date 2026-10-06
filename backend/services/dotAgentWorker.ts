@@ -3,7 +3,6 @@ import { runCurrentDotMissionStep } from './dotAgentMissionRunner.js';
 
 let timer: NodeJS.Timeout | null = null;
 let running = false;
-let tickInFlight: Promise<void> | null = null;
 
 async function runTick() {
   if (running) return;
