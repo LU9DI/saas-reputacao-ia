@@ -76,7 +76,7 @@ async function ensureMissionApprovalAction(empresaId: string, missionId: number,
       'SELECT approval_action_id FROM dot_agent_missions WHERE id=? AND empresa_id=? LIMIT 1',
       [missionId, empresaId],
     );
-    if (mission?.approval_action_id) return Number(mission.approval_action_id);
+    if (mission?.approval_action_id) { release(Number(mission.approval_action_id)); return Number(mission.approval_action_id); }
 
     await db.exec(`CREATE TABLE IF NOT EXISTS dot_events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -117,7 +117,7 @@ async function ensureMissionApprovalAction(empresaId: string, missionId: number,
       const created = await createDecisionsForEvents(empresaId, [{ id: Number(event.id), type: 'dot_mission_approval', severity: 'warning', title: eventTitle, details: 'Aprovação explícita para continuar a missão DOT.' }]);
       decision = created[0] ? { id: created[0].id, options_json: JSON.stringify(created[0].options || []) } : null;
     }
-    if (!decision?.id) return null;
+    if (!decision?.id) { release(null); return null; }
 
     const existingAction = await db.get(
       "SELECT id FROM dot_action_queue WHERE empresa_id=? AND decision_id=? AND status IN ('prepared','approved','executing') LIMIT 1",
@@ -128,7 +128,7 @@ async function ensureMissionApprovalAction(empresaId: string, missionId: number,
       const prepared = await prepareDotActionFromDecision(empresaId, Number(decision.id), 'opcao_1');
       actionId = prepared?.id ? Number(prepared.id) : null;
     }
-    if (!actionId) return null;
+    if (!actionId) { release(null); return null; }
 
     await db.run(
       'UPDATE dot_agent_missions SET approval_action_id=?, status=?, updated_at=? WHERE id=? AND empresa_id=? AND approval_action_id IS NULL',
