@@ -124,9 +124,8 @@ function sourcePathForPage(lang:Lang,slug:string){
   return family?.pt;
 }
 
-function localizedPath(lang:Lang,index:number){
-  const source=sourcePaths[index];
-  return pageFamilies[source]?.[lang] || '/'+lang+'/'+pages[lang][index].slug;
+function localizedPath(lang:Lang,sourcePath:string,fallbackSlug:string){
+  return pageFamilies[sourcePath]?.[lang] || '/'+lang+'/'+fallbackSlug;
 }
 
 const labels={
@@ -182,7 +181,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
   const topic=found.item;
   const related=relatedIndexes(found.index,4);
   const relatedCopy=related.map(i=>pages[lang][i]);
-  const primary=localizedPath(lang,found.index);
+  const primary=localizedPath(lang,sourcePaths[found.index],slug);
   const blogHub=lang==='en'?'/en/blog':lang==='es'?'/es/blog':'/zh/blog';
   const blogFamilies=[
     {en:'/en/blog/get-google-reviews',es:'/es/blog/conseguir-resenas-google',zh:'/zh/blog/google-reviews-guide',label:{en:'How to get genuine Google reviews',es:'Cómo conseguir reseñas genuinas en Google',zh:'如何获得更多真实的 Google 评价'}},
@@ -294,7 +293,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {relatedCopy.map((item,pos)=>{
             const i=related[pos];
-            return <Link key={item.slug} href={localizedPath(lang,i)} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500">
+            return <Link key={item.slug} href={localizedPath(lang,sourcePaths[i],item.slug)} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500">
               <span className="block text-sm font-semibold text-zinc-100">{item.title}</span>
               <span className="mt-1 block text-xs leading-5 text-zinc-400">{item.description}</span>
             </Link>;
