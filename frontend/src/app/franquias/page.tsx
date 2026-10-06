@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação para franquias e redes | Filtra.AI',
+  title: 'Gestão de reputação para franquias e redes ',
   description:
     'Organize avaliações e feedback de várias unidades, identifique padrões e acompanhe reputação local com o Filtra.AI para franquias e redes.',
   alternates: {
