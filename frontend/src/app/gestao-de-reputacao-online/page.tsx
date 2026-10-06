@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: monitore avaliações e feedback ',
+  title: 'Gestão de reputação online: monitore avaliações e feedback',
   description: 'Aprenda a estruturar gestão de reputação online com avaliações, feedback, monitoramento de temas e ações de melhoria. Filtra.AI organiza o ciclo em um só lugar.',
   alternates: {
     canonical: 'https://filtraai.com/gestao-de-reputacao-online',
@@ -29,6 +29,7 @@ export default function Page() {
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre temas, padrões, riscos e oportunidades em escala.' },
         { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Use a voz do cliente como dado para decisões de crescimento.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece com um diagnóstico da presença e dos principais sinais de reputação.' },
+        { href: '/blog/gestao-reputacao-online-guia', title: 'Guia de reputação online', description: 'Aprofunde conceitos, indicadores e rotinas para gerir a reputação.' },
       ]}
       sections={[
         {
@@ -56,8 +57,16 @@ export default function Page() {
           body: 'Hotéis, restaurantes, clínicas, franquias e operações multilocais precisam de uma visão consolidada da marca e também de detalhe por unidade. A gestão correta mantém os dois níveis: visão executiva para priorização e evidência local para a equipe que pode agir.'
         },
         {
+          heading: 'Como gerir a reputação de uma empresa ou organização',
+          body: 'Gerir a reputação de uma empresa significa acompanhar o que clientes e mercado estão dizendo, identificar padrões e transformar esses sinais em decisões. Para uma organização com várias áreas ou unidades, a rotina precisa unir visão central da marca, contexto local, responsáveis por cada tema e acompanhamento das ações.',
+        },
+        {
           heading: 'Por que usar IA nesse processo',
           body: 'Quando o volume cresce, ler tudo manualmente fica caro e inconsistente. IA pode agrupar comentários, encontrar padrões e resumir sinais para acelerar a triagem. O julgamento final continua com a equipe, especialmente quando existe contexto operacional ou ironia no comentário.'
+        },
+        {
+          heading: 'Gestão de reputação online e SEO local',
+          body: 'Para empresas locais, reputação e presença no Google fazem parte da mesma jornada de descoberta. Acompanhe avaliações, temas recorrentes e percepção por unidade junto da estratégia de presença local, conteúdo e Google Maps.',
         },
         {
           heading: 'O que medir toda semana',
