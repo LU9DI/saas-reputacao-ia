@@ -42,6 +42,11 @@ const DEFAULT_CONTEXT_LINKS: ContextLink[] = [
     title: 'Auditoria gratuita',
     description: 'Faça um diagnóstico inicial e descubra pontos de atenção.',
   },
+  {
+    href: '/blog/seo-local-avaliacoes-local-pack',
+    title: 'SEO local e avaliações',
+    description: 'Entenda como presença local, avaliações e reputação trabalham juntas.',
+  },
 ];
 
 export function SeoLanding({
