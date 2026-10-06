@@ -109,14 +109,16 @@ async function ensureMissionApprovalAction(empresaId: string, missionId: number,
       event = { id: inserted.lastID };
     }
 
-    let decision = await db.get(
-      'SELECT id, options_json FROM dot_decisions WHERE empresa_id=? AND event_id=? LIMIT 1',
-      [empresaId, Number(event.id)],
-    );
-    if (!decision) {
-      const created = await createDecisionsForEvents(empresaId, [{ id: Number(event.id), type: 'dot_mission_approval', severity: 'warning', title: eventTitle, details: 'Aprovação explícita para continuar a missão DOT.' }]);
-      decision = created[0] ? { id: created[0].id, options_json: JSON.stringify(created[0].options || []) } : null;
-    }
+    const created = await createDecisionsForEvents(empresaId, [{
+      id: Number(event.id),
+      type: 'dot_mission_approval',
+      severity: 'warning',
+      title: eventTitle,
+      details: 'Aprovação explícita para continuar a missão DOT.',
+    }]);
+    let decision = created[0]
+      ? { id: created[0].id }
+      : await db.get('SELECT id FROM dot_decisions WHERE empresa_id=? AND event_id=? LIMIT 1', [empresaId, Number(event.id)]);
     if (!decision?.id) { release(null); return null; }
 
     const existingAction = await db.get(
