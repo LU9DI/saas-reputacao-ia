@@ -57,7 +57,8 @@ export function DotAgentSurface() {
 
   const hasAccess = Boolean(status?.access && status?.enabled);
   const canApprove = permissions.some((p) => p.resource === 'filtra' && p.action === 'update' && Number(p.granted) === 1);
-  const canMissionExecute = permissions.some((p) => p.resource === 'operations' && p.action === 'execute' && Number(p.granted) === 1);\n  const canActionExecute = permissions.some((p) => p.resource === 'filtra' && p.action === 'execute' && Number(p.granted) === 1);
+  const canMissionExecute = permissions.some((p) => p.resource === 'operations' && p.action === 'execute' && Number(p.granted) === 1);
+  const canActionExecute = permissions.some((p) => p.resource === 'filtra' && p.action === 'execute' && Number(p.granted) === 1);
   const activeMission = useMemo(
     () => missions.find((mission) => ['working', 'planned', 'waiting_approval'].includes(mission.status)) ||
       missions.find((mission) => mission.status !== 'completed'),
