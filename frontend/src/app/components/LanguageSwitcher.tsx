@@ -30,6 +30,7 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/blog/gestao-reputacao-online-guia', en:'/en/blog/online-reputation-management-guide', es:'/es/blog/guia-gestion-reputacion-online', zh:'/zh/blog/online-reputation-management-guide' },
   { pt:'/blog/feedback-cliente-para-reputacao', en:'/en/blog/ai-review-analysis-guide', es:'/es/blog/analisis-resenas-ia', zh:'/zh/blog/ai-review-analysis-guide' },
   { pt:'/blog/seo-local-avaliacoes-local-pack', en:'/en/blog/local-seo-google-reviews', es:'/es/blog/seo-local-resenas-google', zh:'/zh/blog/local-seo-google-reviews' },
+  { pt:'/blog/agencia-vender-gestao-reputacao', en:'/en/blog/agency-reputation-management', es:'/es/blog/agencia-gestion-reputacion', zh:'/zh/blog/agency-reputation-management' },
   { pt:'/blog', en:'/en/blog', es:'/es/blog', zh:'/zh/blog' },
 ];
 
