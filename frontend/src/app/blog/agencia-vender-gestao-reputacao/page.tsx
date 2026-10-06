@@ -35,6 +35,18 @@ export default function Page() {
         Setup (QR + Google URL) · treinamento de 30 min · monitoramento mensal · relatório. Cobrança
         recorrente alinhada ao retainer de SEO.
       </p>
+      <p>
+        A operação fica mais fácil de vender quando o escopo é mensurável: quantidade de unidades acompanhadas,
+        frequência dos relatórios, canais analisados e rotina de revisão das avaliações. Para uma agência de SEO local,
+        isso transforma reputação em uma extensão clara do serviço principal, sem prometer resultados que não dependem
+        apenas da ferramenta.
+      </p>
+      <p>
+        Comece com um cliente-piloto, registre a situação inicial e defina quais sinais serão acompanhados no ciclo
+        mensal. Depois, use os aprendizados para padronizar onboarding, coleta de feedback, análise dos temas,
+        acompanhamento das avaliações e apresentação dos próximos passos. Essa estrutura também ajuda a separar
+        setup de recorrência e a explicar o valor do serviço na renovação.
+      </p>
       <H2>Ferramenta</H2>
       <p>
         Use o trial Filtra.AI em um cliente piloto. Mostre o painel, o fluxo de feedback e os indicadores de
