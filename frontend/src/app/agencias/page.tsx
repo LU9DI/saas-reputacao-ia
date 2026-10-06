@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
   title: 'Reputação para agências de SEO local | Filtra.AI',
   description:
-    'Gestão de reputação, avaliações Google e feedback para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.'
+    'Gestão de reputação, avaliações Google e feedback para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.',
   alternates: {
     canonical: 'https://filtraai.com/agencias',
     languages: {
@@ -39,15 +40,15 @@ export default function AgenciasPage() {
         },
         {
           heading: 'Agência de SEO local: como transformar reputação em serviço recorrente',
-          body: 'Uma oferta recorrente pode combinar diagnóstico, acompanhamento de avaliações, análise de temas, identificação de problemas e relatórios. O cliente passa a enxergar uma rotina contínua de melhoria, enquanto a agência cria um processo que pode ser repetido entre contas sem perder o contexto de cada negócio.'
+          body: <>Uma oferta recorrente pode combinar diagnóstico, acompanhamento de avaliações, análise de temas, identificação de problemas e relatórios. O cliente passa a enxergar uma rotina contínua de melhoria, enquanto a agência cria um processo que pode ser repetido entre contas sem perder o contexto de cada negócio. Para transformar essa lógica em uma oferta comercial, veja o guia sobre <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local</Link>.</>
         },
         {
           heading: 'SEO local, Google Maps e avaliações',
-          body: 'Para negócios locais, descoberta no Google, presença no Maps e percepção do cliente fazem parte do mesmo ciclo. A agência pode usar o Filtra.AI como camada operacional para acompanhar o que acontece depois do atendimento e levar os sinais mais relevantes de volta para a estratégia de SEO local.'
+          body: <>Para negócios locais, descoberta no Google, presença no Maps e percepção do cliente fazem parte do mesmo ciclo. A agência pode usar o Filtra.AI como camada operacional para acompanhar o que acontece depois do atendimento e levar os sinais mais relevantes de volta para a estratégia de SEO local. O aprofundamento sobre <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local, avaliações e Local Pack</Link> detalha como essas frentes se conectam.</>
         },
         {
           heading: 'Como vender gestão de reputação para o cliente',
-          body: 'Em vez de vender apenas “mais avaliações”, apresente a solução como uma operação: coletar feedback autêntico, acompanhar avaliações, identificar padrões, apoiar respostas e mostrar evolução. Essa abordagem conecta reputação à experiência do cliente e dá ao serviço entregáveis que podem ser acompanhados mês a mês.'
+          body: <>Em vez de vender apenas “mais avaliações”, apresente a solução como uma operação: coletar feedback autêntico, acompanhar avaliações, identificar padrões, apoiar respostas e mostrar evolução. Essa abordagem conecta reputação à experiência do cliente e dá ao serviço entregáveis que podem ser acompanhados mês a mês. Uma <Link href="/auditoria-gratuita" className="text-indigo-400 underline">auditoria inicial</Link> pode ajudar a transformar esses sinais em prioridades comerciais.</>
         },
         {
           heading: 'Relatórios que o cliente entende',
