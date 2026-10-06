@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Como conseguir mais avaliações no Google (sem parecer spam)',
   description:
     'Guia prático para convidar avaliações honestas: momento, canal, boas práticas e como organizar feedback de clientes sem pressionar por uma nota específica.',
-  alternates: { canonical: '/blog/como-conseguir-avaliacoes-google' },
+  alternates: { canonical: 'https://filtraai.com/blog/como-conseguir-avaliacoes-google', languages: { 'pt-BR': 'https://filtraai.com/blog/como-conseguir-avaliacoes-google', en: 'https://filtraai.com/en/blog/get-google-reviews', es: 'https://filtraai.com/es/blog/conseguir-resenas-google', zh: 'https://filtraai.com/zh/blog/google-reviews-guide', 'x-default': 'https://filtraai.com/blog/como-conseguir-avaliacoes-google' } },
   openGraph: {
     title: 'Como conseguir mais avaliações no Google sem parecer spam',
     description:
