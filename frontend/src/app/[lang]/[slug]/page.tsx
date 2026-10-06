@@ -95,9 +95,9 @@ function localizedPath(lang:Lang,index:number){
 }
 
 const labels={
-  en:{topics:'Explore related topics',why:'What this page helps you solve',how:'A practical workflow',benefits:'What to look for',next:'Continue with Filtra.AI',back:'See the full strategy'},
-  es:{topics:'Explora temas relacionados',why:'Qué problema ayuda a resolver esta página',how:'Un flujo de trabajo práctico',benefits:'Qué debes observar',next:'Continúa con Filtra.AI',back:'Ver la estrategia completa'},
-  zh:{topics:'探索相关主题',why:'本页面可以帮助解决什么问题',how:'实用的管理流程',benefits:'重点关注什么',next:'继续了解 Filtra.AI',back:'查看完整策略'}
+  en:{topics:'Explore related topics',resources:'Guides and resources',why:'What this page helps you solve',how:'A practical workflow',benefits:'What to look for',next:'Continue with Filtra.AI',back:'See the full strategy'},
+  es:{topics:'Explora temas relacionados',resources:'Guías y recursos',why:'Qué problema ayuda a resolver esta página',how:'Un flujo de trabajo práctico',benefits:'Qué debes observar',next:'Continúa con Filtra.AI',back:'Ver la estrategia completa'},
+  zh:{topics:'探索相关主题',resources:'指南与资源',why:'本页面可以帮助解决什么问题',how:'实用的管理流程',benefits:'重点关注什么',next:'继续了解 Filtra.AI',back:'查看完整策略'}
 };
 
 function relatedIndexes(index:number,count:number){
@@ -137,7 +137,14 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
   const related=relatedIndexes(found.index,4);
   const relatedCopy=related.map(i=>pages[lang][i]);
   const primary=localizedPath(lang,found.index);
-
+  const blogHub=lang==='en'?'/en/blog':lang==='es'?'/es/blog':'/zh/blog';
+  const blogFamilies=[
+    {en:'/en/blog/get-google-reviews',es:'/es/blog/conseguir-resenas-google',zh:'/zh/blog/google-reviews-guide',label:{en:'How to get genuine Google reviews',es:'Cómo conseguir reseñas genuinas en Google',zh:'如何获得更多真实的 Google 评价'}},
+    {en:'/en/blog/online-reputation-management-guide',es:'/es/blog/guia-gestion-reputacion-online',zh:'/zh/blog/online-reputation-management-guide',label:{en:'Online reputation management guide',es:'Guía de gestión de reputación online',zh:'在线声誉管理指南'}},
+    {en:'/en/blog/ai-review-analysis-guide',es:'/es/blog/analisis-resenas-ia',zh:'/zh/blog/ai-review-analysis-guide',label:{en:'AI review analysis guide',es:'Guía de análisis de reseñas con IA',zh:'AI 评论分析指南'}},
+    {en:'/en/blog/local-seo-google-reviews',es:'/es/blog/seo-local-resenas-google',zh:'/zh/blog/local-seo-google-reviews',label:{en:'Local SEO and Google reviews',es:'SEO local y reseñas de Google',zh:'本地 SEO 与 Google 评价'}}
+  ];
+  const resourceArticle=blogFamilies[found.index % blogFamilies.length];
   const sectionCopy={
     en:{
       why:`Businesses searching for ${topic.title.toLowerCase()} need a repeatable way to understand customer signals and turn them into decisions, not just collect more comments.`,
@@ -167,6 +174,17 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
       </div>
     </header>
 
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{__html:JSON.stringify({
+        '@context':'https://schema.org',
+        '@type':'BreadcrumbList',
+        itemListElement:[
+          {'@type':'ListItem',position:1,name:'Filtra.AI',item:base+'/'+lang},
+          {'@type':'ListItem',position:2,name:topic.title,item:base+'/'+lang+'/'+slug}
+        ]
+      })}}
+    />
     <section className="mx-auto max-w-5xl px-6 py-20">
       <p className="mb-4 text-sm font-medium text-indigo-400">Filtra.AI</p>
       <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{topic.h1}</h1>
@@ -203,6 +221,20 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
           })}
         </div>
       </nav>
+
+      <section className="mt-16">
+        <h2 className="text-2xl font-bold tracking-tight">{t.resources}</h2>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <Link href={blogHub} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500">
+            <span className="block text-sm font-semibold text-zinc-100">{lang==='en'?'Reviews & reputation blog':lang==='es'?'Blog de reseñas y reputación':'评价与声誉博客'}</span>
+            <span className="mt-1 block text-xs leading-5 text-zinc-400">{lang==='en'?'Browse localized guides and practical resources.':lang==='es'?'Explora guías localizadas y recursos prácticos.':'浏览本地化指南与实用资源。'}</span>
+          </Link>
+          <Link href={resourceArticle[lang]} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 hover:border-indigo-500">
+            <span className="block text-sm font-semibold text-zinc-100">{resourceArticle.label[lang]}</span>
+            <span className="mt-1 block text-xs leading-5 text-zinc-400">{topic.description}</span>
+          </Link>
+        </div>
+      </section>
 
       <div className="mt-12 flex flex-wrap gap-3">
         <Link href={primary} className="rounded-xl border border-zinc-700 px-5 py-3 font-semibold text-zinc-200">{t.back}</Link>
