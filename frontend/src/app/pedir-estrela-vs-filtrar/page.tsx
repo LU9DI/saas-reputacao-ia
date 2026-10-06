@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
@@ -23,6 +22,12 @@ export default function PedirVsFiltrarPage() {
     <SeoLanding
       h1="Pedir avaliação ≠ controlar reputação"
       lead="Muitos negócios só mandam o link do Google. Um fluxo de feedback anterior à avaliação pode revelar problemas e facilitar que clientes compartilhem experiências reais, sem selecionar quem merece ou não um convite."
+      contextLinks={[
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local e avaliações', description: 'Conecte avaliações, presença local, conteúdo e acompanhamento em uma operação.' },
+        { href: '/avaliacoes-google', title: 'Gestão de avaliações Google', description: 'Acompanhe avaliações e transforme sinais em decisões.' },
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Estruture monitoramento, respostas e melhoria contínua.' },
+        { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Identifique pontos de atenção na reputação e presença local.' },
+      ]}
       sections={[
         {
           heading: 'O problema do “só peça 5★”',
@@ -35,10 +40,6 @@ export default function PedirVsFiltrarPage() {
         {
           heading: 'Transparência com responsabilidade',
           body: 'O objetivo não é selecionar notas. É facilitar a manifestação de opiniões reais, criar contexto para a equipe resolver falhas operacionais e tornar mais simples que clientes que desejarem deixem avaliações públicas.',
-        },
-        {
-          heading: 'Como isso se conecta ao SEO local',
-          body: 'Avaliações são apenas uma parte da presença local. Para entender como conectar avaliações, Perfil da Empresa no Google, site, conteúdo e acompanhamento em uma oferta operacional, veja o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local e avaliações</Link>.',
         },
         {
           heading: 'FAQ rápido',
