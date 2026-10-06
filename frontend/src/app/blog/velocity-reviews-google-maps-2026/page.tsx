@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
@@ -38,6 +39,9 @@ export default function Page() {
         Um canal próprio também pode receber feedback de quem prefere falar diretamente com a empresa. Isso
         cria contexto para corrigir atendimento, prazo ou produto, enquanto o cliente continua livre para
         decidir se publica uma avaliação no Google.
+      </p>
+      <p>
+        Para operações com vários clientes, veja também <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências de SEO local</Link> e o guia sobre <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local e Local Pack</Link>.
       </p>
     </BlogArticle>
   );
