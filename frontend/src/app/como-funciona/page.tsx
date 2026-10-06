@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Como funciona o Filtra.AI | Feedback, avaliações Google e reputação',
+  title: 'Como funciona a Filtra.AI | Feedback, avaliações Google e reputação',
   description:
     'Veja como o Filtra.AI organiza feedback, facilita convites para avaliações genuínas no Google e ajuda a equipe a transformar insatisfação em melhoria. Trial de 7 dias grátis.',
   alternates: {
