@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  ...(process.env.CLOUDFLARE_PAGES === '1'
+    ? { output: 'export', images: { unoptimized: true } }
+    : {}),
   poweredByHeader: false,
 
   typescript: {
