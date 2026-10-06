@@ -2,6 +2,9 @@
   "name": "funil-reputacao-frontend",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "@paypal/react-paypal-js": "^10.4.0",
     "axios": "^1.7.9",
