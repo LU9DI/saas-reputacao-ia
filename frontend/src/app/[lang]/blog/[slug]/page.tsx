@@ -170,7 +170,12 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
     url:articleUrl,
     mainEntityOfPage:articleUrl,
     author:{'@type':'Organization',name:'Filtra.AI',url:base},
-    publisher:{'@type':'Organization',name:'Filtra.AI',url:base}
+    publisher:{'@type':'Organization',name:'Filtra.AI',url:base},
+    datePublished:'2026-10-05',
+    dateModified:'2026-10-05',
+    inLanguage:lang==='en'?'en':lang==='es'?'es':'zh-CN',
+    isPartOf:{'@type':'WebSite',name:'Filtra.AI',url:base},
+    image:base+'/og-image.svg'
   };
 
   return <main lang={lang} className="min-h-screen bg-black text-zinc-100">
@@ -182,6 +187,15 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
     </header>
     <article className="mx-auto max-w-4xl px-6 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(blogPosting)}} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({
+        '@context':'https://schema.org',
+        '@type':'BreadcrumbList',
+        itemListElement:[
+          {'@type':'ListItem',position:1,name:labels.home,item:base+'/'+lang},
+          {'@type':'ListItem',position:2,name:labels.topics,item:base+'/'+lang+'/blog'},
+          {'@type':'ListItem',position:3,name:found.item.title,item:articleUrl}
+        ]
+      })}} />
       <p className="text-sm font-semibold uppercase tracking-widest text-indigo-400">{found.item.kicker}</p>
       <h1 className="mt-4 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">{found.item.title}</h1>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">{found.item.lead}</p>
