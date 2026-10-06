@@ -5,7 +5,7 @@ import { BlogArticle, H2 } from '../../components/BlogArticle';
 export const metadata: Metadata = {
   title: 'Pacotes de SEO local: o que incluir e preço | Filtra.AI',
   description:
-    'Pacotes de SEO local: o que incluir, como precificar e quais entregáveis oferecer, com Google Business Profile, avaliações, reputação, conteúdo e acompanhamento.'
+    'Pacotes de SEO local: o que incluir, como precificar e quais entregáveis oferecer, com Google Business Profile, avaliações, reputação, conteúdo e acompanhamento.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', languages: { 'pt-BR': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', en: 'https://filtraai.com/en/blog/local-seo-google-reviews', es: 'https://filtraai.com/es/blog/seo-local-resenas-google', zh: 'https://filtraai.com/zh/blog/local-seo-google-reviews', 'x-default': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' } },
   openGraph: {
     type: 'article',
@@ -59,6 +59,19 @@ export default function Page() {
         Para negócios com várias unidades, o pacote também precisa considerar diferenças entre localidades. Uma
         unidade pode ter ótima avaliação e outra concentrar reclamações; tratar a rede como se fosse uma única
         operação pode esconder oportunidades importantes.
+      </p>
+
+      <H2>Como precificar um pacote de SEO local?</H2>
+      <p>
+        Não existe um preço único que sirva para todos os clientes. Uma forma mais consistente de precificar é
+        partir do custo e da complexidade da operação: quantidade de unidades, volume de avaliações e feedback,
+        frequência de análise, produção de conteúdo, otimizações necessárias e nível de acompanhamento incluído.
+      </p>
+      <p>
+        Depois, transforme esses fatores em escopo comparável. Um pacote básico pode ter diagnóstico e correções
+        prioritárias; um recorrente pode acrescentar conteúdo, avaliações, reputação e relatório; e uma operação
+        multiunidade pode cobrar pela quantidade de locais e pela profundidade da gestão. O preço deve deixar claro
+        o que acontece todo mês e o que é projeto inicial.
       </p>
 
       <H2>O que deve entrar em um pacote de SEO local?</H2>
