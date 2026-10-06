@@ -31,7 +31,7 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/blog/feedback-cliente-para-reputacao', en:'/en/blog/ai-review-analysis-guide', es:'/es/blog/analisis-resenas-ia', zh:'/zh/blog/ai-review-analysis-guide' },
   { pt:'/blog/seo-local-avaliacoes-local-pack', en:'/en/blog/local-seo-google-reviews', es:'/es/blog/seo-local-resenas-google', zh:'/zh/blog/local-seo-google-reviews' },
   { pt:'/blog', en:'/en/blog', es:'/es/blog', zh:'/zh/blog' },
-]
+];
 
 function normalizePath(pathname: string): string {
   if (!pathname || pathname === '/') return '/';
