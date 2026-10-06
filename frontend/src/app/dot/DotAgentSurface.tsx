@@ -149,9 +149,9 @@ export function DotAgentSurface() {
         aria-label="Abrir DOT"
         data-testid="dot-agent-launcher"
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-[90] grid h-14 w-14 place-items-center rounded-full border border-sky-300/20 bg-sky-500 text-white shadow-2xl shadow-sky-950/40 transition hover:scale-105 hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-300/60"
+        className="fixed bottom-5 right-5 z-[90] grid h-14 w-14 place-items-center rounded-[18px] border border-white/15 bg-zinc-950 text-white shadow-[0_16px_45px_rgba(0,0,0,.45)] transition-all duration-200 hover:-translate-y-1 hover:border-sky-300/40 hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-sky-400/50"
       >
-        <Bot size={24} />
+        <span className="absolute inset-0 rounded-[18px] bg-sky-400/10 animate-pulse" />\n        <Bot size={24} className="relative text-sky-300" />
       </button>
 
       {open && (
@@ -166,13 +166,13 @@ export function DotAgentSurface() {
             aria-modal="true"
             aria-label="DOT, agente da empresa"
             data-testid="dot-agent-panel"
-            className="pointer-events-auto absolute bottom-4 right-4 flex max-h-[calc(100vh-2rem)] w-[min(430px,calc(100vw-2rem))] flex-col overflow-hidden rounded-3xl border border-white/10 bg-zinc-950/95 shadow-2xl shadow-black/50 backdrop-blur-xl"
+            className="pointer-events-auto absolute bottom-4 right-4 flex max-h-[calc(100vh-2rem)] w-[min(470px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#090b10] shadow-[0_30px_100px_rgba(0,0,0,.7)]"
           >
             <header className="flex items-center justify-between border-b border-white/[0.07] px-4 py-3">
               <div className="flex items-center gap-3">
                 <span className="grid h-9 w-9 place-items-center rounded-full bg-sky-500/15 text-sky-300"><Bot size={18} /></span>
                 <div>
-                  <div className="text-sm font-semibold text-white">DOT</div>
+                  <div className="flex items-center gap-2"><div className="text-sm font-semibold tracking-tight text-white">DOT</div><span className="rounded-full border border-emerald-400/15 bg-emerald-400/10 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-emerald-300">ativo</span></div>
                   <div className="text-[10px] text-zinc-500">
                     agente da empresa · {status?.demo ? 'ambiente local' : status?.plan_label || status?.plan || 'plano ativo'}
                   </div>
