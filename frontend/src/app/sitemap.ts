@@ -31,6 +31,7 @@ const SEO_FAMILIES: Record<string, Record<Lang, string>> = {
   '/blog/gestao-reputacao-online-guia': { 'pt-BR':'/blog/gestao-reputacao-online-guia', en:'/en/blog/online-reputation-management-guide', es:'/es/blog/guia-gestion-reputacion-online', zh:'/zh/blog/online-reputation-management-guide' },
   '/blog/feedback-cliente-para-reputacao': { 'pt-BR':'/blog/feedback-cliente-para-reputacao', en:'/en/blog/ai-review-analysis-guide', es:'/es/blog/analisis-resenas-ia', zh:'/zh/blog/ai-review-analysis-guide' },
   '/blog/seo-local-avaliacoes-local-pack': { 'pt-BR':'/blog/seo-local-avaliacoes-local-pack', en:'/en/blog/local-seo-google-reviews', es:'/es/blog/seo-local-resenas-google', zh:'/zh/blog/local-seo-google-reviews' },
+  '/blog': { 'pt-BR':'/blog', en:'/en/blog', es:'/es/blog', zh:'/zh/blog' },
 };
 
 const canonicalPaths = [
@@ -101,7 +102,7 @@ function localizedAlternates(path: string) {
 
 function entry(path: string): MetadataRoute.Sitemap[number] {
   const canonical = path === '' ? '/' : path;
-  const isBlog = canonical === '/blog' || canonical.startsWith('/blog/');
+  const isBlog = canonical === '/blog' || canonical.startsWith('/blog/') || /^\/(en|es|zh)\/blog(?:\/|$)/.test(canonical);
   const isHome = canonical === '/';
   const priority = isHome ? 1 : highPriority.has(canonical) ? 0.95 : isBlog ? 0.8 : 0.7;
   return {
