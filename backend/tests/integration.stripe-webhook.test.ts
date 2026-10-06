@@ -26,8 +26,9 @@ process.env.APP_URL = 'http://localhost:3000';
 process.env.FRONTEND_URL = 'http://localhost:3000';
 process.env.ADMIN_EMAIL = 'admin-stripe-e2e@example.com';
 process.env.ADMIN_PASSWORD = 'AdminTest@123';
-// Sem STRIPE_WEBHOOK_SECRET → constructStripeEvent aceita JSON cru em non-prod
-delete process.env.STRIPE_WEBHOOK_SECRET;
+// Webhook é exercitado com assinatura HMAC real, mas sem credencial Stripe de API.
+process.env.STRIPE_ENABLED = 'true';
+process.env.STRIPE_WEBHOOK_SECRET = 'test-stripe-webhook-secret';
 delete process.env.DATABASE_URL;
 
 let server: any;
@@ -121,11 +122,16 @@ describe('E2E Stripe webhook → ativação de plano', () => {
     };
 
     const body = JSON.stringify(event);
+    const timestamp = Math.floor(Date.now() / 1000);
+    const signature = crypto
+      .createHmac('sha256', process.env.STRIPE_WEBHOOK_SECRET!)
+      .update(`${timestamp}.${body}`, 'utf8')
+      .digest('hex');
     const res = await fetch(`${baseUrl}/api/webhook/stripe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // sem stripe-signature: ok em NODE_ENV=test sem STRIPE_WEBHOOK_SECRET
+        'stripe-signature': `t=${timestamp},v1=${signature}`
       },
       body,
     });
@@ -144,7 +150,11 @@ describe('E2E Stripe webhook → ativação de plano', () => {
 
   it('GET /api/empresa/:id/assinatura reflete acesso pago', async () => {
     const empresaId = (global as any).__stripeE2EEmpresaId as string;
-    const res = await fetch(`${baseUrl}/api/empresa/${empresaId}/assinatura`);
+    const { signAccessToken } = await import('../lib/auth.js');
+    const token = signAccessToken({ id: 'stripe-e2e-user', nome_funcionario: 'Stripe E2E', empresa_id: empresaId });
+    const res = await fetch(`${baseUrl}/api/empresa/${empresaId}/assinatura`, {
+      headers: { Cookie: `saas_auth_token=${token}` },
+    });
     assert.equal(res.status, 200);
     const data = await res.json();
     assert.equal(data.status, 'ativo');
