@@ -185,6 +185,17 @@ export default function Page() {
         ativos serão acompanhados, quantas unidades estão incluídas e quais relatórios o cliente recebe.
       </p>
       <p>
+        Se a prioridade for transformar esse escopo em uma oferta recorrente, veja também o guia sobre{' '}
+        <Link href="/blog/agencia-vender-gestao-reputacao" className="text-indigo-400 underline">
+          como vender gestão de reputação como serviço
+        </Link>
+        {' '}e a página de{' '}
+        <Link href="/agencias" className="text-indigo-400 underline">
+          gestão de reputação para agências de SEO local
+        </Link>
+        .
+      </p>
+      <p>
         Isso também facilita a gestão de carteiras. Em vez de produzir análises manuais idênticas para cada cliente,
         a agência pode centralizar sinais e usar a equipe para interpretar exceções e decidir prioridades. Conheça
         a solução de{' '}
