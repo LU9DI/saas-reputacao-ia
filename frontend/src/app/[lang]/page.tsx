@@ -124,7 +124,7 @@ export default async function LocalizedHome({params}:{params:Promise<{lang:strin
     />
     <header className="border-b border-zinc-800">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="font-semibold tracking-tight text-white">Filtra.AI</Link>
+        <Link href={`/${lang}`} className="font-semibold tracking-tight text-white">Filtra.AI</Link>
         <LanguageSwitcher compact />
       </div>
     </header>
