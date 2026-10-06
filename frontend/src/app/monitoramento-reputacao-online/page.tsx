@@ -27,6 +27,8 @@ export default function Page() {
         { href: '/filtra-ai', title: 'Filtra.AI', description: 'Gestão de reputação, avaliações Google e feedback com IA.' },
         { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Organize avaliações e feedback.' },
         { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Estruture uma rotina contínua.' },
+        { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Transforme monitoramento em entrega recorrente para clientes.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como monitoramento e reputação entram no pacote.' },
       ]}
       sections={[
         { heading: 'O que monitorar', body: 'Acompanhe volume de avaliações, variações de nota, temas recorrentes, novos problemas e mudanças relevantes na percepção dos clientes.' },
