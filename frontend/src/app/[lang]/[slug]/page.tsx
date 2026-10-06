@@ -90,8 +90,38 @@ function get(lang:string,slug:string){
   return index<0?null:{item:items[index],index};
 }
 
+const pageFamilies:Record<string,{pt:string;en:string;es:string;zh:string}>={
+  '/ia':{pt:'/ia',en:'/en/ai',es:'/es/ia',zh:'/zh/ai'},
+  '/feedback-de-clientes':{pt:'/feedback-de-clientes',en:'/en/customer-feedback',es:'/es/feedback-clientes',zh:'/zh/customer-feedback'},
+  '/analise-de-avaliacoes-com-ia':{pt:'/analise-de-avaliacoes-com-ia',en:'/en/ai-review-analysis',es:'/es/analisis-resenas-ia',zh:'/zh/ai-review-analysis'},
+  '/gestao-de-reputacao-online':{pt:'/gestao-de-reputacao-online',en:'/en/online-reputation-management',es:'/es/gestion-reputacion-online',zh:'/zh/online-reputation-management'},
+  '/avaliacoes-google':{pt:'/avaliacoes-google',en:'/en/google-reviews',es:'/es/resenas-google',zh:'/zh/google-reviews'},
+  '/filtra-ai':{pt:'/filtra-ai',en:'/en/filtra-ai',es:'/es/filtra-ai',zh:'/zh/filtra-ai'},
+  '/reputacao-google':{pt:'/reputacao-google',en:'/en/google-reputation',es:'/es/reputacion-google',zh:'/zh/google-reputation'},
+  '/como-melhorar-avaliacoes-google':{pt:'/como-melhorar-avaliacoes-google',en:'/en/improve-google-reviews',es:'/es/mejorar-resenas-google',zh:'/zh/improve-google-reviews'},
+  '/monitoramento-reputacao-online':{pt:'/monitoramento-reputacao-online',en:'/en/online-reputation-monitoring',es:'/es/monitoreo-reputacion-online',zh:'/zh/online-reputation-monitoring'},
+  '/gestao-de-feedback':{pt:'/gestao-de-feedback',en:'/en/customer-feedback-management',es:'/es/gestion-feedback-clientes',zh:'/zh/customer-feedback-management'},
+  '/hoteis':{pt:'/hoteis',en:'/en/hotels',es:'/es/hoteles',zh:'/zh/hotels'},
+  '/turismo':{pt:'/turismo',en:'/en/tourism',es:'/es/turismo',zh:'/zh/tourism'},
+  '/agencias':{pt:'/agencias',en:'/en/agencies',es:'/es/agencias',zh:'/zh/agencies'},
+  '/clinicas':{pt:'/clinicas',en:'/en/clinics',es:'/es/clinicas',zh:'/zh/clinics'},
+  '/franquias':{pt:'/franquias',en:'/en/franchises',es:'/es/franquicias',zh:'/zh/franchises'},
+  '/associacoes':{pt:'/associacoes',en:'/en/associations',es:'/es/asociaciones',zh:'/zh/associations'},
+  '/restaurantes':{pt:'/restaurantes',en:'/en/restaurants',es:'/es/restaurantes',zh:'/zh/restaurants'},
+  '/como-funciona':{pt:'/como-funciona',en:'/en/how-it-works',es:'/es/como-funciona',zh:'/zh/how-it-works'},
+  '/parceiros':{pt:'/parceiros',en:'/en/partners',es:'/es/socios',zh:'/zh/partners'},
+  '/pedir-estrela-vs-filtrar':{pt:'/pedir-estrela-vs-filtrar',en:'/en/ask-for-stars-vs-filtering',es:'/es/pedir-estrellas-vs-filtrar',zh:'/zh/request-stars-vs-filter'},
+  '/auditoria-gratuita':{pt:'/auditoria-gratuita',en:'/en/free-review-audit',es:'/es/auditoria-gratuita',zh:'/zh/free-review-audit'}
+};
+
+function familyForPage(lang:Lang,slug:string){
+  const path='/'+lang+'/'+slug;
+  return Object.values(pageFamilies).find(family=>family[lang]===path);
+}
+
 function localizedPath(lang:Lang,index:number){
-  return '/'+lang+'/'+pages[lang][index].slug;
+  const source=sourcePaths[index];
+  return pageFamilies[source]?.[lang] || '/'+lang+'/'+pages[lang][index].slug;
 }
 
 const labels={
@@ -114,14 +144,25 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
   const {lang,slug}=await params;
   const found=get(lang,slug);
   if(!found)return{};
-  const languages:Record<string,string>={'pt-BR':base+sourcePaths[found.index]};
-  (['en','es','zh'] as Lang[]).forEach(code=>{
-    languages[code]=base+localizedPath(code,found.index);
-  });
+  const family=familyForPage(lang,slug);
+  if(!family)return {
+    title:found.item.title,
+    description:found.item.description,
+    alternates:{canonical:base+'/'+lang+'/'+slug},
+    openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},
+    robots:{index:true,follow:true}
+  };
+  const languages:Record<string,string>={
+    'pt-BR':base+family.pt,
+    en:base+family.en,
+    es:base+family.es,
+    zh:base+family.zh,
+    'x-default':base+family.pt
+  };
   return {
     title:found.item.title,
     description:found.item.description,
-    alternates:{canonical:base+'/'+lang+'/'+slug,languages:{...languages,'x-default':base+sourcePaths[found.index]}},
+    alternates:{canonical:base+'/'+lang+'/'+slug,languages},
     openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},
     robots:{index:true,follow:true}
   };
@@ -144,7 +185,24 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     {en:'/en/blog/ai-review-analysis-guide',es:'/es/blog/analisis-resenas-ia',zh:'/zh/blog/ai-review-analysis-guide',label:{en:'AI review analysis guide',es:'Guía de análisis de reseñas con IA',zh:'AI 评论分析指南'}},
     {en:'/en/blog/local-seo-google-reviews',es:'/es/blog/seo-local-resenas-google',zh:'/zh/blog/local-seo-google-reviews',label:{en:'Local SEO and Google reviews',es:'SEO local y reseñas de Google',zh:'本地 SEO 与 Google 评价'}}
   ];
-  const resourceArticle=blogFamilies[found.index % blogFamilies.length];
+  const resourceByPage:Record<string,typeof blogFamilies[number]>={
+    '/avaliacoes-google':blogFamilies[0],
+    '/como-melhorar-avaliacoes-google':blogFamilies[0],
+    '/reputacao-google':blogFamilies[0],
+    '/gestao-de-reputacao-online':blogFamilies[1],
+    '/monitoramento-reputacao-online':blogFamilies[1],
+    '/analise-de-avaliacoes-com-ia':blogFamilies[2],
+    '/ia':blogFamilies[2],
+    '/feedback-de-clientes':blogFamilies[3],
+    '/agencias':blogFamilies[3],
+    '/hoteis':blogFamilies[3],
+    '/turismo':blogFamilies[3],
+    '/clinicas':blogFamilies[3],
+    '/franquias':blogFamilies[3],
+    '/associacoes':blogFamilies[3],
+    '/restaurantes':blogFamilies[3]
+  };
+  const resourceArticle=resourceByPage[sourcePaths[found.index]] || blogFamilies[0];
   const sectionCopy={
     en:{
       why:`Businesses searching for ${topic.title.toLowerCase()} need a repeatable way to understand customer signals and turn them into decisions, not just collect more comments.`,
