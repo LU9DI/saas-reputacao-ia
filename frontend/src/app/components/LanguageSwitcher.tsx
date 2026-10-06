@@ -11,7 +11,7 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/analise-de-avaliacoes-com-ia', en:'/en/ai-review-analysis', es:'/es/analisis-resenas-ia', zh:'/zh/ai-review-analysis' },
   { pt:'/gestao-de-reputacao-online', en:'/en/online-reputation-management', es:'/es/gestion-reputacion-online', zh:'/zh/online-reputation-management' },
   { pt:'/avaliacoes-google', en:'/en/google-reviews', es:'/es/resenas-google', zh:'/zh/google-reviews' },
-  { pt:'/reputacao-google', en:'/en/google-reputation', es:'/es/reputacion-google', zh:'/zh/google-reputation' },
+  { pt:'/reputacao-google', en:'/en/google-reputation', es:'/es/reputacion-google', zh:'/zh/reputation-google' },
   { pt:'/como-melhorar-avaliacoes-google', en:'/en/improve-google-reviews', es:'/es/mejorar-resenas-google', zh:'/zh/improve-google-reviews' },
   { pt:'/monitoramento-reputacao-online', en:'/en/online-reputation-monitoring', es:'/es/monitoreo-reputacion-online', zh:'/zh/online-reputation-monitoring' },
   { pt:'/gestao-de-feedback', en:'/en/customer-feedback-management', es:'/es/gestion-feedback-clientes', zh:'/zh/customer-feedback-management' },
@@ -19,11 +19,11 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/hoteis', en:'/en/hotels', es:'/es/hoteles', zh:'/zh/hotels' },
   { pt:'/turismo', en:'/en/tourism', es:'/es/turismo', zh:'/zh/tourism' },
   { pt:'/agencias', en:'/en/agencies', es:'/es/agencias', zh:'/zh/agencias' },
-  { pt:'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinicas' },
+  { pt:'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinics' },
   { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franchises' },
   { pt:'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/associations' },
-  { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurantes' },
-  { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
+  { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurants' },
+  { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/como-funciona' },
   { pt:'/parceiros', en:'/en/partners', es:'/es/socios', zh:'/zh/partners' },
   { pt:'/pedir-estrela-vs-filtrar', en:'/en/ask-for-stars-vs-filtering', es:'/es/pedir-estrellas-vs-filtrar', zh:'/zh/request-stars-vs-filter' },
 ];
@@ -51,63 +51,72 @@ export function LanguageSwitcher({
   compact?: boolean;
   variant?: 'select' | 'flags';
 }) {
-  const { language, setLanguage, tx } = useLanguage();
+  const { language, tx } = useLanguage();
   const pathname = usePathname();
   const pathLang = (pathname || '/').match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || language;
+  const currentLanguage =
+    SUPPORTED_LANGUAGES.find((item) => item.code === current) || SUPPORTED_LANGUAGES[0];
 
-  const choose = (code: Language) => {
-    const currentPath = normalizePath(pathname || '/');
-    const target = targetFor(currentPath, code);
-
-    // Persist only when staying on the same route. For SEO routes, navigate
-    // first: updating context before navigation can rerender the selector
-    // during the native select event and cancel the route transition.
-    if (target === currentPath) {
-      setLanguage(code);
-      return;
-    }
-
-    window.location.href = target;
-  };
+  /*
+   * IMPORTANT:
+   * Route changes are real document navigations through <a href>.
+   * We deliberately do not use setLanguage(), router.push(), or
+   * window.location inside the route-changing control. This makes the
+   * language switcher independent from React state/rerenders and from
+   * Next.js client navigation interception.
+   */
+  const links = SUPPORTED_LANGUAGES.map((item) => ({
+    ...item,
+    href: targetFor(pathname || '/', item.code),
+  }));
 
   if (variant === 'flags') {
     return (
       <nav className={`inline-flex items-center gap-1 ${className}`} aria-label={tx('language', 'Idioma')}>
-        {SUPPORTED_LANGUAGES.map((l) => (
-          <button
-            key={l.code}
-            type="button"
-            onClick={() => choose(l.code)}
-            title={l.label}
-            aria-label={l.label}
-            aria-current={current === l.code ? 'page' : undefined}
-            className={`text-sm px-2 py-1 rounded-lg border ${current === l.code ? 'border-indigo-500 bg-indigo-500/20 text-zinc-50' : 'border-zinc-700 bg-zinc-900 text-zinc-400'}`}
+        {links.map((item) => (
+          <a
+            key={item.code}
+            href={item.href}
+            title={item.label}
+            aria-label={item.label}
+            aria-current={current === item.code ? 'page' : undefined}
+            className={`text-sm px-2 py-1 rounded-lg border ${current === item.code ? 'border-indigo-500 bg-indigo-500/20 text-zinc-50' : 'border-zinc-700 bg-zinc-900 text-zinc-400'}`}
           >
-            <span aria-hidden>{l.flag}</span>
-            {!compact && <span className="ml-1 hidden sm:inline">{l.code.toUpperCase()}</span>}
-          </button>
+            <span aria-hidden>{item.flag}</span>
+            {!compact && <span className="ml-1 hidden sm:inline">{item.code.toUpperCase()}</span>}
+          </a>
         ))}
       </nav>
     );
   }
 
   return (
-    <label className={`inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 ${className}`}>
-      <span aria-hidden>{SUPPORTED_LANGUAGES.find((l) => l.code === current)?.flag}</span>
-      <span className={compact ? 'sr-only' : 'text-sm'}>{tx('language', 'Idioma')}</span>
-      <select
-        value={current}
-        onChange={(e) => choose(e.target.value as Language)}
+    <details className={`relative inline-block ${className}`}>
+      <summary
         aria-label={tx('language', 'Idioma')}
-        className="cursor-pointer bg-transparent text-sm text-zinc-100 outline-none"
+        className="flex cursor-pointer list-none items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 [&::-webkit-details-marker]:hidden"
       >
-        {SUPPORTED_LANGUAGES.map((l) => (
-          <option key={l.code} value={l.code} className="bg-zinc-950 text-zinc-100">
-            {l.label}
-          </option>
+        <span aria-hidden>{currentLanguage.flag}</span>
+        <span className={compact ? 'sr-only' : 'text-sm'}>{tx('language', 'Idioma')}</span>
+        <span aria-hidden className="text-xs text-zinc-400">▾</span>
+      </summary>
+      <nav
+        aria-label={tx('language', 'Idioma')}
+        className="absolute right-0 top-full z-[60] mt-2 min-w-36 overflow-hidden rounded-lg border border-zinc-700 bg-zinc-950 p-1 shadow-2xl"
+      >
+        {links.map((item) => (
+          <a
+            key={item.code}
+            href={item.href}
+            aria-current={current === item.code ? 'page' : undefined}
+            className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm ${current === item.code ? 'bg-indigo-500/20 text-white' : 'text-zinc-300 hover:bg-white/10 hover:text-white'}`}
+          >
+            <span aria-hidden>{item.flag}</span>
+            <span>{item.label}</span>
+          </a>
         ))}
-      </select>
-    </label>
+      </nav>
+    </details>
   );
 }
