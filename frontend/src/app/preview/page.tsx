@@ -6,6 +6,8 @@ import { PreviewNavigator } from '../components/PreviewNavigator';
 import { PlanCards } from '../components/PlanCards';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
 
+const TRIAL_HREF = '/preview/teste';
+
 type Copy = {
   badge: string;
   heroTitle: string;
@@ -155,7 +157,7 @@ export default function LandingPreview() {
     <>
       <PreviewNavigator />
       <main className="min-h-screen overflow-hidden bg-[#050507] text-white">
-        <nav className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-6 lg:px-8">
+        <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-6 lg:px-8">
           <BrandMark size="md" subtitle="Reputação" href="/" />
           <div className="flex items-center gap-3">
             <div className="hidden items-center gap-7 text-sm text-zinc-400 md:flex">
@@ -167,7 +169,7 @@ export default function LandingPreview() {
               </a>
             </div>
             <a
-              href="/login?trial=7"
+              href={TRIAL_HREF}
               className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex"
             >
               {c.start}
@@ -188,7 +190,7 @@ export default function LandingPreview() {
           <p className="mt-7 max-w-xl text-lg leading-8 text-zinc-400 sm:text-xl">{c.heroText}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <a
-              href="/login?trial=7"
+              href={TRIAL_HREF}
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-400"
             >
               {c.start} <ArrowRight size={16} />
@@ -247,7 +249,7 @@ export default function LandingPreview() {
             <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{c.finalTitle}</h2>
             <p className="mt-4 text-zinc-400">{c.finalText}</p>
             <a
-              href="/login?trial=7"
+              href={TRIAL_HREF}
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-400"
             >
               {c.start} <ArrowRight size={16} />
