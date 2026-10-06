@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import {
   classifySpendEvent,
   shouldRespectCooldown,
-} from '../../../lib/failoverCore';
+} from '../../../../lib/failoverCore';
 import {
   getFailoverState,
   isEventProcessed,
