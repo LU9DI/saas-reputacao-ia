@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '../components/BrandMark';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const metadata: Metadata = {
   title: 'Blog | Reputação, Google Reviews e SEO local',
@@ -33,7 +34,10 @@ export default function BlogIndexPage() {
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Blog" href="/" />
-        <Link href="/preview/teste" className="text-sm text-indigo-400 hover:text-indigo-300">Começar 7 dias grátis</Link>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher compact />
+          <Link href="/preview/teste" className="text-sm text-indigo-400 hover:text-indigo-300">Começar 7 dias grátis</Link>
+        </div>
       </header>
       <main className="max-w-3xl mx-auto px-4 pb-16 space-y-8">
         <div className="space-y-3">
