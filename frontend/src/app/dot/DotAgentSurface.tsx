@@ -151,7 +151,7 @@ export function DotAgentSurface() {
                 <div>
                   <div className="text-sm font-semibold text-white">DOT</div>
                   <div className="text-[10px] text-zinc-500">
-                    agente da empresa · {status.demo ? 'ambiente local' : status.plan_label || status.plan || 'plano ativo'}
+                    agente da empresa · {status?.demo ? 'ambiente local' : status?.plan_label || status?.plan || 'plano ativo'}
                   </div>
                 </div>
               </div>
