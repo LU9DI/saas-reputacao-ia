@@ -115,8 +115,7 @@ export function DotAgentSurface() {
     }
   }
 
-  if (!status?.access || !status.enabled) return null;
-
+  const hasAccess = Boolean(status?.access && status?.enabled);
   const activeGoals = (workspace?.goals || []).filter((goal) => goal.status === 'active').slice(0, 3);
   const canExecute = permissions.some((p) => p.resource === 'operations' && p.action === 'execute' && Number(p.granted) === 1);
 
@@ -160,6 +159,18 @@ export function DotAgentSurface() {
             </header>
 
             <div className="overflow-y-auto p-4">
+              {!hasAccess ? (
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <div className="text-sm font-semibold text-white">DOT está disponível aqui.</div>
+                  <p className="mt-2 text-xs leading-5 text-zinc-500">
+                    Entre em uma conta autorizada para usar o agente da empresa. O DOT não executa nada sem autenticação e permissões válidas.
+                  </p>
+                  <a href="/login" className="mt-4 inline-flex rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-400">
+                    Entrar na Filtra.AI
+                  </a>
+                </div>
+              ) : (
+              <>
               <div className="rounded-2xl border border-sky-400/10 bg-sky-500/[0.06] p-3">
                 <div className="flex items-start gap-2">
                   <Target size={16} className="mt-0.5 text-sky-300" />
@@ -228,7 +239,9 @@ export function DotAgentSurface() {
                 {integrations.length > 0 && <div className="mt-2 text-[10px] text-zinc-600">{integrations.filter((i) => i.status === 'connected').length} integrações conectadas. Uma integração conectada não significa autorização para ação externa.</div>}
               </section>
 
-              {status.demo && <div className="mt-3 text-[10px] text-zinc-600">Protótipo local: dados demonstrativos. Nenhuma ação externa é executada.</div>}
+              {status.demo && <div className="mt-3 text-[10px] text-zinc-600">Protótipo local: dados demonstrativos. Nenhuma ação externa é executada.</div>
+              </>
+              )}
             </div>
           </aside>
         </div>
