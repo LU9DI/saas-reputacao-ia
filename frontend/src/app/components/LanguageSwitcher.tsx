@@ -103,7 +103,7 @@ export function LanguageSwitcher({
         : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:border-zinc-500'
     }`;
 
-  if (compact || variant === 'select') {
+  if (compact) {
     return (
       <nav
         className={`inline-flex shrink-0 items-center gap-1 ${className}`}
@@ -144,6 +144,29 @@ export function LanguageSwitcher({
           );
         })}
       </nav>
+    );
+  }
+
+  if (variant === 'select') {
+    return (
+      <div className={`inline-flex shrink-0 items-center ${className}`} data-lang-switcher="select-v5">
+        <label className="sr-only" htmlFor="filtra-language-select">
+          {tx('language', 'Idioma')}
+        </label>
+        <select
+          id="filtra-language-select"
+          aria-label={tx('language', 'Idioma')}
+          value={current}
+          onChange={(e) => goToLanguage(e.target.value as Language)}
+          className="h-9 min-w-[132px] cursor-pointer rounded-lg border border-white/10 bg-zinc-950 px-3 text-sm font-medium text-zinc-100 outline-none transition hover:border-white/20 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+        >
+          {SUPPORTED_LANGUAGES.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.flag} {item.label}
+            </option>
+          ))}
+        </select>
+      </div>
     );
   }
 
@@ -201,25 +224,7 @@ export function LanguageSwitcher({
     );
   }
 
-  return (
-    <div
-      className={`inline-flex shrink-0 items-center gap-1.5 relative z-20 pointer-events-auto ${className}`}
-      data-lang-switcher="select-v4"
-    >
-      <select
-        aria-label={tx('language', 'Idioma')}
-        value={current}
-        onChange={(e) => goToLanguage(e.target.value as Language)}
-        className="cursor-pointer rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      >
-        {SUPPORTED_LANGUAGES.map((item) => (
-          <option key={item.code} value={item.code}>
-            {item.flag} {item.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+  return null;
 }
 
 // Cloudflare static deployment validation: 2026-10-06
