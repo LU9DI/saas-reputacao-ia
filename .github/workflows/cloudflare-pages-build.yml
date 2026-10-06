@@ -1,0 +1,36 @@
+name: cloudflare-pages-build
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          CLOUDFLARE_PAGES: "1"
+          NEXT_PUBLIC_APP_URL: "https://filtraai.com"
+          NEXT_PUBLIC_API_URL: "https://filtra-ia-api.onrender.com"
+      - name: Package static export
+        working-directory: .
+        run: tar -czf cloudflare-pages-out.tar.gz -C frontend/out .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-pages-out
+          path: cloudflare-pages-out.tar.gz
+          retention-days: 1
