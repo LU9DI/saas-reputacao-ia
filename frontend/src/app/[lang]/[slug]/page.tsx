@@ -214,8 +214,9 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     '/pedir-estrela-vs-filtrar':blogFamilies[0],
     '/auditoria-gratuita':blogFamilies[2]
   };
-  const sourcePath=sourcePathForPage(lang,slug) || sourcePaths[found.index];
-  const resourceArticle=resourceByPage[sourcePath] || blogFamilies[0];
+  const sourcePath=sourcePathForPage(lang,slug);
+  const resourceArticle=sourcePath ? resourceByPage[sourcePath] : undefined;
+  if(!resourceArticle) notFound();
   const sectionCopy={
     en:{
       why:`Businesses searching for ${topic.title.toLowerCase()} need a repeatable way to understand customer signals and turn them into decisions, not just collect more comments.`,
