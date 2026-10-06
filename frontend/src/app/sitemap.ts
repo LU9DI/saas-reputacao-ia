@@ -27,6 +27,10 @@ const SEO_FAMILIES: Record<string, Record<Lang, string>> = {
   '/como-funciona': { 'pt-BR':'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
   '/parceiros': { 'pt-BR':'/parceiros', en:'/en/partners', es:'/es/socios', zh:'/zh/partners' },
   '/pedir-estrela-vs-filtrar': { 'pt-BR':'/pedir-estrela-vs-filtrar', en:'/en/ask-for-stars-vs-filtering', es:'/es/pedir-estrellas-vs-filtrar', zh:'/zh/request-stars-vs-filter' },
+  '/blog/como-conseguir-avaliacoes-google': { 'pt-BR':'/blog/como-conseguir-avaliacoes-google', en:'/en/blog/get-google-reviews', es:'/es/blog/conseguir-resenas-google', zh:'/zh/blog/google-reviews-guide' },
+  '/blog/gestao-reputacao-online-guia': { 'pt-BR':'/blog/gestao-reputacao-online-guia', en:'/en/blog/online-reputation-management-guide', es:'/es/blog/guia-gestion-reputacion-online', zh:'/zh/blog/online-reputation-management-guide' },
+  '/blog/feedback-cliente-para-reputacao': { 'pt-BR':'/blog/feedback-cliente-para-reputacao', en:'/en/blog/ai-review-analysis-guide', es:'/es/blog/analisis-resenas-ia', zh:'/zh/blog/ai-review-analysis-guide' },
+  '/blog/seo-local-avaliacoes-local-pack': { 'pt-BR':'/blog/seo-local-avaliacoes-local-pack', en:'/en/blog/local-seo-google-reviews', es:'/es/blog/seo-local-resenas-google', zh:'/zh/blog/local-seo-google-reviews' },
 };
 
 const canonicalPaths = [
