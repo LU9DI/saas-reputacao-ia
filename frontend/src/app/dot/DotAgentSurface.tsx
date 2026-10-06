@@ -240,7 +240,7 @@ export function DotAgentSurface() {
               </section>
 
               {status.demo && <div className="mt-3 text-[10px] text-zinc-600">Protótipo local: dados demonstrativos. Nenhuma ação externa é executada.</div>
-              </>
+              </div>
               )}
             </div>
           </aside>
