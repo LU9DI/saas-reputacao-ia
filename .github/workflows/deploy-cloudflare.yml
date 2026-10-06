@@ -65,3 +65,5 @@ jobs:
             exit 1
           fi
           npx wrangler@latest pages deploy out             --project-name=filtra-ai-fallback-direct             --branch=main             --commit-message="Cloudflare deploy ${GITHUB_SHA}"             --commit-hash="${GITHUB_SHA}"
+
+# deployment trigger: 2026-10-06
