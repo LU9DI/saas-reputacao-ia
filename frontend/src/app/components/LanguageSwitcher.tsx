@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
-/** Pares de rotas SEO PT ↔ EN/ES/ZH (artigos / landing localizadas). */
+/** Pares de rotas SEO PT ↔ EN/ES/ZH. */
 export const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt: '/ia', en: '/en/ai', es: '/es/ia', zh: '/zh/ai' },
   { pt: '/filtra-ai', en: '/en/filtra-ai', es: '/es/filtra-ai', zh: '/zh/filtra-ai' },
@@ -40,24 +40,8 @@ function normalizePath(pathname: string): string {
   return clean.replace(/\/+$/, '') || '/';
 }
 
-/** Home e landings de idioma raiz: só troca dicionário, sem mudar de rota. */
-function isAppLanguageOnlyPath(pathname: string): boolean {
-  const n = normalizePath(pathname);
-  if (n === '/' || n === '/en' || n === '/es' || n === '/zh') return true;
-  // páginas de app (login, painel, etc.) — não são artigos SEO
-  const seo = SEO_FAMILIES.some((item) =>
-    Object.values(item).some((path) => normalizePath(path) === n),
-  );
-  return !seo;
-}
-
 export function targetFor(pathname: string, language: Language): string {
   const normalized = normalizePath(pathname);
-  // Home: permanece na mesma URL
-  if (normalized === '/' || normalized === '/en' || normalized === '/es' || normalized === '/zh') {
-    return normalized === '/' || language === 'pt' ? '/' : `/${language}`;
-  }
-  // Na prática a home principal (/) nunca navega — ver goToLanguage
   const family = SEO_FAMILIES.find((item) =>
     Object.values(item).some((path) => normalizePath(path) === normalized),
   );
@@ -94,35 +78,64 @@ export function LanguageSwitcher({
   const pathLang = pathname.match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || language;
   const seoArticle = isSeoArticlePath(pathname);
-  const appOnly = isAppLanguageOnlyPath(pathname);
 
   const goToLanguage = (next: Language) => {
+    if (next === current && next === language) return;
     setLanguage(next);
-    // Página principal e app: NÃO muda de rota — só idioma da UI
-    if (appOnly || normalizePath(pathname) === '/') {
-      if (next !== language) window.location.reload();
-      return;
-    }
-    // Artigos SEO: navega para a URL localizada correspondente
+
+    // Artigos SEO: navega para a URL no idioma escolhido
     if (seoArticle) {
       const href = targetFor(pathname, next);
       if (normalizePath(href) !== normalizePath(pathname)) {
         window.location.assign(href);
-        return;
       }
+      return;
     }
-    if (next !== language) window.location.reload();
+
+    // Home, login, painel, etc.: só muda o idioma da UI (sem mudar de página)
+    // O context atualiza os textos; não força reload.
   };
 
-  if (variant === 'flags') {
+  const btnClass = (active: boolean) =>
+    `inline-flex items-center justify-center text-sm px-2 py-1 rounded-lg border transition cursor-pointer select-none ${
+      active
+        ? 'border-indigo-500 bg-indigo-500/20 text-zinc-50'
+        : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:border-zinc-500'
+    }`;
+
+  if (variant === 'flags' || seoArticle) {
     return (
       <nav
-        className={`inline-flex shrink-0 items-center gap-1 ${className}`}
+        className={`inline-flex shrink-0 items-center gap-1 relative z-20 pointer-events-auto ${className}`}
         aria-label={tx('language', 'Idioma')}
-        data-lang-switcher="flags-v3"
+        data-lang-switcher="v4"
       >
         {SUPPORTED_LANGUAGES.map((item) => {
           const active = current === item.code;
+          const href = seoArticle ? targetFor(pathname, item.code) : undefined;
+
+          if (seoArticle && href) {
+            return (
+              <a
+                key={item.code}
+                href={href}
+                title={item.label}
+                aria-label={item.label}
+                aria-current={active ? 'page' : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToLanguage(item.code);
+                }}
+                className={btnClass(active)}
+              >
+                <span aria-hidden>{item.flag}</span>
+                {!compact && (
+                  <span className="ml-1 hidden sm:inline">{item.code.toUpperCase()}</span>
+                )}
+              </a>
+            );
+          }
+
           return (
             <button
               key={item.code}
@@ -131,11 +144,7 @@ export function LanguageSwitcher({
               aria-label={item.label}
               aria-pressed={active}
               onClick={() => goToLanguage(item.code)}
-              className={`text-sm px-2 py-1 rounded-lg border ${
-                active
-                  ? 'border-indigo-500 bg-indigo-500/20 text-zinc-50'
-                  : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:text-zinc-200'
-              }`}
+              className={btnClass(active)}
             >
               <span aria-hidden>{item.flag}</span>
               {!compact && (
@@ -149,7 +158,10 @@ export function LanguageSwitcher({
   }
 
   return (
-    <div className={`inline-flex shrink-0 items-center gap-1.5 ${className}`} data-lang-switcher="select-v3">
+    <div
+      className={`inline-flex shrink-0 items-center gap-1.5 relative z-20 pointer-events-auto ${className}`}
+      data-lang-switcher="select-v4"
+    >
       <select
         aria-label={tx('language', 'Idioma')}
         value={current}
