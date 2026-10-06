@@ -55,8 +55,8 @@ const entitySchema = {
   alternateName: 'Filtra AI Tecnologia LTDA',
   url: 'https://filtraai.com/',
   logo: 'https://filtraai.com/icons/icon-512.png',
-  description:
-  disambiguatingDescription:
+  description: 'Filtra.AI: plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.',
+  disambiguatingDescription: 'Plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.',
   knowsAbout: [
     'gestão de reputação online',
     'avaliações Google',
