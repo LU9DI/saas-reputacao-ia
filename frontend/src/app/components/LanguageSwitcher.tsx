@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { SUPPORTED_LANGUAGES, useLanguage, type Language } from '../Contexts/LanguageContext';
 
 const SEO_FAMILIES: Array<Record<Language, string>> = [
@@ -53,7 +53,6 @@ export function LanguageSwitcher({
 }) {
   const { language, setLanguage, tx } = useLanguage();
   const pathname = usePathname();
-  const router = useRouter();
   const pathLang = (pathname || '/').match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || language;
 
@@ -61,7 +60,11 @@ export function LanguageSwitcher({
     setLanguage(code);
     const target = targetFor(pathname || '/', code);
     if (target !== normalizePath(pathname || '/')) {
-      router.push(target);
+      // Use a real document navigation here. SEO language routes are a mix of
+      // legacy PT paths and /[lang]/[slug] paths; a full navigation is more
+      // reliable than client routing across those route boundaries and also
+      // works when the selector is rendered inside a sticky SEO header.
+      window.location.assign(target);
     }
   };
 
