@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Pacotes de SEO local para empresas e agências | Filtra.AI',
+  title: 'Pacotes de SEO local: o que incluir, preço e entregáveis | Filtra.AI',
   description:
-    'Pacotes de SEO local para empresas e agências: Google Business Profile, site, avaliações, reputação, conteúdo local, citações e acompanhamento no Google Maps.',
+    'Como montar pacotes de SEO local para empresas e agências: Google Business Profile, site, avaliações, reputação, conteúdo local, citações, entregáveis e acompanhamento no Google Maps.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', languages: { 'pt-BR': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', en: 'https://filtraai.com/en/blog/local-seo-google-reviews', es: 'https://filtraai.com/es/blog/seo-local-resenas-google', zh: 'https://filtraai.com/zh/blog/local-seo-google-reviews', 'x-default': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' } },
   openGraph: {
     type: 'article',
@@ -70,6 +70,17 @@ export default function Page() {
       <p>
         O objetivo não é acumular tarefas. É conectar os sinais que ajudam o negócio a ser encontrado e escolhido:
         informação correta, relevância para a busca, presença local, avaliações e uma rotina de análise.
+      </p>
+
+      <H2>SEO local e Local Pack: onde as avaliações entram?</H2>
+      <p>
+        O objetivo de um pacote de SEO local não é prometer uma posição fixa no Google Maps ou no Local Pack. É construir e acompanhar os ativos que ajudam uma empresa a ser encontrada e escolhida: Perfil da Empresa no Google, páginas relevantes no site, consistência das informações, avaliações autênticas, conteúdo local e sinais de experiência do cliente.
+      </p>
+      <p>
+        As avaliações merecem uma rotina própria dentro do pacote. A agência pode acompanhar novas avaliações, recência, temas recorrentes e respostas, identificar problemas que se repetem e levar esses aprendizados para a operação. Para aprofundar essa frente, veja a{' '}
+        <Link href="/avaliacoes-google" className="text-indigo-400 underline">
+          gestão de avaliações Google
+        </Link>.
       </p>
 
       <H2>Pacote de SEO local: básico, recorrente ou multiunidade?</H2>
@@ -163,11 +174,15 @@ export default function Page() {
       <p>
         Isso também facilita a gestão de carteiras. Em vez de produzir análises manuais idênticas para cada cliente,
         a agência pode centralizar sinais e usar a equipe para interpretar exceções e decidir prioridades. Conheça
-        a solução para{' '}
+        a solução de{' '}
         <Link href="/agencias" className="text-indigo-400 underline">
-          agências que gerenciam reputação de clientes
+          gestão de reputação para agências de SEO local
         </Link>
         .
+      </p>
+
+      <p>
+        Para uma operação com vários clientes, vale definir o escopo por unidade, frequência de análise, entregáveis e indicadores antes de comparar preços. Isso torna o pacote de SEO local mais fácil de vender, executar e renovar.
       </p>
 
       <H2>Perguntas frequentes sobre pacotes de SEO local</H2>
