@@ -170,7 +170,7 @@ export function DotAgentSurface() {
                   </a>
                 </div>
               ) : (
-              <>
+                <div className="space-y-4">
               <div className="rounded-2xl border border-sky-400/10 bg-sky-500/[0.06] p-3">
                 <div className="flex items-start gap-2">
                   <Target size={16} className="mt-0.5 text-sky-300" />
@@ -239,8 +239,8 @@ export function DotAgentSurface() {
                 {integrations.length > 0 && <div className="mt-2 text-[10px] text-zinc-600">{integrations.filter((i) => i.status === 'connected').length} integrações conectadas. Uma integração conectada não significa autorização para ação externa.</div>}
               </section>
 
-              {status.demo && <div className="mt-3 text-[10px] text-zinc-600">Protótipo local: dados demonstrativos. Nenhuma ação externa é executada.</div>
-              </div>
+              {status.demo && <div className="mt-3 text-[10px] text-zinc-600">Protótipo local: dados demonstrativos. Nenhuma ação externa é executada.</div>}
+                </div>
               )}
             </div>
           </aside>
