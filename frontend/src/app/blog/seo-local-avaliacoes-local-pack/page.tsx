@@ -217,6 +217,69 @@ export default function Page() {
         Para uma operação com vários clientes, vale definir o escopo por unidade, frequência de análise, entregáveis e indicadores antes de comparar preços. Isso torna o pacote de SEO local mais fácil de vender, executar e renovar.
       </p>
 
+
+      <H2>Como desenhar o escopo antes de falar em preço</H2>
+      <p>
+        Antes de definir o valor mensal, transforme a oferta em uma lista de decisões. Quantas unidades serão acompanhadas?
+        Quais superfícies entram no trabalho? Com que frequência haverá análise? Quem executa correções? Quem responde avaliações?
+        Quais relatórios o cliente recebe? O que é projeto inicial e o que é recorrência? Essas respostas permitem comparar propostas
+        sem reduzir a compra ao menor preço.
+      </p>
+      <p>
+        Em uma operação de uma única unidade, a profundidade pode ser maior por conta. Em uma rede, parte do esforço muda de natureza:
+        entram comparação entre unidades, priorização e tratamento de exceções. O preço deve acompanhar essa diferença de operação,
+        não apenas o número de tarefas listadas na proposta.
+      </p>
+
+      <H2>Exemplo de matriz de entregáveis</H2>
+      <p>
+        No diagnóstico inicial, entregue linha de base, problemas prioritários e plano de ação. Na recorrência, defina uma cadência
+        para revisar Perfil da Empresa no Google, páginas locais, consultas, avaliações e temas de reputação. No relatório, registre
+        mudanças, ações executadas, pendências e prioridades do próximo ciclo. Em uma operação multiunidade, acrescente comparação
+        por local e uma regra objetiva para decidir quais unidades merecem atenção primeiro.
+      </p>
+      <p>
+        A matriz não precisa prometer uma quantidade artificial de tarefas. Ela precisa tornar o serviço auditável: o cliente deve
+        conseguir entender o que foi feito, o que foi encontrado, o que depende dele e qual será o próximo passo.
+      </p>
+
+      <H2>O que incluir e o que deixar fora do pacote</H2>
+      <p>
+        Inclua aquilo que a agência consegue executar ou acompanhar de forma consistente: diagnóstico, otimizações acordadas,
+        conteúdo previsto, monitoramento, análise de avaliações e relatório. Deixe fora do escopo qualquer atividade que dependa
+        de acesso, decisão ou execução do cliente sem um responsável definido. Também evite transformar “garantia de primeira posição”
+        ou “nota mínima” em entregável; isso não é uma unidade operacional controlável pela agência.
+      </p>
+
+      <H2>Cadência mensal: uma rotina que o cliente consegue enxergar</H2>
+      <p>
+        Uma cadência simples pode começar pela coleta de sinais, passar pela triagem de mudanças, seguir para análise de temas e
+        terminar com prioridades. O relatório deve responder quatro perguntas: o que mudou, por que importa, o que foi feito e o
+        que acontece agora. Em contas com maior volume, a análise de{' '}
+        <Link href="/analise-de-avaliacoes-com-ia" className="text-indigo-400 underline">
+          avaliações com IA
+        </Link>
+        {' '}pode reduzir a triagem manual, enquanto a decisão continua com a equipe responsável pela conta.
+      </p>
+
+      <H2>Como comparar duas propostas de SEO local</H2>
+      <p>
+        Compare unidades incluídas, frequência, profundidade, responsáveis, canais, entregáveis e critérios de medição. Uma proposta
+        mais barata pode simplesmente ter menos acompanhamento; uma mais cara pode incluir trabalho operacional que o negócio não
+        precisa. O melhor comparativo é uma matriz de escopo equivalente, não uma disputa de preço por mensalidade.
+      </p>
+      <p>
+        Para agências que querem incluir reputação como uma linha recorrente, veja também{' '}
+        <Link href="/blog/agencia-vender-gestao-reputacao" className="text-indigo-400 underline">
+          como vender gestão de reputação como serviço recorrente
+        </Link>
+        {' '}e a página de{' '}
+        <Link href="/agencias" className="text-indigo-400 underline">
+          gestão de reputação para agências
+        </Link>
+        .
+      </p>
+
       <H2>Perguntas frequentes sobre pacotes de SEO local</H2>
       <p>
         <strong>O que é um pacote de SEO local?</strong> É uma oferta organizada para melhorar e acompanhar a presença
