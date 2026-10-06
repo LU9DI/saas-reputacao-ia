@@ -1,7 +1,12 @@
-import { redirect } from 'next/navigation';
-import { SeoPageHeader } from '../components/SeoPageHeader';
+'use client';
 
-/** Planos ficam na landing; evita 404 em /planos. */
+import { useEffect } from 'react';
+
+/** Planos ficam na landing; mantém /planos compatível com export estático. */
 export default function PlanosPage() {
-  redirect('/#planos');
+  useEffect(() => {
+    window.location.replace('/#planos');
+  }, []);
+
+  return null;
 }
