@@ -204,7 +204,25 @@ function decorate(response, origin) {
   });
 }
 
-async function fallbackResponse(request, reason) {
+async function fetchFallback(request, env) {
+  try {
+    const configured = await env.FAILOVER_ORIGIN.get('FAILOVER_ORIGIN');
+    if (configured) {
+      const response = await fetch(buildTarget(configured, request.url), new Request(request));
+      return { response, retryable: RETRYABLE.has(response.status) };
+    }
+  } catch {}
+  return { response: null, retryable: true };
+}
+
+async function fallbackResponse(request, env, reason) {
+  const fallback = await fetchFallback(request, env);
+  if (fallback.response && !fallback.retryable) {
+    const enhanced = rewriteSeoResponse(request, fallback.response);
+    await cacheResponse(request, enhanced);
+    return decorate(enhanced, 'fallback');
+  }
+
   if (publicPath(new URL(request.url).pathname)) {
     const cached = await readCache(request);
     if (cached) {
@@ -259,7 +277,7 @@ export default {
         }
       }
 
-      return fallbackResponse(request, 'configured-fallback');
+      return fallbackResponse(request, env, 'configured-fallback');
     }
 
     const primary = await fetchPrimary(request, env);
@@ -277,6 +295,6 @@ export default {
       nextProbeAt: Date.now() + probeInterval,
     });
 
-    return fallbackResponse(request, primary.response ? 'primary-http-' + primary.response.status : 'primary-network-error');
+    return fallbackResponse(request, env, primary.response ? 'primary-http-' + primary.response.status : 'primary-network-error');
   },
 };
