@@ -29,6 +29,7 @@ export default function AgenciasPage() {
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Transforme reviews em temas e relatórios.' },
         { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação', description: 'Acompanhe mudanças e sinais relevantes.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Use um diagnóstico inicial para abrir conversas comerciais.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja o que incluir em uma oferta recorrente de SEO local, avaliações e reputação.' },
         { href: '/filtra-ai', title: 'Conheça a Filtra.AI', description: 'Plataforma de reputação, avaliações e feedback com IA.' },
       ]}
       sections={[
