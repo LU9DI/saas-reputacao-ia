@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação para agências de SEO local | Filtra.AI',
+  title: 'Reputação para agências de SEO local | Filtra.AI',
   description:
-    'Ajude clientes de SEO local a acompanhar avaliações Google, reputação e feedback. Estruture uma oferta recorrente para agências de marketing e SEO local com o Filtra.AI.',
+    'Gestão de reputação, avaliações Google e feedback para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.'
   alternates: {
     canonical: 'https://filtraai.com/agencias',
     languages: {
