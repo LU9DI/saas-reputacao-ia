@@ -12,8 +12,11 @@ export function SeoPageHeader() {
           <BrandMark size="sm" subtitle="Reputação" />
         </Link>
         <div className="flex items-center gap-3">
-          <LanguageSwitcher compact />
-          <Link href="/login" className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/5 hover:text-white">
+          <LanguageSwitcher compact variant="flags" />
+          <Link
+            href="/login"
+            className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/5 hover:text-white"
+          >
             Login
           </Link>
         </div>
