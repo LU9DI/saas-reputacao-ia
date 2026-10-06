@@ -221,3 +221,5 @@ export function LanguageSwitcher({
     </div>
   );
 }
+
+// Cloudflare static deployment validation: 2026-10-06
