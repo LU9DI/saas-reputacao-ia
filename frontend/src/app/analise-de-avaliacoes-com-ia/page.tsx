@@ -30,6 +30,8 @@ export default function Page() {
         { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação', description: 'Acompanhe mudanças e recorrências.' },
         { href: '/filtra-ai', title: 'Filtra.AI', description: 'Conheça a plataforma.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece com um diagnóstico.' },
+        { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Use análise de avaliações como parte de uma oferta recorrente.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Entenda como análise e reputação complementam SEO local.' },
       ]}
       sections={[
         {
