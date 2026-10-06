@@ -57,7 +57,18 @@ export default function Page() {
           O valor da avaliação está na decisão que ela provoca. Se clientes repetem a mesma reclamação sobre espera, o problema deixa de ser “marketing” e vira uma prioridade operacional. É essa ligação entre voz do cliente e ação que transforma reputação em ativo de negócio.
         </p>
         <p>
-          Para aprofundar, veja <Link href="/avaliacoes-google" className="text-indigo-300 underline">gestão de avaliações Google</Link>, <Link href="/gestao-de-reputacao-online" className="text-indigo-300 underline">gestão de reputação online</Link> e faça uma <Link href="/auditoria-gratuita" className="text-indigo-300 underline">auditoria gratuita</Link>.
+          Para aprofundar a execução, veja <Link href="/avaliacoes-google" className="text-indigo-300 underline">gestão de avaliações Google</Link>, <Link href="/gestao-de-reputacao-online" className="text-indigo-300 underline">gestão de reputação online</Link> e faça uma <Link href="/auditoria-gratuita" className="text-indigo-300 underline">auditoria gratuita</Link>.
+        </p>
+        <p>
+          Se você atende múltiplos clientes ou unidades, veja também{' '}
+          <Link href="/agencias" className="text-indigo-300 underline">
+            gestão de reputação para agências de SEO local
+          </Link>{' '}
+          e o guia sobre{' '}
+          <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 underline">
+            pacotes de SEO local e Local Pack
+          </Link>
+          .
         </p>
       </BlogArticle>
     </>
