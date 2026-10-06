@@ -19,6 +19,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
       {slug:'get-google-reviews',title:'How to Get More Genuine Google Reviews',description:'How to make honest review collection easier without selecting customers by rating.'},
       {slug:'online-reputation-management-guide',title:'Online Reputation Management: A Practical Guide',description:'Build a repeatable process around reviews, feedback, analysis and action.'},
       {slug:'ai-review-analysis-guide',title:'AI Review Analysis: How to Turn Comments into Decisions',description:'Use AI to find recurring themes and prioritize operational action.'},
+      {slug:'customer-feedback-reputation',title:'Customer Feedback and Reputation: How to Close the Loop',description:'Turn customer feedback into priorities, operational action and measurable learning.'},
       {slug:'agency-reputation-management',title:'Agency Reputation Management: How to Build a Recurring Local SEO Service',description:'A practical guide for SEO agencies offering reputation management as a recurring local SEO service.'},
       {slug:'local-seo-google-reviews',title:'Local SEO and Google Reviews: What Businesses Should Monitor',description:'Connect local SEO, customer experience and reviews in one routine.'}
     ],
@@ -33,6 +34,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
       {slug:'conseguir-resenas-google',title:'Cómo conseguir más reseñas genuinas en Google',description:'Cómo facilitar reseñas honestas sin seleccionar clientes por valoración.'},
       {slug:'guia-gestion-reputacion-online',title:'Gestión de reputación online: guía práctica',description:'Crea un proceso repetible de reseñas, feedback, análisis y acción.'},
       {slug:'analisis-resenas-ia',title:'Análisis de reseñas con IA: de los comentarios a las decisiones',description:'Usa IA para detectar temas recurrentes y priorizar acciones.'},
+      {slug:'feedback-clientes-reputacion',title:'Feedback de clientes y reputación: cómo cerrar el ciclo',description:'Convierte el feedback de clientes en prioridades, acciones y aprendizaje medible.'},
       {slug:'agencia-gestion-reputacion',title:'Gestión de reputación para agencias: cómo crear un servicio recurrente de SEO local',description:'Guía práctica para agencias SEO que ofrecen gestión de reputación como servicio recurrente.'},
       {slug:'seo-local-resenas-google',title:'SEO local y reseñas de Google: qué debe monitorizar una empresa',description:'Conecta SEO local, experiencia del cliente y reputación.'}
     ],
@@ -47,6 +49,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
       {slug:'google-reviews-guide',title:'如何获得更多真实的 Google 评价',description:'如何让真实评价更容易发生，同时避免按评分选择客户。'},
       {slug:'online-reputation-management-guide',title:'在线声誉管理：企业实用指南',description:'围绕评价、反馈、分析和行动建立可重复流程。'},
       {slug:'ai-review-analysis-guide',title:'AI 评论分析：如何把评论转化为管理决策',description:'使用 AI 发现重复主题并确定运营优先级。'},
+      {slug:'customer-feedback-reputation',title:'客户反馈与声誉管理：如何闭环',description:'将客户反馈转化为优先级、运营行动和可衡量的改进。'},
       {slug:'agency-reputation-management',title:'代理商声誉管理：如何建立可重复的本地 SEO 服务',description:'为 SEO 代理商提供持续性的声誉管理服务指南。'},
       {slug:'local-seo-google-reviews',title:'本地 SEO 与 Google 评价：企业应该监测什么',description:'把本地 SEO、客户体验和评价连接成持续流程。'}
     ],
