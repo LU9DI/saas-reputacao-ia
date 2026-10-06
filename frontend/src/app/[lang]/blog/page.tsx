@@ -19,6 +19,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
       {slug:'get-google-reviews',title:'How to Get More Genuine Google Reviews',description:'How to make honest review collection easier without selecting customers by rating.'},
       {slug:'online-reputation-management-guide',title:'Online Reputation Management: A Practical Guide',description:'Build a repeatable process around reviews, feedback, analysis and action.'},
       {slug:'ai-review-analysis-guide',title:'AI Review Analysis: How to Turn Comments into Decisions',description:'Use AI to find recurring themes and prioritize operational action.'},
+      {slug:'agency-reputation-management',title:'Agency Reputation Management: How to Build a Recurring Local SEO Service',description:'A practical guide for SEO agencies offering reputation management as a recurring local SEO service.'},
       {slug:'local-seo-google-reviews',title:'Local SEO and Google Reviews: What Businesses Should Monitor',description:'Connect local SEO, customer experience and reviews in one routine.'}
     ],
     cta:'Start your 7-day free trial'
