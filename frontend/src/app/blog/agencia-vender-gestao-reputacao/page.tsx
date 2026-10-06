@@ -47,10 +47,16 @@ export default function Page() {
         acompanhamento das avaliações e apresentação dos próximos passos. Essa estrutura também ajuda a separar
         setup de recorrência e a explicar o valor do serviço na renovação.
       </p>
+      <H2>O que você está vendendo de fato</H2>
+      <p>
+        Não venda uma promessa de “subir a nota” nem uma posição no Google. Venda uma rotina operacional: coletar feedback de forma não seletiva, organizar avaliações, encontrar temas recorrentes, identificar insatisfações e levar os sinais para quem consegue agir. A ferramenta reduz o trabalho de triagem; a agência interpreta o contexto e decide a prioridade.
+      </p>
+      <p>
+        No Filtra.AI, a operação pode incluir feedback de clientes, avaliações, análise automatizada e recursos de IA. Há também um fluxo de convites não seletivos para avaliações genuínas. Isso permite demonstrar o processo em um piloto sem inventar um case ou prometer um resultado que ainda não foi medido.
+      </p>
       <H2>Ferramenta</H2>
       <p>
-        Use o trial Filtra.AI em um cliente piloto. Mostre o painel, o fluxo de feedback e os indicadores de
-        reputação. Depois padronize a rotina na carteira.
+        Use o trial Filtra.AI em um cliente piloto. Mostre o painel, o fluxo de feedback e os indicadores de reputação. Registre uma linha de base, defina o que será acompanhado e só apresente evolução que tenha sido realmente observada.
       </p>
       <p>
         Para estruturar a oferta por serviço, escopo e entregáveis, veja também{' '}
@@ -58,6 +64,10 @@ export default function Page() {
           gestão de reputação para agências de SEO local
         </Link>
         .
+      </p>
+      <H2>O que medir no primeiro ciclo</H2>
+      <p>
+        Antes de iniciar, registre a situação existente: quantidade de avaliações, recência, nota, principais temas e problemas já conhecidos. No fechamento do ciclo, compare os mesmos sinais e acrescente as ações tomadas. Se um indicador não mudou, mostre isso; transparência é parte do serviço.
       </p>
       <H2>Métricas que o cliente entende</H2>
       <p>
