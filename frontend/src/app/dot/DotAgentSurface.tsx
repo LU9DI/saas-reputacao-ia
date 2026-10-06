@@ -57,7 +57,7 @@ export function DotAgentSurface() {
 
   const hasAccess = Boolean(status?.access && status?.enabled);
   const canApprove = permissions.some((p) => p.resource === 'filtra' && p.action === 'update' && Number(p.granted) === 1);
-  const canExecute = permissions.some((p) => p.resource === 'filtra' && p.action === 'execute' && Number(p.granted) === 1);
+  const canMissionExecute = permissions.some((p) => p.resource === 'operations' && p.action === 'execute' && Number(p.granted) === 1);\n  const canActionExecute = permissions.some((p) => p.resource === 'filtra' && p.action === 'execute' && Number(p.granted) === 1);
   const activeMission = useMemo(
     () => missions.find((mission) => ['working', 'planned', 'waiting_approval'].includes(mission.status)) ||
       missions.find((mission) => mission.status !== 'completed'),
@@ -172,7 +172,7 @@ export function DotAgentSurface() {
   }
 
   async function runMission(missionId: number) {
-    if (!canExecute || actionBusy) return;
+    if (!canMissionExecute || actionBusy) return;
     setActionBusy(missionId); setError('');
     try {
       const res = await apiFetch('/api/dot/agent/missions/' + missionId + '/run-step', { method: 'POST', credentials: 'include' });
@@ -198,7 +198,7 @@ export function DotAgentSurface() {
   }
 
   async function executeAction(actionId: number) {
-    if (!canExecute || approvalBusy) return;
+    if (!canActionExecute || approvalBusy) return;
     setApprovalBusy(actionId); setError('');
     try {
       const res = await apiFetch('/api/dot/actions/' + actionId + '/run', { method: 'POST', credentials: 'include' });
@@ -305,7 +305,7 @@ export function DotAgentSurface() {
                           </div>;
                         })}
                       </div>
-                      {activeMission.status !== 'waiting_approval' && activeMission.status !== 'completed' && <button type="button" disabled={!canExecute || actionBusy === activeMission.id} onClick={() => void runMission(activeMission.id)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] py-2.5 text-[11px] font-semibold text-zinc-200 transition hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40">{actionBusy === activeMission.id ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}{canExecute ? 'Deixar o DOT avançar agora' : 'Execução interna ainda não autorizada'}</button>}
+                      {activeMission.status !== 'waiting_approval' && activeMission.status !== 'completed' && <button type="button" disabled={!canMissionExecute || actionBusy === activeMission.id} onClick={() => void runMission(activeMission.id)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] py-2.5 text-[11px] font-semibold text-zinc-200 transition hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40">{actionBusy === activeMission.id ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}{canMissionExecute ? 'Deixar o DOT avançar agora' : 'Execução interna ainda não autorizada'}</button>}
                     </section>
                   ) : (
                     <section className="rounded-[26px] border border-dashed border-white/10 bg-white/[0.018] p-6 text-center">
@@ -332,7 +332,7 @@ export function DotAgentSurface() {
                   {actions.some((action) => action.status === 'approved') && <section className="rounded-[24px] border border-emerald-400/10 bg-emerald-400/[0.035] p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div><div className="text-[10px] font-semibold uppercase tracking-[.15em] text-emerald-300/80">Liberado</div><div className="mt-1 text-xs font-medium text-zinc-200">Existe uma ação aprovada pronta para o DOT.</div></div>
-                      {actions.filter((action) => action.status === 'approved').slice(0, 1).map((action) => <button key={action.id} type="button" disabled={!canExecute || approvalBusy === action.id} onClick={() => void executeAction(action.id)} className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-400 px-3 py-2 text-[10px] font-semibold text-zinc-950 disabled:opacity-40">{approvalBusy === action.id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}Executar</button>)}
+                      {actions.filter((action) => action.status === 'approved').slice(0, 1).map((action) => <button key={action.id} type="button" disabled={!canActionExecute || approvalBusy === action.id} onClick={() => void executeAction(action.id)} className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-400 px-3 py-2 text-[10px] font-semibold text-zinc-950 disabled:opacity-40">{approvalBusy === action.id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}Executar</button>)}
                     </div>
                   </section>}
 
@@ -355,7 +355,7 @@ export function DotAgentSurface() {
                     </button>
                     {settingsOpen && <div className="border-t border-white/[0.06] px-4 pb-4 pt-3">
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Execução</div><div className="mt-1 text-[10px] text-zinc-500">{canExecute ? 'Autorizada internamente' : 'Bloqueada'}</div></div>
+                        <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Execução</div><div className="mt-1 text-[10px] text-zinc-500">{canActionExecute ? 'Autorizada internamente' : 'Bloqueada'}</div></div>
                         <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Integrações</div><div className="mt-1 text-[10px] text-zinc-500">{connectedIntegrations} conectadas</div></div>
                       </div>
                       <p className="mt-3 text-[10px] leading-4 text-zinc-700">O DOT não envia nada para fora automaticamente. Ações externas permanecem fora do gateway de execução.</p>
