@@ -6,7 +6,7 @@ const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
 const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: guia completo | Filtra.AI',
+  title: 'Gestão de reputação online: guia completo ',
   description:
     'Gestão de reputação online: como monitorar avaliações, responder clientes, analisar feedback e transformar a reputação da empresa em crescimento.',
   alternates: { canonical },
