@@ -199,7 +199,7 @@ export default function FiltraAiPage() {
         <p className="mt-3 leading-7 text-zinc-300">
           Teste a plataforma por 7 dias e veja como feedback e avaliações podem virar inteligência para o negócio.
         </p>
-        <Link href="/" className="mt-5 inline-block rounded-xl bg-indigo-500 px-5 py-3 font-semibold">
+        <Link href="/preview/teste" className="mt-5 inline-block rounded-xl bg-indigo-500 px-5 py-3 font-semibold">
           Começar 7 dias grátis
         </Link>
       </section>
