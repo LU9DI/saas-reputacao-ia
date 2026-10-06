@@ -18,11 +18,11 @@ const SEO_FAMILIES: Array<Record<Language, string>> = [
   { pt:'/auditoria-gratuita', en:'/en/free-review-audit', es:'/es/auditoria-gratuita', zh:'/zh/free-review-audit' },
   { pt:'/hoteis', en:'/en/hotels', es:'/es/hoteles', zh:'/zh/hotels' },
   { pt:'/turismo', en:'/en/tourism', es:'/es/turismo', zh:'/zh/tourism' },
-  { pt:'/agencias', en:'/en/agencies', es:'/es/agencias', zh:'/zh/agencies' },
-  { pt:'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinics' },
-  { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franquicias' },
+  { pt:'/agencias', en:'/en/agencies', es:'/es/agencias', zh:'/zh/agencias' },
+  { pt:'/clinicas', en:'/en/clinics', es:'/es/clinicas', zh:'/zh/clinicas' },
+  { pt:'/franquias', en:'/en/franchises', es:'/es/franquicias', zh:'/zh/franchises' },
   { pt:'/associacoes', en:'/en/associations', es:'/es/asociaciones', zh:'/zh/associations' },
-  { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurants' },
+  { pt:'/restaurantes', en:'/en/restaurants', es:'/es/restaurantes', zh:'/zh/restaurantes' },
   { pt:'/como-funciona', en:'/en/how-it-works', es:'/es/como-funciona', zh:'/zh/how-it-works' },
   { pt:'/parceiros', en:'/en/partners', es:'/es/socios', zh:'/zh/partners' },
   { pt:'/pedir-estrela-vs-filtrar', en:'/en/ask-for-stars-vs-filtering', es:'/es/pedir-estrellas-vs-filtrar', zh:'/zh/request-stars-vs-filter' },
@@ -62,15 +62,18 @@ export function LanguageSwitcher({
   const current = pathLang || language;
 
   const choose = (code: Language) => {
-    setLanguage(code);
-    const target = targetFor(pathname || '/', code);
-    if (target !== normalizePath(pathname || '/')) {
-      // Use a real document navigation here. SEO language routes are a mix of
-      // legacy PT paths and /[lang]/[slug] paths; a full navigation is more
-      // reliable than client routing across those route boundaries and also
-      // works when the selector is rendered inside a sticky SEO header.
-      window.location.assign(target);
+    const currentPath = normalizePath(pathname || '/');
+    const target = targetFor(currentPath, code);
+
+    // Persist only when staying on the same route. For SEO routes, navigate
+    // first: updating context before navigation can rerender the selector
+    // during the native select event and cancel the route transition.
+    if (target === currentPath) {
+      setLanguage(code);
+      return;
     }
+
+    window.location.href = target;
   };
 
   if (variant === 'flags') {
