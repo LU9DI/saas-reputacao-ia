@@ -208,43 +208,39 @@ export function AuditoriaGratuitaClient() {
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-none focus:border-indigo-500"
             />
             <label className="flex items-start gap-3 text-sm text-zinc-400">
-
               <input
                 type="checkbox"
                 checked={consent}
                 onChange={(e) => setConsent(e.target.checked)}
                 className="mt-1"
               />
-              <span>
-                {c.consentText}
-              </span>
+              <span>{c.consentText}</span>
             </label>
+            <p className="text-xs text-zinc-500">{c.emailHint}</p>
             <label className="block text-sm font-medium">{c.reviews}</label>
             <p className="text-xs text-zinc-500">{c.format}</p>
-            <p className="text-xs text-zinc-500">{c.emailHint}</p>
             <textarea
               value={raw}
               onChange={(e) => setRaw(e.target.value)}
-              rows={12}
+              rows={8}
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 font-mono text-sm outline-none focus:border-indigo-500"
             />
+            {error ? <p className="text-sm text-red-400">{error}</p> : null}
             <button
+              type="button"
               onClick={runDiagnostic}
-              disabled={loading || !company.trim() || (consent && !email.trim())}
-              className="w-full rounded-xl bg-indigo-600 px-5 py-3 font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={loading}
+              className="rounded-xl bg-indigo-600 px-5 py-3 font-semibold disabled:opacity-60"
             >
               {loading ? c.loading : c.run}
             </button>
-            {error && (
-              <p className="rounded-xl border border-red-900 bg-red-950/40 p-3 text-sm text-red-300">{error}</p>
-            )}
           </div>
 
           <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
             {!diagnostic ? (
               <div className="space-y-4 text-zinc-400">
-                <h2 className="text-2xl font-semibold text-zinc-100">{c.receive}</h2>
-                <ul className="space-y-3">
+                <h2 className="text-xl font-semibold text-zinc-100">{c.receive}</h2>
+                <ul className="space-y-2 text-sm">
                   <li>• {c.r1}</li>
                   <li>• {c.r2}</li>
                   <li>• {c.r3}</li>
@@ -297,7 +293,7 @@ export function AuditoriaGratuitaClient() {
                 ) : null}
                 {diagnostic.actions?.length ? (
                   <div>
-                    <h3 className="font-semibold">{c.actions}</h3}
+                    <h3 className="font-semibold">{c.actions}</h3>
                     <ul className="mt-2 space-y-2 text-zinc-300">
                       {diagnostic.actions.map((item) => (
                         <li key={item}>• {item}</li>
