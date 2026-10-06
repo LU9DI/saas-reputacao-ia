@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de avaliações Google: monitore, analise e responda | Filtra.AI',
-  description: 'Organize avaliações Google, entenda os temas dos clientes e conecte feedback à operação. Filtra.AI ajuda empresas a transformar reviews em decisões.',
+  title: 'Gestão de avaliações Google: monitore, analise e responda',
+  description: 'Organize avaliações Google, entenda os temas dos clientes e conecte feedback à operação. Transforme reviews em decisões com análise, contexto e acompanhamento.',
   alternates: {
     canonical: 'https://filtraai.com/avaliacoes-google',
     languages: {
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'Gestão de avaliações Google: monitore, analise e responda | Filtra.AI',
+    title: 'Gestão de avaliações Google: monitore, analise e responda',
     description: 'Organize avaliações Google, entenda os temas dos clientes e conecte feedback à operação.',
     url: 'https://filtraai.com/avaliacoes-google',
     siteName: 'Filtra.AI',
