@@ -40,7 +40,6 @@ const articles:Record<Lang,Article[]>={
       {heading:'Close the loop',body:'After an improvement is made, compare later reviews to the original theme. The value of AI analysis is not a summary on its own; it is the ability to connect feedback with measurable action.'}
     ]},
     {slug:'customer-feedback-reputation',title:'Customer Feedback and Reputation: How to Close the Loop',description:'A practical guide to turning customer feedback into priorities, operational action and reputation improvement.',kicker:'Customer Feedback · Reputation',lead:'Collecting feedback is only the start. The value appears when signals become priorities, actions and measurable learning.',sections:[{heading:'Capture the signal close to the experience',body:'Feedback is easier to interpret when it is collected near the moment of the customer experience. Keep the collection path simple and aligned with the real customer journey.'},{heading:'Organize feedback by theme and priority',body:'Do not turn every comment into the same kind of task. Group signals by topic, impact and recurrence so repeated issues become visible.',bullets:['Group recurring topics','Consider customer impact','Separate isolated events from patterns','Assign an operational owner']},{heading:'Separate public reviews from private feedback',body:'Public reviews shape market perception, while private feedback can help investigate and recover individual experiences. Both are useful when their roles are clear.'},{heading:'Close the loop with action',body:'The process should end with an action and a later review of what changed. Without that step, feedback becomes storage instead of an improvement system.'}]},
-    {slug:'customer-feedback-reputation',title:'客户反馈与声誉管理：如何闭环',description:'将客户反馈转化为优先级、运营行动和声誉改进的实用指南。',kicker:'客户反馈 · 声誉',lead:'收集反馈只是开始。真正的价值来自把信号转化为优先级、行动和可衡量的学习。',sections:[{heading:'在体验附近捕捉信号',body:'越接近客户体验发生的时刻，反馈越容易保留上下文。收集方式应简单，并融入真实的客户流程。'},{heading:'按主题和优先级整理反馈',body:'不要把每条评论都变成相同的任务。按主题、影响和重复程度进行整理，让反复出现的问题变得清晰。',bullets:['归纳重复主题','考虑客户影响','区分孤立事件与模式','指定运营负责人']},{heading:'区分公开评价与私下反馈',body:'公开评价影响市场对企业的认知，而私下反馈有助于调查和恢复具体体验。两者都重要，但作用不同。'},{heading:'用行动完成闭环',body:'流程应该以明确行动结束，并在之后复盘变化。否则反馈只是存储，而不是持续改进系统。'}]},
     {slug:'local-seo-google-reviews',title:'Local SEO and Google Reviews: What Businesses Should Monitor',description:'Connect local SEO, Google reviews and customer experience with a practical reputation workflow for local businesses.',kicker:'Local SEO · Reviews',lead:'Local visibility is not only about publishing a profile. Businesses also need a credible customer experience and a steady process for learning from reviews.',sections:[
       {heading:'Keep the local business information consistent',body:'Name, location, contact details, hours and service information should remain clear across the customer journey. Confusing information can create friction before the review ever happens.'},
       {heading:'Treat reviews as customer evidence',body:'Reviews reveal how customers experience the business in real situations. Track themes that affect local trust, such as service, reliability, speed and communication.'},
@@ -96,6 +95,7 @@ const articles:Record<Lang,Article[]>={
       {heading:'行动前先确定优先级',body:'并非所有负面评论都需要相同处理。可以考虑出现频率、客户影响、严重程度以及企业改变流程的能力。',bullets:['问题出现频率','对客户体验的影响','运营负责人','改进后的变化证据']},
       {heading:'完成反馈闭环',body:'完成改进后，继续观察新的评论是否还出现原来的问题。AI 分析的价值不是一份摘要，而是把客户声音与可衡量的行动连接起来。'}
     ]},
+    {slug:'customer-feedback-reputation',title:'客户反馈与声誉管理：如何闭环',description:'将客户反馈转化为优先级、运营行动和可衡量改进的实用指南。',kicker:'客户反馈 · 声誉',lead:'收集反馈只是开始。真正的价值来自把信号转化为优先级、行动和可衡量的学习。',sections:[{heading:'在体验附近捕捉信号',body:'越接近客户体验发生的时刻，反馈越容易保留上下文。收集方式应简单，并融入真实的客户流程。'},{heading:'按主题和优先级整理反馈',body:'不要把每条评论都变成相同的任务。按主题、影响和重复程度进行整理，让反复出现的问题变得清晰。',bullets:['归纳重复主题','考虑客户影响','区分孤立事件与模式','指定运营负责人']},{heading:'区分公开评价与私下反馈',body:'公开评价影响市场对企业的认知，而私下反馈有助于调查和恢复具体体验。两者都重要，但作用不同。'},{heading:'用行动完成闭环',body:'流程应该以明确行动结束，并在之后复盘变化。否则反馈只是存储，而不是持续改进系统。'}]},
     {slug:'local-seo-google-reviews',title:'本地 SEO 与 Google 评价：企业应该监测什么',description:'把本地 SEO、Google 评价和客户体验连接起来，为本地企业建立可持续的声誉管理流程。',kicker:'本地 SEO · 评价',lead:'本地可见度不仅仅是建立一个商家资料。企业还需要可信的客户体验，以及持续学习评价内容的方法。',sections:[
       {heading:'保持本地商家信息一致',body:'名称、地址、联系方式、营业时间和服务信息应该在客户旅程中保持清楚。信息不一致可能在评价发生前就造成摩擦。'},
       {heading:'把评价当作客户证据',body:'评价反映真实体验。可以观察影响本地信任的主题，例如服务、可靠性、速度和沟通。'},
@@ -112,8 +112,13 @@ function get(lang:string,slug:string){
   return index<0?null:{item:list[index],index};
 }
 
-function familyPath(lang:Lang,index:number){
-  return families[index][lang];
+function familyFor(lang:Lang,slug:string){
+  return families.find(family => family[lang] === '/'+lang+'/blog/'+slug || family[lang] === '/blog/'+slug);
+}
+
+function familyPath(lang:Lang,slug:string){
+  const family=familyFor(lang,slug);
+  return family?.[lang] || '/'+lang+'/blog/'+slug;
 }
 
 const localizedLabels={
@@ -137,12 +142,14 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
   const lang=raw as Lang;
   const found=get(lang,slug);
   if(!found)return{};
+  const familyIndex=found.index;
+  const family=families.find(item => item[lang] === '/'+lang+'/blog/'+slug) || families[familyIndex];
   const languages:Record<string,string>={
-    'pt-BR':base+families[found.index].pt,
-    en:base+families[found.index].en,
-    es:base+families[found.index].es,
-    zh:base+families[found.index].zh,
-    'x-default':base+families[found.index].pt
+    'pt-BR':base+family.pt,
+    en:base+family.en,
+    es:base+family.es,
+    zh:base+family.zh,
+    'x-default':base+family.pt
   };
   return {
     title:found.item.title,
@@ -165,9 +172,9 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
   const found=get(lang,slug);
   if(!found)notFound();
   const labels=localizedLabels[lang];
-  const relatedIndex=(found.index+1)%families.length;
+  const relatedIndex=(found.index+1)%articles[lang].length;
   const related=articles[lang][relatedIndex];
-  const solutionPath=solutionPaths[lang][found.index];
+  const solutionPath=solutionPaths[lang][Math.min(found.index, solutionPaths[lang].length-1)];
   const articleUrl=base+'/'+lang+'/blog/'+slug;
   const blogPosting={
     '@context':'https://schema.org',
