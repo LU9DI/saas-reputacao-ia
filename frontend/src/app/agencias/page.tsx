@@ -70,6 +70,23 @@ export default function AgenciasPage() {
           heading: 'Escala para carteiras maiores',
           body: 'Com vários clientes, o ganho vem da padronização: mesma lógica de onboarding, mesmo formato de análise e uma rotina clara para cada conta. A agência preserva o contexto de cada negócio, mas reduz o trabalho manual repetitivo e consegue priorizar exceções.'
         },
+
+        {
+          heading: 'O que a agência faz, o que a plataforma faz e o que o cliente faz',
+          body: <>Um escopo saudável separa responsabilidades. A agência define estratégia, interpreta os sinais, prioriza ações e conduz a comunicação com o cliente. A Filtra.AI organiza dados, apoia a triagem e acelera a análise conforme os recursos contratados. O cliente continua responsável por decisões operacionais, atendimento e mudanças dentro do próprio negócio. Essa divisão evita que a ferramenta seja apresentada como substituta da consultoria.</>
+        },
+        {
+          heading: 'Como estruturar onboarding para cada conta',
+          body: <>No início, registre unidades, links dos perfis, canais de feedback, volume e recência de avaliações, nota atual, temas já conhecidos e responsáveis. Depois, defina a cadência: o que será observado semanalmente, o que entra no relatório mensal e quais situações exigem encaminhamento imediato. O onboarding vira um ativo comercial quando o cliente consegue ver claramente o ponto de partida e a rotina que será executada.</>
+        },
+        {
+          heading: 'Como demonstrar valor sem inventar ROI',
+          body: <>Use uma linha de base e compare os mesmos indicadores ao longo do tempo. Mostre mudanças em volume e recência de avaliações, temas recorrentes, problemas encaminhados, respostas e ações implementadas. Se uma métrica não melhorar, registre isso e explique a próxima hipótese. A prova comercial fica mais forte quando é baseada no que realmente aconteceu na conta, e não em um case genérico.</>
+        },
+        {
+          heading: 'Quando a operação está pronta para escalar',
+          body: <>Escalar não significa apenas adicionar clientes. Antes, padronize o onboarding, defina um modelo de relatório, estabeleça critérios para priorizar exceções e documente quem aprova respostas e ações. A partir daí, a agência pode usar uma mesma estrutura operacional em diferentes contas, preservando as particularidades de cada negócio.</>
+        },
         {
           heading: 'O papel da IA na entrega',
           body: 'A IA pode classificar comentários, encontrar recorrências e acelerar a produção de análises. No Filtra.AI, recursos automatizados de IA são usados para classificação, análise, sugestão de respostas ou geração de relatórios, conforme o plano. A agência continua responsável pelo contexto estratégico, pela comunicação com o cliente e pela decisão sobre quais sinais merecem intervenção.'
