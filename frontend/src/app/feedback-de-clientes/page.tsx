@@ -36,7 +36,7 @@ export default function Page() {
         { heading: 'Análise de feedback de clientes com IA', body: 'A IA pode acelerar classificação, agrupamento e resumo quando o volume cresce. O processo fica mais útil quando cada tema relevante recebe responsável, ação e indicador de acompanhamento.' },
         { heading: 'Feedback, avaliações e reputação formam um único ciclo', body: 'Feedback privado ajuda a descobrir atritos; avaliações públicas mostram como a experiência aparece para o mercado. Juntos, esses sinais ajudam a empresa a priorizar melhorias e acompanhar a percepção ao longo do tempo.' },
         {
-        {
+        
           heading: 'Por que feedback de clientes é um ativo',
           body: 'Avaliações e comentários registram experiências reais. Quando reunidos em volume suficiente, ajudam a identificar recorrências que uma equipe não perceberia olhando cada interação separadamente.'
         },
