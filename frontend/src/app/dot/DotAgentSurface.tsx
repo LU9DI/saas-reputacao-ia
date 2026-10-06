@@ -15,6 +15,7 @@ type Goal = {
 type DotStatus = { access: boolean; enabled: boolean; demo: boolean; plan?: string; plan_label?: string };
 type Permission = { resource: string; action: string; granted: number };
 type Integration = { provider: string; label: string; status: string };
+type Mission = { id: number; goal_id: number; title: string; status: string; current_step: number; total_steps: number };
 
 export function DotAgentSurface() {
   const [status, setStatus] = useState<DotStatus | null>(null);
@@ -25,6 +26,10 @@ export function DotAgentSurface() {
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [permissionBusy, setPermissionBusy] = useState<string | null>(null);
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [actionBusy, setActionBusy] = useState<number | null>(null);
 
   async function loadStatus() {
     try {
@@ -43,9 +48,11 @@ export function DotAgentSurface() {
 
   async function loadWorkspace() {
     try {
-      const [workspaceRes, permissionRes] = await Promise.all([
+      setError('');
+      const [workspaceRes, permissionRes, missionsRes] = await Promise.all([
         apiFetch('/api/dot/agent/workspace', { credentials: 'include' }),
         apiFetch('/api/dot/agent/permissions', { credentials: 'include' }),
+        apiFetch('/api/dot/agent/missions', { credentials: 'include' }),
       ]);
       if (workspaceRes.ok) {
         const data = await workspaceRes.json();
@@ -55,7 +62,12 @@ export function DotAgentSurface() {
         const data = await permissionRes.json();
         if (data?.ok) setPermissions(data.permissions || []);
       }
-    } catch { /* panel remains usable */ }
+      if (missionsRes.ok) {
+        const data = await missionsRes.json();
+        if (data?.ok) setMissions(data.missions || []);
+      }
+    } catch { setError('Não consegui atualizar o estado do DOT.'); }
+    finally { setLoading(false); }
   }
 
   async function loadIntegrations() {
@@ -94,9 +106,8 @@ export function DotAgentSurface() {
         setWorkspace((current) => current ? { ...current, goals: [data.goal, ...current.goals] } : current);
         setDraft('');
       }
-    } finally {
-      setBusy(false);
-    }
+    } catch { setError('Não foi possível criar o objetivo.'); }
+    finally { setBusy(false); }
   }
 
   async function togglePermission(resource: string, action: string, granted: boolean) {
@@ -118,6 +129,18 @@ export function DotAgentSurface() {
   const hasAccess = Boolean(status?.access && status?.enabled);
   const activeGoals = (workspace?.goals || []).filter((goal) => goal.status === 'active').slice(0, 3);
   const canExecute = permissions.some((p) => p.resource === 'operations' && p.action === 'execute' && Number(p.granted) === 1);
+
+  async function runMission(missionId: number) {
+    if (!canExecute || actionBusy) return;
+    setActionBusy(missionId); setError('');
+    try {
+      const res = await apiFetch(`/api/dot/agent/missions/${missionId}/run-step`, { method: 'POST', credentials: 'include' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || 'Não foi possível executar a próxima etapa.');
+      await loadWorkspace();
+    } catch (e) { setError(e instanceof Error ? e.message : 'Falha ao executar a etapa.'); }
+    finally { setActionBusy(null); }
+  }
 
   return (
     <>
@@ -171,6 +194,8 @@ export function DotAgentSurface() {
                 </div>
               ) : (
                 <div className="space-y-4">
+              {error && <div className="rounded-xl border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">{error}</div>}
+              {loading && <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 text-xs text-zinc-500">Carregando o estado do agente…</div>}
               <div className="rounded-2xl border border-sky-400/10 bg-sky-500/[0.06] p-3">
                 <div className="flex items-start gap-2">
                   <Target size={16} className="mt-0.5 text-sky-300" />
@@ -207,6 +232,29 @@ export function DotAgentSurface() {
                           <span className="text-[10px] text-sky-300">{Math.round(goal.progress)}%</span>
                         </div>
                         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]"><div className="h-full rounded-full bg-sky-400/70" style={{ width: Math.max(0, Math.min(100, goal.progress)) + '%' }} /></div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              <section className="mt-4 rounded-xl border border-white/[0.07] p-3">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="text-[10px] font-semibold uppercase tracking-[.15em] text-zinc-600">Missões</div>
+                  <button type="button" onClick={() => void loadWorkspace()} className="text-[10px] text-sky-300 hover:text-sky-200">Atualizar</button>
+                </div>
+                {missions.length === 0 ? <div className="text-xs text-zinc-600">As missões aparecerão aqui assim que você der um objetivo.</div> : (
+                  <div className="space-y-2">
+                    {missions.slice(0, 4).map((m) => (
+                      <div key={m.id} className="rounded-xl border border-white/[0.07] bg-black/20 p-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="truncate text-xs text-zinc-200">{m.title}</span>
+                          <span className="text-[10px] text-zinc-500">{m.status}</span>
+                        </div>
+                        <div className="mt-2 flex items-center justify-between text-[10px] text-zinc-600">
+                          <span>etapa {Math.min(m.current_step + 1, m.total_steps)}/{m.total_steps}</span>
+                          {m.status !== 'completed' && <button type="button" disabled={!canExecute || actionBusy === m.id} onClick={() => void runMission(m.id)} className="rounded-lg bg-sky-500/15 px-2 py-1 text-sky-300 disabled:opacity-40">{actionBusy === m.id ? 'Executando…' : 'Executar próxima'}</button>}
+                        </div>
                       </div>
                     ))}
                   </div>
