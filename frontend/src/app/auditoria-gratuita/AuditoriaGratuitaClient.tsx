@@ -297,7 +297,7 @@ export function AuditoriaGratuitaClient() {
                 ) : null}
                 {diagnostic.actions?.length ? (
                   <div>
-                    <h3 className="font-semibold">{c.actions}</h3}
+                    <h3 className="font-semibold">{c.actions}</h3>
                     <ul className="mt-2 space-y-2 text-zinc-300">
                       {diagnostic.actions.map((item) => (
                         <li key={item}>• {item}</li>
