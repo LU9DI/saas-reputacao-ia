@@ -5,7 +5,7 @@ import { BlogArticle, H2 } from '../../components/BlogArticle';
 const canonical = 'https://filtraai.com/blog/avaliacoes-google-restaurantes';
 
 export const metadata: Metadata = {
-  title: 'Avaliações Google para restaurantes: rotina prática de feedback | Filtra.AI',
+  title: 'Avaliações Google para restaurantes: rotina prática de feedback ',
   description:
     'Como restaurantes podem organizar feedback, analisar avaliações Google e transformar reclamações recorrentes em melhorias de serviço.',
   alternates: { canonical },
