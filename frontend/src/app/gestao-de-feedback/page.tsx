@@ -15,7 +15,11 @@ export async function generateMetadata(): Promise<Metadata> {
       zh: 'https://filtraai.com/zh/customer-feedback-management',
       'x-default': 'https://filtraai.com/gestao-de-feedback',
     },
-  },\n  };\n}\n\nexport default function Page() {
+  },
+  };
+}
+
+export default function Page() {
   return (
     <SeoLanding
       h1="Gestão de feedback de clientes: da opinião à ação"
