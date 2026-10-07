@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
-export const metadata: Metadata = {
-  title: 'Como melhorar avaliações Google de uma empresa ',
+export async function generateMetadata(): Promise<Metadata> {
+  title: 'Como melhorar avaliações Google de uma empresa',
   description:
     'Estratégias práticas para aumentar o volume de avaliações Google honestas, entender feedback e melhorar a experiência do cliente.',
   alternates: {
