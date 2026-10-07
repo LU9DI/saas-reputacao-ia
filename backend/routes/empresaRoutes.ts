@@ -794,8 +794,8 @@ export function mountEmpresaRoutes(app: Express) {
           metricas: {
         unidades_ranking: unidadesRanking,
             unidades_resumo: unidadesResumo,
-            unidades_insights: unidadesInsights,
-            prioridades_operacionais: prioridadesOperacionaisPorUnidade(unidadesRanking, unidadesInsights),
+            unidades_insights: (planAtual === 'corporativo' || planAtual === 'rei') ? unidadesInsights : [],
+            prioridades_operacionais: (planAtual === 'corporativo' || planAtual === 'rei') ? prioridadesOperacionaisPorUnidade(unidadesRanking, unidadesInsights) : [],
             radar_estrategico: planAtual === 'rei' ? radarEstrategico(reviews, unidadesRanking) : null,
             total,
             media,
