@@ -10,6 +10,7 @@ import { getDb, findEmpresa } from '../lib/db.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { isTrialPlan, planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
+import { getFeedbackLimit, planTemIA } from '../lib/quota.js';
 
 type JsonRpcId = string | number | null;
 
@@ -169,7 +170,8 @@ function parseTags(raw: unknown): string[] {
 async function toolGetCompanySummary(ctx: ToolCtx) {
   const empresa = await findEmpresa(ctx.empresa_id);
   if (!empresa) throw new Error('Empresa não encontrada.');
-  const rows = await loadReviews(empresa.id, 500);
+  const plan = String(empresa.plan || 'trial').toLowerCase();
+  const rows = await loadReviews(empresa.id, getFeedbackLimit(plan));
   const reais = rows.filter((r) => Number(r.is_test) !== 1);
   const total = reais.length;
   const soma = reais.reduce((s, r) => s + Number(r.rating || 0), 0);
@@ -217,7 +219,10 @@ async function toolListCriticalReviews(
 ) {
   const limit = Math.min(50, Math.max(1, Number(args.limit) || 15));
   const onlyUntreated = Boolean(args.only_untreated);
-  const rows = await loadReviews(ctx.empresa_id, 400);
+  const empresa = await findEmpresa(ctx.empresa_id);
+  if (!empresa) throw new Error('Empresa não encontrada.');
+  const plan = String(empresa.plan || 'trial').toLowerCase();
+  const rows = await loadReviews(ctx.empresa_id, getFeedbackLimit(plan));
   let criticas = rows
     .filter((r) => Number(r.is_test) !== 1 && Number(r.rating) <= 3)
     .map((r) => ({
@@ -225,7 +230,7 @@ async function toolListCriticalReviews(
       rating: Number(r.rating),
       name: r.name || null,
       comment: r.comment ? String(r.comment).slice(0, 500) : null,
-      ai_tags: parseTags(r.ai_tags),
+      ai_tags: planTemIA(plan) ? parseTags(r.ai_tags) : [],
       created_at: rowCreatedAt(r),
       treated: Boolean(r.treated_at),
       sentiment: r.sentiment || null,
@@ -239,7 +244,13 @@ async function toolListCriticalReviews(
 
 async function toolGetAiThemes(ctx: ToolCtx, args: { limit?: number }) {
   const limit = Math.min(20, Math.max(1, Number(args.limit) || 10));
-  const rows = await loadReviews(ctx.empresa_id, 500);
+  const empresa = await findEmpresa(ctx.empresa_id);
+  if (!empresa) throw new Error('Empresa não encontrada.');
+  const plan = String(empresa.plan || 'trial').toLowerCase();
+  if (!planTemIA(plan)) {
+    throw Object.assign(new Error('Temas de IA não estão disponíveis neste plano.'), { code: -32003 });
+  }
+  const rows = await loadReviews(ctx.empresa_id, getFeedbackLimit(plan));
   const tagCount: Record<string, number> = {};
   for (const r of rows) {
     if (Number(r.is_test) === 1) continue;
