@@ -31,8 +31,8 @@ describe('resolvePlano', () => {
   });
 
   it('limites de feedback batem com o produto', () => {
-    assert.equal(PLANOS.inicial.reviewLimit, 150);
-    assert.equal(PLANOS.pro.reviewLimit, 400);
+    assert.equal(PLANOS.inicial.reviewLimit, 100);
+    assert.equal(PLANOS.pro.reviewLimit, 300);
     assert.equal(PLANOS.ultra.reviewLimit, 800);
     assert.equal(PLANOS.corporativo.reviewLimit, 2500);
     assert.equal(PLANOS.rei.reviewLimit, 8000);
