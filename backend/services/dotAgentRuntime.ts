@@ -2,6 +2,7 @@ import { callAI } from '../groqService.js';
 import { invokeDotTool, listDotTools, type DotToolDefinition } from './dotToolRegistry.js';
 import { getDb } from '../lib/db.js';
 import { addDotPlanStep, createDotPlan, ensureDotPlanSchema, setDotPlanStatus, updateDotPlanStep } from './dotAgentPlan.js';
+import { acquireDotRuntimeLock, releaseDotRuntimeLock } from './dotAgentRuntimeLock.js';
 
 export type DotRuntimeEvent = {
   type: 'model' | 'tool' | 'final' | 'approval';
@@ -155,9 +156,28 @@ export async function runDotAgent(input: {
   maxTokens: number;
   allowTools?: boolean;
 }): Promise<DotAgentRunResult> {
-  const started = Date.now();
-  const events: DotRuntimeEvent[] = [];
-  await ensureDotPlanSchema();
+  const lock = await acquireDotRuntimeLock({
+    empresaId: input.empresaId,
+    actorUserId: input.actorUserId,
+    sessionId: input.sessionId,
+  });
+  if (!lock) {
+    return {
+      text: 'Já existe uma execução do DOT em andamento para esta sessão. Acompanhe a execução atual antes de iniciar outra.',
+      provider: 'runtime-lock',
+      latency_ms: 0,
+      tokens: 0,
+      events: [],
+      tool_calls: 0,
+      replans: 0,
+      stopped_reason: 'already_running',
+    };
+  }
+
+  try {
+    const started = Date.now();
+    const events: DotRuntimeEvent[] = [];
+    await ensureDotPlanSchema();
   const plan = await createDotPlan({
     empresaId: input.empresaId,
     actorUserId: input.actorUserId || 'system-dot',
@@ -338,14 +358,17 @@ ${input.history || '(sem histórico)'}`;
     completedAt,
   });
 
-  return {
-    text: finalText,
-    provider: lastProvider,
-    latency_ms: totalLatency,
-    tokens: totalTokens,
-    events,
-    tool_calls: toolCalls,
-    replans,
-    stopped_reason: stoppedReason,
-  };
+    return {
+      text: finalText,
+      provider: lastProvider,
+      latency_ms: totalLatency,
+      tokens: totalTokens,
+      events,
+      tool_calls: toolCalls,
+      replans,
+      stopped_reason: stoppedReason,
+    };
+  } finally {
+    await releaseDotRuntimeLock(lock);
+  }
 }
