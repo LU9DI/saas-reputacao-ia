@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { apiFetch } from '../../utils/apiFailover';
 import { readApiError } from '../../utils/apiError';
 import { useLanguage } from '../../Contexts/LanguageContext';
@@ -142,7 +142,9 @@ function whatsappValido(raw: string): boolean {
 
 export default function PaginaAvaliacao() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const empresaId = params.id as string;
+  const unidadeId = searchParams.get('unidade_id') || searchParams.get('unidade') || '';
   const { language, t } = useLanguage();
   const tx = useMemo(() => {
     const fb = EVAL_FALLBACK[language] || EVAL_FALLBACK.pt;
@@ -200,6 +202,7 @@ export default function PaginaAvaliacao() {
     website,
     client_whatsapp: selectedRating <= 3 ? clientWhatsapp.trim() : undefined,
     locale: language,
+    ...(unidadeId ? { unidade_id: unidadeId } : {}),
   });
 
   const mensagemClienteParaEmpresa = () => {
