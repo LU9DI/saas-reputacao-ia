@@ -15,9 +15,15 @@ export function PwaRegister() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    if ('serviceWorker' in navigator) {
+    const isLocalDev =
+      process.env.NODE_ENV !== 'production' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+    // Service workers must not control localhost development. A stale SW can
+    // cache old Next chunks and make a healthy dev server appear broken.
+    if (!isLocalDev && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {
-        /* silencioso em dev se SW falhar */
+        /* silencioso se SW falhar */
       });
     }
 
