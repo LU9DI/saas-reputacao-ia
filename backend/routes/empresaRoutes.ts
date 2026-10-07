@@ -171,7 +171,7 @@ function insightsOperacionaisPorUnidade(reviews: any[], ranking: any[]) {
 }
 
 
-function prioridadesOperacionaisPorUnidade(ranking: any[], insights: any[]) {
+export function prioridadesOperacionaisPorUnidade(ranking: any[], insights: any[]) {
   const byId = new Map((insights || []).map((u: any) => [String(u.id), u]));
   const actionFor = (tag: string, critical: boolean) => {
     const t = String(tag || '').toLowerCase();
