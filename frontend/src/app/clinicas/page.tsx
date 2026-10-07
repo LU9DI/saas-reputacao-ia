@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de avaliações Google para clínicas ',
+  title: 'Gestão de avaliações Google para clínicas',
   description:
     'Organize avaliações Google, feedback de pacientes e sinais de experiência para clínicas e redes com o Filtra.AI.',
   alternates: {
