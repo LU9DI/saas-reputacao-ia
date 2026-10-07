@@ -128,6 +128,18 @@ async function persistRun(input: {
   );
 }
 
+export async function listDotAgentRuns(empresaId: string, limit = 20) {
+  await ensureRuntimeSchema();
+  const rows = await getDb().all(
+    'SELECT id,session_id,objective,status,iterations,tool_calls,replans,stopped_reason,events_json,created_at,completed_at FROM dot_agent_runs WHERE empresa_id=? ORDER BY id DESC LIMIT ?',
+    [empresaId, Math.max(1, Math.min(limit, 100))],
+  );
+  return (rows || []).map((row: any) => ({
+    ...row,
+    events: (() => { try { return JSON.parse(String(row.events_json || '[]')); } catch { return []; } })(),
+  }));
+}
+
 export async function runDotAgent(input: {
   empresaId: string;
   actorUserId?: string | null;
