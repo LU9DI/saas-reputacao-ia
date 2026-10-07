@@ -118,8 +118,7 @@ async function brevoUpsert(lead: Lead) {
   const attributes: Record<string, string> = {};
   const company = clean(lead.company, 200);
   if (company) attributes.COMPANY = company;
-  if (lead.source) attributes.ACQUISITION_SOURCE = clean(lead.source, 120);
-  if (lead.consent_at) attributes.CONSENT_AT = clean(lead.consent_at, 80);
+  // Keep Brevo payload limited to standard contact data; consent is enforced by the caller.
 
   const body = {
     email,
