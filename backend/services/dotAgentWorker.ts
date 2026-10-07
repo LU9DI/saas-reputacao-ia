@@ -1,5 +1,7 @@
 import { getDb } from '../lib/db.js';
-import { runCurrentDotMissionStep } from './dotAgentMissionRunner.js';
+import { getDotAgentWorkspace } from './dotAgent.js';
+import { ensureDotPlanSchema } from './dotAgentPlan.js';
+import { runDotAgent } from './dotAgentRuntime.js';
 
 let timer: NodeJS.Timeout | null = null;
 let running = false;
@@ -9,28 +11,38 @@ async function runTick() {
   if (running) return;
   running = true;
   try {
+    await ensureDotPlanSchema();
     const db = getDb();
-    const missions = await db.all(
-      "SELECT id, empresa_id FROM dot_agent_missions WHERE status IN ('planned','working') ORDER BY updated_at ASC LIMIT 25",
+    // O worker agora recupera planos persistentes do runtime agentivo.
+    // Missões legadas não são mais a fonte de verdade da execução.
+    const plans = await db.all(
+      "SELECT id, empresa_id, actor_user_id, session_id, objective, status FROM dot_agent_plans WHERE status IN ('working','paused') ORDER BY updated_at ASC LIMIT 25",
     );
 
-    for (const mission of missions || []) {
+    for (const plan of plans || []) {
       try {
-        // Uma rodada pode atravessar várias etapas determinísticas da mesma missão.
-        // Paramos imediatamente quando a missão pede aprovação ou não avança mais.
-        for (let step = 0; step < 6; step += 1) {
-          const result = await runCurrentDotMissionStep(String(mission.empresa_id), Number(mission.id));
-          if (!result) break;
-          if (result.blocked) {
-            console.log(`🤖 DOT agente: missão ${mission.id} aguardando aprovação.`);
-            break;
-          }
-          const state = result.mission;
-          if (!state || ['completed', 'waiting_approval', 'paused'].includes(String(state.status))) break;
-          if (Number(state.current_step ?? -1) >= Number(state.total_steps ?? 6)) break;
+        const status = String(plan.status);
+        // Planos pausados por limite operacional podem continuar automaticamente.
+        // Planos em working são recuperados após crash/restart; o lock impede duplicidade.
+        const result = await runDotAgent({
+          empresaId: String(plan.empresa_id),
+          actorUserId: String(plan.actor_user_id),
+          sessionId: String(plan.session_id),
+          objective: String(plan.objective),
+          context: JSON.stringify(await getDotAgentWorkspace(String(plan.empresa_id))),
+          history: '',
+          maxTokens: Math.max(600, Number(process.env.DOT_DELEGATION_MAX_TOKENS || 900)),
+          allowTools: true,
+          planId: String(plan.id),
+          approvalGranted: false,
+        });
+
+        if (result.stopped_reason === 'already_running') continue;
+        if (status === 'paused') {
+          console.log(`🤖 DOT agente: plano ${plan.id} retomado automaticamente.`);
         }
       } catch (error: any) {
-        console.warn(`DOT agente: falha na missão ${mission.id}:`, error?.message || error);
+        console.warn(`DOT agente: falha na recuperação do plano ${plan.id}:`, error?.message || error);
       }
     }
   } finally {
