@@ -88,13 +88,16 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const multi = textOrFallback(t.feat_multi, 'Dashboard Multi-unidades');
   const support = textOrFallback(t.feat_support, 'Suporte Prioritário');
   const early = textOrFallback(t.feat_early, 'Acesso antecipado a novas funções');
+  const ranking = textOrFallback(t.feat_unit_ranking, 'Ranking das unidades');
+  const unitLinks = textOrFallback(t.feat_unit_links, 'Link de avaliação por unidade');
+  const executive = textOrFallback(t.feat_executive_report, 'Relatório executivo completo');
 
   const map: Record<string, { features: string[]; missing?: string[] }> = {
     inicial: { features: [fb, wpp, dashboard], missing: [report, aiMissing] },
     pro: { features: [fb, wpp, dashboard, report], missing: [aiMissing] },
     ultra: { features: [fb, wpp, ai, report, analytics] },
-    corporativo: { features: [fb, wpp, ai, report, multi, support, early] },
-    rei: { features: [fb, wpp, ai, report, multi, support, early] },
+    corporativo: { features: [fb, wpp, ai, report, multi, ranking, unitLinks, support, early] },
+    rei: { features: [fb, wpp, ai, report, multi, ranking, unitLinks, executive, support, early] },
   };
   return map[plan] || { features: [fb] };
 }
