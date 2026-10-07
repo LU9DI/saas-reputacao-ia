@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { getDb } from "../db";
+import { getDb } from '../lib/db.js';
 
 export type DotPlanStepStatus = "pending" | "working" | "completed" | "blocked" | "failed";
 
@@ -78,10 +78,10 @@ export async function createDotPlan(input: {
   await ensureDotPlanSchema();
   const db = getDb();
   const id = randomUUID();
-  await db.query(
-    `INSERT INTO dot_agent_plans (id, empresa_id, actor_user_id, session_id, objective)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [id, input.empresaId, input.actorUserId, input.sessionId, input.objective],
+  const now = new Date().toISOString();
+  await db.run(
+    'INSERT INTO dot_agent_plans (id,empresa_id,actor_user_id,session_id,objective,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
+    [id, input.empresaId, input.actorUserId, input.sessionId, input.objective.slice(0, 4000), 'working', now, now],
   );
   return {
     id,
@@ -102,21 +102,19 @@ export async function addDotPlanStep(input: {
 }): Promise<DotPlanStep> {
   await ensureDotPlanSchema();
   const db = getDb();
-  const next = await db.query<{ next: number }>(
-    `SELECT COALESCE(MAX(sequence), 0) + 1 AS next FROM dot_agent_plan_steps WHERE plan_id = $1`,
+  const next = const nextRows = await db.all(
+    'SELECT COALESCE(MAX(sequence), 0) + 1 AS next FROM dot_agent_plan_steps WHERE plan_id=?',
     [input.planId],
   );
-  const sequence = Number(next.rows[0]?.next ?? 1);
+  const sequence = Number((nextRows as any[])?.[0]?.next ?? 1);
   const id = randomUUID();
-  await db.query(
-    `INSERT INTO dot_agent_plan_steps
-      (id, plan_id, sequence, title, kind, tool_id, rationale)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-    [id, input.planId, sequence, input.title, input.kind, input.toolId ?? null, input.rationale ?? null],
+  await db.run(
+    'INSERT INTO dot_agent_plan_steps (id,plan_id,sequence,title,kind,status,tool_id,rationale,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
+    [id, input.planId, sequence, input.title.slice(0, 1000), input.kind.slice(0, 120), 'pending', input.toolId ?? null, input.rationale?.slice(0, 2000) ?? null, now],
   );
-  await db.query(
-    `UPDATE dot_agent_plans SET current_step_id = $2, updated_at = NOW() WHERE id = $1`,
-    [input.planId, id],
+  await db.run(
+    'UPDATE dot_agent_plans SET current_step_id=?, updated_at=? WHERE id=?',
+    [id, now, input.planId],
   );
   return {
     id,
@@ -140,19 +138,20 @@ export async function updateDotPlanStep(
 ): Promise<void> {
   await ensureDotPlanSchema();
   const db = getDb();
-  await db.query(
+  const now = new Date().toISOString();
+  await db.run(
     `UPDATE dot_agent_plan_steps
-       SET status = $2,
-           evidence_json = COALESCE($3::jsonb, evidence_json),
-           error = $4,
-           started_at = CASE WHEN $2 = 'working' AND started_at IS NULL THEN NOW() ELSE started_at END,
-           completed_at = CASE WHEN $2 IN ('completed','failed','blocked') THEN NOW() ELSE completed_at END
-     WHERE id = $1`,
+       SET status=?,
+           evidence_json=COALESCE(?, evidence_json),
+           error=?,
+           started_at=CASE WHEN ?='working' AND started_at IS NULL THEN ? ELSE started_at END,
+           completed_at=CASE WHEN ? IN ('completed','failed','blocked') THEN ? ELSE completed_at END
+     WHERE id=?`,
     [
-      stepId,
       update.status,
-      update.evidence === undefined ? null : JSON.stringify(update.evidence),
-      update.error ?? null,
+      update.evidence === undefined ? null : JSON.stringify(update.evidence).slice(0, 20000),
+      update.error?.slice(0, 4000) ?? null,
+      update.status, now, update.status, now, stepId,
     ],
   );
 }
@@ -163,24 +162,20 @@ export async function setDotPlanStatus(
 ): Promise<void> {
   await ensureDotPlanSchema();
   const db = getDb();
-  await db.query(
-    `UPDATE dot_agent_plans SET status = $2, updated_at = NOW() WHERE id = $1`,
-    [planId, status],
+  await db.run(
+    'UPDATE dot_agent_plans SET status=?, updated_at=? WHERE id=?',
+    [status, new Date().toISOString(), planId],
   );
 }
 
 export async function getDotPlan(planId: string): Promise<DotPlan | null> {
   await ensureDotPlanSchema();
   const db = getDb();
-  const result = await db.query<{
-    id: string; empresa_id: string; actor_user_id: string; session_id: string;
-    objective: string; status: DotPlan["status"]; current_step_id: string | null;
-  }>(
-    `SELECT id, empresa_id, actor_user_id, session_id, objective, status, current_step_id
-       FROM dot_agent_plans WHERE id = $1 LIMIT 1`,
+  const rows = await db.all(
+    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id FROM dot_agent_plans WHERE id=? LIMIT 1',
     [planId],
   );
-  const row = result.rows[0];
+  const row = (rows as any[])?.[0];
   if (!row) return null;
   return {
     id: row.id,
