@@ -33,7 +33,7 @@ const FEATURES: Record<string, { features: string[]; missingFeatures?: string[];
     features: ['2.500 feedbacks/mês', 'WPP Integrado', 'IA Ativa', '1 Relatório PDF/mês', 'Dashboard Multi-unidades', 'Suporte Prioritário', 'Acesso antecipado a novas funções'],
   },
   rei: {
-    features: ['8.000 feedbacks/mês', 'WPP Integrado', 'IA Ativa', '1 Relatório PDF/mês', 'Dashboard Multi-unidades', 'Suporte Prioritário', 'Acesso antecipado a novas funções'],
+    features: ['8.000 feedbacks/mês', 'WPP Integrado', 'IA Ativa', '1 Relatório PDF/mês', 'Dashboard Multi-unidades', 'Radar estratégico', 'Oportunidades de crescimento', 'Suporte Prioritário', 'Acesso antecipado a novas funções'],
   },
 };
 
