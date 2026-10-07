@@ -8,6 +8,7 @@ type Lead = {
 };
 
 const HUBSPOT_BASE = 'https://api.hubapi.com';
+const FREE_EMAIL_DOMAINS = new Set(['gmail.com','outlook.com','hotmail.com','live.com','icloud.com','yahoo.com','proton.me','protonmail.com']);
 const BREVO_BASE = 'https://api.brevo.com/v3';
 
 function clean(value: unknown, max = 500) {
@@ -74,8 +75,10 @@ async function hubspotUpsert(lead: Lead) {
   }
 
   const contactId = String(contact.id || existing?.id || '');
-  if (company && contactId) {
-    const domain = company.includes('.') ? company.toLowerCase() : '';
+  if (contactId) {
+    const domain = email.split('@')[1]?.toLowerCase() || '';
+    const companyName = company || domain;
+    if (!domain || FREE_EMAIL_DOMAINS.has(domain)) return { enabled: true, contactId, created: !existing?.id };
     if (domain) {
       const companySearch = await jsonFetch(`${HUBSPOT_BASE}/crm/v3/objects/companies/search`, {
         method: 'POST',
@@ -86,12 +89,19 @@ async function hubspotUpsert(lead: Lead) {
           limit: 1,
         }),
       });
-      const companyRecord = companySearch.results?.[0];
+      let companyRecord = companySearch.results?.[0];
+      if (!companyRecord?.id && companyName && domain) {
+        companyRecord = await jsonFetch(`${HUBSPOT_BASE}/crm/v3/objects/companies`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ properties: { name: companyName, domain } }),
+        });
+      }
       if (companyRecord?.id) {
-        await jsonFetch(`${HUBSPOT_BASE}/crm/v4/objects/contacts/${contactId}/associations/companies/${companyRecord.id}`, {
+        await jsonFetch(`${HUBSPOT_BASE}/crm/v3/objects/contacts/${contactId}/associations/companies/${companyRecord.id}/1`, {
           method: 'PUT',
           headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ associationCategory: 'HUBSPOT_DEFINED', associationTypeId: 1 }),
+          body: '{}',
         });
       }
     }
