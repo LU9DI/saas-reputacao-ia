@@ -28,9 +28,10 @@ async function ensureSchema() {
     error TEXT,
     created_at TEXT NOT NULL
   )`);
-  const columns = await db.all('PRAGMA table_info(dot_tool_audit)');
-  if (!(columns || []).some((column: any) => String(column.name) === 'actor_user_id')) {
+  try {
     await db.exec('ALTER TABLE dot_tool_audit ADD COLUMN actor_user_id TEXT');
+  } catch {
+    // Compatível com Postgres e SQLite: a coluna já existente é um no-op seguro.
   }
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_tool_audit_empresa ON dot_tool_audit(empresa_id, created_at)');
 }
@@ -123,6 +124,29 @@ const tools: Record<string, DotToolDefinition> = {
   },
 };
 
+function validateToolInput(toolId: string, input: Record<string, unknown>) {
+  if (toolId === 'reviews.read') {
+    const limit = input.limit;
+    if (limit !== undefined && (!Number.isFinite(Number(limit)) || Number(limit) < 1 || Number(limit) > 100)) {
+      throw new Error('reviews.read: limit deve estar entre 1 e 100.');
+    }
+  }
+  if (toolId === 'search-console.query') {
+    const startDate = String(input.startDate || '');
+    const endDate = String(input.endDate || '');
+    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(startDate) || !/^\\d{4}-\\d{2}-\\d{2}$/.test(endDate)) {
+      throw new Error('search-console.query: startDate e endDate devem estar em YYYY-MM-DD.');
+    }
+    const rowLimit = input.rowLimit === undefined ? 1000 : Number(input.rowLimit);
+    if (!Number.isFinite(rowLimit) || rowLimit < 1 || rowLimit > 25000) {
+      throw new Error('search-console.query: rowLimit deve estar entre 1 e 25000.');
+    }
+    if (input.dimensions !== undefined && !Array.isArray(input.dimensions)) {
+      throw new Error('search-console.query: dimensions deve ser um array.');
+    }
+  }
+}
+ 
 export function listDotTools(): Array<Omit<DotToolDefinition, 'execute'>> {
   return Object.values(tools).map(({ execute, ...definition }) => definition);
 }
@@ -138,6 +162,7 @@ export async function invokeDotTool(input: {
   if (!definition) throw new Error('Ferramenta DOT não registrada.');
   if (definition.requiresApproval) throw new Error('Esta ferramenta exige aprovação e não pode ser chamada diretamente.');
   const params = input.input || {};
+  validateToolInput(definition.id, params);
   try {
     await requireDotAccess(input.empresaId, definition.resource, definition.operation, input.actorUserId || null, { toolId: definition.id, actorType: input.actorType, actorUserId: input.actorUserId || null });
     const result = await definition.execute(input.empresaId, params);
