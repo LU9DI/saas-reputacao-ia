@@ -142,7 +142,7 @@ export default function FiltraAiPage() {
           Filtra.AI é a marca da Filtra Ai Tecnologia LTDA, empresa brasileira de software. O produto é focado em reputação empresarial, avaliações Google, feedback e inteligência artificial para negócios.
         </p>
         <p className="leading-8 text-zinc-400">
-          Essa página existe para deixar inequívoca a identidade da marca: quando alguém pesquisa por Filtra ou Filtra.AI, a referência que queremos construir é a plataforma brasileira de gestão de reputação online — e não ferramentas de filtros de fotografia.
+          Esta página reforça a identidade da marca e explica claramente o produto: uma plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.
         </p>
       </section>
 
