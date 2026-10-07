@@ -1,21 +1,14 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
-export const metadata: Metadata = {
-  title: 'Gestão de avaliações Google para clínicas',
-  description:
-    'Organize avaliações Google, feedback de pacientes e sinais de experiência para clínicas e redes com o Filtra.AI.',
-  alternates: {
-    canonical: 'https://filtraai.com/clinicas',
-    languages: {
-      'pt-BR': 'https://filtraai.com/clinicas',
-      en: 'https://filtraai.com/en/clinics',
-      es: 'https://filtraai.com/es/clinicas',
-      zh: 'https://filtraai.com/zh/clinics',
-      'x-default': 'https://filtraai.com/clinicas',
-    },
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Gestão de avaliações Google para clínicas',
+    description: 'Organize avaliações Google, feedback de pacientes e sinais de experiência para clínicas e redes com o Filtra.AI.',
+    alternates: { canonical:'https://filtraai.com/clinicas', languages:{ 'pt-BR':'https://filtraai.com/clinicas', en:'https://filtraai.com/en/clinics', es:'https://filtraai.com/es/clinicas', zh:'https://filtraai.com/zh/clinics', 'x-default':'https://filtraai.com/clinicas' } },
+    openGraph: { title:'Gestão de avaliações Google para clínicas', description:'Organize avaliações Google, feedback de pacientes e sinais de experiência para clínicas e redes com o Filtra.AI.', url:'https://filtraai.com/clinicas', type:'website' },
+  };
+}
 
 export default function ClinicasPage() {
   return (
