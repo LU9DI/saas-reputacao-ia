@@ -33,7 +33,7 @@ export default function Page() {
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Use análise de avaliações como parte de uma oferta recorrente.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Entenda como análise e reputação complementam SEO local.' },
       ]}
-      sections=[
+      sections={[
         {
           heading: 'Como analisar avaliações com IA passo a passo',
           body: 'Primeiro reúna avaliações e feedback em uma base consistente. Depois classifique temas, compare frequência e evolução, revise casos ambíguos e transforme os achados em prioridades. A IA acelera a triagem, mas a equipe deve validar interpretações que dependem de contexto.'
