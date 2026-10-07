@@ -58,7 +58,7 @@ old_spec = """ * /plan (Tabela de Precificação, Limites Globais e Regras de IA
 new_spec = """ * /plan (Tabela de Precificação, Limites Globais e Regras de IA)
  * --------------------------------------------------
  * - INICIAL (R$ 69,90/mês | R$ 49,90/mês no anual): 100 feedbacks/mês.
- * - PRO (R$ 109,90/mês | R$ 99,90/mês no anual): 400 feedbacks/mês.
+ * - PRO (R$ 109,90/mês | R$ 99,90/mês no anual): 300 feedbacks/mês.
  * - ULTRA (R$ 199,90/mês | R$ 149,90/mês no anual): 800 feedbacks/mês. IA + 1 relatório PDF/mês.
  * - CORPORATIVO (R$ 499,90/mês | R$ 429,90/mês no anual): 2.500 feedbacks/mês. Dashboard multi-unidades.
  * - REI (R$ 999,90/mês | R$ 899,90/mês no anual): 8.000 feedbacks/mês. IA prioritária e relatórios avançados."""
