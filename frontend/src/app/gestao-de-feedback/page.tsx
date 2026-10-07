@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
   title: 'Gestão de feedback de clientes: método e ferramentas | Filtra.AI',
   description:
     'Como estruturar coleta, análise e acompanhamento de feedback de clientes para transformar opiniões em melhoria operacional.',
