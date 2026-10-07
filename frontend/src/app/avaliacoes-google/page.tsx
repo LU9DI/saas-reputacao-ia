@@ -40,7 +40,7 @@ export default function Page() {
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Estruture avaliações e reputação como serviço para clientes.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como avaliações e reputação entram em uma oferta de SEO local.' },
       ]}
-      sections=[
+      sections={[
         {
           heading: 'Como fazer gestão de avaliações Google na prática',
           body: 'Comece por uma linha de base: volume de avaliações, nota, recência, distribuição por nota e principais temas. Depois defina uma cadência para acompanhar novas avaliações, responder quando necessário e encaminhar problemas recorrentes para a equipe responsável. A Filtra.AI apoia a triagem e análise; a decisão continua com a empresa.'
