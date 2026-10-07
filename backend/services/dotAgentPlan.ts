@@ -162,6 +162,18 @@ export async function findActiveDotPlanForSignal(empresaId: string, triggerFinge
   return { id: row.id, empresaId: row.empresa_id, actorUserId: row.actor_user_id, sessionId: row.session_id, objective: row.objective, status: row.status as DotPlanStatus, currentStepId: row.current_step_id, approvedBy: row.approved_by ?? null, approvedAt: row.approved_at ?? null, approvalAction: row.approval_action ?? null, triggerSignalId: row.trigger_signal_id ?? null, triggerFingerprint: row.trigger_fingerprint ?? null };
 }
 
+export async function findRecentDotPlanForSignal(empresaId: string, triggerFingerprint: string, cooldownHours = 24): Promise<DotPlan | null> {
+  await ensureDotPlanSchema();
+  const cutoff = new Date(Date.now() - Math.max(1, cooldownHours) * 60 * 60 * 1000).toISOString();
+  const rows = await getDb().all(
+    "SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint FROM dot_agent_plans WHERE empresa_id=? AND trigger_fingerprint=? AND updated_at>=? ORDER BY updated_at DESC LIMIT 1",
+    [empresaId, triggerFingerprint, cutoff],
+  );
+  const row = (rows as any[])?.[0];
+  if (!row) return null;
+  return { id: row.id, empresaId: row.empresa_id, actorUserId: row.actor_user_id, sessionId: row.session_id, objective: row.objective, status: row.status as DotPlanStatus, currentStepId: row.current_step_id, approvedBy: row.approved_by ?? null, approvedAt: row.approved_at ?? null, approvalAction: row.approval_action ?? null, triggerSignalId: row.trigger_signal_id ?? null, triggerFingerprint: row.trigger_fingerprint ?? null };
+}
+
 export async function claimDotPlanForActor(planId: string, empresaId: string, actorUserId: string): Promise<boolean> {
   await ensureDotPlanSchema();
   const result = await getDb().run(
