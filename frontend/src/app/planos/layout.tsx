@@ -4,14 +4,14 @@ export const metadata: Metadata = {
   title: 'Planos da Filtra.AI',
   description:
     'Conheça os planos da Filtra.AI para gestão de reputação, avaliações, feedback de clientes e inteligência de crescimento.',
-  alternates: { canonical: 'https://filtraai.com/' },
+  alternates: { canonical: 'https://filtraai.com/planos' },
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
     title: 'Planos | Filtra.AI',
     description:
       'Conheça os planos da Filtra.AI para gestão de reputação e análise de avaliações com IA.',
-    url: 'https://filtraai.com/',
+    url: 'https://filtraai.com/planos',
     siteName: 'Filtra.AI',
   },
 };
