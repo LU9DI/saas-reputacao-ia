@@ -1,5 +1,6 @@
 
 import { enviarEmail } from '../lib/mailer.js';
+import { syncConsentedAcquisitionLead } from '../services/crmAcquisitionSync.js';
 
 function acquisitionDailyLimit(): number {
   const configured = Number(process.env.ACQUISITION_DAILY_LIMIT || 80);
@@ -326,8 +327,13 @@ export function mountAcquisitionRoutes(app: Express) {
         'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
         [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ company, email }).slice(0, 20000)]
       );
-      const row = await db.get('SELECT id,email,company,consent,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
-      return res.status(existing ? 200 : 201).json({ ok: true, lead_id: row.id, lead: row });
+      const row = await db.get('SELECT id,email,company,consent,consent_at,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
+      const crmSync = await syncConsentedAcquisitionLead(row);
+      await db.run(
+        'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
+        [crypto.randomUUID(), leadId, crmSync.ok ? 'crm.sync.completed' : 'crm.sync.partial', source, JSON.stringify(crmSync).slice(0, 20000)]
+      );
+      return res.status(existing ? 200 : 201).json({ ok: true, lead_id: row.id, lead: row, crm_sync: crmSync });
     } catch (error: any) {
       console.error('[acquisition] consent:', error?.message || error);
       return res.status(503).json({ error: 'Não foi possível registrar o consentimento agora.' });
