@@ -88,7 +88,7 @@ function appUrl(): string {
   return (
     envTrim('APP_URL') ||
     envTrim('FRONTEND_URL') ||
-    'https://filtra-ai.vercel.app'
+    'https://filtraai.com'
   ).replace(/\/$/, '');
 }
 
