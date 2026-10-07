@@ -175,7 +175,7 @@ export async function findRecentDotPlanForSignal(empresaId: string, triggerFinge
   );
   const row = (rows as any[])?.[0];
   if (!row) return null;
-  return { id: row.id, empresaId: row.empresa_id, actorUserId: row.actor_user_id, sessionId: row.session_id, objective: row.objective, status: row.status as DotPlanStatus, currentStepId: row.current_step_id, approvedBy: row.approved_by ?? null, approvedAt: row.approved_at ?? null, approvalAction: row.approval_action ?? null, triggerSignalId: row.trigger_signal_id ?? null, triggerFingerprint: row.trigger_fingerprint ?? null };
+  return { id: row.id, empresaId: row.empresa_id, actorUserId: row.actor_user_id, sessionId: row.session_id, objective: row.objective, status: row.status as DotPlanStatus, currentStepId: row.current_step_id, approvedBy: row.approved_by ?? null, approvedAt: row.approved_at ?? null, approvalAction: row.approval_action ?? null, triggerSignalId: row.trigger_signal_id ?? null, triggerFingerprint: row.trigger_fingerprint ?? null, pauseReason: row.pause_reason ?? null };
 }
 
 export async function claimDotPlanForActor(planId: string, empresaId: string, actorUserId: string): Promise<boolean> {
@@ -247,6 +247,7 @@ export async function listDotPlans(empresaId: string, actorUserId: string, limit
     approvalAction: row.approval_action ?? null,
     triggerSignalId: row.trigger_signal_id ?? null,
     triggerFingerprint: row.trigger_fingerprint ?? null,
+    pauseReason: row.pause_reason ?? null,
   }));
 }
 
