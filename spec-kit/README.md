@@ -20,3 +20,14 @@ Quando uma distinção competitiva for necessária, ela deve ser feita de forma 
 Qualquer conteúdo novo ou alterado que viole essa regra deve ser considerado falha de especificação e corrigido antes do deploy.
 
 Adicione aqui os arquivos necessários para a sua auditoria.
+
+
+## Auditoria executável de comunicação/SEO
+
+O guardrail `audit-seo-brand.mjs` verifica o conteúdo público em `frontend/src/app` e falha quando encontra a frase legada de filtros de fotografia, referências explícitas a concorrentes/competidores ou linguagem depreciativa. Execute antes do deploy:
+
+```bash
+node spec-kit/audit-seo-brand.mjs
+```
+
+O objetivo é impedir regressões da regra de comunicação no código, sem bloquear usos funcionais e neutros de termos como `comparar` ou `SEO`.
