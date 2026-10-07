@@ -9,6 +9,7 @@ import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 import { requireDotAccess, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
 import { claimDotPlanForActor, listDotPlanSteps, listDotPlans } from '../services/dotAgentPlan.js';
 import { runDotAgent } from '../services/dotAgentRuntime.js';
+import { listDotHypotheses } from '../services/dotAgentDecision.js';
 
 type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string; userId?: string | null; demo?: boolean };
 
@@ -66,6 +67,17 @@ export function mountDotAgentRoutes(app: Express) {
       res.json({ ok: true, ...await getDotAgentWorkspace(access.empresaId), plan: access.plan, plan_label: planLabel(access.plan || '') });
     } catch (error) {
       res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar o espaço do agente DOT.' });
+    }
+  });
+
+  app.get('/api/dot/agent/hypotheses', async (req: Request, res: Response) => {
+    const access = await resolveDotAgentAccess(req);
+    if (!access.allowed || !access.empresaId || !access.userId) return deny(res, access);
+    try {
+      const items = await listDotHypotheses(access.empresaId, Number(req.query.limit) || 20);
+      res.json({ ok: true, hypotheses: items.map((item) => ({ id: item.id, signalId: item.signalId, statement: item.statement, rationale: item.rationale, status: item.status, confidence: item.confidence, confidenceScore: item.confidenceScore, evidenceStepIds: item.evidenceStepIds, createdAt: item.createdAt, updatedAt: item.updatedAt })) });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar dados do agente DOT.' });
     }
   });
 
