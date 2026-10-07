@@ -45,6 +45,9 @@ export default function Page() {
           pacotes de SEO local e avaliações
         </Link>
         .
+      <p>
+        Se quiser transformar esse processo em rotina, veja também a <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">gestão de reputação online</Link> e o guia de <Link href="/gestao-de-feedback" className="text-indigo-400 underline">gestão de feedback de clientes</Link>.
+      </p>
       </p>
     </BlogArticle>
   );
