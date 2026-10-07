@@ -10,6 +10,7 @@ import { requireDotAccess, type DotAccessAction, type DotAccessResource } from '
 import { claimDotPlanForActor, listDotPlanStepsForTenant, listDotPlans } from '../services/dotAgentPlan.js';
 import { runDotAgent } from '../services/dotAgentRuntime.js';
 import { listDotHypotheses } from '../services/dotAgentDecision.js';
+import { listDotDecisions } from '../services/dotAgentLedger.js';
 
 type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string; userId?: string | null; demo?: boolean };
 
@@ -78,6 +79,38 @@ export function mountDotAgentRoutes(app: Express) {
       res.json({ ok: true, hypotheses: items.map((item) => ({ id: item.id, signalId: item.signalId, statement: item.statement, rationale: item.rationale, status: item.status, confidence: item.confidence, confidenceScore: item.confidenceScore, evidenceStepIds: item.evidenceStepIds, createdAt: item.createdAt, updatedAt: item.updatedAt })) });
     } catch (error) {
       res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar dados do agente DOT.' });
+    }
+  });
+
+  app.get('/api/dot/agent/decisions', async (req: Request, res: Response) => {
+    const access = await resolveDotAgentAccess(req);
+    if (!access.allowed || !access.empresaId || !access.userId) return deny(res, access);
+    try {
+      const items = await listDotDecisions(access.empresaId, Number(req.query.limit) || 20);
+      res.json({
+        ok: true,
+        decisions: items.map((item) => ({
+          id: item.id,
+          planId: item.planId,
+          signalId: item.signalId,
+          hypothesisId: item.hypothesisId,
+          decisionType: item.decisionType,
+          decision: item.decision,
+          rationaleSummary: item.rationaleSummary,
+          confidenceScore: item.confidenceScore,
+          evidenceStepIds: item.evidenceStepIds,
+          approvalRequired: item.approvalRequired,
+          approvalStatus: item.approvalStatus,
+          approvedBy: item.approvedBy,
+          approvedAt: item.approvedAt,
+          actionId: item.actionId,
+          outcomeId: item.outcomeId,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        })),
+      });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar decisões do agente DOT.' });
     }
   });
 
