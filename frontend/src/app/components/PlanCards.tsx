@@ -287,6 +287,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     if (lower.includes('wpp') || lower.includes('whatsapp')) {
       icon = MessageCircle;
       badgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
+    } else if (lower.includes('ranking') || lower.includes('unidade') || lower.includes('executivo')) {
+      badgeClass = 'text-blue-700 bg-blue-50 border-blue-200/60';
     } else if (lower.includes('ia') || lower.includes('ai') || lower.includes('智能')) {
       icon = Sparkles;
     } else if (
