@@ -87,7 +87,11 @@ export function mountDotAgentRoutes(app: Express) {
       const plans = await listDotPlans(access.empresaId, access.userId, 50);
       const plan = plans.find((item) => item.id === req.params.id);
       if (!plan) return res.status(404).json({ ok: false, error: 'Plano não encontrado.' });
-      const steps = await listDotPlanSteps(plan.id);\n      // Evidence may contain raw review/search data. The UI receives only the\n      // execution metadata; sensitive evidence remains server-side and in audit storage.\n      const safeSteps = steps.map(({ evidence: _evidence, ...step }) => step);\n      res.json({ ok: true, plan, steps: safeSteps });
+      const steps = await listDotPlanSteps(plan.id);
+      // Evidence may contain raw review/search data. The UI receives only the
+      // execution metadata; sensitive evidence remains server-side and in audit storage.
+      const safeSteps = steps.map(({ evidence: _evidence, ...step }) => step);
+      res.json({ ok: true, plan, steps: safeSteps });
     } catch (error) {
       res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar etapas do plano.' });
     }
