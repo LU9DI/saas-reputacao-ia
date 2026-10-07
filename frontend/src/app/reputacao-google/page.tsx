@@ -15,7 +15,11 @@ export async function generateMetadata(): Promise<Metadata> {
       zh: 'https://filtraai.com/zh/google-reputation',
       'x-default': 'https://filtraai.com/reputacao-google',
     },
-  },\n  };\n}\n\nexport default function Page() {
+  },
+  };
+}
+
+export default function Page() {
   return (
     <SeoLanding
       h1="Reputação no Google: transforme avaliações em gestão"
