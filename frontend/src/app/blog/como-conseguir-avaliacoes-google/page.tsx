@@ -118,6 +118,9 @@ export default function BlogAvaliacoesGooglePage() {
           </Link>
           .
         </p>
+        <p>
+          Para transformar pedidos em uma rotina completa, veja também a <Link href="/reputacao-google" className="text-indigo-400 underline">gestão de avaliações Google</Link>, o guia de <Link href="/como-melhorar-avaliacoes-google" className="text-indigo-400 underline">como melhorar avaliações Google</Link> e a <Link href="/gestao-de-feedback" className="text-indigo-400 underline">gestão de feedback de clientes</Link>. Se o objetivo for acompanhar sinais ao longo do tempo, use a página de <Link href="/monitoramento-reputacao-online" className="text-indigo-400 underline">monitoramento de reputação online</Link>.
+        </p>
 
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">
           <p className="text-zinc-100 font-medium">Teste o fluxo completo em 7 dias</p>
