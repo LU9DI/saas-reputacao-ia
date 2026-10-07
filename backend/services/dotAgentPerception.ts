@@ -4,6 +4,7 @@ import {
   createDotPlan,
   ensureDotPlanSchema,
   findActiveDotPlanForSignal,
+  findRecentDotPlanForSignal,
 } from './dotAgentPlan.js';
 
 export type DotSignalSeverity = 'low' | 'medium' | 'high' | 'critical';
@@ -312,6 +313,8 @@ export async function createAutonomousDotPlans(empresaId: string, minPriority = 
     if (created.length >= limit || signal.priorityScore < minPriority || signal.status === 'ignored') continue;
     const existing = await findActiveDotPlanForSignal(empresaId, signal.fingerprint);
     if (existing) continue;
+    const recent = await findRecentDotPlanForSignal(empresaId, signal.fingerprint, Number(process.env.DOT_AUTONOMOUS_PLAN_COOLDOWN_HOURS || 24));
+    if (recent) continue;
 
     const sessionId = `autonomous:${signal.fingerprint}`;
     const plan = await createDotPlan({
