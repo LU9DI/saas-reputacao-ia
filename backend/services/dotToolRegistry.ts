@@ -36,6 +36,13 @@ async function ensureSchema() {
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_tool_audit_empresa ON dot_tool_audit(empresa_id, created_at)');
 }
 
+function auditSafeValue(value: unknown): unknown {
+  if (value == null) return null;
+  if (Array.isArray(value)) return { type: 'array', count: value.length };
+  if (typeof value === 'object') return { type: 'object', keys: Object.keys(value as Record<string, unknown>).slice(0, 30) };
+  return typeof value;
+}
+
 async function audit(input: {
   empresaId: string;
   toolId: string;
@@ -50,7 +57,7 @@ async function audit(input: {
   await ensureSchema();
   await getDb().run(
     'INSERT INTO dot_tool_audit (empresa_id,tool_id,operation,allowed,actor_type,actor_user_id,input_json,result_json,error,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
-    [input.empresaId, input.toolId, input.operation, input.allowed ? 1 : 0, input.actorType, input.actorUserId || null, JSON.stringify(input.input || {}), input.result == null ? null : JSON.stringify(input.result), input.error || null, new Date().toISOString()],
+    [input.empresaId, input.toolId, input.operation, input.allowed ? 1 : 0, input.actorType, input.actorUserId || null, JSON.stringify({ keys: Object.keys(input.input || {}).slice(0, 30) }), input.result == null ? null : JSON.stringify(auditSafeValue(input.result)), input.error || null, new Date().toISOString()],
   );
 }
 
