@@ -410,7 +410,7 @@ ${input.history || '(sem histórico)'}`;
       workingContext += `\n\n[DADO NÃO CONFIÁVEL — FERRAMENTA ${decision.tool_id}]\n${JSON.stringify(toolResult.result).slice(0, 20_000)}\n[FIM DO DADO NÃO CONFIÁVEL]`;
       evidenceStepIds.push(planStep.id);
       if (hypothesis) {
-        const assessment = evaluateDotEvidence({ signalType: hypothesis.signalId, toolId: decision.tool_id, result: toolResult.result });
+        const assessment = evaluateDotEvidence({ toolId: decision.tool_id, result: toolResult.result });
         await attachDotHypothesisEvidence({ hypothesisId: hypothesis.id, evidenceStepId: planStep.id, support: assessment.support, strength: assessment.strength });
       }
       await updateDotPlanStep(planStep.id, { status: 'completed', evidence: toolResult.result });
