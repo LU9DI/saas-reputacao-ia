@@ -42,7 +42,11 @@ const faqSchema = {
       name: 'Como a IA ajuda na gestão de reputação?',
       acceptedAnswer: { '@type': 'Answer', text: 'A IA pode classificar comentários, agrupar temas, resumir padrões e acelerar a triagem de grandes volumes de feedback, com revisão humana para situações que exigem contexto.' },
     },
-  ],\n  };\n}\n\nexport default function Page() {
+  ],
+  };
+}
+
+export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
