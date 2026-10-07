@@ -1,53 +1,13 @@
-name: Deploy
+name: Legacy deploy placeholder
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
-    inputs:
-      target:
-        description: 'Ambiente'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - staging
 
+# Vercel is no longer a production deployment target.
+# Production frontend deployment is handled by deploy-cloudflare.yml.
 jobs:
-  deploy-web-vercel:
-    name: Frontend → Vercel (prebuilt)
-
+  retired:
+    name: Retired
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Vercel CLI
-        run: npm i -g vercel@latest
-
-      - name: Deploy Frontend
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          set -e
-          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
-            echo "::error::Secrets da Vercel incompletos: VERCEL_TOKEN, VERCEL_ORG_ID e VERCEL_PROJECT_ID são obrigatórios."
-            exit 1
-          fi
-          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-          vercel build --prod --token="$VERCEL_TOKEN"
-          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+      - run: echo "Legacy deployment workflow retired; use Cloudflare Pages."
