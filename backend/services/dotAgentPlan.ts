@@ -159,3 +159,49 @@ export async function getDotPlan(planId: string): Promise<DotPlan | null> {
     currentStepId: row.current_step_id,
   };
 }
+
+
+export async function listDotPlans(empresaId: string, actorUserId: string, limit = 10): Promise<DotPlan[]> {
+  await ensureDotPlanSchema();
+  const rows = await getDb().all(
+    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id FROM dot_agent_plans WHERE empresa_id=? AND actor_user_id=? ORDER BY updated_at DESC LIMIT ?',
+    [empresaId, actorUserId, Math.max(1, Math.min(limit, 50))],
+  );
+  return (rows as any[]).map((row) => ({
+    id: row.id,
+    empresaId: row.empresa_id,
+    actorUserId: row.actor_user_id,
+    sessionId: row.session_id,
+    objective: row.objective,
+    status: row.status as DotPlanStatus,
+    currentStepId: row.current_step_id,
+  }));
+}
+
+export async function listDotPlanSteps(planId: string): Promise<DotPlanStep[]> {
+  await ensureDotPlanSchema();
+  const rows = await getDb().all(
+    'SELECT id,plan_id,sequence,title,kind,status,tool_id,rationale,evidence_json,error FROM dot_agent_plan_steps WHERE plan_id=? ORDER BY sequence ASC',
+    [planId],
+  );
+  return (rows as any[]).map((row) => ({
+    id: row.id,
+    planId: row.plan_id,
+    sequence: Number(row.sequence),
+    title: row.title,
+    kind: row.kind,
+    status: row.status as DotPlanStepStatus,
+    toolId: row.tool_id,
+    rationale: row.rationale,
+    evidence: row.evidence_json ? safeJson(row.evidence_json) : undefined,
+    error: row.error,
+  }));
+}
+
+function safeJson(value: string): unknown {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
