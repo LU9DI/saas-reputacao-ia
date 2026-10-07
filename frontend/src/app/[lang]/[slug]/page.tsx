@@ -134,12 +134,29 @@ const labels={
   zh:{topics:'探索相关主题',resources:'指南与资源',why:'本页面可以帮助解决什么问题',how:'实用的管理流程',benefits:'重点关注什么',next:'继续了解 Filtra.AI',back:'查看完整策略'}
 };
 
+const AUTHORITY_CORE_PATHS=[
+  '/filtra-ai',
+  '/gestao-de-reputacao-online',
+  '/avaliacoes-google',
+  '/reputacao-google',
+  '/analise-de-avaliacoes-com-ia',
+  '/feedback-de-clientes',
+  '/como-melhorar-avaliacoes-google',
+  '/monitoramento-reputacao-online',
+  '/gestao-de-feedback',
+];
+
 function relatedIndexes(index:number,count:number){
-  const total=sourcePaths.length;
   const result:number[]=[];
+  for(const sourcePath of AUTHORITY_CORE_PATHS){
+    const candidate=sourcePaths.indexOf(sourcePath);
+    if(candidate>=0 && candidate!==index && !result.includes(candidate)) result.push(candidate);
+    if(result.length>=count) return result;
+  }
+  const total=sourcePaths.length;
   for(let offset=1;result.length<count && offset<total;offset++){
     const candidate=(index+offset)%total;
-    if(candidate!==index)result.push(candidate);
+    if(candidate!==index && !result.includes(candidate)) result.push(candidate);
   }
   return result;
 }
