@@ -456,6 +456,55 @@ export default function PainelEmpresa() {
                       ))}
                     </div>
                   )}
+                  {String(empresa.plan || '').toLowerCase() === 'corporativo' && Array.isArray(metricas.prioridades_operacionais) && metricas.prioridades_operacionais.length > 0 && (
+                    <div className="mb-5 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-4 sm:p-5">
+                      <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                          <div className="text-[10px] font-semibold uppercase tracking-wide text-indigo-400">Prioridades operacionais</div>
+                          <h4 className="mt-1 text-base font-semibold text-white">O que a operação deve atacar agora</h4>
+                        </div>
+                        <span className="text-xs text-zinc-500">{metricas.prioridades_operacionais.length} prioridades derivadas dos feedbacks</span>
+                      </div>
+                      <div className="grid gap-3 lg:grid-cols-2">
+                        {metricas.prioridades_operacionais.map((item: any) => (
+                          <div key={item.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className={item.prioridade === 'alta' ? 'rounded-full border border-red-400/20 bg-red-400/5 px-2 py-0.5 text-[10px] font-semibold uppercase text-red-300' : item.prioridade === 'media' ? 'rounded-full border border-amber-400/20 bg-amber-400/5 px-2 py-0.5 text-[10px] font-semibold uppercase text-amber-300' : 'rounded-full border border-emerald-400/20 bg-emerald-400/5 px-2 py-0.5 text-[10px] font-semibold uppercase text-emerald-300'}>
+                                    {item.prioridade === 'alta' ? 'Alta' : item.prioridade === 'media' ? 'Média' : 'Oportunidade'}
+                                  </span>
+                                  <span className="text-[11px] text-zinc-500">{item.unidade}</span>
+                                </div>
+                                <div className="mt-2 text-sm font-semibold text-white">{item.titulo}</div>
+                              </div>
+                            </div>
+                            <p className="mt-2 text-xs leading-5 text-zinc-400">{item.problema}</p>
+                            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                                <div className="text-[9px] uppercase tracking-wide text-zinc-600">Nota</div>
+                                <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencia?.nota || '—'}</div>
+                              </div>
+                              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                                <div className="text-[9px] uppercase tracking-wide text-zinc-600">Tema</div>
+                                <div className="mt-1 truncate text-xs font-semibold text-zinc-200">{item.evidencia?.tag || 'Desempenho'}</div>
+                              </div>
+                              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                                <div className="text-[9px] uppercase tracking-wide text-zinc-600">Tendência</div>
+                                <div className={Number(item.evidencia?.tendencia_14d || 0) < 0 ? 'mt-1 text-xs font-semibold text-red-300' : 'mt-1 text-xs font-semibold text-emerald-300'}>
+                                  {Number(item.evidencia?.tendencia_14d || 0) > 0 ? '+' : ''}{item.evidencia?.tendencia_14d || '0.0'}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="mt-3 rounded-xl border border-indigo-400/10 bg-indigo-400/5 p-3">
+                              <div className="text-[9px] uppercase tracking-wide text-indigo-300">Ação sugerida</div>
+                              <div className="mt-1 text-xs leading-5 text-indigo-100">{item.acao_sugerida}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[680px] text-sm">
                       <thead><tr className="border-b border-white/10 text-left text-[10px] uppercase tracking-wide text-zinc-500">
