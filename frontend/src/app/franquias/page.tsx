@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação para franquias e redes ',
+  title: 'Gestão de reputação para franquias e redes',
   description:
-    'Organize avaliações e feedback de várias unidades, identifique padrões e acompanhe reputação local com o Filtra.AI para franquias e redes.',
+    'Gestão de reputação para franquias e redes: compare avaliações por unidade, encontre padrões e transforme feedback em ações operacionais.',
   alternates: {
     canonical: 'https://filtraai.com/franquias',
     languages: {
@@ -39,6 +39,7 @@ export default function FranquiasPage() {
         { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões em informação operacional para a rede.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões recorrentes entre unidades e avaliações.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial de uma unidade ou da rede.' },
+        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Entenda como avaliações entram na operação de SEO local.' },
       ]}
       sections={[
         {
@@ -60,6 +61,18 @@ export default function FranquiasPage() {
         {
           heading: 'Teste uma unidade primeiro',
           body: 'Ative o trial de 7 dias em uma unidade piloto, valide o fluxo e depois avalie a expansão para a rede.',
+        },
+        {
+          heading: 'O que acompanhar por unidade',
+          body: 'Compare volume de avaliações, nota média, temas recorrentes, avaliações sem resposta e tempo de resposta. O objetivo é identificar desvios entre unidades e priorizar a operação que precisa de atenção, sem reduzir a análise a uma única nota.',
+        },
+        {
+          heading: 'Como transformar comparação em rotina',
+          body: 'Defina uma cadência semanal para revisar sinais críticos e uma revisão mensal para comparar tendências. Registre o responsável por cada ação e o período de acompanhamento para saber se a mudança realmente alterou o padrão de feedback.',
+        },
+        {
+          heading: 'Reputação centralizada, contexto local',
+          body: 'Uma rede precisa de visão consolidada para encontrar padrões e de visão por endereço para corrigir causas locais. A operação deve preservar o contexto de cada unidade em vez de aplicar a mesma resposta a problemas diferentes.',
         },
       ]}
     />
