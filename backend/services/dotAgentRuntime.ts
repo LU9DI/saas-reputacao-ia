@@ -35,7 +35,7 @@ function cleanJson(raw: string): string {
     .trim();
 }
 
-function parseDecision(raw: string): RuntimeDecision {
+export function parseDotRuntimeDecision(raw: string): RuntimeDecision {
   const cleaned = cleanJson(raw);
   try {
     const parsed = JSON.parse(cleaned);
@@ -214,7 +214,7 @@ ${input.history || '(sem histórico)'}`;
       at: new Date().toISOString(),
     });
 
-    const decision = parseDecision(result.text);
+    const decision = parseDotRuntimeDecision(result.text);
 
     if (decision.type === 'final') {
       finalText = decision.message || 'Concluí a análise com as evidências disponíveis.';
