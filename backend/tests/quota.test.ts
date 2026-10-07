@@ -35,6 +35,17 @@ describe('getFeedbackLimit', () => {
   });
 });
 
+
+describe('limites oficiais de feedback', () => {
+  it('mantém a escada Inicial 100 / Pro 300 / Ultra 800 / Corporativo 2500 / REI 8000', () => {
+    assert.equal(getFeedbackLimit('inicial'), 100);
+    assert.equal(getFeedbackLimit('pro'), 300);
+    assert.equal(getFeedbackLimit('ultra'), 800);
+    assert.equal(getFeedbackLimit('corporativo'), 2500);
+    assert.equal(getFeedbackLimit('rei'), 8000);
+  });
+});
+
 describe('getTokenLimit', () => {
   it('inicial/pro zerados', () => {
     assert.equal(getTokenLimit('inicial'), 0);
