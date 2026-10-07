@@ -19,6 +19,7 @@ import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
 import { selectDotModel } from '../services/dotModelRouting.js';
 import { runDotAgent } from '../services/dotAgentRuntime.js';
+import { loadDotSessionHistory, appendDotMemoryTurn, clearDotSessionHistory } from '../services/dotMemory.js';
 import { requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
 
 const dotLimiter = rateLimit({
@@ -63,7 +64,6 @@ type DotAccess = {
   userId: string | null;
 };
 
-const sessions = new Map<string, ChatItem[]>();
 const MAX_HISTORY = 12;
 
 const DOT_RESPONSE_TOKEN_LIMITS: Record<string, number> = {
@@ -187,18 +187,6 @@ function scopedSessionId(access: DotAccess, id: string): string {
   if (access.demo) return `demo:${safeId}`;
   const userScope = access.userId || 'authenticated-unknown';
   return access.empresaId ? `${access.empresaId}:${userScope}:${safeId}` : `anonymous:${safeId}`;
-}
-
-function sessionHistory(id: string): ChatItem[] {
-  const current = sessions.get(id);
-  if (current) return current;
-  const created: ChatItem[] = [];
-  sessions.set(id, created);
-  return created;
-}
-
-function resetSession(id: string) {
-  sessions.delete(id);
 }
 
 function buildConversation(context: string, history: ChatItem[], message: string): string {
@@ -601,7 +589,8 @@ export function mountDotRoutes(app: Express) {
     const access = await resolveDotAccess(req);
     if (!access.allowed) return deny(res, access);
 
-    resetSession(scopedSessionId(access, String(req.params.sessionId || '')));
+    const sessionId = scopedSessionId(access, String(req.params.sessionId || ''));
+    await clearDotSessionHistory(access.empresaId || 'demo', sessionId);
     res.json({ ok: true });
   });
 
@@ -618,7 +607,8 @@ export function mountDotRoutes(app: Express) {
     if (!message) return res.status(400).json({ error: 'Mensagem obrigatória.' });
 
     const sessionId = scopedSessionId(access, requestedSessionId);
-    const history = sessionHistory(sessionId);
+    const memoryEmpresaId = access.empresaId || 'demo';
+    const history = await loadDotSessionHistory(memoryEmpresaId, sessionId, MAX_HISTORY);
 
     const contextResult = access.demo
       ? {
@@ -641,8 +631,9 @@ export function mountDotRoutes(app: Express) {
     if (!access.demo && contextResult.cacheHit) {
       const cachedAnswer = buildCachedDotAnswer(message, contextResult.snapshot);
       if (cachedAnswer) {
-        history.push({ role: 'user', text: message, at: Date.now() });
-        history.push({ role: 'dot', text: cachedAnswer, at: Date.now() });
+        await appendDotMemoryTurn({ empresaId: memoryEmpresaId, sessionId, actorUserId: access.userId, role: 'user', text: message });
+        await appendDotMemoryTurn({ empresaId: memoryEmpresaId, sessionId, actorUserId: access.userId, role: 'dot', text: cachedAnswer });
+        history.push({ role: 'user', text: message, at: Date.now() }, { role: 'dot', text: cachedAnswer, at: Date.now() });
         while (history.length > MAX_HISTORY) history.shift();
         return res.json({
           ok: true,
@@ -684,8 +675,9 @@ export function mountDotRoutes(app: Express) {
         contextResult.fingerprint,
       );
       if (semanticCached) {
-        history.push({ role: 'user', text: message, at: Date.now() });
-        history.push({ role: 'dot', text: semanticCached.answer, at: Date.now() });
+        await appendDotMemoryTurn({ empresaId: memoryEmpresaId, sessionId, actorUserId: access.userId, role: 'user', text: message });
+        await appendDotMemoryTurn({ empresaId: memoryEmpresaId, sessionId, actorUserId: access.userId, role: 'dot', text: semanticCached.answer });
+        history.push({ role: 'user', text: message, at: Date.now() }, { role: 'dot', text: semanticCached.answer, at: Date.now() });
         while (history.length > MAX_HISTORY) history.shift();
         const dotLimit = getFeatureTokenLimit(access.plan || 'rei', 'dot');
         const dotUsed = await tokensUsadosFeatureMes(access.empresaId as string, 'dot');
@@ -774,8 +766,9 @@ Você deve operar pelo runtime de agente: investigar com ferramentas, reavaliar 
         );
       }
 
-      history.push({ role: 'user', text: message, at: Date.now() });
-      history.push({ role: 'dot', text: runtime.text, at: Date.now() });
+      await appendDotMemoryTurn({ empresaId: memoryEmpresaId, sessionId, actorUserId: access.userId, role: 'user', text: message });
+      await appendDotMemoryTurn({ empresaId: memoryEmpresaId, sessionId, actorUserId: access.userId, role: 'dot', text: runtime.text });
+      history.push({ role: 'user', text: message, at: Date.now() }, { role: 'dot', text: runtime.text, at: Date.now() });
       while (history.length > MAX_HISTORY) history.shift();
 
       return res.json({
