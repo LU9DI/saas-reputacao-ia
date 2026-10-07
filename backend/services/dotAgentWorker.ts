@@ -3,6 +3,7 @@ import { runCurrentDotMissionStep } from './dotAgentMissionRunner.js';
 
 let timer: NodeJS.Timeout | null = null;
 let running = false;
+let wakeInFlight: Promise<void> | null = null;
 
 async function runTick() {
   if (running) return;
@@ -51,11 +52,11 @@ export function startDotAgentWorker() {
 
 export function wakeDotAgentWorker() {
   if (process.env.DOT_AGENT_WORKER_ENABLED === '0') return;
-  if (tickInFlight) return tickInFlight;
-  tickInFlight = runTick().finally(() => {
-    tickInFlight = null;
+  if (wakeInFlight) return wakeInFlight;
+  wakeInFlight = runTick().finally(() => {
+    wakeInFlight = null;
   });
-  return tickInFlight;
+  return wakeInFlight;
 }
 
 export function stopDotAgentWorker() {
