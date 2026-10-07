@@ -329,6 +329,15 @@ export function AuditoriaGratuitaClient() {
           <Link href="/planos" className="underline">
             {c.nav4}
           </Link>
+          <Link href="/agencias" className="underline">
+            Gestão de reputação para agências
+          </Link>
+          <Link href="/blog/seo-local-avaliacoes-local-pack" className="underline">
+            Pacotes de SEO local
+          </Link>
+          <Link href="/avaliacoes-google" className="underline">
+            Avaliações Google
+          </Link>
         </nav>
       </div>
       </main>
