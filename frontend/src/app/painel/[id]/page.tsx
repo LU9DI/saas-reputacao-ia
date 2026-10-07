@@ -567,6 +567,77 @@ export default function PainelEmpresa() {
                   </div>
                 </div>
 
+                {Array.isArray(metricas.oportunidades_estrategicas) && metricas.oportunidades_estrategicas.length > 0 && (
+                  <div className="mt-4 rounded-2xl border border-violet-400/10 bg-violet-400/[0.03] p-4">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                      <div>
+                        <div className="text-sm font-semibold text-white">Top oportunidades estratégicas</div>
+                        <div className="mt-1 text-xs text-zinc-500">Prioridade calculada por recorrência, abrangência, tendência, demanda e impacto percebido.</div>
+                      </div>
+                      <span className="text-[10px] uppercase tracking-wide text-violet-300">REI · 0–100</span>
+                    </div>
+                    <div className="mt-3 grid gap-3 lg:grid-cols-2">
+                      {metricas.oportunidades_estrategicas.slice(0, 10).map((item: any) => (
+                        <div key={item.id} className="rounded-2xl border border-white/5 bg-black/20 p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="rounded-full border border-violet-400/15 bg-violet-400/5 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-violet-200">
+                                  {item.tipo || 'oportunidade'}
+                                </span>
+                                <span className={Number(item.score || 0) >= 70 ? 'text-xs font-semibold text-emerald-300' : Number(item.score || 0) >= 45 ? 'text-xs font-semibold text-amber-300' : 'text-xs font-semibold text-zinc-400'}>
+                                  Score {item.score || 0}
+                                </span>
+                              </div>
+                              <div className="mt-2 text-sm font-semibold text-white">{item.titulo}</div>
+                            </div>
+                            <span className="shrink-0 rounded-full border border-white/10 px-2 py-1 text-[9px] uppercase text-zinc-500">
+                              {item.potencial === 'alto' ? 'Alto' : item.potencial === 'medio' ? 'Médio' : 'Baixo'}
+                            </span>
+                          </div>
+                          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                              <div className="text-[9px] uppercase tracking-wide text-zinc-600">Ocorrências</div>
+                              <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencias?.ocorrencias || 0}</div>
+                            </div>
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                              <div className="text-[9px] uppercase tracking-wide text-zinc-600">Unidades</div>
+                              <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencias?.unidades_afetadas || 0}</div>
+                            </div>
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                              <div className="text-[9px] uppercase tracking-wide text-zinc-600">Tendência</div>
+                              <div className={Number(item.evidencias?.tendencia_14d || 0) > 0 ? 'mt-1 text-xs font-semibold text-red-300' : 'mt-1 text-xs font-semibold text-zinc-300'}>
+                                {Number(item.evidencias?.tendencia_14d || 0) > 0 ? '+' : ''}{item.evidencias?.tendencia_14d || 0}
+                              </div>
+                            </div>
+                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                              <div className="text-[9px] uppercase tracking-wide text-zinc-600">Nota média</div>
+                              <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencias?.media_nota || '—'}</div>
+                            </div>
+                          </div>
+                          <div className="mt-3 rounded-xl border border-emerald-400/10 bg-emerald-400/[0.03] p-3">
+                            <div className="text-[9px] uppercase tracking-wide text-emerald-300">Impacto no negócio</div>
+                            <div className="mt-1 text-xs leading-5 text-zinc-300">{item.impacto_negocio}</div>
+                          </div>
+                          <div className="mt-2 rounded-xl border border-indigo-400/10 bg-indigo-400/[0.03] p-3">
+                            <div className="text-[9px] uppercase tracking-wide text-indigo-300">Ação recomendada</div>
+                            <div className="mt-1 text-xs leading-5 text-indigo-100">{item.acao_recomendada}</div>
+                          </div>
+                          {Array.isArray(item.unidades_afetadas) && item.unidades_afetadas.length > 0 && (
+                            <div className="mt-3 flex flex-wrap gap-1.5">
+                              {item.unidades_afetadas.slice(0, 6).map((u: any) => (
+                                <span key={u.id} className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-1 text-[10px] text-zinc-500">
+                                  {u.nome}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {Array.isArray(metricas.radar_estrategico.sinais_crescimento) && metricas.radar_estrategico.sinais_crescimento.length > 0 && (
                   <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/[0.03] p-4">
                     <div className="flex items-end justify-between gap-3">
