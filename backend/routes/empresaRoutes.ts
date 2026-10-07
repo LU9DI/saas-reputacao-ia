@@ -170,6 +170,81 @@ function insightsOperacionaisPorUnidade(reviews: any[], ranking: any[]) {
   });
 }
 
+
+function prioridadesOperacionaisPorUnidade(ranking: any[], insights: any[]) {
+  const byId = new Map((insights || []).map((u: any) => [String(u.id), u]));
+  const actionFor = (tag: string, critical: boolean) => {
+    const t = String(tag || '').toLowerCase();
+    if (/tempo|espera|demora|atraso/.test(t)) return 'Reduzir tempo de espera e revisar o fluxo operacional.';
+    if (/atendimento|equipe|servi|funcion/.test(t)) return 'Revisar atendimento, treinamento e padrão de execução da equipe.';
+    if (/preço|preco|valor|custo/.test(t)) return 'Avaliar percepção de valor, preço e ofertas frente à demanda observada.';
+    if (/produto|qualidade|estrutura|ambiente/.test(t)) return 'Atacar a causa operacional do tema e acompanhar a evolução da nota.';
+    if (/limpeza|higiene/.test(t)) return 'Reforçar rotina, checklist e controle de qualidade deste processo.';
+    return critical
+      ? 'Criar plano corretivo para o tema e acompanhar a evolução semanal.'
+      : 'Testar uma melhoria operacional focada neste tema e medir o impacto.';
+  };
+
+  const result: any[] = [];
+  for (const u of ranking || []) {
+    if (!u.feedbacks) continue;
+    const insight = byId.get(String(u.id)) || {};
+    const attention = Array.isArray(insight.pontos_atencao) ? insight.pontos_atencao : [];
+    const strengths = Array.isArray(insight.pontos_fortes) ? insight.pontos_fortes : [];
+    const topIssue = attention[0] || null;
+    const critical = u.status === 'critica';
+    const declining = Number(u.tendencia_14d || 0) < -0.2;
+    if (topIssue || critical || declining) {
+      const priority = critical || (declining && Number(topIssue?.count || 0) >= 2) ? 'alta' : 'media';
+      const title = topIssue?.tag
+        ? `Corrigir ${topIssue.tag} — ${u.nome}`
+        : `Recuperar desempenho — ${u.nome}`;
+      result.push({
+        id: `op-${u.id}-${topIssue?.tag || 'desempenho'}`,
+        unidade_id: u.id,
+        unidade: u.nome,
+        prioridade: priority,
+        titulo: title,
+        problema: topIssue?.tag
+          ? `Tema recorrente em ${topIssue.count} feedback(s) negativo(s).`
+          : declining
+            ? `Nota caiu ${Math.abs(Number(u.tendencia_14d || 0)).toFixed(1)} ponto(s) nos últimos 14 dias.`
+            : 'Desempenho abaixo do esperado.',
+        evidencia: {
+          tag: topIssue?.tag || null,
+          ocorrencias: Number(topIssue?.count || 0),
+          nota: u.nota,
+          tendencia_14d: u.tendencia_14d,
+          feedbacks: u.feedbacks,
+        },
+        acao_sugerida: actionFor(topIssue?.tag || '', critical),
+      });
+    }
+    if (strengths[0] && Number(u.nota || 0) >= 4.5 && Number(u.tendencia_14d || 0) >= 0) {
+      result.push({
+        id: `bp-${u.id}-${strengths[0].tag}`,
+        unidade_id: u.id,
+        unidade: u.nome,
+        prioridade: 'oportunidade',
+        titulo: `Replicar ${strengths[0].tag} — ${u.nome}`,
+        problema: 'Prática com sinal positivo e potencial de replicação entre unidades.',
+        evidencia: {
+          tag: strengths[0].tag,
+          ocorrencias: Number(strengths[0].count || 0),
+          nota: u.nota,
+          tendencia_14d: u.tendencia_14d,
+          feedbacks: u.feedbacks,
+        },
+        acao_sugerida: 'Identificar o que esta unidade faz diferente e transformar em prática replicável nas demais unidades.',
+      });
+    }
+  }
+  const order: Record<string, number> = { alta: 0, media: 1, oportunidade: 2 };
+  return result
+    .sort((a, b) => (order[a.prioridade] ?? 9) - (order[b.prioridade] ?? 9) || Number(b.evidencia.ocorrencias || 0) - Number(a.evidencia.ocorrencias || 0))
+    .slice(0, 12);
+}
+
 function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
@@ -666,6 +741,7 @@ export function mountEmpresaRoutes(app: Express) {
         unidades_ranking: unidadesRanking,
             unidades_resumo: unidadesResumo,
             unidades_insights: unidadesInsights,
+            prioridades_operacionais: prioridadesOperacionaisPorUnidade(unidadesRanking, unidadesInsights),
             total,
             media,
             negativas,
