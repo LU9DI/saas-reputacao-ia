@@ -41,6 +41,9 @@ export default function Page() {
       <p>
         O QR é uma peça operacional, não uma estratégia isolada. Para definir frequência, entregáveis e métricas
         junto de avaliações, reputação e presença local, veja o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local</Link>.
+      <p>
+        Para conectar o convite a uma operação contínua, veja também a <Link href="/reputacao-google" className="text-indigo-400 underline">gestão de avaliações Google</Link> e a <Link href="/como-melhorar-avaliacoes-google" className="text-indigo-400 underline">rotina para melhorar avaliações</Link>.
+      </p>
       </p>
     </BlogArticle>
   );
