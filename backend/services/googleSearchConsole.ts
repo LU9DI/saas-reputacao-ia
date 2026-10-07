@@ -260,7 +260,7 @@ export async function queryGoogleSearchConsole(empresaId: string, input: GscSear
   if (!row) throw new Error('Google Search Console não conectado.');
   const siteUrl = String(row.site_url || '').trim();
   if (!siteUrl) throw new Error('Selecione uma propriedade do Search Console antes de consultar dados.');
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(input.startDate) || !/^\\d{4}-\\d{2}-\\d{2}$/.test(input.endDate)) throw new Error('Datas inválidas.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(input.endDate)) throw new Error('Datas inválidas.');
   const start = new Date(`${input.startDate}T00:00:00Z`);
   const end = new Date(`${input.endDate}T00:00:00Z`);
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || start > end) throw new Error('Intervalo de datas inválido.');
