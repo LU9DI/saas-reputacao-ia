@@ -1,12 +1,19 @@
 import type { Metadata } from 'next';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
-export const metadata: Metadata = {
-  title: 'Clínicas: checklist de avaliações Google',
-  description:
-    'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
-  alternates: { canonical: 'https://filtraai.com/blog/clinica-checklist-avaliacoes-google' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Clínicas: checklist de avaliações Google',
+    description: 'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
+    alternates: { canonical: 'https://filtraai.com/blog/clinica-checklist-avaliacoes-google' },
+    openGraph: {
+      type: 'article',
+      url: 'https://filtraai.com/blog/clinica-checklist-avaliacoes-google',
+      title: 'Clínicas: checklist de avaliações Google',
+      description: 'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
+    },
+  };
+}
 
 export default function Page() {
   return (
