@@ -1,7 +1,7 @@
 import { getDb } from '../lib/db.js';
 
 export type DotAccessAction = 'read' | 'analyze' | 'create' | 'update' | 'execute' | 'external_send';
-export type DotAccessResource = 'filtra' | 'customers' | 'sales' | 'marketing' | 'operations' | 'finance' | 'hr' | 'crm' | 'documents' | 'calendar' | 'email' | 'whatsapp' | 'erp' | 'other';
+export type DotAccessResource = 'filtra' | 'customers' | 'sales' | 'marketing' | 'operations' | 'finance' | 'hr' | 'crm' | 'documents' | 'calendar' | 'email' | 'whatsapp' | 'erp' | 'seo' | 'other';
 export type DotPermission = { resource: DotAccessResource; action: DotAccessAction; granted: boolean; granted_by?: string | null; granted_at?: string | null };
 
 export async function ensureDotAccessSchema() {
