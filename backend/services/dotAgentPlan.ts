@@ -3,6 +3,7 @@ import { getDb } from '../lib/db.js';
 
 export type DotPlanStepStatus = 'pending' | 'working' | 'completed' | 'blocked' | 'failed';
 export type DotPlanStatus = 'working' | 'waiting_approval' | 'completed' | 'failed' | 'paused';
+export type DotPlanPauseReason = 'budget' | 'awaiting_user' | 'system_recovery' | 'rate_limit' | 'error' | 'manual';
 
 export interface DotPlanStep {
   id: string;
@@ -30,6 +31,7 @@ export interface DotPlan {
   approvalAction?: string | null;
   triggerSignalId?: string | null;
   triggerFingerprint?: string | null;
+  pauseReason?: DotPlanPauseReason | null;
 }
 
 let schemaPromise: Promise<void> | null = null;
@@ -52,13 +54,15 @@ export function ensureDotPlanSchema(): Promise<void> {
         approved_at TEXT,
         approval_action TEXT,
         trigger_signal_id TEXT,
-        trigger_fingerprint TEXT
+        trigger_fingerprint TEXT,
+        pause_reason TEXT
       )`);
       try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN approved_by TEXT'); } catch {}
       try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN approved_at TEXT'); } catch {}
       try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN approval_action TEXT'); } catch {}
       try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN trigger_signal_id TEXT'); } catch {}
       try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN trigger_fingerprint TEXT'); } catch {}
+      try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN pause_reason TEXT'); } catch {}
       await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_plan_steps (
         id TEXT PRIMARY KEY,
         plan_id TEXT NOT NULL,
@@ -97,7 +101,7 @@ export async function createDotPlan(input: {
     'INSERT INTO dot_agent_plans (id,empresa_id,actor_user_id,session_id,objective,status,created_at,updated_at,trigger_signal_id,trigger_fingerprint) VALUES (?,?,?,?,?,?,?,?,?,?)',
     [id, input.empresaId, input.actorUserId, input.sessionId, input.objective.slice(0, 4000), 'working', now, now, input.triggerSignalId ?? null, input.triggerFingerprint ?? null],
   );
-  return { id, empresaId: input.empresaId, actorUserId: input.actorUserId, sessionId: input.sessionId, objective: input.objective, status: 'working', approvedBy: null, approvedAt: null, approvalAction: null, triggerSignalId: input.triggerSignalId ?? null, triggerFingerprint: input.triggerFingerprint ?? null };
+  return { id, empresaId: input.empresaId, actorUserId: input.actorUserId, sessionId: input.sessionId, objective: input.objective, status: 'working', approvedBy: null, approvedAt: null, approvalAction: null, triggerSignalId: input.triggerSignalId ?? null, triggerFingerprint: input.triggerFingerprint ?? null, pauseReason: null };
 }
 
 export async function addDotPlanStep(input: {
@@ -154,12 +158,12 @@ export async function updateDotPlanStep(stepId: string, update: {
 export async function findActiveDotPlanForSignal(empresaId: string, triggerFingerprint: string): Promise<DotPlan | null> {
   await ensureDotPlanSchema();
   const rows = await getDb().all(
-    "SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint FROM dot_agent_plans WHERE empresa_id=? AND trigger_fingerprint=? AND status IN ('working','paused','waiting_approval') ORDER BY updated_at DESC LIMIT 1",
+    "SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint,pause_reason FROM dot_agent_plans WHERE empresa_id=? AND trigger_fingerprint=? AND status IN ('working','paused','waiting_approval') ORDER BY updated_at DESC LIMIT 1",
     [empresaId, triggerFingerprint],
   );
   const row = (rows as any[])?.[0];
   if (!row) return null;
-  return { id: row.id, empresaId: row.empresa_id, actorUserId: row.actor_user_id, sessionId: row.session_id, objective: row.objective, status: row.status as DotPlanStatus, currentStepId: row.current_step_id, approvedBy: row.approved_by ?? null, approvedAt: row.approved_at ?? null, approvalAction: row.approval_action ?? null, triggerSignalId: row.trigger_signal_id ?? null, triggerFingerprint: row.trigger_fingerprint ?? null };
+  return { id: row.id, empresaId: row.empresa_id, actorUserId: row.actor_user_id, sessionId: row.session_id, objective: row.objective, status: row.status as DotPlanStatus, currentStepId: row.current_step_id, approvedBy: row.approved_by ?? null, approvedAt: row.approved_at ?? null, approvalAction: row.approval_action ?? null, triggerSignalId: row.trigger_signal_id ?? null, triggerFingerprint: row.trigger_fingerprint ?? null, pauseReason: row.pause_reason ?? null };
 }
 
 export async function findRecentDotPlanForSignal(empresaId: string, triggerFingerprint: string, cooldownHours = 24): Promise<DotPlan | null> {
@@ -191,11 +195,11 @@ export async function recordDotPlanApproval(planId: string, approvedBy: string, 
   );
 }
 
-export async function setDotPlanStatus(planId: string, status: DotPlanStatus): Promise<void> {
+export async function setDotPlanStatus(planId: string, status: DotPlanStatus, pauseReason?: DotPlanPauseReason | null): Promise<void> {
   await ensureDotPlanSchema();
   await getDb().run(
-    'UPDATE dot_agent_plans SET status=?, updated_at=? WHERE id=?',
-    [status, new Date().toISOString(), planId],
+    'UPDATE dot_agent_plans SET status=?, pause_reason=?, updated_at=? WHERE id=?',
+    [status, status === 'paused' ? (pauseReason || 'system_recovery') : null, new Date().toISOString(), planId],
   );
 }
 
