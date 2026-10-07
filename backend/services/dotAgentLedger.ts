@@ -321,6 +321,22 @@ export async function recordDotOutcome(input: {
   };
 }
 
+export async function bindDotDecisionAction(id: string, empresaId: string, actionId: string): Promise<void> {
+  await ensureDotLedgerSchema();
+  await getDb().run(
+    'UPDATE dot_agent_decisions SET action_id=?,updated_at=? WHERE id=? AND empresa_id=?',
+    [actionId, new Date().toISOString(), id, empresaId],
+  );
+}
+
+export async function bindDotDecisionOutcome(id: string, empresaId: string, outcomeId: string): Promise<void> {
+  await ensureDotLedgerSchema();
+  await getDb().run(
+    'UPDATE dot_agent_decisions SET outcome_id=?,updated_at=? WHERE id=? AND empresa_id=?',
+    [outcomeId, new Date().toISOString(), id, empresaId],
+  );
+}
+
 export async function listDotDecisions(empresaId: string, limit = 20): Promise<DotDecision[]> {
   await ensureDotLedgerSchema();
   const rows = await getDb().all('SELECT * FROM dot_agent_decisions WHERE empresa_id=? ORDER BY created_at DESC LIMIT ?', [empresaId, Math.max(1, Math.min(limit, 50))]);
