@@ -43,8 +43,7 @@ const faqSchema = {
       acceptedAnswer: { '@type': 'Answer', text: 'A IA pode classificar comentários, agrupar temas, resumir padrões e acelerar a triagem de grandes volumes de feedback, com revisão humana para situações que exigem contexto.' },
     },
   ],
-  };
-}
+};
 
 export default function Page() {
   return (
