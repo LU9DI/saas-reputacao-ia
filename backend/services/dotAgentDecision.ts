@@ -145,7 +145,6 @@ export async function getOpenDotHypothesisForSignal(empresaId: string, signalId:
 }
 
 export function evaluateDotEvidence(input: {
-  signalType: string;
   toolId: string;
   result: unknown;
 }): { support: 'support' | 'refute' | 'neutral'; strength: number } {
@@ -153,23 +152,18 @@ export function evaluateDotEvidence(input: {
     const ratings = input.result.map((row: any) => Number(row?.rating)).filter(Number.isFinite);
     if (!ratings.length) return { support: 'neutral', strength: 5 };
     const negative = ratings.filter((rating) => rating <= 2).length;
-    if (input.signalType === 'reviews_negative_pressure') {
-      return negative > 0 ? { support: 'support', strength: Math.min(30, 10 + negative * 3) } : { support: 'refute', strength: 12 };
-    }
-    if (input.signalType === 'reviews_rating_decline') {
-      const average = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-      return average <= 3.2 ? { support: 'support', strength: 15 } : { support: 'neutral', strength: 5 };
-    }
+    const average = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+    return negative > 0 || average <= 3.2 ? { support: 'support', strength: Math.min(30, 10 + negative * 3) } : { support: 'neutral', strength: 5 };
   }
 
   if (input.toolId === 'reviews.analyze' && input.result && typeof input.result === 'object') {
     const average = Number((input.result as any).averageRating);
-    if (Number.isFinite(average) && input.signalType.startsWith('reviews_')) {
+    if (Number.isFinite(average)) {
       return average <= 3.2 ? { support: 'support', strength: 15 } : { support: 'neutral', strength: 5 };
     }
   }
 
-  if (input.toolId === 'dot.goals.read' && Array.isArray(input.result) && input.signalType === 'goal_stalled') {
+  if (input.toolId === 'dot.goals.read' && Array.isArray(input.result)) {
     const active = input.result.filter((goal: any) => String(goal?.status) === 'active');
     const stalled = active.filter((goal: any) => Number(goal?.progress || 0) < 50);
     return stalled.length ? { support: 'support', strength: Math.min(25, 10 + stalled.length * 3) } : { support: 'refute', strength: 15 };
