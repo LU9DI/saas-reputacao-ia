@@ -95,41 +95,13 @@ const CONTEXT_LINKS_BY_PATH: Record<string, ContextLink[]> = {
 };
 
 const DEFAULT_CONTEXT_LINKS: ContextLink[] = [
-  {
-    href: '/filtra-ai',
-    title: 'Filtra.AI — gestão de reputação',
-    description: 'Conheça a plataforma de gestão de reputação, avaliações Google e feedback com IA.',
-  },
-  {
-    href: '/avaliacoes-google',
-    title: 'Avaliações Google',
-    description: 'Entenda como transformar avaliações Google e feedback em uma rotina de gestão.',
-  },
-  {
-    href: '/feedback-de-clientes',
-    title: 'Feedback de clientes',
-    description: 'Transforme opiniões em informação útil para o negócio.',
-  },
-  {
-    href: '/analise-de-avaliacoes-com-ia',
-    title: 'Análise de avaliações com IA',
-    description: 'Identifique padrões e temas recorrentes nas avaliações.',
-  },
-  {
-    href: '/gestao-de-reputacao-online',
-    title: 'Gestão de reputação online',
-    description: 'Organize monitoramento, respostas e evolução da reputação.',
-  },
-  {
-    href: '/auditoria-gratuita',
-    title: 'Auditoria gratuita',
-    description: 'Faça um diagnóstico inicial e descubra pontos de atenção.',
-  },
-  {
-    href: '/blog/seo-local-avaliacoes-local-pack',
-    title: 'SEO local e avaliações',
-    description: 'Entenda como presença local, avaliações e reputação trabalham juntas.',
-  },
+  { href: '/filtra-ai', title: 'Filtra.AI — gestão de reputação', description: 'Conheça a plataforma de gestão de reputação, avaliações Google e feedback com IA.' },
+  { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Entenda como transformar avaliações Google e feedback em uma rotina de gestão.' },
+  { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões em informação útil para o negócio.' },
+  { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Identifique padrões e temas recorrentes nas avaliações.' },
+  { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Organize monitoramento, respostas e evolução da reputação.' },
+  { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial e descubra pontos de atenção.' },
+  { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Entenda como presença local, avaliações e reputação trabalham juntas.' },
 ];
 
 export function SeoLanding({
@@ -140,6 +112,7 @@ export function SeoLanding({
   ctaLabel,
   breadcrumbHref,
   contextLinks,
+  mcpEndpoint,
 }: {
   h1: string;
   lead: string;
@@ -148,6 +121,7 @@ export function SeoLanding({
   ctaLabel?: string;
   breadcrumbHref?: string;
   contextLinks?: ContextLink[];
+  mcpEndpoint?: string;
 }) {
   const resolvedContextLinks = contextLinks || (breadcrumbHref ? CONTEXT_LINKS_BY_PATH[breadcrumbHref] : undefined) || DEFAULT_CONTEXT_LINKS;
   return (
@@ -179,19 +153,9 @@ export function SeoLanding({
               __html: JSON.stringify({
                 '@context': 'https://schema.org',
                 '@type': 'BreadcrumbList',
-              itemListElement: [
-                {
-                  '@type': 'ListItem',
-                  position: 1,
-                  name: UI.home,
-                  item: 'https://filtraai.com/',
-                },
-                {
-                  '@type': 'ListItem',
-                  position: 2,
-                  name: h1,
-                  item: `https://filtraai.com${breadcrumbHref}`,
-                },
+                itemListElement: [
+                  { '@type': 'ListItem', position: 1, name: UI.home, item: 'https://filtraai.com/' },
+                  { '@type': 'ListItem', position: 2, name: h1, item: `https://filtraai.com${breadcrumbHref}` },
                 ],
               }),
             }}
@@ -218,17 +182,24 @@ export function SeoLanding({
           </section>
         ))}
 
+        {mcpEndpoint && (
+          <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+            <h2 className="text-lg font-semibold text-zinc-100">Endpoint MCP</h2>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+              Use este endereço no cliente compatível com MCP. Você pode selecionar e copiar o endereço abaixo.
+            </p>
+            <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-800 bg-black px-4 py-3">
+              <code className="whitespace-nowrap text-sm text-zinc-100">{mcpEndpoint}</code>
+            </div>
+          </section>
+        )}
+
         <section className="border-t border-zinc-800 pt-8">
           <h2 className="text-lg font-semibold">{UI.deep}</h2>
           <p className="mt-2 text-sm text-zinc-400">{UI.deepBody}</p>
-
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {resolvedContextLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-700"
-              >
+              <Link key={link.href} href={link.href} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 transition hover:border-zinc-700">
                 <span className="font-medium">{link.title}</span>
                 <span className="mt-1 block text-xs text-zinc-500">{link.description}</span>
               </Link>
@@ -237,19 +208,14 @@ export function SeoLanding({
         </section>
 
         <div className="pt-4">
-          <Link
-            href={ctaHref}
-            className="inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white"
-          >
+          <Link href={ctaHref} className="inline-flex rounded-xl bg-indigo-600 px-5 py-3 text-sm font-medium text-white">
             {ctaLabel || UI.cta}
           </Link>
         </div>
 
         <nav className="flex flex-wrap gap-x-4 gap-y-2 border-t border-zinc-800 pt-6 text-xs text-zinc-500">
           {resolvedContextLinks.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-zinc-300">
-              {link.title}
-            </Link>
+            <Link key={link.href} href={link.href} className="hover:text-zinc-300">{link.title}</Link>
           ))}
         </nav>
       </main>
