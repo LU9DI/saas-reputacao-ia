@@ -302,6 +302,9 @@ export default function Page() {
 
       <H2>Como transformar o pacote em rotina</H2>
       <p>
+        Uma operação recorrente também precisa de acompanhamento contínuo. A <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">gestão de reputação online</Link> conecta avaliações, feedback e prioridades; o <Link href="/monitoramento-reputacao-online" className="text-indigo-400 underline">monitoramento de reputação</Link> ajuda a acompanhar mudanças ao longo do tempo.
+      </p>
+      <p>
         Uma rotina eficiente começa pelo diagnóstico, passa por prioridades e termina com uma revisão do que mudou.
         O ciclo pode ser: observar, identificar padrões, escolher ações, executar, medir e ajustar. Essa disciplina
         é mais sustentável do que tentar fazer todas as otimizações ao mesmo tempo.
@@ -329,6 +332,9 @@ export default function Page() {
       </p>
 
       <H2>O que avaliar antes de contratar um pacote de SEO local</H2>
+      <p>
+        Além do escopo, a operação precisa de caminhos claros para os temas de reputação. Veja a <Link href="/monitoramento-reputacao-online" className="text-indigo-400 underline">rotina de monitoramento de reputação online</Link>, a <Link href="/reputacao-google" className="text-indigo-400 underline">gestão de avaliações Google</Link> e o guia sobre <Link href="/como-melhorar-avaliacoes-google" className="text-indigo-400 underline">como melhorar avaliações Google</Link>. Para estruturar o tratamento do feedback, consulte também a <Link href="/gestao-de-feedback" className="text-indigo-400 underline">gestão de feedback de clientes</Link>.
+      </p>
       <ul className="list-disc pl-5 space-y-1">
         <li>Escopo e número de unidades claramente definidos.</li>
         <li>Responsável por execução, aprovação e contato com o cliente.</li>
