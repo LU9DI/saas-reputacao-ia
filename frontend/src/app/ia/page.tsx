@@ -3,7 +3,7 @@ import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
   title: 'IA para ChatGPT, Claude e Grok | Análise de reputação',
-  description: 'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação.',
+  description: 'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação. Conecte o endpoint MCP oficial e leve os dados da sua empresa para seus agentes de IA.',
   alternates: {
     canonical: 'https://filtraai.com/ia',
     languages: {
