@@ -5,6 +5,7 @@ import type { Express, Response } from 'express';
 import { getDb, findEmpresa } from '../lib/db.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { planTemIA } from '../lib/quota.js';
 
 function podeGerir(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
@@ -25,6 +26,14 @@ export function mountExportRoutes(app: Express) {
       const emp = await findEmpresa(String(req.params.ref));
       if (!emp) return res.status(404).json({ error: 'Empresa não encontrada.' });
       if (!podeGerir(req, emp.id)) return res.status(403).json({ error: 'Sem permissão.' });
+
+      const plan = String(emp.plan || 'trial').toLowerCase();
+      if (!planTemIA(plan)) {
+        return res.status(403).json({
+          error: 'Exportação avançada de críticas não está disponível neste plano.',
+          code: 'PLAN_FEATURE_UNAVAILABLE',
+        });
+      }
 
       const rows = await getDb().all(
         `SELECT id, name, rating, comment, ai_reply, client_whatsapp, createdAt, treated_at
