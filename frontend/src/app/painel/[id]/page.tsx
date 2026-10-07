@@ -414,6 +414,22 @@ export default function PainelEmpresa() {
 
               {nivel === 'executivo' && Array.isArray(metricas.unidades_ranking) && metricas.unidades_ranking.length > 0 && (
                 <section className="mt-5 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+                  {String(empresa.plan || '').toLowerCase() === 'corporativo' && metricas.unidades_resumo && (
+                    <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                      {[
+                        ['Melhor unidade', metricas.unidades_resumo.melhor_unidade?.nome || '—', metricas.unidades_resumo.melhor_unidade?.nota ? String(metricas.unidades_resumo.melhor_unidade.nota) + '★' : ''],
+                        ['Unidade em atenção', metricas.unidades_resumo.unidade_atencao?.nome || '—', metricas.unidades_resumo.unidade_atencao?.nota ? String(metricas.unidades_resumo.unidade_atencao.nota) + '★' : ''],
+                        ['Maior evolução', metricas.unidades_resumo.maior_evolucao?.nome || '—', metricas.unidades_resumo.maior_evolucao?.delta ? '+' + String(metricas.unidades_resumo.maior_evolucao.delta) : ''],
+                        ['Maior queda', metricas.unidades_resumo.maior_queda?.nome || '—', metricas.unidades_resumo.maior_queda?.delta ? String(metricas.unidades_resumo.maior_queda.delta) : ''],
+                      ].map(([title, value, detail]) => (
+                        <div key={String(title)} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                          <div className="text-[10px] uppercase tracking-wide text-zinc-500">{title}</div>
+                          <div className="mt-2 truncate text-sm font-semibold text-white">{value}</div>
+                          {detail ? <div className="mt-1 text-xs text-zinc-500">{detail}</div> : null}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                       <p className="text-[11px] font-medium uppercase tracking-wide text-indigo-400">Operação multi-unidades</p>
