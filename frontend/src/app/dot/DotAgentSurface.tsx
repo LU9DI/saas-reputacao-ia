@@ -208,8 +208,8 @@ export function DotAgentSurface() {
   return (
     <>
       <button type="button" aria-label="Abrir DOT" data-testid="dot-agent-launcher" onClick={() => setOpen((value) => !value)}
-        className="fixed bottom-5 right-5 z-[90] grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-zinc-950/95 text-white shadow-[0_18px_50px_rgba(0,0,0,.45)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-sky-300/30 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
-        <Bot size={19} strokeWidth={2.1} aria-hidden="true" />
+        className="fixed bottom-6 right-6 z-[90] grid h-12 w-12 place-items-center rounded-2xl border border-white/15 bg-[linear-gradient(145deg,#171b26,#090b10)] text-white shadow-[0_18px_55px_rgba(0,0,0,.48),0_0_0_1px_rgba(125,211,252,.05)] backdrop-blur-2xl transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:border-sky-300/35 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
+        <span className="relative grid h-7 w-7 place-items-center rounded-xl bg-sky-300/[.09] text-sky-200"><Bot size={17} strokeWidth={2} aria-hidden="true" /><span className="absolute inset-0 rounded-xl ring-1 ring-inset ring-white/[.06]" /></span>
         {hasAccess && <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 bg-emerald-400" />}
       </button>
 
@@ -217,17 +217,17 @@ export function DotAgentSurface() {
         <div className="fixed inset-0 z-[100] pointer-events-none">
           <button aria-label="Fechar DOT" onClick={() => setOpen(false)} className="pointer-events-auto absolute inset-0 bg-black/55 backdrop-blur-[2px]" />
           <aside role="dialog" aria-modal="true" aria-label="DOT, agente da empresa" data-testid="dot-agent-panel"
-            className="pointer-events-auto absolute bottom-3 right-3 flex max-h-[calc(100vh-1.5rem)] w-[min(440px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#080a0f] shadow-[0_30px_100px_rgba(0,0,0,.7)]">
-            <header className="shrink-0 border-b border-white/[.07] px-5 py-4">
+            className="pointer-events-auto absolute bottom-4 right-4 flex max-h-[min(760px,calc(100vh-2rem))] w-[min(500px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[30px] border border-white/[.11] bg-[#080a0f]/[.98] shadow-[0_35px_120px_rgba(0,0,0,.72),0_0_0_1px_rgba(255,255,255,.02)] backdrop-blur-2xl">
+            <header className="relative shrink-0 border-b border-white/[.07] bg-[radial-gradient(circle_at_15%_0%,rgba(125,211,252,.08),transparent_35%)] px-6 py-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-sky-400/[.08] text-sky-300"><Bot size={17} strokeWidth={2.1} /></div>
+                  <div className="relative grid h-10 w-10 place-items-center rounded-2xl bg-[linear-gradient(145deg,rgba(125,211,252,.14),rgba(255,255,255,.035))] text-sky-200 shadow-inner ring-1 ring-inset ring-white/[.08]"><Bot size={18} strokeWidth={2} /><span className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-[#0b0d12]" /></div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold tracking-tight text-white">DOT</span>
                       <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[.12em] ${hasAccess ? 'bg-emerald-400/10 text-emerald-300' : 'bg-zinc-400/10 text-zinc-500'}`}>{hasAccess ? 'ativo' : 'bloqueado'}</span>
                     </div>
-                    <div className="mt-0.5 text-[10px] text-zinc-600">agente operacional da empresa</div>
+                    <div className="mt-0.5 text-[10px] text-zinc-500">agente operacional · sempre no seu contexto</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -237,7 +237,7 @@ export function DotAgentSurface() {
               </div>
             </header>
 
-            <div className="min-h-0 overflow-y-auto px-4 pb-4 pt-4">
+            <div className="min-h-0 overflow-y-auto px-5 pb-5 pt-5">
               {!hasAccess ? (
                 <section className="rounded-[24px] border border-white/[.08] bg-white/[.025] p-5">
                   <div className="text-xl font-semibold tracking-tight text-white">O DOT fica aqui.</div>
@@ -248,19 +248,19 @@ export function DotAgentSurface() {
                 <div className="space-y-3">
                   {error && <div role="alert" className="rounded-xl border border-rose-400/15 bg-rose-500/[.06] px-3 py-2.5 text-[11px] leading-4 text-rose-200">{error}</div>}
 
-                  <section className="rounded-[24px] border border-white/[.08] bg-white/[.025] p-4">
+                  <section className="relative overflow-hidden rounded-[26px] border border-white/[.09] bg-[linear-gradient(145deg,rgba(125,211,252,.075),rgba(255,255,255,.02)_45%,rgba(255,255,255,.012))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.025)]">
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <div className="text-[9px] font-semibold uppercase tracking-[.18em] text-sky-300/80">Delegar</div>
-                        <h2 className="mt-1 text-[17px] font-semibold tracking-tight text-white">O que você quer que eu cuide?</h2>
+                        <h2 className="mt-1 max-w-[340px] text-[20px] font-semibold leading-tight tracking-[-.02em] text-white">O que você quer que eu cuide?</h2>
                       </div>
                       {workspace?.summary && <div className="text-right"><div className="text-lg font-semibold text-white">{workspace.summary.active}</div><div className="text-[9px] uppercase tracking-[.12em] text-zinc-600">ativas</div></div>}
                     </div>
-                    <div className="mt-3 rounded-2xl border border-white/[.08] bg-black/20 p-1.5">
+                    <div className="mt-4 rounded-2xl border border-white/[.09] bg-[#07090d]/70 p-1.5 shadow-inner">
                       <input data-testid="dot-goal-input" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') void createGoal(); }} placeholder="Ex.: descobrir por que minhas avaliações caíram" className="w-full bg-transparent px-2.5 py-2.5 text-[13px] text-white outline-none placeholder:text-zinc-700" />
-                      <div className="mt-1.5 flex items-center justify-between gap-2">
-                        <button type="button" onClick={() => setDraft(quickGoals[0])} className="min-w-0 truncate px-2.5 py-1.5 text-[10px] text-zinc-600 hover:text-zinc-300">{quickGoals[0]}</button>
-                        <button type="button" onClick={() => void createGoal()} disabled={busy || draft.trim().length < 3} className="shrink-0 rounded-xl bg-white px-3.5 py-2 text-[10px] font-semibold text-zinc-950 hover:bg-zinc-200 disabled:opacity-35">{busy ? <Loader2 size={13} className="animate-spin" /> : 'Delegar'}</button>
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1 overflow-hidden"><button type="button" onClick={() => setDraft(quickGoals[0])} className="max-w-full truncate rounded-lg px-2.5 py-1.5 text-left text-[10px] text-zinc-500 transition hover:bg-white/[.04] hover:text-zinc-300">Sugestão: {quickGoals[0].toLowerCase()}</button></div>
+                        <button type="button" onClick={() => void createGoal()} disabled={busy || draft.trim().length < 3} className="shrink-0 rounded-xl bg-white px-4 py-2.5 text-[10px] font-semibold text-zinc-950 shadow-[0_6px_18px_rgba(255,255,255,.08)] transition hover:-translate-y-0.5 hover:bg-zinc-100 disabled:translate-y-0 disabled:opacity-35">{busy ? <Loader2 size={13} className="animate-spin" /> : 'Delegar'}</button>
                       </div>
                     </div>
                   </section>
@@ -268,13 +268,13 @@ export function DotAgentSurface() {
                   {loading ? (
                     <section className="rounded-[22px] border border-white/[.07] bg-white/[.018] p-4 text-xs text-zinc-600">Reunindo o estado da empresa…</section>
                   ) : activeMission ? (
-                    <section className="rounded-[24px] border border-white/[.08] bg-[#0c0f15] p-4">
+                    <section className="rounded-[26px] border border-white/[.08] bg-[#0b0e14] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,.025)]">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0"><div className="text-[9px] font-semibold uppercase tracking-[.18em] text-zinc-600">Missão atual</div><h3 className="mt-1 truncate text-[14px] font-semibold text-white">{activeMission.title}</h3></div>
                         <span className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[.1em] ${activeMission.status === 'waiting_approval' ? 'bg-amber-400/10 text-amber-300' : activeMission.status === 'completed' ? 'bg-emerald-400/10 text-emerald-300' : 'bg-sky-400/10 text-sky-300'}`}>{activeMission.status === 'waiting_approval' ? 'sua decisão' : activeMission.status === 'completed' ? 'concluída' : 'trabalhando'}</span>
                       </div>
                       <div className="mt-3 flex items-center gap-2"><div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[.06]"><div className="h-full rounded-full bg-sky-400 transition-all" style={{ width: missionProgress(activeMission) + '%' }} /></div><span className="text-[9px] text-zinc-600">{Math.round(missionProgress(activeMission))}%</span></div>
-                      <div className="mt-4 space-y-1">
+                      <div className="mt-4 space-y-1.5">
                         {steps.map((step, index) => {
                           const current = index === activeMission.current_step;
                           const done = step.status === 'completed' || index < activeMission.current_step;
@@ -284,7 +284,7 @@ export function DotAgentSurface() {
                           </div>;
                         })}
                       </div>
-                      {activeMission.status !== 'waiting_approval' && activeMission.status !== 'completed' && <button type="button" disabled={!canMissionExecute || actionBusy === activeMission.id} onClick={() => void runMission(activeMission.id)} className="mt-3 w-full rounded-xl border border-white/[.08] bg-white/[.025] py-2.5 text-[10px] font-semibold text-zinc-300 hover:bg-white/[.05] disabled:opacity-35">{actionBusy === activeMission.id ? 'Executando…' : canMissionExecute ? 'Avançar missão' : 'Aguardando autorização'}</button>}
+                      {activeMission.status !== 'waiting_approval' && activeMission.status !== 'completed' && <button type="button" disabled={!canMissionExecute || actionBusy === activeMission.id} onClick={() => void runMission(activeMission.id)} className="mt-4 w-full rounded-xl border border-white/[.08] bg-white/[.035] py-2.5 text-[10px] font-semibold text-zinc-200 transition hover:bg-white/[.06] disabled:opacity-35">{actionBusy === activeMission.id ? 'Executando…' : canMissionExecute ? 'Avançar missão' : 'Aguardando autorização'}</button>}
                     </section>
                   ) : (
                     <section className="rounded-[24px] border border-dashed border-white/[.08] p-6 text-center">
@@ -308,7 +308,7 @@ export function DotAgentSurface() {
                     </div>
                   </section>}
 
-                  {(activeCases.length > 0 || pendingFollowups > 0) && <div className="grid grid-cols-2 gap-2">
+                  {(activeCases.length > 0 || pendingFollowups > 0) && <div className="grid grid-cols-2 gap-2.5">
                     <div className="rounded-2xl border border-white/[.07] bg-white/[.018] p-3"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-700">Casos em foco</div><div className="mt-1 text-lg font-semibold text-white">{activeCases.length}</div></div>
                     <div className="rounded-2xl border border-white/[.07] bg-white/[.018] p-3"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-700">Acompanhamentos</div><div className="mt-1 text-lg font-semibold text-white">{pendingFollowups}</div></div>
                   </div>}
