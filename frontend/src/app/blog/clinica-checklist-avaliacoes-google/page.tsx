@@ -12,7 +12,6 @@ export default function Page() {
   return (
     <BlogArticle
       kicker="Segmento · Clínicas"
-      canonical="https://filtraai.com/blog/clinica-checklist-avaliacoes-google"
       title="Clínicas: checklist de avaliações Google"
       lead="Paciente pesquisa nota antes de agendar. Um fluxo estruturado de feedback ajuda a clínica a identificar problemas, responder avaliações e transformar experiência em melhoria operacional."
     >
