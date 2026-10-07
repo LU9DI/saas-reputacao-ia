@@ -437,6 +437,25 @@ export default function PainelEmpresa() {
                     </div>
                     <p className="text-xs text-zinc-500">Baseado nos feedbacks reais disponíveis no painel</p>
                   </div>
+                  {String(empresa.plan || '').toLowerCase() === 'corporativo' && Array.isArray(metricas.unidades_insights) && metricas.unidades_insights.length > 0 && (
+                    <div className="mb-5 grid gap-3 lg:grid-cols-2">
+                      {metricas.unidades_insights.filter((u: any) => u.pontos_fortes?.length || u.pontos_atencao?.length).map((u: any) => (
+                        <div key={u.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                          <div className="text-sm font-semibold text-white">{u.nome}</div>
+                          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                            <div>
+                              <div className="text-[10px] uppercase tracking-wide text-emerald-400">Pontos fortes</div>
+                              <div className="mt-2 flex flex-wrap gap-1.5">{(u.pontos_fortes || []).map((x: any) => <span key={x.tag} className="rounded-lg border border-emerald-400/15 bg-emerald-400/5 px-2 py-1 text-[11px] text-emerald-200">{x.tag} · {x.count}</span>)}</div>
+                            </div>
+                            <div>
+                              <div className="text-[10px] uppercase tracking-wide text-amber-400">Pontos de atenção</div>
+                              <div className="mt-2 flex flex-wrap gap-1.5">{(u.pontos_atencao || []).map((x: any) => <span key={x.tag} className="rounded-lg border border-amber-400/15 bg-amber-400/5 px-2 py-1 text-[11px] text-amber-200">{x.tag} · {x.count}</span>)}</div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[680px] text-sm">
                       <thead><tr className="border-b border-white/10 text-left text-[10px] uppercase tracking-wide text-zinc-500">
