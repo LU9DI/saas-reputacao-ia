@@ -25,6 +25,7 @@ import {
 } from '../lib/quota.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
+import { ensureUnidadesSchema } from '../lib/unidades.js';
 
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -87,6 +88,45 @@ function serieUltimosDias(
   }));
 }
 
+function unidadeRanking(reviews: any[], unidades: any[]) {
+  const real = (reviews || []).filter((r) => !r.is_test);
+  const now = Date.now();
+  const periodStart = now - 14 * 24 * 60 * 60 * 1000;
+  const previousStart = now - 28 * 24 * 60 * 60 * 1000;
+  const groups = (unidades || []).map((u: any) => {
+    const list = real.filter((r) => String(r.unidade_id || '') === String(u.id));
+    const current = list.filter((r) => {
+      const t = new Date(r.createdAt || r.created_at || r.createdat || 0).getTime();
+      return t >= periodStart;
+    });
+    const previous = list.filter((r) => {
+      const t = new Date(r.createdAt || r.created_at || r.createdat || 0).getTime();
+      return t >= previousStart && t < periodStart;
+    });
+    const avg = list.length ? list.reduce((s: number, r: any) => s + Number(r.rating || 0), 0) / list.length : 0;
+    const curAvg = current.length ? current.reduce((s: number, r: any) => s + Number(r.rating || 0), 0) / current.length : 0;
+    const prevAvg = previous.length ? previous.reduce((s: number, r: any) => s + Number(r.rating || 0), 0) / previous.length : 0;
+    const delta = current.length && previous.length ? curAvg - prevAvg : 0;
+    const critical = list.filter((r: any) => Number(r.rating) <= 3).length;
+    const positive = list.filter((r: any) => Number(r.rating) >= 4).length;
+    const positiveRate = list.length ? positive / list.length : 0;
+    return {
+      id: String(u.id),
+      nome: String(u.nome || 'Unidade'),
+      cidade: u.cidade || null,
+      feedbacks: list.length,
+      nota: Math.round(avg * 10) / 10,
+      positivas: positive,
+      criticas: critical,
+      taxa_positiva: Math.round(positiveRate * 100),
+      tendencia_14d: Math.round(delta * 10) / 10,
+      feedbacks_14d: current.length,
+      status: avg >= 4.5 ? 'excelente' : avg >= 4 ? 'boa' : avg >= 3.5 ? 'atencao' : list.length ? 'critica' : 'sem_dados',
+    };
+  });
+  return groups.sort((a: any, b: any) => b.nota - a.nota || b.feedbacks - a.feedbacks);
+}
+
 function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
@@ -111,6 +151,7 @@ async function ensurePainelColumns(db: any) {
     'fraud_flags TEXT',
     'origin TEXT',
     'client_whatsapp TEXT',
+    'unidade_id TEXT',
     'treated_at TIMESTAMPTZ',
     'treated_note TEXT',
   ];
@@ -459,6 +500,17 @@ export function mountEmpresaRoutes(app: Express) {
         });
 
         const reais = reviews.filter((r) => !r.is_test);
+        const planAtual = String(empresa.plan || 'trial').toLowerCase();
+        let unidadesRanking: any[] = [];
+        if (planAtual === 'corporativo' || planAtual === 'rei' || trial) {
+          try {
+            await ensureUnidadesSchema(db);
+            const unidades = await db.all(`SELECT id, nome, cidade FROM unidades WHERE empresa_id = ? AND COALESCE(ativo, 1) = 1 ORDER BY nome ASC`, [empresa.id]);
+            unidadesRanking = unidadeRanking(reviews, unidades || []);
+          } catch (e: any) {
+            console.warn('unidades ranking:', e?.message || e);
+          }
+        }
         const total = reais.length;
         const soma = reais.reduce((s: number, r: any) => s + Number(r.rating || 0), 0);
         const media = total ? Math.round((soma / total) * 10) / 10 : 0;
@@ -562,6 +614,7 @@ export function mountEmpresaRoutes(app: Express) {
           },
           reviews: reais,
           metricas: {
+        unidades_ranking: unidadesRanking,
             total,
             media,
             negativas,
