@@ -813,15 +813,15 @@ export function mountEmpresaRoutes(app: Express) {
             name: r.name,
             rating: r.rating,
             comment: r.comment,
-            ai_reply: r.ai_reply,
-            ai_tags: tags,
+            ai_reply: planTemIA(planAtual) ? r.ai_reply : null,
+            ai_tags: planTemIA(planAtual) ? tags : [],
             createdAt,
             is_test: Number(r.is_test) === 1,
             fraud_flags: r.fraud_flags || null,
             origin: r.origin || 'publico',
             sentiment: r.sentiment || null,
             sentiment_score: r.sentiment_score != null ? Number(r.sentiment_score) : null,
-            sentiment_source: r.sentiment_source || null,
+            sentiment_source: planTemIA(planAtual) ? (r.sentiment_source || null) : null,
             unidade_id: r.unidade_id || null,
             client_whatsapp: clientWpp,
             client_whatsapp_url: linkWhatsapp(clientWpp, textoWpp),
@@ -891,7 +891,7 @@ export function mountEmpresaRoutes(app: Express) {
             tagCount[k] = (tagCount[k] || 0) + 1;
           }
         }
-        const top_tags = Object.entries(tagCount)
+        const top_tags = planTemIA(planAtual) ? Object.entries(tagCount)
           .sort((a, b) => b[1] - a[1])
           .slice(0, 8)
           .map(([tag, count]) => ({ tag, count }));
