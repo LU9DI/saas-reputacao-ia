@@ -21,7 +21,15 @@ export function PwaRegister() {
 
     // Service workers must not control localhost development. A stale SW can
     // cache old Next chunks and make a healthy dev server appear broken.
-    if (!isLocalDev && 'serviceWorker' in navigator) {
+    if (isLocalDev && 'serviceWorker' in navigator) {
+      // Clean up workers/caches left by an earlier production/dev session.
+      void navigator.serviceWorker.getRegistrations().then((registrations) =>
+        Promise.all(registrations.map((registration) => registration.unregister()))
+      );
+      if ('caches' in window) {
+        void caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key))));
+      }
+    } else if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => {
         /* silencioso se SW falhar */
       });
