@@ -93,9 +93,10 @@ async function ensureRuntimeSchema() {
     completed_at TEXT
   )`);
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_agent_runs_empresa ON dot_agent_runs(empresa_id, created_at)');
-  const columns = await db.all('PRAGMA table_info(dot_agent_runs)');
-  if (!(columns as any[]).some((column) => String(column.name) === 'plan_id')) {
+  try {
     await db.exec('ALTER TABLE dot_agent_runs ADD COLUMN plan_id TEXT');
+  } catch {
+    // A coluna já existe em bancos persistentes; a migração é idempotente por tentativa.
   }
 }
 
@@ -202,7 +203,7 @@ ${input.history || '(sem histórico)'}`;
       : `OBJETIVO:\n${input.objective}\n\nRESULTADOS ACUMULADOS:\n${workingContext}\n\nEscolha o próximo passo. Se já houver evidência suficiente, finalize.`;
 
     const remainingBudget = Math.max(0, input.maxTokens - spentTokens);
-    if (remainingBudget <= 0) {
+    if (remainingBudget < 32) {
       stoppedReason = 'token_budget_exhausted';
       break;
     }
@@ -230,6 +231,12 @@ ${input.history || '(sem histórico)'}`;
     if (decision.type === 'final') {
       finalText = decision.message || 'Concluí a análise com as evidências disponíveis.';
       stoppedReason = 'final';
+      events.push({
+        type: 'final',
+        name: 'agent_completed',
+        output: finalText.slice(0, 4000),
+        at: new Date().toISOString(),
+      });
       await setDotPlanStatus(plan.id, 'completed');
       break;
     }
@@ -319,7 +326,9 @@ ${input.history || '(sem histórico)'}`;
     planId: plan.id,
     sessionId: input.sessionId,
     objective: input.objective,
-    status: stoppedReason === 'approval_required' ? 'waiting_approval' : 'completed',
+    status: stoppedReason === 'approval_required'
+      ? 'waiting_approval'
+      : (stoppedReason === 'max_iterations' || stoppedReason === 'token_budget_exhausted' ? 'paused' : 'completed'),
     iterations: events.filter((event) => event.type === 'model').length,
     toolCalls,
     replans,
