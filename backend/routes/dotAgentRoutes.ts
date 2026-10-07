@@ -7,7 +7,7 @@ import { createDotAgentGoal, getDotAgentWorkspace, listDotAgentGoals, updateDotA
 import { createMissionForGoal } from '../services/dotAgentMissions.js';
 import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 import { requireDotAccess, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
-import { listDotPlanSteps, listDotPlans } from '../services/dotAgentPlan.js';
+import { claimDotPlanForActor, listDotPlanSteps, listDotPlans } from '../services/dotAgentPlan.js';
 import { runDotAgent } from '../services/dotAgentRuntime.js';
 
 type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string; userId?: string | null; demo?: boolean };
@@ -111,6 +111,12 @@ export function mountDotAgentRoutes(app: Express) {
       const approvalGranted = req.body?.approved === true;
       if (plan.status === 'waiting_approval' && !approvalGranted) {
         return res.status(409).json({ ok: false, error: 'Aprovação explícita é necessária para continuar este plano.', code: 'DOT_APPROVAL_REQUIRED' });
+      }
+
+      if (plan.actorUserId === 'system-dot') {
+        const claimed = await claimDotPlanForActor(plan.id, access.empresaId, access.userId);
+        if (!claimed) return res.status(409).json({ ok: false, error: 'Este plano autônomo mudou de estado antes da retomada.' });
+        plan.actorUserId = access.userId;
       }
 
       void runDotAgent({
