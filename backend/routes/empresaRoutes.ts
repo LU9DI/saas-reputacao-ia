@@ -231,6 +231,7 @@ function emptyPainelPayload(empresa: any, reason?: string) {
       crises_24h: 0,
       distribuicao: [0, 0, 0, 0, 0],
       top_tags: [],
+      unidades_ranking: [],
       taxa_positiva: 0,
       serie_14d: serieUltimosDias([], 14),
       testes_excluidos: 0,
