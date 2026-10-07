@@ -12,6 +12,14 @@ export type PlanPriceRow = {
   review_limit: number;
 };
 
+const OFFICIAL_REVIEW_LIMITS: Record<string, number> = {
+  inicial: 100,
+  pro: 300,
+  ultra: 800,
+  corporativo: 2500,
+  rei: 8000,
+};
+
 const DEFAULTS: PlanPriceRow[] = [
   { plan: 'inicial', month_brl: 69.9, year_monthly_brl: 49.9, review_limit: 100 },
   { plan: 'pro', month_brl: 109.9, year_monthly_brl: 99.9, review_limit: 300 },
@@ -94,7 +102,7 @@ export async function listPlanPrices(db: Database = getDb()): Promise<{
       month_brl: Number(r.month_brl),
       year_monthly_brl: year,
       year_monthly_base: Number(r.year_monthly_brl),
-      review_limit: Number(r.review_limit),
+      review_limit: OFFICIAL_REVIEW_LIMITS[String(r.plan).toLowerCase()] ?? Number(r.review_limit),
       annual_total_brl: Math.round(year * 12 * 100) / 100,
     };
   });
@@ -127,10 +135,7 @@ export async function updatePlanPrices(
       u.year_monthly_brl != null && Number(u.year_monthly_brl) > 0
         ? Math.round(Number(u.year_monthly_brl) * 100) / 100
         : Number(cur.year_monthly_brl);
-    const limit =
-      u.review_limit != null && Number(u.review_limit) > 0
-        ? Math.floor(Number(u.review_limit))
-        : Number(cur.review_limit);
+    const limit = OFFICIAL_REVIEW_LIMITS[plan] ?? Number(cur.review_limit);
     await db.run(
       `UPDATE plan_prices SET month_brl = ?, year_monthly_brl = ?, review_limit = ?,
        updated_at = datetime('now') WHERE plan = ?`,
