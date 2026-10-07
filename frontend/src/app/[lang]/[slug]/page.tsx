@@ -134,29 +134,47 @@ const labels={
   zh:{topics:'探索相关主题',resources:'指南与资源',why:'本页面可以帮助解决什么问题',how:'实用的管理流程',benefits:'重点关注什么',next:'继续了解 Filtra.AI',back:'查看完整策略'}
 };
 
-const AUTHORITY_CORE_PATHS=[
-  '/filtra-ai',
-  '/gestao-de-reputacao-online',
-  '/avaliacoes-google',
-  '/reputacao-google',
-  '/analise-de-avaliacoes-com-ia',
-  '/feedback-de-clientes',
-  '/como-melhorar-avaliacoes-google',
-  '/monitoramento-reputacao-online',
-  '/gestao-de-feedback',
-];
+const RELATED_BY_SOURCE:Record<string,string[]>={
+  '/filtra-ai':['/gestao-de-reputacao-online','/avaliacoes-google','/analise-de-avaliacoes-com-ia','/feedback-de-clientes'],
+  '/gestao-de-reputacao-online':['/monitoramento-reputacao-online','/reputacao-google','/avaliacoes-google','/gestao-de-feedback'],
+  '/avaliacoes-google':['/como-melhorar-avaliacoes-google','/reputacao-google','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online'],
+  '/reputacao-google':['/avaliacoes-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-reputacao-online'],
+  '/analise-de-avaliacoes-com-ia':['/avaliacoes-google','/feedback-de-clientes','/gestao-de-reputacao-online','/monitoramento-reputacao-online'],
+  '/feedback-de-clientes':['/gestao-de-feedback','/analise-de-avaliacoes-com-ia','/avaliacoes-google','/gestao-de-reputacao-online'],
+  '/como-melhorar-avaliacoes-google':['/avaliacoes-google','/reputacao-google','/feedback-de-clientes','/gestao-de-reputacao-online'],
+  '/monitoramento-reputacao-online':['/gestao-de-reputacao-online','/reputacao-google','/avaliacoes-google','/analise-de-avaliacoes-com-ia'],
+  '/gestao-de-feedback':['/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google'],
+  '/hoteis':['/reputacao-google','/avaliacoes-google','/gestao-de-reputacao-online','/monitoramento-reputacao-online'],
+  '/turismo':['/reputacao-google','/gestao-de-reputacao-online','/feedback-de-clientes','/monitoramento-reputacao-online'],
+  '/agencias':['/gestao-de-reputacao-online','/avaliacoes-google','/auditoria-gratuita','/parceiros'],
+  '/clinicas':['/avaliacoes-google','/reputacao-google','/gestao-de-feedback','/gestao-de-reputacao-online'],
+  '/franquias':['/monitoramento-reputacao-online','/gestao-de-reputacao-online','/avaliacoes-google','/reputacao-google'],
+  '/associacoes':['/feedback-de-clientes','/gestao-de-feedback','/gestao-de-reputacao-online','/auditoria-gratuita'],
+  '/restaurantes':['/avaliacoes-google','/reputacao-google','/como-melhorar-avaliacoes-google','/feedback-de-clientes'],
+  '/como-funciona':['/filtra-ai','/avaliacoes-google','/feedback-de-clientes','/gestao-de-reputacao-online'],
+  '/parceiros':['/filtra-ai','/gestao-de-reputacao-online','/avaliacoes-google','/auditoria-gratuita'],
+  '/pedir-estrela-vs-filtrar':['/avaliacoes-google','/feedback-de-clientes','/gestao-de-reputacao-online','/como-melhorar-avaliacoes-google'],
+  '/auditoria-gratuita':['/filtra-ai','/avaliacoes-google','/gestao-de-reputacao-online','/analise-de-avaliacoes-com-ia'],
+};
 
 function relatedIndexes(index:number,count:number){
+  const sourcePath=sourcePaths[index];
+  const preferred=RELATED_BY_SOURCE[sourcePath]||[];
   const result:number[]=[];
-  for(const sourcePath of AUTHORITY_CORE_PATHS){
-    const candidate=sourcePaths.indexOf(sourcePath);
+  for(const path of preferred){
+    const candidate=sourcePaths.indexOf(path);
     if(candidate>=0 && candidate!==index && !result.includes(candidate)) result.push(candidate);
-    if(result.length>=count) return result;
+    if(result.length>=count)return result;
   }
-  const total=sourcePaths.length;
-  for(let offset=1;result.length<count && offset<total;offset++){
-    const candidate=(index+offset)%total;
-    if(candidate!==index && !result.includes(candidate)) result.push(candidate);
+  const authority=['/filtra-ai','/gestao-de-reputacao-online','/avaliacoes-google','/reputacao-google','/analise-de-avaliacoes-com-ia','/feedback-de-clientes','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback'];
+  for(const path of authority){
+    const candidate=sourcePaths.indexOf(path);
+    if(candidate>=0 && candidate!==index && !result.includes(candidate))result.push(candidate);
+    if(result.length>=count)return result;
+  }
+  for(let offset=1;result.length<count && offset<sourcePaths.length;offset++){
+    const candidate=(index+offset)%sourcePaths.length;
+    if(candidate!==index&&!result.includes(candidate))result.push(candidate);
   }
   return result;
 }
