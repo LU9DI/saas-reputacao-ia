@@ -19,6 +19,7 @@ async function ensureSchema(){
     updated_at TEXT NOT NULL,
     last_activity_at TEXT
   )`);
+  try { await db.exec('ALTER TABLE dot_agent_goals ADD COLUMN last_activity_at TEXT'); } catch {}
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_agent_goals_empresa ON dot_agent_goals(empresa_id,status,updated_at)');
 }
 
