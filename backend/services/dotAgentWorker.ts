@@ -2,6 +2,7 @@ import { getDb } from '../lib/db.js';
 import { getDotAgentWorkspace } from './dotAgent.js';
 import { ensureDotPlanSchema } from './dotAgentPlan.js';
 import { runDotAgent } from './dotAgentRuntime.js';
+import { createAutonomousDotPlans, detectDotSignals } from './dotAgentPerception.js';
 
 let timer: NodeJS.Timeout | null = null;
 let running = false;
@@ -13,7 +14,25 @@ async function runTick() {
   try {
     await ensureDotPlanSchema();
     const db = getDb();
-    // O worker agora recupera planos persistentes do runtime agentivo.
+
+    // Percepção contínua: o DOT pode detectar problemas relevantes sem esperar
+    // que alguém crie manualmente um objetivo. A criação do plano é deduplicada
+    // pelo fingerprint do sinal e a execução autônoma fica restrita a leitura/análise.
+    if (process.env.DOT_AUTONOMOUS_PERCEPTION_ENABLED !== '0') {
+      const tenants = await db.all(
+        "SELECT id FROM empresas WHERE LOWER(COALESCE(plan,'')) IN ('rei','corporativo','corp') ORDER BY id LIMIT 50",
+      );
+      for (const tenant of tenants || []) {
+        try {
+          await detectDotSignals(String(tenant.id));
+          await createAutonomousDotPlans(String(tenant.id), Math.max(60, Number(process.env.DOT_AUTONOMOUS_MIN_PRIORITY || 70)), 1);
+        } catch (error: any) {
+          console.warn(`DOT percepção: falha no tenant ${tenant.id}:`, error?.message || error);
+        }
+      }
+    }
+
+    // O worker recupera planos persistentes do runtime agentivo.
     // Missões legadas não são mais a fonte de verdade da execução.
     const plans = await db.all(
       "SELECT id, empresa_id, actor_user_id, session_id, objective, status FROM dot_agent_plans WHERE status IN ('working','paused') ORDER BY updated_at ASC LIMIT 25",
@@ -35,6 +54,7 @@ async function runTick() {
           allowTools: true,
           planId: String(plan.id),
           approvalGranted: false,
+          autonomous: String(plan.actor_user_id) === 'system-dot',
         });
 
         if (result.stopped_reason === 'already_running') continue;
