@@ -1,7 +1,7 @@
 import { callAI } from '../groqService.js';
 import { invokeDotTool, listDotTools, type DotToolDefinition } from './dotToolRegistry.js';
 import { getDb } from '../lib/db.js';
-import { addDotPlanStep, createDotPlan, ensureDotPlanSchema, setDotPlanStatus, updateDotPlanStep } from './dotAgentPlan.js';
+import { addDotPlanStep, createDotPlan, ensureDotPlanSchema, getDotPlan, listDotPlanSteps, setDotPlanStatus, updateDotPlanStep } from './dotAgentPlan.js';
 import { acquireDotRuntimeLock, releaseDotRuntimeLock } from './dotAgentRuntimeLock.js';
 
 export type DotRuntimeEvent = {
