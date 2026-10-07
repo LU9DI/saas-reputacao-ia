@@ -61,6 +61,11 @@ export default function ClinicasPage() {
           heading: 'O que acompanhar toda semana',
           body: 'Além da média, acompanhe volume novo, distribuição por nota, temas recorrentes, mudanças na percepção e diferenças entre unidades. A meta é transformar esses sinais em ações verificáveis e acompanhar se o padrão melhora.'
         },
+        {
+          heading: 'Como escolher uma operação de avaliações Google para clínicas',
+          body: 'Uma rotina útil começa com linha de base, responsáveis e cadência. A equipe pode acompanhar novas avaliações, nota, recência, temas de atendimento, espera e comunicação, além de comparar unidades quando necessário. O objetivo é transformar avaliações em decisões de experiência do paciente, não apenas perseguir uma nota.',
+        },
+
       ]}
     />
   );
