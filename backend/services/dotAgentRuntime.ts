@@ -103,6 +103,41 @@ async function ensureRuntimeSchema() {
   }
 }
 
+function sanitizePersistedEvents(events: DotRuntimeEvent[]): DotRuntimeEvent[] {
+  return events.map((event) => {
+    if (event.type === 'model') {
+      return { type: event.type, name: event.name, at: event.at };
+    }
+    if (event.type === 'tool') {
+      const rawInput = event.input || {};
+      return {
+        type: event.type,
+        name: event.name,
+        input: { keys: Object.keys(rawInput).slice(0, 30) },
+        output: event.output && typeof event.output === 'object' && 'error' in (event.output as any)
+          ? { error: String((event.output as any).error).slice(0, 500) }
+          : { resultRecorded: true },
+        at: event.at,
+      };
+    }
+    if (event.type === 'final') {
+      return {
+        type: event.type,
+        name: event.name,
+        output: { chars: typeof event.output === 'string' ? event.output.length : 0 },
+        evidenceStepIds: event.evidenceStepIds?.slice(-20),
+        at: event.at,
+      };
+    }
+    return {
+      type: event.type,
+      name: event.name,
+      input: event.input ? { action: (event.input as any).action ? String((event.input as any).action).slice(0, 500) : null } : undefined,
+      at: event.at,
+    };
+  });
+}
+
 async function persistRun(input: {
   empresaId: string;
   actorUserId?: string | null;
@@ -132,7 +167,7 @@ async function persistRun(input: {
       input.toolCalls,
       input.replans,
       input.stoppedReason,
-      JSON.stringify(input.events).slice(0, 100_000),
+      JSON.stringify(sanitizePersistedEvents(input.events)).slice(0, 100_000),
       input.createdAt,
       input.completedAt,
     ],
