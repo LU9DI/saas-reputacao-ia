@@ -8,6 +8,7 @@ import { createMissionForGoal } from '../services/dotAgentMissions.js';
 import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 import { requireDotAccess, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
 import { listDotPlanSteps, listDotPlans } from '../services/dotAgentPlan.js';
+import { runDotAgent } from '../services/dotAgentRuntime.js';
 
 type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string; userId?: string | null; demo?: boolean };
 
@@ -109,8 +110,28 @@ export function mountDotAgentRoutes(app: Express) {
     try {
       const goal = await createDotAgentGoal(access.empresaId, req.body || {});
       const mission = await createMissionForGoal(access.empresaId, goal.id, goal.title);
+
+      // A delegação já acorda o runtime agentivo. A missão legada permanece
+      // para compatibilidade visual, mas o trabalho principal passa pelo
+      // loop dinâmico com ferramentas, evidências, plano persistente e replanejamento.
+      void runDotAgent({
+        empresaId: access.empresaId,
+        actorUserId: access.userId,
+        sessionId: `goal:${goal.id}`,
+        objective: goal.title,
+        context: JSON.stringify(await getDotAgentWorkspace(access.empresaId)),
+        history: '',
+        maxTokens: Math.max(600, Number(process.env.DOT_DELEGATION_MAX_TOKENS || 900)),
+        allowTools: true,
+      }).then(async (runtime) => {
+        const nextProgress = runtime.stopped_reason === 'final' ? 100 : runtime.stopped_reason === 'approval_required' ? 70 : Number(goal.progress || 0);
+        await updateDotAgentGoal(access.empresaId as string, goal.id, { progress: nextProgress });
+      }).catch((error) => {
+        console.warn('DOT agente: falha na delegação inicial', error instanceof Error ? error.message : error);
+      });
+
       void wakeDotAgentWorker();
-      res.status(201).json({ ok: true, goal, mission });
+      res.status(201).json({ ok: true, goal, mission, agent_started: true });
     } catch (error) {
       res.status(400).json({ ok: false, error: error instanceof Error ? error.message : 'Não foi possível criar o objetivo.' });
     }
