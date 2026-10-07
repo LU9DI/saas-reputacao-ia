@@ -146,6 +146,30 @@ function resumoUnidades(ranking: any[]) {
   };
 }
 
+
+function insightsOperacionaisPorUnidade(reviews: any[], ranking: any[]) {
+  const real = (reviews || []).filter((r) => !r.is_test);
+  return (ranking || []).map((u: any) => {
+    const list = real.filter((r: any) => String(r.unidade_id || '') === String(u.id));
+    const positive: Record<string, number> = {};
+    const issues: Record<string, number> = {};
+    for (const r of list) {
+      const target = Number(r.rating) >= 4 ? positive : Number(r.rating) <= 3 ? issues : null;
+      if (!target) continue;
+      const tags = Array.isArray(r.ai_tags) ? r.ai_tags : [];
+      for (const tag of tags) {
+        const key = String(tag || '').trim();
+        if (key) target[key] = (target[key] || 0) + 1;
+      }
+    }
+    const top = (source: Record<string, number>) => Object.entries(source)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([tag, count]) => ({ tag, count }));
+    return { id: u.id, nome: u.nome, pontos_fortes: top(positive), pontos_atencao: top(issues) };
+  });
+}
+
 function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
@@ -523,12 +547,14 @@ export function mountEmpresaRoutes(app: Express) {
         const reais = reviews.filter((r) => !r.is_test);
         const planAtual = String(empresa.plan || 'trial').toLowerCase();
         let unidadesRanking: any[] = [];
+        let unidadesInsights: any[] = [];
         let unidadesResumo: any = { total_unidades: 0, unidades_com_dados: 0, melhor_unidade: null, unidade_atencao: null, maior_evolucao: null, maior_queda: null };
         if (planAtual === 'corporativo' || planAtual === 'rei' || isTrialPlan(planAtual)) {
           try {
             await ensureUnidadesSchema(db);
             const unidades = await db.all(`SELECT id, nome, cidade FROM unidades WHERE empresa_id = ? AND COALESCE(ativo, 1) = 1 ORDER BY nome ASC`, [empresa.id]);
             unidadesRanking = unidadeRanking(reviews, unidades || []);
+            unidadesInsights = insightsOperacionaisPorUnidade(reviews, unidadesRanking);
             unidadesResumo = resumoUnidades(unidadesRanking);
           } catch (e: any) {
             console.warn('unidades ranking:', e?.message || e);
@@ -639,6 +665,7 @@ export function mountEmpresaRoutes(app: Express) {
           metricas: {
         unidades_ranking: unidadesRanking,
             unidades_resumo: unidadesResumo,
+            unidades_insights: unidadesInsights,
             total,
             media,
             negativas,
