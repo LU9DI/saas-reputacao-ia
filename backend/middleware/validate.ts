@@ -204,6 +204,7 @@ export const schemaReview: Schema = {
   empresa_ref: { required: false, type: 'string', max: 100 },
   website: { required: false, type: 'string', max: 200 },
   is_test: { required: false, type: 'boolean' },
+  unidade_id: { required: false, type: 'string', max: 100 },
   locale: {
     required: false,
     type: 'string',
