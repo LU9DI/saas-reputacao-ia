@@ -36,6 +36,14 @@ CREATE TABLE IF NOT EXISTS reviews (
   comment TEXT,
   ai_reply TEXT,
   ai_tags TEXT,
+  unidade_id TEXT,
+  sentiment TEXT,
+  sentiment_score DOUBLE PRECISION,
+  sentiment_source TEXT,
+  client_whatsapp TEXT,
+  locale TEXT,
+  is_test INTEGER DEFAULT 0,
+  origin TEXT,
   "createdAt" TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -64,6 +72,20 @@ CREATE TABLE IF NOT EXISTS password_resets (
   criado_em TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS unidades (
+  id TEXT PRIMARY KEY,
+  empresa_id TEXT NOT NULL REFERENCES empresas(id),
+  nome TEXT NOT NULL,
+  endereco TEXT,
+  cidade TEXT,
+  google_place_id TEXT,
+  google_review_url TEXT,
+  ativo INTEGER NOT NULL DEFAULT 1,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE INDEX IF NOT EXISTS idx_reviews_empresa ON reviews(empresa_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_unidade ON reviews(unidade_id);
+CREATE INDEX IF NOT EXISTS idx_unidades_empresa ON unidades(empresa_id);
 CREATE INDEX IF NOT EXISTS idx_usuarios_cnpj ON usuarios(cnpj);
 CREATE INDEX IF NOT EXISTS idx_empresas_stripe_customer ON empresas(stripe_customer_id);
