@@ -127,6 +127,25 @@ function unidadeRanking(reviews: any[], unidades: any[]) {
   return groups.sort((a: any, b: any) => b.nota - a.nota || b.feedbacks - a.feedbacks);
 }
 
+function resumoUnidades(ranking: any[]) {
+  const comDados = (ranking || []).filter((u: any) => u.feedbacks > 0);
+  const porTendencia = [...comDados].sort((a, b) => Number(b.tendencia_14d || 0) - Number(a.tendencia_14d || 0));
+  const melhor = comDados[0] || null;
+  const pior = [...comDados].sort((a, b) => Number(a.nota || 0) - Number(b.nota || 0))[0] || null;
+  return {
+    total_unidades: (ranking || []).length,
+    unidades_com_dados: comDados.length,
+    melhor_unidade: melhor ? { id: melhor.id, nome: melhor.nome, nota: melhor.nota } : null,
+    unidade_atencao: pior ? { id: pior.id, nome: pior.nome, nota: pior.nota } : null,
+    maior_evolucao: porTendencia[0] && Number(porTendencia[0].tendencia_14d || 0) > 0
+      ? { id: porTendencia[0].id, nome: porTendencia[0].nome, delta: porTendencia[0].tendencia_14d }
+      : null,
+    maior_queda: porTendencia.length && Number(porTendencia[porTendencia.length - 1].tendencia_14d || 0) < 0
+      ? { id: porTendencia[porTendencia.length - 1].id, nome: porTendencia[porTendencia.length - 1].nome, delta: porTendencia[porTendencia.length - 1].tendencia_14d }
+      : null,
+  };
+}
+
 function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
@@ -504,11 +523,13 @@ export function mountEmpresaRoutes(app: Express) {
         const reais = reviews.filter((r) => !r.is_test);
         const planAtual = String(empresa.plan || 'trial').toLowerCase();
         let unidadesRanking: any[] = [];
+        let unidadesResumo: any = { total_unidades: 0, unidades_com_dados: 0, melhor_unidade: null, unidade_atencao: null, maior_evolucao: null, maior_queda: null };
         if (planAtual === 'corporativo' || planAtual === 'rei' || isTrialPlan(planAtual)) {
           try {
             await ensureUnidadesSchema(db);
             const unidades = await db.all(`SELECT id, nome, cidade FROM unidades WHERE empresa_id = ? AND COALESCE(ativo, 1) = 1 ORDER BY nome ASC`, [empresa.id]);
             unidadesRanking = unidadeRanking(reviews, unidades || []);
+            unidadesResumo = resumoUnidades(unidadesRanking);
           } catch (e: any) {
             console.warn('unidades ranking:', e?.message || e);
           }
@@ -617,6 +638,7 @@ export function mountEmpresaRoutes(app: Express) {
           reviews: reais,
           metricas: {
         unidades_ranking: unidadesRanking,
+            unidades_resumo: unidadesResumo,
             total,
             media,
             negativas,
