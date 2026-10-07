@@ -14,7 +14,7 @@ describe('planTemIA', () => {
     assert.equal(planTemIA('inicial'), false);
     assert.equal(planTemIA('pro'), false);
   });
-  it('ultra+ e trial com IA', () => {
+  it('ultra, corporativo, REI e trial com IA', () => {
     assert.equal(planTemIA('ultra'), true);
     assert.equal(planTemIA('corporativo'), true);
     assert.equal(planTemIA('rei'), true);
@@ -28,6 +28,7 @@ describe('getFeedbackLimit', () => {
     assert.equal(getFeedbackLimit('inicial'), PLAN_FEEDBACK_LIMITS.inicial);
     assert.equal(getFeedbackLimit('pro'), PLAN_FEEDBACK_LIMITS.pro);
     assert.equal(getFeedbackLimit('ultra'), PLAN_FEEDBACK_LIMITS.ultra);
+    assert.equal(getFeedbackLimit('corporativo'), PLAN_FEEDBACK_LIMITS.corporativo);
     assert.equal(getFeedbackLimit('rei'), PLAN_FEEDBACK_LIMITS.rei);
   });
   it('fallback trial para plano desconhecido', () => {
@@ -35,14 +36,12 @@ describe('getFeedbackLimit', () => {
   });
 });
 
-
 describe('limites oficiais de feedback', () => {
   it('mantém a escada Inicial 100 / Pro 300 / Ultra 800 / Corporativo 2500 / REI 8000', () => {
-    assert.equal(getFeedbackLimit('inicial'), 100);
-    assert.equal(getFeedbackLimit('pro'), 300);
-    assert.equal(getFeedbackLimit('ultra'), 800);
-    assert.equal(getFeedbackLimit('corporativo'), 2500);
-    assert.equal(getFeedbackLimit('rei'), 8000);
+    assert.deepEqual(
+      ['inicial', 'pro', 'ultra', 'corporativo', 'rei'].map(getFeedbackLimit),
+      [100, 300, 800, 2500, 8000]
+    );
   });
 });
 
@@ -51,10 +50,11 @@ describe('getTokenLimit', () => {
     assert.equal(getTokenLimit('inicial'), 0);
     assert.equal(getTokenLimit('pro'), 0);
   });
-  it('trial e ultra+ com teto', () => {
+  it('trial e ultra+ com teto crescente', () => {
     assert.ok(getTokenLimit('trial') > 0);
     assert.ok(getTokenLimit('ultra') > getTokenLimit('trial'));
-    assert.ok(getTokenLimit('rei') >= getTokenLimit('corporativo'));
+    assert.ok(getTokenLimit('corporativo') > getTokenLimit('ultra'));
+    assert.ok(getTokenLimit('rei') > getTokenLimit('corporativo'));
     assert.equal(getTokenLimit('ultra'), PLAN_TOKEN_LIMITS.ultra);
   });
 });
@@ -68,5 +68,15 @@ describe('planTemPdf', () => {
     assert.equal(planTemPdf('rei'), true);
     assert.equal(planTemPdf('trial'), true);
     assert.equal(isTrialPlan('teste'), true);
+  });
+});
+
+describe('matriz oficial de planos', () => {
+  it('preserva a ordem de capacidade e IA', () => {
+    const planos = ['inicial', 'pro', 'ultra', 'corporativo', 'rei'];
+    const limites = planos.map(getFeedbackLimit);
+    assert.deepEqual(limites, [100, 300, 800, 2500, 8000]);
+    assert.deepEqual(planos.map(planTemIA), [false, false, true, true, true]);
+    assert.deepEqual(planos.map(planTemPdf), [false, true, true, true, true]);
   });
 });
