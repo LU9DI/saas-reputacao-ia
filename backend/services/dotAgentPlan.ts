@@ -25,6 +25,9 @@ export interface DotPlan {
   objective: string;
   status: DotPlanStatus;
   currentStepId?: string | null;
+  approvedBy?: string | null;
+  approvedAt?: string | null;
+  approvalAction?: string | null;
 }
 
 let schemaPromise: Promise<void> | null = null;
@@ -42,8 +45,14 @@ export function ensureDotPlanSchema(): Promise<void> {
         status TEXT NOT NULL DEFAULT 'working',
         current_step_id TEXT,
         created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        approved_by TEXT,
+        approved_at TEXT,
+        approval_action TEXT
       )`);
+      try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN approved_by TEXT'); } catch {}
+      try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN approved_at TEXT'); } catch {}
+      try { await db.exec('ALTER TABLE dot_agent_plans ADD COLUMN approval_action TEXT'); } catch {}
       await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_plan_steps (
         id TEXT PRIMARY KEY,
         plan_id TEXT NOT NULL,
@@ -79,7 +88,7 @@ export async function createDotPlan(input: {
     'INSERT INTO dot_agent_plans (id,empresa_id,actor_user_id,session_id,objective,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
     [id, input.empresaId, input.actorUserId, input.sessionId, input.objective.slice(0, 4000), 'working', now, now],
   );
-  return { id, empresaId: input.empresaId, actorUserId: input.actorUserId, sessionId: input.sessionId, objective: input.objective, status: 'working' };
+  return { id, empresaId: input.empresaId, actorUserId: input.actorUserId, sessionId: input.sessionId, objective: input.objective, status: 'working', approvedBy: null, approvedAt: null, approvalAction: null };
 }
 
 export async function addDotPlanStep(input: {
@@ -133,6 +142,14 @@ export async function updateDotPlanStep(stepId: string, update: {
   );
 }
 
+export async function recordDotPlanApproval(planId: string, approvedBy: string, approvalAction?: string | null): Promise<void> {
+  await ensureDotPlanSchema();
+  await getDb().run(
+    'UPDATE dot_agent_plans SET approved_by=?, approved_at=?, approval_action=?, updated_at=? WHERE id=?',
+    [approvedBy, new Date().toISOString(), approvalAction?.slice(0, 1000) ?? null, new Date().toISOString(), planId],
+  );
+}
+
 export async function setDotPlanStatus(planId: string, status: DotPlanStatus): Promise<void> {
   await ensureDotPlanSchema();
   await getDb().run(
@@ -144,7 +161,7 @@ export async function setDotPlanStatus(planId: string, status: DotPlanStatus): P
 export async function getDotPlan(planId: string): Promise<DotPlan | null> {
   await ensureDotPlanSchema();
   const rows = await getDb().all(
-    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id FROM dot_agent_plans WHERE id=? LIMIT 1',
+    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action FROM dot_agent_plans WHERE id=? LIMIT 1',
     [planId],
   );
   const row = (rows as any[])?.[0];
@@ -157,6 +174,9 @@ export async function getDotPlan(planId: string): Promise<DotPlan | null> {
     objective: row.objective,
     status: row.status as DotPlanStatus,
     currentStepId: row.current_step_id,
+    approvedBy: row.approved_by ?? null,
+    approvedAt: row.approved_at ?? null,
+    approvalAction: row.approval_action ?? null,
   };
 }
 
@@ -164,7 +184,7 @@ export async function getDotPlan(planId: string): Promise<DotPlan | null> {
 export async function listDotPlans(empresaId: string, actorUserId: string, limit = 10): Promise<DotPlan[]> {
   await ensureDotPlanSchema();
   const rows = await getDb().all(
-    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id FROM dot_agent_plans WHERE empresa_id=? AND actor_user_id=? ORDER BY updated_at DESC LIMIT ?',
+    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action FROM dot_agent_plans WHERE empresa_id=? AND actor_user_id=? ORDER BY updated_at DESC LIMIT ?',
     [empresaId, actorUserId, Math.max(1, Math.min(limit, 50))],
   );
   return (rows as any[]).map((row) => ({
@@ -175,6 +195,9 @@ export async function listDotPlans(empresaId: string, actorUserId: string, limit
     objective: row.objective,
     status: row.status as DotPlanStatus,
     currentStepId: row.current_step_id,
+    approvedBy: row.approved_by ?? null,
+    approvedAt: row.approved_at ?? null,
+    approvalAction: row.approval_action ?? null,
   }));
 }
 
