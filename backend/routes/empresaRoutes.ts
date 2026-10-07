@@ -489,12 +489,15 @@ async function ensurePainelColumns(db: any) {
   }
 }
 
-async function loadReviewsSafe(db: any, empresaId: string): Promise<any[]> {
+const PAINEL_RECENTES_LIMIT = 500;
+
+async function loadReviewsSafe(db: any, empresaId: string, limit: number): Promise<any[]> {
+  const safeLimit = Math.max(1, Math.min(8000, Math.floor(Number(limit) || 500)));
   const queries = [
-    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC NULLS LAST LIMIT 500`,
-    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY "createdAt" DESC LIMIT 500`,
-    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY id DESC LIMIT 500`,
-    `SELECT * FROM reviews WHERE empresa_id = ? LIMIT 500`,
+    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC NULLS LAST LIMIT ${safeLimit}`,
+    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY "createdAt" DESC LIMIT ${safeLimit}`,
+    `SELECT * FROM reviews WHERE empresa_id = ? ORDER BY id DESC LIMIT ${safeLimit}`,
+    `SELECT * FROM reviews WHERE empresa_id = ? LIMIT ${safeLimit}`,
   ];
   for (const q of queries) {
     try {
@@ -773,7 +776,9 @@ export function mountEmpresaRoutes(app: Express) {
           console.warn('ensurePainelColumns:', e?.message || e);
         }
 
-        const rows = await loadReviewsSafe(db, empresa.id);
+        const planAtual = String(empresa.plan || 'trial').toLowerCase();
+        // A análise respeita a capacidade do plano; a UI recebe apenas os feedbacks recentes.
+        const rows = await loadReviewsSafe(db, empresa.id, getFeedbackLimit(planAtual));
 
         const reviews = (rows || []).map((r: any) => {
           let tags: string[] = [];
@@ -828,7 +833,6 @@ export function mountEmpresaRoutes(app: Express) {
         });
 
         const reais = reviews.filter((r) => !r.is_test);
-        const planAtual = String(empresa.plan || 'trial').toLowerCase();
         let unidadesRanking: any[] = [];
         let unidadesInsights: any[] = [];
         let unidadesResumo: any = { total_unidades: 0, unidades_com_dados: 0, melhor_unidade: null, unidade_atencao: null, maior_evolucao: null, maior_queda: null };
@@ -944,7 +948,8 @@ export function mountEmpresaRoutes(app: Express) {
             whatsapp_url: linkWhatsapp(wpp),
             locale: empresa.locale || 'pt',
           },
-          reviews: reais,
+          reviews: reais.slice(0, PAINEL_RECENTES_LIMIT),
+          reviews_total: total,
           metricas: {
         unidades_ranking: unidadesRanking,
             unidades_resumo: unidadesResumo,
