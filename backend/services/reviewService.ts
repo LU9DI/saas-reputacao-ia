@@ -30,16 +30,16 @@ export async function criarReview(input:ReviewInput,db:Database=getDb()):Promise
   const ip=input.ip||'0.0.0.0';
   const ipHash=hashIp(ip);
   const locale=normalizeLocale(input.locale);
-  const unidadeId = input.unidade_id ? String(input.unidade_id).trim().slice(0,100) : null;
-  if (unidadeId) {
-    const unidade = await db.get(`SELECT id FROM unidades WHERE id = ? AND empresa_id = ? AND COALESCE(ativo, 1) = 1 LIMIT 1`, [unidadeId, empresaId]);
-    if (!unidade) throw new ReviewValidationError('Unidade inválida para esta empresa.');
-  }
   let clientWpp:string|null=null;
   if(!isTest&&rating<=3){clientWpp=normalizarWhatsapp(input.client_whatsapp);if(!clientWpp)throw new ReviewValidationError('Informe seu WhatsApp/telefone para a empresa poder retornar o contato.');}
   let empresaId:string|null=null;let nomeEmpresa:string|undefined;let plan='trial';let slugOrId:string|undefined;let empresaWpp:string|null=null;
+  const unidadeId = input.unidade_id ? String(input.unidade_id).trim().slice(0,100) : null;
   if(empresaRef){
     const emp=await findEmpresa(empresaRef);if(!emp)throw new ReviewNotFoundError();
+    if(unidadeId){
+      try{const unidade=await db.get(`SELECT id FROM unidades WHERE id = ? AND empresa_id = ? AND COALESCE(ativo, 1) = 1 LIMIT 1`,[unidadeId,emp.id]);if(!unidade)throw new ReviewValidationError('Unidade inválida para esta empresa.');}
+      catch(e:any){if(e instanceof ReviewValidationError)throw e;throw new ReviewValidationError('Unidade inválida para esta empresa.');}
+    }
     empresaId=emp.id;nomeEmpresa=emp.nome_empresa;plan=String(emp.plan||emp.status||'trial').toLowerCase();slugOrId=emp.slug||emp.id;empresaWpp=normalizarWhatsapp(emp.whatsapp_suporte);
     if(!isTest){
       checkMemoryRate(ip,empresaId!);await checkDbRateByIp(db,empresaId!,ipHash);
