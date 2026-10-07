@@ -4,6 +4,7 @@ import { gerarRelatorioInteligentePDF } from '../relatorioInteligentePdf.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 import { planTemPdf } from '../lib/plans.js';
+import { planTemIA } from '../lib/quota.js';
 import { readPdfCache, writePdfCache } from '../lib/pdfCache.js';
 
 function dateOnly(value: unknown): string | null {
@@ -37,6 +38,7 @@ export function mountRelatorioInteligenteRoutes(app: Express) {
 
     const plan = String(empresa.plan || empresa.status || '').toLowerCase();
     if (!planTemPdf(plan)) return res.status(403).json({ error: 'PDF não disponível neste plano.' });
+    if (!planTemIA(plan)) return res.status(403).json({ error: 'Relatório inteligente não disponível neste plano.', code: 'PLAN_FEATURE_UNAVAILABLE' });
 
     // O relatório atual acompanha todos os dados disponíveis no painel.
     // Sem período explícito, inclui também as avaliações de hoje até o momento.
