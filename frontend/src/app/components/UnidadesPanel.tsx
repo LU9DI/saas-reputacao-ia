@@ -96,6 +96,21 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
     }
   };
 
+  const evaluationLink = (id: string) => {
+    if (typeof window === 'undefined') return `/avaliacao/${empresaRef}?unidade_id=${encodeURIComponent(id)}`;
+    return `${window.location.origin}/avaliacao/${encodeURIComponent(empresaRef)}?unidade_id=${encodeURIComponent(id)}`;
+  };
+
+  const copyEvaluationLink = async (id: string) => {
+    const link = evaluationLink(id);
+    try {
+      await navigator.clipboard.writeText(link);
+      setMsg('Link da unidade copiado.');
+    } catch {
+      setMsg(link);
+    }
+  };
+
   const remove = async (id: string) => {
     if (!confirm(t.units_confirm_remove)) return;
     try {
@@ -129,13 +144,21 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
             key={u.id}
             className="flex items-center justify-between gap-3 text-sm border border-zinc-800 rounded-xl px-3 py-2"
           >
-            <span>
+            <span className="min-w-0">
               <strong className="text-zinc-100">{u.nome}</strong>
               {u.cidade ? <span className="text-zinc-500"> · {u.cidade}</span> : null}
             </span>
-            <button type="button" onClick={() => remove(u.id)} className="text-xs text-red-400">
-              {t.units_remove}
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              <button type="button" onClick={() => void copyEvaluationLink(u.id)} className="text-xs text-indigo-400 hover:text-indigo-300">
+                Copiar link
+              </button>
+              <a href={evaluationLink(u.id)} target="_blank" rel="noreferrer" className="text-xs text-zinc-400 hover:text-zinc-200">
+                Abrir
+              </a>
+              <button type="button" onClick={() => remove(u.id)} className="text-xs text-red-400">
+                {t.units_remove}
+              </button>
+            </div>
           </li>
         ))}
         {items.length === 0 && !loadError && (
