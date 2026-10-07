@@ -502,7 +502,7 @@ export function mountEmpresaRoutes(app: Express) {
         const reais = reviews.filter((r) => !r.is_test);
         const planAtual = String(empresa.plan || 'trial').toLowerCase();
         let unidadesRanking: any[] = [];
-        if (planAtual === 'corporativo' || planAtual === 'rei' || trial) {
+        if (planAtual === 'corporativo' || planAtual === 'rei' || isTrialPlan(planAtual)) {
           try {
             await ensureUnidadesSchema(db);
             const unidades = await db.all(`SELECT id, nome, cidade FROM unidades WHERE empresa_id = ? AND COALESCE(ativo, 1) = 1 ORDER BY nome ASC`, [empresa.id]);
