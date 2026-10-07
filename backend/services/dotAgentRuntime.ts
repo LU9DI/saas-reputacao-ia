@@ -4,7 +4,7 @@ import { getDb } from '../lib/db.js';
 import { addDotPlanStep, createDotPlan, ensureDotPlanSchema, getDotPlan, listDotPlanSteps, recordDotPlanApproval, setDotPlanStatus, updateDotPlanStep } from './dotAgentPlan.js';
 import { acquireDotRuntimeLock, releaseDotRuntimeLock } from './dotAgentRuntimeLock.js';
 import { attachDotHypothesisEvidence, evaluateDotEvidence, getOpenDotHypothesisForSignal } from './dotAgentDecision.js';
-import { bindDotDecisionAction, getOrCreateDotAction, recordDotDecision } from './dotAgentLedger.js';
+import { approvePendingDotDecisionsForPlan, bindDotDecisionAction, getOrCreateDotAction, promoteApprovedDotActionsForPlan, recordDotDecision } from './dotAgentLedger.js';
 
 export type DotRuntimeEvent = {
   type: 'model' | 'tool' | 'final' | 'approval';
@@ -241,6 +241,8 @@ export async function runDotAgent(input: {
       }
       if (plan.status === 'waiting_approval') {
         await recordDotPlanApproval(plan.id, input.actorUserId || 'system-dot');
+        await approvePendingDotDecisionsForPlan(input.empresaId, plan.id, input.actorUserId || 'system-dot');
+        await promoteApprovedDotActionsForPlan(input.empresaId, plan.id, input.actorUserId || 'system-dot');
         const steps = await listDotPlanSteps(plan.id);
         for (const step of steps.filter((item) => item.status === 'blocked' && item.kind === 'approval')) {
           await updateDotPlanStep(step.id, { status: 'completed' });
