@@ -300,6 +300,11 @@ ${input.history || '(sem histórico)'}`;
     const decision = parseDotRuntimeDecision(result.text);
 
     if (decision.type === 'final') {
+      if (tools.length > 0 && toolCalls === 0) {
+        workingContext += '\nAinda não há evidência operacional coletada nesta rodada. Antes de concluir, use pelo menos uma ferramenta permitida ou explique uma impossibilidade concreta.';
+        replans += 1;
+        continue;
+      }
       finalText = decision.message || 'Concluí a análise com as evidências disponíveis.';
       stoppedReason = 'final';
       events.push({
