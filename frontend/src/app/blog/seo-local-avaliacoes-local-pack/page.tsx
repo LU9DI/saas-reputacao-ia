@@ -317,6 +317,27 @@ export default function Page() {
         </Link>{' '}
         reúne gestão de reputação online, avaliações Google e feedback de clientes com inteligência artificial.
       </p>
+      <H2>Pacotes de SEO local para agências: como vender sem prometer ranking</H2>
+      <p>
+        Para uma agência, um pacote de SEO local precisa deixar claro o que é executado todos os meses, quem é responsável por cada etapa e como o cliente acompanha a evolução. Uma composição prática pode reunir Perfil da Empresa no Google, avaliações, reputação, conteúdo local, diagnóstico e acompanhamento.
+      </p>
+      <p>
+        A diferença entre uma proposta genérica e uma operação vendável está no escopo: número de unidades, frequência, canais acompanhados, entregáveis, critérios de priorização e reunião de revisão. O pacote deve explicar o trabalho que será feito mesmo quando uma posição no Google não mudar.
+      </p>
+      <p>
+        Para transformar isso em serviço recorrente, veja também <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências de SEO local</Link> e use a <Link href="/auditoria-gratuita" className="text-indigo-400 underline">auditoria gratuita</Link> como ponto de partida para identificar oportunidades reais antes da proposta.
+      </p>
+
+      <H2>O que avaliar antes de contratar um pacote de SEO local</H2>
+      <ul className="list-disc pl-5 space-y-1">
+        <li>Escopo e número de unidades claramente definidos.</li>
+        <li>Responsável por execução, aprovação e contato com o cliente.</li>
+        <li>Cadência de monitoramento e relatório.</li>
+        <li>Tratamento de avaliações e feedback sem seleção artificial de notas.</li>
+        <li>Critérios objetivos para priorizar problemas e oportunidades.</li>
+        <li>Separação entre entregáveis controláveis e resultados que dependem do mercado e do Google.</li>
+      </ul>
+
       </BlogArticle>
     </>
   );
