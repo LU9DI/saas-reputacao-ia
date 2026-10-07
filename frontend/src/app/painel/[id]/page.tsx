@@ -567,6 +567,32 @@ export default function PainelEmpresa() {
                   </div>
                 </div>
 
+                {Array.isArray(metricas.radar_estrategico.sinais_crescimento) && metricas.radar_estrategico.sinais_crescimento.length > 0 && (
+                  <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/[0.03] p-4">
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold text-white">Sinais de crescimento</div>
+                        <div className="mt-1 text-xs text-zinc-500">Demandas recorrentes que podem virar produto, expansão ou melhoria comercial.</div>
+                      </div>
+                      <span className="text-[10px] uppercase tracking-wide text-emerald-300">REI</span>
+                    </div>
+                    <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+                      {metricas.radar_estrategico.sinais_crescimento.slice(0, 8).map((item: any) => (
+                        <div key={item.tema} className="rounded-xl border border-white/5 bg-black/20 p-3">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="min-w-0 truncate text-xs font-semibold text-zinc-200">{item.tema}</span>
+                            <span className="shrink-0 text-xs font-semibold text-emerald-300">{item.ocorrencias}</span>
+                          </div>
+                          <div className="mt-2 flex items-center justify-between text-[10px] text-zinc-500">
+                            <span>{item.tipo === 'demanda' ? 'Demanda' : item.tipo === 'expansao' ? 'Expansão' : 'Melhoria'}</span>
+                            <span>{item.potencial === 'alto' ? 'Potencial alto' : item.potencial === 'medio' ? 'Potencial médio' : 'Sinal inicial'}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-4 grid gap-4 lg:grid-cols-3">
                   {[
                     ['Oportunidades percebidas', metricas.radar_estrategico.oportunidades, 'emerald'],
