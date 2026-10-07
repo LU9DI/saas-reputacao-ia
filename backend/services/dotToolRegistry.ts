@@ -141,7 +141,7 @@ function validateToolInput(toolId: string, input: Record<string, unknown>) {
   if (toolId === 'search-console.query') {
     const startDate = String(input.startDate || '');
     const endDate = String(input.endDate || '');
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\\d{4}-\\d{2}-\\d{2}$/.test(endDate)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
       throw new Error('search-console.query: startDate e endDate devem estar em YYYY-MM-DD.');
     }
     const rowLimit = input.rowLimit === undefined ? 1000 : Number(input.rowLimit);
