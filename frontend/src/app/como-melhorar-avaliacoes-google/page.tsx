@@ -15,10 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
       zh: 'https://filtraai.com/zh/improve-google-reviews',
       'x-default': 'https://filtraai.com/como-melhorar-avaliacoes-google',
     },
-  },
-};
-
-export default function Page() {
+  },\n  };\n}\n\nexport default function Page() {
   return (
     <SeoLanding
       h1="Como melhorar as avaliações Google da sua empresa"
