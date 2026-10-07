@@ -529,6 +529,67 @@ export default function PainelEmpresa() {
               )}
             </section>
 
+            {String(empresa.plan || '').toLowerCase() === 'rei' && metricas.radar_estrategico && (
+              <section className="scroll-mt-28 rounded-3xl border border-violet-400/15 bg-violet-500/[0.04] p-5 sm:p-6">
+                <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-violet-300">REI · Inteligência estratégica</p>
+                    <h3 className="mt-1 text-xl font-semibold text-white">Radar de crescimento, risco e demanda</h3>
+                    <p className="mt-1 text-sm text-zinc-500">Sinais derivados dos feedbacks e da operação, sem gerar uma nova camada de análise duplicada.</p>
+                  </div>
+                  <span className="rounded-full border border-violet-400/15 bg-violet-400/5 px-3 py-1.5 text-[11px] text-violet-200">
+                    {metricas.radar_estrategico.crescimento?.feedbacks_analisados || 0} feedbacks analisados
+                  </span>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="text-[10px] uppercase tracking-wide text-zinc-500">Clientes em risco</div>
+                    <div className="mt-2 text-2xl font-semibold text-white">{metricas.radar_estrategico.risco?.clientes_em_risco || 0}</div>
+                    <div className="mt-1 text-xs text-zinc-500">sinais negativos fortes</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="text-[10px] uppercase tracking-wide text-zinc-500">Negativas 14d</div>
+                    <div className="mt-2 text-2xl font-semibold text-white">{metricas.radar_estrategico.risco?.negativas_14d || 0}</div>
+                    <div className={Number(metricas.radar_estrategico.risco?.variacao_negativas_14d || 0) > 0 ? 'mt-1 text-xs text-red-300' : 'mt-1 text-xs text-emerald-300'}>
+                      {Number(metricas.radar_estrategico.risco?.variacao_negativas_14d || 0) > 0 ? '+' : ''}{metricas.radar_estrategico.risco?.variacao_negativas_14d || 0} vs. 14d anteriores
+                    </div>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="text-[10px] uppercase tracking-wide text-zinc-500">Unidade referência</div>
+                    <div className="mt-2 truncate text-sm font-semibold text-white">{metricas.radar_estrategico.crescimento?.unidade_referencia?.nome || '—'}</div>
+                    <div className="mt-1 text-xs text-zinc-500">{metricas.radar_estrategico.crescimento?.unidade_referencia?.nota ? metricas.radar_estrategico.crescimento.unidade_referencia.nota + '★' : 'Sem dados'}</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="text-[10px] uppercase tracking-wide text-zinc-500">Unidade crítica</div>
+                    <div className="mt-2 truncate text-sm font-semibold text-white">{metricas.radar_estrategico.risco?.unidade_critica?.nome || '—'}</div>
+                    <div className="mt-1 text-xs text-zinc-500">{metricas.radar_estrategico.risco?.unidade_critica?.nota ? metricas.radar_estrategico.risco.unidade_critica.nota + '★' : 'Sem dados'}</div>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                  {[
+                    ['Oportunidades percebidas', metricas.radar_estrategico.oportunidades, 'emerald'],
+                    ['Temas críticos', metricas.radar_estrategico.temas_criticos, 'amber'],
+                    ['Pedidos dos clientes', metricas.radar_estrategico.pedidos_clientes, 'violet'],
+                  ].map(([title, items, tone]) => (
+                    <div key={String(title)} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                      <div className="text-sm font-semibold text-white">{title}</div>
+                      <div className="mt-3 space-y-2">
+                        {(Array.isArray(items) ? items : []).slice(0, 5).map((item: any) => (
+                          <div key={item.tema} className="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2.5">
+                            <span className="min-w-0 truncate text-xs text-zinc-300">{item.tema}</span>
+                            <span className={tone === 'emerald' ? 'shrink-0 text-xs font-semibold text-emerald-300' : tone === 'amber' ? 'shrink-0 text-xs font-semibold text-amber-300' : 'shrink-0 text-xs font-semibold text-violet-300'}>{item.ocorrencias}</span>
+                          </div>
+                        ))}
+                        {(!Array.isArray(items) || items.length === 0) && <div className="py-4 text-xs text-zinc-600">Ainda não há sinal suficiente.</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section id="ai-report" className="scroll-mt-28">
               {reportOk ? (
                 <RelatorioInteligentePanel
