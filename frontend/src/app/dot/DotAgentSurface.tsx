@@ -17,6 +17,7 @@ type CaseItem = { id: number; status: string; priority: string; summary: string;
 type AgentRun = { id: number; objective: string; status: string; iterations: number; tool_calls: number; replans: number; stopped_reason?: string | null; events?: Array<{ type: string; name: string; at: string }> };
 type AgentPlan = { id: string; objective: string; status: string; currentStepId?: string | null; triggerSignalId?: string | null; triggerFingerprint?: string | null };
 type AgentPlanStep = { id: string; sequence: number; title: string; kind: string; status: string };
+type DotSignal = { id: string; title: string; summary: string; severity: 'low' | 'medium' | 'high' | 'critical'; priorityScore: number; status: string };
 
 const quickGoals = [
   'Encontrar o principal problema da minha operação',
@@ -48,6 +49,7 @@ export function DotAgentSurface() {
   const [cases, setCases] = useState<CaseItem[]>([]);
   const [runs, setRuns] = useState<AgentRun[]>([]);
   const [plans, setPlans] = useState<AgentPlan[]>([]);
+  const [signals, setSignals] = useState<DotSignal[]>([]);
   const [planSteps, setPlanSteps] = useState<AgentPlanStep[]>([]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
@@ -95,6 +97,7 @@ export function DotAgentSurface() {
       if (workspaceRes.ok) {
         const data = await workspaceRes.json();
         if (data?.ok) setWorkspace({ goals: data.goals || [], summary: data.summary || { active: 0, attention: 0 } });
+        setSignals(data.signals || []);
       }
       if (permissionRes.ok) {
         const data = await permissionRes.json();
@@ -321,7 +324,20 @@ export function DotAgentSurface() {
                     </section>
                   )}
 
-{plans.length > 0 && <section className="rounded-[22px] border border-emerald-300/10 bg-emerald-300/[.025] p-4">
+{signals.length > 0 && <section className="rounded-[22px] border border-amber-300/10 bg-amber-300/[.02] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-amber-300/70">Sinais detectados</div><div className="mt-1 text-[11px] text-zinc-400">O DOT encontrou pontos que merecem atenção antes de você pedir.</div></div>
+                      <span className="text-[9px] text-zinc-600">{signals.length} ativos</span>
+                    </div>
+                    <div className="mt-3 space-y-2">
+                      {signals.slice(0, 3).map((signal) => <div key={signal.id} className="rounded-xl border border-white/[.05] bg-black/10 px-3 py-2.5">
+                        <div className="flex items-center gap-2"><span className={`h-1.5 w-1.5 rounded-full ${signal.severity === 'critical' ? 'bg-red-400' : signal.severity === 'high' ? 'bg-amber-300' : 'bg-sky-300'}`} /><span className="min-w-0 flex-1 truncate text-[10px] font-medium text-zinc-300">{signal.title}</span><span className="text-[8px] text-zinc-600">{signal.priorityScore}</span></div>
+                        <div className="mt-1 text-[9px] leading-4 text-zinc-600">{signal.summary}</div>
+                      </div>)}
+                    </div>
+                  </section>}
+
+                  {plans.length > 0 && <section className="rounded-[22px] border border-emerald-300/10 bg-emerald-300/[.025] p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-300/70">Plano vivo</div><div className="mt-1 text-[11px] text-zinc-400">O DOT decide os próximos passos com base nas evidências.</div></div>
                       <div className="flex items-center gap-2"><span className="text-[8px] uppercase tracking-[.08em] text-emerald-300/60">{plans[0].triggerSignalId ? 'Detectado automaticamente' : 'Delegado por você'}</span><span className="text-[9px] text-zinc-600">{plans[0].status}</span></div>
