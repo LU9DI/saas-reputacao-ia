@@ -30,7 +30,7 @@ export default function Page() {
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Transforme monitoramento em entrega recorrente para clientes.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como monitoramento e reputação entram no pacote.' },
       ]}
-      sections=[
+      sections={[
         { heading: 'Como montar um monitoramento de reputação online', body: 'Defina primeiro quais fontes e sinais importam, depois estabeleça frequência, responsáveis e critérios de prioridade. Uma rotina útil registra mudanças, contexto e próxima ação em vez de apenas acumular alertas.' },
         { heading: 'Monitoramento de reputação para agências de SEO local', body: 'Para agências, o valor está em transformar monitoramento em uma entrega recorrente e comparável entre clientes. Padronize linha de base, temas, indicadores e relatório, mantendo espaço para exceções de cada negócio.' },
         { heading: 'O que fazer quando aparece um sinal crítico', body: 'Confirme se o sinal é isolado ou recorrente, identifique a unidade ou etapa da jornada envolvida, encaminhe para o responsável e acompanhe as avaliações seguintes. Evite tratar todo alerta como crise.' },
