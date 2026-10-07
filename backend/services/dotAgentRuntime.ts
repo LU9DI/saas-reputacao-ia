@@ -4,6 +4,7 @@ import { getDb } from '../lib/db.js';
 import { addDotPlanStep, createDotPlan, ensureDotPlanSchema, getDotPlan, listDotPlanSteps, recordDotPlanApproval, setDotPlanStatus, updateDotPlanStep } from './dotAgentPlan.js';
 import { acquireDotRuntimeLock, releaseDotRuntimeLock } from './dotAgentRuntimeLock.js';
 import { attachDotHypothesisEvidence, evaluateDotEvidence, getOpenDotHypothesisForSignal } from './dotAgentDecision.js';
+import { bindDotDecisionAction, getOrCreateDotAction, recordDotDecision } from './dotAgentLedger.js';
 
 export type DotRuntimeEvent = {
   type: 'model' | 'tool' | 'final' | 'approval';
@@ -337,6 +338,18 @@ ${input.history || '(sem histórico)'}`;
     });
 
     const decision = parseDotRuntimeDecision(result.text);
+    const decisionLedger = await recordDotDecision({
+      empresaId: input.empresaId,
+      planId: plan.id,
+      signalId: plan.triggerSignalId || null,
+      hypothesisId: hypothesis?.id || null,
+      decisionType: decision.type,
+      decision: decision.type === 'tool' ? decision.tool_id : decision.type === 'approval' ? (decision.action || decision.message) : decision.message,
+      rationaleSummary: decision.type === 'tool' ? (decision.rationale || '') : decision.type === 'approval' ? decision.message : 'Conclusão do ciclo com as evidências disponíveis.',
+      confidenceScore: hypothesis?.confidenceScore || 0,
+      evidenceStepIds,
+      approvalRequired: decision.type === 'approval',
+    });
 
     if (decision.type === 'final') {
       if (tools.length > 0 && toolCalls === 0) {
@@ -373,7 +386,19 @@ ${input.history || '(sem histórico)'}`;
         rationale: decision.message,
       });
       await updateDotPlanStep(approvalStep.id, { status: 'blocked', evidence: { action: decision.action || null, message: decision.message } });
-      await setDotPlanStatus(plan.id, 'waiting_approval');
+      if (decision.action) {
+        const action = await getOrCreateDotAction({
+          empresaId: input.empresaId,
+          planId: plan.id,
+          actionType: 'agent.approval_request',
+          targetKey: decision.action,
+          fingerprint: plan.triggerFingerprint,
+          requestedBy: input.actorUserId || null,
+          approvalRequired: true,
+        });
+        await bindDotDecisionAction(decisionLedger.id, input.empresaId, action.action.id);
+      }
+      await setDotPlanStatus(plan.id, 'waiting_approval', 'awaiting_user');
       break;
     }
 
@@ -439,7 +464,7 @@ ${input.history || '(sem histórico)'}`;
 
   const completedAt = new Date().toISOString();
   if (stoppedReason === 'max_iterations' || stoppedReason === 'token_budget_exhausted') {
-    await setDotPlanStatus(plan.id, 'paused');
+    await setDotPlanStatus(plan.id, 'paused', stoppedReason === 'token_budget_exhausted' ? 'budget' : 'system_recovery');
   }
   await persistRun({
     empresaId: input.empresaId,
