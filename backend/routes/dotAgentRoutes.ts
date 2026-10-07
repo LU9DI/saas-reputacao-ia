@@ -97,6 +97,43 @@ export function mountDotAgentRoutes(app: Express) {
     }
   });
 
+  app.post('/api/dot/agent/plans/:id/continue', async (req: Request, res: Response) => {
+    const access = await resolveDotAgentAccess(req);
+    if (!access.allowed || !access.empresaId || !access.userId) return deny(res, access);
+    if (!(await requireAgentMutation(res, access, 'operations', 'update'))) return;
+    try {
+      const plans = await listDotPlans(access.empresaId, access.userId, 50);
+      const plan = plans.find((item) => item.id === req.params.id);
+      if (!plan) return res.status(404).json({ ok: false, error: 'Plano não encontrado.' });
+      if (!['paused', 'waiting_approval'].includes(plan.status)) {
+        return res.status(409).json({ ok: false, error: 'Este plano não está disponível para retomada.', status: plan.status });
+      }
+      const approvalGranted = req.body?.approved === true;
+      if (plan.status === 'waiting_approval' && !approvalGranted) {
+        return res.status(409).json({ ok: false, error: 'Aprovação explícita é necessária para continuar este plano.', code: 'DOT_APPROVAL_REQUIRED' });
+      }
+
+      void runDotAgent({
+        empresaId: access.empresaId,
+        actorUserId: access.userId,
+        sessionId: plan.sessionId,
+        objective: plan.objective,
+        context: JSON.stringify(await getDotAgentWorkspace(access.empresaId)),
+        history: '',
+        maxTokens: Math.max(600, Number(process.env.DOT_DELEGATION_MAX_TOKENS || 900)),
+        allowTools: true,
+        planId: plan.id,
+        approvalGranted,
+      }).catch((error) => {
+        console.warn('DOT agente: falha ao retomar plano', error instanceof Error ? error.message : error);
+      });
+
+      res.status(202).json({ ok: true, plan_id: plan.id, resumed: true, approval_granted: approvalGranted });
+    } catch (error) {
+      res.status(400).json({ ok: false, error: error instanceof Error ? error.message : 'Não foi possível retomar o plano.' });
+    }
+  });
+
   app.get('/api/dot/agent/goals', async (req: Request, res: Response) => {
     const access = await resolveDotAgentAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
