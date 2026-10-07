@@ -14,6 +14,7 @@ type MissionStep = { id: number; mission_id: number; type: 'observe' | 'investig
 type Action = { id: number; decisionId: number; optionId: string; action: string; status: 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled' | string; approvedAt?: string | null; executedAt?: string | null; error?: string | null };
 type FollowUp = { id: number; status: string; due_at: string; outcome?: string | null };
 type CaseItem = { id: number; status: string; priority: string; summary: string; next_step: string };
+type AgentRun = { id: number; objective: string; status: string; iterations: number; tool_calls: number; replans: number; stopped_reason?: string | null; events?: Array<{ type: string; name: string; at: string }> };
 
 const quickGoals = [
   'Encontrar o principal problema da minha operação',
@@ -43,6 +44,7 @@ export function DotAgentSurface() {
   const [actions, setActions] = useState<Action[]>([]);
   const [followups, setFollowups] = useState<FollowUp[]>([]);
   const [cases, setCases] = useState<CaseItem[]>([]);
+  const [runs, setRuns] = useState<AgentRun[]>([]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -82,8 +84,9 @@ export function DotAgentSurface() {
         apiFetch('/api/dot/actions', { credentials: 'include' }),
         apiFetch('/api/dot/followups', { credentials: 'include' }),
         apiFetch('/api/dot/cases', { credentials: 'include' }),
+        apiFetch('/api/dot/runs?limit=8', { credentials: 'include' }),
       ]);
-      const [workspaceRes, permissionRes, missionsRes, actionsRes, followupsRes, casesRes] = requests;
+      const [workspaceRes, permissionRes, missionsRes, actionsRes, followupsRes, casesRes, runsRes] = requests;
       if (workspaceRes.ok) {
         const data = await workspaceRes.json();
         if (data?.ok) setWorkspace({ goals: data.goals || [], summary: data.summary || { active: 0, attention: 0 } });
@@ -111,6 +114,10 @@ export function DotAgentSurface() {
       if (casesRes.ok) {
         const data = await casesRes.json();
         if (data?.ok) setCases(data.cases || []);
+      }
+      if (runsRes.ok) {
+        const data = await runsRes.json();
+        if (data?.ok) setRuns(data.runs || []);
       }
     } catch {
       setError('Não consegui atualizar o estado do DOT.');
@@ -293,6 +300,22 @@ export function DotAgentSurface() {
                       <p className="mt-1 text-[11px] leading-5 text-zinc-600">Delegue um objetivo acima e o DOT transforma isso em uma missão acompanhável.</p>
                     </section>
                   )}
+
+                  {runs.length > 0 && <section className="rounded-[22px] border border-sky-300/10 bg-sky-300/[.025] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-sky-300/70">Atividade do agente</div><div className="mt-1 text-[11px] text-zinc-400">O DOT registra cada investigação e replanejamento.</div></div>
+                      <span className="text-[9px] text-zinc-600">{runs.length} recentes</span>
+                    </div>
+                    <div className="mt-3 space-y-2">
+                      {runs.slice(0, 3).map((run) => <div key={run.id} className="rounded-xl border border-white/[.06] bg-black/10 px-3 py-2.5">
+                        <div className="truncate text-[10px] font-medium text-zinc-300">{run.objective}</div>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[9px] text-zinc-600">
+                          <span>{run.tool_calls} ferramentas</span><span>{run.replans} replanejamentos</span><span>{run.iterations} ciclos</span>
+                          <span className={run.status === 'waiting_approval' ? 'text-amber-300' : 'text-emerald-300/70'}>{run.status === 'waiting_approval' ? 'aguardando aprovação' : 'concluído'}</span>
+                        </div>
+                      </div>)}
+                    </div>
+                  </section>}
 
                   {pendingApproval && <section className="rounded-[22px] border border-amber-300/15 bg-amber-300/[.05] p-4">
                     <div className="text-[9px] font-semibold uppercase tracking-[.16em] text-amber-300/80">Sua decisão</div>
