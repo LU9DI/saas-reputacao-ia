@@ -162,8 +162,14 @@ export async function invokeDotTool(input: {
   if (!definition) throw new Error('Ferramenta DOT não registrada.');
   if (definition.requiresApproval) throw new Error('Esta ferramenta exige aprovação e não pode ser chamada diretamente.');
   const params = input.input || {};
-  validateToolInput(definition.id, params);
   try {
+    try {
+      validateToolInput(definition.id, params);
+    } catch (error: any) {
+      const message = String(error?.message || error);
+      await audit({ ...input, operation: definition.operation, allowed: false, error: message });
+      throw error;
+    }
     await requireDotAccess(input.empresaId, definition.resource, definition.operation, input.actorUserId || null, { toolId: definition.id, actorType: input.actorType, actorUserId: input.actorUserId || null });
     const result = await definition.execute(input.empresaId, params);
     await audit({ ...input, operation: definition.operation, allowed: true, result });
