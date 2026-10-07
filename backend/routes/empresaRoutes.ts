@@ -252,7 +252,7 @@ export function radarEstrategico(reviews: any[], ranking: any[]) {
   const negativeThemes: Record<string, number> = {};
   const requestThemes: Record<string, number> = {};
   let riskClients = 0;
-  const requestPattern = /\\b(quero|queria|gostaria|poderia|poderiam|deveria|deveriam|sugest[aã]o|faltou|falta|seria bom|mais)\\b/i;
+  const requestPattern = /\b(quero|queria|gostaria|poderia|poderiam|deveria|deveriam|sugest[aã]o|faltou|falta|seria bom|mais)\b/i;
 
   for (const r of real) {
     const rating = Number(r.rating || 0);
@@ -275,14 +275,28 @@ export function radarEstrategico(reviews: any[], ranking: any[]) {
   const bestUnit = [...(ranking || [])].filter((u: any) => u.feedbacks > 0).sort((a, b) => b.nota - a.nota)[0] || null;
   const worstUnit = [...(ranking || [])].filter((u: any) => u.feedbacks > 0).sort((a, b) => a.nota - b.nota)[0] || null;
   const recentCut = Date.now() - 14 * 24 * 60 * 60 * 1000;
-  const recentNegative = real.filter((r: any) => Number(r.rating || 0) <= 3 && new Date(r.createdAt).getTime() >= recentCut).length;
+  const recentNegative = real.filter((r: any) => Number(r.rating || 0) <= 3 && new Date(rowCreatedAt(r)).getTime() >= recentCut).length;
   const previousNegative = real.filter((r: any) => {
-    const t = new Date(r.createdAt).getTime();
+    const t = new Date(rowCreatedAt(r)).getTime();
     return Number(r.rating || 0) <= 3 && t < recentCut && t >= recentCut - 14 * 24 * 60 * 60 * 1000;
   }).length;
 
+  const growthSignals = Object.entries(requestThemes)
+    .map(([tema, ocorrencias]) => {
+      const normalized = tema.toLowerCase();
+      const type = /produto|servi|plano|categoria|opção|opcao/.test(normalized)
+        ? 'demanda'
+        : /mais|adicion|novo|nova|expand|ampli/.test(normalized)
+          ? 'expansao'
+          : 'melhoria';
+      return { tema, ocorrencias, tipo: type, potencial: ocorrencias >= 3 ? 'alto' : ocorrencias >= 2 ? 'medio' : 'incipiente' };
+    })
+    .sort((a, b) => b.ocorrencias - a.ocorrencias)
+    .slice(0, 8);
+
   return {
-    oportunidades: top(positiveThemes),
+    oportunidades: growthSignals.filter((x) => x.tipo !== 'melhoria'),
+    sinais_crescimento: growthSignals,
     temas_criticos: top(negativeThemes),
     pedidos_clientes: top(requestThemes),
     risco: {
