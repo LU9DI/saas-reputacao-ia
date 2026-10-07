@@ -77,4 +77,14 @@ export async function criarReview(input:ReviewInput,db:Database=getDb()):Promise
   let whatsapp_empresa_url:string|null=null;let whatsapp_mensagem:string|null=null;if(!isTest&&rating<=3&&empresaWpp){whatsapp_mensagem=mensagemClienteParaEmpresa({nomeEmpresa,nomeCliente:name||undefined,rating,comment:comment||undefined});whatsapp_empresa_url=linkWhatsapp(empresaWpp,whatsapp_mensagem);}
   return{success:true,id:result?.lastID,ai:Boolean(aiReply),is_test:isTest,sentiment:sentiment.label,ai_skipped_quota:aiSkippedQuota,locale,whatsapp_empresa_url,whatsapp_mensagem};
 }
-export async function listarReviews(ref:string,db:Database=getDb()){const emp=await findEmpresa(ref);if(!emp)throw new ReviewNotFoundError();await ensureReviewFraudColumns(db);await ensureSentimentColumns(db);try{return await db.all(`SELECT * FROM reviews WHERE empresa_id=? ORDER BY id DESC LIMIT 100`,[emp.id]);}catch{return[];}}
+export async function listarReviews(ref:string,db:Database=getDb()){
+  const emp=await findEmpresa(ref);if(!emp)throw new ReviewNotFoundError();
+  await ensureReviewFraudColumns(db);await ensureSentimentColumns(db);
+  const plan=String(emp.plan||emp.status||'trial').toLowerCase();
+  const limite=getFeedbackLimit(plan);
+  const temIa=planTemIA(plan);
+  try{
+    const rows=await db.all(`SELECT * FROM reviews WHERE empresa_id=? ORDER BY id DESC LIMIT ${Math.max(1, Math.min(8000, limite))}`,[emp.id]);
+    return (rows||[]).map((r:any)=>temIa?r:{...r,ai_reply:null,ai_tags:null,sentiment_source:null});
+  }catch{return[];}
+}
