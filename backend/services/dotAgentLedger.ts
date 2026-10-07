@@ -337,6 +337,26 @@ export async function bindDotDecisionOutcome(id: string, empresaId: string, outc
   );
 }
 
+export async function approvePendingDotDecisionsForPlan(empresaId: string, planId: string, approvedBy: string): Promise<number> {
+  await ensureDotLedgerSchema();
+  const now = new Date().toISOString();
+  const result = await getDb().run(
+    "UPDATE dot_agent_decisions SET approval_status='approved',approved_by=?,approved_at=?,updated_at=? WHERE empresa_id=? AND plan_id=? AND approval_status='awaiting_approval'",
+    [approvedBy, now, now, empresaId, planId],
+  );
+  return Number((result as any)?.changes || 0);
+}
+
+export async function promoteApprovedDotActionsForPlan(empresaId: string, planId: string, approvedBy: string): Promise<number> {
+  await ensureDotLedgerSchema();
+  const now = new Date().toISOString();
+  const result = await getDb().run(
+    "UPDATE dot_agent_actions SET status='proposed',approved_by=?,updated_at=? WHERE empresa_id=? AND plan_id=? AND status='awaiting_approval'",
+    [approvedBy, now, empresaId, planId],
+  );
+  return Number((result as any)?.changes || 0);
+}
+
 export async function listDotDecisions(empresaId: string, limit = 20): Promise<DotDecision[]> {
   await ensureDotLedgerSchema();
   const rows = await getDb().all('SELECT * FROM dot_agent_decisions WHERE empresa_id=? ORDER BY created_at DESC LIMIT ?', [empresaId, Math.max(1, Math.min(limit, 50))]);
