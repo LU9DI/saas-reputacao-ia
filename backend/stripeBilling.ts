@@ -17,8 +17,8 @@ export type PlanoDef = { key: PlanoKey; planDb: PlanDb; label: string; unitAmoun
 export const PLANOS: Record<string, PlanoDef> = {
   inicial:{key:'inicial',planDb:'inicial',label:'Inicial Mensal',unitAmount:6990,interval:'month',displayMonthly:69.9,reviewLimit:100,envPriceId:process.env.STRIPE_PRICE_INICIAL_MONTHLY},
   'inicial-anual':{key:'inicial-anual',planDb:'inicial',label:'Inicial Anual',unitAmount:4990*12,interval:'year',displayMonthly:49.9,reviewLimit:100,envPriceId:process.env.STRIPE_PRICE_INICIAL_YEARLY},
-  pro:{key:'pro',planDb:'pro',label:'Pro Mensal',unitAmount:10990,interval:'month',displayMonthly:109.9,reviewLimit:400,envPriceId:process.env.STRIPE_PRICE_PRO_MONTHLY},
-  'pro-anual':{key:'pro-anual',planDb:'pro',label:'Pro Anual',unitAmount:9990*12,interval:'year',displayMonthly:99.9,reviewLimit:400,envPriceId:process.env.STRIPE_PRICE_PRO_YEARLY},
+  pro:{key:'pro',planDb:'pro',label:'Pro Mensal',unitAmount:10990,interval:'month',displayMonthly:109.9,reviewLimit:300,envPriceId:process.env.STRIPE_PRICE_PRO_MONTHLY},
+  'pro-anual':{key:'pro-anual',planDb:'pro',label:'Pro Anual',unitAmount:9990*12,interval:'year',displayMonthly:99.9,reviewLimit:300,envPriceId:process.env.STRIPE_PRICE_PRO_YEARLY},
   ultra:{key:'ultra',planDb:'ultra',label:'Ultra Mensal',unitAmount:19990,interval:'month',displayMonthly:199.9,reviewLimit:800,envPriceId:process.env.STRIPE_PRICE_ULTRA_MONTHLY||process.env.STRIPE_PRICE_ULTRA},
   'ultra-anual':{key:'ultra-anual',planDb:'ultra',label:'Ultra Anual',unitAmount:14990*12,interval:'year',displayMonthly:149.9,reviewLimit:800,envPriceId:process.env.STRIPE_PRICE_ULTRA_YEARLY},
   corporativo:{key:'corporativo',planDb:'corporativo',label:'Corporativo Mensal',unitAmount:49990,interval:'month',displayMonthly:499.9,reviewLimit:2500,envPriceId:process.env.STRIPE_PRICE_CORPORATE_MONTHLY||process.env.STRIPE_PRICE_CORPORATE},
