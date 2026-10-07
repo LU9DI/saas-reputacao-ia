@@ -10,6 +10,7 @@ export type DotRuntimeEvent = {
   input?: Record<string, unknown>;
   output?: unknown;
   at: string;
+  evidenceStepIds?: string[];
 };
 
 export type DotAgentRunResult = {
@@ -21,6 +22,7 @@ export type DotAgentRunResult = {
   tool_calls: number;
   replans: number;
   stopped_reason: string;
+  evidence_step_ids?: string[];
 };
 
 type RuntimeDecision =
@@ -179,6 +181,7 @@ export async function runDotAgent(input: {
       tool_calls: 0,
       replans: 0,
       stopped_reason: 'already_running',
+      evidence_step_ids: [],
     };
   }
 
@@ -240,6 +243,7 @@ export async function runDotAgent(input: {
   let stoppedReason = 'max_iterations';
   let finalText = '';
   let spentTokens = 0;
+  const evidenceStepIds: string[] = [];
 
   const system = `Você é o núcleo operacional do Filtra Dot.
 ${autonomous ? 'Esta é uma execução autônoma de percepção. Você só pode observar/analisar dados; nunca invente permissão para efeitos externos.' : ''}
@@ -302,6 +306,7 @@ ${input.history || '(sem histórico)'}`;
         type: 'final',
         name: 'agent_completed',
         output: finalText.slice(0, 4000),
+        evidenceStepIds: evidenceStepIds.slice(-20),
         at: new Date().toISOString(),
       });
       await setDotPlanStatus(plan.id, 'completed');
@@ -361,6 +366,7 @@ ${input.history || '(sem histórico)'}`;
         at: new Date().toISOString(),
       });
       workingContext += `\n\n[DADO NÃO CONFIÁVEL — FERRAMENTA ${decision.tool_id}]\n${JSON.stringify(toolResult.result).slice(0, 20_000)}\n[FIM DO DADO NÃO CONFIÁVEL]`;
+      evidenceStepIds.push(planStep.id);
       await updateDotPlanStep(planStep.id, { status: 'completed', evidence: toolResult.result });
       replans += 1;
     } catch (error: any) {
@@ -414,6 +420,7 @@ ${input.history || '(sem histórico)'}`;
       tool_calls: toolCalls,
       replans,
       stopped_reason: stoppedReason,
+      evidence_step_ids: evidenceStepIds,
     };
   } finally {
     await releaseDotRuntimeLock(lock);
