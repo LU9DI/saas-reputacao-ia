@@ -170,7 +170,12 @@ export async function invokeDotTool(input: {
       await audit({ ...input, operation: definition.operation, allowed: false, error: message });
       throw error;
     }
-    await requireDotAccess(input.empresaId, definition.resource, definition.operation, input.actorUserId || null, { toolId: definition.id, actorType: input.actorType, actorUserId: input.actorUserId || null });
+    const autonomousRead = input.actorType === 'system'
+      && (definition.operation === 'read' || definition.operation === 'analyze')
+      && process.env.DOT_AUTONOMOUS_READ_ENABLED !== '0';
+    if (!autonomousRead) {
+      await requireDotAccess(input.empresaId, definition.resource, definition.operation, input.actorUserId || null, { toolId: definition.id, actorType: input.actorType, actorUserId: input.actorUserId || null });
+    }
     const result = await definition.execute(input.empresaId, params);
     await audit({ ...input, operation: definition.operation, allowed: true, result });
     return { ok: true, tool: definition.id, result };
