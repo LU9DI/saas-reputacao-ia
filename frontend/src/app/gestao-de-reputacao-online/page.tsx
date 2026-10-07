@@ -15,7 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
       'x-default': 'https://filtraai.com/gestao-de-reputacao-online',
     },
   },
-};
+  };
+}
 
 const faqSchema = {
   '@context': 'https://schema.org',
