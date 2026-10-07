@@ -3,6 +3,7 @@ import { invokeDotTool, listDotTools, type DotToolDefinition } from './dotToolRe
 import { getDb } from '../lib/db.js';
 import { addDotPlanStep, createDotPlan, ensureDotPlanSchema, getDotPlan, listDotPlanSteps, recordDotPlanApproval, setDotPlanStatus, updateDotPlanStep } from './dotAgentPlan.js';
 import { acquireDotRuntimeLock, releaseDotRuntimeLock } from './dotAgentRuntimeLock.js';
+import { attachDotHypothesisEvidence, getOpenDotHypothesisForSignal } from './dotAgentDecision.js';
 
 export type DotRuntimeEvent = {
   type: 'model' | 'tool' | 'final' | 'approval';
@@ -279,6 +280,7 @@ export async function runDotAgent(input: {
   let finalText = '';
   let spentTokens = 0;
   const evidenceStepIds: string[] = [];
+  const hypothesis = plan.triggerSignalId ? await getOpenDotHypothesisForSignal(input.empresaId, plan.triggerSignalId) : null;
 
   const system = `Você é o núcleo operacional do Filtra Dot.
 ${autonomous ? 'Esta é uma execução autônoma de percepção. Você só pode observar/analisar dados; nunca invente permissão para efeitos externos.' : ''}
@@ -407,6 +409,11 @@ ${input.history || '(sem histórico)'}`;
       });
       workingContext += `\n\n[DADO NÃO CONFIÁVEL — FERRAMENTA ${decision.tool_id}]\n${JSON.stringify(toolResult.result).slice(0, 20_000)}\n[FIM DO DADO NÃO CONFIÁVEL]`;
       evidenceStepIds.push(planStep.id);
+      if (hypothesis) {
+        const resultText = JSON.stringify(toolResult.result).toLowerCase();
+        const support = /queda|negativ|estagn|parad|problema|ruim|crit/.test(resultText) ? 'support' : 'neutral';
+        await attachDotHypothesisEvidence({ hypothesisId: hypothesis.id, evidenceStepId: planStep.id, support, strength: support === 'support' ? 12 : 5 });
+      }
       await updateDotPlanStep(planStep.id, { status: 'completed', evidence: toolResult.result });
       replans += 1;
     } catch (error: any) {
