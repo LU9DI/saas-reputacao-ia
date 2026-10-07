@@ -1,5 +1,6 @@
 import { getDb } from '../lib/db.js';
 import { requireDotAccess, type DotAccessAction, type DotAccessResource } from './dotAccessControl.js';
+import { queryGoogleSearchConsole } from './googleSearchConsole.js';
 
 export type DotToolOperation = DotAccessAction;
 export type DotToolDefinition = {
@@ -88,6 +89,25 @@ const tools: Record<string, DotToolDefinition> = {
     async execute(empresaId) {
       const row = await getDb().get('SELECT COUNT(*) AS total, AVG(rating) AS average_rating FROM reviews WHERE empresa_id=?', [empresaId]);
       return { total: Number(row?.total || 0), averageRating: row?.average_rating == null ? null : Number(row.average_rating) };
+    },
+  },
+  'search-console.query': {
+    id: 'search-console.query',
+    description: 'Consulta dados reais do Google Search Console da propriedade conectada pela empresa.',
+    resource: 'seo',
+    operation: 'read',
+    risk: 'low',
+    requiresApproval: false,
+    async execute(empresaId, input) {
+      return queryGoogleSearchConsole(empresaId, {
+        startDate: String(input.startDate || ''),
+        endDate: String(input.endDate || ''),
+        dimensions: Array.isArray(input.dimensions) ? input.dimensions.map(String) : ['query', 'page'],
+        type: String(input.type || 'web'),
+        dimensionFilterGroups: Array.isArray(input.dimensionFilterGroups) ? input.dimensionFilterGroups : undefined,
+        rowLimit: Number(input.rowLimit || 1000),
+        startRow: Number(input.startRow || 0),
+      });
     },
   },
   'dot.goals.read': {
