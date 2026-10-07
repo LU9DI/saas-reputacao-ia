@@ -1,5 +1,6 @@
 name: Deploy Filtra.AI frontend to Cloudflare Pages
-# Build once in GitHub Actions and publish only the static artifact to Pages.
+# Production frontend deployment: GitHub Actions → Cloudflare Pages.
+# Vercel is not part of the production frontend path.
 
 on:
   push:
@@ -38,17 +39,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Temporarily exclude Vercel-only cron route
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -d src/app/api/cron/keep-warm ]; then
-            mv src/app/api/cron/keep-warm /tmp/filtra-keep-warm
-            echo "moved=1" >> "$GITHUB_ENV"
-          else
-            echo "moved=0" >> "$GITHUB_ENV"
-          fi
-
       - name: Build static export
         run: npm run build
 
@@ -60,18 +50,7 @@ jobs:
           test -f out/404.html
           echo "Static artifact ready: $(du -sh out | cut -f1)"
 
-      - name: Restore Vercel-only cron route
-        if: always() && env.moved == '1'
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p src/app/api/cron
-          rm -rf src/app/api/cron/keep-warm
-          mv /tmp/filtra-keep-warm src/app/api/cron/keep-warm
-
-      - name: Deploy static artifact to Cloudflare Pages
-        if: success()
-        working-directory: frontend
+      - name: Deploy to Cloudflare Pages
         run: |
           set -euo pipefail
           test -n "$CLOUDFLARE_ACCOUNT_ID"
@@ -79,5 +58,5 @@ jobs:
           npx wrangler@latest pages deploy out \
             --project-name=filtra-ai-fallback-direct \
             --branch=main \
-            --commit-message="Cloudflare Pages \${GITHUB_SHA}" \
-            --commit-hash="\${GITHUB_SHA}"
+            --commit-message="Cloudflare Pages ${GITHUB_SHA}" \
+            --commit-hash="${GITHUB_SHA}"
