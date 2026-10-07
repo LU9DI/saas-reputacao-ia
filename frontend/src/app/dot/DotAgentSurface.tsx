@@ -216,149 +216,123 @@ export function DotAgentSurface() {
   return (
     <>
       <button type="button" aria-label="Abrir DOT" data-testid="dot-agent-launcher" onClick={() => setOpen((value) => !value)}
-        className="fixed bottom-5 right-5 z-[90] grid h-12 w-12 place-items-center rounded-[16px] border border-white/10 bg-[#0b0d12]/95 text-white shadow-[0_14px_45px_rgba(0,0,0,.48)] backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 hover:border-sky-300/30 hover:bg-[#11141b] focus:outline-none focus:ring-2 focus:ring-sky-400/50">
-        <span className="absolute inset-0 rounded-[16px] bg-sky-400/[0.07] animate-pulse" />
-        <Bot size={21} className="relative text-sky-300" strokeWidth={1.8} />
-        {hasAccess && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#050507] bg-emerald-400" />}
+        className="fixed bottom-5 right-5 z-[90] grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-zinc-950/95 text-white shadow-[0_18px_50px_rgba(0,0,0,.45)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-sky-300/30 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
+        <span className="relative text-[18px]" aria-hidden="true">◉</span>
+        {hasAccess && <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 bg-emerald-400" />}
       </button>
 
       {open && (
         <div className="fixed inset-0 z-[100] pointer-events-none">
-          <button aria-label="Fechar DOT" onClick={() => setOpen(false)} className="pointer-events-auto absolute inset-0 bg-black/50 backdrop-blur-[3px]" />
+          <button aria-label="Fechar DOT" onClick={() => setOpen(false)} className="pointer-events-auto absolute inset-0 bg-black/55 backdrop-blur-[2px]" />
           <aside role="dialog" aria-modal="true" aria-label="DOT, agente da empresa" data-testid="dot-agent-panel"
-            className="pointer-events-auto absolute bottom-3 right-3 flex max-h-[calc(100vh-1.5rem)] w-[min(500px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-[30px] border border-white/10 bg-[#080a0f] shadow-[0_35px_120px_rgba(0,0,0,.72)]">
-            <header className="shrink-0 border-b border-white/[0.07] px-5 py-4">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-sky-300/10 bg-sky-400/[0.08] text-sky-300"><Bot size={19} strokeWidth={1.7} /></div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2"><span className="text-[15px] font-semibold tracking-tight text-white">DOT</span><span className="rounded-full border border-emerald-400/15 bg-emerald-400/[0.08] px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[.12em] text-emerald-300">{hasAccess ? 'ativo' : 'bloqueado'}</span></div>
-                    <div className="truncate text-[10px] text-zinc-500">agente da empresa · {status?.demo ? 'modo demonstração' : status?.plan_label || status?.plan || 'acesso'}</div>
+            className="pointer-events-auto absolute bottom-3 right-3 flex max-h-[calc(100vh-1.5rem)] w-[min(440px,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-[#080a0f] shadow-[0_30px_100px_rgba(0,0,0,.7)]">
+            <header className="shrink-0 border-b border-white/[.07] px-5 py-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-sky-400/[.08] text-sky-300">◉</div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold tracking-tight text-white">DOT</span>
+                      <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[.12em] ${hasAccess ? 'bg-emerald-400/10 text-emerald-300' : 'bg-zinc-400/10 text-zinc-500'}`}>{hasAccess ? 'ativo' : 'bloqueado'}</span>
+                    </div>
+                    <div className="mt-0.5 text-[10px] text-zinc-600">agente operacional da empresa</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  {hasAccess && <button type="button" aria-label="Atualizar DOT" onClick={() => void loadWorkspace()} className="rounded-xl p-2 text-zinc-500 transition hover:bg-white/5 hover:text-zinc-200"><RefreshCw size={15} /></button>}
-                  <button type="button" aria-label="Fechar" onClick={() => setOpen(false)} className="rounded-xl p-2 text-zinc-500 transition hover:bg-white/5 hover:text-zinc-200"><X size={17} /></button>
+                  {hasAccess && <button type="button" aria-label="Atualizar DOT" onClick={() => void loadWorkspace()} className="rounded-xl p-2 text-zinc-500 hover:bg-white/5 hover:text-zinc-200"><RefreshCw size={14} /></button>}
+                  <button type="button" aria-label="Fechar" onClick={() => setOpen(false)} className="rounded-xl p-2 text-zinc-500 hover:bg-white/5 hover:text-zinc-200"><X size={16} /></button>
                 </div>
               </div>
             </header>
 
-            <div className="min-h-0 overflow-y-auto px-5 pb-5 pt-4">
+            <div className="min-h-0 overflow-y-auto px-4 pb-4 pt-4">
               {!hasAccess ? (
-                <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-sky-400/[0.08] to-white/[0.02] p-5">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-400/10 text-sky-300"><Bot size={21} /></div>
-                  <h2 className="mt-5 text-xl font-semibold tracking-tight text-white">Eu fico aqui com você.</h2>
-                  <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-400">Entre em uma conta autorizada para que eu possa acompanhar a empresa. O DOT nunca age fora do escopo autenticado.</p>
-                  <a href="/login" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200">Entrar na Filtra.AI <ArrowUpRight size={14} /></a>
-                </div>
+                <section className="rounded-[24px] border border-white/[.08] bg-white/[.025] p-5">
+                  <div className="text-xl font-semibold tracking-tight text-white">O DOT fica aqui.</div>
+                  <p className="mt-2 text-xs leading-5 text-zinc-500">Entre em uma conta autorizada para delegar objetivos ao agente. Nenhuma ação externa é executada automaticamente.</p>
+                  <a href="/login" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-xs font-semibold text-zinc-950 hover:bg-zinc-200">Entrar <ArrowUpRight size={13} /></a>
+                </section>
               ) : (
-                <div className="space-y-4">
-                  {error && <div role="alert" className="flex items-start gap-2.5 rounded-2xl border border-rose-400/15 bg-rose-500/[0.07] px-3.5 py-3 text-xs leading-5 text-rose-200"><AlertTriangle size={15} className="mt-0.5 shrink-0" /><span>{error}</span></div>}
+                <div className="space-y-3">
+                  {error && <div role="alert" className="rounded-xl border border-rose-400/15 bg-rose-500/[.06] px-3 py-2.5 text-[11px] leading-4 text-rose-200">{error}</div>}
 
-                  <section className="rounded-[26px] border border-white/10 bg-gradient-to-br from-white/[0.055] to-white/[0.018] p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-sky-400/10 text-sky-300"><Sparkles size={17} /></div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-semibold uppercase tracking-[.16em] text-sky-300/80">Delegue para mim</div>
-                        <h2 className="mt-1.5 text-lg font-semibold tracking-tight text-white">O que você quer que eu cuide?</h2>
-                        <p className="mt-1 text-[11px] leading-5 text-zinc-500">Eu transformo seu objetivo em missão, investigo, preparo o próximo passo e paro quando sua decisão for necessária.</p>
+                  <section className="rounded-[24px] border border-white/[.08] bg-white/[.025] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-[9px] font-semibold uppercase tracking-[.18em] text-sky-300/80">Delegar</div>
+                        <h2 className="mt-1 text-[17px] font-semibold tracking-tight text-white">O que eu devo cuidar?</h2>
                       </div>
+                      {workspace?.summary && <div className="text-right"><div className="text-lg font-semibold text-white">{workspace.summary.active}</div><div className="text-[9px] uppercase tracking-[.12em] text-zinc-600">ativas</div></div>}
                     </div>
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-2">
-                      <input data-testid="dot-goal-input" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') void createGoal(); }} placeholder="Ex.: descobrir por que minhas avaliações caíram" className="w-full bg-transparent px-2 py-2 text-sm text-white outline-none placeholder:text-zinc-600" />
-                      <div className="mt-2 flex items-center justify-between gap-2">
-                        <div className="flex min-w-0 gap-1.5 overflow-x-auto pb-0.5">
-                          {quickGoals.slice(0, 2).map((goal) => <button key={goal} type="button" onClick={() => setDraft(goal)} className="shrink-0 rounded-lg border border-white/[0.07] bg-white/[0.025] px-2 py-1.5 text-[10px] text-zinc-500 transition hover:border-sky-300/20 hover:text-zinc-300">{goal.length > 28 ? goal.slice(0, 28) + '…' : goal}</button>)}
-                        </div>
-                        <button type="button" onClick={() => void createGoal()} disabled={busy || draft.trim().length < 3} className="shrink-0 rounded-xl bg-white px-3.5 py-2 text-[11px] font-semibold text-zinc-950 transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-35">{busy ? <Loader2 size={14} className="animate-spin" /> : 'Delegar'}</button>
+                    <div className="mt-3 rounded-2xl border border-white/[.08] bg-black/20 p-1.5">
+                      <input data-testid="dot-goal-input" value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') void createGoal(); }} placeholder="Ex.: descobrir por que minhas avaliações caíram" className="w-full bg-transparent px-2.5 py-2.5 text-[13px] text-white outline-none placeholder:text-zinc-700" />
+                      <div className="mt-1.5 flex items-center justify-between gap-2">
+                        <button type="button" onClick={() => setDraft(quickGoals[0])} className="min-w-0 truncate px-2.5 py-1.5 text-[10px] text-zinc-600 hover:text-zinc-300">{quickGoals[0]}</button>
+                        <button type="button" onClick={() => void createGoal()} disabled={busy || draft.trim().length < 3} className="shrink-0 rounded-xl bg-white px-3.5 py-2 text-[10px] font-semibold text-zinc-950 hover:bg-zinc-200 disabled:opacity-35">{busy ? <Loader2 size={13} className="animate-spin" /> : 'Delegar'}</button>
                       </div>
                     </div>
                   </section>
 
                   {loading ? (
-                    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.02] px-4 py-5 text-xs text-zinc-500">O DOT está reunindo o estado da empresa…</div>
+                    <section className="rounded-[22px] border border-white/[.07] bg-white/[.018] p-4 text-xs text-zinc-600">Reunindo o estado da empresa…</section>
                   ) : activeMission ? (
-                    <section className="rounded-[26px] border border-white/10 bg-[#0c0f15] p-5">
+                    <section className="rounded-[24px] border border-white/[.08] bg-[#0c0f15] p-4">
                       <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.16em] text-zinc-500"><Target size={13} className="text-sky-300" />Estou cuidando de</div>
-                          <h3 className="mt-1.5 truncate text-[15px] font-semibold text-white">{activeMission.title}</h3>
-                          {activeGoal && <p className="mt-1 text-[11px] text-zinc-600">objetivo · {activeGoal.title}</p>}
-                        </div>
-                        <span className={"shrink-0 rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[.12em] " + (activeMission.status === 'waiting_approval' ? 'bg-amber-400/10 text-amber-300' : activeMission.status === 'completed' ? 'bg-emerald-400/10 text-emerald-300' : 'bg-sky-400/10 text-sky-300')}>
-                          {activeMission.status === 'waiting_approval' ? 'aguardando você' : activeMission.status === 'completed' ? 'concluída' : 'em andamento'}
-                        </span>
+                        <div className="min-w-0"><div className="text-[9px] font-semibold uppercase tracking-[.18em] text-zinc-600">Missão atual</div><h3 className="mt-1 truncate text-[14px] font-semibold text-white">{activeMission.title}</h3></div>
+                        <span className={`shrink-0 rounded-full px-2 py-1 text-[9px] font-semibold uppercase tracking-[.1em] ${activeMission.status === 'waiting_approval' ? 'bg-amber-400/10 text-amber-300' : activeMission.status === 'completed' ? 'bg-emerald-400/10 text-emerald-300' : 'bg-sky-400/10 text-sky-300'}`}>{activeMission.status === 'waiting_approval' ? 'sua decisão' : activeMission.status === 'completed' ? 'concluída' : 'trabalhando'}</span>
                       </div>
-                      <div className="mt-4">
-                        <div className="flex items-center justify-between text-[10px] text-zinc-500"><span>{Math.round(missionProgress(activeMission))}% concluído</span><span>{Math.min(activeMission.current_step + 1, activeMission.total_steps)}/{activeMission.total_steps}</span></div>
-                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]"><div className="h-full rounded-full bg-sky-400 transition-all duration-500" style={{ width: missionProgress(activeMission) + '%' }} /></div>
-                      </div>
-                      <div className="mt-5 space-y-2">
+                      <div className="mt-3 flex items-center gap-2"><div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[.06]"><div className="h-full rounded-full bg-sky-400 transition-all" style={{ width: missionProgress(activeMission) + '%' }} /></div><span className="text-[9px] text-zinc-600">{Math.round(missionProgress(activeMission))}%</span></div>
+                      <div className="mt-4 space-y-1">
                         {steps.map((step, index) => {
                           const current = index === activeMission.current_step;
                           const done = step.status === 'completed' || index < activeMission.current_step;
-                          return <div key={step.id} className={"flex items-start gap-3 rounded-xl px-2.5 py-2 " + (current ? 'bg-white/[0.035]' : '')}>
-                            <div className="mt-0.5 shrink-0">{done ? <CheckCircle2 size={15} className="text-emerald-400" /> : current ? <Clock3 size={15} className={step.status === 'waiting_approval' ? 'text-amber-300' : 'text-sky-300'} /> : <Circle size={15} className="text-zinc-700" />}</div>
-                            <div className="min-w-0 flex-1"><div className={"text-xs " + (done ? 'text-zinc-500' : current ? 'font-medium text-zinc-200' : 'text-zinc-600')}>{stepLabel[step.type] || step.title}</div>{current && step.output && <div className="mt-1 text-[10px] leading-4 text-zinc-500">{step.output}</div>}</div>
+                          return <div key={step.id} className={`flex items-center gap-2.5 rounded-xl px-2 py-2 ${current ? 'bg-white/[.035]' : ''}`}>
+                            {done ? <CheckCircle2 size={14} className="shrink-0 text-emerald-400" /> : current ? <Clock3 size={14} className={step.status === 'waiting_approval' ? 'shrink-0 text-amber-300' : 'shrink-0 text-sky-300'} /> : <Circle size={14} className="shrink-0 text-zinc-700" />}
+                            <span className={`min-w-0 flex-1 text-[11px] ${done ? 'text-zinc-600' : current ? 'text-zinc-200' : 'text-zinc-700'}`}>{stepLabel[step.type] || step.title}</span>
                           </div>;
                         })}
                       </div>
-                      {activeMission.status !== 'waiting_approval' && activeMission.status !== 'completed' && <button type="button" disabled={!canMissionExecute || actionBusy === activeMission.id} onClick={() => void runMission(activeMission.id)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] py-2.5 text-[11px] font-semibold text-zinc-200 transition hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40">{actionBusy === activeMission.id ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}{canMissionExecute ? 'Deixar o DOT avançar agora' : 'Execução interna ainda não autorizada'}</button>}
+                      {activeMission.status !== 'waiting_approval' && activeMission.status !== 'completed' && <button type="button" disabled={!canMissionExecute || actionBusy === activeMission.id} onClick={() => void runMission(activeMission.id)} className="mt-3 w-full rounded-xl border border-white/[.08] bg-white/[.025] py-2.5 text-[10px] font-semibold text-zinc-300 hover:bg-white/[.05] disabled:opacity-35">{actionBusy === activeMission.id ? 'Executando…' : canMissionExecute ? 'Avançar missão' : 'Aguardando autorização'}</button>}
                     </section>
                   ) : (
-                    <section className="rounded-[26px] border border-dashed border-white/10 bg-white/[0.018] p-6 text-center">
-                      <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-sky-400/[0.07] text-sky-300"><Target size={20} /></div>
-                      <h3 className="mt-4 text-sm font-semibold text-white">Ainda não estou cuidando de nada.</h3>
-                      <p className="mx-auto mt-1.5 max-w-xs text-[11px] leading-5 text-zinc-600">Delegue um objetivo acima. A partir daí, o DOT acompanha a missão sem transformar isso em uma conversa.</p>
+                    <section className="rounded-[24px] border border-dashed border-white/[.08] p-6 text-center">
+                      <div className="mx-auto text-2xl text-sky-300/60">◉</div>
+                      <div className="mt-2 text-sm font-semibold text-white">Nenhuma missão ativa</div>
+                      <p className="mt-1 text-[11px] leading-5 text-zinc-600">Delegue um objetivo acima e o DOT transforma isso em uma missão acompanhável.</p>
                     </section>
                   )}
 
-                  {pendingApproval && <section className="rounded-[24px] border border-amber-300/15 bg-amber-300/[0.055] p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-300/10 text-amber-300"><Clock3 size={17} /></div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[10px] font-semibold uppercase tracking-[.15em] text-amber-300/80">Sua decisão</div>
-                        <h3 className="mt-1 text-sm font-semibold text-white">O DOT preparou um próximo passo.</h3>
-                        <p className="mt-1 text-[11px] leading-5 text-zinc-500">Nada foi executado ainda. Revise e aprove quando quiser; aprovação e execução continuam separadas.</p>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {canApprove ? <button type="button" disabled={approvalBusy === pendingApproval.id} onClick={() => void approveAction(pendingApproval.id)} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-300 px-3 py-2 text-[10px] font-semibold text-zinc-950 disabled:opacity-50">{approvalBusy === pendingApproval.id ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}Aprovar</button> : <span className="rounded-xl border border-white/10 px-3 py-2 text-[10px] text-zinc-600">Aprovação reservada ao responsável.</span>}
-                        </div>
-                      </div>
-                    </div>
+                  {pendingApproval && <section className="rounded-[22px] border border-amber-300/15 bg-amber-300/[.05] p-4">
+                    <div className="text-[9px] font-semibold uppercase tracking-[.16em] text-amber-300/80">Sua decisão</div>
+                    <div className="mt-1 text-sm font-semibold text-white">O próximo passo está pronto.</div>
+                    <p className="mt-1 text-[11px] leading-5 text-zinc-500">Nada foi executado. Sua aprovação libera a ação; execução continua separada.</p>
+                    <div className="mt-3">{canApprove ? <button type="button" disabled={approvalBusy === pendingApproval.id} onClick={() => void approveAction(pendingApproval.id)} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-300 px-3 py-2 text-[10px] font-semibold text-zinc-950">{approvalBusy === pendingApproval.id ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}Aprovar</button> : <span className="text-[10px] text-zinc-600">Aprovação reservada ao responsável.</span>}</div>
                   </section>}
 
-                  {actions.some((action) => action.status === 'approved') && <section className="rounded-[24px] border border-emerald-400/10 bg-emerald-400/[0.035] p-4">
+                  {actions.some((action) => action.status === 'approved') && <section className="rounded-[22px] border border-emerald-400/10 bg-emerald-400/[.035] p-4">
                     <div className="flex items-center justify-between gap-3">
-                      <div><div className="text-[10px] font-semibold uppercase tracking-[.15em] text-emerald-300/80">Liberado</div><div className="mt-1 text-xs font-medium text-zinc-200">Existe uma ação aprovada pronta para o DOT.</div></div>
-                      {actions.filter((action) => action.status === 'approved').slice(0, 1).map((action) => <button key={action.id} type="button" disabled={!canActionExecute || approvalBusy === action.id} onClick={() => void executeAction(action.id)} className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-400 px-3 py-2 text-[10px] font-semibold text-zinc-950 disabled:opacity-40">{approvalBusy === action.id ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}Executar</button>)}
+                      <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-300/80">Liberado</div><div className="mt-1 text-[11px] text-zinc-300">Existe uma ação aprovada.</div></div>
+                      {actions.filter((action) => action.status === 'approved').slice(0, 1).map((action) => <button key={action.id} type="button" disabled={!canActionExecute || approvalBusy === action.id} onClick={() => void executeAction(action.id)} className="shrink-0 rounded-xl bg-emerald-400 px-3 py-2 text-[10px] font-semibold text-zinc-950 disabled:opacity-35">{approvalBusy === action.id ? 'Executando…' : 'Executar'}</button>)}
                     </div>
                   </section>}
 
-                  {(activeCases.length > 0 || pendingFollowups > 0) && <section className="grid grid-cols-2 gap-2">
-                    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-3"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-600">Casos em foco</div><div className="mt-1 text-lg font-semibold text-white">{activeCases.length}</div><div className="text-[10px] text-zinc-600">tratativas internas</div></div>
-                    <div className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-3"><div className="text-[9px] font-semibold uppercase tracking-[.14em] text-zinc-600">Acompanhamentos</div><div className="mt-1 text-lg font-semibold text-white">{pendingFollowups}</div><div className="text-[10px] text-zinc-600">pendentes</div></div>
+                  {(activeCases.length > 0 || pendingFollowups > 0) && <div className="grid grid-cols-2 gap-2">
+                    <div className="rounded-2xl border border-white/[.07] bg-white/[.018] p-3"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-700">Casos em foco</div><div className="mt-1 text-lg font-semibold text-white">{activeCases.length}</div></div>
+                    <div className="rounded-2xl border border-white/[.07] bg-white/[.018] p-3"><div className="text-[9px] uppercase tracking-[.14em] text-zinc-700">Acompanhamentos</div><div className="mt-1 text-lg font-semibold text-white">{pendingFollowups}</div></div>
+                  </div>}
+
+                  {missions.length > 1 && <section className="rounded-[22px] border border-white/[.07] bg-white/[.015] p-3">
+                    <div className="flex items-center justify-between"><span className="text-[9px] font-semibold uppercase tracking-[.15em] text-zinc-700">Missões</span><span className="text-[9px] text-zinc-700">{missions.length}</span></div>
+                    <div className="mt-2 space-y-1">{missions.slice(0, 4).map((mission) => <button key={mission.id} type="button" onClick={() => setSelectedMissionId(mission.id)} className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left ${selectedMissionId === mission.id ? 'bg-white/[.05]' : 'hover:bg-white/[.03]'}`}><span className="truncate text-[10px] text-zinc-500">{mission.title}</span><span className="text-[9px] text-zinc-700">{Math.round(missionProgress(mission))}%</span></button>)}</div>
                   </section>}
 
-                  {missions.length > 1 && <section className="rounded-2xl border border-white/[0.07] bg-white/[0.018] p-3">
-                    <div className="flex items-center justify-between"><div className="text-[10px] font-semibold uppercase tracking-[.15em] text-zinc-600">Outras missões</div><span className="text-[10px] text-zinc-700">{missions.length}</span></div>
-                    <div className="mt-2 space-y-1">
-                      {missions.slice(0, 5).map((mission) => <button key={mission.id} type="button" onClick={() => setSelectedMissionId(mission.id)} className={"flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-left transition " + (selectedMissionId === mission.id ? 'bg-white/[0.05]' : 'hover:bg-white/[0.03]')}><span className="min-w-0 truncate text-[11px] text-zinc-400">{mission.title}</span><span className="shrink-0 text-[9px] text-zinc-600">{Math.round(missionProgress(mission))}%</span></button>)}
+                  <details className="rounded-[20px] border border-white/[.07] bg-white/[.012]">
+                    <summary className="cursor-pointer list-none px-4 py-3 text-[9px] font-semibold uppercase tracking-[.15em] text-zinc-700">Controle do agente</summary>
+                    <div className="grid grid-cols-2 gap-2 border-t border-white/[.06] px-4 py-3">
+                      <div className="rounded-xl border border-white/[.06] p-2.5"><div className="text-[9px] text-zinc-700">Execução</div><div className="mt-1 text-[10px] text-zinc-500">{canActionExecute ? 'autorizada' : 'bloqueada'}</div></div>
+                      <div className="rounded-xl border border-white/[.06] p-2.5"><div className="text-[9px] text-zinc-700">Escopo</div><div className="mt-1 text-[10px] text-zinc-500">isolado por empresa</div></div>
                     </div>
-                  </section>}
-
-                  <section className="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.015]">
-                    <button type="button" onClick={() => setSettingsOpen((value) => !value)} className="flex w-full items-center justify-between px-4 py-3 text-left">
-                      <span className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.14em] text-zinc-600"><Settings2 size={13} />Controle do agente</span>
-                      <ChevronDown size={14} className={"text-zinc-600 transition " + (settingsOpen ? 'rotate-180' : '')} />
-                    </button>
-                    {settingsOpen && <div className="border-t border-white/[0.06] px-4 pb-4 pt-3">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Execução</div><div className="mt-1 text-[10px] text-zinc-500">{canActionExecute ? 'Autorizada internamente' : 'Bloqueada'}</div></div>
-                        <div className="rounded-xl border border-white/[0.06] p-2.5"><div className="text-[9px] uppercase tracking-[.12em] text-zinc-700">Escopo</div><div className="mt-1 text-[10px] text-zinc-500">Isolado por empresa</div></div>
-                      </div>
-                      <p className="mt-3 text-[10px] leading-4 text-zinc-700">O DOT não envia nada para fora automaticamente. Ações externas permanecem fora do gateway de execução.</p>
-                    </div>}
-                  </section>
+                  </details>
                 </div>
               )}
             </div>
