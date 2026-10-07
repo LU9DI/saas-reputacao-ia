@@ -180,12 +180,32 @@ export async function runDotAgent(input: {
     const started = Date.now();
     const events: DotRuntimeEvent[] = [];
     await ensureDotPlanSchema();
-  const plan = await createDotPlan({
-    empresaId: input.empresaId,
-    actorUserId: input.actorUserId || 'system-dot',
-    sessionId: input.sessionId,
-    objective: input.objective,
-  });
+    let plan = input.planId ? await getDotPlan(input.planId) : null;
+    if (input.planId) {
+      if (!plan || plan.empresaId !== input.empresaId || plan.actorUserId !== (input.actorUserId || 'system-dot')) {
+        throw new Error('Plano DOT não pertence ao tenant/ator desta execução.');
+      }
+      if (plan.status === 'completed' || plan.status === 'failed') {
+        throw new Error('Este plano DOT já foi encerrado.');
+      }
+      if (plan.status === 'waiting_approval' && input.approvalGranted !== true) {
+        throw new Error('A aprovação explícita é necessária para retomar este plano.');
+      }
+      if (plan.status === 'waiting_approval') {
+        const steps = await listDotPlanSteps(plan.id);
+        for (const step of steps.filter((item) => item.status === 'blocked' && item.kind === 'approval')) {
+          await updateDotPlanStep(step.id, { status: 'completed' });
+        }
+      }
+      await setDotPlanStatus(plan.id, 'working');
+    } else {
+      plan = await createDotPlan({
+        empresaId: input.empresaId,
+        actorUserId: input.actorUserId || 'system-dot',
+        sessionId: input.sessionId,
+        objective: input.objective,
+      });
+    }
   const tools = input.allowTools === false ? [] : listDotTools();
   const catalog = toolCatalog(tools);
   let workingContext = input.context;
