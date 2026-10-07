@@ -151,6 +151,8 @@ export function listDotTools(): Array<Omit<DotToolDefinition, 'execute'>> {
   return Object.values(tools).map(({ execute, ...definition }) => definition);
 }
 
+const AUTONOMOUS_READ_TOOL_IDS = new Set(['company.workspace.read', 'reviews.read', 'reviews.analyze', 'search-console.query', 'dot.goals.read']);
+
 export async function invokeDotTool(input: {
   empresaId: string;
   toolId: string;
@@ -171,7 +173,7 @@ export async function invokeDotTool(input: {
       throw error;
     }
     const autonomousRead = input.actorType === 'system'
-      && (definition.operation === 'read' || definition.operation === 'analyze')
+      && AUTONOMOUS_READ_TOOL_IDS.has(definition.id)
       && process.env.DOT_AUTONOMOUS_READ_ENABLED !== '0';
     if (!autonomousRead) {
       await requireDotAccess(input.empresaId, definition.resource, definition.operation, input.actorUserId || null, { toolId: definition.id, actorType: input.actorType, actorUserId: input.actorUserId || null });
