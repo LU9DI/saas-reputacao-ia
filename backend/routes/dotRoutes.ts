@@ -18,6 +18,7 @@ import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
 import { selectDotModel } from '../services/dotModelRouting.js';
+import { runDotAgent } from '../services/dotAgentRuntime.js';
 import { requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
 
 const dotLimiter = rateLimit({
@@ -743,52 +744,53 @@ export function mountDotRoutes(app: Express) {
     const reservedTokens = tokenBudget.response_limit;
 
     try {
-      const responseSystem = `${SYSTEM}
-ORÇAMENTO DESTA RESPOSTA: até ${tokenBudget.response_limit} tokens de saída.
-CONTEXTO: ${contextResult.decision.mode}. ${contextResult.decision.reason}
+      const responseSystem = \`\${SYSTEM}
+ORÇAMENTO DESTA RESPOSTA: até \${tokenBudget.response_limit} tokens de saída.
+CONTEXTO: \${contextResult.decision.mode}. \${contextResult.decision.reason}
 REGRA DE FRESCOR: use fatos persistidos do contexto quando suficientes; quando a pergunta pedir estado atual, causa, impacto, comparação, recomendação ou decisão, raciocine novamente com os dados verificados nesta solicitação.
-Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: conclusão, evidências, impacto, recomendação e próximo passo. Evite introduções e repetições desnecessárias.`;
+Você deve operar pelo runtime de agente: investigar com ferramentas, reavaliar resultados e só então concluir.\`;
 
       const routing = selectDotModel(message);
-      const result = await callAI(
-        responseSystem,
-        buildConversation(contextResult.context, history, message),
-        tokenBudget.response_limit,
-        0.45,
-        {
-          empresaId: access.empresaId || null,
-          tipo: 'filtra_dot_chat',
-          feature: 'dot',
-          model: routing.model,
-        }
-      );
+      const runtime = await runDotAgent({
+        empresaId: access.empresaId || 'demo',
+        actorUserId: access.userId,
+        sessionId,
+        objective: message,
+        context: \`\${contextResult.context}\\n\\n\${responseSystem}\`,
+        history: history.slice(-MAX_HISTORY).map((item) => \`\${item.role}: \${item.text}\`).join('\\n'),
+        maxTokens: tokenBudget.response_limit,
+      });
 
       releaseDotTokenReservation(access.empresaId, reservedTokens);
 
-      // Guarda somente respostas geradas por IA e vinculadas ao fingerprint atual.
-      // Uma nova avaliação ou mudança relevante invalida esse cache.
-      if (!access.demo && contextResult.fingerprint && result.text) {
+      if (!access.demo && contextResult.fingerprint && runtime.text) {
         await putDotResponseCache(
           access.empresaId as string,
           message,
           contextResult.fingerprint,
-          result.text,
-          { tokens_used: result.tokens, provider: result.provider, model: result.model },
+          runtime.text,
+          { tokens_used: runtime.tokens, provider: runtime.provider, model: routing.model },
         );
       }
 
       history.push({ role: 'user', text: message, at: Date.now() });
-      history.push({ role: 'dot', text: result.text, at: Date.now() });
+      history.push({ role: 'dot', text: runtime.text, at: Date.now() });
       while (history.length > MAX_HISTORY) history.shift();
 
       return res.json({
         ok: true,
-        message: result.text,
-        provider: result.provider,
-        model: result.model,
+        message: runtime.text,
+        provider: runtime.provider,
+        model: routing.model,
         routing_tier: routing.tier,
-        latency_ms: result.latency_ms,
-        tokens_used: result.tokens,
+        latency_ms: runtime.latency_ms,
+        tokens_used: runtime.tokens,
+        agent: {
+          tool_calls: runtime.tool_calls,
+          replans: runtime.replans,
+          stopped_reason: runtime.stopped_reason,
+          events: runtime.events,
+        },
         demo: access.demo,
         plan: access.plan || 'rei',
         plan_label: access.planLabel || 'Rei',
@@ -800,18 +802,18 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
         feedback_isolated: true,
         response_token_limit: tokenBudget.response_limit,
         token_warning_threshold: 0.8,
-        token_warning: tokenBudget.feature_limit > 0 && ((tokenBudget.feature_used + result.tokens) / tokenBudget.feature_limit) >= 0.8,
+        token_warning: tokenBudget.feature_limit > 0 && ((tokenBudget.feature_used + runtime.tokens) / tokenBudget.feature_limit) >= 0.8,
         tokens_remaining_estimate: tokenBudget.limit
-          ? Math.max(0, tokenBudget.limit - tokenBudget.used - result.tokens)
+          ? Math.max(0, tokenBudget.limit - tokenBudget.used - runtime.tokens)
           : null,
         dot_token_limit: tokenBudget.feature_limit || null,
-        dot_tokens_used: tokenBudget.feature_used + result.tokens,
+        dot_tokens_used: tokenBudget.feature_used + runtime.tokens,
         context_mode: contextResult.decision.mode,
         context_source: contextResult.decision.dataSource,
         context_refresh_required: contextResult.decision.refreshRequired,
         context_reason: contextResult.decision.reason,
         dot_tokens_remaining_estimate: tokenBudget.feature_limit
-          ? Math.max(0, tokenBudget.feature_limit - tokenBudget.feature_used - result.tokens)
+          ? Math.max(0, tokenBudget.feature_limit - tokenBudget.used - runtime.tokens)
           : null,
       });
     } catch (error: any) {
