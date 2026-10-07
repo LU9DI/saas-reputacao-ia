@@ -7,7 +7,7 @@ import { createDotAgentGoal, getDotAgentWorkspace, listDotAgentGoals, updateDotA
 import { createMissionForGoal } from '../services/dotAgentMissions.js';
 import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 import { requireDotAccess, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
-import { claimDotPlanForActor, listDotPlanSteps, listDotPlans } from '../services/dotAgentPlan.js';
+import { claimDotPlanForActor, listDotPlanStepsForTenant, listDotPlans } from '../services/dotAgentPlan.js';
 import { runDotAgent } from '../services/dotAgentRuntime.js';
 import { listDotHypotheses } from '../services/dotAgentDecision.js';
 
@@ -99,7 +99,7 @@ export function mountDotAgentRoutes(app: Express) {
       const plans = await listDotPlans(access.empresaId, access.userId, 50);
       const plan = plans.find((item) => item.id === req.params.id);
       if (!plan) return res.status(404).json({ ok: false, error: 'Plano não encontrado.' });
-      const steps = await listDotPlanSteps(plan.id);
+      const steps = await listDotPlanStepsForTenant(access.empresaId, access.userId, plan.id);
       // Evidence may contain raw review/search data. The UI receives only the
       // execution metadata; sensitive evidence remains server-side and in audit storage.
       const safeSteps = steps.map(({ evidence: _evidence, ...step }) => step);
