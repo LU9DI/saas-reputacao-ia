@@ -170,7 +170,7 @@ export async function findRecentDotPlanForSignal(empresaId: string, triggerFinge
   await ensureDotPlanSchema();
   const cutoff = new Date(Date.now() - Math.max(1, cooldownHours) * 60 * 60 * 1000).toISOString();
   const rows = await getDb().all(
-    "SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint FROM dot_agent_plans WHERE empresa_id=? AND trigger_fingerprint=? AND updated_at>=? ORDER BY updated_at DESC LIMIT 1",
+    "SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint,pause_reason FROM dot_agent_plans WHERE empresa_id=? AND trigger_fingerprint=? AND updated_at>=? ORDER BY updated_at DESC LIMIT 1",
     [empresaId, triggerFingerprint, cutoff],
   );
   const row = (rows as any[])?.[0];
@@ -206,7 +206,7 @@ export async function setDotPlanStatus(planId: string, status: DotPlanStatus, pa
 export async function getDotPlan(planId: string): Promise<DotPlan | null> {
   await ensureDotPlanSchema();
   const rows = await getDb().all(
-    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint FROM dot_agent_plans WHERE id=? LIMIT 1',
+    'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint,pause_reason FROM dot_agent_plans WHERE id=? LIMIT 1',
     [planId],
   );
   const row = (rows as any[])?.[0];
@@ -231,7 +231,7 @@ export async function getDotPlan(planId: string): Promise<DotPlan | null> {
 export async function listDotPlans(empresaId: string, actorUserId: string, limit = 10): Promise<DotPlan[]> {
   await ensureDotPlanSchema();
   const rows = await getDb().all(
-    "SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint FROM dot_agent_plans WHERE empresa_id=? AND (actor_user_id=? OR actor_user_id='system-dot') ORDER BY updated_at DESC LIMIT ?",
+    "SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id,approved_by,approved_at,approval_action,trigger_signal_id,trigger_fingerprint,pause_reason FROM dot_agent_plans WHERE empresa_id=? AND (actor_user_id=? OR actor_user_id='system-dot') ORDER BY updated_at DESC LIMIT ?",
     [empresaId, actorUserId, Math.max(1, Math.min(limit, 50))],
   );
   return (rows as any[]).map((row) => ({
