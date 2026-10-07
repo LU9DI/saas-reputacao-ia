@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { prioridadesOperacionaisPorUnidade } from '../routes/empresaRoutes.js';
+import { oportunidadesEstrategicas, prioridadesOperacionaisPorUnidade } from '../routes/empresaRoutes.js';
 
 describe('prioridadesOperacionaisPorUnidade', () => {
   it('prioriza unidade crítica com tema recorrente', () => {
@@ -26,5 +26,44 @@ describe('prioridadesOperacionaisPorUnidade', () => {
     const ranking = [{ id: 'u3', nome: 'Norte', feedbacks: 8, nota: 4.1, tendencia_14d: 0, status: 'boa' }];
     const insights = [{ id: 'u3', nome: 'Norte', pontos_atencao: [], pontos_fortes: [] }];
     assert.deepEqual(prioridadesOperacionaisPorUnidade(ranking, insights), []);
+  });
+});
+
+
+describe('oportunidadesEstrategicas', () => {
+  it('pontua demanda recorrente e abrangente como oportunidade de alto potencial', () => {
+    const reviews = [
+      { rating: 4, comment: 'Quero mais opções de produto', ai_tags: ['Produto'], unidade_id: 'u1', createdAt: new Date().toISOString() },
+      { rating: 4, comment: 'Gostaria de mais opções', ai_tags: ['Produto'], unidade_id: 'u2', createdAt: new Date().toISOString() },
+      { rating: 5, comment: 'Produto excelente', ai_tags: ['Produto'], unidade_id: 'u3', createdAt: new Date().toISOString() },
+      { rating: 4, comment: 'Produto bom', ai_tags: ['Produto'], unidade_id: 'u1', createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
+    ];
+    const ranking = [
+      { id: 'u1', nome: 'Centro', feedbacks: 10, nota: 4.4 },
+      { id: 'u2', nome: 'Sul', feedbacks: 10, nota: 4.5 },
+      { id: 'u3', nome: 'Norte', feedbacks: 10, nota: 4.6 },
+    ];
+    const [item] = oportunidadesEstrategicas(reviews, ranking);
+    assert.equal(item.tipo, 'demanda');
+    assert.equal(item.evidencias.unidades_afetadas, 3);
+    assert.ok(item.score >= 45);
+    assert.equal(item.potencial, 'alto');
+    assert.match(item.impacto_negocio, /receita/i);
+  });
+
+  it('identifica retenção quando um tema recorrente tem nota baixa', () => {
+    const reviews = [
+      { rating: 2, comment: 'Problema grave', ai_tags: ['Atendimento'], unidade_id: 'u1', createdAt: new Date().toISOString() },
+      { rating: 2, comment: 'Muito ruim', ai_tags: ['Atendimento'], unidade_id: 'u1', createdAt: new Date().toISOString() },
+      { rating: 3, comment: 'Precisa melhorar', ai_tags: ['Atendimento'], unidade_id: 'u2', createdAt: new Date().toISOString() },
+    ];
+    const ranking = [
+      { id: 'u1', nome: 'Centro', feedbacks: 10, nota: 3.0 },
+      { id: 'u2', nome: 'Sul', feedbacks: 10, nota: 3.2 },
+    ];
+    const [item] = oportunidadesEstrategicas(reviews, ranking);
+    assert.equal(item.tipo, 'retencao');
+    assert.equal(item.evidencias.ocorrencias, 3);
+    assert.equal(item.evidencias.unidades_afetadas, 2);
   });
 });
