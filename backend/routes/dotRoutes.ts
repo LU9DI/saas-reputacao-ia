@@ -18,7 +18,7 @@ import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
 import { selectDotModel } from '../services/dotModelRouting.js';
-import { runDotAgent } from '../services/dotAgentRuntime.js';
+import { runDotAgent, listDotAgentRuns } from '../services/dotAgentRuntime.js';
 import { loadDotSessionHistory, appendDotMemoryTurn, clearDotSessionHistory } from '../services/dotMemory.js';
 import { requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
 
@@ -298,6 +298,13 @@ export function mountDotRoutes(app: Express) {
         'memoria_de_conversa',
       ],
     });
+  });
+
+  app.get('/api/dot/runs', async (req: Request, res: Response) => {
+    const access = await resolveDotAccess(req);
+    if (!access.allowed || !access.empresaId) return deny(res, access);
+    const limit = Math.min(Math.max(Number(req.query.limit || 20), 1), 100);
+    res.json({ ok: true, runs: await listDotAgentRuns(access.empresaId, limit) });
   });
 
   app.get('/api/dot/preferences', async (req: Request, res: Response) => {
