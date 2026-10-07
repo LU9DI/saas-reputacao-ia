@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Clínicas: checklist de avaliações Google ',
+  title: 'Clínicas: checklist de avaliações Google',
   description:
     'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
   alternates: { canonical: 'https://filtraai.com/blog/clinica-checklist-avaliacoes-google' },
@@ -12,6 +12,7 @@ export default function Page() {
   return (
     <BlogArticle
       kicker="Segmento · Clínicas"
+      canonical="https://filtraai.com/blog/clinica-checklist-avaliacoes-google"
       title="Clínicas: checklist de avaliações Google"
       lead="Paciente pesquisa nota antes de agendar. Um fluxo estruturado de feedback ajuda a clínica a identificar problemas, responder avaliações e transformar experiência em melhoria operacional."
     >
