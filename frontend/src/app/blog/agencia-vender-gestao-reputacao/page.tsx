@@ -157,6 +157,14 @@ export default function Page() {
         </Link>
         .
       </p>
+      <H2>Pacotes de SEO local: onde a reputação entra no escopo</H2>
+      <p>
+        Para agências, reputação funciona melhor como uma camada operacional do pacote de SEO local: acompanhamento de avaliações, análise de temas, feedback e relatório. O escopo deve informar frequência, unidades, responsáveis e critérios de medição, sem vender garantia de posição.
+      </p>
+      <p>
+        Compare essa estrutura com o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local</Link> e com a página de <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências</Link>.
+      </p>
+
     </BlogArticle>
   );
 }
