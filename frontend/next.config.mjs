@@ -6,7 +6,7 @@ const nextConfig = {
     : {}),
   poweredByHeader: false,
 
-  // Cloudflare Pages deploy is intentionally static/export-compatible.
+  // Production frontend is a static export for Cloudflare Pages.
 
   typescript: {
     ignoreBuildErrors: true,
@@ -15,8 +15,8 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // Em dev: proxy /api → backend local.
-  // Em produção (Vercel): o front chama NEXT_PUBLIC_API_URL (Render) direto — sem rewrite.
+  // In development, proxy /api to the local backend.
+  // In production, the browser calls the Render API directly via NEXT_PUBLIC_API_URL.
   async rewrites() {
     if (process.env.NODE_ENV === 'production') return [];
     const backend = (process.env.BACKEND_URL || 'http://127.0.0.1:5000').replace(/\/+$/, '');
