@@ -11,6 +11,89 @@ const UI = {
   cta: 'Começar teste gratuito (7 dias)',
 };
 
+const CONTEXT_LINKS_BY_PATH: Record<string, ContextLink[]> = {
+  '/filtra-ai': [
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Acompanhe avaliações, feedback e evolução da reputação.' },
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Transforme avaliações em uma rotina de gestão.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões e temas recorrentes com IA.' },
+    { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Organize a voz do cliente antes que os sinais se percam.' },
+    { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Acompanhe mudanças e sinais relevantes ao longo do tempo.' },
+    { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial da reputação.' },
+  ],
+  '/gestao-de-reputacao-online': [
+    { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Detecte mudanças, padrões e sinais que pedem atenção.' },
+    { href: '/reputacao-google', title: 'Reputação no Google', description: 'Conecte avaliações públicas à gestão da reputação.' },
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Estruture o acompanhamento das avaliações.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Transforme comentários em temas e prioridades.' },
+    { href: '/gestao-de-feedback', title: 'Gestão de feedback', description: 'Leve sinais da experiência até a equipe responsável.' },
+    { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Identifique pontos de atenção e oportunidades.' },
+  ],
+  '/avaliacoes-google': [
+    { href: '/como-melhorar-avaliacoes-google', title: 'Como melhorar avaliações Google', description: 'Crie uma rotina sustentável para aumentar a qualidade das avaliações.' },
+    { href: '/reputacao-google', title: 'Reputação no Google', description: 'Entenda os sinais por trás da percepção pública.' },
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Conecte avaliações a monitoramento e melhoria contínua.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões em grandes volumes de comentários.' },
+    { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões em informação acionável.' },
+    { href: '/blog/como-conseguir-avaliacoes-google', title: 'Como conseguir avaliações Google', description: 'Aprenda práticas para facilitar avaliações genuínas.' },
+  ],
+  '/reputacao-google': [
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Organize a gestão das avaliações e seus sinais.' },
+    { href: '/como-melhorar-avaliacoes-google', title: 'Como melhorar avaliações Google', description: 'Conecte experiência, feedback e evolução da percepção.' },
+    { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Acompanhe mudanças e recorrências.' },
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Estruture a operação contínua de reputação.' },
+    { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Entenda a experiência antes e depois da avaliação pública.' },
+    { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Encontre oportunidades na presença e reputação.' },
+  ],
+  '/analise-de-avaliacoes-com-ia': [
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Aplique análise aos sinais que chegam pelas avaliações.' },
+    { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Una avaliações públicas e feedback estruturado.' },
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Converta padrões em decisões de reputação.' },
+    { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Observe tendências e mudanças nos temas.' },
+    { href: '/reputacao-google', title: 'Reputação no Google', description: 'Relacione temas de avaliações com percepção pública.' },
+    { href: '/ia', title: 'IA para reputação', description: 'Veja como a inteligência artificial entra no fluxo.' },
+  ],
+  '/feedback-de-clientes': [
+    { href: '/gestao-de-feedback', title: 'Gestão de feedback', description: 'Estruture coleta, triagem, responsáveis e acompanhamento.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões em comentários e avaliações.' },
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Conecte feedback à reputação pública.' },
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Transforme sinais da experiência em gestão contínua.' },
+    { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Acompanhe tendências e problemas recorrentes.' },
+    { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece com um diagnóstico da reputação.' },
+  ],
+  '/gestao-de-feedback': [
+    { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Entenda como estruturar a voz do cliente.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Priorize temas recorrentes com IA.' },
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Conecte feedback à reputação e à operação.' },
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Relacione feedback e avaliações públicas.' },
+    { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Acompanhe se os problemas persistem.' },
+    { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Identifique os principais pontos de atenção.' },
+  ],
+  '/como-melhorar-avaliacoes-google': [
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Estruture a rotina de avaliações da empresa.' },
+    { href: '/reputacao-google', title: 'Reputação no Google', description: 'Entenda como a percepção pública evolui.' },
+    { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Use feedback para descobrir pontos de atrito.' },
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Conecte experiência, avaliação e gestão.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Identifique temas recorrentes com IA.' },
+    { href: '/blog/como-conseguir-avaliacoes-google', title: 'Guia de avaliações Google', description: 'Aprofunde as práticas para gerar avaliações genuínas.' },
+  ],
+  '/monitoramento-reputacao-online': [
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Transforme monitoramento em processo de gestão.' },
+    { href: '/reputacao-google', title: 'Reputação no Google', description: 'Acompanhe a percepção pública da marca.' },
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Monitore volume, temas e evolução das avaliações.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Acelere a descoberta de padrões.' },
+    { href: '/gestao-de-feedback', title: 'Gestão de feedback', description: 'Conecte sinais públicos e privados.' },
+    { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece identificando os sinais mais importantes.' },
+  ],
+  '/auditoria-gratuita': [
+    { href: '/filtra-ai', title: 'Filtra.AI', description: 'Conheça a plataforma e o fluxo completo.' },
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Veja como organizar a gestão das avaliações.' },
+    { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Entenda o processo contínuo de reputação.' },
+    { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Aprofunde o diagnóstico dos comentários.' },
+    { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Entenda os sinais que não aparecem só na nota.' },
+    { href: '/como-melhorar-avaliacoes-google', title: 'Como melhorar avaliações Google', description: 'Transforme diagnóstico em melhoria contínua.' },
+  ],
+};
+
 const DEFAULT_CONTEXT_LINKS: ContextLink[] = [
   {
     href: '/filtra-ai',
@@ -56,7 +139,7 @@ export function SeoLanding({
   ctaHref = '/preview/teste',
   ctaLabel,
   breadcrumbHref,
-  contextLinks = DEFAULT_CONTEXT_LINKS,
+  contextLinks,
 }: {
   h1: string;
   lead: string;
@@ -66,6 +149,7 @@ export function SeoLanding({
   breadcrumbHref?: string;
   contextLinks?: ContextLink[];
 }) {
+  const resolvedContextLinks = contextLinks || (breadcrumbHref ? CONTEXT_LINKS_BY_PATH[breadcrumbHref] : undefined) || DEFAULT_CONTEXT_LINKS;
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <SeoPageHeader />
@@ -139,7 +223,7 @@ export function SeoLanding({
           <p className="mt-2 text-sm text-zinc-400">{UI.deepBody}</p>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {contextLinks.map((link) => (
+            {resolvedContextLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -162,7 +246,7 @@ export function SeoLanding({
         </div>
 
         <nav className="flex flex-wrap gap-x-4 gap-y-2 border-t border-zinc-800 pt-6 text-xs text-zinc-500">
-          {DEFAULT_CONTEXT_LINKS.map((link) => (
+          {resolvedContextLinks.map((link) => (
             <Link key={link.href} href={link.href} className="hover:text-zinc-300">
               {link.title}
             </Link>
