@@ -313,6 +313,141 @@ export function radarEstrategico(reviews: any[], ranking: any[]) {
   };
 }
 
+
+export function oportunidadesEstrategicas(reviews: any[], ranking: any[]) {
+  const real = (reviews || []).filter((r: any) => !r.is_test);
+  const now = Date.now();
+  const recentCut = now - 14 * 24 * 60 * 60 * 1000;
+  const previousCut = now - 28 * 24 * 60 * 60 * 1000;
+  const unitById = new Map((ranking || []).map((u: any) => [String(u.id), u]));
+  const stats = new Map<string, {
+    ocorrencias: number;
+    unidades: Set<string>;
+    recentes: number;
+    anteriores: number;
+    pedidos: number;
+    somaNota: number;
+    negativas: number;
+    positivas: number;
+  }>();
+
+  const requestPattern = /\b(quero|queria|gostaria|poderia|poderiam|deveria|deveriam|sugest[aã]o|faltou|falta|seria bom|mais)\b/i;
+
+  for (const r of real) {
+    const t = new Date(rowCreatedAt(r)).getTime();
+    const recent = Number.isFinite(t) && t >= recentCut;
+    const previous = Number.isFinite(t) && t >= previousCut && t < recentCut;
+    const rating = Number(r.rating || 0);
+    const request = requestPattern.test(String(r.comment || ''));
+    const unitId = String(r.unidade_id || '');
+    const tags = Array.isArray(r.ai_tags) ? r.ai_tags : [];
+
+    for (const rawTag of tags) {
+      const tema = String(rawTag || '').trim();
+      if (!tema) continue;
+      const current = stats.get(tema) || {
+        ocorrencias: 0,
+        unidades: new Set<string>(),
+        recentes: 0,
+        anteriores: 0,
+        pedidos: 0,
+        somaNota: 0,
+        negativas: 0,
+        positivas: 0,
+      };
+      current.ocorrencias += 1;
+      if (unitId) current.unidades.add(unitId);
+      if (recent) current.recentes += 1;
+      if (previous) current.anteriores += 1;
+      if (request) current.pedidos += 1;
+      current.somaNota += rating;
+      if (rating <= 3) current.negativas += 1;
+      if (rating >= 4) current.positivas += 1;
+      stats.set(tema, current);
+    }
+  }
+
+  const totalUnits = Math.max(1, (ranking || []).filter((u: any) => u.feedbacks > 0).length);
+  const maxRecent = Math.max(1, ...[...stats.values()].map((s) => s.recentes));
+  const maxRequests = Math.max(1, ...[...stats.values()].map((s) => s.pedidos));
+
+  const result = [...stats.entries()].map(([tema, s]) => {
+    const abrangencia = Math.min(20, Math.round((s.unidades.size / totalUnits) * 20));
+    const recorrencia = Math.min(30, s.ocorrencias * 4);
+    const tendenciaBruta = s.recentes - s.anteriores;
+    const tendencia = Math.max(0, Math.min(20, Math.round((tendenciaBruta / maxRecent) * 20)));
+    const sinalPedido = Math.min(20, Math.round((s.pedidos / maxRequests) * 20));
+    const mediaNota = s.ocorrencias ? s.somaNota / s.ocorrencias : 0;
+    const impactoNota = mediaNota <= 3 ? 10 : mediaNota < 3.5 ? 8 : mediaNota < 4 ? 5 : 2;
+    const score = Math.max(0, Math.min(100, recorrencia + abrangencia + tendencia + sinalPedido + impactoNota));
+    const normalized = tema.toLowerCase();
+
+    let tipo: 'demanda' | 'expansao' | 'retencao' | 'operacao' | 'replicacao';
+    let impactoNegocio: string;
+    let acaoRecomendada: string;
+
+    if (s.pedidos >= 2 && /produto|servi|plano|categoria|opção|opcao|novo|nova|adicion/.test(normalized)) {
+      tipo = 'demanda';
+      impactoNegocio = 'Potencial de expansão de receita a partir de uma demanda recorrente dos clientes.';
+      acaoRecomendada = 'Validar a demanda, dimensionar interesse e testar uma oferta antes de ampliar a operação.';
+    } else if (s.positivas >= s.negativas * 2 && mediaNota >= 4.5 && s.unidades.size >= 1) {
+      tipo = 'replicacao';
+      impactoNegocio = 'Potencial de ganho operacional ao replicar uma prática que já funciona.';
+      acaoRecomendada = 'Identificar a prática associada ao tema e replicá-la nas unidades com menor desempenho.';
+    } else if (s.negativas >= Math.max(2, s.positivas) && mediaNota <= 3.5) {
+      tipo = 'retencao';
+      impactoNegocio = 'Risco de perda de clientes e redução de recorrência se o problema persistir.';
+      acaoRecomendada = 'Priorizar a correção da causa e acompanhar a recuperação da nota e dos sinais negativos.';
+    } else if (s.pedidos >= 2) {
+      tipo = 'expansao';
+      impactoNegocio = 'Sinal de oportunidade comercial ou de ampliação da oferta.';
+      acaoRecomendada = 'Testar uma iniciativa comercial ou operacional associada ao tema e medir adesão.';
+    } else {
+      tipo = 'operacao';
+      impactoNegocio = 'Potencial de ganho de eficiência, satisfação e retorno ao corrigir um tema recorrente.';
+      acaoRecomendada = 'Criar uma ação operacional mensurável e acompanhar o efeito nas unidades afetadas.';
+    }
+
+    const unidadesAfetadas = [...s.unidades]
+      .map((id) => unitById.get(id))
+      .filter(Boolean)
+      .sort((a: any, b: any) => Number(b.feedbacks || 0) - Number(a.feedbacks || 0))
+      .slice(0, 8)
+      .map((u: any) => ({ id: u.id, nome: u.nome, nota: u.nota }));
+
+    return {
+      id: `opp-${tema.toLowerCase().replace(/[^a-z0-9à-ÿ]+/gi, '-').replace(/^-|-$/g, '').slice(0, 60)}`,
+      tipo,
+      titulo: tipo === 'demanda'
+        ? `Explorar demanda por ${tema}`
+        : tipo === 'replicacao'
+          ? `Replicar força em ${tema}`
+          : tipo === 'retencao'
+            ? `Reduzir risco em ${tema}`
+            : tipo === 'expansao'
+              ? `Expandir oportunidade em ${tema}`
+              : `Melhorar operação em ${tema}`,
+      score,
+      potencial: score >= 70 ? 'alto' : score >= 45 ? 'medio' : 'baixo',
+      evidencias: {
+        ocorrencias: s.ocorrencias,
+        unidades_afetadas: s.unidades.size,
+        tendencia_14d: tendenciaBruta,
+        pedidos_clientes: s.pedidos,
+        media_nota: Math.round(mediaNota * 10) / 10,
+      },
+      impacto_negocio: impactoNegocio,
+      acao_recomendada: acaoRecomendada,
+      unidades_afetadas: unidadesAfetadas,
+    };
+  });
+
+  return result
+    .filter((x) => x.evidencias.ocorrencias >= 2 || x.evidencias.pedidos_clientes >= 1)
+    .sort((a, b) => b.score - a.score || b.evidencias.ocorrencias - a.evidencias.ocorrencias)
+    .slice(0, 10);
+}
+
 function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
