@@ -759,6 +759,7 @@ Você deve operar pelo runtime de agente: investigar com ferramentas, reavaliar 
         context: \`\${contextResult.context}\\n\\n\${responseSystem}\`,
         history: history.slice(-MAX_HISTORY).map((item) => \`\${item.role}: \${item.text}\`).join('\\n'),
         maxTokens: tokenBudget.response_limit,
+        allowTools: !access.demo,
       });
 
       releaseDotTokenReservation(access.empresaId, reservedTokens);
