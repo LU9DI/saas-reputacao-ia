@@ -107,7 +107,6 @@ function localizedAlternates(path: string) {
 function entry(path: string): MetadataRoute.Sitemap[number] {
   const canonical = path === '' ? '/' : path;
   const isBlog = canonical === '/blog' || canonical.startsWith('/blog/') || /^\/(en|es|zh)\/blog(?:\/|$)/.test(canonical);
-  const isHome = canonical === '/';
   const priority = authorityCore.has(canonical) ? 1 : highPriority.has(canonical) ? 0.9 : isBlog ? 0.8 : 0.7;
   return {
     url: base + canonical,
