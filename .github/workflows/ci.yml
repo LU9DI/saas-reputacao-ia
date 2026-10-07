@@ -11,6 +11,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  seo-brand:
+    name: SEO + brand guardrail
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Audit public SEO/content rules
+        run: node spec-kit/audit-seo-brand.mjs
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest
@@ -91,14 +106,15 @@ jobs:
   summary:
     name: CI summary
     runs-on: ubuntu-latest
-    needs: [backend, frontend]
+    needs: [seo-brand, backend, frontend]
     if: always()
     steps:
       - name: Check results
         run: |
+          echo "SEO/brand: ${{ needs.seo-brand.result }}"
           echo "Backend: ${{ needs.backend.result }}"
           echo "Frontend: ${{ needs.frontend.result }}"
-          if [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ]; then
+          if [ "${{ needs.seo-brand.result }}" != "success" ] || [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ]; then
             echo "CI failed"
             exit 1
           fi
