@@ -135,6 +135,15 @@ export async function ensureDotHypothesis(empresaId: string, signal: {
   ));
 }
 
+export async function getOpenDotHypothesisForSignal(empresaId: string, signalId: string): Promise<DotHypothesis | null> {
+  await ensureDotDecisionSchema();
+  const row = await getDb().get(
+    "SELECT id,empresa_id,signal_id,statement,rationale,status,confidence,confidence_score,evidence_step_ids_json,created_at,updated_at FROM dot_agent_hypotheses WHERE empresa_id=? AND signal_id=? AND status IN ('open','supported') ORDER BY updated_at DESC LIMIT 1",
+    [empresaId, signalId],
+  );
+  return row ? rowToHypothesis(row) : null;
+}
+
 export async function attachDotHypothesisEvidence(input: {
   hypothesisId: string;
   evidenceStepId: string;
