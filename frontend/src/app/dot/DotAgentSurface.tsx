@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  AlertTriangle, ArrowUpRight, Bot, Check, CheckCircle2, ChevronDown, Circle,
-  Clock3, Loader2, RefreshCw, Settings2, Sparkles, Target, X,
+  ArrowUpRight, Bot, Check, CheckCircle2, Circle, Clock3, Loader2, RefreshCw, X,
 } from 'lucide-react';
 import { apiFetch } from '../utils/apiFailover';
 
@@ -49,7 +48,6 @@ export function DotAgentSurface() {
   const [loading, setLoading] = useState(true);
   const [actionBusy, setActionBusy] = useState<number | null>(null);
   const [approvalBusy, setApprovalBusy] = useState<number | null>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [error, setError] = useState('');
   const [selectedMissionId, setSelectedMissionId] = useState<number | null>(null);
 
@@ -61,11 +59,6 @@ export function DotAgentSurface() {
     () => missions.find((mission) => ['working', 'planned', 'waiting_approval'].includes(mission.status)) ||
       missions.find((mission) => mission.status !== 'completed'),
     [missions],
-  );
-  const activeGoal = useMemo(
-    () => workspace?.goals.find((goal) => goal.id === activeMission?.goal_id && goal.status === 'active') ||
-      workspace?.goals.find((goal) => goal.status === 'active'),
-    [workspace, activeMission],
   );
   const pendingApproval = useMemo(() => actions.find((action) => action.status === 'prepared'), [actions]);
   const activeCases = useMemo(() => cases.filter((item) => ['prioritized', 'escalated'].includes(item.status)).slice(0, 3), [cases]);
@@ -210,14 +203,13 @@ export function DotAgentSurface() {
     } finally { setApprovalBusy(null); }
   }
 
-  const selectedMission = missions.find((mission) => mission.id === selectedMissionId) || activeMission;
   const pendingFollowups = followups.filter((item) => item.status === 'pending').length;
 
   return (
     <>
       <button type="button" aria-label="Abrir DOT" data-testid="dot-agent-launcher" onClick={() => setOpen((value) => !value)}
         className="fixed bottom-5 right-5 z-[90] grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-zinc-950/95 text-white shadow-[0_18px_50px_rgba(0,0,0,.45)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-sky-300/30 focus:outline-none focus:ring-2 focus:ring-sky-400/40">
-        <span className="relative text-[18px]" aria-hidden="true">◉</span>
+        <Bot size={19} strokeWidth={2.1} aria-hidden="true" />
         {hasAccess && <span className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 bg-emerald-400" />}
       </button>
 
@@ -229,7 +221,7 @@ export function DotAgentSurface() {
             <header className="shrink-0 border-b border-white/[.07] px-5 py-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-sky-400/[.08] text-sky-300">◉</div>
+                  <div className="grid h-9 w-9 place-items-center rounded-xl bg-sky-400/[.08] text-sky-300"><Bot size={17} strokeWidth={2.1} /></div>
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold tracking-tight text-white">DOT</span>
@@ -260,7 +252,7 @@ export function DotAgentSurface() {
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <div className="text-[9px] font-semibold uppercase tracking-[.18em] text-sky-300/80">Delegar</div>
-                        <h2 className="mt-1 text-[17px] font-semibold tracking-tight text-white">O que eu devo cuidar?</h2>
+                        <h2 className="mt-1 text-[17px] font-semibold tracking-tight text-white">O que você quer que eu cuide?</h2>
                       </div>
                       {workspace?.summary && <div className="text-right"><div className="text-lg font-semibold text-white">{workspace.summary.active}</div><div className="text-[9px] uppercase tracking-[.12em] text-zinc-600">ativas</div></div>}
                     </div>
@@ -296,7 +288,7 @@ export function DotAgentSurface() {
                     </section>
                   ) : (
                     <section className="rounded-[24px] border border-dashed border-white/[.08] p-6 text-center">
-                      <div className="mx-auto text-2xl text-sky-300/60">◉</div>
+                      <Bot className="mx-auto text-sky-300/60" size={26} strokeWidth={1.8} />
                       <div className="mt-2 text-sm font-semibold text-white">Nenhuma missão ativa</div>
                       <p className="mt-1 text-[11px] leading-5 text-zinc-600">Delegue um objetivo acima e o DOT transforma isso em uma missão acompanhável.</p>
                     </section>
