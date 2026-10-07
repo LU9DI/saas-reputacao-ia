@@ -155,6 +155,8 @@ export async function runDotAgent(input: {
   history?: string;
   maxTokens: number;
   allowTools?: boolean;
+  planId?: string;
+  approvalGranted?: boolean;
 }): Promise<DotAgentRunResult> {
   const lock = await acquireDotRuntimeLock({
     empresaId: input.empresaId,
