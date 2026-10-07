@@ -137,12 +137,17 @@ async function persistRun(input: {
   );
 }
 
-export async function listDotAgentRuns(empresaId: string, limit = 20) {
+export async function listDotAgentRuns(empresaId: string, actorUserId?: string | null, limit = 20) {
   await ensureRuntimeSchema();
-  const rows = await getDb().all(
-    'SELECT id,session_id,objective,status,iterations,tool_calls,replans,stopped_reason,created_at,completed_at FROM dot_agent_runs WHERE empresa_id=? ORDER BY id DESC LIMIT ?',
-    [empresaId, Math.max(1, Math.min(limit, 100))],
-  );
+  const rows = actorUserId
+    ? await getDb().all(
+      'SELECT id,session_id,objective,status,iterations,tool_calls,replans,stopped_reason,created_at,completed_at FROM dot_agent_runs WHERE empresa_id=? AND actor_user_id=? ORDER BY id DESC LIMIT ?',
+      [empresaId, actorUserId, Math.max(1, Math.min(limit, 100))],
+    )
+    : await getDb().all(
+      'SELECT id,session_id,objective,status,iterations,tool_calls,replans,stopped_reason,created_at,completed_at FROM dot_agent_runs WHERE empresa_id=? ORDER BY id DESC LIMIT ?',
+      [empresaId, Math.max(1, Math.min(limit, 100))],
+    );
   return rows || [];
 }
 
