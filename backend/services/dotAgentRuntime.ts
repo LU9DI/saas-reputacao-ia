@@ -1,6 +1,7 @@
 import { callAI } from '../groqService.js';
 import { invokeDotTool, listDotTools, type DotToolDefinition } from './dotToolRegistry.js';
 import { getDb } from '../lib/db.js';
+import { addDotPlanStep, createDotPlan, ensureDotPlanSchema, setDotPlanStatus, updateDotPlanStep } from './dotAgentPlan.js';
 
 export type DotRuntimeEvent = {
   type: 'model' | 'tool' | 'final' | 'approval';
@@ -92,11 +93,16 @@ async function ensureRuntimeSchema() {
     completed_at TEXT
   )`);
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_agent_runs_empresa ON dot_agent_runs(empresa_id, created_at)');
+  const columns = await db.all('PRAGMA table_info(dot_agent_runs)');
+  if (!(columns as any[]).some((column) => String(column.name) === 'plan_id')) {
+    await db.exec('ALTER TABLE dot_agent_runs ADD COLUMN plan_id TEXT');
+  }
 }
 
 async function persistRun(input: {
   empresaId: string;
   actorUserId?: string | null;
+  planId?: string | null;
   sessionId: string;
   objective: string;
   status: string;
@@ -110,10 +116,11 @@ async function persistRun(input: {
 }) {
   await ensureRuntimeSchema();
   await getDb().run(
-    'INSERT INTO dot_agent_runs (empresa_id,actor_user_id,session_id,objective,status,iterations,tool_calls,replans,stopped_reason,events_json,created_at,completed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+    'INSERT INTO dot_agent_runs (empresa_id,actor_user_id,plan_id,session_id,objective,status,iterations,tool_calls,replans,stopped_reason,events_json,created_at,completed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
     [
       input.empresaId,
       input.actorUserId || null,
+      input.planId || null,
       input.sessionId,
       input.objective.slice(0, 4000),
       input.status,
@@ -149,6 +156,13 @@ export async function runDotAgent(input: {
 }): Promise<DotAgentRunResult> {
   const started = Date.now();
   const events: DotRuntimeEvent[] = [];
+  await ensureDotPlanSchema();
+  const plan = await createDotPlan({
+    empresaId: input.empresaId,
+    actorUserId: input.actorUserId || 'system-dot',
+    sessionId: input.sessionId,
+    objective: input.objective,
+  });
   const tools = input.allowTools === false ? [] : listDotTools();
   const catalog = toolCatalog(tools);
   let workingContext = input.context;
@@ -216,6 +230,7 @@ ${input.history || '(sem histórico)'}`;
     if (decision.type === 'final') {
       finalText = decision.message || 'Concluí a análise com as evidências disponíveis.';
       stoppedReason = 'final';
+      await setDotPlanStatus(plan.id, 'completed');
       break;
     }
 
@@ -228,6 +243,14 @@ ${input.history || '(sem histórico)'}`;
         at: new Date().toISOString(),
       });
       stoppedReason = 'approval_required';
+      const approvalStep = await addDotPlanStep({
+        planId: plan.id,
+        title: decision.action || 'Aprovação necessária',
+        kind: 'approval',
+        rationale: decision.message,
+      });
+      await updateDotPlanStep(approvalStep.id, { status: 'blocked', evidence: { action: decision.action || null, message: decision.message } });
+      await setDotPlanStatus(plan.id, 'waiting_approval');
       break;
     }
 
@@ -237,6 +260,15 @@ ${input.history || '(sem histórico)'}`;
       replans += 1;
       continue;
     }
+
+    const planStep = await addDotPlanStep({
+      planId: plan.id,
+      title: decision.tool_id,
+      kind: 'tool',
+      toolId: decision.tool_id,
+      rationale: decision.rationale,
+    });
+    await updateDotPlanStep(planStep.id, { status: 'working' });
 
     try {
       const toolResult = await invokeDotTool({
@@ -255,6 +287,7 @@ ${input.history || '(sem histórico)'}`;
         at: new Date().toISOString(),
       });
       workingContext += `\n\n[FERRAMENTA ${decision.tool_id}]\n${JSON.stringify(toolResult.result).slice(0, 20_000)}`;
+      await updateDotPlanStep(planStep.id, { status: 'completed', evidence: toolResult.result });
       replans += 1;
     } catch (error: any) {
       toolCalls += 1;
@@ -267,6 +300,7 @@ ${input.history || '(sem histórico)'}`;
         at: new Date().toISOString(),
       });
       workingContext += `\n\n[FALHA DA FERRAMENTA ${decision.tool_id}] ${message}`;
+      await updateDotPlanStep(planStep.id, { status: 'failed', error: message });
       replans += 1;
     }
   }
@@ -276,9 +310,13 @@ ${input.history || '(sem histórico)'}`;
   }
 
   const completedAt = new Date().toISOString();
+  if (stoppedReason === 'max_iterations' || stoppedReason === 'token_budget_exhausted') {
+    await setDotPlanStatus(plan.id, 'paused');
+  }
   await persistRun({
     empresaId: input.empresaId,
     actorUserId: input.actorUserId,
+    planId: plan.id,
     sessionId: input.sessionId,
     objective: input.objective,
     status: stoppedReason === 'approval_required' ? 'waiting_approval' : 'completed',
