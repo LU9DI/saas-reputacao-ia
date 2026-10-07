@@ -245,6 +245,60 @@ export function prioridadesOperacionaisPorUnidade(ranking: any[], insights: any[
     .slice(0, 12);
 }
 
+
+export function radarEstrategico(reviews: any[], ranking: any[]) {
+  const real = (reviews || []).filter((r: any) => !r.is_test);
+  const positiveThemes: Record<string, number> = {};
+  const negativeThemes: Record<string, number> = {};
+  const requestThemes: Record<string, number> = {};
+  let riskClients = 0;
+  const requestPattern = /\\b(quero|queria|gostaria|poderia|poderiam|deveria|deveriam|sugest[aã]o|faltou|falta|seria bom|mais)\\b/i;
+
+  for (const r of real) {
+    const rating = Number(r.rating || 0);
+    const tags = Array.isArray(r.ai_tags) ? r.ai_tags : [];
+    const target = rating >= 4 ? positiveThemes : rating <= 3 ? negativeThemes : null;
+    for (const tag of tags) {
+      const key = String(tag || '').trim();
+      if (!key) continue;
+      if (target) target[key] = (target[key] || 0) + 1;
+      if (requestPattern.test(String(r.comment || ''))) requestThemes[key] = (requestThemes[key] || 0) + 1;
+    }
+    if (rating <= 2 || String(r.sentiment || '').toLowerCase() === 'negativo') riskClients += 1;
+  }
+
+  const top = (source: Record<string, number>, limit = 5) => Object.entries(source)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([tema, ocorrencias]) => ({ tema, ocorrencias }));
+
+  const bestUnit = [...(ranking || [])].filter((u: any) => u.feedbacks > 0).sort((a, b) => b.nota - a.nota)[0] || null;
+  const worstUnit = [...(ranking || [])].filter((u: any) => u.feedbacks > 0).sort((a, b) => a.nota - b.nota)[0] || null;
+  const recentCut = Date.now() - 14 * 24 * 60 * 60 * 1000;
+  const recentNegative = real.filter((r: any) => Number(r.rating || 0) <= 3 && new Date(r.createdAt).getTime() >= recentCut).length;
+  const previousNegative = real.filter((r: any) => {
+    const t = new Date(r.createdAt).getTime();
+    return Number(r.rating || 0) <= 3 && t < recentCut && t >= recentCut - 14 * 24 * 60 * 60 * 1000;
+  }).length;
+
+  return {
+    oportunidades: top(positiveThemes),
+    temas_criticos: top(negativeThemes),
+    pedidos_clientes: top(requestThemes),
+    risco: {
+      clientes_em_risco: riskClients,
+      negativas_14d: recentNegative,
+      variacao_negativas_14d: recentNegative - previousNegative,
+      unidade_critica: worstUnit ? { id: worstUnit.id, nome: worstUnit.nome, nota: worstUnit.nota } : null,
+    },
+    crescimento: {
+      unidade_referencia: bestUnit ? { id: bestUnit.id, nome: bestUnit.nome, nota: bestUnit.nota } : null,
+      unidades: (ranking || []).filter((u: any) => u.feedbacks > 0).length,
+      feedbacks_analisados: real.length,
+    },
+  };
+}
+
 function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
@@ -742,6 +796,7 @@ export function mountEmpresaRoutes(app: Express) {
             unidades_resumo: unidadesResumo,
             unidades_insights: unidadesInsights,
             prioridades_operacionais: prioridadesOperacionaisPorUnidade(unidadesRanking, unidadesInsights),
+            radar_estrategico: planAtual === 'rei' ? radarEstrategico(reviews, unidadesRanking) : null,
             total,
             media,
             negativas,
