@@ -7,6 +7,7 @@ import { createDotAgentGoal, getDotAgentWorkspace, listDotAgentGoals, updateDotA
 import { createMissionForGoal } from '../services/dotAgentMissions.js';
 import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 import { requireDotAccess, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
+import { listDotPlanSteps, listDotPlans } from '../services/dotAgentPlan.js';
 
 type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string; userId?: string | null; demo?: boolean };
 
@@ -64,6 +65,30 @@ export function mountDotAgentRoutes(app: Express) {
       res.json({ ok: true, ...await getDotAgentWorkspace(access.empresaId), plan: access.plan, plan_label: planLabel(access.plan || '') });
     } catch (error) {
       res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar o espaço do agente DOT.' });
+    }
+  });
+
+  app.get('/api/dot/agent/plans', async (req: Request, res: Response) => {
+    const access = await resolveDotAgentAccess(req);
+    if (!access.allowed || !access.empresaId || !access.userId) return deny(res, access);
+    try {
+      const plans = await listDotPlans(access.empresaId, access.userId, Number(req.query.limit) || 10);
+      res.json({ ok: true, plans });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar planos do agente DOT.' });
+    }
+  });
+
+  app.get('/api/dot/agent/plans/:id/steps', async (req: Request, res: Response) => {
+    const access = await resolveDotAgentAccess(req);
+    if (!access.allowed || !access.empresaId || !access.userId) return deny(res, access);
+    try {
+      const plans = await listDotPlans(access.empresaId, access.userId, 50);
+      const plan = plans.find((item) => item.id === req.params.id);
+      if (!plan) return res.status(404).json({ ok: false, error: 'Plano não encontrado.' });
+      res.json({ ok: true, plan, steps: await listDotPlanSteps(plan.id) });
+    } catch (error) {
+      res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar etapas do plano.' });
     }
   });
 
