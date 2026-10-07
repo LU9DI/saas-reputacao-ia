@@ -15,7 +15,7 @@ type Action = { id: number; decisionId: number; optionId: string; action: string
 type FollowUp = { id: number; status: string; due_at: string; outcome?: string | null };
 type CaseItem = { id: number; status: string; priority: string; summary: string; next_step: string };
 type AgentRun = { id: number; objective: string; status: string; iterations: number; tool_calls: number; replans: number; stopped_reason?: string | null; events?: Array<{ type: string; name: string; at: string }> };
-type AgentPlan = { id: string; objective: string; status: string; currentStepId?: string | null };
+type AgentPlan = { id: string; objective: string; status: string; currentStepId?: string | null; triggerSignalId?: string | null; triggerFingerprint?: string | null };
 type AgentPlanStep = { id: string; sequence: number; title: string; kind: string; status: string };
 
 const quickGoals = [
@@ -324,7 +324,7 @@ export function DotAgentSurface() {
 {plans.length > 0 && <section className="rounded-[22px] border border-emerald-300/10 bg-emerald-300/[.025] p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-300/70">Plano vivo</div><div className="mt-1 text-[11px] text-zinc-400">O DOT decide os próximos passos com base nas evidências.</div></div>
-                      <span className="text-[9px] text-zinc-600">{plans[0].status}</span>
+                      <div className="flex items-center gap-2"><span className="text-[8px] uppercase tracking-[.08em] text-emerald-300/60">{plans[0].triggerSignalId ? 'Detectado automaticamente' : 'Delegado por você'}</span><span className="text-[9px] text-zinc-600">{plans[0].status}</span></div>
                     </div>
                     <div className="mt-3 space-y-1.5">
                       {planSteps.slice(-5).map((step) => <div key={step.id} className="flex items-center gap-2.5 rounded-xl bg-black/10 px-3 py-2">
