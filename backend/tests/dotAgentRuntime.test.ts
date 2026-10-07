@@ -29,3 +29,14 @@ test('DOT runtime remove cercas markdown antes do JSON', () => {
   const decision = parseDotRuntimeDecision('```json\n{"type":"final","message":"Concluído"}\n```');
   assert.deepEqual(decision, { type: 'final', message: 'Concluído' });
 });
+
+
+test('DOT runtime rejeita tipos de decisão desconhecidos', () => {
+  const decision = parseDotRuntimeDecision('{"type":"execute","tool_id":"reviews.read"}');
+  assert.equal(decision.type, 'final');
+});
+
+test('DOT runtime não executa ferramenta quando o JSON está quebrado', () => {
+  const decision = parseDotRuntimeDecision('{"type":"tool","tool_id":"reviews.read"');
+  assert.equal(decision.type, 'final');
+});
