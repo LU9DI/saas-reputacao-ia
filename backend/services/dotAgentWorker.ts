@@ -35,12 +35,13 @@ async function runTick() {
     // O worker recupera planos persistentes do runtime agentivo.
     // Missões legadas não são mais a fonte de verdade da execução.
     const plans = await db.all(
-      "SELECT id, empresa_id, actor_user_id, session_id, objective, status FROM dot_agent_plans WHERE status IN ('working','paused') ORDER BY updated_at ASC LIMIT 25",
+      "SELECT id, empresa_id, actor_user_id, session_id, objective, status, pause_reason FROM dot_agent_plans WHERE status='working' OR (status='paused' AND pause_reason IN ('system_recovery','budget','rate_limit','error')) ORDER BY updated_at ASC LIMIT 25",
     );
 
     for (const plan of plans || []) {
       try {
         const status = String(plan.status);
+        const pauseReason = plan.pause_reason ? String(plan.pause_reason) : null;
         // Planos pausados por limite operacional podem continuar automaticamente.
         // Planos em working são recuperados após crash/restart; o lock impede duplicidade.
         const result = await runDotAgent({
@@ -59,7 +60,7 @@ async function runTick() {
 
         if (result.stopped_reason === 'already_running') continue;
         if (status === 'paused') {
-          console.log(`🤖 DOT agente: plano ${plan.id} retomado automaticamente.`);
+          console.log(`🤖 DOT agente: plano ${plan.id} retomado automaticamente (${pauseReason || 'system_recovery'}).`);
         }
       } catch (error: any) {
         console.warn(`DOT agente: falha na recuperação do plano ${plan.id}:`, error?.message || error);
