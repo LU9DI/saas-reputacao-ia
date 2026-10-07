@@ -5,7 +5,7 @@ import type { Express, Response } from 'express';
 import { getDb, findEmpresa } from '../lib/db.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { planTemIA } from '../lib/quota.js';
+import { planTemIA, getFeedbackLimit } from '../lib/quota.js';
 
 function podeGerir(req: AuthRequest, empresaId: string): boolean {
   if (isAdminUser(req.user)) return true;
@@ -40,7 +40,7 @@ export function mountExportRoutes(app: Express) {
          FROM reviews
          WHERE empresa_id = ? AND rating <= 3 AND IFNULL(is_test,0) = 0
          ORDER BY createdAt DESC
-         LIMIT 2000`,
+         LIMIT ${Math.max(1, Math.min(8000, getFeedbackLimit(plan)))}`,
         [emp.id]
       );
 
