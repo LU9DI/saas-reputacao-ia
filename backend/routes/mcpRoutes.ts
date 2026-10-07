@@ -182,7 +182,6 @@ async function toolGetCompanySummary(ctx: ToolCtx) {
   const crises_24h = reais.filter(
     (r) => Number(r.rating) <= 2 && new Date(rowCreatedAt(r)).getTime() >= ha24h
   ).length;
-  const plan = String(empresa.plan || 'trial').toLowerCase();
   const trial = isTrialPlan(plan);
   const statusAcesso =
     empresa.status === 'bloqueado'
