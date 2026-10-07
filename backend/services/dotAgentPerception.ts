@@ -6,6 +6,7 @@ import {
   findActiveDotPlanForSignal,
   findRecentDotPlanForSignal,
 } from './dotAgentPlan.js';
+import { ensureDotHypothesis } from './dotAgentDecision.js';
 
 export type DotSignalSeverity = 'low' | 'medium' | 'high' | 'critical';
 export type DotSignalStatus = 'active' | 'resolved' | 'planned' | 'ignored';
@@ -317,6 +318,8 @@ export async function createAutonomousDotPlans(empresaId: string, minPriority = 
     if (recent) continue;
 
     const sessionId = `autonomous:${signal.fingerprint}`;
+    await ensureDotHypothesis(empresaId, signal);
+
     const plan = await createDotPlan({
       empresaId,
       actorUserId: 'system-dot',
