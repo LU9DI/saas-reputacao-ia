@@ -2,21 +2,28 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SeoLanding } from '../components/SeoLanding';
 
-export const metadata: Metadata = {
-  title: 'SEO local para agências: reputação | Filtra.AI',
-  description:
-    'Gestão de reputação e avaliações Google para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.',
-  alternates: {
-    canonical: 'https://filtraai.com/agencias',
-    languages: {
-      'pt-BR': 'https://filtraai.com/agencias',
-      en: 'https://filtraai.com/en/agencies',
-      es: 'https://filtraai.com/es/agencias',
-      zh: 'https://filtraai.com/zh/agencies',
-      'x-default': 'https://filtraai.com/agencias',
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'SEO local para agências: reputação | Filtra.AI',
+    description: 'Gestão de reputação e avaliações Google para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.',
+    alternates: {
+      canonical: 'https://filtraai.com/agencias',
+      languages: {
+        'pt-BR': 'https://filtraai.com/agencias',
+        en: 'https://filtraai.com/en/agencies',
+        es: 'https://filtraai.com/es/agencias',
+        zh: 'https://filtraai.com/zh/agencies',
+        'x-default': 'https://filtraai.com/agencias',
+      },
     },
-  },
-};
+    openGraph: {
+      type: 'website',
+      url: 'https://filtraai.com/agencias',
+      title: 'SEO local para agências: reputação | Filtra.AI',
+      description: 'Gestão de reputação e avaliações Google para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.',
+    },
+  };
+}
 
 export default function AgenciasPage() {
   return (
