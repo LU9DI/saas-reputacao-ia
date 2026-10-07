@@ -91,8 +91,11 @@ export default function AgenciasPage() {
           heading: 'O papel da IA na entrega',
           body: 'A IA pode classificar comentários, encontrar recorrências e acelerar a produção de análises. No Filtra.AI, recursos automatizados de IA são usados para classificação, análise, sugestão de respostas ou geração de relatórios, conforme o plano. A agência continua responsável pelo contexto estratégico, pela comunicação com o cliente e pela decisão sobre quais sinais merecem intervenção.'
         },
-      ]}
-      />
+        },
+        {
+          heading: 'Pacotes de SEO local para agências: escopo que o cliente consegue comprar',
+          body: <>Uma proposta comercial forte separa estratégia de execução. Defina unidades, frequência, avaliações, reputação, conteúdo local, relatórios e responsáveis. O objetivo é vender uma rotina mensurável, não uma promessa de posição. Para comparar escopo, preço e entregáveis, consulte <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">o guia de pacotes de SEO local</Link>.</>
+        },
       ]}
     />
   );
