@@ -162,6 +162,7 @@ export async function runDotAgent(input: {
   allowTools?: boolean;
   planId?: string;
   approvalGranted?: boolean;
+  autonomous?: boolean;
 }): Promise<DotAgentRunResult> {
   const lock = await acquireDotRuntimeLock({
     empresaId: input.empresaId,
@@ -183,6 +184,7 @@ export async function runDotAgent(input: {
 
   try {
     const started = Date.now();
+    const autonomous = input.autonomous === true || input.actorUserId === 'system-dot';
     const events: DotRuntimeEvent[] = [];
     await ensureDotPlanSchema();
     let plan = input.planId ? await getDotPlan(input.planId) : null;
@@ -210,6 +212,8 @@ export async function runDotAgent(input: {
         actorUserId: input.actorUserId || 'system-dot',
         sessionId: input.sessionId,
         objective: input.objective,
+        triggerSignalId: null,
+        triggerFingerprint: null,
       });
     }
   const tools = input.allowTools === false ? [] : listDotTools();
@@ -238,6 +242,7 @@ export async function runDotAgent(input: {
   let spentTokens = 0;
 
   const system = `Você é o núcleo operacional do Filtra Dot.
+${autonomous ? 'Esta é uma execução autônoma de percepção. Você só pode observar/analisar dados; nunca invente permissão para efeitos externos.' : ''}
 Você NÃO é um chatbot genérico. Você recebe um objetivo e deve investigar, usar ferramentas permitidas, observar os resultados e replanejar até ter evidência suficiente para responder.
 A cada ciclo escolha EXATAMENTE UMA saída JSON:
 {"type":"tool","tool_id":"...","input":{},"rationale":"..."}
@@ -343,7 +348,7 @@ ${input.history || '(sem histórico)'}`;
       const toolResult = await invokeDotTool({
         empresaId: input.empresaId,
         toolId: decision.tool_id,
-        actorType: 'dot',
+        actorType: autonomous ? 'system' : 'dot',
         actorUserId: input.actorUserId || null,
         input: decision.input || {},
       });
