@@ -63,17 +63,20 @@ const localizedPaths = Object.values(SEO_FAMILIES).flatMap((family) =>
   Object.values(family).map((path) => path).filter((path) => path !== family['pt-BR']),
 );
 
-const highPriority = new Set([
+const authorityCore = new Set([
   '/',
   '/filtra-ai',
+  '/gestao-de-reputacao-online',
+  '/avaliacoes-google',
   '/reputacao-google',
+  '/analise-de-avaliacoes-com-ia',
+  '/feedback-de-clientes',
   '/como-melhorar-avaliacoes-google',
   '/monitoramento-reputacao-online',
   '/gestao-de-feedback',
-  '/feedback-de-clientes',
-  '/analise-de-avaliacoes-com-ia',
-  '/gestao-de-reputacao-online',
-  '/avaliacoes-google',
+]);
+
+const highPriority = new Set([
   '/auditoria-gratuita',
   '/agencias',
   '/clinicas',
@@ -105,10 +108,10 @@ function entry(path: string): MetadataRoute.Sitemap[number] {
   const canonical = path === '' ? '/' : path;
   const isBlog = canonical === '/blog' || canonical.startsWith('/blog/') || /^\/(en|es|zh)\/blog(?:\/|$)/.test(canonical);
   const isHome = canonical === '/';
-  const priority = isHome ? 1 : highPriority.has(canonical) ? 0.95 : isBlog ? 0.8 : 0.7;
+  const priority = authorityCore.has(canonical) ? 1 : highPriority.has(canonical) ? 0.9 : isBlog ? 0.8 : 0.7;
   return {
     url: base + canonical,
-    changeFrequency: isHome || isBlog ? 'weekly' : 'monthly',
+    changeFrequency: authorityCore.has(canonical) || isBlog ? 'weekly' : 'monthly',
     priority,
     alternates: localizedAlternates(canonical),
   };
