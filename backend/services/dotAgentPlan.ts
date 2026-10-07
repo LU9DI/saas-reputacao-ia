@@ -162,6 +162,15 @@ export async function findActiveDotPlanForSignal(empresaId: string, triggerFinge
   return { id: row.id, empresaId: row.empresa_id, actorUserId: row.actor_user_id, sessionId: row.session_id, objective: row.objective, status: row.status as DotPlanStatus, currentStepId: row.current_step_id, approvedBy: row.approved_by ?? null, approvedAt: row.approved_at ?? null, approvalAction: row.approval_action ?? null, triggerSignalId: row.trigger_signal_id ?? null, triggerFingerprint: row.trigger_fingerprint ?? null };
 }
 
+export async function claimDotPlanForActor(planId: string, empresaId: string, actorUserId: string): Promise<boolean> {
+  await ensureDotPlanSchema();
+  const result = await getDb().run(
+    "UPDATE dot_agent_plans SET actor_user_id=?,updated_at=? WHERE id=? AND empresa_id=? AND actor_user_id='system-dot' AND status IN ('paused','waiting_approval')",
+    [actorUserId, new Date().toISOString(), planId, empresaId],
+  );
+  return Number((result as any)?.changes ?? 0) > 0;
+}
+
 export async function recordDotPlanApproval(planId: string, approvedBy: string, approvalAction?: string | null): Promise<void> {
   await ensureDotPlanSchema();
   await getDb().run(
