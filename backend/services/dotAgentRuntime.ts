@@ -285,7 +285,6 @@ export async function runDotAgent(input: {
   let spentTokens = 0;
   const evidenceStepIds: string[] = [];
   const hypothesis = plan.triggerSignalId ? await getOpenDotHypothesisForSignal(input.empresaId, plan.triggerSignalId) : null;
-  const signalType = plan.triggerSignalId ? String(plan.triggerFingerprint || '') : '';
 
   const system = `Você é o núcleo operacional do Filtra Dot.
 ${autonomous ? 'Esta é uma execução autônoma de percepção. Você só pode observar/analisar dados; nunca invente permissão para efeitos externos.' : ''}
