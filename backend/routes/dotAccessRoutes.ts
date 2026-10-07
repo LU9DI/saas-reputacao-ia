@@ -5,7 +5,7 @@ import { empresaTemAcesso } from '../services/billingService.js';
 import { listDotPermissions, setDotPermission, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
 import { listDotTools, invokeDotTool } from '../services/dotToolRegistry.js';
 
-const resources: DotAccessResource[] = ['filtra','customers','sales','marketing','operations','finance','hr','crm','documents','calendar','email','whatsapp','erp','other'];
+const resources: DotAccessResource[] = ['filtra','customers','sales','marketing','operations','finance','hr','crm','documents','calendar','email','whatsapp','erp','seo','other'];
 const actions: DotAccessAction[] = ['read','analyze','create','update','execute','external_send'];
 
 function demoEnabled() {
