@@ -273,3 +273,13 @@ function safeJson(value: string): unknown {
     return value;
   }
 }
+
+export async function listDotPlanStepsForTenant(empresaId: string, actorUserId: string, planId: string): Promise<DotPlanStep[]> {
+  await ensureDotPlanSchema();
+  const plan = await getDb().get(
+    "SELECT id FROM dot_agent_plans WHERE id=? AND empresa_id=? AND (actor_user_id=? OR actor_user_id='system-dot') LIMIT 1",
+    [planId, empresaId, actorUserId],
+  );
+  if (!plan) return [];
+  return listDotPlanSteps(planId);
+}
