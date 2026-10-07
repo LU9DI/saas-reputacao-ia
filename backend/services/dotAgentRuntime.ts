@@ -44,23 +44,24 @@ export function parseDotRuntimeDecision(raw: string): RuntimeDecision {
   const cleaned = cleanJson(raw);
   try {
     const parsed = JSON.parse(cleaned);
-    if (parsed?.type === 'tool' && typeof parsed.tool_id === 'string') {
+    if (parsed?.type === 'tool' && typeof parsed.tool_id === 'string' && parsed.tool_id.length <= 120) {
+      const input = parsed.input && typeof parsed.input === 'object' && !Array.isArray(parsed.input) ? parsed.input : {};
       return {
         type: 'tool',
-        tool_id: parsed.tool_id,
-        input: parsed.input && typeof parsed.input === 'object' ? parsed.input : {},
-        rationale: typeof parsed.rationale === 'string' ? parsed.rationale : undefined,
+        tool_id: parsed.tool_id.slice(0, 120),
+        input,
+        rationale: typeof parsed.rationale === 'string' ? parsed.rationale.slice(0, 1200) : undefined,
       };
     }
     if (parsed?.type === 'approval') {
       return {
         type: 'approval',
-        message: String(parsed.message || 'A aprovação do responsável é necessária antes da próxima ação.'),
-        action: typeof parsed.action === 'string' ? parsed.action : undefined,
+        message: String(parsed.message || 'A aprovação do responsável é necessária antes da próxima ação.').slice(0, 4000),
+        action: typeof parsed.action === 'string' ? parsed.action.slice(0, 1200) : undefined,
       };
     }
     if (parsed?.type === 'final') {
-      return { type: 'final', message: String(parsed.message || '').trim() };
+      return { type: 'final', message: String(parsed.message || '').trim().slice(0, 6000) };
     }
   } catch {
     // Fallback seguro: texto não estruturado nunca dispara ferramenta.
