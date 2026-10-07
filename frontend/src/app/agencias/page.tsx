@@ -92,6 +92,8 @@ export default function AgenciasPage() {
           body: 'A IA pode classificar comentários, encontrar recorrências e acelerar a produção de análises. No Filtra.AI, recursos automatizados de IA são usados para classificação, análise, sugestão de respostas ou geração de relatórios, conforme o plano. A agência continua responsável pelo contexto estratégico, pela comunicação com o cliente e pela decisão sobre quais sinais merecem intervenção.'
         },
       ]}
+      />
+      ]}
     />
   );
 }
