@@ -15,6 +15,8 @@ type Action = { id: number; decisionId: number; optionId: string; action: string
 type FollowUp = { id: number; status: string; due_at: string; outcome?: string | null };
 type CaseItem = { id: number; status: string; priority: string; summary: string; next_step: string };
 type AgentRun = { id: number; objective: string; status: string; iterations: number; tool_calls: number; replans: number; stopped_reason?: string | null; events?: Array<{ type: string; name: string; at: string }> };
+type AgentPlan = { id: string; objective: string; status: string; currentStepId?: string | null };
+type AgentPlanStep = { id: string; sequence: number; title: string; kind: string; status: string };
 
 const quickGoals = [
   'Encontrar o principal problema da minha operação',
@@ -45,6 +47,8 @@ export function DotAgentSurface() {
   const [followups, setFollowups] = useState<FollowUp[]>([]);
   const [cases, setCases] = useState<CaseItem[]>([]);
   const [runs, setRuns] = useState<AgentRun[]>([]);
+  const [plans, setPlans] = useState<AgentPlan[]>([]);
+  const [planSteps, setPlanSteps] = useState<AgentPlanStep[]>([]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -85,8 +89,9 @@ export function DotAgentSurface() {
         apiFetch('/api/dot/followups', { credentials: 'include' }),
         apiFetch('/api/dot/cases', { credentials: 'include' }),
         apiFetch('/api/dot/runs?limit=8', { credentials: 'include' }),
+        apiFetch('/api/dot/agent/plans?limit=4', { credentials: 'include' }),
       ]);
-      const [workspaceRes, permissionRes, missionsRes, actionsRes, followupsRes, casesRes, runsRes] = requests;
+      const [workspaceRes, permissionRes, missionsRes, actionsRes, followupsRes, casesRes, runsRes, plansRes] = requests;
       if (workspaceRes.ok) {
         const data = await workspaceRes.json();
         if (data?.ok) setWorkspace({ goals: data.goals || [], summary: data.summary || { active: 0, attention: 0 } });
@@ -118,6 +123,21 @@ export function DotAgentSurface() {
       if (runsRes.ok) {
         const data = await runsRes.json();
         if (data?.ok) setRuns(data.runs || []);
+      }
+      if (plansRes.ok) {
+        const data = await plansRes.json();
+        if (data?.ok) {
+          const nextPlans = data.plans || [];
+          setPlans(nextPlans);
+          const activePlan = nextPlans.find((plan: AgentPlan) => ['working', 'waiting_approval'].includes(plan.status)) || nextPlans[0];
+          if (activePlan) {
+            const stepRes = await apiFetch('/api/dot/agent/plans/' + encodeURIComponent(activePlan.id) + '/steps', { credentials: 'include' });
+            if (stepRes.ok) {
+              const stepData = await stepRes.json();
+              if (stepData?.ok) setPlanSteps(stepData.steps || []);
+            }
+          } else setPlanSteps([]);
+        }
       }
     } catch {
       setError('Não consegui atualizar o estado do DOT.');
@@ -301,7 +321,21 @@ export function DotAgentSurface() {
                     </section>
                   )}
 
-                  {runs.length > 0 && <section className="rounded-[22px] border border-sky-300/10 bg-sky-300/[.025] p-4">
+{plans.length > 0 && <section className="rounded-[22px] border border-emerald-300/10 bg-emerald-300/[.025] p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-emerald-300/70">Plano vivo</div><div className="mt-1 text-[11px] text-zinc-400">O DOT decide os próximos passos com base nas evidências.</div></div>
+                      <span className="text-[9px] text-zinc-600">{plans[0].status}</span>
+                    </div>
+                    <div className="mt-3 space-y-1.5">
+                      {planSteps.slice(-5).map((step) => <div key={step.id} className="flex items-center gap-2.5 rounded-xl bg-black/10 px-3 py-2">
+                        {step.status === 'completed' ? <CheckCircle2 size={13} className="text-emerald-400" /> : step.status === 'working' ? <Loader2 size={13} className="animate-spin text-sky-300" /> : <Circle size={13} className="text-zinc-700" />}
+                        <span className="min-w-0 flex-1 truncate text-[10px] text-zinc-400">{step.title}</span>
+                        <span className="text-[8px] uppercase tracking-[.08em] text-zinc-700">{step.status}</span>
+                      </div>)}
+                    </div>
+                  </section>}
+
+                                    {runs.length > 0 && <section className="rounded-[22px] border border-sky-300/10 bg-sky-300/[.025] p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div><div className="text-[9px] font-semibold uppercase tracking-[.16em] text-sky-300/70">Atividade do agente</div><div className="mt-1 text-[11px] text-zinc-400">O DOT registra cada investigação e replanejamento.</div></div>
                       <span className="text-[9px] text-zinc-600">{runs.length} recentes</span>
