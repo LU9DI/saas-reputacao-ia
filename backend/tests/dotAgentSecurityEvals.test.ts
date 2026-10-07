@@ -42,3 +42,15 @@ test('eval de segurança: JSON válido mas input primitivo vira input vazio', ()
   assert.equal(decision.type, 'tool');
   if (decision.type === 'tool') assert.deepEqual(decision.input, {});
 });
+
+test('eval de segurança: input array nunca é tratado como objeto de argumentos', () => {
+  const decision = parseDotRuntimeDecision('{"type":"tool","tool_id":"reviews.read","input":[1,2,3]}');
+  assert.equal(decision.type, 'tool');
+  if (decision.type === 'tool') assert.deepEqual(decision.input, {});
+});
+
+test('eval de segurança: ferramenta com identificador excessivo não é executada', () => {
+  const toolId = 'x'.repeat(121);
+  const decision = parseDotRuntimeDecision(JSON.stringify({ type: 'tool', tool_id: toolId, input: {} }));
+  assert.equal(decision.type, 'final');
+});
