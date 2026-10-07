@@ -491,6 +491,7 @@ export function mountEmpresaRoutes(app: Express) {
             sentiment: r.sentiment || null,
             sentiment_score: r.sentiment_score != null ? Number(r.sentiment_score) : null,
             sentiment_source: r.sentiment_source || null,
+            unidade_id: r.unidade_id || null,
             client_whatsapp: clientWpp,
             client_whatsapp_url: linkWhatsapp(clientWpp, textoWpp),
             client_whatsapp_anon: r.client_whatsapp === '[anonimizado]',
