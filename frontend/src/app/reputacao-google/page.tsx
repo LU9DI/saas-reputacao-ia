@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export async function generateMetadata(): Promise<Metadata> {
-  title: 'Reputação no Google: gestão de avaliações e confiança | Filtra.AI',
+  return {
+    title: 'Reputação no Google: gestão de avaliações e confiança | Filtra.AI',
   description:
     'Como gerir reputação no Google, organizar avaliações e transformar feedback em ações de crescimento com a Filtra.AI.',
   alternates: {
