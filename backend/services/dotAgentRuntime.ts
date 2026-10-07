@@ -136,10 +136,11 @@ export async function runDotAgent(input: {
   context: string;
   history?: string;
   maxTokens: number;
+  allowTools?: boolean;
 }): Promise<DotAgentRunResult> {
   const started = Date.now();
   const events: DotRuntimeEvent[] = [];
-  const tools = listDotTools();
+  const tools = input.allowTools === false ? [] : listDotTools();
   const catalog = toolCatalog(tools);
   let workingContext = input.context;
   let lastProvider = 'unknown';
@@ -149,6 +150,7 @@ export async function runDotAgent(input: {
   let replans = 0;
   let stoppedReason = 'max_iterations';
   let finalText = '';
+  let spentTokens = 0;
 
   const system = `Você é o núcleo operacional do Filtra Dot.
 Você NÃO é um chatbot genérico. Você recebe um objetivo e deve investigar, usar ferramentas permitidas, observar os resultados e replanejar até ter evidência suficiente para responder.
@@ -176,16 +178,22 @@ ${input.history || '(sem histórico)'}`;
       ? `OBJETIVO DO USUÁRIO:\n${input.objective}\n\nDecida o primeiro passo operacional.`
       : `OBJETIVO:\n${input.objective}\n\nRESULTADOS ACUMULADOS:\n${workingContext}\n\nEscolha o próximo passo. Se já houver evidência suficiente, finalize.`;
 
+    const remainingBudget = Math.max(0, input.maxTokens - spentTokens);
+    if (remainingBudget <= 0) {
+      stoppedReason = 'token_budget_exhausted';
+      break;
+    }
     const result = await callAI(
       system,
       user,
-      Math.max(300, Math.min(input.maxTokens, 900)),
+      Math.max(1, Math.min(remainingBudget, 900)),
       0.2,
       { empresaId: input.empresaId, tipo: 'filtra_dot_agent_runtime' },
     );
 
     lastProvider = result.provider;
     totalTokens += result.tokens;
+    spentTokens += result.tokens;
     totalLatency += result.latency_ms;
     events.push({
       type: 'model',
