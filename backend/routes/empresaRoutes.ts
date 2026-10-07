@@ -894,7 +894,7 @@ export function mountEmpresaRoutes(app: Express) {
         const top_tags = planTemIA(planAtual) ? Object.entries(tagCount)
           .sort((a, b) => b[1] - a[1])
           .slice(0, 8)
-          .map(([tag, count]) => ({ tag, count }));
+          .map(([tag, count]) => ({ tag, count })) : [];
 
         const serie_14d = serieUltimosDias(reais, 14);
 
