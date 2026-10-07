@@ -1,7 +1,11 @@
 name: Refresh backend lockfile
 
 on:
-  workflow_dispatch:
+  push:
+    branches: ["codex/dot-company-execution"]
+    paths:
+      - "backend/package.json"
+      - ".github/workflows/refresh-backend-lock.yml"
 
 permissions:
   contents: write
