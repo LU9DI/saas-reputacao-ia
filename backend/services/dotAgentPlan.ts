@@ -1,7 +1,8 @@
-import { randomUUID } from "crypto";
+import { randomUUID } from 'crypto';
 import { getDb } from '../lib/db.js';
 
-export type DotPlanStepStatus = "pending" | "working" | "completed" | "blocked" | "failed";
+export type DotPlanStepStatus = 'pending' | 'working' | 'completed' | 'blocked' | 'failed';
+export type DotPlanStatus = 'working' | 'waiting_approval' | 'completed' | 'failed' | 'paused';
 
 export interface DotPlanStep {
   id: string;
@@ -22,7 +23,7 @@ export interface DotPlan {
   actorUserId: string;
   sessionId: string;
   objective: string;
-  status: "working" | "waiting_approval" | "completed" | "failed" | "paused";
+  status: DotPlanStatus;
   currentStepId?: string | null;
 }
 
@@ -32,38 +33,34 @@ export function ensureDotPlanSchema(): Promise<void> {
   if (!schemaPromise) {
     schemaPromise = (async () => {
       const db = getDb();
-      await db.query(`
-        CREATE TABLE IF NOT EXISTS dot_agent_plans (
-          id TEXT PRIMARY KEY,
-          empresa_id TEXT NOT NULL,
-          actor_user_id TEXT NOT NULL,
-          session_id TEXT NOT NULL,
-          objective TEXT NOT NULL,
-          status TEXT NOT NULL DEFAULT 'working',
-          current_step_id TEXT,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        )
-      `);
-      await db.query(`
-        CREATE TABLE IF NOT EXISTS dot_agent_plan_steps (
-          id TEXT PRIMARY KEY,
-          plan_id TEXT NOT NULL,
-          sequence INTEGER NOT NULL,
-          title TEXT NOT NULL,
-          kind TEXT NOT NULL,
-          status TEXT NOT NULL DEFAULT 'pending',
-          tool_id TEXT,
-          rationale TEXT,
-          evidence_json JSONB,
-          error TEXT,
-          started_at TIMESTAMPTZ,
-          completed_at TIMESTAMPTZ,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        )
-      `);
-      await db.query(`CREATE INDEX IF NOT EXISTS idx_dot_agent_plans_tenant_session ON dot_agent_plans(empresa_id, session_id, updated_at DESC)`);
-      await db.query(`CREATE INDEX IF NOT EXISTS idx_dot_agent_plan_steps_plan_seq ON dot_agent_plan_steps(plan_id, sequence)`);
+      await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_plans (
+        id TEXT PRIMARY KEY,
+        empresa_id TEXT NOT NULL,
+        actor_user_id TEXT NOT NULL,
+        session_id TEXT NOT NULL,
+        objective TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'working',
+        current_step_id TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )`);
+      await db.exec(`CREATE TABLE IF NOT EXISTS dot_agent_plan_steps (
+        id TEXT PRIMARY KEY,
+        plan_id TEXT NOT NULL,
+        sequence INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        tool_id TEXT,
+        rationale TEXT,
+        evidence_json TEXT,
+        error TEXT,
+        started_at TEXT,
+        completed_at TEXT,
+        created_at TEXT NOT NULL
+      )`);
+      await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_agent_plans_tenant_session ON dot_agent_plans(empresa_id, session_id, updated_at)');
+      await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_agent_plan_steps_plan_seq ON dot_agent_plan_steps(plan_id, sequence)');
     })();
   }
   return schemaPromise;
@@ -76,21 +73,13 @@ export async function createDotPlan(input: {
   objective: string;
 }): Promise<DotPlan> {
   await ensureDotPlanSchema();
-  const db = getDb();
   const id = randomUUID();
   const now = new Date().toISOString();
-  await db.run(
+  await getDb().run(
     'INSERT INTO dot_agent_plans (id,empresa_id,actor_user_id,session_id,objective,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)',
     [id, input.empresaId, input.actorUserId, input.sessionId, input.objective.slice(0, 4000), 'working', now, now],
   );
-  return {
-    id,
-    empresaId: input.empresaId,
-    actorUserId: input.actorUserId,
-    sessionId: input.sessionId,
-    objective: input.objective,
-    status: "working",
-  };
+  return { id, empresaId: input.empresaId, actorUserId: input.actorUserId, sessionId: input.sessionId, objective: input.objective, status: 'working' };
 }
 
 export async function addDotPlanStep(input: {
@@ -102,12 +91,13 @@ export async function addDotPlanStep(input: {
 }): Promise<DotPlanStep> {
   await ensureDotPlanSchema();
   const db = getDb();
-  const next = const nextRows = await db.all(
+  const rows = await db.all(
     'SELECT COALESCE(MAX(sequence), 0) + 1 AS next FROM dot_agent_plan_steps WHERE plan_id=?',
     [input.planId],
   );
-  const sequence = Number((nextRows as any[])?.[0]?.next ?? 1);
+  const sequence = Number((rows as any[])?.[0]?.next ?? 1);
   const id = randomUUID();
+  const now = new Date().toISOString();
   await db.run(
     'INSERT INTO dot_agent_plan_steps (id,plan_id,sequence,title,kind,status,tool_id,rationale,created_at) VALUES (?,?,?,?,?,?,?,?,?)',
     [id, input.planId, sequence, input.title.slice(0, 1000), input.kind.slice(0, 120), 'pending', input.toolId ?? null, input.rationale?.slice(0, 2000) ?? null, now],
@@ -116,30 +106,17 @@ export async function addDotPlanStep(input: {
     'UPDATE dot_agent_plans SET current_step_id=?, updated_at=? WHERE id=?',
     [id, now, input.planId],
   );
-  return {
-    id,
-    planId: input.planId,
-    sequence,
-    title: input.title,
-    kind: input.kind,
-    status: "pending",
-    toolId: input.toolId ?? null,
-    rationale: input.rationale ?? null,
-  };
+  return { id, planId: input.planId, sequence, title: input.title, kind: input.kind, status: 'pending', toolId: input.toolId ?? null, rationale: input.rationale ?? null };
 }
 
-export async function updateDotPlanStep(
-  stepId: string,
-  update: {
-    status: DotPlanStepStatus;
-    evidence?: unknown;
-    error?: string;
-  },
-): Promise<void> {
+export async function updateDotPlanStep(stepId: string, update: {
+  status: DotPlanStepStatus;
+  evidence?: unknown;
+  error?: string;
+}): Promise<void> {
   await ensureDotPlanSchema();
-  const db = getDb();
   const now = new Date().toISOString();
-  await db.run(
+  await getDb().run(
     `UPDATE dot_agent_plan_steps
        SET status=?,
            evidence_json=COALESCE(?, evidence_json),
@@ -156,13 +133,9 @@ export async function updateDotPlanStep(
   );
 }
 
-export async function setDotPlanStatus(
-  planId: string,
-  status: DotPlan["status"],
-): Promise<void> {
+export async function setDotPlanStatus(planId: string, status: DotPlanStatus): Promise<void> {
   await ensureDotPlanSchema();
-  const db = getDb();
-  await db.run(
+  await getDb().run(
     'UPDATE dot_agent_plans SET status=?, updated_at=? WHERE id=?',
     [status, new Date().toISOString(), planId],
   );
@@ -170,8 +143,7 @@ export async function setDotPlanStatus(
 
 export async function getDotPlan(planId: string): Promise<DotPlan | null> {
   await ensureDotPlanSchema();
-  const db = getDb();
-  const rows = await db.all(
+  const rows = await getDb().all(
     'SELECT id,empresa_id,actor_user_id,session_id,objective,status,current_step_id FROM dot_agent_plans WHERE id=? LIMIT 1',
     [planId],
   );
@@ -183,7 +155,7 @@ export async function getDotPlan(planId: string): Promise<DotPlan | null> {
     actorUserId: row.actor_user_id,
     sessionId: row.session_id,
     objective: row.objective,
-    status: row.status,
+    status: row.status as DotPlanStatus,
     currentStepId: row.current_step_id,
   };
 }
