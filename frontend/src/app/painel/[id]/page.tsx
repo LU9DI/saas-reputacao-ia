@@ -411,6 +411,38 @@ export default function PainelEmpresa() {
                   mostrarTags={dashboard?.mostrar_tags}
                 />
               </div>
+
+              {nivel === 'executivo' && Array.isArray(metricas.unidades_ranking) && metricas.unidades_ranking.length > 0 && (
+                <section className="mt-5 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+                  <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-indigo-400">Operação multi-unidades</p>
+                      <h3 className="mt-1 text-lg font-semibold text-white">Ranking das unidades</h3>
+                    </div>
+                    <p className="text-xs text-zinc-500">Baseado nos feedbacks reais disponíveis no painel</p>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[680px] text-sm">
+                      <thead><tr className="border-b border-white/10 text-left text-[10px] uppercase tracking-wide text-zinc-500">
+                        <th className="px-3 py-2">#</th><th className="px-3 py-2">Unidade</th><th className="px-3 py-2">Nota</th><th className="px-3 py-2">Tendência</th><th className="px-3 py-2">Feedbacks</th><th className="px-3 py-2">Positivas</th><th className="px-3 py-2">Situação</th>
+                      </tr></thead>
+                      <tbody>
+                        {metricas.unidades_ranking.map((u: any, i: number) => (
+                          <tr key={u.id} className="border-b border-white/5 last:border-0">
+                            <td className="px-3 py-3 font-semibold text-zinc-500">{i + 1}</td>
+                            <td className="px-3 py-3"><div className="font-medium text-zinc-100">{u.nome}</div>{u.cidade ? <div className="text-[11px] text-zinc-600">{u.cidade}</div> : null}</td>
+                            <td className="px-3 py-3 font-semibold text-white">{u.nota ? u.nota + '★' : '—'}</td>
+                            <td className={u.tendencia_14d > 0 ? 'px-3 py-3 font-medium text-emerald-400' : u.tendencia_14d < 0 ? 'px-3 py-3 font-medium text-red-400' : 'px-3 py-3 font-medium text-zinc-500'}>{u.tendencia_14d > 0 ? '+' : ''}{u.tendencia_14d || '0.0'}</td>
+                            <td className="px-3 py-3 text-zinc-300">{u.feedbacks}</td>
+                            <td className="px-3 py-3 text-zinc-300">{u.taxa_positiva}%</td>
+                            <td className="px-3 py-3 text-xs font-semibold">{u.status === 'excelente' ? 'Excelente' : u.status === 'boa' ? 'Boa' : u.status === 'atencao' ? 'Atenção' : u.status === 'critica' ? 'Crítica' : 'Sem dados'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
             </section>
 
             <section id="ai-report" className="scroll-mt-28">
