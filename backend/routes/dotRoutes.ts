@@ -369,7 +369,7 @@ export function mountDotRoutes(app: Express) {
     if (!(await requireMutationPermission(res, access, 'filtra', 'create', { route: '/api/dot/decisions/:id/prepare-action' }))) return;
     const optionId = String(req.body?.optionId || '');
     if (!['opcao_1', 'opcao_2'].includes(optionId)) return res.status(400).json({ error: 'Opção inválida.' });
-    const action = await prepareDotActionFromDecision(access.empresaId, Number(req.params.id), optionId);
+    const action = await prepareDotActionFromDecision(access.empresaId, Number(req.params.id), optionId, access.userId || null);
     if (!action) return res.status(404).json({ error: 'Decisão ou opção não encontrada.' });
     res.json({ ok: true, action, executed: false });
   });
@@ -379,7 +379,7 @@ export function mountDotRoutes(app: Express) {
     if (!access.allowed || !access.empresaId) return deny(res, access);
     if (!(await requireMutationPermission(res, access, 'filtra', 'update', { route: '/api/dot/actions/:id/approve' }))) return;
     const actionId = Number(req.params.id);
-    const action = await approveDotAction(access.empresaId, actionId);
+    const action = await approveDotAction(access.empresaId, actionId, access.userId || null);
     if (!action) return res.status(409).json({ error: 'Ação não encontrada ou já processada.' });
 
     // Aprovar não executa. A aprovação apenas libera a ação para a etapa
