@@ -328,7 +328,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders }: Props
 
       <div className="mt-5 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div><h3 className="text-sm font-semibold uppercase tracking-wide text-indigo-200">{t.plan}: {plan.nome || '—'}</h3><p className="mt-1 text-xs text-zinc-500">{plan.proximo_plano ? `${t.next}: ${plan.next_plan}` : ''}</p></div>
+          <div><h3 className="text-sm font-semibold uppercase tracking-wide text-indigo-200">{t.plan}: {plan.nome || '—'}</h3><p className="mt-1 text-xs text-zinc-500">{plan.proximo_plano ? `${t.next}: ${plan.proximo_plano}` : ''}</p></div>
         </div>
         <ul className="mt-4 grid gap-2 sm:grid-cols-2">
           {(plan.beneficios_incluidos || []).map((x: string) => <li key={x} className="flex gap-2 text-sm text-zinc-300"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{x}</li>)}
