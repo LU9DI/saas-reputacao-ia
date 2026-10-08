@@ -14,8 +14,13 @@ async function ensureSchema() {
     title TEXT NOT NULL,
     details TEXT NOT NULL,
     created_at TEXT NOT NULL,
-    acknowledged_at TEXT
+    acknowledged_at TEXT,
+    source_followup_id INTEGER
   )`);
+  try { await db.exec('ALTER TABLE dot_events ADD COLUMN source_followup_id INTEGER'); } catch (error: any) {
+    const message = String(error?.message || error).toLowerCase();
+    if (!message.includes('duplicate column') && !message.includes('already exists')) throw error;
+  }
 }
 
 export async function runDotMonitor(empresaId: string) {
