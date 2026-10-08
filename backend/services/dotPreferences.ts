@@ -28,9 +28,11 @@ export const DEFAULT_DOT_PREFERENCES: DotPreferences = {
 
 async function ensureColumns() {
   const db = getDb();
-  const cols = (await db.all('PRAGMA table_info(empresas)')).map((c: any) => c.name);
-  if (!cols.includes('dot_preferences_json')) {
+  try {
     await db.exec('ALTER TABLE empresas ADD COLUMN dot_preferences_json TEXT');
+  } catch (error: any) {
+    const message = String(error?.message || error).toLowerCase();
+    if (!message.includes('duplicate column') && !message.includes('already exists')) throw error;
   }
 }
 
