@@ -14,7 +14,7 @@ import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
-import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
+import { getTokenLimit, tokensUsadosMes } from '../lib/quota.js';
 import { requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
 
 const dotLimiter = rateLimit({
@@ -102,9 +102,9 @@ async function checkDotTokenBudget(
 
   cleanupDotTokenReservations();
   const normalizedPlan = dotPlanKey(plan);
-  const featureLimit = getFeatureTokenLimit(normalizedPlan, 'dot');
+  const featureLimit = getTokenLimit(normalizedPlan, 'dot');
   const feedbackLimit = getTokenLimit(normalizedPlan);
-  const featureUsed = await tokensUsadosFeatureMes(empresaId, 'dot');
+  const featureUsed = await tokensUsadosMes(empresaId, 'dot');
   const key = empresaId;
   const reserved = dotTokenReservations.get(key)?.tokens || 0;
 
@@ -149,11 +149,11 @@ async function checkDotTokenBudget(
 const DOT_TOKEN_WARNING_THRESHOLD = 0.8;
 
 async function getDotTokenUsage(empresaId: string | null | undefined, plan: string | null | undefined) {
-  const limit = getFeatureTokenLimit(dotPlanKey(plan), 'dot');
+  const limit = getTokenLimit(dotPlanKey(plan), 'dot');
   if (!empresaId || limit <= 0) {
     return { used: 0, limit, percent: 0, warning: false, exhausted: false, remaining: Math.max(0, limit) };
   }
-  const used = await tokensUsadosFeatureMes(empresaId, 'dot');
+  const used = await tokensUsadosMes(empresaId, 'dot');
   const percent = limit > 0 ? used / limit : 0;
   return {
     used,
@@ -641,12 +641,12 @@ export function mountDotRoutes(app: Express) {
           context_source: 'cache',
           context_refresh_required: false,
           context_reason: contextResult.decision.reason,
-          dot_token_limit: getFeatureTokenLimit(access.plan || 'rei', 'dot'),
-          dot_tokens_used: await tokensUsadosFeatureMes(access.empresaId as string, 'dot'),
+          dot_token_limit: getTokenLimit(access.plan || 'rei', 'dot'),
+          dot_tokens_used: await tokensUsadosMes(access.empresaId as string, 'dot'),
           dot_tokens_remaining_estimate: Math.max(
             0,
-            getFeatureTokenLimit(access.plan || 'rei', 'dot') -
-              await tokensUsadosFeatureMes(access.empresaId as string, 'dot'),
+            getTokenLimit(access.plan || 'rei', 'dot') -
+              await tokensUsadosMes(access.empresaId as string, 'dot'),
           ),
         });
       }
@@ -665,8 +665,8 @@ export function mountDotRoutes(app: Express) {
         history.push({ role: 'user', text: message, at: Date.now() });
         history.push({ role: 'dot', text: semanticCached.answer, at: Date.now() });
         while (history.length > MAX_HISTORY) history.shift();
-        const dotLimit = getFeatureTokenLimit(access.plan || 'rei', 'dot');
-        const dotUsed = await tokensUsadosFeatureMes(access.empresaId as string, 'dot');
+        const dotLimit = getTokenLimit(access.plan || 'rei', 'dot');
+        const dotUsed = await tokensUsadosMes(access.empresaId as string, 'dot');
         return res.json({
           ok: true,
           message: semanticCached.answer,
