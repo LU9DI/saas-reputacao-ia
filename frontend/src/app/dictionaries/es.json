@@ -191,5 +191,12 @@
   "webauthn_cancelled": "Registro cancelado.",
   "webauthn_save_error": "No se pudo guardar la clave de acceso.",
   "webauthn_error": "No se pudo registrar la clave de acceso.",
-  "push_active_badge": "Activo"
+  "push_active_badge": "Activo",
+  "feat_unit_ranking": "Ranking de unidades",
+  "feat_unit_links": "Enlaces de evaluación por unidad",
+  "feat_unit_insights": "Insights operativos por unidad",
+  "feat_priorities": "Prioridades operativas",
+  "feat_strategic_radar": "Radar estratégico",
+  "feat_growth": "Oportunidades de crecimiento",
+  "feat_executive_report": "Informe ejecutivo completo"
 }
