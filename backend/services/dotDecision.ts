@@ -40,9 +40,11 @@ async function ensureSchema() {
     status TEXT NOT NULL DEFAULT 'pending',
     created_at TEXT NOT NULL
   )`);
-  const columns = await db.all('PRAGMA table_info(dot_decisions)');
-  if (!(columns || []).some((c: any) => c.name === 'options_json')) {
+  try {
     await db.exec("ALTER TABLE dot_decisions ADD COLUMN options_json TEXT NOT NULL DEFAULT '[]'");
+  } catch (error: any) {
+    const message = String(error?.message || error).toLowerCase();
+    if (!message.includes('duplicate column') && !message.includes('already exists')) throw error;
   }
 }
 
