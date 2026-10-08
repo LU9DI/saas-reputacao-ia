@@ -91,13 +91,26 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const ranking = textOrFallback(t.feat_unit_ranking, 'Ranking das unidades');
   const unitLinks = textOrFallback(t.feat_unit_links, 'Link de avaliação por unidade');
   const executive = textOrFallback(t.feat_executive_report, 'Relatório executivo completo');
+  const unitInsights = textOrFallback(t.feat_unit_insights, 'Insights operacionais por unidade');
+  const priorities = textOrFallback(t.feat_priorities, 'Prioridades operacionais');
+  const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico');
+  const growth = textOrFallback(t.feat_growth, 'Oportunidades de crescimento');
 
   const map: Record<string, { features: string[]; missing?: string[] }> = {
     inicial: { features: [fb, wpp, dashboard], missing: [report, aiMissing] },
     pro: { features: [fb, wpp, dashboard, report], missing: [aiMissing] },
     ultra: { features: [fb, wpp, ai, report, analytics] },
-    corporativo: { features: [fb, wpp, ai, report, multi, ranking, unitLinks, support, early] },
-    rei: { features: [fb, wpp, ai, report, multi, ranking, unitLinks, executive, support, early] },
+    corporativo: {
+      features: [
+        fb, wpp, ai, report, multi, ranking, unitInsights, priorities, unitLinks, support, early,
+      ],
+    },
+    rei: {
+      features: [
+        fb, wpp, ai, report, multi, ranking, unitInsights, priorities,
+        strategicRadar, growth, unitLinks, executive, support, early,
+      ],
+    },
   };
   return map[plan] || { features: [fb] };
 }
