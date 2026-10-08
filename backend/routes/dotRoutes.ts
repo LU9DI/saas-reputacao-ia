@@ -15,6 +15,7 @@ import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, getFeatureTokenLimit, tokensUsadosFeatureMes } from '../lib/quota.js';
+import { selectDotModel } from '../services/dotModelRouting.js';
 import { requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
 
 const dotLimiter = rateLimit({
@@ -728,6 +729,7 @@ CONTEXTO: ${contextResult.decision.mode}. ${contextResult.decision.reason}
 REGRA DE FRESCOR: use fatos persistidos do contexto quando suficientes; quando a pergunta pedir estado atual, causa, impacto, comparação, recomendação ou decisão, raciocine novamente com os dados verificados nesta solicitação.
 Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: conclusão, evidências, impacto, recomendação e próximo passo. Evite introduções e repetições desnecessárias.`;
 
+      const routing = selectDotModel(message);
       const result = await callAI(
         responseSystem,
         buildConversation(contextResult.context, history, message),
@@ -737,6 +739,7 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
           empresaId: access.empresaId || null,
           tipo: 'filtra_dot_chat',
           feature: 'dot',
+          model: routing.model,
         }
       );
 
