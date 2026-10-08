@@ -27,9 +27,11 @@ async function ensureSchema() {
     error TEXT,
     created_at TEXT NOT NULL
   )`);
-  const columns = await db.all('PRAGMA table_info(dot_tool_audit)');
-  if (!(columns || []).some((column: any) => String(column.name) === 'actor_user_id')) {
+  try {
     await db.exec('ALTER TABLE dot_tool_audit ADD COLUMN actor_user_id TEXT');
+  } catch (error: any) {
+    const message = String(error?.message || error).toLowerCase();
+    if (!message.includes('duplicate column') && !message.includes('already exists')) throw error;
   }
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_tool_audit_empresa ON dot_tool_audit(empresa_id, created_at)');
 }
