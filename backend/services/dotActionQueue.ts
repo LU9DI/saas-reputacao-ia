@@ -53,10 +53,12 @@ async function ensureSchema() {
   await db.exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_one_active_decision ON dot_action_queue(empresa_id, decision_id) WHERE status IN ('prepared','approved','executing')");
 }
 
-export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string) {
+export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string, actorUserId?: string | null) {
   await ensureSchema();
-  const prepared = await withActionLock(`prepare:${empresaId}:${decisionId}`, () =>
-    withDbTransaction(async (tx) => {
+  let prepared;
+  try {
+    prepared = await withActionLock(`prepare:${empresaId}:${decisionId}`, () =>
+      withDbTransaction(async (tx) => {
       const decision = await tx.get('SELECT * FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [decisionId, empresaId]);
       if (!decision) return null;
 
@@ -96,8 +98,17 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
         if (promoted.changes !== 1) throw new Error('Não foi possível preparar a decisão; transação revertida.');
       }
       return normalizeActionRow({ id, decision_id: decisionId, option_id: option.id, action: definition.action, status: 'prepared' });
-    }),
-  );
+      }),
+    );
+  } catch (error: any) {
+    const message = String(error?.message || error).toLowerCase();
+    if (!message.includes('unique') && !message.includes('duplicate')) throw error;
+    const existing = await getDb().get(
+      "SELECT * FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ? AND status IN ('prepared','approved','executing') LIMIT 1",
+      [empresaId, decisionId],
+    );
+    prepared = normalizeActionRow(existing);
+  }
 
   if (prepared?.id) {
     await recordDotActionAudit({
@@ -105,14 +116,15 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
       actionId: Number(prepared.id),
       decisionId,
       event: 'prepared',
-      actorType: 'dot',
+      actorType: actorUserId ? 'user' : 'dot',
+      actorId: actorUserId || null,
       metadata: { optionId: prepared.optionId },
     });
   }
   return prepared;
 }
 
-export async function approveDotAction(empresaId: string, actionId: number) {
+export async function approveDotAction(empresaId: string, actionId: number, actorUserId?: string | null) {
   await ensureSchema();
   const now = new Date().toISOString();
 
@@ -154,7 +166,7 @@ export async function approveDotAction(empresaId: string, actionId: number) {
   );
 
   if (approved?.id) {
-    await recordDotActionAudit({ empresaId, actionId, decisionId: Number(approved.decisionId), event: 'approved', actorType: 'user' });
+    await recordDotActionAudit({ empresaId, actionId, decisionId: Number(approved.decisionId), event: 'approved', actorType: 'user', actorId: actorUserId || null });
   }
   return approved;
 }
