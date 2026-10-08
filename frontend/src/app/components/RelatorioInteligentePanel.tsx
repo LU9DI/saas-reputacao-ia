@@ -20,6 +20,8 @@ const COPY: Record<Lang, any> = {
     month: 'Período',
     refresh: 'Atualizar',
     executive: 'Resumo executivo',
+    why: 'Por que isso importa',
+    where: 'Onde atuar agora',
     kpis: 'Indicadores principais',
     sentiment: 'Sentimento',
     themes: 'Temas recorrentes',
@@ -246,6 +248,16 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders }: Props
           <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-semibold text-blue-200">{plan.nome || '—'}</span>
         </div>
         <p className="mt-3 text-base leading-7 text-zinc-200">{report?.resumo_executivo || t.noData}</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-3">
+            <div className="text-[11px] uppercase tracking-wide text-zinc-500">{t.why}</div>
+            <p className="mt-1 text-sm leading-6 text-zinc-300">{report?.narrativa?.por_que_importa || '—'}</p>
+          </div>
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-3">
+            <div className="text-[11px] uppercase tracking-wide text-zinc-500">{t.where}</div>
+            <p className="mt-1 text-sm leading-6 text-zinc-300">{report?.narrativa?.onde_atuar || '—'}</p>
+          </div>
+        </div>
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
