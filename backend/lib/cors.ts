@@ -12,16 +12,11 @@ import type { CorsOptions } from 'cors';
 export function buildCorsOptions(): CorsOptions {
   const isProd = process.env.NODE_ENV === 'production';
 
-  const fromEnv = (process.env.CORS_ORIGINS || '')
-    .split(',')
-    .map((s) => s.trim().replace(/\/$/, ''))
-    .filter(Boolean);
-
-  const defaults = [process.env.APP_URL, process.env.FRONTEND_URL]
+// Strict allowlist of exactly three hosts: APP_URL, FRONTEND_URL, backup
+  const backupHost = 'https://backup-api.filtraai.com';
+  const allowlist = [process.env.APP_URL, process.env.FRONTEND_URL, backupHost]
     .filter(Boolean)
     .map((s) => String(s).replace(/\/$/, ''));
-
-  const allowlist = [...new Set([...fromEnv, ...defaults])];
 
   if (!isProd) {
     return { origin: true, credentials: true };
