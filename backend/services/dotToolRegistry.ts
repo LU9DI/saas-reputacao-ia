@@ -90,17 +90,6 @@ const tools: Record<string, DotToolDefinition> = {
       return { total: Number(row?.total || 0), averageRating: row?.average_rating == null ? null : Number(row.average_rating) };
     },
   },
-  'dot.goals.read': {
-    id: 'dot.goals.read',
-    description: 'Consulta os objetivos operacionais atuais do DOT.',
-    resource: 'operations',
-    operation: 'read',
-    risk: 'low',
-    requiresApproval: false,
-    async execute(empresaId) {
-      return getDb().all('SELECT id,title,description,status,progress,source,updated_at,last_activity_at FROM dot_agent_goals WHERE empresa_id=? AND status<>? ORDER BY updated_at DESC LIMIT 50', [empresaId, 'archived']);
-    },
-  },
 };
 
 export function listDotTools(): Array<Omit<DotToolDefinition, 'execute'>> {
