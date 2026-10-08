@@ -238,5 +238,12 @@
   "webauthn_error": "Não foi possível registrar a digital.",
   "push_active_badge": "Ativo",
   "login_bio_use_email": "Para biometria, use o e-mail cadastrado.",
-  "login_bio_need_email": "Informe o e-mail antes de usar a digital."
+  "login_bio_need_email": "Informe o e-mail antes de usar a digital.",
+  "feat_unit_ranking": "Ranking das unidades",
+  "feat_unit_links": "Links de avaliação por unidade",
+  "feat_unit_insights": "Insights operacionais por unidade",
+  "feat_priorities": "Prioridades operacionais",
+  "feat_strategic_radar": "Radar estratégico",
+  "feat_growth": "Oportunidades de crescimento",
+  "feat_executive_report": "Relatório executivo completo"
 }
