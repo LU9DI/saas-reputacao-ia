@@ -27,7 +27,7 @@ export async function runDotMonitor(empresaId: string) {
   }
 
   const rows = await db.all(
-    'SELECT rating, ai_tags, createdAt FROM reviews WHERE empresa_id = ? AND COALESCE(is_test, 0) != 1 ORDER BY id DESC LIMIT 200',
+    'SELECT rating, ai_tags, createdAt FROM reviews WHERE empresa_id = ? ORDER BY id DESC LIMIT 200',
     [empresaId]
   );
   const reviews = rows || [];
