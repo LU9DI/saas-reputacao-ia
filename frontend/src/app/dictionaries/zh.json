@@ -191,5 +191,12 @@
   "webauthn_cancelled": "注册已取消。",
   "webauthn_save_error": "无法保存通行密钥。",
   "webauthn_error": "无法注册通行密钥。",
-  "push_active_badge": "已启用"
+  "push_active_badge": "已启用",
+  "feat_unit_ranking": "门店排名",
+  "feat_unit_links": "各门店评价链接",
+  "feat_unit_insights": "各门店运营洞察",
+  "feat_priorities": "运营优先事项",
+  "feat_strategic_radar": "战略雷达",
+  "feat_growth": "增长机会",
+  "feat_executive_report": "完整执行报告"
 }
