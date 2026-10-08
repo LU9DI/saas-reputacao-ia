@@ -102,7 +102,7 @@ async function checkDotTokenBudget(
 
   cleanupDotTokenReservations();
   const normalizedPlan = dotPlanKey(plan);
-  const featureLimit = getTokenLimit(normalizedPlan, 'dot');
+  const featureLimit = getTokenLimit(normalizedPlan);
   const feedbackLimit = getTokenLimit(normalizedPlan);
   const featureUsed = await tokensUsadosMes(empresaId, 'dot');
   const key = empresaId;
@@ -149,7 +149,7 @@ async function checkDotTokenBudget(
 const DOT_TOKEN_WARNING_THRESHOLD = 0.8;
 
 async function getDotTokenUsage(empresaId: string | null | undefined, plan: string | null | undefined) {
-  const limit = getTokenLimit(dotPlanKey(plan), 'dot');
+  const limit = getTokenLimit(dotPlanKey(plan));
   if (!empresaId || limit <= 0) {
     return { used: 0, limit, percent: 0, warning: false, exhausted: false, remaining: Math.max(0, limit) };
   }
@@ -641,11 +641,11 @@ export function mountDotRoutes(app: Express) {
           context_source: 'cache',
           context_refresh_required: false,
           context_reason: contextResult.decision.reason,
-          dot_token_limit: getTokenLimit(access.plan || 'rei', 'dot'),
+          dot_token_limit: getTokenLimit(access.plan || 'rei'),
           dot_tokens_used: await tokensUsadosMes(access.empresaId as string, 'dot'),
           dot_tokens_remaining_estimate: Math.max(
             0,
-            getTokenLimit(access.plan || 'rei', 'dot') -
+            getTokenLimit(access.plan || 'rei') -
               await tokensUsadosMes(access.empresaId as string, 'dot'),
           ),
         });
@@ -665,7 +665,7 @@ export function mountDotRoutes(app: Express) {
         history.push({ role: 'user', text: message, at: Date.now() });
         history.push({ role: 'dot', text: semanticCached.answer, at: Date.now() });
         while (history.length > MAX_HISTORY) history.shift();
-        const dotLimit = getTokenLimit(access.plan || 'rei', 'dot');
+        const dotLimit = getTokenLimit(access.plan || 'rei');
         const dotUsed = await tokensUsadosMes(access.empresaId as string, 'dot');
         return res.json({
           ok: true,
