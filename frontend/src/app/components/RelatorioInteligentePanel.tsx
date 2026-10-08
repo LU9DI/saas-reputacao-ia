@@ -1,455 +1,358 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FileText, Lightbulb, Mail, MessageCircle, Send, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { exportReportClient } from '../utils/reportPdfClient';
-import { pdfReleaseStatus } from '../utils/pdfReleaseGate';
-import { uiCopy } from '../utils/relatorioUiCopy';
-
-type Review = {
-  rating?: number | string | null;
-  comment?: string | null;
-  sentiment?: string | null;
-  ai_tags?: unknown;
-  createdAt?: string | null;
-  created_at?: string | null;
-  is_test?: boolean | null;
-};
-
-type PanelData = {
-  empresa?: {
-    nome_empresa?: string | null;
-    slug?: string | null;
-    id?: string | null;
-    plan?: string | null;
-    status?: string | null;
-    expira_em?: string | null;
-  } | null;
-  metricas?: { serie_14d?: unknown } | null;
-  reviews?: unknown;
-};
 
 type Props = {
   empresaId: string;
   api: string;
   authHeaders: (json?: boolean) => HeadersInit;
-  panelData?: PanelData | null;
+  panelData?: any | null;
 };
 
-const PDF_LANGS = new Set(['pt', 'en', 'es', 'zh']);
-const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+type Lang = 'pt' | 'en' | 'es' | 'zh';
 
-function currentMonth(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+const COPY: Record<Lang, any> = {
+  pt: {
+    title: 'Relatório profissional',
+    subtitle: 'Um relatório estruturado para entender o que aconteceu, o que merece atenção e o que fazer agora.',
+    month: 'Período',
+    refresh: 'Atualizar',
+    executive: 'Resumo executivo',
+    kpis: 'Indicadores principais',
+    sentiment: 'Sentimento',
+    themes: 'Temas recorrentes',
+    positive: 'Pontos positivos',
+    attention: 'Pontos de atenção',
+    risks: 'Riscos',
+    opportunities: 'Oportunidades',
+    actions: 'Recomendações',
+    plan: 'Seu plano',
+    benefits: 'Benefícios incluídos',
+    comparison: 'Como os planos evoluem',
+    channels: 'Distribuir relatório',
+    channelsHint: 'A mesma informação é adaptada para cada canal. A estrutura também fica pronta para automações e IA.',
+    email: 'E-mail',
+    whatsapp: 'WhatsApp',
+    sms: 'SMS',
+    wechat: 'WeChat',
+    send: 'Enviar relatório',
+    sending: 'Enviando…',
+    sent: 'Relatório encaminhado para distribuição.',
+    sendError: 'Não foi possível distribuir agora. O relatório continua disponível no painel.',
+    noData: 'Ainda não há avaliações válidas neste período.',
+    noRisk: 'Nenhum risco prioritário identificado pelos dados disponíveis.',
+    noOpportunity: 'Nenhuma oportunidade clara identificada pelos dados disponíveis.',
+    all: 'Tudo do plano anterior',
+    evaluations: 'avaliações',
+    average: 'nota média',
+    positiveRate: 'positivas',
+    critical: 'críticas',
+    unit: 'Unidades',
+    next: 'Próximo plano',
+  },
+  en: {
+    title: 'Professional report',
+    subtitle: 'A structured report to understand what happened, what needs attention, and what to do next.',
+    month: 'Period', refresh: 'Refresh', executive: 'Executive summary', kpis: 'Key indicators',
+    sentiment: 'Sentiment', themes: 'Recurring themes', positive: 'Positive points', attention: 'Points of attention',
+    risks: 'Risks', opportunities: 'Opportunities', actions: 'Recommendations', plan: 'Your plan',
+    benefits: 'Included benefits', comparison: 'How plans evolve', channels: 'Distribute report',
+    channelsHint: 'The same information is adapted to each channel. The structure is also ready for automation and AI.',
+    email: 'Email', whatsapp: 'WhatsApp', sms: 'SMS', wechat: 'WeChat', send: 'Send report',
+    sending: 'Sending…', sent: 'Report sent for distribution.', sendError: 'Distribution failed. The report remains available in the dashboard.',
+    noData: 'There are no valid reviews for this period.', noRisk: 'No priority risk identified from available data.',
+    noOpportunity: 'No clear opportunity identified from available data.', all: 'Everything from the previous plan',
+    evaluations: 'reviews', average: 'average rating', positiveRate: 'positive', critical: 'critical',
+    unit: 'Units', next: 'Next plan',
+  },
+  es: {
+    title: 'Informe profesional',
+    subtitle: 'Un informe estructurado para entender qué ocurrió, qué requiere atención y qué hacer ahora.',
+    month: 'Período', refresh: 'Actualizar', executive: 'Resumen ejecutivo', kpis: 'Indicadores principales',
+    sentiment: 'Sentimiento', themes: 'Temas recurrentes', positive: 'Puntos positivos', attention: 'Puntos de atención',
+    risks: 'Riesgos', opportunities: 'Oportunidades', actions: 'Recomendaciones', plan: 'Tu plan',
+    benefits: 'Beneficios incluidos', comparison: 'Cómo evolucionan los planes', channels: 'Distribuir informe',
+    channelsHint: 'La misma información se adapta a cada canal. La estructura también está lista para automatización e IA.',
+    email: 'Correo', whatsapp: 'WhatsApp', sms: 'SMS', wechat: 'WeChat', send: 'Enviar informe',
+    sending: 'Enviando…', sent: 'Informe enviado para distribución.', sendError: 'No fue posible distribuirlo. El informe sigue disponible en el panel.',
+    noData: 'Todavía no hay reseñas válidas en este período.', noRisk: 'No se identificaron riesgos prioritarios.',
+    noOpportunity: 'No se identificaron oportunidades claras.', all: 'Todo lo del plan anterior',
+    evaluations: 'reseñas', average: 'calificación media', positiveRate: 'positivas', critical: 'críticas',
+    unit: 'Unidades', next: 'Siguiente plan',
+  },
+  zh: {
+    title: '专业报告',
+    subtitle: '用结构化信息说明发生了什么、哪里需要关注以及下一步应该做什么。',
+    month: '期间', refresh: '刷新', executive: '执行摘要', kpis: '核心指标',
+    sentiment: '情绪', themes: '重复主题', positive: '积极点', attention: '关注点',
+    risks: '风险', opportunities: '机会', actions: '建议', plan: '当前方案',
+    benefits: '包含的权益', comparison: '方案如何升级', channels: '分发报告',
+    channelsHint: '同一份信息会适配不同渠道，结构也适合自动化和 AI 处理。',
+    email: '邮箱', whatsapp: 'WhatsApp', sms: '短信', wechat: '微信', send: '发送报告',
+    sending: '发送中…', sent: '报告已提交分发。', sendError: '暂时无法分发，报告仍可在面板查看。',
+    noData: '本期间暂无有效评价。', noRisk: '根据现有数据未发现优先风险。',
+    noOpportunity: '根据现有数据未发现明确机会。', all: '包含上一级方案全部权益',
+    evaluations: '评价', average: '平均评分', positiveRate: '积极', critical: '需关注',
+    unit: '单位', next: '下一方案',
+  },
+};
+
+function langOf(value: string): Lang {
+  return value === 'en' || value === 'es' || value === 'zh' ? value : 'pt';
 }
 
-function buildMonthOptions(): string[] {
+function monthOptions(): string[] {
   const out: string[] = [];
   const d = new Date();
   d.setDate(1);
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 12; i += 1) {
     out.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
     d.setMonth(d.getMonth() - 1);
   }
   return out;
 }
 
-function labelMes(m: string, lang: string): string {
-  if (!MONTH_RE.test(m)) return m;
-  const [y, mo] = m.split('-');
-  const namesPt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-  const namesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const names = lang === 'en' ? namesEn : namesPt;
-  return `${names[Number(mo) - 1]}/${y}`;
+function monthLabel(value: string, lang: Lang): string {
+  const [year, month] = value.split('-');
+  const names: Record<string, string[]> = {
+    pt: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+    en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    es: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+    zh: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+  };
+  return `${names[lang][Number(month) - 1]}/${year}`;
 }
 
-function toFiniteNumber(value: unknown): number | null {
-  const n = typeof value === 'number' ? value : Number(value);
-  return Number.isFinite(n) ? n : null;
+function currentMonth() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function reviewDate(review: Review): string {
-  const value = review.createdAt || review.created_at || '';
-  return typeof value === 'string' ? value : '';
-}
-
-function reviewRating(review: Review): number | null {
-  const n = toFiniteNumber(review.rating);
-  return n !== null && n >= 1 && n <= 5 ? n : null;
-}
-
-function reviewTags(review: Review): string[] {
-  if (!Array.isArray(review.ai_tags)) return [];
-  return review.ai_tags.map((tag) => String(tag ?? '').trim()).filter(Boolean).slice(0, 20);
-}
-
-function sentimentKey(value: unknown): 'positivo' | 'neutro' | 'negativo' | null {
-  const s = String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  return s.includes('pos') ? 'positivo' : s.includes('neg') ? 'negativo' : s.includes('neu') ? 'neutro' : null;
-}
-
-export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelData }: Props) {
+export function RelatorioInteligentePanel({ empresaId, api, authHeaders }: Props) {
   const { language } = useLanguage();
-  const copy = useMemo(() => uiCopy(language), [language]);
-  const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
-  const [mesReport, setMesReport] = useState(currentMonth);
-  const [pdfLang, setPdfLang] = useState<string>(() => (PDF_LANGS.has(language) ? String(language) : 'pt'));
+  const lang = langOf(language);
+  const t = COPY[lang];
+  const months = useMemo(monthOptions, []);
+  const [month, setMonth] = useState(currentMonth);
+  const [report, setReport] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [destinations, setDestinations] = useState({ email: '', whatsapp: '', sms: '', wechat: '' });
+  const [sending, setSending] = useState(false);
+  const [sendMessage, setSendMessage] = useState('');
 
-  useEffect(() => {
-    if (PDF_LANGS.has(language)) setPdfLang(String(language));
-  }, [language]);
-
-  const [downloading, setDownloading] = useState(false);
-  const [downloadError, setDownloadError] = useState('');
-  const [reportMetrics, setReportMetrics] = useState<{
-    total?: number;
-    media?: number;
-    positivas?: number;
-    negativas?: number;
-  } | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    const loadReportMetrics = async () => {
-      if (!MONTH_RE.test(mesReport)) {
-        setReportMetrics(null);
-        return;
-      }
-      try {
-        const base = String(api || '').replace(/\/+$/, '');
-        const response = await fetch(
-          base +
-            '/api/empresa/' +
-            encodeURIComponent(empresaId) +
-            '/relatorio/inteligente?mes=' +
-            encodeURIComponent(mesReport),
-          { method: 'GET', headers: authHeaders(false), credentials: 'include' }
-        );
-        if (!response.ok) {
-          if (!cancelled) setReportMetrics(null);
-          return;
-        }
-        const data = await response.json();
-        if (!cancelled) setReportMetrics(data?.metricas || null);
-      } catch {
-        if (!cancelled) setReportMetrics(null);
-      }
-    };
-    void loadReportMetrics();
-    return () => {
-      cancelled = true;
-    };
-  }, [api, empresaId, mesReport, authHeaders]);
-
-  const empresa = panelData?.empresa || {};
-  const metricas = panelData?.metricas || {};
-  const pdfGate = pdfReleaseStatus(empresa);
-
-  const reviews: Review[] = useMemo(() => {
-    if (!Array.isArray(panelData?.reviews)) return [];
-    return panelData.reviews.filter((item): item is Review => {
-      if (!item || typeof item !== 'object') return false;
-      return (item as Review).is_test !== true;
-    });
-  }, [panelData?.reviews]);
-
-  const selectedMonth = MONTH_RE.test(mesReport) ? mesReport : '';
-
-  const monthReviews = useMemo(() => {
-    if (!selectedMonth) return reviews;
-    return reviews.filter((review) => reviewDate(review).slice(0, 7) === selectedMonth);
-  }, [reviews, selectedMonth]);
-
-  const stats = useMemo(() => {
-    const total = monthReviews.length;
-    let ratingSum = 0,
-      ratedCount = 0,
-      positive = 0,
-      critical = 0;
-    const sentiment = { positivo: 0, neutro: 0, negativo: 0 };
-    const tagCounts: Record<string, number> = {};
-    const distribution = [0, 0, 0, 0, 0];
-
-    for (const review of monthReviews) {
-      const rating = reviewRating(review);
-      if (rating !== null) {
-        ratingSum += rating;
-        ratedCount++;
-        if (rating >= 4) positive++;
-        else if (rating <= 3) critical++;
-        distribution[rating - 1] += 1;
-      }
-      let s = sentimentKey(review.sentiment);
-      if (!s && rating !== null) s = rating >= 4 ? 'positivo' : rating <= 2 ? 'negativo' : 'neutro';
-      if (s) sentiment[s]++;
-      for (const tag of reviewTags(review)) tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-    }
-
-    const themes = Object.entries(tagCounts)
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-      .slice(0, 6)
-      .map(([name, count]) => ({ name, count }));
-
-    const authoritativeTotal = toFiniteNumber(reportMetrics?.total);
-    const authoritativeAverage = toFiniteNumber(reportMetrics?.media);
-    const authoritativePositive = toFiniteNumber(reportMetrics?.positivas);
-    const authoritativeCritical = toFiniteNumber(reportMetrics?.negativas);
-
-    return {
-      total: authoritativeTotal ?? total,
-      ratedCount: authoritativeTotal ?? ratedCount,
-      positive: authoritativePositive ?? positive,
-      critical: authoritativeCritical ?? critical,
-      average: authoritativeAverage ?? (ratedCount ? Math.round((ratingSum / ratedCount) * 10) / 10 : 0),
-      sentiment,
-      themes,
-      distribution,
-    };
-  }, [monthReviews, reportMetrics]);
-
-  const evolution = useMemo(() => {
-    const raw = Array.isArray(metricas?.serie_14d) ? metricas.serie_14d : [];
-    const points = raw
-      .filter((point: any) => point && Number(point.total) > 0)
-      .map((point: any) => toFiniteNumber(point.media))
-      .filter((v): v is number => v !== null);
-    if (points.length < 2) return null;
-    return Math.round((points[points.length - 1] - points[0]) * 10) / 10;
-  }, [metricas?.serie_14d]);
-
-  const recommendations = useMemo(() => {
-    const out: string[] = [];
-    if (!stats.total) out.push(copy.recEmpty);
-    else {
-      if (stats.critical > stats.positive) out.push(copy.recCritical);
-      if (stats.average > 0 && stats.average < 4) out.push(copy.recLowAvg);
-      if (stats.positive >= stats.critical) out.push(copy.recKeepPositive);
-      if (stats.sentiment.negativo > stats.sentiment.positivo) out.push(copy.recNegSentiment);
-      if (stats.themes.length) out.push(copy.recTheme(stats.themes[0].name));
-    }
-    return out.slice(0, 4);
-  }, [stats, copy]);
-
-  const downloadPdf = async () => {
-    if (!pdfGate.released) {
-      setDownloadError(
-        pdfGate.unlockLabel
-          ? `${copy.pdfUnlock}: ${pdfGate.unlockLabel}`
-          : copy.pdfLocked
-      );
-      return;
-    }
-    if (!MONTH_RE.test(mesReport)) {
-      setDownloadError(copy.errPeriod);
-      return;
-    }
-    setDownloading(true);
-    setDownloadError('');
+  const load = async () => {
+    setLoading(true);
+    setError('');
     try {
-      const lang = PDF_LANGS.has(pdfLang) ? pdfLang : 'pt';
-      const pdfCopy = uiCopy(lang);
-      const result = exportReportClient({
-        companyName: String(empresa?.nome_empresa || 'Empresa'),
-        periodLabel: labelMes(mesReport, lang),
-        lang,
-        plan: String(empresa?.plan || 'trial'),
-        stats: {
-          total: stats.total,
-          ratedCount: stats.ratedCount,
-          positive: stats.positive,
-          critical: stats.critical,
-          average: stats.average,
-          sentiment: stats.sentiment,
-          themes: stats.themes,
-          distribution: stats.distribution,
-        },
-        evolution,
-        recommendations,
-        labels: {
-          title: pdfCopy.title,
-          avg: pdfCopy.avg,
-          reviews: pdfCopy.reviews,
-          positive: pdfCopy.positive,
-          critical: pdfCopy.critical,
-          evolution: pdfCopy.evolution,
-          evolutionEmpty: pdfCopy.evolutionEmpty,
-          evolutionText: pdfCopy.evolutionText,
-          sentiment: pdfCopy.sentiment,
-          sentPos: pdfCopy.sentPos,
-          sentNeu: pdfCopy.sentNeu,
-          sentNeg: pdfCopy.sentNeg,
-          pointsPos: pdfCopy.pointsPos,
-          pointsCrit: pdfCopy.pointsCrit,
-          recommendations: pdfCopy.recommendations,
-          themes: pdfCopy.themes,
-          footer: pdfCopy.footer,
-          brand: pdfCopy.brand,
-          rights: pdfCopy.rights,
-        },
-      });
-      if (!result.ok) setDownloadError(copy.errFail);
-    } catch {
-      setDownloadError(copy.errFail);
+      const base = String(api || '').replace(/\/+$/, '');
+      const response = await fetch(
+        `${base}/api/empresa/${encodeURIComponent(empresaId)}/relatorio?mes=${encodeURIComponent(month)}`,
+        { credentials: 'include', headers: authHeaders(false), cache: 'no-store' },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(String(data?.error || `HTTP ${response.status}`));
+      setReport(data);
+    } catch (e) {
+      setReport(null);
+      setError(e instanceof Error ? e.message : 'Report unavailable');
     } finally {
-      setDownloading(false);
+      setLoading(false);
     }
   };
 
+  useEffect(() => { void load(); }, [empresaId, api, month]);
+
+  const send = async () => {
+    const active = Object.entries(destinations).filter(([, value]) => String(value).trim());
+    if (!active.length) {
+      setSendMessage(t.channelsHint);
+      return;
+    }
+    setSending(true);
+    setSendMessage('');
+    try {
+      const base = String(api || '').replace(/\/+$/, '');
+      const response = await fetch(
+        `${base}/api/empresa/${encodeURIComponent(empresaId)}/relatorio/enviar`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: { ...authHeaders(true), 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mes: month,
+            destinatarios: active.map(([canal, destino]) => ({ canal, destino })),
+          }),
+        },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(String(data?.error || t.sendError));
+      setSendMessage(t.sent);
+    } catch (e) {
+      setSendMessage(e instanceof Error ? e.message : t.sendError);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (loading && !report) {
+    return <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 text-sm text-zinc-400">{t.title}…</section>;
+  }
+
+  if (error && !report) {
+    return (
+      <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">
+        <div className="flex items-center justify-between gap-3">
+          <div><h2 className="text-lg font-bold text-white">{t.title}</h2><p className="mt-1 text-sm text-red-400">{error}</p></div>
+          <button type="button" onClick={() => void load()} className="rounded-xl border border-zinc-700 px-3 py-2 text-sm text-zinc-200">{t.refresh}</button>
+        </div>
+      </section>
+    );
+  }
+
+  const k = report?.kpis || {};
+  const sentiment = report?.sentimento || {};
+  const plan = report?.plano || {};
+  const themes = report?.temas || {};
+  const risks = Array.isArray(report?.riscos) ? report.riscos : [];
+  const opportunities = Array.isArray(report?.oportunidades) ? report.oportunidades : [];
+  const recommendations = Array.isArray(report?.recomendacoes) ? report.recomendacoes : [];
+  const units = Array.isArray(report?.unidades) ? report.unidades : [];
+  const comparison = Array.isArray(plan?.comparativo) ? plan.comparativo : [];
+  const channels = report?.canais || {};
+
   return (
     <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-sm">
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-col gap-4 border-b border-zinc-800 pb-5 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <h2 className="flex items-center gap-2 text-lg font-bold text-zinc-50">
-            <FileText className="h-5 w-5 text-blue-600" />
-            {copy.title}
-          </h2>
-          <p className="mt-1 text-sm text-zinc-400">{copy.subtitle}</p>
+          <h2 className="flex items-center gap-2 text-lg font-bold text-zinc-50"><FileText className="h-5 w-5 text-blue-400" />{t.title}</h2>
+          <p className="mt-1 max-w-3xl text-sm text-zinc-400">{t.subtitle}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="text-xs font-medium text-zinc-400">
-            {copy.month}
-            <select
-              className="ml-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
-              value={mesReport}
-              onChange={(e) => setMesReport(e.target.value)}
-            >
-              {mesesOpcoes.map((m) => (
-                <option key={m} value={m}>
-                  {labelMes(m, language)}
-                </option>
-              ))}
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-zinc-500">{t.month}
+            <select value={month} onChange={(e) => setMonth(e.target.value)} className="ml-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100">
+              {months.map((m) => <option key={m} value={m}>{monthLabel(m, lang)}</option>)}
             </select>
           </label>
-          <label className="text-xs font-medium text-zinc-400">
-            {copy.pdfLang}
-            <select
-              className="ml-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
-              value={pdfLang}
-              onChange={(e) => setPdfLang(e.target.value)}
-            >
-              <option value="pt">Português</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="zh">中文</option>
-            </select>
-          </label>
-          <button
-            type="button"
-            onClick={() => void downloadPdf()}
-            disabled={downloading || !pdfGate.released}
-            title={
-              !pdfGate.released && pdfGate.unlockLabel
-                ? `${copy.pdfUnlock}: ${pdfGate.unlockLabel}`
-                : undefined
-            }
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60"
-          >
-            <Download className="h-4 w-4" />
-            {downloading ? copy.generating : copy.exportPdf}
-          </button>
+          <button type="button" onClick={() => void load()} className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-200">{t.refresh}</button>
         </div>
       </div>
 
-      {!pdfGate.released && (
-        <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95">
-          {copy.pdfLocked}
-          {pdfGate.unlockLabel ? (
-            <>
-              {' '}
-              ({copy.pdfUnlock}: <strong className="text-amber-50">{pdfGate.unlockLabel}</strong>).
-            </>
-          ) : (
-            '.'
-          )}
+      <div className="mt-5 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-blue-200">{t.executive}</h3>
+          <span className="rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-semibold text-blue-200">{plan.nome || '—'}</span>
+        </div>
+        <p className="mt-3 text-base leading-7 text-zinc-200">{report?.resumo_executivo || t.noData}</p>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {[
+          [t.evaluations, k.avaliacoes ?? 0, 'text-zinc-50'],
+          [t.average, Number(k.nota_media || 0).toFixed(1), 'text-zinc-50'],
+          [t.positiveRate, `${k.percentual_positivas ?? 0}%`, 'text-emerald-400'],
+          [t.critical, k.criticas ?? 0, 'text-red-400'],
+        ].map(([label, value, color]) => (
+          <div key={String(label)} className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4">
+            <div className="text-[11px] uppercase tracking-wide text-zinc-500">{label}</div>
+            <div className={`mt-1 text-2xl font-bold ${color}`}>{value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-zinc-800 p-4">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-200"><TrendingUp className="h-4 w-4" />{t.sentiment}</h3>
+          <div className="mt-3 grid grid-cols-3 gap-2 text-sm text-zinc-400">
+            <span>+ {sentiment.positivo ?? 0}</span><span>• {sentiment.neutro ?? 0}</span><span>− {sentiment.negativo ?? 0}</span>
+          </div>
+        </div>
+        <div className="rounded-xl border border-zinc-800 p-4">
+          <h3 className="text-sm font-semibold text-zinc-200">{t.themes}</h3>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {(themes.atencao || []).slice(0, 6).map((x: any) => <span key={x.tema} className="rounded-full bg-zinc-900 px-3 py-1 text-xs text-zinc-300">{x.tema} · {x.volume}</span>)}
+            {!(themes.atencao || []).length && <span className="text-sm text-zinc-500">—</span>}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-zinc-800 p-4">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-emerald-400"><CheckCircle2 className="h-4 w-4" />{t.positive}</h3>
+          <div className="mt-3 space-y-2 text-sm text-zinc-400">
+            {(themes.positivos || []).slice(0, 5).map((x: any) => <div key={x.tema} className="flex justify-between gap-4"><span>{x.tema}</span><b>{x.volume}</b></div>)}
+            {!(themes.positivos || []).length && <span>—</span>}
+          </div>
+        </div>
+        <div className="rounded-xl border border-zinc-800 p-4">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-400"><AlertTriangle className="h-4 w-4" />{t.attention}</h3>
+          <div className="mt-3 space-y-2 text-sm text-zinc-400">
+            {risks.length ? risks.map((x: any, i: number) => <div key={`${x.titulo}-${i}`}><b className="text-zinc-200">{x.titulo}</b><p>{x.evidencias}</p></div>) : <span>{t.noRisk}</span>}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-zinc-800 p-4">
+          <h3 className="text-sm font-semibold text-zinc-200">{t.opportunities}</h3>
+          <div className="mt-3 space-y-2 text-sm text-zinc-400">{opportunities.length ? opportunities.map((x: any, i: number) => <div key={`${x.titulo}-${i}`}><b className="text-zinc-200">{x.titulo}</b><p>{x.evidencias}</p></div>) : <span>{t.noOpportunity}</span>}</div>
+        </div>
+        <div className="rounded-xl border border-zinc-800 p-4">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-200"><Lightbulb className="h-4 w-4 text-yellow-400" />{t.actions}</h3>
+          <ul className="mt-3 space-y-2 text-sm text-zinc-400">{recommendations.map((x: string, i: number) => <li key={i}>• {x}</li>)}</ul>
+        </div>
+      </div>
+
+      {units.length > 0 && (
+        <div className="mt-5 rounded-xl border border-zinc-800 p-4">
+          <h3 className="text-sm font-semibold text-zinc-200">{t.unit}</h3>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {units.map((u: any) => <div key={u.id} className="rounded-lg bg-zinc-900 p-3"><div className="font-medium text-zinc-200">{u.nome}</div><div className="mt-1 text-xs text-zinc-500">{u.avaliacoes} {t.evaluations} · {u.nota_media.toFixed(1)} {t.average}</div></div>)}
+          </div>
         </div>
       )}
 
-      {downloadError ? <p className="mb-4 text-sm text-red-400">{downloadError}</p> : null}
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.avg}</p>
-          <p className="mt-1 text-xl font-bold text-zinc-50">{stats.average || '—'}</p>
+      <div className="mt-5 rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div><h3 className="text-sm font-semibold uppercase tracking-wide text-indigo-200">{t.plan}: {plan.nome || '—'}</h3><p className="mt-1 text-xs text-zinc-500">{plan.next_plan ? `${t.next}: ${plan.next_plan}` : ''}</p></div>
         </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.reviews}</p>
-          <p className="mt-1 text-xl font-bold text-zinc-50">{stats.total}</p>
-        </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.positive}</p>
-          <p className="mt-1 text-xl font-bold text-emerald-400">{stats.positive}</p>
-        </div>
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
-          <p className="text-[11px] uppercase tracking-wide text-zinc-500">{copy.critical}</p>
-          <p className="mt-1 text-xl font-bold text-red-400">{stats.critical}</p>
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="rounded-xl border border-zinc-800 p-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-200">
-            <TrendingUp className="h-4 w-4 text-blue-500" />
-            {copy.evolution}
-          </h3>
-          <p className="mt-2 text-sm text-zinc-400">
-            {evolution === null ? copy.evolutionEmpty : `${copy.evolutionText} ${evolution > 0 ? '+' : ''}${evolution}`}
-          </p>
-        </div>
-        <div className="rounded-xl border border-zinc-800 p-4">
-          <h3 className="text-sm font-semibold text-zinc-200">{copy.sentiment}</h3>
-          <p className="mt-2 text-sm text-zinc-400">
-            {copy.sentPos}: {stats.sentiment.positivo} · {copy.sentNeu}: {stats.sentiment.neutro} · {copy.sentNeg}:{' '}
-            {stats.sentiment.negativo}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="rounded-xl border border-zinc-800 p-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-emerald-400">
-            <CheckCircle2 className="h-4 w-4" />
-            {copy.pointsPos}
-          </h3>
-          <p className="mt-2 text-sm text-zinc-400">
-            {stats.positive ? copy.pointsPosLine(stats.positive) : copy.pointsPosEmpty}
-          </p>
-        </div>
-        <div className="rounded-xl border border-zinc-800 p-4">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-amber-400">
-            <AlertTriangle className="h-4 w-4" />
-            {copy.pointsCrit}
-          </h3>
-          <p className="mt-2 text-sm text-zinc-400">
-            {stats.critical ? copy.pointsCritLine(stats.critical) : copy.pointsCritEmpty}
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-4 rounded-xl border border-zinc-800 p-4">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-zinc-200">
-          <Lightbulb className="h-4 w-4 text-yellow-400" />
-          {copy.recommendations}
-        </h3>
-        <ul className="mt-2 space-y-1.5">
-          {recommendations.map((r, i) => (
-            <li key={i} className="text-sm text-zinc-400">
-              • {r}
-            </li>
-          ))}
+        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+          {(plan.beneficios_incluidos || []).map((x: string) => <li key={x} className="flex gap-2 text-sm text-zinc-300"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{x}</li>)}
         </ul>
+        <div className="mt-5 border-t border-indigo-500/10 pt-4">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.comparison}</h4>
+          <div className="mt-3 grid gap-2 md:grid-cols-5">
+            {comparison.map((p: any) => <div key={p.codigo} className={`rounded-xl border p-3 ${p.codigo === plan.codigo ? 'border-indigo-400/50 bg-indigo-400/10' : 'border-zinc-800 bg-zinc-900/60'}`}><div className="text-sm font-semibold text-zinc-100">{p.nome}</div><div className="mt-2 text-xs leading-5 text-zinc-500">{p.beneficios.slice(-3).join(' · ')}</div></div>)}
+          </div>
+        </div>
       </div>
 
-      <div className="mt-4 text-xs text-zinc-500">
-        {copy.brand}
-        {empresa?.plan ? (
-          <>
-            {' · '}
-            {copy.plan}: <span className="font-medium text-zinc-400">{String(empresa.plan)}</span>
-          </>
-        ) : null}
+      <div className="mt-5 rounded-2xl border border-zinc-800 p-5">
+        <div className="flex items-center gap-2"><Send className="h-4 w-4 text-blue-400" /><h3 className="text-sm font-semibold text-zinc-200">{t.channels}</h3></div>
+        <p className="mt-1 text-xs text-zinc-500">{t.channelsHint}</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+          {([
+            ['email', t.email, Mail, 'email@empresa.com'],
+            ['whatsapp', t.whatsapp, MessageCircle, '+55 62 99999-9999'],
+            ['sms', t.sms, MessageCircle, '+55 62 99999-9999'],
+            ['wechat', t.wechat, MessageCircle, 'ID / número'],
+          ] as const).map(([key, label, Icon, placeholder]) => (
+            <label key={key} className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/50 p-3">
+              <Icon className="h-4 w-4 shrink-0 text-zinc-500" />
+              <span className="w-20 text-xs text-zinc-500">{label}</span>
+              <input value={destinations[key]} onChange={(e) => setDestinations((prev) => ({ ...prev, [key]: e.target.value }))} placeholder={placeholder} className="min-w-0 flex-1 bg-transparent text-sm text-zinc-200 outline-none placeholder:text-zinc-700" />
+            </label>
+          ))}
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button type="button" onClick={() => void send()} disabled={sending} className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"><Send className="h-4 w-4" />{sending ? t.sending : t.send}</button>
+          {sendMessage ? <span className="text-sm text-zinc-400">{sendMessage}</span> : null}
+        </div>
       </div>
+
+      <div className="mt-4 text-[11px] text-zinc-600">Filtra.AI · {report?.geracao?.modo === 'deterministico' ? 'dados estruturados do painel' : 'IA'}</div>
     </section>
   );
 }
