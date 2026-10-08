@@ -25,7 +25,7 @@ export async function resolveDotComplaint(empresaId: string, complaint: string):
   const db = getDb();
   const empresa = await findEmpresa(empresaId);
   if (!empresa) throw new Error('Empresa não encontrada.');
-  const rows = await db.all('SELECT id, rating, comment, createdAt, is_test FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 500', [empresaId]);
+  const rows = await db.all('SELECT id, rating, comment, createdAt FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 500', [empresaId]);
   const real = (rows || []).filter((r: any) => Number(r.is_test) !== 1);
   const wanted = terms(cleanComplaint);
   const scored = real.map((r: any) => { const text = normalize(r.comment); const matched = wanted.filter(t => text.includes(t)); return { row: r, score: matched.length, matched }; }).filter((x: any) => x.score > 0).sort((a: any, b: any) => b.score - a.score || Number(a.row.rating) - Number(b.row.rating)).slice(0, 5);
