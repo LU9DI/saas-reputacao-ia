@@ -10,7 +10,7 @@ import type { Database } from 'sqlite';
 import { fileURLToPath } from 'url';
 import { ensureAuthColumns } from '../passwordResetRoutes.js';
 import { ensureMfaColumns } from '../mfa.js';
-import { initPgDatabase, isPostgresUrl, asSqliteDb } from './db.pg.js';
+import { initPgDatabase, isPostgresUrl, asSqliteDb, type PgDatabase } from './db.pg.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +26,21 @@ export function getDb(): Database {
 
 export function dbEngine(): 'sqlite' | 'postgres' {
   return _engine;
+}
+
+export async function withDbTransaction<T>(work: (tx: Database) => Promise<T>): Promise<T> {
+  const db = getDb();
+  const transaction = (db as unknown as Partial<PgDatabase>).transaction;
+  if (typeof transaction === 'function') return transaction((tx) => work(tx as unknown as Database));
+  await db.run('BEGIN');
+  try {
+    const result = await work(db);
+    await db.run('COMMIT');
+    return result;
+  } catch (error) {
+    try { await db.run('ROLLBACK'); } catch { /* preserve original error */ }
+    throw error;
+  }
 }
 
 export async function pingDb(): Promise<{ ok: boolean; engine: string; error?: string }> {
