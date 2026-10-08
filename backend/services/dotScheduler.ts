@@ -1,4 +1,4 @@
-import { getDb } from '../lib/db.js';
+import { getDb, dbEngine } from '../lib/db.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { runDotMonitor } from './dotMonitor.js';
 import { monitorDueDotFollowUps } from './dotFollowUp.js';
@@ -42,6 +42,10 @@ let running = false;
 
 async function ensureSchedulerColumn() {
   const db = getDb();
+  if (dbEngine() === 'postgres') {
+    await db.exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS dot_monitor_last_at TEXT');
+    return;
+  }
   const cols = (await db.all('PRAGMA table_info(empresas)')).map((c: any) => c.name);
   if (!cols.includes('dot_monitor_last_at')) await db.exec('ALTER TABLE empresas ADD COLUMN dot_monitor_last_at TEXT');
 }
@@ -70,7 +74,7 @@ export async function runDueDotMonitors() {
     const companies = await db.all(
       `SELECT id, plan, status, dot_monitor_last_at FROM empresas
        WHERE status IN ('ativo', 'trial')
-         AND LOWER(IFNULL(plan, '')) IN ('rei', 'corporativo', 'corp')`
+         AND LOWER(COALESCE(plan, '')) IN ('rei', 'corporativo', 'corp')`
     );
     let processed = 0;
     let skipped = 0;
