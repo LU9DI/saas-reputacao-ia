@@ -215,5 +215,12 @@
   "webauthn_error": "Could not register the passkey.",
   "push_active_badge": "Active",
   "login_bio_use_email": "For biometrics, use the registered email.",
-  "login_bio_need_email": "Enter the email before using biometrics."
+  "login_bio_need_email": "Enter the email before using biometrics.",
+  "feat_unit_ranking": "Unit ranking",
+  "feat_unit_links": "Evaluation links by unit",
+  "feat_unit_insights": "Operational insights by unit",
+  "feat_priorities": "Operational priorities",
+  "feat_strategic_radar": "Strategic radar",
+  "feat_growth": "Growth opportunities",
+  "feat_executive_report": "Full executive report"
 }
