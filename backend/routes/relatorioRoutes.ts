@@ -1,28 +1,28 @@
 /**
- * Relatório PDF mensal — autenticado, cache em disco, SEM tokens de IA.
- * Suporta ?lang=pt|en|es|zh e diferencia conteúdo por plano (v8).
+ * Relatório profissional — objeto estruturado, visual no painel e distribuição por canais.
+ *
+ * PDF deixa de ser o formato do produto. A estrutura JSON é a fonte única para
+ * painel, e-mail, WhatsApp, SMS/WeChat e futuras camadas de IA.
  */
-import type { Express, Request, Response } from 'express';
+import type { Express, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { getDb, findEmpresa } from '../lib/db.js';
-import { gerarRelatorioMensalPDF, ensureUnidadesSchema, PDF_LAYOUT_VERSION, cycleWindowFromExpiry } from '../relatorioPdf.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import { validateReportMonth } from '../lib/dateValidation.js';
-import { planTemPdf } from '../lib/plans.js';
-import { logPdfGeneration } from '../lib/opsLog.js';
+import { empresaTemRelatorio } from '../lib/plans.js';
+import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
+import { notifyN8nAsync, n8nConfigured } from '../lib/n8n.js';
 import {
-  autenticarToken,
-  isAdminUser,
-  type AuthRequest,
-} from '../lib/auth.js';
-import { readPdfCache, writePdfCache } from '../lib/pdfCache.js';
+  buildRelatorioProfissional,
+  normalizeDestinatarios,
+} from '../services/relatorioProfissional.js';
 
-const pdfLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 120,
+const sendLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Muitos downloads de PDF deste IP. Aguarde um pouco.' },
+  message: { error: 'Muitos envios de relatório. Aguarde.' },
 });
 
 function podeAcessarEmpresa(req: AuthRequest, empresaId: string): boolean {
@@ -30,193 +30,200 @@ function podeAcessarEmpresa(req: AuthRequest, empresaId: string): boolean {
   return Boolean(req.user?.empresa_id && req.user.empresa_id === empresaId);
 }
 
-function authModeOf(req: AuthRequest): string {
-  if (isAdminUser(req.user)) return 'jwt_admin';
-  if (req.user?.empresa_id) return 'jwt_cliente';
-  return 'jwt';
+function reportMonth(req: AuthRequest): string {
+  const check = validateReportMonth(req.query.mes || req.body?.mes, {
+    defaultToCurrent: true,
+    minYear: 2020,
+    allowFutureMonths: 0,
+  });
+  return check.ok ? check.value : new Date().toISOString().slice(0, 7);
 }
 
-function normalizeLang(raw: unknown): string {
-  const s = String(raw || '').toLowerCase().trim();
-  if (s.startsWith('en')) return 'en';
-  if (s.startsWith('es')) return 'es';
-  if (s.startsWith('zh') || s.startsWith('cn')) return 'zh';
-  return 'pt';
+function planError(empresa: any) {
+  return {
+    error: 'Relatório profissional não disponível neste plano. O plano Inicial não inclui relatórios.',
+    plan: empresa.plan,
+    code: 'PLAN_NO_REPORT',
+  };
 }
 
 export function mountRelatorioRoutes(app: Express) {
-  app.get(
-    '/api/empresa/:ref/relatorio.pdf',
-    pdfLimiter,
-    autenticarToken,
-    asyncHandler(async (req: AuthRequest, res: Response) => {
-      const t0 = Date.now();
-      const auth_mode = authModeOf(req);
-      const db = getDb();
+  const getDestinatariosHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const empresa = await findEmpresa(req.params.ref);
+    if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+    if (!podeAcessarEmpresa(req, empresa.id)) return res.status(403).json({ error: 'Sem permissão.' });
 
-      const empresa = await findEmpresa(req.params.ref);
-      if (!empresa) {
-        await logPdfGeneration(db, {
-          status: 'error',
-          error: 'Empresa não encontrada',
-          auth_mode,
-          duration_ms: Date.now() - t0,
-        });
-        return res.status(404).json({ error: 'Empresa não encontrada.' });
-      }
-
-      if (!podeAcessarEmpresa(req, empresa.id)) {
-        await logPdfGeneration(db, {
-          empresa_id: empresa.id,
-          empresa_nome: empresa.nome_empresa,
-          status: 'forbidden',
-          error: 'Sem permissão',
-          auth_mode,
-          duration_ms: Date.now() - t0,
-        });
-        return res.status(403).json({ error: 'Sem permissão para baixar este relatório.' });
-      }
-
-      const plan = String(empresa.plan || '').toLowerCase();
-      if (!planTemPdf(plan)) {
-        await logPdfGeneration(db, {
-          empresa_id: empresa.id,
-          empresa_nome: empresa.nome_empresa,
-          status: 'forbidden',
-          error: `Plano ${plan} sem PDF`,
-          auth_mode,
-          duration_ms: Date.now() - t0,
-        });
-        return res.status(403).json({
-          error:
-            'Relatório PDF não disponível neste plano. Use o seletor de plano no painel (modo teste) ou faça upgrade.',
-          plan,
-        });
-      }
-
-      const explicitMonth = req.query.mes !== undefined && String(req.query.mes).trim() !== '';
-      let mesAno = '';
-      let reportWindow = null as ReturnType<typeof cycleWindowFromExpiry>;
-      if (explicitMonth) {
-        const mesCheck = validateReportMonth(req.query.mes, {
-          defaultToCurrent: false,
-          minYear: 2020,
-          allowFutureMonths: 0,
-        });
-        if (!mesCheck.ok) {
-          await logPdfGeneration(db, {
-            empresa_id: empresa.id,
-            empresa_nome: empresa.nome_empresa,
-            status: 'error',
-            error: mesCheck.error,
-            auth_mode,
-            duration_ms: Date.now() - t0,
-          });
-          return res.status(400).json({
-            error: mesCheck.error,
-            exemplo: '2026-09',
-          });
-        }
-        mesAno = mesCheck.value;
-      } else if (plan !== 'trial' && String(empresa.status || '').toLowerCase() !== 'trial') {
-        // Paid subscriptions use the current billing period, whose end is expira_em.
-        // The explicit ?mes=YYYY-MM path remains available for historical calendar-month reports.
-        reportWindow = cycleWindowFromExpiry((empresa as any).expira_em);
-        if (reportWindow) {
-          mesAno = reportWindow.end.toISOString().slice(0, 7);
-        } else {
-          const mesCheck = validateReportMonth(undefined, {
-            defaultToCurrent: true,
-            minYear: 2020,
-            allowFutureMonths: 0,
-          });
-          if (!mesCheck.ok) throw new Error(mesCheck.error);
-          mesAno = mesCheck.value;
-        }
-      } else {
-        const mesCheck = validateReportMonth(undefined, {
-          defaultToCurrent: true,
-          minYear: 2020,
-          allowFutureMonths: 0,
-        });
-        if (!mesCheck.ok) throw new Error(mesCheck.error);
-        mesAno = mesCheck.value;
-      }
-
-      const lang = normalizeLang(
-        req.query.lang || (empresa as any).locale || (empresa as any).idioma || (empresa as any).language
+    let raw: unknown = null;
+    try {
+      const row = await getDb().get<{ relatorio_destinatarios?: string }>(
+        'SELECT relatorio_destinatarios FROM empresas WHERE id = ?',
+        [empresa.id],
       );
-      const version = PDF_LAYOUT_VERSION || 'v8';
-      const cacheKey = reportWindow?.key || mesAno;
+      raw = row?.relatorio_destinatarios ?? null;
+    } catch {
+      raw = null;
+    }
 
-      const cached = readPdfCache(empresa.id, cacheKey, plan, lang, version);
-      if (cached) {
-        await logPdfGeneration(db, {
-          empresa_id: empresa.id,
-          empresa_nome: empresa.nome_empresa,
-          mes: mesAno,
-          status: 'ok',
-          bytes: cached.length,
-          auth_mode: auth_mode + '_cache',
-          duration_ms: Date.now() - t0,
-        });
-        const slug = (empresa as any).slug || empresa.id.slice(0, 8);
-        const cacheFilename = reportWindow
-          ? `relatorio-${slug}-ciclo-${reportWindow.end.toISOString().slice(0, 10)}-${lang}.pdf`
-          : `relatorio-${slug}-${mesAno}-${lang}.pdf`;
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader(
-          'Content-Disposition',
-          `attachment; filename="${cacheFilename}"`
-        );
-        res.setHeader('X-PDF-Cache', 'HIT');
-        res.setHeader('X-PDF-Lang', lang);
-        res.setHeader('X-PDF-Version', version);
-        return res.send(cached);
-      }
-
-      await ensureUnidadesSchema(db);
-
-      let pdf: Buffer;
+    let destinatarios: Array<{ canal: string; destino: string }> = [];
+    if (typeof raw === 'string' && raw.trim()) {
       try {
-        pdf = await gerarRelatorioMensalPDF(db, empresa.id, mesAno, undefined, lang, reportWindow);
-      } catch (e: any) {
-        await logPdfGeneration(db, {
-          empresa_id: empresa.id,
-          empresa_nome: empresa.nome_empresa,
-          mes: mesAno,
-          status: 'error',
-          error: e?.message || 'Falha geração PDF',
-          auth_mode,
-          duration_ms: Date.now() - t0,
-        });
-        console.error('[pdf] generation error:', e?.message || e, e?.stack);
-        throw e;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          destinatarios = parsed
+            .map((d: any) => ({
+              canal: String(d?.canal ?? d?.channel ?? d?.tipo ?? '').trim().toLowerCase(),
+              destino: String(d?.destino ?? d?.destination ?? d?.phone ?? d?.email ?? d?.address ?? '').trim(),
+            }))
+            .filter((d) => d.canal && d.destino);
+        }
+      } catch {
+        destinatarios = [];
       }
+    }
 
-      writePdfCache(empresa.id, cacheKey, plan, pdf, lang, version);
+    return res.json({ success: true, ativo: destinatarios.length > 0, destinatarios });
+  });
 
-      await logPdfGeneration(db, {
-        empresa_id: empresa.id,
-        empresa_nome: empresa.nome_empresa,
-        mes: mesAno,
-        status: 'ok',
-        bytes: pdf.length,
-        auth_mode,
-        duration_ms: Date.now() - t0,
+  const saveDestinatariosHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const empresa = await findEmpresa(req.params.ref);
+    if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+    if (!podeAcessarEmpresa(req, empresa.id)) return res.status(403).json({ error: 'Sem permissão.' });
+
+    const destinatarios = normalizeDestinatarios(req.body || {});
+    if (destinatarios.length > 20) return res.status(400).json({ error: 'Máximo de 20 destinatários.' });
+
+    await getDb().exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS relatorio_destinatarios TEXT');
+    await getDb().run(
+      'UPDATE empresas SET relatorio_destinatarios = ? WHERE id = ?',
+      [JSON.stringify(destinatarios), empresa.id],
+    );
+    return res.json({ success: true, ativo: destinatarios.length > 0, destinatarios });
+  });
+
+  app.get('/api/empresa/:ref/relatorio/destinatarios', autenticarToken, getDestinatariosHandler);
+  app.put('/api/empresa/:ref/relatorio/destinatarios', autenticarToken, saveDestinatariosHandler);
+  app.post('/api/empresa/:ref/relatorio/destinatarios', autenticarToken, saveDestinatariosHandler);
+
+  const previewHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const empresa = await findEmpresa(req.params.ref);
+    if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+    if (!podeAcessarEmpresa(req, empresa.id)) return res.status(403).json({ error: 'Sem permissão.' });
+    if (!empresaTemRelatorio(empresa)) return res.status(403).json(planError(empresa));
+
+    const mesAno = reportMonth(req);
+    const relatorio = await buildRelatorioProfissional(getDb(), empresa, mesAno);
+
+    return res.json({
+      success: true,
+      tipo: 'relatorio_profissional',
+      ...relatorio,
+      n8n_configured: n8nConfigured(),
+    });
+  });
+
+  app.get('/api/empresa/:ref/relatorio', autenticarToken, previewHandler);
+  app.get('/api/empresa/:ref/relatorio/inteligente', autenticarToken, previewHandler);
+  app.post('/api/empresa/:ref/relatorio/preview', autenticarToken, sendLimiter, previewHandler);
+
+  const sendHandler = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const empresa = await findEmpresa(req.params.ref);
+    if (!empresa) return res.status(404).json({ error: 'Empresa não encontrada.' });
+    if (!podeAcessarEmpresa(req, empresa.id)) return res.status(403).json({ error: 'Sem permissão.' });
+    if (!empresaTemRelatorio(empresa)) return res.status(403).json(planError(empresa));
+
+    const mesAno = reportMonth(req);
+    let destinatarios = normalizeDestinatarios(req.body || {});
+
+    if (destinatarios.length === 0) {
+      try {
+        const u = await getDb().get(
+          'SELECT email FROM usuarios WHERE empresa_id = ? AND email IS NOT NULL LIMIT 1',
+          [empresa.id],
+        );
+        if (u?.email) destinatarios = [{ canal: 'email', destino: String(u.email) }];
+      } catch {
+        /* fallback manual */
+      }
+    }
+
+    if (destinatarios.length === 0) {
+      return res.status(400).json({
+        error: 'Informe ao menos um destinatário: email, whatsapp, sms, wechat ou destinatarios[{canal,destino}].',
+        code: 'NO_DESTINATARIO',
       });
+    }
 
-      const slug = (empresa as any).slug || empresa.id.slice(0, 8);
-      const filename = reportWindow
-        ? `relatorio-${slug}-ciclo-${reportWindow.end.toISOString().slice(0, 10)}-${lang}.pdf`
-        : `relatorio-${slug}-${mesAno}-${lang}.pdf`;
+    const relatorio = await buildRelatorioProfissional(getDb(), empresa, mesAno);
+    const channels = [...new Set(destinatarios.map((d) => d.canal))];
+    const idempotencyKey = `professional-report:${empresa.id}:${mesAno}:${channels.sort().join(',')}`;
 
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      res.setHeader('X-PDF-Cache', 'MISS');
-      res.setHeader('X-PDF-Lang', lang);
-      res.setHeader('X-PDF-Version', version);
-      res.send(pdf);
-    })
-  );
+    if (!n8nConfigured()) {
+      return res.status(503).json({
+        error: 'Distribuição externa não configurada. O relatório continua disponível no painel.',
+        code: 'N8N_OFF',
+        preview: {
+          tipo: relatorio.tipo,
+          periodo: relatorio.periodo,
+          plano: relatorio.plano,
+          kpis: relatorio.kpis,
+          canais: relatorio.canais,
+        },
+      });
+    }
+
+    const ok = await notifyN8nAsync('report.generated', {
+      tipo: 'relatorio_profissional',
+      schema_version: relatorio.schema_version,
+      empresa_id: empresa.id,
+      slug: empresa.slug,
+      nome_empresa: empresa.nome_empresa,
+      plan: empresa.plan,
+      periodo: relatorio.periodo,
+      report: relatorio,
+      relatorio: relatorio,
+      channels,
+      destinatarios,
+      email: destinatarios.find((d) => d.canal === 'email')?.destino || null,
+      idempotency_key: idempotencyKey,
+      modelo_ia: relatorio.geracao.modelo_ia,
+      tokens: relatorio.geracao.tokens,
+    });
+
+    if (!ok) {
+      return res.status(502).json({
+        error: 'O canal de distribuição não aceitou o relatório. O relatório continua disponível no painel.',
+        code: 'N8N_REJECT',
+        preview: { periodo: relatorio.periodo, canais: relatorio.canais },
+      });
+    }
+
+    return res.json({
+      success: true,
+      tipo: 'relatorio_profissional',
+      enviado: true,
+      destinatarios,
+      channels,
+      periodo: relatorio.periodo,
+      kpis: relatorio.kpis,
+      plano: relatorio.plano,
+      mensagem: 'Relatório profissional gerado e encaminhado para distribuição pelos canais selecionados.',
+    });
+  });
+
+  app.post('/api/empresa/:ref/relatorio/enviar', autenticarToken, sendLimiter, sendHandler);
+  app.post('/api/empresa/:ref/relatorio/inteligente', autenticarToken, sendLimiter, sendHandler);
+  app.post('/api/empresa/:ref/relatorio/send', autenticarToken, sendLimiter, sendHandler);
+
+  // Compatibilidade explícita: PDF deixou de ser o produto. Não geramos arquivo nem iniciamos Chromium.
+  const legacyPdfHandler = asyncHandler(async (_req: AuthRequest, res: Response) => {
+    return res.status(410).json({
+      error: 'PDF descontinuado como formato de relatório.',
+      code: 'REPORT_FORMAT_RETIRED',
+      replacement: '/api/empresa/:ref/relatorio',
+      message: 'Use o relatório profissional estruturado, disponível no painel e pelos canais de distribuição.',
+    });
+  });
+
+  app.get('/api/empresa/:ref/relatorio-inteligente.pdf', autenticarToken, legacyPdfHandler);
+  app.get('/api/empresa/:ref/relatorio.pdf', autenticarToken, legacyPdfHandler);
 }
