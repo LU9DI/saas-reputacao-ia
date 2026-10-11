@@ -48,6 +48,8 @@ jobs:
           test -d out
           test -f out/index.html
           test -f out/404.html
+          test -f out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
+          test -f out/robots.txt
           echo "Static artifact ready: $(du -sh out | cut -f1)"
 
       - name: Deploy to Cloudflare Pages
@@ -60,3 +62,6 @@ jobs:
             --branch=main \
             --commit-message="Cloudflare Pages ${GITHUB_SHA}" \
             --commit-hash="${GITHUB_SHA}"
+
+      - name: Submit sitemap URLs to IndexNow
+        run: npm run seo:indexnow
