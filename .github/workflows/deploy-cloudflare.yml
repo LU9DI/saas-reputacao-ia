@@ -48,9 +48,14 @@ jobs:
           test -d out
           test -f out/index.html
           test -f out/404.html
-          test -f out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
+          test -f out/sitemap.xml
           test -f out/robots.txt
+          test -f out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
+          grep -q 'https://filtraai.com/en' out/sitemap.xml
+          grep -q 'https://filtraai.com/es' out/sitemap.xml
+          grep -q 'https://filtraai.com/zh' out/sitemap.xml
           echo "Static artifact ready: $(du -sh out | cut -f1)"
+          echo "Sitemap URL count: $(grep -o '<loc>' out/sitemap.xml | wc -l)"
 
       - name: Deploy to Cloudflare Pages
         run: |
