@@ -116,7 +116,14 @@ function entry(path: string): MetadataRoute.Sitemap[number] {
   };
 }
 
-const allPaths = [...canonicalPaths, ...localizedPaths].filter((path, index, arr) => arr.indexOf(path) === index);
+const translatedBlogPaths = [
+  '/en/blog/ai-review-analysis-guide',
+  '/es/blog/analisis-resenas-ia',
+  '/zh/blog/ai-review-analysis-guide',
+];
+
+const allPaths = [...canonicalPaths, ...localizedPaths, ...translatedBlogPaths]
+  .filter((path, index, arr) => arr.indexOf(path) === index);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return allPaths.map(entry);
