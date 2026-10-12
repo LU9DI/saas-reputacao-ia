@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   creator: 'Filtra.AI',
   publisher: 'Filtra.AI',
   manifest: '/manifest.webmanifest',
-  alternates: { canonical: `${siteUrl}/` },
   category: 'BusinessApplication',
   openGraph: {
     type: 'website',
