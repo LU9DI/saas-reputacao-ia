@@ -298,9 +298,9 @@ export default function PainelEmpresa() {
             <a href="#reviews" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <MessageSquare size={17} /> {t.panel_reviews || 'Avaliações'}
             </a>
-            <a href="#professional-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
+            {reportMensalOk && <a href="#professional-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <FileText size={17} /> Relatório profissional
-            </a>
+            </a>}
             <a href="#ai-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <Bot size={17} /> {t.panel_ai_report || 'Relatório IA'}
             </a>
