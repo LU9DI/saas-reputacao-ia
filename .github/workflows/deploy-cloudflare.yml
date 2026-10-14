@@ -58,10 +58,14 @@ jobs:
           grep -q 'https://filtraai.com/es/blog/analisis-resenas-ia' out/sitemap.xml
           grep -q 'https://filtraai.com/zh/blog/ai-review-analysis-guide' out/sitemap.xml
           grep -q 'Disallow: /painel/' out/robots.txt
+          grep -q 'Disallow: /widget/' out/robots.txt
           grep -q 'Sitemap: https://filtraai.com/sitemap.xml' out/robots.txt
           grep -qx 'a3d7f1c94b2e6a805d1f7c3b9e4a6d82' out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
           echo "Static artifact ready: $(du -sh out | cut -f1)"
           echo "Sitemap URL count: $(grep -o '<loc>' out/sitemap.xml | wc -l)"
+
+      - name: Audit sitemap, canonical URLs and exported pages
+        run: npm run seo:audit
 
       - name: Deploy to Cloudflare Pages
         run: |
