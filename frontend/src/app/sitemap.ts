@@ -38,7 +38,6 @@ const SEO_FAMILIES: Record<string, Record<Lang, string>> = {
 const canonicalPaths = [
   '',
   ...Object.keys(SEO_FAMILIES).filter((p) => p !== '/'),
-  '/blog',
   '/blog/gestao-reputacao-online-guia',
   '/blog/como-responder-avaliacoes-negativas',
   '/blog/como-conseguir-avaliacoes-google',
