@@ -34,12 +34,16 @@ const NEVER_INDEX = [
 const NOINDEX_ROUTES = [
   '/login',
   '/admin',
+  '/admin/login',
+  '/painel/preview',
   '/painel/_',
   '/avaliacao/_',
   '/widget/_',
   '/pagamento-ok',
   '/preview',
+  '/preview/teste',
   '/teste',
+  '/teste/verificar',
   '/recuperar-senha',
   '/suporte',
 ];
