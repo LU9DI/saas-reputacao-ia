@@ -56,10 +56,10 @@ function collectPageRoutes(directory = appRoot) {
 
 const staticRoutes = new Set(collectPageRoutes());
 function slugsForLanguage(source, language) {
-  const start = source.indexOf('\n  ' + language + ':[');
+  const start = source.indexOf('\n' + language + ':[');
   if (start < 0) return new Set();
   const nextLanguages = ['en', 'es', 'zh'].slice(['en', 'es', 'zh'].indexOf(language) + 1);
-  const ends = nextLanguages.map((next) => source.indexOf('\n  ' + next + ':[', start + 1)).filter((index) => index >= 0);
+  const ends = nextLanguages.map((next) => source.indexOf('\n' + next + ':[', start + 1)).filter((index) => index >= 0);
   const end = ends.length ? Math.min(...ends) : source.indexOf('\n};', start + 1);
   const block = source.slice(start, end < 0 ? source.length : end);
   return new Set([...block.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
