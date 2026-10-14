@@ -231,7 +231,13 @@ export async function buildRelatorioProfissional(
     } catch { rows = []; }
   }
 
+  const periodoDate = new Date(periodo + '-01T00:00:00.000Z');
+  periodoDate.setUTCMonth(periodoDate.getUTCMonth() - 1);
+  const periodoAnterior = periodoDate.toISOString().slice(0, 7);
   const reais = rows.filter((row) => !isTest(row) && dateOf(row).startsWith(periodo));
+  const anteriores = rows.filter((row) => !isTest(row) && dateOf(row).startsWith(periodoAnterior));
+  const mediaAnterior = anteriores.length ? Math.round((anteriores.reduce((sum, row) => sum + Number(row.rating || 0), 0) / anteriores.length) * 10) / 10 : null;
+  const criticasAnterior = anteriores.length ? Math.round((anteriores.filter((row) => Number(row.rating) <= 2).length / anteriores.length) * 100) : null;
   const avaliacoes = reais.length;
   const soma = reais.reduce((sum, row) => sum + Number(row.rating || 0), 0);
   const notaMedia = avaliacoes ? Math.round((soma / avaliacoes) * 10) / 10 : 0;
@@ -272,6 +278,46 @@ export async function buildRelatorioProfissional(
     } catch { unidades = []; }
   }
 
+  const rankingUnidades = unidades.slice().sort((a, b) => b.nota_media - a.nota_media || b.avaliacoes - a.avaliacoes).map((u, index) => ({ ...u, posicao: index + 1 }));
+  const prioridadesOperacionais = ['corporativo', 'rei'].includes(plan) ? unidades.map((u: any) => {
+    const unitReviews = reais.filter((r) => String(r.unidade_id || '') === String(u.id));
+    const tagsCount = new Map<string, number>();
+    for (const row of unitReviews) {
+      if (Number(row.rating) > 3) continue;
+      for (const tag of tags(row.ai_tags)) tagsCount.set(tag, (tagsCount.get(tag) || 0) + 1);
+    }
+    const topTheme = [...tagsCount.entries()].sort((a, b) => b[1] - a[1])[0];
+    const criticalShare = u.avaliacoes ? Math.round((u.criticas / u.avaliacoes) * 100) : 0;
+    if (u.nota_media >= 4 && criticalShare < 20 && u.criticas < 2) return null;
+    return {
+      unidade_id: u.id, unidade: u.nome, prioridade: (u.nota_media < 3.2 || criticalShare >= 35) ? 'alta' : 'media',
+      evidencia: 'Média ' + Number(u.nota_media).toFixed(1) + '/5; ' + u.criticas + ' avaliações críticas em ' + u.avaliacoes + ' avaliações (' + criticalShare + '%).',
+      tema_recorrente: topTheme ? topTheme[0] : null,
+      acao_recomendada: topTheme ? 'Investigar o tema “' + topTheme[0] + '” nesta unidade, validar a causa com a equipe e acompanhar o indicador no próximo ciclo.' : 'Revisar as avaliações críticas desta unidade, identificar causas recorrentes e acompanhar a evolução no próximo ciclo.',
+    };
+  }).filter(Boolean).sort((a: any, b: any) => (a.prioridade === 'alta' ? 0 : 1) - (b.prioridade === 'alta' ? 0 : 1)) : [];
+  const radarEstrategico: any[] = [];
+  if (plan === 'rei') {
+    if (mediaAnterior !== null) {
+      const delta = Math.round((notaMedia - mediaAnterior) * 10) / 10;
+      if (delta <= -0.3) radarEstrategico.push({ nivel: 'alto', sinal: 'Queda na nota média', evidencia: 'A nota média passou de ' + mediaAnterior.toFixed(1) + ' para ' + notaMedia.toFixed(1) + ' em relação a ' + periodoAnterior + '.', acao: 'Investigar os temas e unidades que mais contribuíram para a queda antes de definir uma ação corretiva.' });
+      else if (delta >= 0.3) radarEstrategico.push({ nivel: 'positivo', sinal: 'Melhora na nota média', evidencia: 'A nota média subiu de ' + mediaAnterior.toFixed(1) + ' para ' + notaMedia.toFixed(1) + ' em relação a ' + periodoAnterior + '.', acao: 'Identificar práticas associadas à melhora e verificar se podem ser replicadas.' });
+      if (criticasAnterior !== null) {
+        const currentCriticalPct = kpis.percentual_criticas;
+        const change = currentCriticalPct - criticasAnterior;
+        if (change >= 10) radarEstrategico.push({ nivel: 'alto', sinal: 'Aumento da proporção de avaliações críticas', evidencia: 'A proporção de notas de 1–2 estrelas subiu de ' + criticasAnterior + '% para ' + currentCriticalPct + '%.', acao: 'Priorizar as causas recorrentes das avaliações críticas e revisar a resposta operacional.' });
+        else if (change <= -10) radarEstrategico.push({ nivel: 'positivo', sinal: 'Redução da proporção de avaliações críticas', evidencia: 'A proporção de notas de 1–2 estrelas caiu de ' + criticasAnterior + '% para ' + currentCriticalPct + '%.', acao: 'Verificar quais ações coincidiram com a redução e acompanhar se o resultado se mantém.' });
+      }
+    } else {
+      radarEstrategico.push({ nivel: 'informativo', sinal: 'Histórico comparativo insuficiente', evidencia: 'Não há avaliações válidas no mês anterior para estabelecer uma comparação confiável.', acao: 'Acumular mais um ciclo mensal antes de afirmar tendências.' });
+    }
+    if (unidades.length > 1) {
+      const sortedUnits = unidades.slice().sort((a, b) => a.nota_media - b.nota_media);
+      const gap = Math.round((sortedUnits[sortedUnits.length - 1].nota_media - sortedUnits[0].nota_media) * 10) / 10;
+      if (gap >= 0.7) radarEstrategico.push({ nivel: 'medio', sinal: 'Diferença relevante entre unidades', evidencia: 'A diferença entre a maior e a menor média é de ' + gap.toFixed(1) + ' ponto(s).', acao: 'Comparar os temas das unidades de maior e menor desempenho para identificar práticas replicáveis e pontos de atrito.' });
+    }
+  }
+
   const riscos = [];
   if (kpis.percentual_criticas >= 20) riscos.push({ nivel: 'alto', titulo: 'Concentração de avaliações críticas', evidencias: `${kpis.percentual_criticas}% das avaliações são críticas.` });
   if (sent.negativo > sent.positivo) riscos.push({ nivel: 'medio', titulo: 'Sentimento negativo predominante', evidencias: 'O volume de sinais negativos supera o positivo no período.' });
@@ -308,6 +354,10 @@ export async function buildRelatorioProfissional(
     sentimento: sent,
     temas: { positivos: temasPositivos, atencao: temasAtencao },
     unidades,
+    ranking_unidades: ['corporativo', 'rei'].includes(plan) ? rankingUnidades : [],
+    prioridades_operacionais: prioridadesOperacionais,
+    radar_estrategico: plan === 'rei' ? radarEstrategico : [],
+    oportunidades_crescimento: plan === 'rei' ? oportunidades : [],
     riscos,
     oportunidades,
     recomendacoes: buildRecommendations(kpis, temasAtencao),
