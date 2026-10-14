@@ -50,6 +50,8 @@ describe('relatório profissional mensal', () => {
     assert.ok(report.canais.email.html.includes('break-inside:avoid'));
     assert.ok(!report.canais.email.html.includes('page-break-before:always'));
     assert.match(report.canais.email.html, /Prioridades operacionais/);
+    assert.match(report.resumo_executivo, /a empresa registrou 2 avaliações/i);
+    assert.ok(!report.resumo_executivo.includes('o Corporativo registrou'));
     assert.equal(report.geracao.modo, 'deterministico');
   });
 
@@ -68,6 +70,14 @@ describe('relatório profissional mensal', () => {
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /diretoria/i.test(x)));
     assert.match(report.canais.email.html, /Radar estratégico/);
     assert.match(report.canais.email.html, /Relatório executivo mensal/);
+  });
+
+  it('explica com clareza quando não há avaliações válidas no período', async () => {
+    const report = await buildRelatorioProfissional(fakeDb([]), { id: 'company-empty', nome_empresa: 'Sem Dados', plan: 'pro' }, '2026-09');
+    assert.equal(report.kpis.avaliacoes, 0);
+    assert.match(report.resumo_executivo, /Não houve avaliações válidas/i);
+    assert.ok(report.canais.email.html.includes('—'));
+    assert.ok(!report.canais.email.html.includes('0.0/5'));
   });
 
   it('não atribui benefícios do REI ao Trial', async () => {
