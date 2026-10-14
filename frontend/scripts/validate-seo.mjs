@@ -61,6 +61,8 @@ for (const path of sitemapPaths) {
   if (/^\/(en|es|zh)\/blog\/[^/]+$/.test(path)) {
     const slug = path.split('/').at(-1);
     check(localizedBlogSlugs.has(slug), `Sitemap blog route has no matching localized article slug: ${path}`);
+  } else if (/^\/(en|es|zh)\/blog$/.test(path)) {
+    check(staticRoutes.has('/[lang]/blog'), 'Localized blog index route /[lang]/blog must exist');
   } else if (/^\/(en|es|zh)\/[^/]+$/.test(path)) {
     const slug = path.split('/').at(-1);
     check(localizedSlugs.has(slug), `Sitemap localized route has no matching page slug: ${path}`);
