@@ -139,7 +139,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           console.warn('[monthly-report] falha empresa=' + empresa.id + ':', message);
         }
       }
-      return res.status(stats.falhas ? 207 : 200).json({ success: stats.falhas === 0, partial: stats.falhas > 0 || stats.sem_destinatario > 0, ...stats, distribuicao_configurada: true, idempotencia: 'um encaminhamento aceito pelo webhook por empresa e mês' });
+      return res.status(stats.falhas || stats.sem_destinatario ? 207 : 200).json({ success: stats.falhas === 0 && stats.sem_destinatario === 0, partial: stats.falhas > 0 || stats.sem_destinatario > 0, ...stats, distribuicao_configurada: true, idempotencia: 'um encaminhamento aceito pelo webhook por empresa e mês' });
     } catch (error: any) {
       console.error('[monthly-report] job falhou:', error?.message || error);
       return res.status(500).json({ error: 'Falha ao processar relatórios mensais.', code: 'MONTHLY_REPORT_JOB_FAILED' });
