@@ -155,7 +155,7 @@ function summarizeThemes(rows: Review[], positive: boolean): Array<{ tema: strin
     .map(([tema, volume]) => ({ tema, volume }));
 }
 
-function buildSummary(plan: string, kpi: any): string {
+function buildSummary(kpi: any): string {
   if (!kpi.avaliacoes) {
     return 'Não houve avaliações válidas no período. O relatório está pronto para receber dados assim que novas avaliações forem registradas.';
   }
@@ -164,8 +164,7 @@ function buildSummary(plan: string, kpi: any): string {
     kpi.nota_media >= 4 ? 'desempenho positivo' :
     kpi.nota_media >= 3 ? 'desempenho estável, com pontos de atenção' :
     'cenário que merece atenção prioritária';
-  const planName = planLabel(plan);
-  return `No período analisado, o ${planName} registrou ${kpi.avaliacoes} avaliações, nota média de ${kpi.nota_media.toFixed(1)} e ${kpi.percentual_positivas}% de avaliações positivas. O cenário indica ${quality}.`;
+  return `No período analisado, a empresa registrou ${kpi.avaliacoes} avaliações, nota média de ${kpi.nota_media.toFixed(1)}/5 e ${kpi.percentual_positivas}% de avaliações positivas. O cenário indica ${quality}.`;
 }
 
 function buildRecommendations(kpi: any, themes: any): string[] {
@@ -383,7 +382,7 @@ export async function buildRelatorioProfissional(
         beneficios: PLAN_BENEFITS[p],
       })),
     },
-    resumo_executivo: buildSummary(plan, kpis),
+    resumo_executivo: buildSummary(kpis),
     kpis,
     distribuicao_estrelas: distribuicao,
     sentimento: sent,
