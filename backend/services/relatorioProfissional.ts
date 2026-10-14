@@ -1,8 +1,8 @@
 /**
  * Relatório profissional — JSON-first, determinístico e pronto para canais.
  *
- * O relatório é um objeto de negócio, não um arquivo. A mesma estrutura
- * alimenta painel, e-mail, WhatsApp, SMS/WeChat e futuras camadas de IA.
+ * O relatório mensal é um entregável independente do painel. A estrutura
+ * alimenta e-mail, WhatsApp, SMS/WeChat e a narrativa executiva baseada em evidências.
  */
 import type { Database } from 'sqlite';
 import { planLabel, PLANOS_OFICIAIS } from '../lib/plans.js';
@@ -65,11 +65,17 @@ const PLAN_BENEFITS: Record<string, string[]> = {
   ],
   rei: [
     'Até 8.000 feedbacks por mês',
-    'Todos os recursos do Corporativo',
+    'Relatório profissional mensal com análise de sentimento e temas recorrentes',
+    'Gestão consolidada de múltiplas unidades',
+    'Ranking comparativo de desempenho por unidade',
+    'Análise dos temas operacionais de cada unidade',
+    'Prioridades de ação baseadas nas avaliações do período',
+    'Links de avaliação exclusivos para cada unidade',
     'Relatório executivo mensal preparado para a diretoria',
     'Radar estratégico de riscos e tendências de reputação',
     'Oportunidades de crescimento identificadas nos dados',
     'Recomendações executivas priorizadas por evidência e urgência',
+    'Suporte prioritário e acesso antecipado a funcionalidades selecionadas',
   ],
 };
 
