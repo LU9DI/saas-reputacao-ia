@@ -4,7 +4,7 @@ O relatório mensal é um entregável independente do painel. Esta implementaç�
 
 ## Identidade visual
 
-O relatório HTML inclui o logotipo oficial do Filtra.AI no cabeçalho e uma marca-d’água tipográfica discreta “FILTRA.AI” no corpo. A identidade visual é aplicada ao novo entregável mensal, sem alterar o painel nem os endpoints e conteúdos legados de PDF.
+O relatório HTML inclui o logotipo oficial do Filtra.AI no cabeçalho e uma marca-d’água tipográfica discreta “FILTRA.AI” no corpo. A identidade visual é aplicada ao novo entregável mensal, sem alterar o painel nem os endpoints e conteúdos legados de PDF. O HTML também traz regras de impressão em A4 com fluxo natural, sem quebras de página forçadas, evitando páginas vazias; títulos, linhas de tabela e blocos curtos são protegidos contra cortes quando possível. A impressão deve ser conferida em navegadores diferentes, pois o comportamento final também depende do mecanismo de impressão.
 
 ## Conteúdo
 
@@ -40,5 +40,7 @@ O job mantém a tabela `relatorio_envios_mensais` e reserva uma combinação ún
 - **Corporativo:** visão multiunidades, ranking comparativo, temas por unidade e prioridades operacionais.
 - **REI:** inclui o escopo Corporativo e acrescenta leitura executiva mensal, radar de riscos/tendências e oportunidades de crescimento.
 - **Trial:** não herda os benefícios exclusivos do REI.
+
+O conteúdo do relatório respeita a hierarquia dos planos: Pro recebe o resumo e os indicadores essenciais; Ultra acrescenta interpretação, temas, riscos, oportunidades e plano de ação; Corporativo acrescenta ranking e prioridades por unidade; REI acrescenta o radar estratégico. Quando não há avaliações válidas, a nota média é exibida como “—”, não como 0,0/5.
 
 Os textos comerciais não substituem a verificação dos gates de acesso existentes para recursos fora do relatório.
