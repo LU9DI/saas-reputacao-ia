@@ -1,13 +1,14 @@
 # Relatório profissional mensal
 
-O relatório profissional mensal passa a ter uma seção própria no painel do cliente. A seção nova não faz chamadas de rede próprias: calcula a visualização com as avaliações já carregadas pela tela do painel. O Relatório Inteligente legado e seus endpoints PDF permanecem intactos e fora do escopo de alteração.
+O relatório profissional mensal tem uma seção própria no painel do cliente. O job mensal gera um snapshot JSON completo a partir das avaliações reais do mês e persiste esse conteúdo em `relatorio_envios_mensais.report_json`. O painel entrega os snapshots junto de seu payload principal autenticado; a seção não dispara uma chamada de rede própria nem gera o relatório durante a visualização. O Relatório Inteligente legado e seus endpoints PDF permanecem intactos e fora do escopo de alteração.
 
 ## Painel do cliente
 
 - Exibido para os planos Pro, Ultra, Corporativo e REI.
-- Permite selecionar um mês presente nas avaliações carregadas e apresenta indicadores, resumo executivo, pontos de atenção, recomendações e, conforme o plano, temas recorrentes e dados por unidade.
-- A seção não gera nem disponibiliza um PDF paralelo; o relatório é a experiência principal no painel.
-- Limite importante: o painel carrega um conjunto de avaliações recentes limitado pelo plano. A seção filtra esse conjunto por mês, portanto não garante um arquivo/snapshot persistido para cada mês nem acesso a meses ausentes do payload. O job mensal descrito abaixo ainda é um fluxo separado de distribuição e não alimenta a seção visual do painel.
+- Permite selecionar entre snapshots mensais previamente gerados, com indicadores, resumo executivo, sentimento, temas, riscos, recomendações e, conforme o plano, comparativo de unidades e radar estratégico.
+- Os snapshots ficam persistidos por empresa e mês, são verificados contra a empresa autenticada e são incluídos no carregamento normal do painel. Não é feita geração sob demanda na navegação.
+- A seção não gera nem disponibiliza um PDF paralelo; o relatório profissional mensal é a experiência principal no painel.
+- Meses anteriores à ativação do job ou ainda não gerados não aparecem no histórico. O fallback visual baseado nas avaliações carregadas é mantido apenas quando não há snapshot salvo, sem afirmar que esse fallback seja um relatório mensal persistido.
 
 ## Identidade visual
 
