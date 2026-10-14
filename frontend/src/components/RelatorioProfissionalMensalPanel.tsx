@@ -19,6 +19,7 @@ type Unit = { id?: string; nome?: string; nome_unidade?: string; nome_empresa?: 
 type Props = {
   empresa: { id?: string; nome_empresa?: string; plan?: string };
   reviews: Review[];
+  monthlyReports?: any[];
   unidades?: Unit[];
   lang?: string;
 };
@@ -64,13 +65,16 @@ function languageOf(name: unknown): string {
   return 'pt';
 }
 
-export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = [], lang: languageName }: Props) {
+export function RelatorioProfissionalMensalPanel({ empresa, reviews, monthlyReports = [], unidades = [], lang: languageName }: Props) {
   const [selectedMonth, setSelectedMonth] = useState('');
   const lang = languageOf(languageName);
   const t = COPY[lang] || COPY.pt;
   const validReviews = useMemo(() => reviews.filter((r) => !isTest(r) && Number(r.rating) >= 1 && Number(r.rating) <= 5 && reviewDate(r)), [reviews]);
   const months = useMemo(() => [...new Set(validReviews.map(reviewDate))].sort().reverse(), [validReviews]);
-  const activeMonth = selectedMonth && months.includes(selectedMonth) ? selectedMonth : (months[0] || '');
+  const savedReports = useMemo(() => monthlyReports.filter((r) => typeof r?.periodo === 'string' && r?.kpis && r?.empresa?.id === String(empresa.id || '')).sort((a, b) => b.periodo.localeCompare(a.periodo)), [monthlyReports, empresa.id]);
+  const availableMonths = savedReports.length ? savedReports.map((r) => r.periodo) : months;
+  const activeMonth = selectedMonth && availableMonths.includes(selectedMonth) ? selectedMonth : (availableMonths[0] || '');
+  const activeReport = savedReports.find((r) => r.periodo === activeMonth) || null;
   const rows = useMemo(() => validReviews.filter((r) => reviewDate(r) === activeMonth), [validReviews, activeMonth]);
   const stats = useMemo(() => {
     const total = rows.length;
@@ -127,7 +131,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = 
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 print:hidden">
-          {months.length > 0 && <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-300"><CalendarDays size={15} /><span className="sr-only">{t.period}</span><select aria-label={t.period} value={activeMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="max-w-40 bg-transparent text-sm outline-none">{months.map((m) => <option key={m} value={m} className="bg-zinc-900">{m}</option>)}</select></label>}
+          {availableMonths.length > 0 && <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-300"><CalendarDays size={15} /><span className="sr-only">{t.period}</span><select aria-label={t.period} value={activeMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="max-w-40 bg-transparent text-sm outline-none">{availableMonths.map((m) => <option key={m} value={m} className="bg-zinc-900">{m}</option>)}</select></label>}
         </div>
       </div>
       <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
@@ -135,7 +139,39 @@ export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = 
         <span className="rounded-full border border-white/10 px-3 py-1.5">{String(empresa.plan || 'pro').toUpperCase()}</span>
         <span className="rounded-full border border-white/10 px-3 py-1.5">{activeMonth || '—'}</span>
       </div>
-      {!months.length ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noHistory}</p> : !stats.total ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noData}</p> : (
+      {activeReport ? (
+        <div className="mt-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.04] px-4 py-3 text-xs text-emerald-200">
+            <span>Snapshot mensal gerado previamente · fonte: avaliações reais do período</span>
+            <span>{activeReport.geracao?.modo === 'ia' ? 'Análise assistida por IA' : 'Análise determinística'}</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {[[String(activeReport.kpis.avaliacoes || 0), t.reviews], [activeReport.kpis.avaliacoes ? Number(activeReport.kpis.nota_media).toFixed(1) + '/5' : '—', t.average], [String(activeReport.kpis.percentual_positivas || 0) + '%', t.positive], [String(activeReport.kpis.criticas || 0), t.critical]].map(([value, label]) => <div key={label} className="rounded-2xl border border-white/10 bg-black/25 p-4"><div className="text-2xl font-semibold text-white">{value}</div><div className="mt-1 text-xs text-zinc-500">{label}</div></div>)}
+          </div>
+          <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+            <h3 className="text-sm font-semibold text-white">{t.summary}</h3>
+            <p className="mt-3 text-sm leading-6 text-zinc-300">{activeReport.resumo_executivo || 'Sem resumo disponível para este período.'}</p>
+            {activeReport.narrativa?.por_que_importa && <p className="mt-3 text-sm leading-6 text-zinc-400">{activeReport.narrativa.por_que_importa}</p>}
+          </article>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <h3 className="text-sm font-semibold text-white">{t.sentiment}</h3>
+              <div className="mt-3 grid grid-cols-3 gap-2">{[[t.positive, activeReport.sentimento?.positivo || 0], [t.neutral, activeReport.sentimento?.neutro || 0], [t.negative, activeReport.sentimento?.negativo || 0]].map(([name, count]) => <div key={String(name)} className="rounded-xl border border-white/5 px-3 py-2"><div className="text-lg font-semibold text-white">{count}</div><div className="text-xs text-zinc-500">{name}</div></div>)}</div>
+              <h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.themes}</h4>
+              {[...(activeReport.temas?.atencao || []), ...(activeReport.temas?.positivos || [])].slice(0, 8).length ? <ul className="mt-2 space-y-2">{[...(activeReport.temas?.atencao || []), ...(activeReport.temas?.positivos || [])].slice(0, 8).map((theme: any, index: number) => <li key={String(theme.tema) + index} className="flex justify-between gap-3 rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme.tema}</span><span className="text-zinc-500">{theme.volume}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}
+            </article>
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <h3 className="text-sm font-semibold text-white">{t.action}</h3>
+              {activeReport.recomendacoes?.length ? <ul className="mt-3 space-y-2">{activeReport.recomendacoes.map((item: string, index: number) => <li key={index} className="rounded-xl border border-white/5 px-3 py-2 text-sm leading-5 text-zinc-300">{item}</li>)}</ul> : <p className="mt-3 text-sm text-zinc-400">Sem recomendações registradas.</p>}
+              {activeReport.riscos?.length > 0 && <><h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-amber-300">{t.attention}</h4><ul className="mt-2 space-y-2">{activeReport.riscos.map((item: any, index: number) => <li key={index} className="rounded-xl border border-amber-400/10 px-3 py-2 text-sm text-zinc-300"><span className="font-medium">{item.titulo}</span><p className="mt-1 text-zinc-400">{item.evidencias}</p></li>)}</ul></>}
+            </article>
+          </div>
+          {(multiUnit && activeReport.ranking_unidades?.length > 0) && <article className="rounded-2xl border border-white/10 bg-black/20 p-5"><h3 className="text-sm font-semibold text-white">{t.units}</h3><div className="mt-3 space-y-2">{activeReport.ranking_unidades.map((unit: any) => <div key={String(unit.id)} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 px-3 py-3"><span className="text-sm text-zinc-300">{unit.posicao}. {unit.nome}</span><span className="text-xs text-zinc-500">{unit.avaliacoes} · {t.reviews}</span><span className="text-sm font-semibold text-white">{Number(unit.nota_media).toFixed(1)}/5</span></div>)}</div></article>}
+          {rei && <article className="rounded-2xl border border-violet-400/15 bg-violet-400/[0.03] p-5"><h3 className="text-sm font-semibold text-white">{t.strategicRadar}</h3>{activeReport.radar_estrategico?.length ? <div className="mt-3 space-y-3">{activeReport.radar_estrategico.map((item: any, index: number) => <div key={index} className="rounded-xl border border-white/5 p-3"><div className="text-sm font-semibold text-white">{item.sinal}</div><p className="mt-1 text-sm text-zinc-400">{item.evidencia}</p><p className="mt-2 text-sm text-violet-100">{item.acao}</p></div>)}</div> : <p className="mt-2 text-sm text-zinc-400">Sem sinais estratégicos adicionais neste ciclo.</p>}
+            {activeReport.oportunidades_crescimento?.length > 0 && <><h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-emerald-300">Oportunidades de crescimento</h4><div className="mt-2 space-y-2">{activeReport.oportunidades_crescimento.map((item: any, index: number) => <div key={index} className="rounded-xl border border-white/5 p-3"><div className="text-sm font-medium text-white">{item.titulo}</div><p className="mt-1 text-sm text-zinc-400">{item.evidencias}</p><p className="mt-2 text-sm text-zinc-300">{item.acao_recomendada}</p></div>)}</div></>}
+          </article>}
+        </div>
+      ) : !availableMonths.length ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noHistory}</p> : !stats.total ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noData}</p> : (
         <>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {[[String(stats.total), t.reviews], [stats.average.toFixed(1) + '/5', t.average], [stats.positivePct + '%', t.positive], [String(stats.critical), t.critical]].map(([value, label]) => <div key={label} className="rounded-2xl border border-white/10 bg-black/25 p-4"><div className="text-2xl font-semibold text-white">{value}</div><div className="mt-1 text-xs text-zinc-500">{label}</div></div>)}
