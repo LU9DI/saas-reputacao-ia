@@ -33,7 +33,7 @@ const COPY: Record<string, Record<string, string>> = {
 function reviewDate(review: Review): string {
   const raw = String(review.createdAt ?? review.createdat ?? review.created_at ?? '').trim();
   if (!raw) return '';
-  const month = raw.match(/^(\\d{4})-(\\d{2})/);
+  const month = raw.match(/^(\d{4})-(\d{2})/);
   if (month) return month[1] + '-' + month[2];
   const date = new Date(raw);
   return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 7);
