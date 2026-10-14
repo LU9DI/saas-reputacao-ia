@@ -1,13 +1,13 @@
 # Blueprint Render — API Filtra.IA
-# No dashboard: New → Blueprint → este repo, ou Web Service com rootDir=backend
+# Para a API nativa Node, use rootDir=backend para limitar o contexto do serviço.
 services:
   - type: web
     name: filtra-api
     runtime: node
     plan: free
     rootDir: backend
-    buildCommand: npm install
-    # NÃO use node dist/server.js — o código fonte roda com tsx
+    buildCommand: npm ci --omit=dev --no-audit --no-fund
+    # tsx é dependência de produção; executar o TypeScript diretamente.
     startCommand: npx tsx server.ts
     healthCheckPath: /api/health
     envVars:
