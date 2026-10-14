@@ -30,6 +30,16 @@ function parseDestinations(raw: unknown) {
   try { return normalizeDestinatarios({ destinatarios: JSON.parse(raw) }); } catch { return []; }
 }
 
+/** Resolve destinatários sem mascarar falhas de banco como ausência de e-mail. */
+export async function resolveMonthlyReportRecipients(db: any, empresaId: string, raw: unknown) {
+  let destinatarios = parseDestinations(raw);
+  if (!destinatarios.length) {
+    const user = await db.get('SELECT email FROM usuarios WHERE empresa_id = ? AND email IS NOT NULL LIMIT 1', [empresaId]);
+    if (user?.email) destinatarios = [{ canal: 'email', destino: String(user.email).trim() }];
+  }
+  return destinatarios;
+}
+
 async function ensureMonthlyReportSchema(db: any) {
   try { await db.exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS relatorio_destinatarios TEXT'); }
   catch { try { await db.exec('ALTER TABLE empresas ADD COLUMN relatorio_destinatarios TEXT'); } catch { /* coluna já existe ou engine não permite */ } }
@@ -69,11 +79,14 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
       for (const empresa of companies) {
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
-        let destinatarios = parseDestinations(empresa.relatorio_destinatarios);
-        if (!destinatarios.length) {
-          // Ausência de e-mail é válida; falha de banco deve ser registrada como falha do job.
-          const user = await db.get('SELECT email FROM usuarios WHERE empresa_id = ? AND email IS NOT NULL LIMIT 1', [empresa.id]);
-          if (user?.email) destinatarios = [{ canal: 'email', destino: String(user.email).trim() }];
+        let destinatarios: any[];
+        try {
+          destinatarios = await resolveMonthlyReportRecipients(db, String(empresa.id), empresa.relatorio_destinatarios);
+        } catch (error: any) {
+          const message = String(error?.message || error).slice(0, 500);
+          console.warn('[monthly-report] consulta de destinatário falhou empresa=' + empresa.id + ':', message);
+          stats.falhas++;
+          continue;
         }
         if (!destinatarios.length) { stats.sem_destinatario++; continue; }
         const now = new Date().toISOString();
