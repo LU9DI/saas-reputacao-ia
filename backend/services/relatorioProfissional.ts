@@ -304,7 +304,9 @@ export async function buildRelatorioProfissional(
         const avg = total ? Math.round((reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / total) * 10) / 10 : 0;
         return { id: u.id, nome: u.nome, avaliacoes: total, nota_media: avg, criticas: reviews.filter((r) => Number(r.rating) <= 3).length };
       }).filter((u) => u.avaliacoes > 0);
-    } catch { unidades = []; }
+    } catch (error: any) {
+      throw new Error('Falha ao consultar unidades para o relatório profissional.', { cause: error });
+    }
   }
 
   const rankingUnidades = unidades.slice().sort((a, b) => b.nota_media - a.nota_media || b.avaliacoes - a.avaliacoes).map((u, index) => ({ ...u, posicao: index + 1 }));
