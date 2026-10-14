@@ -35,6 +35,10 @@ const SEO_FAMILIES: Record<string, Record<Lang, string>> = {
   '/blog': { 'pt-BR':'/blog', en:'/en/blog', es:'/es/blog', zh:'/zh/blog' },
 };
 
+const TRANSLATED_BLOG_FAMILIES = [
+  { en: '/en/blog/ai-review-analysis-guide', es: '/es/blog/analisis-resenas-ia', zh: '/zh/blog/ai-review-analysis-guide' },
+] as const;
+
 const canonicalPaths = [
   '',
   ...Object.keys(SEO_FAMILIES).filter((p) => p !== '/'),
@@ -89,6 +93,15 @@ const highPriority = new Set([
 function localizedAlternates(path: string) {
   for (const family of Object.values(SEO_FAMILIES)) {
     if (Object.values(family).includes(path)) {
+      return {
+        languages: Object.fromEntries(
+          Object.entries(family).map(([lang, target]) => [lang, base + target]),
+        ),
+      };
+    }
+  }
+  for (const family of TRANSLATED_BLOG_FAMILIES) {
+    if (Object.values(family).includes(path as (typeof family)[keyof typeof family])) {
       return {
         languages: Object.fromEntries(
           Object.entries(family).map(([lang, target]) => [lang, base + target]),
