@@ -24,10 +24,10 @@ type Props = {
 };
 
 const COPY: Record<string, Record<string, string>> = {
-  pt: { title: 'Relatório profissional mensal', subtitle: 'Análise do período calculada no próprio painel a partir das avaliações já carregadas.', period: 'Mês de referência', noData: 'Não há avaliações válidas neste período.', noHistory: 'Não há meses com avaliações disponíveis nos dados carregados.', reviews: 'Avaliações', average: 'Nota média', positive: 'Positivas', critical: 'Críticas (1–3 estrelas)', summary: 'Resumo executivo', strengths: 'Principais pontos positivos', attention: 'Pontos de atenção', action: 'Plano de ação recomendado', units: 'Desempenho por unidade', themes: 'Temas recorrentes', noTags: 'Sem temas identificados nos dados deste período.', proSummary: 'O período foi avaliado com base nas avaliações válidas já disponíveis no painel.', criticalAction: 'Priorizar o tratamento das avaliações de 1 a 3 estrelas e acompanhar a evolução no próximo ciclo.', positiveAction: 'Manter as práticas associadas às avaliações positivas e comparar os resultados no próximo ciclo.', noCritical: 'Não foram registradas avaliações críticas no período.' },
-  en: { title: 'Monthly professional report', subtitle: 'Period analysis calculated in the dashboard from reviews already loaded.', period: 'Reporting month', noData: 'No valid reviews for this period.', noHistory: 'No months with reviews are available in the loaded data.', reviews: 'Reviews', average: 'Average rating', positive: 'Positive', critical: 'Critical (1–3 stars)', summary: 'Executive summary', strengths: 'Main strengths', attention: 'Points to address', action: 'Recommended action plan', units: 'Performance by location', themes: 'Recurring themes', noTags: 'No themes were identified in this period.', proSummary: 'This period is assessed from valid reviews already available in the dashboard.', criticalAction: 'Prioritize 1–3 star reviews and monitor progress in the next cycle.', positiveAction: 'Maintain practices associated with positive reviews and compare results next cycle.', noCritical: 'No critical reviews were recorded for this period.' },
-  es: { title: 'Informe profesional mensual', subtitle: 'Análisis del período calculado en el panel a partir de las reseñas ya cargadas.', period: 'Mes de referencia', noData: 'No hay reseñas válidas en este período.', noHistory: 'No hay meses con reseñas disponibles en los datos cargados.', reviews: 'Reseñas', average: 'Calificación media', positive: 'Positivas', critical: 'Críticas (1–3 estrellas)', summary: 'Resumen ejecutivo', strengths: 'Principales fortalezas', attention: 'Puntos de atención', action: 'Plan de acción recomendado', units: 'Rendimiento por unidad', themes: 'Temas recurrentes', noTags: 'No se identificaron temas en este período.', proSummary: 'El período se evalúa con las reseñas válidas ya disponibles en el panel.', criticalAction: 'Priorizar las reseñas de 1 a 3 estrellas y seguir la evolución en el próximo ciclo.', positiveAction: 'Mantener las prácticas asociadas a reseñas positivas y comparar los resultados en el próximo ciclo.', noCritical: 'No se registraron reseñas críticas en este período.' },
-  zh: { title: '月度专业报告', subtitle: '根据面板中已加载的评价，在客户端计算所选期间的分析。', period: '报告月份', noData: '此期间没有有效评价。', noHistory: '已加载的数据中没有可用的评价月份。', reviews: '评价数', average: '平均评分', positive: '好评', critical: '需关注（1–3 星）', summary: '执行摘要', strengths: '主要优势', attention: '关注事项', action: '建议行动计划', units: '各门店表现', themes: '重复主题', noTags: '此期间未识别到主题。', proSummary: '本期间分析基于面板中已加载的有效评价。', criticalAction: '优先处理 1–3 星评价，并在下个周期跟踪进展。', positiveAction: '保持与好评相关的做法，并在下个周期比较结果。', noCritical: '此期间没有记录需关注的评价。' },
+  pt: { title: 'Relatório profissional mensal', subtitle: 'Análise do período calculada no próprio painel a partir das avaliações já carregadas.', period: 'Mês de referência', noData: 'Não há avaliações válidas neste período.', noHistory: 'Não há meses com avaliações disponíveis nos dados carregados.', reviews: 'Avaliações', average: 'Nota média', positive: 'Positivas', critical: 'Críticas (1–3 estrelas)', summary: 'Resumo executivo', strengths: 'Principais pontos positivos', attention: 'Pontos de atenção', action: 'Plano de ação recomendado', units: 'Desempenho por unidade', themes: 'Temas recorrentes', sentiment: 'Sentimento', positiveThemes: 'Temas positivos', criticalThemes: 'Temas críticos', strategicRadar: 'Radar estratégico', noTags: 'Sem temas identificados nos dados deste período.', proSummary: 'O período foi avaliado com base nas avaliações válidas já disponíveis no painel.', criticalAction: 'Priorizar o tratamento das avaliações de 1 a 3 estrelas e acompanhar a evolução no próximo ciclo.', positiveAction: 'Manter as práticas associadas às avaliações positivas e comparar os resultados no próximo ciclo.', noCritical: 'Não foram registradas avaliações críticas no período.' },
+  en: { title: 'Monthly professional report', subtitle: 'Period analysis calculated in the dashboard from reviews already loaded.', period: 'Reporting month', noData: 'No valid reviews for this period.', noHistory: 'No months with reviews are available in the loaded data.', reviews: 'Reviews', average: 'Average rating', positive: 'Positive', critical: 'Critical (1–3 stars)', summary: 'Executive summary', strengths: 'Main strengths', attention: 'Points to address', action: 'Recommended action plan', units: 'Performance by location', themes: 'Recurring themes', sentiment: 'Sentiment', positiveThemes: 'Positive themes', criticalThemes: 'Critical themes', strategicRadar: 'Strategic radar', noTags: 'No themes were identified in this period.', proSummary: 'This period is assessed from valid reviews already available in the dashboard.', criticalAction: 'Prioritize 1–3 star reviews and monitor progress in the next cycle.', positiveAction: 'Maintain practices associated with positive reviews and compare results next cycle.', noCritical: 'No critical reviews were recorded for this period.' },
+  es: { title: 'Informe profesional mensual', subtitle: 'Análisis del período calculado en el panel a partir de las reseñas ya cargadas.', period: 'Mes de referencia', noData: 'No hay reseñas válidas en este período.', noHistory: 'No hay meses con reseñas disponibles en los datos cargados.', reviews: 'Reseñas', average: 'Calificación media', positive: 'Positivas', critical: 'Críticas (1–3 estrellas)', summary: 'Resumen ejecutivo', strengths: 'Principales fortalezas', attention: 'Puntos de atención', action: 'Plan de acción recomendado', units: 'Rendimiento por unidad', themes: 'Temas recurrentes', sentiment: 'Sentimiento', positiveThemes: 'Temas positivos', criticalThemes: 'Temas críticos', strategicRadar: 'Radar estratégico', noTags: 'No se identificaron temas en este período.', proSummary: 'El período se evalúa con las reseñas válidas ya disponibles en el panel.', criticalAction: 'Priorizar las reseñas de 1 a 3 estrellas y seguir la evolución en el próximo ciclo.', positiveAction: 'Mantener las prácticas asociadas a reseñas positivas y comparar los resultados en el próximo ciclo.', noCritical: 'No se registraron reseñas críticas en este período.' },
+  zh: { title: '月度专业报告', subtitle: '根据面板中已加载的评价，在客户端计算所选期间的分析。', period: '报告月份', noData: '此期间没有有效评价。', noHistory: '已加载的数据中没有可用的评价月份。', reviews: '评价数', average: '平均评分', positive: '好评', critical: '需关注（1–3 星）', summary: '执行摘要', strengths: '主要优势', attention: '关注事项', action: '建议行动计划', units: '各门店表现', themes: '重复主题', sentiment: '情绪', positiveThemes: '积极主题', criticalThemes: '关键问题', strategicRadar: '战略雷达', noTags: '此期间未识别到主题。', proSummary: '本期间分析基于面板中已加载的有效评价。', criticalAction: '优先处理 1–3 星评价，并在下个周期跟踪进展。', positiveAction: '保持与好评相关的做法，并在下个周期比较结果。', noCritical: '此期间没有记录需关注的评价。' },
 };
 
 function reviewDate(review: Review): string {
@@ -40,6 +40,16 @@ function reviewDate(review: Review): string {
 }
 function isTest(review: Review): boolean {
   return review.is_test === true || Number(review.is_test) === 1 || String(review.is_test).toLowerCase() === 'true';
+}
+function sentimentOf(review: Review): 'positive' | 'neutral' | 'negative' {
+  const raw = String(review.sentiment || '').toLowerCase();
+  if (raw.includes('pos')) return 'positive';
+  if (raw.includes('neg')) return 'negative';
+  if (raw.includes('neu')) return 'neutral';
+  const rating = Number(review.rating);
+  if (rating >= 4) return 'positive';
+  if (rating <= 2) return 'negative';
+  return 'neutral';
 }
 function parseTags(value: unknown): string[] {
   let raw = value;
@@ -68,9 +78,18 @@ export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = 
     const positive = rows.filter((r) => Number(r.rating) >= 4).length;
     const critical = rows.filter((r) => Number(r.rating) <= 3).length;
     const tags = new Map<string, number>();
+    const criticalTags = new Map<string, number>();
+    const positiveTags = new Map<string, number>();
+    const sentimentCounts = { positive: 0, neutral: 0, negative: 0 };
     const units = new Map<string, { name: string; count: number; total: number }>();
     for (const row of rows) {
-      for (const tag of parseTags(row.ai_tags)) tags.set(tag, (tags.get(tag) || 0) + 1);
+      const sentiment = sentimentOf(row);
+      sentimentCounts[sentiment] += 1;
+      for (const tag of parseTags(row.ai_tags)) {
+        tags.set(tag, (tags.get(tag) || 0) + 1);
+        if (Number(row.rating) <= 3) criticalTags.set(tag, (criticalTags.get(tag) || 0) + 1);
+        if (Number(row.rating) >= 4) positiveTags.set(tag, (positiveTags.get(tag) || 0) + 1);
+      }
       const id = String(row.unidade_id || '');
       if (id) {
         const unit = unidades.find((u) => String(u.id || '') === id);
@@ -85,6 +104,9 @@ export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = 
       total, average, positive, critical,
       positivePct: total ? Math.round(positive / total * 100) : 0,
       themes: [...tags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8),
+      criticalThemes: [...criticalTags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 5),
+      positiveThemes: [...positiveTags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 5),
+      sentimentCounts,
       units: [...units.values()].map((u) => ({ ...u, average: u.total / u.count })).sort((a, b) => a.average - b.average),
     };
   }, [rows, unidades]);
@@ -126,7 +148,10 @@ export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = 
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="flex items-center gap-2 text-sm font-semibold text-white"><AlertTriangle size={16} className="text-amber-300" />{t.attention}</h3>
               <p className="mt-3 text-sm leading-6 text-zinc-300">{stats.critical ? t.criticalAction : t.noCritical}</p>
-              {advanced && <div className="mt-4"><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.themes}</h4>{stats.themes.length ? <ul className="mt-2 space-y-2">{stats.themes.map(([theme, count]) => <li key={theme} className="flex justify-between gap-3 rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-zinc-500">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div>}
+              {advanced && <div className="mt-4 space-y-4">
+                <div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.sentiment}</h4><div className="mt-2 grid grid-cols-3 gap-2">{[[t.positive, stats.sentimentCounts.positive], ['Neutro', stats.sentimentCounts.neutral], ['Negativo', stats.sentimentCounts.negative]].map(([name, count]) => <div key={String(name)} className="rounded-xl border border-white/5 px-3 py-2"><div className="text-lg font-semibold text-white">{count}</div><div className="text-xs text-zinc-500">{name}</div></div>)}</div></div>
+                <div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.themes}</h4>{stats.themes.length ? <ul className="mt-2 space-y-2">{stats.themes.map(([theme, count]) => <li key={theme} className="flex justify-between gap-3 rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-zinc-500">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div>
+              </div>}
             </article>
           </div>
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
@@ -140,6 +165,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = 
               {rei && <p className="mt-3 rounded-xl border border-violet-400/15 bg-violet-400/[0.04] p-3 text-sm text-violet-100">REI: consolide os sinais por unidade, acompanhe riscos e transforme temas recorrentes em iniciativas mensuráveis.</p>}
             </article>
           </div>
+          {rei && <article className="mt-4 rounded-2xl border border-violet-400/15 bg-violet-400/[0.03] p-5"><h3 className="text-sm font-semibold text-white">{t.strategicRadar}</h3><div className="mt-3 grid gap-3 sm:grid-cols-2"><div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.criticalThemes}</h4>{stats.criticalThemes.length ? <ul className="mt-2 space-y-2">{stats.criticalThemes.map(([theme, count]) => <li key={theme} className="flex justify-between rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-amber-300">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div><div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.positiveThemes}</h4>{stats.positiveThemes.length ? <ul className="mt-2 space-y-2">{stats.positiveThemes.map(([theme, count]) => <li key={theme} className="flex justify-between rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-emerald-300">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div></div></article>}
           {multiUnit && <article className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-5"><h3 className="text-sm font-semibold text-white">{t.units}</h3>{stats.units.length ? <div className="mt-3 space-y-2">{stats.units.map((u) => <div key={u.name} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 px-3 py-3"><span className="text-sm text-zinc-300">{u.name}</span><span className="text-xs text-zinc-500">{u.count} · {t.reviews}</span><span className="text-sm font-semibold text-white">{u.average.toFixed(1)}/5</span></div>)}</div> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</article>}
         </>
       )}
