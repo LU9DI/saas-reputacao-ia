@@ -13,6 +13,8 @@ const check = (condition, message) => { if (!condition) errors.push(message); };
 check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
 check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans canonical must point to /planos');
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
+check(!plansLayout.includes("canonical: 'https://filtraai.com/'"), 'Plans canonical must not point to the homepage');
+check(!plansLayout.includes("url: 'https://filtraai.com/'"), 'Plans Open Graph URL must not point to the homepage');
 check(robots.includes('https://filtraai.com/sitemap.xml'), 'Next robots metadata must reference the sitemap');
 check(publicRobots.includes('https://filtraai.com/sitemap.xml'), 'public/robots.txt must reference the sitemap');
 
