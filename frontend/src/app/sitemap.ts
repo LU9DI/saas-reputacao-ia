@@ -35,28 +35,27 @@ const SEO_FAMILIES: Record<string, Record<Lang, string>> = {
   '/blog': { 'pt-BR':'/blog', en:'/en/blog', es:'/es/blog', zh:'/zh/blog' },
 };
 
+const TRANSLATED_BLOG_FAMILIES = [
+  { en: '/en/blog/ai-review-analysis-guide', es: '/es/blog/analisis-resenas-ia', zh: '/zh/blog/ai-review-analysis-guide' },
+] as const;
+
 const canonicalPaths = [
   '',
   ...Object.keys(SEO_FAMILIES).filter((p) => p !== '/'),
-  '/blog',
-  '/blog/gestao-reputacao-online-guia',
   '/blog/como-responder-avaliacoes-negativas',
-  '/blog/como-conseguir-avaliacoes-google',
   '/blog/velocity-reviews-google-maps-2026',
   '/blog/review-1-estrela-primeiras-24-horas',
   '/blog/qr-code-balcao-reviews',
-  '/blog/seo-local-avaliacoes-local-pack',
   '/blog/clinica-checklist-avaliacoes-google',
-  '/blog/agencia-vender-gestao-reputacao',
   '/blog/whatsapp-pedir-estrela-vs-filtrar-qr',
   '/blog/google-business-profile-avaliacoes',
   '/blog/reputacao-online-clinicas',
   '/blog/reputacao-online-hoteis',
   '/blog/reputacao-franquias-multilocal',
   '/blog/avaliacoes-google-restaurantes',
-  '/blog/feedback-cliente-para-reputacao',
   '/termos',
   '/privacidade',
+  '/planos',
 ];
 
 const localizedPaths = Object.values(SEO_FAMILIES).flatMap((family) =>
@@ -94,6 +93,15 @@ const highPriority = new Set([
 function localizedAlternates(path: string) {
   for (const family of Object.values(SEO_FAMILIES)) {
     if (Object.values(family).includes(path)) {
+      return {
+        languages: Object.fromEntries(
+          Object.entries(family).map(([lang, target]) => [lang, base + target]),
+        ),
+      };
+    }
+  }
+  for (const family of TRANSLATED_BLOG_FAMILIES) {
+    if (Object.values(family).includes(path as (typeof family)[keyof typeof family])) {
       return {
         languages: Object.fromEntries(
           Object.entries(family).map(([lang, target]) => [lang, base + target]),
