@@ -195,10 +195,10 @@ function channelTexts(report: any) {
     'Avaliações: ' + k.avaliacoes + ' | Nota média: ' + averageLabel + ' | Positivas: ' + k.percentual_positivas + '% | Críticas (≤3★): ' + k.criticas,
   ];
   if (hasAdvancedAnalysis) textParts.push('', 'POR QUE ISSO IMPORTA', report.narrativa.por_que_importa, '', 'ONDE ATUAR', report.narrativa.onde_atuar,
-    '', 'TEMAS RECORRENTES', themes.map((x: any) => '• ' + x.tema + ': ' + x.volume + ' ocorrência(s)').join('\\n') || 'Não há temas recorrentes suficientes para uma leitura confiável.',
-    '', 'RISCOS A ACOMPANHAR', (report.riscos || []).map((x: any) => '• ' + x.titulo + ': ' + x.evidencias).join('\\n') || 'Nenhum risco relevante sinalizado pelos critérios disponíveis.',
-    '', 'OPORTUNIDADES', (report.oportunidades || []).map((x: any) => '• ' + x.titulo + ': ' + x.evidencias + (x.acao_recomendada ? ' Ação: ' + x.acao_recomendada : '')).join('\\n') || 'Não há evidência suficiente para destacar oportunidades específicas.',
-    '', 'PLANO DE AÇÃO RECOMENDADO', recs.map((x: string) => '• ' + x).join('\\n') || 'Acompanhar a evolução no próximo ciclo.');
+    '', 'TEMAS RECORRENTES', themes.map((x: any) => '• ' + x.tema + ': ' + x.volume + ' ocorrência(s)').join('\n') || 'Não há temas recorrentes suficientes para uma leitura confiável.',
+    '', 'RISCOS A ACOMPANHAR', (report.riscos || []).map((x: any) => '• ' + x.titulo + ': ' + x.evidencias).join('\n') || 'Nenhum risco relevante sinalizado pelos critérios disponíveis.',
+    '', 'OPORTUNIDADES', (report.oportunidades || []).map((x: any) => '• ' + x.titulo + ': ' + x.evidencias + (x.acao_recomendada ? ' Ação: ' + x.acao_recomendada : '')).join('\n') || 'Não há evidência suficiente para destacar oportunidades específicas.',
+    '', 'PLANO DE AÇÃO RECOMENDADO', recs.map((x: string) => '• ' + x).join('\n') || 'Acompanhar a evolução no próximo ciclo.');
   if (hasUnitAnalysis && units.length) textParts.push('', 'RANKING DAS UNIDADES', (report.ranking_unidades || units).map((u: any) => '• ' + (u.posicao ? u.posicao + 'º — ' : '') + u.nome + ': média ' + Number(u.nota_media).toFixed(1) + ', ' + u.avaliacoes + ' avaliações').join('\n'));
   if (hasUnitAnalysis && report.prioridades_operacionais?.length) textParts.push('', 'PRIORIDADES OPERACIONAIS', report.prioridades_operacionais.map((x: any) => '• [' + x.prioridade.toUpperCase() + '] ' + x.unidade + ': ' + x.evidencia + ' Ação: ' + x.acao_recomendada).join('\n'));
   if (hasStrategicAnalysis && report.radar_estrategico?.length) textParts.push('', 'RADAR ESTRATÉGICO', report.radar_estrategico.map((x: any) => '• ' + x.sinal + ': ' + x.evidencia + ' Ação: ' + x.acao).join('\n'));
