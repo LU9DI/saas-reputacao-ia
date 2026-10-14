@@ -43,6 +43,7 @@ export async function resolveMonthlyReportRecipients(db: any, empresaId: string,
 async function ensureMonthlyReportSchema(db: any) {
   try { await db.exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS relatorio_destinatarios TEXT'); }
   catch { try { await db.exec('ALTER TABLE empresas ADD COLUMN relatorio_destinatarios TEXT'); } catch { /* coluna já existe ou engine não permite */ } }
+  try { await db.exec('ALTER TABLE relatorio_envios_mensais ADD COLUMN report_json TEXT'); } catch { /* coluna já existe ou tabela ainda não foi criada */ }
   await db.exec(`CREATE TABLE IF NOT EXISTS relatorio_envios_mensais (
     id TEXT PRIMARY KEY,
     empresa_id TEXT NOT NULL,
@@ -52,6 +53,7 @@ async function ensureMonthlyReportSchema(db: any) {
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     enviado_em TEXT,
+    report_json TEXT,
     erro TEXT,
     tentativas INTEGER NOT NULL DEFAULT 0,
     UNIQUE (empresa_id, periodo)
@@ -122,6 +124,8 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         }
         try {
           const report = await buildRelatorioProfissional(db, empresa, periodo);
+          // Persist the generated snapshot before delivery so the customer panel can render it from its normal payload.
+          await db.run(`UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(report), new Date().toISOString(), empresa.id, periodo]);
           const channels = [...new Set(destinatarios.map((d: any) => d.canal))];
           const accepted = await notifyN8nAsync('report.generated', {
             tipo: 'relatorio_profissional_mensal',
