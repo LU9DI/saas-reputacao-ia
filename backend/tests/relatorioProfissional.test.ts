@@ -43,6 +43,8 @@ describe('relatório profissional mensal', () => {
     assert.ok(report.prioridades_operacionais.some((x: any) => x.unidade === 'Centro'));
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /ranking comparativo/i.test(x)));
     assert.match(report.canais.email.html, /Relatório mensal de reputação/);
+    assert.ok(report.canais.email.html.includes('alt="Logotipo Filtra.AI"'));
+    assert.ok(report.canais.email.html.includes('aria-hidden="true"') && report.canais.email.html.includes('>FILTRA.AI</div>'));
     assert.match(report.canais.email.html, /Prioridades operacionais/);
     assert.equal(report.geracao.modo, 'deterministico');
   });
