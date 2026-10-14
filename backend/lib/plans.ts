@@ -25,13 +25,12 @@ export function isTrialPlan(plan: string | null | undefined): boolean {
 /** Relatório profissional mensal: Pro e acima + trial. O Inicial não inclui o entregável mensal. */
 export function planTemRelatorioMensal(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
-  if (isTrialPlan(p)) return true;
   return ['pro', 'ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(p);
 }
 
 /** Alias legado mantido para que rotas antigas não quebrem enquanto o PDF é aposentado como entregável. */
 export function planTemPdf(plan: string | null | undefined): boolean {
-  return planTemRelatorioMensal(plan);
+  return isTrialPlan(plan) || planTemRelatorioMensal(plan);
 }
 /** Alias usado por alguns módulos legados */
 export function empresaTemPdf(empresa: { plan?: string; status?: string } | null): boolean {
