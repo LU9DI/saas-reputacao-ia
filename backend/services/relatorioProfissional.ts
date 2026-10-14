@@ -225,24 +225,27 @@ export async function buildRelatorioProfissional(
     ? mesAno
     : new Date().toISOString().slice(0, 7);
   const plan = normalizePlan(empresa.plan);
+  const periodoDate = new Date(periodo + '-01T00:00:00.000Z');
+  periodoDate.setUTCMonth(periodoDate.getUTCMonth() - 1);
+  const periodoAnterior = periodoDate.toISOString().slice(0, 7);
+  const fimPeriodoDate = new Date(periodo + '-01T00:00:00.000Z');
+  fimPeriodoDate.setUTCMonth(fimPeriodoDate.getUTCMonth() + 1);
+  const inicioConsulta = periodoAnterior + '-01T00:00:00.000Z';
+  const fimConsulta = fimPeriodoDate.toISOString();
   let rows: Review[] = [];
   try {
     rows = await db.all(
-      'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 20000',
-      [empresa.id],
+      'SELECT * FROM reviews WHERE empresa_id = ? AND createdAt >= ? AND createdAt < ? ORDER BY createdAt DESC LIMIT 20000',
+      [empresa.id, inicioConsulta, fimConsulta],
     ) as Review[];
   } catch {
     try {
       rows = await db.all(
-        'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY created_at DESC LIMIT 20000',
-        [empresa.id],
+        'SELECT * FROM reviews WHERE empresa_id = ? AND created_at >= ? AND created_at < ? ORDER BY created_at DESC LIMIT 20000',
+        [empresa.id, inicioConsulta, fimConsulta],
       ) as Review[];
     } catch { rows = []; }
   }
-
-  const periodoDate = new Date(periodo + '-01T00:00:00.000Z');
-  periodoDate.setUTCMonth(periodoDate.getUTCMonth() - 1);
-  const periodoAnterior = periodoDate.toISOString().slice(0, 7);
   const reais = rows.filter((row) => !isTest(row) && dateOf(row).startsWith(periodo));
   const anteriores = rows.filter((row) => !isTest(row) && dateOf(row).startsWith(periodoAnterior));
   const mediaAnterior = anteriores.length ? Math.round((anteriores.reduce((sum, row) => sum + Number(row.rating || 0), 0) / anteriores.length) * 10) / 10 : null;
