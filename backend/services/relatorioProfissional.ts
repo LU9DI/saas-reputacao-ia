@@ -58,6 +58,11 @@ const PLAN_BENEFITS: Record<string, string[]> = {
     'Suporte prioritário',
     'Acesso antecipado a funcionalidades selecionadas',
   ],
+  trial: [
+    'Experiência de avaliação por 7 dias',
+    'Relatório mensal com indicadores, sentimento e temas disponíveis no período',
+    'Análises com inteligência artificial durante o teste',
+  ],
   rei: [
     'Até 8.000 feedbacks por mês',
     'Todos os recursos do Corporativo',
@@ -73,7 +78,7 @@ const PLAN_ORDER = ['inicial', 'pro', 'ultra', 'corporativo', 'rei'];
 function normalizePlan(value: unknown): string {
   const p = String(value || '').trim().toLowerCase();
   if (p === 'corp' || p === 'corporate') return 'corporativo';
-  if (p === 'teste' || p === 'test' || p.startsWith('trial')) return 'rei';
+  if (p === 'teste' || p === 'test' || p.startsWith('trial')) return 'trial';
   return PLANOS_OFICIAIS.includes(p as any) ? p : 'pro';
 }
 
@@ -84,6 +89,7 @@ function planBenefits(plan: string): string[] {
 
 function nextPlan(plan: string): string | null {
   const normalized = normalizePlan(plan);
+  if (normalized === 'trial') return 'pro';
   const index = PLAN_ORDER.indexOf(normalized);
   return index >= 0 && index < PLAN_ORDER.length - 1 ? PLAN_ORDER[index + 1] : null;
 }
