@@ -22,7 +22,7 @@ function previousMonthUtc(): string {
   return date.toISOString().slice(0, 7);
 }
 function isMonth(value: unknown): value is string {
-  if (typeof value !== 'string' || !/^\\d{4}-(0[1-9]|1[0-2])$/.test(value)) return false;
+  if (typeof value !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return false;
   return value < currentMonthUtc();
 }
 function parseDestinations(raw: unknown) {
