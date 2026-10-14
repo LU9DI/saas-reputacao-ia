@@ -72,13 +72,14 @@ jobs:
         run: npx tsc --noEmit
 
   frontend:
-    name: Frontend (lint + build)
+    name: Frontend (static export + indexing audit)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     env:
       NEXT_PUBLIC_API_URL: http://127.0.0.1:5000
+      CLOUDFLARE_PAGES: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -86,7 +87,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -100,8 +101,11 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
-      - name: Build Next.js
+      - name: Build static export
         run: npm run build
+
+      - name: Audit exported indexing artifact
+        run: npm run seo:audit
 
   summary:
     name: CI summary
