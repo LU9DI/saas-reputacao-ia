@@ -11,6 +11,8 @@ const robots = read('src/app/robots.ts');
 const publicRobots = read('public/robots.txt');
 const localizedPages = read('src/app/[lang]/[slug]/page.tsx');
 const localizedBlogs = read('src/app/[lang]/blog/[slug]/page.tsx');
+const localizedHome = read('src/app/[lang]/page.tsx');
+const localizedBlogIndex = read('src/app/[lang]/blog/page.tsx');
 const errors = [];
 const check = (condition, message) => { if (!condition) errors.push(message); };
 
@@ -62,12 +64,12 @@ for (const path of sitemapPaths) {
     const slug = path.split('/').at(-1);
     check(localizedBlogSlugs.has(slug), `Sitemap blog route has no matching localized article slug: ${path}`);
   } else if (/^\/(en|es|zh)\/blog$/.test(path)) {
-    check(staticRoutes.has('/[lang]/blog'), 'Localized blog index route /[lang]/blog must exist');
+    check(localizedBlogIndex.includes('generateStaticParams'), 'Localized blog index must define static params');
   } else if (/^\/(en|es|zh)\/[^/]+$/.test(path)) {
     const slug = path.split('/').at(-1);
     check(localizedSlugs.has(slug), `Sitemap localized route has no matching page slug: ${path}`);
   } else if (/^\/(en|es|zh)$/.test(path)) {
-    check(staticRoutes.has('/[lang]'), 'Localized home route /[lang] must exist');
+    check(localizedHome.includes('generateStaticParams'), 'Localized home must define static params');
   } else if (!staticRoutes.has(path)) {
     check(false, `Sitemap route has no matching static page: ${path}`);
   }
