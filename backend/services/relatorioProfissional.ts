@@ -231,8 +231,6 @@ export async function buildRelatorioProfissional(
   const periodoAnterior = periodoDate.toISOString().slice(0, 7);
   const fimPeriodoDate = new Date(periodo + '-01T00:00:00.000Z');
   fimPeriodoDate.setUTCMonth(fimPeriodoDate.getUTCMonth() + 1);
-  const inicioConsulta = periodoAnterior + '-01T00:00:00.000Z';
-  const fimConsulta = fimPeriodoDate.toISOString();
   async function loadMonthRows(month: string): Promise<Review[]> {
     const start = month + '-01T00:00:00.000Z';
     const endDate = new Date(start);
@@ -262,8 +260,8 @@ export async function buildRelatorioProfissional(
     const rating = Number(row.rating);
     return Number.isFinite(rating) && rating >= 1 && rating <= 5;
   };
-  const reais = rowsPeriodo.filter((row) => !isTest(row) && validRating(row));
-  const anteriores = rowsAnteriores.filter((row) => !isTest(row) && validRating(row));
+  const reais = rowsPeriodo.filter((row) => !isTest(row) && validRating(row) && dateOf(row).startsWith(periodo));
+  const anteriores = rowsAnteriores.filter((row) => !isTest(row) && validRating(row) && dateOf(row).startsWith(periodoAnterior));
   const mediaAnterior = anteriores.length ? Math.round((anteriores.reduce((sum, row) => sum + Number(row.rating || 0), 0) / anteriores.length) * 10) / 10 : null;
   const criticasAnterior = anteriores.length ? Math.round((anteriores.filter((row) => Number(row.rating) <= 3).length / anteriores.length) * 100) : null;
   const avaliacoes = reais.length;
