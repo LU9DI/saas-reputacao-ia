@@ -33,7 +33,7 @@ const PLAN_BENEFITS: Record<string, string[]> = {
   inicial: [
     'Até 100 feedbacks por mês',
     'Dashboard para acompanhar avaliações e indicadores essenciais',
-    'Integração com WhatsApp',
+    'WhatsApp integrado',
   ],
   pro: [
     'Até 300 feedbacks por mês',
@@ -52,7 +52,7 @@ const PLAN_BENEFITS: Record<string, string[]> = {
     'Relatório profissional mensal com análise de sentimento e temas recorrentes',
     'Gestão consolidada de múltiplas unidades',
     'Ranking comparativo de desempenho por unidade',
-    'Análise dos temas operacionais de cada unidade',
+    'Análise de resultados e temas por unidade',
     'Prioridades de ação baseadas nas avaliações do período',
     'Links de avaliação exclusivos para cada unidade',
     'Suporte prioritário',
@@ -71,11 +71,11 @@ const PLAN_BENEFITS: Record<string, string[]> = {
     'Análise dos temas operacionais de cada unidade',
     'Prioridades de ação baseadas nas avaliações do período',
     'Links de avaliação exclusivos para cada unidade',
-    'Relatório executivo mensal preparado para a diretoria',
-    'Radar estratégico de riscos e tendências de reputação',
+    'Relatório executivo mensal para a diretoria',
+    'Radar estratégico de riscos e tendências',
     'Oportunidades de crescimento identificadas nos dados',
     'Recomendações executivas priorizadas por evidência e urgência',
-    'Suporte prioritário e acesso antecipado a funcionalidades selecionadas',
+    'Suporte prioritário e acesso antecipado a novas funções',
   ],
 };
 
