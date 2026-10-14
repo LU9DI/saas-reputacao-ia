@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import Client from './Client';
+
+export const metadata: Metadata = {
+  title: 'Enviar avaliação | Filtra.AI',
+  robots: { index: false, follow: false },
+};
 
 // Export estático (Cloudflare Pages): uma única página-casca; o id real vem da URL no cliente
 // (ver utils/useRouteId e public/_redirects).
