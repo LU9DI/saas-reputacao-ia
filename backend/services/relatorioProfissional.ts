@@ -6,7 +6,7 @@
  */
 import type { Database } from 'sqlite';
 import { planLabel, PLANOS_OFICIAIS } from '../lib/plans.js';
-import { planTemIA } from '../lib/quota.js';
+import { planTemIA, assertEmpresaTokenQuota } from '../lib/quota.js';
 import { aiConfigured, gerarNarrativaRelatorio } from '../groqService.js';
 
 export type ReportChannel = 'email' | 'whatsapp' | 'sms' | 'wechat';
@@ -382,6 +382,8 @@ export async function buildRelatorioProfissional(
   // Se o provedor falhar, a narrativa determinística existente continua disponível.
   if (planTemIA(plan) && aiConfigured() && avaliacoes > 0) {
     try {
+      const quota = await assertEmpresaTokenQuota(String(empresa.id), plan);
+      if (!quota.ok) throw new Error('Limite mensal de tokens de IA atingido; usando análise determinística.');
       const ai = await gerarNarrativaRelatorio({
         empresa: baseReport.empresa.nome,
         periodo,
