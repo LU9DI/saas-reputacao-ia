@@ -40,6 +40,7 @@ const NOINDEX_ROUTES = [
   '/avaliacao/_',
   '/widget/_',
   '/pagamento-ok',
+  '/planos',
   '/preview',
   '/preview/teste',
   '/teste',
@@ -147,7 +148,7 @@ if (!robots.includes('Sitemap: https://filtraai.com/sitemap.xml')) {
 if (!/Disallow:\s*\/api\//i.test(robots)) {
   fail('robots.txt must disallow API endpoints');
 }
-for (const prefix of ['/painel/', '/admin/', '/avaliacao/', '/widget/', '/login', '/recuperar-senha', '/teste', '/preview', '/pagamento-ok', '/suporte']) {
+for (const prefix of ['/painel/', '/admin/', '/avaliacao/', '/widget/', '/login', '/recuperar-senha', '/teste', '/preview', '/pagamento-ok', '/planos', '/suporte']) {
   const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   if (new RegExp(`Disallow:\\s*${escaped}`, 'i').test(robots)) {
     fail(`robots.txt blocks ${prefix}; crawlers must be able to read its noindex directive`);
