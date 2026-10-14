@@ -4,5 +4,6 @@ Disallow: /painel/
 Disallow: /admin/
 Disallow: /api/
 Disallow: /avaliacao/
+Disallow: /widget/
 
 Sitemap: https://filtraai.com/sitemap.xml
