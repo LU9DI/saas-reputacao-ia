@@ -57,6 +57,7 @@ const canonicalPaths = [
   '/blog/feedback-cliente-para-reputacao',
   '/termos',
   '/privacidade',
+  '/planos',
 ];
 
 const localizedPaths = Object.values(SEO_FAMILIES).flatMap((family) =>
