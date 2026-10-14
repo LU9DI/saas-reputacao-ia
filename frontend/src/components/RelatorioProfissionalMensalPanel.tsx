@@ -20,6 +20,7 @@ type Props = {
   empresa: { id?: string; nome_empresa?: string; plan?: string };
   reviews: Review[];
   unidades?: Unit[];
+  lang?: string;
 };
 
 const COPY: Record<string, Record<string, string>> = {
@@ -30,9 +31,11 @@ const COPY: Record<string, Record<string, string>> = {
 };
 
 function reviewDate(review: Review): string {
-  const raw = review.createdAt ?? review.createdat ?? review.created_at;
+  const raw = String(review.createdAt ?? review.createdat ?? review.created_at ?? '').trim();
   if (!raw) return '';
-  const date = new Date(String(raw));
+  const month = raw.match(/^(\\d{4})-(\\d{2})/);
+  if (month) return month[1] + '-' + month[2];
+  const date = new Date(raw);
   return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 7);
 }
 function isTest(review: Review): boolean {
@@ -51,9 +54,9 @@ function languageOf(name: unknown): string {
   return 'pt';
 }
 
-export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = [] }: Props) {
+export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = [], lang: languageName }: Props) {
   const [selectedMonth, setSelectedMonth] = useState('');
-  const lang = typeof document !== 'undefined' ? languageOf(document.documentElement.lang) : 'pt';
+  const lang = languageOf(languageName);
   const t = COPY[lang] || COPY.pt;
   const validReviews = useMemo(() => reviews.filter((r) => !isTest(r) && Number(r.rating) >= 1 && Number(r.rating) <= 5 && reviewDate(r)), [reviews]);
   const months = useMemo(() => [...new Set(validReviews.map(reviewDate))].sort().reverse(), [validReviews]);
