@@ -166,41 +166,40 @@ function buildRecommendations(kpi: any, themes: any): string[] {
 }
 
 function channelTexts(report: any) {
-  const headline = report.resumo_executivo;
   const k = report.kpis;
-  const recs = report.recomendacoes.map((x: string) => `• ${x}`).join('\n');
-  const benefits = report.plano.beneficios_incluidos.slice(0, 5).map((x: string) => `• ${x}`).join('\n');
-  const text = [
-    `Filtra.AI — Relatório profissional | ${report.periodo}`,
-    report.empresa.nome,
-    '',
-    headline,
-    '',
-    `KPIs: ${k.avaliacoes} avaliações · média ${k.nota_media.toFixed(1)} · ${k.percentual_positivas}% positivas · ${k.criticas} críticas`,
-    '',
-    'Recomendações:',
-    recs,
-    '',
-    `Seu plano (${report.plano.nome}) inclui:`,
-    benefits,
-  ].join('\n');
-
-  const compact = `Filtra.AI | ${report.empresa.nome} | ${report.periodo}: ${k.avaliacoes} avaliações, média ${k.nota_media.toFixed(1)}, ${k.percentual_positivas}% positivas, ${k.criticas} críticas. ${report.recomendacoes[0]}`;
-  const whatsapp = text.length > 3800 ? `${text.slice(0, 3700)}…` : text;
-  const sms = compact.length > 300 ? `${compact.slice(0, 297)}…` : compact;
-
+  const li = (items: any[], render: (item: any) => string) => items.length ? '<ul>' + items.map(render).join('') + '</ul>' : '<p>Sem evidência suficiente para destacar itens neste período.</p>';
+  const themes = [...(report.temas?.atencao || []), ...(report.temas?.positivos || [])].slice(0, 8);
+  const units = (report.unidades || []).slice().sort((a: any, b: any) => a.nota_media - b.nota_media);
+  const recs = report.recomendacoes || [];
+  const textParts = [
+    'FILTRA.AI | RELATÓRIO MENSAL DE REPUTAÇÃO',
+    report.empresa.nome + ' · ' + report.periodo + ' · Plano ' + report.plano.nome,
+    '', 'RESUMO EXECUTIVO', report.resumo_executivo,
+    '', 'INDICADORES DO PERÍODO',
+    'Avaliações: ' + k.avaliacoes + ' | Nota média: ' + Number(k.nota_media).toFixed(1) + '/5 | Positivas: ' + k.percentual_positivas + '% | Críticas: ' + k.criticas,
+    '', 'POR QUE ISSO IMPORTA', report.narrativa.por_que_importa,
+    '', 'ONDE ATUAR', report.narrativa.onde_atuar,
+    '', 'TEMAS RECORRENTES', themes.map((x: any) => '• ' + x.tema + ': ' + x.volume + ' ocorrência(s)').join('\n') || 'Não há temas recorrentes suficientes para uma leitura confiável.',
+    '', 'RISCOS A ACOMPANHAR', (report.riscos || []).map((x: any) => '• ' + x.titulo + ': ' + x.evidencias).join('\n') || 'Nenhum risco relevante sinalizado pelos critérios disponíveis.',
+    '', 'OPORTUNIDADES', (report.oportunidades || []).map((x: any) => '• ' + x.titulo + ': ' + x.evidencias).join('\n') || 'Não há evidência suficiente para destacar oportunidades específicas.',
+    '', 'PLANO DE AÇÃO RECOMENDADO', recs.map((x: string) => '• ' + x).join('\n') || 'Acompanhar a evolução no próximo ciclo.',
+  ];
+  if (units.length) textParts.push('', 'COMPARATIVO ENTRE UNIDADES', units.map((u: any) => '• ' + u.nome + ': média ' + Number(u.nota_media).toFixed(1) + ', ' + u.avaliacoes + ' avaliações, ' + u.criticas + ' críticas').join('\n'));
+  textParts.push('', 'ESCOPO DO PLANO ' + String(report.plano.nome).toUpperCase(), report.plano.beneficios_incluidos.map((x: string) => '• ' + x).join('\n'));
+  textParts.push('', 'Metodologia: análise baseada nas avaliações válidas registradas no período. Os sinais apontam temas a investigar e não comprovam, isoladamente, relações de causa e efeito.');
+  const text = textParts.join('\n');
+  const cards = [[String(k.avaliacoes), 'Avaliações'], [Number(k.nota_media).toFixed(1) + '/5', 'Nota média'], [String(k.percentual_positivas) + '%', 'Positivas'], [String(k.criticas), 'Críticas']];
+  const cardsHtml = cards.map(([value, label]) => '<td style="width:25%;padding:6px"><div style="background:#f3f6fb;border:1px solid #e0e7f0;border-radius:8px;padding:14px"><div style="font-size:22px;font-weight:700;color:#183b62">' + escapeHtml(value) + '</div><div style="font-size:12px;color:#64748b;margin-top:5px">' + escapeHtml(label) + '</div></div></td>').join('');
+  const section = (title: string, body: string) => '<h2 style="font-size:17px;color:#12304a;margin:26px 0 8px">' + title + '</h2>' + body;
+  const html = '<div style="background:#f3f6fb;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#172033"><article style="max-width:760px;margin:auto;background:#fff;border:1px solid #e0e7f0;border-radius:12px;overflow:hidden"><header style="background:#11243b;padding:28px 30px;color:#fff"><div style="font-size:12px;letter-spacing:1.4px;color:#b9d5ff">FILTRA.AI · INTELIGÊNCIA DE REPUTAÇÃO</div><h1 style="font-size:25px;line-height:1.25;margin:12px 0 8px">Relatório mensal de reputação</h1><p style="margin:0;color:#d8e5f5">' + escapeHtml(report.empresa.nome) + ' · ' + escapeHtml(report.periodo) + ' · Plano ' + escapeHtml(report.plano.nome) + '</p></header><main style="padding:26px 30px">' + section('Resumo executivo', '<p style="font-size:15px;line-height:1.65">' + escapeHtml(report.resumo_executivo) + '</p>') + '<table role="presentation" style="width:100%;border-collapse:separate;margin:18px 0"><tr>' + cardsHtml + '</tr></table>' + section('Por que isso importa', '<p style="line-height:1.65">' + escapeHtml(report.narrativa.por_que_importa) + '</p>') + section('Onde atuar', '<p style="line-height:1.65">' + escapeHtml(report.narrativa.onde_atuar) + '</p>') + section('Temas recorrentes', li(themes, (x: any) => '<li><strong>' + escapeHtml(x.tema) + '</strong> — ' + Number(x.volume) + ' ocorrência(s)</li>')) + section('Riscos a acompanhar', li(report.riscos || [], (x: any) => '<li><strong>' + escapeHtml(x.titulo) + '</strong> — ' + escapeHtml(x.evidencias) + '</li>')) + section('Oportunidades', li(report.oportunidades || [], (x: any) => '<li><strong>' + escapeHtml(x.titulo) + '</strong> — ' + escapeHtml(x.evidencias) + '</li>')) + section('Plano de ação recomendado', li(recs, (x: string) => '<li>' + escapeHtml(x) + '</li>')) + (units.length ? section('Comparativo entre unidades', '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th align="left" style="padding:9px;border-bottom:1px solid #dbe3ee">Unidade</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Média</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Avaliações</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Críticas</th></tr></thead><tbody>' + units.map((u: any) => '<tr><td style="padding:9px;border-bottom:1px solid #edf1f6">' + escapeHtml(u.nome) + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + Number(u.nota_media).toFixed(1) + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + u.avaliacoes + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + u.criticas + '</td></tr>').join('') + '</tbody></table>') : '') + section('Recursos incluídos no plano ' + escapeHtml(report.plano.nome), li(report.plano.beneficios_incluidos, (x: string) => '<li>' + escapeHtml(x) + '</li>')) + '<p style="font-size:11px;color:#64748b;border-top:1px solid #e0e7f0;padding-top:16px;margin-top:28px">Análise baseada nas avaliações válidas registradas no período. Os sinais indicam pontos a investigar e não comprovam, isoladamente, relações de causa e efeito.</p></main></article></div>';
+  const compact = 'Filtra.AI | ' + report.empresa.nome + ' | ' + report.periodo + ': ' + k.avaliacoes + ' avaliações, média ' + Number(k.nota_media).toFixed(1) + '/5, ' + k.percentual_positivas + '% positivas, ' + k.criticas + ' críticas. ' + (recs[0] || 'Acompanhe a evolução no próximo ciclo.');
+  const whatsapp = text.length > 3800 ? text.slice(0, 3700) + '…' : text;
+  const sms = compact.length > 300 ? compact.slice(0, 297) + '…' : compact;
   return {
-    email: {
-      subject: `Filtra.AI — Relatório profissional · ${report.periodo} · ${report.empresa.nome}`,
-      text,
-      html: `<article style="font-family:Arial,sans-serif;max-width:760px;margin:auto;color:#172033"><h1>Relatório profissional</h1><p><strong>${escapeHtml(report.empresa.nome)}</strong> · ${escapeHtml(report.periodo)}</p><p>${escapeHtml(headline)}</p><h2>Indicadores</h2><ul><li>${k.avaliacoes} avaliações</li><li>Nota média: <strong>${k.nota_media.toFixed(1)}</strong></li><li>${k.percentual_positivas}% positivas</li><li>${k.criticas} críticas</li></ul><h2>O que fazer agora</h2><ul>${report.recomendacoes.map((x: string) => `<li>${escapeHtml(x)}</li>`).join('')}</ul><h2>Benefícios do plano ${escapeHtml(report.plano.nome)}</h2><ul>${report.plano.beneficios_incluidos.map((x: string) => `<li>${escapeHtml(x)}</li>`).join('')}</ul></article>`,
-    },
-    whatsapp,
-    sms,
-    wechat: whatsapp,
+    email: { subject: 'Filtra.AI — Relatório mensal de reputação · ' + report.periodo + ' · ' + report.empresa.nome, text, html },
+    whatsapp, sms, wechat: whatsapp,
   };
 }
-
 export async function buildRelatorioProfissional(
   db: Database,
   empresa: { id: string; nome_empresa?: string; plan?: string; slug?: string; locale?: string; idioma?: string; language?: string },
