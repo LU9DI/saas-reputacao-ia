@@ -4,12 +4,14 @@ import { buildRelatorioProfissional } from '../services/relatorioProfissional.js
 
 const originalGroq = process.env.GROQ_API_KEY;
 const originalGemini = process.env.GEMINI_API_KEY;
+const originalGoogle = process.env.GOOGLE_API_KEY;
 delete process.env.GROQ_API_KEY;
 delete process.env.GEMINI_API_KEY;
 delete process.env.GOOGLE_API_KEY;
 after(() => {
   if (originalGroq === undefined) delete process.env.GROQ_API_KEY; else process.env.GROQ_API_KEY = originalGroq;
   if (originalGemini === undefined) delete process.env.GEMINI_API_KEY; else process.env.GEMINI_API_KEY = originalGemini;
+  if (originalGoogle === undefined) delete process.env.GOOGLE_API_KEY; else process.env.GOOGLE_API_KEY = originalGoogle;
 });
 
 function fakeDb(reviews: any[]) {
