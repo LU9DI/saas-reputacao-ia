@@ -76,25 +76,25 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const ai = textOrFallback(t.feat_ai, 'IA integrada');
   const reportFallback =
     t.lang_name === 'English'
-      ? 'Smart report'
+      ? '1 professional report per month'
       : t.lang_name === 'Español'
-        ? 'Informe inteligente'
+        ? '1 informe profesional al mes'
         : t.lang_name === '中文'
-          ? '智能报告'
-          : 'Relatório inteligente';
+          ? '每月一份专业报告'
+          : '1 relatório profissional por mês';
   const report = textOrFallback(t.feat_report, reportFallback);
   const aiMissing = textOrFallback(t.feat_ai_missing, 'IA integrada');
   const analytics = textOrFallback(t.feat_dashboard, 'Dashboard com análises');
   const multi = textOrFallback(t.feat_multi, 'Dashboard Multi-unidades');
   const support = textOrFallback(t.feat_support, 'Suporte Prioritário');
   const early = textOrFallback(t.feat_early, 'Acesso antecipado a novas funções');
-  const ranking = textOrFallback(t.feat_unit_ranking, 'Ranking das unidades');
-  const unitLinks = textOrFallback(t.feat_unit_links, 'Link de avaliação por unidade');
-  const executive = textOrFallback(t.feat_executive_report, 'Relatório executivo completo');
-  const unitInsights = textOrFallback(t.feat_unit_insights, 'Insights operacionais por unidade');
-  const priorities = textOrFallback(t.feat_priorities, 'Prioridades operacionais');
-  const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico');
-  const growth = textOrFallback(t.feat_growth, 'Oportunidades de crescimento');
+  const ranking = textOrFallback(t.feat_unit_ranking, 'Ranking comparativo de desempenho por unidade');
+  const unitLinks = textOrFallback(t.feat_unit_links, 'Links de avaliação exclusivos por unidade');
+  const executive = textOrFallback(t.feat_executive_report, 'Relatório executivo mensal para a diretoria');
+  const unitInsights = textOrFallback(t.feat_unit_insights, 'Análise de resultados e temas por unidade');
+  const priorities = textOrFallback(t.feat_priorities, 'Prioridades de ação baseadas nas avaliações');
+  const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico de riscos e tendências');
+  const growth = textOrFallback(t.feat_growth, 'Oportunidades de crescimento identificadas nos dados');
 
   const map: Record<string, { features: string[]; missing?: string[] }> = {
     inicial: { features: [fb, wpp, dashboard], missing: [report, aiMissing] },
