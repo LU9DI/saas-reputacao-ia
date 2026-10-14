@@ -1,28 +1,49 @@
-# Filtra.AI — Indexação orgânica
+# Filtra.AI — SEO indexing runbook
 
-Este procedimento acompanha uma publicação grande do frontend. Não é necessário criar um deploy para cada URL.
+This runbook is for the production publication window. Do not submit URLs before the static export is deployed and the production hostname serves the expected artifact.
 
-## Antes da publicação
+## Before publishing
 
-1. Confirmar CI verde, incluindo o build em modo `CLOUDFLARE_PAGES=1` e `npm run seo:audit`.
-2. Confirmar que o sitemap contém apenas URLs públicas, HTTPS, do host canônico `filtraai.com`.
-3. Confirmar que rotas de aplicação e conversão estão fora do sitemap e emitem `noindex, nofollow`.
-4. Não alterar o backend, DNS ou variáveis de API como parte de uma entrega de indexação sem validar o endpoint canônico separadamente.
+1. Wait for the full GitHub Actions CI to complete successfully, including the static export and `seo:audit` job.
+2. Confirm the Cloudflare Pages deployment completed and that production routing points at the intended artifact. A successful Pages upload alone does not prove that `https://filtraai.com` serves that deployment.
+3. Check these public endpoints in a browser or with HTTP requests:
+   - `https://filtraai.com/robots.txt`
+   - `https://filtraai.com/sitemap.xml`
+   - `https://filtraai.com/`
+   - `https://filtraai.com/en`, `/es`, and `/zh`
+   - At least one public landing page and one blog article per language.
+4. Inspect the returned HTML, not only the rendered browser view. Confirm each indexable page has a self-referencing canonical, useful title and description, and expected language alternates. Confirm private routes carry `noindex`.
 
-## Após a publicação grande
+## Google Search Console
 
-1. Abrir `https://filtraai.com/sitemap.xml` e `https://filtraai.com/robots.txt`; confirmar HTTP 200 e conteúdo atualizado.
-2. No Google Search Console, selecionar a propriedade de domínio `filtraai.com`, enviar `https://filtraai.com/sitemap.xml` e verificar o estado do processamento.
-3. Usar a inspeção de URL do Search Console nas páginas prioritárias e solicitar indexação quando estiverem acessíveis, canônicas e com conteúdo final.
-4. No Bing Webmaster Tools, verificar o domínio e confirmar a leitura do sitemap. O workflow envia as URLs do sitemap via IndexNow depois de publicar.
-5. Após alguns dias, analisar páginas indexadas, exclusões, canonicals escolhidos pelo Google, consultas e cliques; corrigir causas técnicas antes de reenviar solicitações.
+1. Open the verified Domain property for `filtraai.com`. If no Domain property exists, verify it using the DNS TXT method in Search Console.
+2. Open **Sitemaps** and submit `https://filtraai.com/sitemap.xml`.
+3. Review the sitemap status and discovered URL count. Resolve fetch/parsing errors before requesting individual indexing.
+4. Use **URL inspection** for a small priority set after deployment: homepage, core product/solution pages, free audit page, and representative translated pages.
+5. Use **Test live URL** first. If the page is accessible and indexable, request indexing. Requests are rate-limited and do not guarantee inclusion.
+6. Review **Page indexing** and **Manual actions / Security issues** reports over subsequent days. Distinguish crawled-not-indexed, duplicate/canonical, blocked, and server errors instead of repeatedly resubmitting the same URL.
 
-## Ordem de prioridade
+## Bing Webmaster Tools and IndexNow
 
-- Núcleo: página inicial, `/filtra-ai`, `/gestao-de-reputacao-online`, `/avaliacoes-google`, `/reputacao-google`, `/analise-de-avaliacoes-com-ia`, `/feedback-de-clientes`, `/como-melhorar-avaliacoes-google`, `/monitoramento-reputacao-online` e `/gestao-de-feedback`.
-- Depois: páginas de auditoria gratuita e segmentos empresariais; em seguida, artigos relacionados e as versões traduzidas.
-- A estratégia busca competitividade para Top 3/Top 10 nas consultas adequadas, sem prometer Top 1 nem indexação imediata.
+1. Verify `filtraai.com` in Bing Webmaster Tools and import the verified Search Console property if offered.
+2. Submit `https://filtraai.com/sitemap.xml` in the Sitemaps area.
+3. The deployment workflow sends sitemap URLs to IndexNow after the deployment step. The public key file must remain reachable at the exact URL declared by `frontend/scripts/submit-indexnow.mjs`.
+4. Treat an accepted IndexNow request as a notification, not proof of crawling or indexing. Check Bing Webmaster Tools for crawl and indexing results.
 
-## Limite de automação
+## Post-deploy smoke checks
 
-O workflow pode validar o artefato e notificar mecanismos compatíveis com IndexNow. A submissão e a inspeção no Google Search Console exigem acesso autorizado à propriedade; não devem ser simuladas por CI nem tratadas como concluídas sem confirmação no próprio Search Console.
+- Confirm all sitemap URLs return the intended page (not a generic shell, 404, login, or fallback error).
+- Confirm redirects and canonical URLs converge on HTTPS `filtraai.com` and do not point to an obsolete deployment host.
+- Confirm the sitemap contains only public, canonical URLs; private dashboard, evaluation, widget, admin, recovery, and test routes must not appear.
+- Confirm `robots.txt` does not block pages whose HTML must communicate `noindex`. Blocking crawling can prevent search engines from observing that directive.
+- Re-run the CI audit on every material SEO or routing change.
+
+## Priority
+
+- Core: homepage, `/filtra-ai`, `/gestao-de-reputacao-online`, `/avaliacoes-google`, `/reputacao-google`, `/analise-de-avaliacoes-com-ia`, `/feedback-de-clientes`, `/como-melhorar-avaliacoes-google`, `/monitoramento-reputacao-online`, and `/gestao-de-feedback`.
+- Next: free audit and industry pages; then related articles and their translations.
+- This strategy aims to improve discovery and competitiveness for relevant Top 3/Top 10 queries, but does not promise rankings or immediate indexing.
+
+## Important limitations
+
+Sitemaps and IndexNow help discovery but do not guarantee indexing, ranking, or a timeline. Do not request indexing for URLs that are unavailable, thin, duplicate, or intentionally private. Do not publish until production routing has been verified; the Pages project name alone is not evidence that the main domain serves it. Google Search Console submission and inspection require authorized access to the property and must not be reported as completed without confirmation there.
