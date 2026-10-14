@@ -65,7 +65,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
            AND lower(COALESCE(e.status, '')) IN ('ativo','active')
          ORDER BY e.id`
       ) as any[];
-      const stats = { periodo, candidatos: companies.length, enviados: 0, pulados: 0, falhas: 0, sem_destinatario: 0 };
+      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0 };
       for (const empresa of companies) {
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
@@ -131,7 +131,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           });
           if (!accepted) throw new Error('Webhook de distribuição não confirmou o recebimento.');
           await db.run(`UPDATE relatorio_envios_mensais SET status = 'sent', updated_at = ?, enviado_em = ?, erro = NULL WHERE empresa_id = ? AND periodo = ?`, [new Date().toISOString(), new Date().toISOString(), empresa.id, periodo]);
-          stats.enviados++;
+          stats.encaminhados++;
         } catch (error: any) {
           const message = String(error?.message || error).slice(0, 500);
           await db.run(`UPDATE relatorio_envios_mensais SET status = 'failed', updated_at = ?, erro = ? WHERE empresa_id = ? AND periodo = ? AND status <> 'sent'`, [new Date().toISOString(), message, empresa.id, periodo]);
@@ -139,7 +139,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           console.warn('[monthly-report] falha empresa=' + empresa.id + ':', message);
         }
       }
-      return res.json({ success: true, ...stats, distribuicao_configurada: true, idempotencia: 'uma entrega confirmada por empresa e mês' });
+      return res.json({ success: true, ...stats, distribuicao_configurada: true, idempotencia: 'um encaminhamento aceito pelo webhook por empresa e mês' });
     } catch (error: any) {
       console.error('[monthly-report] job falhou:', error?.message || error);
       return res.status(500).json({ error: 'Falha ao processar relatórios mensais.', code: 'MONTHLY_REPORT_JOB_FAILED' });
