@@ -51,6 +51,9 @@ describe('relatório profissional mensal', () => {
     assert.equal(report.ranking_unidades[0].nome, 'Sul');
     assert.ok(report.prioridades_operacionais.some((x: any) => x.unidade === 'Centro'));
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /ranking comparativo/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /dashboard com análises/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
     assert.match(report.canais.email.html, /Relatório mensal de reputação/);
     assert.ok(report.canais.email.html.includes('alt="Logotipo Filtra.AI"'));
     assert.ok(report.canais.email.html.includes('aria-hidden="true"') && report.canais.email.html.includes('>FILTRA.AI</div>'));
@@ -61,6 +64,13 @@ describe('relatório profissional mensal', () => {
     assert.match(report.resumo_executivo, /a empresa registrou 2 avaliações/i);
     assert.ok(!report.resumo_executivo.includes('o Corporativo registrou'));
     assert.equal(report.geracao.modo, 'deterministico');
+  });
+
+  it('preserva os benefícios herdados do Ultra no resumo comercial do plano', async () => {
+    const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-ultra', nome_empresa: 'Ultra Teste', plan: 'ultra' }, '2026-09');
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /dashboard com análises/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
   });
 
   it('mantém o escopo de Pro e não mostra análise avançada reservada aos planos superiores', async () => {
@@ -76,6 +86,9 @@ describe('relatório profissional mensal', () => {
     assert.ok(report.radar_estrategico.some((x: any) => /nota média/i.test(x.sinal)));
     assert.ok(Array.isArray(report.oportunidades_crescimento));
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /diretoria/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /dashboard com análises/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
+    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
     assert.match(report.canais.email.html, /Radar estratégico/);
     assert.match(report.canais.email.html, /Relatório executivo mensal/);
   });
