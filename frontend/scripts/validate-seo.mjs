@@ -56,13 +56,17 @@ function collectPageRoutes(directory = appRoot) {
 
 const staticRoutes = new Set(collectPageRoutes());
 function slugsForLanguage(source, language) {
-  const start = source.indexOf('\n' + language + ':[');
-  if (start < 0) return new Set();
+  const startMatch = new RegExp('^\\s*' + language + ':\\[', 'm').exec(source);
+  if (!startMatch) return new Set();
+  const start = startMatch.index;
   const nextLanguages = ['en', 'es', 'zh'].slice(['en', 'es', 'zh'].indexOf(language) + 1);
-  const ends = nextLanguages.map((next) => source.indexOf('\n' + next + ':[', start + 1)).filter((index) => index >= 0);
-  const end = ends.length ? Math.min(...ends) : source.indexOf('\n};', start + 1);
+  const ends = nextLanguages
+    .map((next) => new RegExp('^\\s*' + next + ':\\[', 'm').exec(source.slice(start + 1)))
+    .filter(Boolean)
+    .map((match) => start + 1 + match.index);
+  const end = ends.length ? Math.min(...ends) : source.indexOf('\\n};', start + 1);
   const block = source.slice(start, end < 0 ? source.length : end);
-  return new Set([...block.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
+  return new Set([...block.matchAll(/slug:\\s*'([^']+)'/g)].map((match) => match[1]));
 }
 const localizedSlugs = Object.fromEntries(['en', 'es', 'zh'].map((lang) => [lang, slugsForLanguage(localizedPages, lang)]));
 const localizedBlogSlugs = Object.fromEntries(['en', 'es', 'zh'].map((lang) => [lang, slugsForLanguage(localizedBlogs, lang)]));
