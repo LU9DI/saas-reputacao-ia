@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 const appRoot = resolve(process.cwd(), 'src/app');
 const read = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 const sitemap = read('src/app/sitemap.ts');
+const rootLayout = read('src/app/layout.tsx');
 const plansLayout = read('src/app/planos/layout.tsx');
 const plansPage = read('src/app/planos/page.tsx');
 const robots = read('src/app/robots.ts');
@@ -17,6 +18,7 @@ const errors = [];
 const check = (condition, message) => { if (!condition) errors.push(message); };
 
 check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
+check(rootLayout.includes('localized-document-language') && rootLayout.includes('document.documentElement.lang'), 'Root layout must set the document language for localized routes before hydration');
 check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans canonical must point to /planos');
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
 check(!plansPage.includes('window.location.replace'), 'Plans page must render content instead of redirecting client-side');
