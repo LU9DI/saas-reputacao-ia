@@ -18,15 +18,15 @@ const LABELS: Record<string, string> = {
 
 const FEATURES: Record<string, { features: string[]; missingFeatures?: string[]; highlight?: boolean }> = {
   inicial: {
-    features: ['100 feedbacks/mês', 'WPP Integrado', 'Dashboard'],
-    missingFeatures: ['Integrado com IA', 'Relatório profissional mensal'],
+    features: ['100 feedbacks/mês', 'WhatsApp integrado', 'Dashboard'],
+    missingFeatures: ['Análises com inteligência artificial', 'Relatório profissional mensal'],
   },
   pro: {
     features: ['300 feedbacks/mês', 'WPP Integrado', 'Dashboard', '1 relatório profissional por mês'],
     missingFeatures: ['Integrado com IA'],
   },
   ultra: {
-    features: ['800 feedbacks/mês', 'WPP Integrado', 'IA Ativa', '1 relatório profissional por mês', 'Dashboard com análises'],
+    features: ['800 feedbacks/mês', 'WPP Integrado', 'Análises com inteligência artificial', '1 relatório profissional por mês', 'Dashboard com análises'],
     highlight: true,
   },
   corporativo: {
@@ -39,7 +39,7 @@ const FEATURES: Record<string, { features: string[]; missingFeatures?: string[];
       'Ranking comparativo de desempenho por unidade',
       'Análise de resultados e temas por unidade',
       'Prioridades de ação baseadas nas avaliações',
-      'Links de avaliação exclusivos por unidade',
+      'Links de avaliação exclusivos para cada unidade',
       'Suporte Prioritário',
       'Acesso antecipado a novas funções',
     ],
