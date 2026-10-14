@@ -245,7 +245,7 @@ export async function buildRelatorioProfissional(
   const reais = rows.filter((row) => !isTest(row) && dateOf(row).startsWith(periodo));
   const anteriores = rows.filter((row) => !isTest(row) && dateOf(row).startsWith(periodoAnterior));
   const mediaAnterior = anteriores.length ? Math.round((anteriores.reduce((sum, row) => sum + Number(row.rating || 0), 0) / anteriores.length) * 10) / 10 : null;
-  const criticasAnterior = anteriores.length ? Math.round((anteriores.filter((row) => Number(row.rating) <= 2).length / anteriores.length) * 100) : null;
+  const criticasAnterior = anteriores.length ? Math.round((anteriores.filter((row) => Number(row.rating) <= 3).length / anteriores.length) * 100) : null;
   const avaliacoes = reais.length;
   const soma = reais.reduce((sum, row) => sum + Number(row.rating || 0), 0);
   const notaMedia = avaliacoes ? Math.round((soma / avaliacoes) * 10) / 10 : 0;
