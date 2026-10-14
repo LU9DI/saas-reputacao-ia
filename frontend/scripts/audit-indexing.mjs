@@ -121,15 +121,17 @@ for (const raw of urls) {
   const canonicalMatch =
     html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["'][^>]*>/i) ||
     html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["'][^>]*>/i);
-  if (canonicalMatch) {
-    try {
-      const canonical = new URL(canonicalMatch[1], raw).toString();
-      if (normalize(canonical) !== key) {
-        fail(`canonical mismatch: sitemap ${raw} points to ${canonical}`);
-      }
-    } catch {
-      fail(`invalid canonical URL on ${raw}: ${canonicalMatch[1]}`);
+  if (!canonicalMatch) {
+    fail(`missing canonical link on sitemap URL: ${raw}`);
+    continue;
+  }
+  try {
+    const canonical = new URL(canonicalMatch[1], raw).toString();
+    if (normalize(canonical) !== key) {
+      fail(`canonical mismatch: sitemap ${raw} points to ${canonical}`);
     }
+  } catch {
+    fail(`invalid canonical URL on ${raw}: ${canonicalMatch[1]}`);
   }
 }
 
