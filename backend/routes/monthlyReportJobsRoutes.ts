@@ -76,19 +76,12 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
            AND lower(COALESCE(e.status, '')) IN ('ativo','active')
          ORDER BY e.id`
       ) as any[];
-      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0 };
+      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0, snapshots_gerados: 0, snapshots_recuperados: 0 };
       for (const empresa of companies) {
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
-        let destinatarios: any[];
-        try {
-          destinatarios = await resolveMonthlyReportRecipients(db, String(empresa.id), empresa.relatorio_destinatarios);
-        } catch (error: any) {
-          const message = String(error?.message || error).slice(0, 500);
-          console.warn('[monthly-report] consulta de destinatário falhou empresa=' + empresa.id + ':', message);
-          stats.falhas++;
-          continue;
-        }
+        // Destinatários não podem bloquear a criação do snapshot: a reserva começa com a configuração explícita, mesmo vazia.
+        const configuredDestinatarios = parseDestinations(empresa.relatorio_destinatarios);
         const now = new Date().toISOString();
         const id = randomUUID();
         let reservationCreated = false;
@@ -97,7 +90,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
             `INSERT INTO relatorio_envios_mensais (id, empresa_id, periodo, status, destinatarios_json, created_at, updated_at, tentativas)
              VALUES (?, ?, ?, 'processing', ?, ?, ?, 1)
              ON CONFLICT (empresa_id, periodo) DO NOTHING`,
-            [id, empresa.id, periodo, JSON.stringify(destinatarios), now, now]
+            [id, empresa.id, periodo, JSON.stringify(configuredDestinatarios), now, now]
           );
           reservationCreated = Number(inserted.changes || 0) > 0;
         } catch (error: any) {
@@ -106,25 +99,42 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           continue;
         }
         const reservation = await db.get('SELECT status, updated_at, report_json FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, periodo]) as any;
-        if (reservation?.status === 'accepted') { stats.pulados++; continue; }
+        if (reservation?.status === 'accepted') {
+          if (reservation.report_json) { stats.pulados++; continue; }
+          try {
+            const recoveredReport = await buildRelatorioProfissional(db, empresa, periodo);
+            const saved = await db.run(
+              `UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL`,
+              [JSON.stringify(recoveredReport), new Date().toISOString(), empresa.id, periodo]
+            );
+            if (saved.changes) stats.snapshots_recuperados++;
+            else stats.pulados++;
+          } catch (error: any) {
+            stats.falhas++;
+            console.warn('[monthly-report] recuperação de snapshot falhou empresa=' + empresa.id + ':', String(error?.message || error).slice(0, 500));
+          }
+          continue;
+        }
         if (!reservationCreated) {
           const updatedAt = new Date(String(reservation?.updated_at || '')).getTime();
           const staleProcessing = reservation?.status === 'processing' && Number.isFinite(updatedAt) && Date.now() - updatedAt >= 30 * 60 * 1000;
           if (reservation?.status === 'processing' && !staleProcessing) { stats.pulados++; continue; }
           if (!['failed', 'generated'].includes(String(reservation?.status || '')) && !staleProcessing) { stats.pulados++; continue; }
-          if (reservation?.status === 'generated' && !destinatarios.length) { stats.sem_destinatario++; continue; }
           const expectedStatus = staleProcessing ? 'processing' : String(reservation.status);
           const retry = await db.run(
             `UPDATE relatorio_envios_mensais SET status = 'processing', updated_at = ?, erro = NULL, tentativas = tentativas + 1, destinatarios_json = ?
              WHERE empresa_id = ? AND periodo = ? AND status = ? AND updated_at = ?`,
-            [now, JSON.stringify(destinatarios), empresa.id, periodo, expectedStatus, reservation.updated_at]
+            [now, JSON.stringify(configuredDestinatarios), empresa.id, periodo, expectedStatus, reservation.updated_at]
           );
           if (!retry.changes) { stats.pulados++; continue; }
         }
         try {
           const report = reservation?.report_json ? JSON.parse(String(reservation.report_json)) : await buildRelatorioProfissional(db, empresa, periodo);
-          // Persist the generated snapshot before attempting delivery; the panel reads it with its normal payload.
-          await db.run(`UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(report), new Date().toISOString(), empresa.id, periodo]);
+          // Persist the generated snapshot before resolving recipients or attempting delivery.
+          const snapshotSaved = await db.run(`UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(report), new Date().toISOString(), empresa.id, periodo]);
+          if (snapshotSaved.changes && !reservation?.report_json) stats.snapshots_gerados++;
+          const destinatarios = await resolveMonthlyReportRecipients(db, String(empresa.id), empresa.relatorio_destinatarios);
+          await db.run(`UPDATE relatorio_envios_mensais SET destinatarios_json = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(destinatarios), empresa.id, periodo]);
           if (!destinatarios.length) {
             await db.run(`UPDATE relatorio_envios_mensais SET status = 'generated', updated_at = ?, erro = NULL WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [new Date().toISOString(), empresa.id, periodo]);
             stats.sem_destinatario++;
