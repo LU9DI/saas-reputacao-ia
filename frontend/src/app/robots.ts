@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/painel/', '/admin/', '/api/', '/avaliacao/'],
+      // These are application/private endpoints, not public search landing pages.
+      disallow: ['/painel/', '/admin/', '/api/', '/avaliacao/', '/widget/'],
     },
     sitemap: `${base}/sitemap.xml`,
   };
