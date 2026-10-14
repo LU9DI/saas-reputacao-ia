@@ -157,7 +157,7 @@ function summarizeThemes(rows: Review[], positive: boolean): Array<{ tema: strin
 
 function buildSummary(plan: string, kpi: any): string {
   if (!kpi.avaliacoes) {
-    return 'Não houve avaliações válidas no período. O relatório está pronto para receber dados assim que novas avaliações entrarem no painel.';
+    return 'Não houve avaliações válidas no período. O relatório está pronto para receber dados assim que novas avaliações forem registradas.';
   }
   const quality =
     kpi.nota_media >= 4.5 ? 'desempenho excelente' :
@@ -389,7 +389,7 @@ export async function buildRelatorioProfissional(
       oportunidades: oportunidades.map((x: any) => x.titulo),
       o_que_fazer_agora: buildRecommendations(kpis, temasAtencao),
     },
-    origem: 'dados_reais_do_painel',
+    origem: 'dados_reais_de_avaliacoes',
   };
 
   // A IA interpreta apenas métricas agregadas. O servidor continua sendo a fonte de verdade dos números.
