@@ -26,7 +26,7 @@ export function isTrialPlan(plan: string | null | undefined): boolean {
 export function planTemRelatorioMensal(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
   if (isTrialPlan(p)) return true;
-  return ['pro', 'ultra', 'corporativo', 'corp', 'rei'].includes(p);
+  return ['pro', 'ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(p);
 }
 
 /** Alias legado mantido para que rotas antigas não quebrem enquanto o PDF é aposentado como entregável. */
