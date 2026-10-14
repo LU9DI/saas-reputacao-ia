@@ -28,13 +28,13 @@ A IA recebe apenas dados agregados e temas, não os comentários individuais dos
 
 ## Cadência e idempotência
 
-O job `POST /api/jobs/monthly-reports` prepara o mês calendário anterior e encaminha o relatório aos destinatários configurados. É possível indicar um mês encerrado por `?mes=YYYY-MM` para uma execução de recuperação. O plano Inicial fica fora da entrega mensal; Pro, Ultra, Corporativo e REI são elegíveis.
+O job `POST /api/jobs/monthly-reports` prepara e persiste o snapshot do mês calendário anterior mesmo quando a distribuição ainda não está configurada; quando houver webhook e destinatários, também encaminha o relatório. É possível indicar um mês encerrado por `?mes=YYYY-MM` para uma execução de recuperação. O plano Inicial fica fora da entrega mensal; Pro, Ultra, Corporativo e REI são elegíveis.
 
 O job mantém a tabela `relatorio_envios_mensais` e reserva uma combinação única de empresa + mês. Uma segunda execução não encaminha de novo um relatório já aceito. Reservas em processamento por mais de 30 minutos podem ser retomadas; falhas ficam registradas e podem ser tentadas novamente.
 
 ## Configuração necessária para operação automática
 
-- `JOBS_SECRET` definido no ambiente de produção.
+- `JOBS_SECRET` definido no ambiente de produção. Envie-o no header `Authorization: Bearer ...` ou `x-jobs-secret`; não use query string para segredo.
 - `N8N_WEBHOOK_URL` configurada e `N8N_ENABLED` não desativado.
 - Workflow n8n que reconheça o evento `report.generated`, entregue o relatório aos canais informados e use `idempotency_key` para impedir duplicações na própria camada de distribuição.
 - Agendador externo configurado para chamar o endpoint autenticado mensalmente (recomendação: dia 1, depois da virada UTC). Pode ser executado diariamente com segurança, pois a idempotência evita reenvios do mesmo mês.
