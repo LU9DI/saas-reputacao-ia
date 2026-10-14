@@ -94,7 +94,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           continue;
         }
         const reservation = await db.get('SELECT status, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, periodo]) as any;
-        if (reservation?.status === 'sent') { stats.pulados++; continue; }
+        if (reservation?.status === 'accepted') { stats.pulados++; continue; }
         if (!reservationCreated) {
           const updatedAt = new Date(String(reservation?.updated_at || '')).getTime();
           const staleProcessing = reservation?.status === 'processing' && Number.isFinite(updatedAt) && Date.now() - updatedAt >= 30 * 60 * 1000;
@@ -130,16 +130,16 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
             tokens: report.geracao?.tokens || 0,
           });
           if (!accepted) throw new Error('Webhook de distribuição não confirmou o recebimento.');
-          await db.run(`UPDATE relatorio_envios_mensais SET status = 'sent', updated_at = ?, enviado_em = ?, erro = NULL WHERE empresa_id = ? AND periodo = ?`, [new Date().toISOString(), new Date().toISOString(), empresa.id, periodo]);
+          await db.run(`UPDATE relatorio_envios_mensais SET status = 'accepted', updated_at = ?, enviado_em = ?, erro = NULL WHERE empresa_id = ? AND periodo = ?`, [new Date().toISOString(), new Date().toISOString(), empresa.id, periodo]);
           stats.encaminhados++;
         } catch (error: any) {
           const message = String(error?.message || error).slice(0, 500);
-          await db.run(`UPDATE relatorio_envios_mensais SET status = 'failed', updated_at = ?, erro = ? WHERE empresa_id = ? AND periodo = ? AND status <> 'sent'`, [new Date().toISOString(), message, empresa.id, periodo]);
+          await db.run(`UPDATE relatorio_envios_mensais SET status = 'failed', updated_at = ?, erro = ? WHERE empresa_id = ? AND periodo = ? AND status <> 'accepted'`, [new Date().toISOString(), message, empresa.id, periodo]);
           stats.falhas++;
           console.warn('[monthly-report] falha empresa=' + empresa.id + ':', message);
         }
       }
-      return res.json({ success: true, ...stats, distribuicao_configurada: true, idempotencia: 'um encaminhamento aceito pelo webhook por empresa e mês' });
+      return res.status(stats.falhas ? 207 : 200).json({ success: stats.falhas === 0, partial: stats.falhas > 0 || stats.sem_destinatario > 0, ...stats, distribuicao_configurada: true, idempotencia: 'um encaminhamento aceito pelo webhook por empresa e mês' });
     } catch (error: any) {
       console.error('[monthly-report] job falhou:', error?.message || error);
       return res.status(500).json({ error: 'Falha ao processar relatórios mensais.', code: 'MONTHLY_REPORT_JOB_FAILED' });
