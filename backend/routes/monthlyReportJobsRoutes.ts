@@ -61,7 +61,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
       const companies = await db.all(
         `SELECT e.id, e.nome_empresa, e.slug, e.plan, e.status, e.relatorio_destinatarios
          FROM empresas e
-         WHERE lower(COALESCE(e.plan, '')) IN ('pro','ultra','corporativo','corp','rei')
+         WHERE lower(COALESCE(e.plan, '')) IN ('pro','ultra','corporativo','corporate','corp','rei')
            AND lower(COALESCE(e.status, '')) IN ('ativo','active')
          ORDER BY e.id`
       ) as any[];
