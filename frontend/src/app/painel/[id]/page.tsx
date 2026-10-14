@@ -693,7 +693,7 @@ export default function PainelEmpresa() {
               </section>
             )}
 
-            {reportMensalOk && <RelatorioProfissionalMensalPanel empresa={empresa} reviews={reviews} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />}
+            {reportMensalOk && <RelatorioProfissionalMensalPanel empresa={empresa} reviews={reviews} monthlyReports={Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />}
 
             <section id="ai-report" className="scroll-mt-28">
               {reportOk ? (
