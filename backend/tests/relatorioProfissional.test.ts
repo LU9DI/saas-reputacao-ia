@@ -46,6 +46,8 @@ describe('relatório profissional mensal', () => {
     const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-1', nome_empresa: 'Empresa Teste', plan: 'corporativo' }, '2026-09');
     assert.equal(report.periodo, '2026-09');
     assert.equal(report.kpis.avaliacoes, 2);
+    assert.ok(!report.canais.email.text.includes('\\n'), 'plain-text report must not contain literal \\n sequences');
+    assert.ok(report.canais.email.text.split('\n').length > 1, 'plain-text report must contain actual line breaks');
     assert.equal(report.ranking_unidades[0].nome, 'Sul');
     assert.ok(report.prioridades_operacionais.some((x: any) => x.unidade === 'Centro'));
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /ranking comparativo/i.test(x)));
