@@ -63,7 +63,12 @@ function resolveLimit(plan: string, fromApi?: number): number {
 
 function textOrFallback(value: unknown, fallback: string): string {
   const text = String(value ?? '').trim();
-  return text || fallback;
+  // Nunca exibir chaves internas de tradução nos benefícios dos planos.
+  // Isso também protege contra dicionários antigos/cacheados no cliente.
+  if (!text || /^[a-z][a-z0-9]*_[a-z0-9_]+$/i.test(text) && text.startsWith('feat_')) {
+    return fallback;
+  }
+  return text;
 }
 
 function featuresForPlan(plan: string, limit: number, t: any) {
