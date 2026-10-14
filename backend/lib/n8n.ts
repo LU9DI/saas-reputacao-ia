@@ -18,7 +18,8 @@ export type N8nEvent =
   | 'review.nova'
   | 'lead.whatsapp'
   | 'empresa.bloqueada'
-  | 'lead.capturado';
+  | 'lead.capturado'
+  | 'report.generated';
 
 export function n8nConfigured(): boolean {
   const url = process.env.N8N_WEBHOOK_URL?.trim();
@@ -79,6 +80,39 @@ export function notifyN8n(
     });
 }
 
+
+/** Envio síncrono para workflows que exigem confirmação HTTP (ex.: relatório mensal). */
+export async function notifyN8nAsync(
+  event: N8nEvent,
+  payload: Record<string, unknown>
+): Promise<boolean> {
+  if (!n8nConfigured()) return false;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'User-Agent': 'Filtra.IA/n8n',
+  };
+  const secret = process.env.N8N_WEBHOOK_SECRET?.trim();
+  if (secret) headers['X-Filtra-Secret'] = secret;
+  const apiKey = process.env.N8N_API_KEY?.trim();
+  if (apiKey) headers['X-N8N-API-KEY'] = apiKey;
+  try {
+    const response = await fetch(n8nWebhookUrl(), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ event, source: 'filtra-ia', ts: new Date().toISOString(), ...payload }),
+      signal: AbortSignal.timeout(8_000),
+    });
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      console.warn('[n8n] ' + event + ' HTTP ' + response.status, body.slice(0, 200));
+      return false;
+    }
+    return true;
+  } catch (error: any) {
+    console.warn('[n8n] ' + event + ' falhou:', error?.message || error);
+    return false;
+  }
+}
 export function n8nStatus() {
   return {
     configured: n8nConfigured(),
