@@ -396,7 +396,7 @@ export async function buildRelatorioProfissional(
     oportunidades,
     recomendacoes: buildRecommendations(kpis, temasAtencao),
     narrativa: {
-      o_que_aconteceu: buildSummary(plan, kpis),
+      o_que_aconteceu: buildSummary(kpis),
       por_que_importa: kpis.percentual_criticas > 0
         ? `Há ${kpis.criticas} avaliações críticas que podem indicar pontos de atrito na experiência.`
         : 'Os sinais disponíveis não mostram concentração relevante de avaliações críticas.',
