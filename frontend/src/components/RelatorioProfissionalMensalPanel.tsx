@@ -1,24 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { CalendarDays, FileText, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { CalendarDays, FileText } from 'lucide-react';
 
-type Review = {
-  id?: string | number;
-  rating?: unknown;
-  comment?: unknown;
-  sentiment?: unknown;
-  ai_tags?: unknown;
-  unidade_id?: string | null;
-  createdAt?: unknown;
-  created_at?: unknown;
-  createdat?: unknown;
-  is_test?: unknown;
-};
 type Unit = { id?: string; nome?: string; nome_unidade?: string; nome_empresa?: string };
 type Props = {
   empresa: { id?: string; nome_empresa?: string; plan?: string };
-  reviews: Review[];
   monthlyReports?: any[];
   unidades?: Unit[];
   lang?: string;
@@ -31,32 +18,6 @@ const COPY: Record<string, Record<string, string>> = {
   zh: { title: '月度专业报告', subtitle: '展示预先生成的月度历史记录；此区域不会单独发起网络请求。', period: '报告月份', noData: '此期间没有有效评价。', noHistory: '已加载的数据中没有可用的评价月份。', reviews: '评价数', average: '平均评分', positive: '好评', critical: '需关注（1–3 星）', summary: '执行摘要', strengths: '主要优势', attention: '关注事项', action: '建议行动计划', units: '各门店表现', themes: '重复主题', sentiment: '情绪', neutral: '中性', negative: '消极', positiveThemes: '积极主题', criticalThemes: '关键问题', strategicRadar: '战略雷达', noTags: '此期间未识别到主题。', proSummary: '本期间分析基于面板中已加载的有效评价。', criticalAction: '优先处理 1–3 星评价，并在下个周期跟踪进展。', positiveAction: '保持与好评相关的做法，并在下个周期比较结果。', noCritical: '此期间没有记录需关注的评价。' },
 };
 
-function reviewDate(review: Review): string {
-  const raw = String(review.createdAt ?? review.createdat ?? review.created_at ?? '').trim();
-  if (!raw) return '';
-  const month = raw.match(/^(\d{4})-(\d{2})/);
-  if (month) return month[1] + '-' + month[2];
-  const date = new Date(raw);
-  return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 7);
-}
-function isTest(review: Review): boolean {
-  return review.is_test === true || Number(review.is_test) === 1 || String(review.is_test).toLowerCase() === 'true';
-}
-function sentimentOf(review: Review): 'positive' | 'neutral' | 'negative' {
-  const raw = String(review.sentiment || '').toLowerCase();
-  if (raw.includes('pos')) return 'positive';
-  if (raw.includes('neg')) return 'negative';
-  if (raw.includes('neu')) return 'neutral';
-  const rating = Number(review.rating);
-  if (rating >= 4) return 'positive';
-  if (rating <= 2) return 'negative';
-  return 'neutral';
-}
-function parseTags(value: unknown): string[] {
-  let raw = value;
-  if (typeof raw === 'string') { try { raw = JSON.parse(raw); } catch { raw = []; } }
-  return Array.isArray(raw) ? raw.map(String).map((x) => x.trim()).filter(Boolean) : [];
-}
 function languageOf(name: unknown): string {
   const value = String(name || '').toLowerCase();
   if (value.includes('english') || value === 'en') return 'en';
@@ -65,57 +26,17 @@ function languageOf(name: unknown): string {
   return 'pt';
 }
 
-export function RelatorioProfissionalMensalPanel({ empresa, reviews, monthlyReports = [], unidades = [], lang: languageName }: Props) {
+export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [], unidades = [], lang: languageName }: Props) {
   const [selectedMonth, setSelectedMonth] = useState('');
   const lang = languageOf(languageName);
   const t = COPY[lang] || COPY.pt;
-  const validReviews = useMemo(() => reviews.filter((r) => !isTest(r) && Number(r.rating) >= 1 && Number(r.rating) <= 5 && reviewDate(r)), [reviews]);
-  const months = useMemo(() => [...new Set(validReviews.map(reviewDate))].sort().reverse(), [validReviews]);
+  // A interface só exibe snapshots persistidos recebidos no payload normal do painel.
+  // Não sintetiza um relatório alternativo a partir das avaliações carregadas.
   const savedReports = useMemo(() => monthlyReports.filter((r) => typeof r?.periodo === 'string' && r?.kpis && r?.empresa?.id === String(empresa.id || '')).sort((a, b) => b.periodo.localeCompare(a.periodo)), [monthlyReports, empresa.id]);
-  const availableMonths = savedReports.length ? savedReports.map((r) => r.periodo) : months;
+  const availableMonths = savedReports.map((r) => r.periodo);
   const activeMonth = selectedMonth && availableMonths.includes(selectedMonth) ? selectedMonth : (availableMonths[0] || '');
   const activeReport = savedReports.find((r) => r.periodo === activeMonth) || null;
-  const rows = useMemo(() => validReviews.filter((r) => reviewDate(r) === activeMonth), [validReviews, activeMonth]);
-  const stats = useMemo(() => {
-    const total = rows.length;
-    const average = total ? rows.reduce((sum, r) => sum + Number(r.rating), 0) / total : 0;
-    const positive = rows.filter((r) => Number(r.rating) >= 4).length;
-    const critical = rows.filter((r) => Number(r.rating) <= 3).length;
-    const tags = new Map<string, number>();
-    const criticalTags = new Map<string, number>();
-    const positiveTags = new Map<string, number>();
-    const sentimentCounts = { positive: 0, neutral: 0, negative: 0 };
-    const units = new Map<string, { name: string; count: number; total: number }>();
-    for (const row of rows) {
-      const sentiment = sentimentOf(row);
-      sentimentCounts[sentiment] += 1;
-      for (const tag of parseTags(row.ai_tags)) {
-        tags.set(tag, (tags.get(tag) || 0) + 1);
-        if (Number(row.rating) <= 3) criticalTags.set(tag, (criticalTags.get(tag) || 0) + 1);
-        if (Number(row.rating) >= 4) positiveTags.set(tag, (positiveTags.get(tag) || 0) + 1);
-      }
-      const id = String(row.unidade_id || '');
-      if (id) {
-        const unit = unidades.find((u) => String(u.id || '') === id);
-        const name = String(unit?.nome || unit?.nome_unidade || unit?.nome_empresa || id);
-        const current = units.get(id) || { name, count: 0, total: 0 };
-        current.count += 1;
-        current.total += Number(row.rating);
-        units.set(id, current);
-      }
-    }
-    return {
-      total, average, positive, critical,
-      positivePct: total ? Math.round(positive / total * 100) : 0,
-      themes: [...tags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8),
-      criticalThemes: [...criticalTags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 5),
-      positiveThemes: [...positiveTags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 5),
-      sentimentCounts,
-      units: [...units.values()].map((u) => ({ ...u, average: u.total / u.count })).sort((a, b) => a.average - b.average),
-    };
-  }, [rows, unidades]);
   const plan = String(empresa.plan || 'pro').toLowerCase();
-  const advanced = ['ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(plan);
   const multiUnit = ['corporativo', 'corporate', 'corp', 'rei'].includes(plan);
   const rei = plan === 'rei';
 
@@ -171,40 +92,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, reviews, monthlyRepo
             {(activeReport.oportunidades_crescimento?.length || 0) > 0 && <><h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-emerald-300">Oportunidades de crescimento</h4><div className="mt-2 space-y-2">{activeReport.oportunidades_crescimento.map((item: any, index: number) => <div key={index} className="rounded-xl border border-white/5 p-3"><div className="text-sm font-medium text-white">{item.titulo}</div><p className="mt-1 text-sm text-zinc-400">{item.evidencias}</p><p className="mt-2 text-sm text-zinc-300">{item.acao_recomendada}</p></div>)}</div></>}
           </article>}
         </div>
-      ) : !availableMonths.length ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noHistory}</p> : !stats.total ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noData}</p> : (
-        <>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {[[String(stats.total), t.reviews], [stats.average.toFixed(1) + '/5', t.average], [stats.positivePct + '%', t.positive], [String(stats.critical), t.critical]].map(([value, label]) => <div key={label} className="rounded-2xl border border-white/10 bg-black/25 p-4"><div className="text-2xl font-semibold text-white">{value}</div><div className="mt-1 text-xs text-zinc-500">{label}</div></div>)}
-          </div>
-          <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-white"><TrendingUp size={16} className="text-emerald-300" />{t.summary}</h3>
-              <p className="mt-3 text-sm leading-6 text-zinc-300">{t.proSummary} {stats.total} {t.reviews.toLowerCase()}; {t.average.toLowerCase()}: {stats.average.toFixed(1)}/5; {t.positive.toLowerCase()}: {stats.positivePct}%.</p>
-            </article>
-            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-white"><AlertTriangle size={16} className="text-amber-300" />{t.attention}</h3>
-              <p className="mt-3 text-sm leading-6 text-zinc-300">{stats.critical ? t.criticalAction : t.noCritical}</p>
-              {advanced && <div className="mt-4 space-y-4">
-                <div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.sentiment}</h4><div className="mt-2 grid grid-cols-3 gap-2">{[[t.positive, stats.sentimentCounts.positive], [t.neutral, stats.sentimentCounts.neutral], [t.negative, stats.sentimentCounts.negative]].map(([name, count]) => <div key={String(name)} className="rounded-xl border border-white/5 px-3 py-2"><div className="text-lg font-semibold text-white">{count}</div><div className="text-xs text-zinc-500">{name}</div></div>)}</div></div>
-                <div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.themes}</h4>{stats.themes.length ? <ul className="mt-2 space-y-2">{stats.themes.map(([theme, count]) => <li key={theme} className="flex justify-between gap-3 rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-zinc-500">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div>
-              </div>}
-            </article>
-          </div>
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-white"><CheckCircle2 size={16} className="text-emerald-300" />{t.strengths}</h3>
-              <p className="mt-3 text-sm leading-6 text-zinc-300">{stats.positive ? t.positiveAction : t.noCritical}</p>
-            </article>
-            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
-              <h3 className="text-sm font-semibold text-white">{t.action}</h3>
-              <p className="mt-3 text-sm leading-6 text-zinc-300">{stats.critical ? t.criticalAction : t.positiveAction}</p>
-              {rei && <p className="mt-3 rounded-xl border border-violet-400/15 bg-violet-400/[0.04] p-3 text-sm text-violet-100">REI: consolide os sinais por unidade, acompanhe riscos e transforme temas recorrentes em iniciativas mensuráveis.</p>}
-            </article>
-          </div>
-          {rei && <article className="mt-4 rounded-2xl border border-violet-400/15 bg-violet-400/[0.03] p-5"><h3 className="text-sm font-semibold text-white">{t.strategicRadar}</h3><div className="mt-3 grid gap-3 sm:grid-cols-2"><div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.criticalThemes}</h4>{stats.criticalThemes.length ? <ul className="mt-2 space-y-2">{stats.criticalThemes.map(([theme, count]) => <li key={theme} className="flex justify-between rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-amber-300">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div><div><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.positiveThemes}</h4>{stats.positiveThemes.length ? <ul className="mt-2 space-y-2">{stats.positiveThemes.map(([theme, count]) => <li key={theme} className="flex justify-between rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-emerald-300">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div></div></article>}
-          {multiUnit && <article className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-5"><h3 className="text-sm font-semibold text-white">{t.units}</h3>{stats.units.length ? <div className="mt-3 space-y-2">{stats.units.map((u) => <div key={u.name} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 px-3 py-3"><span className="text-sm text-zinc-300">{u.name}</span><span className="text-xs text-zinc-500">{u.count} · {t.reviews}</span><span className="text-sm font-semibold text-white">{u.average.toFixed(1)}/5</span></div>)}</div> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</article>}
-        </>
-      )}
+      ) : <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noHistory}</p>}
 
     </section>
   );
