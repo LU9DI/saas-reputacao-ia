@@ -197,7 +197,16 @@
   "feat_unit_links": "Enlaces de reseña exclusivos para cada unidad",
   "feat_unit_insights": "Análisis de resultados y temas por unidad",
   "feat_priorities": "Prioridades de acción basadas en las reseñas",
-  "feat_strategic_radar": "Radar estratégico de riesgos y tendencias",
+  "feat_strategic_radar": "Radar estratégico de riesgos y tendencias de reputación",
   "feat_growth": "Oportunidades de crecimiento basadas en datos",
-  "feat_executive_report": "Informe ejecutivo mensual para la dirección"
+  "feat_executive_report": "Informe ejecutivo mensual para la dirección",
+  "feat_feedbacks": "{n} reseñas de clientes/mes",
+  "feat_wpp": "Integración con WhatsApp",
+  "feat_basic_charts": "Panel de control",
+  "feat_ai": "Análisis con inteligencia artificial",
+  "feat_ai_missing": "Análisis con inteligencia artificial",
+  "feat_dashboard": "Panel con análisis avanzados",
+  "feat_multi": "Gestión consolidada de múltiples unidades",
+  "feat_support": "Soporte prioritario",
+  "feat_early": "Acceso anticipado a nuevas funciones seleccionadas"
 }
