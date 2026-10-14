@@ -55,19 +55,30 @@ function collectPageRoutes(directory = appRoot) {
 }
 
 const staticRoutes = new Set(collectPageRoutes());
-const localizedSlugs = new Set([...localizedPages.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
-const localizedBlogSlugs = new Set([...localizedBlogs.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
+function slugsForLanguage(source, language) {
+  const start = source.indexOf('\\n  ' + language + ':[');
+  if (start < 0) return new Set();
+  const nextLanguages = ['en', 'es', 'zh'].slice(['en', 'es', 'zh'].indexOf(language) + 1);
+  const ends = nextLanguages.map((next) => source.indexOf('\\n  ' + next + ':[', start + 1)).filter((index) => index >= 0);
+  const end = ends.length ? Math.min(...ends) : source.indexOf('\\n};', start + 1);
+  const block = source.slice(start, end < 0 ? source.length : end);
+  return new Set([...block.matchAll(/slug:\\s*'([^']+)'/g)].map((match) => match[1]));
+}
+const localizedSlugs = Object.fromEntries(['en', 'es', 'zh'].map((lang) => [lang, slugsForLanguage(localizedPages, lang)]));
+const localizedBlogSlugs = Object.fromEntries(['en', 'es', 'zh'].map((lang) => [lang, slugsForLanguage(localizedBlogs, lang)]));
 const literalPaths = [...sitemap.matchAll(/'((?:\/)[^']*)'/g)].map((match) => match[1]);
 const sitemapPaths = [...new Set(literalPaths)].filter((path) => path !== '/');
 for (const path of sitemapPaths) {
   if (/^\/(en|es|zh)\/blog\/[^/]+$/.test(path)) {
     const slug = path.split('/').at(-1);
-    check(localizedBlogSlugs.has(slug), `Sitemap blog route has no matching localized article slug: ${path}`);
+    const language = path.split('/')[1];
+    check(localizedBlogSlugs[language]?.has(slug), `Sitemap blog route has no matching ${language} article slug: ${path}`);
   } else if (/^\/(en|es|zh)\/blog$/.test(path)) {
     check(localizedBlogIndex.includes('generateStaticParams'), 'Localized blog index must define static params');
   } else if (/^\/(en|es|zh)\/[^/]+$/.test(path)) {
     const slug = path.split('/').at(-1);
-    check(localizedSlugs.has(slug), `Sitemap localized route has no matching page slug: ${path}`);
+    const language = path.split('/')[1];
+    check(localizedSlugs[language]?.has(slug), `Sitemap localized route has no matching ${language} page slug: ${path}`);
   } else if (/^\/(en|es|zh)$/.test(path)) {
     check(localizedHome.includes('generateStaticParams'), 'Localized home must define static params');
   } else if (!staticRoutes.has(path)) {
