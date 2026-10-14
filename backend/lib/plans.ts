@@ -22,7 +22,7 @@ export function isTrialPlan(plan: string | null | undefined): boolean {
   return p === 'trial' || p === 'teste' || p === 'trialing' || p.startsWith('trial');
 }
 
-/** Relatório profissional mensal: Pro e acima + trial. O Inicial não inclui o entregável mensal. */
+/** Entrega profissional mensal: Pro e acima. Trial mantém apenas a elegibilidade legada do PDF durante a compatibilidade. */
 export function planTemRelatorioMensal(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
   return ['pro', 'ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(p);
