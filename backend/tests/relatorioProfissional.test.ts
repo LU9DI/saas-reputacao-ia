@@ -32,6 +32,7 @@ const reviews = [
   { id: 'r2', rating: 5, unidade_id: 'u2', createdAt: '2026-09-08T12:00:00.000Z', is_test: 0, ai_tags: '["Agilidade"]', sentiment: 'positivo' },
   { id: 'r3', rating: 4, unidade_id: 'u1', createdAt: '2026-08-05T12:00:00.000Z', is_test: 0, ai_tags: '["Atendimento"]', sentiment: 'positivo' },
   { id: 'r4', rating: 4, unidade_id: 'u2', createdAt: '2026-08-08T12:00:00.000Z', is_test: 0, ai_tags: '["Agilidade"]', sentiment: 'positivo' },
+  { id: 'r5', rating: 0, unidade_id: 'u1', createdAt: '2026-09-12T12:00:00.000Z', is_test: 0, ai_tags: '[]', sentiment: 'neutro' },
 ];
 
 describe('relatório profissional mensal', () => {
@@ -45,8 +46,19 @@ describe('relatório profissional mensal', () => {
     assert.match(report.canais.email.html, /Relatório mensal de reputação/);
     assert.ok(report.canais.email.html.includes('alt="Logotipo Filtra.AI"'));
     assert.ok(report.canais.email.html.includes('aria-hidden="true"') && report.canais.email.html.includes('>FILTRA.AI</div>'));
+    assert.ok(report.canais.email.html.includes('@page{size:A4'));
+    assert.ok(report.canais.email.html.includes('break-inside:avoid'));
+    assert.ok(!report.canais.email.html.includes('page-break-before:always'));
     assert.match(report.canais.email.html, /Prioridades operacionais/);
     assert.equal(report.geracao.modo, 'deterministico');
+  });
+
+  it('mantém o escopo de Pro e não mostra análise avançada reservada aos planos superiores', async () => {
+    const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-pro', nome_empresa: 'Pro Teste', plan: 'pro' }, '2026-09');
+    assert.equal(report.kpis.avaliacoes, 2);
+    assert.ok(!report.canais.email.html.includes('Temas recorrentes'));
+    assert.ok(!report.canais.email.html.includes('Riscos a acompanhar'));
+    assert.ok(report.canais.email.html.includes('Indicadores do período') || report.canais.email.html.includes('Avaliações'));
   });
 
   it('gera radar comparativo e escopo executivo REI com evidências do mês anterior', async () => {
