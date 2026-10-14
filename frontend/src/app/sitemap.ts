@@ -94,10 +94,14 @@ const highPriority = new Set([
 function localizedAlternates(path: string) {
   for (const family of Object.values(SEO_FAMILIES)) {
     if (Object.values(family).includes(path)) {
+      const languages = Object.fromEntries(
+        Object.entries(family).map(([lang, target]) => [lang, base + target]),
+      );
       return {
-        languages: Object.fromEntries(
-          Object.entries(family).map(([lang, target]) => [lang, base + target]),
-        ),
+        languages: {
+          ...languages,
+          'x-default': base + family['pt-BR'],
+        },
       };
     }
   }
