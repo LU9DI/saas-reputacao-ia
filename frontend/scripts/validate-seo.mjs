@@ -2,13 +2,11 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import assert from 'node:assert/strict';
 
-const root = process.cwd();
-const read = (path) => readFileSync(resolve(root, path), 'utf8');
+const read = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 const sitemap = read('src/app/sitemap.ts');
 const plansLayout = read('src/app/planos/layout.tsx');
 const robots = read('src/app/robots.ts');
 const publicRobots = read('public/robots.txt');
-
 const errors = [];
 const check = (condition, message) => { if (!condition) errors.push(message); };
 
@@ -18,9 +16,13 @@ check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Gr
 check(robots.includes('https://filtraai.com/sitemap.xml'), 'Next robots metadata must reference the sitemap');
 check(publicRobots.includes('https://filtraai.com/sitemap.xml'), 'public/robots.txt must reference the sitemap');
 
-const paths = [...sitemap.matchAll(/^\s*'((?:\/)[^']*)',?\s*$/gm)].map((match) => match[1]);
+const start = sitemap.indexOf('const canonicalPaths = [');
+const end = sitemap.indexOf('\n];', start);
+check(start >= 0 && end > start, 'canonicalPaths array must exist');
+const canonicalBlock = start >= 0 && end > start ? sitemap.slice(start, end) : '';
+const paths = [...canonicalBlock.matchAll(/^\s*'([^']+)',?\s*$/gm)].map((match) => match[1]);
 const duplicates = paths.filter((path, index) => paths.indexOf(path) !== index);
-check(duplicates.length === 0, `sitemap source contains duplicate literal paths: ${[...new Set(duplicates)].join(', ')}`);
+check(duplicates.length === 0, `canonicalPaths contains duplicate URLs: ${[...new Set(duplicates)].join(', ')}`);
 
 const families = [...sitemap.matchAll(/^\s*'([^']+)':\s*\{([^}]+)\},?\s*$/gm)];
 for (const [, family, body] of families) {
@@ -30,4 +32,4 @@ for (const [, family, body] of families) {
 }
 
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
-console.log(`SEO source validation passed: ${paths.length} literal path entries and ${families.length} hreflang families checked.`);
+console.log(`SEO source validation passed: ${paths.length} canonical paths and ${families.length} hreflang families checked.`);
