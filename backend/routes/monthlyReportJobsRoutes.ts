@@ -71,10 +71,9 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
         let destinatarios = parseDestinations(empresa.relatorio_destinatarios);
         if (!destinatarios.length) {
-          try {
-            const user = await db.get('SELECT email FROM usuarios WHERE empresa_id = ? AND email IS NOT NULL LIMIT 1', [empresa.id]);
-            if (user?.email) destinatarios = [{ canal: 'email', destino: String(user.email).trim() }];
-          } catch { /* sem e-mail primário */ }
+          // Ausência de e-mail é válida; falha de banco deve ser registrada como falha do job.
+          const user = await db.get('SELECT email FROM usuarios WHERE empresa_id = ? AND email IS NOT NULL LIMIT 1', [empresa.id]);
+          if (user?.email) destinatarios = [{ canal: 'email', destino: String(user.email).trim() }];
         }
         if (!destinatarios.length) { stats.sem_destinatario++; continue; }
         const now = new Date().toISOString();
