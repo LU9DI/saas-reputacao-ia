@@ -16,7 +16,7 @@ export function allowPlanSwitch(): boolean {
   return process.env.NODE_ENV !== 'production';
 }
 
-/** Trial / teste de 7 dias — tudo incluso (IA, PDF, dashboard completo). */
+/** Trial / teste de 7 dias. Benefícios exclusivos do REI não devem ser inferidos automaticamente para o Trial. */
 export function isTrialPlan(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
   return p === 'trial' || p === 'teste' || p === 'trialing' || p.startsWith('trial');
