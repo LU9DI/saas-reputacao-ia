@@ -26,6 +26,10 @@ jobs:
       - name: Audit public SEO/content rules
         run: node spec-kit/audit-seo-brand.mjs
 
+      - name: Validate SEO routes and sitemap metadata
+        working-directory: frontend
+        run: node scripts/validate-seo.mjs
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest
