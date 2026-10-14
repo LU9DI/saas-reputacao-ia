@@ -5,12 +5,12 @@ import { planTemRelatorioMensal } from '../lib/plans.js';
 import { n8nConfigured, notifyN8nAsync } from '../lib/n8n.js';
 import { buildRelatorioProfissional, normalizeDestinatarios } from '../services/relatorioProfissional.js';
 
-function authorized(req: Request): boolean {
+export function authorizedMonthlyReportJob(req: Pick<Request, 'headers'>): boolean {
   const secret = process.env.JOBS_SECRET?.trim();
   if (!secret) return process.env.NODE_ENV !== 'production';
   const header = String(req.headers.authorization || '');
   const bearer = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
-  const supplied = String(req.headers['x-jobs-secret'] || req.query.secret || '');
+  const supplied = String(req.headers['x-jobs-secret'] || '');
   return bearer === secret || supplied === secret;
 }
 
@@ -62,8 +62,7 @@ async function ensureMonthlyReportSchema(db: any) {
 
 export function mountMonthlyReportJobsRoutes(app: Express) {
   app.post('/api/jobs/monthly-reports', async (req: Request, res: Response) => {
-    if (!authorized(req)) return res.status(401).json({ error: 'Unauthorized' });
-    if (!n8nConfigured()) return res.status(503).json({ error: 'Distribuição mensal indisponível: webhook n8n não configurado.', code: 'N8N_OFF' });
+    if (!authorizedMonthlyReportJob(req)) return res.status(401).json({ error: 'Unauthorized' });
     const requested = String(req.query.mes || req.body?.mes || '');
     const periodo = requested ? requested : previousMonthUtc();
     if (!isMonth(periodo)) return res.status(400).json({ error: 'Informe um mês encerrado no formato YYYY-MM.', code: 'INVALID_REPORT_MONTH' });
@@ -77,7 +76,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
            AND lower(COALESCE(e.status, '')) IN ('ativo','active')
          ORDER BY e.id`
       ) as any[];
-      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0 };
+      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0 };
       for (const empresa of companies) {
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
@@ -90,7 +89,6 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           stats.falhas++;
           continue;
         }
-        if (!destinatarios.length) { stats.sem_destinatario++; continue; }
         const now = new Date().toISOString();
         const id = randomUUID();
         let reservationCreated = false;
@@ -107,14 +105,15 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           stats.falhas++;
           continue;
         }
-        const reservation = await db.get('SELECT status, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, periodo]) as any;
+        const reservation = await db.get('SELECT status, updated_at, report_json FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, periodo]) as any;
         if (reservation?.status === 'accepted') { stats.pulados++; continue; }
         if (!reservationCreated) {
           const updatedAt = new Date(String(reservation?.updated_at || '')).getTime();
           const staleProcessing = reservation?.status === 'processing' && Number.isFinite(updatedAt) && Date.now() - updatedAt >= 30 * 60 * 1000;
           if (reservation?.status === 'processing' && !staleProcessing) { stats.pulados++; continue; }
-          if (reservation?.status !== 'failed' && !staleProcessing) { stats.pulados++; continue; }
-          const expectedStatus = staleProcessing ? 'processing' : 'failed';
+          if (!['failed', 'generated'].includes(String(reservation?.status || '')) && !staleProcessing) { stats.pulados++; continue; }
+          if (reservation?.status === 'generated' && !destinatarios.length) { stats.sem_destinatario++; continue; }
+          const expectedStatus = staleProcessing ? 'processing' : String(reservation.status);
           const retry = await db.run(
             `UPDATE relatorio_envios_mensais SET status = 'processing', updated_at = ?, erro = NULL, tentativas = tentativas + 1, destinatarios_json = ?
              WHERE empresa_id = ? AND periodo = ? AND status = ? AND updated_at = ?`,
@@ -123,9 +122,19 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           if (!retry.changes) { stats.pulados++; continue; }
         }
         try {
-          const report = await buildRelatorioProfissional(db, empresa, periodo);
-          // Persist the generated snapshot before delivery so the customer panel can render it from its normal payload.
+          const report = reservation?.report_json ? JSON.parse(String(reservation.report_json)) : await buildRelatorioProfissional(db, empresa, periodo);
+          // Persist the generated snapshot before attempting delivery; the panel reads it with its normal payload.
           await db.run(`UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(report), new Date().toISOString(), empresa.id, periodo]);
+          if (!destinatarios.length) {
+            await db.run(`UPDATE relatorio_envios_mensais SET status = 'generated', updated_at = ?, erro = NULL WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [new Date().toISOString(), empresa.id, periodo]);
+            stats.sem_destinatario++;
+            continue;
+          }
+          if (!n8nConfigured()) {
+            await db.run(`UPDATE relatorio_envios_mensais SET status = 'generated', updated_at = ?, erro = NULL WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [new Date().toISOString(), empresa.id, periodo]);
+            stats.distribuicao_indisponivel++;
+            continue;
+          }
           const channels = [...new Set(destinatarios.map((d: any) => d.canal))];
           const accepted = await notifyN8nAsync('report.generated', {
             tipo: 'relatorio_profissional_mensal',
@@ -155,7 +164,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           console.warn('[monthly-report] falha empresa=' + empresa.id + ':', message);
         }
       }
-      return res.status(stats.falhas || stats.sem_destinatario ? 207 : 200).json({ success: stats.falhas === 0 && stats.sem_destinatario === 0, partial: stats.falhas > 0 || stats.sem_destinatario > 0, ...stats, distribuicao_configurada: true, idempotencia: 'um encaminhamento aceito pelo webhook por empresa e mês' });
+      return res.status(stats.falhas || stats.sem_destinatario || stats.distribuicao_indisponivel ? 207 : 200).json({ success: stats.falhas === 0 && stats.sem_destinatario === 0 && stats.distribuicao_indisponivel === 0, partial: stats.falhas > 0 || stats.sem_destinatario > 0 || stats.distribuicao_indisponivel > 0, ...stats, distribuicao_configurada: n8nConfigured(), idempotencia: 'um encaminhamento aceito pelo webhook por empresa e mês; snapshots persistidos independentemente da distribuição' });
     } catch (error: any) {
       console.error('[monthly-report] job falhou:', error?.message || error);
       return res.status(500).json({ error: 'Falha ao processar relatórios mensais.', code: 'MONTHLY_REPORT_JOB_FAILED' });
