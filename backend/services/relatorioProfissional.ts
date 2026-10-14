@@ -43,12 +43,17 @@ const PLAN_BENEFITS: Record<string, string[]> = {
   ],
   ultra: [
     'Até 800 feedbacks por mês',
+    'Dashboard com análises',
+    'Integração com WhatsApp',
     'Relatório profissional mensal com análise de sentimento e temas recorrentes',
     'Análises com inteligência artificial',
     'Indicadores avançados para acompanhar a reputação',
   ],
   corporativo: [
     'Até 2.500 feedbacks por mês',
+    'Dashboard com análises',
+    'Integração com WhatsApp',
+    'Análises com inteligência artificial',
     'Relatório profissional mensal com análise de sentimento e temas recorrentes',
     'Gestão consolidada de múltiplas unidades',
     'Ranking comparativo de desempenho por unidade',
@@ -59,12 +64,14 @@ const PLAN_BENEFITS: Record<string, string[]> = {
     'Acesso antecipado a funcionalidades selecionadas',
   ],
   trial: [
-    'Experiência de avaliação por 7 dias',
     'Acesso de avaliação por 7 dias',
     'Análises com inteligência artificial durante o teste',
   ],
   rei: [
     'Até 8.000 feedbacks por mês',
+    'Dashboard com análises',
+    'Integração com WhatsApp',
+    'Análises com inteligência artificial',
     'Relatório profissional mensal com análise de sentimento e temas recorrentes',
     'Gestão consolidada de múltiplas unidades',
     'Ranking comparativo de desempenho por unidade',
