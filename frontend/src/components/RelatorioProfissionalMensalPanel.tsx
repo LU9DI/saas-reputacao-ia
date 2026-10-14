@@ -1,0 +1,148 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { CalendarDays, Download, FileText, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react';
+
+type Review = {
+  id?: string | number;
+  rating?: unknown;
+  comment?: unknown;
+  sentiment?: unknown;
+  ai_tags?: unknown;
+  unidade_id?: string | null;
+  createdAt?: unknown;
+  created_at?: unknown;
+  createdat?: unknown;
+  is_test?: unknown;
+};
+type Unit = { id?: string; nome?: string; nome_unidade?: string; nome_empresa?: string };
+type Props = {
+  empresa: { id?: string; nome_empresa?: string; plan?: string };
+  reviews: Review[];
+  unidades?: Unit[];
+};
+
+const COPY: Record<string, Record<string, string>> = {
+  pt: { title: 'Relatório profissional mensal', subtitle: 'Análise do período calculada no próprio painel a partir das avaliações já carregadas.', period: 'Mês de referência', noData: 'Não há avaliações válidas neste período.', noHistory: 'Não há meses com avaliações disponíveis nos dados carregados.', reviews: 'Avaliações', average: 'Nota média', positive: 'Positivas', critical: 'Críticas (1–3 estrelas)', summary: 'Resumo executivo', strengths: 'Principais pontos positivos', attention: 'Pontos de atenção', action: 'Plano de ação recomendado', units: 'Desempenho por unidade', themes: 'Temas recorrentes', download: 'Imprimir / salvar como PDF', printNote: 'Use a opção “Salvar como PDF” na janela de impressão, se precisar de uma cópia.', noTags: 'Sem temas identificados nos dados deste período.', proSummary: 'O período foi avaliado com base nas avaliações válidas já disponíveis no painel.', criticalAction: 'Priorizar o tratamento das avaliações de 1 a 3 estrelas e acompanhar a evolução no próximo ciclo.', positiveAction: 'Manter as práticas associadas às avaliações positivas e comparar os resultados no próximo ciclo.', noCritical: 'Não foram registradas avaliações críticas no período.' },
+  en: { title: 'Monthly professional report', subtitle: 'Period analysis calculated in the dashboard from reviews already loaded.', period: 'Reporting month', noData: 'No valid reviews for this period.', noHistory: 'No months with reviews are available in the loaded data.', reviews: 'Reviews', average: 'Average rating', positive: 'Positive', critical: 'Critical (1–3 stars)', summary: 'Executive summary', strengths: 'Main strengths', attention: 'Points to address', action: 'Recommended action plan', units: 'Performance by location', themes: 'Recurring themes', download: 'Print / save as PDF', printNote: 'Choose “Save as PDF” in the print dialog if you need a copy.', noTags: 'No themes were identified in this period.', proSummary: 'This period is assessed from valid reviews already available in the dashboard.', criticalAction: 'Prioritize 1–3 star reviews and monitor progress in the next cycle.', positiveAction: 'Maintain practices associated with positive reviews and compare results next cycle.', noCritical: 'No critical reviews were recorded for this period.' },
+  es: { title: 'Informe profesional mensual', subtitle: 'Análisis del período calculado en el panel a partir de las reseñas ya cargadas.', period: 'Mes de referencia', noData: 'No hay reseñas válidas en este período.', noHistory: 'No hay meses con reseñas disponibles en los datos cargados.', reviews: 'Reseñas', average: 'Calificación media', positive: 'Positivas', critical: 'Críticas (1–3 estrellas)', summary: 'Resumen ejecutivo', strengths: 'Principales fortalezas', attention: 'Puntos de atención', action: 'Plan de acción recomendado', units: 'Rendimiento por unidad', themes: 'Temas recurrentes', download: 'Imprimir / guardar como PDF', printNote: 'Elija “Guardar como PDF” en la ventana de impresión si necesita una copia.', noTags: 'No se identificaron temas en este período.', proSummary: 'El período se evalúa con las reseñas válidas ya disponibles en el panel.', criticalAction: 'Priorizar las reseñas de 1 a 3 estrellas y seguir la evolución en el próximo ciclo.', positiveAction: 'Mantener las prácticas asociadas a reseñas positivas y comparar los resultados en el próximo ciclo.', noCritical: 'No se registraron reseñas críticas en este período.' },
+  zh: { title: '月度专业报告', subtitle: '根据面板中已加载的评价，在客户端计算所选期间的分析。', period: '报告月份', noData: '此期间没有有效评价。', noHistory: '已加载的数据中没有可用的评价月份。', reviews: '评价数', average: '平均评分', positive: '好评', critical: '需关注（1–3 星）', summary: '执行摘要', strengths: '主要优势', attention: '关注事项', action: '建议行动计划', units: '各门店表现', themes: '重复主题', download: '打印 / 保存为 PDF', printNote: '如需副本，请在打印窗口中选择“保存为 PDF”。', noTags: '此期间未识别到主题。', proSummary: '本期间分析基于面板中已加载的有效评价。', criticalAction: '优先处理 1–3 星评价，并在下个周期跟踪进展。', positiveAction: '保持与好评相关的做法，并在下个周期比较结果。', noCritical: '此期间没有记录需关注的评价。' },
+};
+
+function reviewDate(review: Review): string {
+  const raw = review.createdAt ?? review.createdat ?? review.created_at;
+  if (!raw) return '';
+  const date = new Date(String(raw));
+  return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 7);
+}
+function isTest(review: Review): boolean {
+  return review.is_test === true || Number(review.is_test) === 1 || String(review.is_test).toLowerCase() === 'true';
+}
+function parseTags(value: unknown): string[] {
+  let raw = value;
+  if (typeof raw === 'string') { try { raw = JSON.parse(raw); } catch { raw = []; } }
+  return Array.isArray(raw) ? raw.map(String).map((x) => x.trim()).filter(Boolean) : [];
+}
+function languageOf(name: unknown): string {
+  const value = String(name || '').toLowerCase();
+  if (value.includes('english') || value === 'en') return 'en';
+  if (value.includes('español') || value.includes('espanol') || value === 'es') return 'es';
+  if (value.includes('中文') || value.includes('chinese') || value === 'zh') return 'zh';
+  return 'pt';
+}
+
+export function RelatorioProfissionalMensalPanel({ empresa, reviews, unidades = [] }: Props) {
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const lang = typeof document !== 'undefined' ? languageOf(document.documentElement.lang) : 'pt';
+  const t = COPY[lang] || COPY.pt;
+  const validReviews = useMemo(() => reviews.filter((r) => !isTest(r) && Number(r.rating) >= 1 && Number(r.rating) <= 5 && reviewDate(r)), [reviews]);
+  const months = useMemo(() => [...new Set(validReviews.map(reviewDate))].sort().reverse(), [validReviews]);
+  const activeMonth = selectedMonth && months.includes(selectedMonth) ? selectedMonth : (months[0] || '');
+  const rows = useMemo(() => validReviews.filter((r) => reviewDate(r) === activeMonth), [validReviews, activeMonth]);
+  const stats = useMemo(() => {
+    const total = rows.length;
+    const average = total ? rows.reduce((sum, r) => sum + Number(r.rating), 0) / total : 0;
+    const positive = rows.filter((r) => Number(r.rating) >= 4).length;
+    const critical = rows.filter((r) => Number(r.rating) <= 3).length;
+    const tags = new Map<string, number>();
+    const units = new Map<string, { name: string; count: number; total: number }>();
+    for (const row of rows) {
+      for (const tag of parseTags(row.ai_tags)) tags.set(tag, (tags.get(tag) || 0) + 1);
+      const id = String(row.unidade_id || '');
+      if (id) {
+        const unit = unidades.find((u) => String(u.id || '') === id);
+        const name = String(unit?.nome || unit?.nome_unidade || unit?.nome_empresa || id);
+        const current = units.get(id) || { name, count: 0, total: 0 };
+        current.count += 1;
+        current.total += Number(row.rating);
+        units.set(id, current);
+      }
+    }
+    return {
+      total, average, positive, critical,
+      positivePct: total ? Math.round(positive / total * 100) : 0,
+      themes: [...tags.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8),
+      units: [...units.values()].map((u) => ({ ...u, average: u.total / u.count })).sort((a, b) => a.average - b.average),
+    };
+  }, [rows, unidades]);
+  const plan = String(empresa.plan || 'pro').toLowerCase();
+  const advanced = ['ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(plan);
+  const multiUnit = ['corporativo', 'corporate', 'corp', 'rei'].includes(plan);
+  const rei = plan === 'rei';
+
+  return (
+    <section id="professional-report" className="scroll-mt-28 rounded-3xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/[0.08] via-zinc-950 to-zinc-950 p-5 sm:p-7">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+        <div className="flex items-start gap-3">
+          <span className="rounded-xl border border-indigo-300/20 bg-indigo-400/10 p-3 text-indigo-200"><FileText size={22} /></span>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[.18em] text-indigo-300">Filtra.AI</p>
+            <h2 className="mt-1 text-xl font-semibold text-white sm:text-2xl">{t.title}</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">{t.subtitle}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 print:hidden">
+          {months.length > 0 && <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-300"><CalendarDays size={15} /><span className="sr-only">{t.period}</span><select aria-label={t.period} value={activeMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="max-w-40 bg-transparent text-sm outline-none">{months.map((m) => <option key={m} value={m} className="bg-zinc-900">{m}</option>)}</select></label>}
+          <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-400"><Download size={16} />{t.download}</button>
+        </div>
+      </div>
+      <div className="mt-5 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+        <span className="rounded-full border border-white/10 px-3 py-1.5">{empresa.nome_empresa || 'Empresa'}</span>
+        <span className="rounded-full border border-white/10 px-3 py-1.5">{String(empresa.plan || 'pro').toUpperCase()}</span>
+        <span className="rounded-full border border-white/10 px-3 py-1.5">{activeMonth || '—'}</span>
+      </div>
+      {!months.length ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noHistory}</p> : !stats.total ? <p className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5 text-sm text-zinc-400">{t.noData}</p> : (
+        <>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {[[String(stats.total), t.reviews], [stats.average.toFixed(1) + '/5', t.average], [stats.positivePct + '%', t.positive], [String(stats.critical), t.critical]].map(([value, label]) => <div key={label} className="rounded-2xl border border-white/10 bg-black/25 p-4"><div className="text-2xl font-semibold text-white">{value}</div><div className="mt-1 text-xs text-zinc-500">{label}</div></div>)}
+          </div>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-white"><TrendingUp size={16} className="text-emerald-300" />{t.summary}</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">{t.proSummary} {stats.total} {t.reviews.toLowerCase()}; {t.average.toLowerCase()}: {stats.average.toFixed(1)}/5; {t.positive.toLowerCase()}: {stats.positivePct}%.</p>
+              <p className="mt-3 text-xs leading-5 text-zinc-500">{t.printNote}</p>
+            </article>
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-white"><AlertTriangle size={16} className="text-amber-300" />{t.attention}</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">{stats.critical ? t.criticalAction : t.noCritical}</p>
+              {advanced && <div className="mt-4"><h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">{t.themes}</h4>{stats.themes.length ? <ul className="mt-2 space-y-2">{stats.themes.map(([theme, count]) => <li key={theme} className="flex justify-between gap-3 rounded-xl border border-white/5 px-3 py-2 text-sm"><span className="text-zinc-300">{theme}</span><span className="text-zinc-500">{count}</span></li>)}</ul> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</div>}
+            </article>
+          </div>
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-white"><CheckCircle2 size={16} className="text-emerald-300" />{t.strengths}</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">{stats.positive ? t.positiveAction : t.noCritical}</p>
+            </article>
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+              <h3 className="text-sm font-semibold text-white">{t.action}</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">{stats.critical ? t.criticalAction : t.positiveAction}</p>
+              {rei && <p className="mt-3 rounded-xl border border-violet-400/15 bg-violet-400/[0.04] p-3 text-sm text-violet-100">REI: consolide os sinais por unidade, acompanhe riscos e transforme temas recorrentes em iniciativas mensuráveis.</p>}
+            </article>
+          </div>
+          {multiUnit && <article className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-5"><h3 className="text-sm font-semibold text-white">{t.units}</h3>{stats.units.length ? <div className="mt-3 space-y-2">{stats.units.map((u) => <div key={u.name} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 px-3 py-3"><span className="text-sm text-zinc-300">{u.name}</span><span className="text-xs text-zinc-500">{u.count} · {t.reviews}</span><span className="text-sm font-semibold text-white">{u.average.toFixed(1)}/5</span></div>)}</div> : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}</article>}
+        </>
+      )}
+      <style jsx global>{`@media print { body { background: white !important; color: #111827 !important; } body * { visibility: hidden; } #professional-report, #professional-report * { visibility: visible; } #professional-report { position: absolute; inset: 0 auto auto 0; width: 100%; background: white !important; color: #111827 !important; border: 0 !important; padding: 0 !important; } #professional-report article, #professional-report div { break-inside: avoid; box-shadow: none !important; } #professional-report h2, #professional-report h3, #professional-report p, #professional-report span { color: #111827 !important; } .print\\:hidden { display: none !important; } }`}</style>
+    </section>
+  );
+}
