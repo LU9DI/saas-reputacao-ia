@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Validates the actual static-export artifact that is intended for Cloudflare Pages.
- * This is deliberately dependency-free so it can run in CI before any deployment.
+ * Validates the static-export artifact intended for Cloudflare Pages.
+ * Dependency-free so it can run in CI before deployment.
  */
 
 import { existsSync, readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 
 const OUT = resolve(process.cwd(), 'out');
 const SITEMAP = join(OUT, 'sitemap.xml');
@@ -31,6 +31,18 @@ const NEVER_INDEX = [
   /^\/(?:admin|painel|api|avaliacao|widget)(?:\/|$)/,
   /^\/(?:login|recuperar-senha|teste|preview|pagamento-ok|suporte)(?:\/|$)/,
 ];
+const NOINDEX_ROUTES = [
+  '/login',
+  '/admin',
+  '/painel/_',
+  '/avaliacao/_',
+  '/widget/_',
+  '/pagamento-ok',
+  '/preview',
+  '/teste',
+  '/recuperar-senha',
+  '/suporte',
+];
 
 function fail(message) {
   console.error(`Indexing audit FAILED: ${message}`);
@@ -41,6 +53,24 @@ function normalize(url) {
   const parsed = new URL(url);
   const path = parsed.pathname === '/' ? '/' : parsed.pathname.replace(/\/$/, '');
   return `${parsed.origin}${path}`;
+}
+
+function htmlCandidates(routePath) {
+  if (routePath === '/') return [join(OUT, 'index.html')];
+  const safePath = routePath.replace(/^\/+/, '');
+  const candidates = [
+    join(OUT, `${safePath}.html`),
+    join(OUT, safePath, 'index.html'),
+    join(OUT, safePath),
+  ];
+  return candidates.filter((candidate) => {
+    const absolute = resolve(candidate);
+    return absolute === OUT || absolute.startsWith(OUT + sep);
+  });
+}
+
+function findHtml(routePath) {
+  return htmlCandidates(routePath).find((candidate) => existsSync(candidate));
 }
 
 if (!existsSync(SITEMAP)) fail('out/sitemap.xml is missing');
@@ -77,19 +107,16 @@ for (const raw of urls) {
   if (normalized.has(key)) fail(`duplicate URL in sitemap: ${raw}`);
   normalized.add(key);
 
-  const routePath = parsed.pathname === '/' ? '' : parsed.pathname;
-  const candidates = routePath
-    ? [join(OUT, `${routePath}.html`), join(OUT, routePath, 'index.html'), join(OUT, routePath)]
-    : [join(OUT, 'index.html')];
-  if (!candidates.some((candidate) => existsSync(candidate))) {
+  const htmlPath = findHtml(parsed.pathname);
+  if (!htmlPath) {
     fail(`sitemap URL has no exported HTML file: ${raw}`);
     continue;
   }
 
-  const htmlPath = candidates.find((candidate) => existsSync(candidate));
   const html = readFileSync(htmlPath, 'utf8');
-  const canonicalMatch = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["'][^>]*>/i)
-    || html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["'][^>]*>/i);
+  const canonicalMatch =
+    html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["'][^>]*>/i) ||
+    html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["'][^>]*>/i);
   if (canonicalMatch) {
     try {
       const canonical = new URL(canonicalMatch[1], raw).toString();
@@ -103,15 +130,36 @@ for (const raw of urls) {
 }
 
 for (const required of REQUIRED_URLS) {
-  if (!normalized.has(normalize(required))) fail(`required SEO landing page missing from sitemap: ${required}`);
+  if (!normalized.has(normalize(required))) {
+    fail(`required SEO landing page missing from sitemap: ${required}`);
+  }
 }
 
 if (!robots.includes('Sitemap: https://filtraai.com/sitemap.xml')) {
   fail('robots.txt does not advertise the canonical sitemap URL');
 }
-if (!/Disallow:\s*\/widget\//i.test(robots)) {
-  fail('robots.txt must disallow private/widget endpoints');
+if (!/Disallow:\s*\/api\//i.test(robots)) {
+  fail('robots.txt must disallow API endpoints');
+}
+for (const prefix of ['/painel/', '/admin/', '/avaliacao/', '/widget/', '/login', '/recuperar-senha', '/teste', '/preview', '/pagamento-ok', '/suporte']) {
+  const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (new RegExp(`Disallow:\\s*${escaped}`, 'i').test(robots)) {
+    fail(`robots.txt blocks ${prefix}; crawlers must be able to read its noindex directive`);
+  }
+}
+
+for (const route of NOINDEX_ROUTES) {
+  const htmlPath = findHtml(route);
+  if (!htmlPath) {
+    fail(`expected noindex route is missing from static export: ${route}`);
+    continue;
+  }
+  const html = readFileSync(htmlPath, 'utf8');
+  const hasNoindex =
+    /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html) ||
+    /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
+  if (!hasNoindex) fail(`route lacks a robots noindex directive: ${route}`);
 }
 
 if (process.exitCode) process.exit(process.exitCode);
-console.log(`Indexing audit PASSED: ${urls.length} unique URLs, canonical host and static files verified.`);
+console.log(`Indexing audit PASSED: ${urls.length} unique URLs, static files, canonicals and noindex routes verified.`);
