@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { getDb } from '../lib/db.js';
-import { planTemPdf } from '../lib/plans.js';
+import { planTemRelatorioMensal } from '../lib/plans.js';
 import { n8nConfigured, notifyN8nAsync } from '../lib/n8n.js';
 import { buildRelatorioProfissional, normalizeDestinatarios } from '../services/relatorioProfissional.js';
 
@@ -68,7 +68,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
       const stats = { periodo, candidatos: companies.length, enviados: 0, pulados: 0, falhas: 0, sem_destinatario: 0 };
       for (const empresa of companies) {
         const plan = String(empresa.plan || '').toLowerCase();
-        if (!planTemPdf(plan)) { stats.pulados++; continue; }
+        if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
         let destinatarios = parseDestinations(empresa.relatorio_destinatarios);
         if (!destinatarios.length) {
           try {
@@ -106,7 +106,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           if (!retry.changes) { stats.pulados++; continue; }
         }
         try {
-          const report = await buildRelatorioProfissional(db, empresa, periodo, 'pt');
+          const report = await buildRelatorioProfissional(db, empresa, periodo);
           const channels = [...new Set(destinatarios.map((d: any) => d.canal))];
           const accepted = await notifyN8nAsync('report.generated', {
             tipo: 'relatorio_profissional_mensal',
