@@ -48,7 +48,7 @@ export function planLabel(plan: string): string {
     ultra: 'Ultra',
     corporativo: 'Corporativo',
     corp: 'Corporativo',
-    rei: 'Rei',
+    rei: 'REI',
   };
   return map[String(plan || '').toLowerCase()] || String(plan || '—');
 }
