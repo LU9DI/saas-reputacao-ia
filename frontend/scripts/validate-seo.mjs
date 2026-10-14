@@ -73,13 +73,13 @@ const localizedBlogSlugs = Object.fromEntries(['en', 'es', 'zh'].map((lang) => [
 const familiesStart = sitemap.indexOf('const SEO_FAMILIES');
 const familiesEnd = sitemap.indexOf('const canonicalPaths', familiesStart);
 const translatedStart = sitemap.indexOf('const translatedBlogPaths = [');
-const translatedEnd = sitemap.indexOf('\\n];', translatedStart);
+const translatedEnd = sitemap.indexOf('\n];', translatedStart);
 const sitemapData = [
   familiesStart >= 0 && familiesEnd > familiesStart ? sitemap.slice(familiesStart, familiesEnd) : '',
   canonicalBlock,
   translatedStart >= 0 && translatedEnd > translatedStart ? sitemap.slice(translatedStart, translatedEnd) : '',
-].join('\\n');
-const literalPaths = [...sitemapData.matchAll(/'((?:\\/)[^']*)'/g)].map((match) => match[1]);
+].join('\n');
+const literalPaths = [...sitemapData.matchAll(/'((?:\/)[^']*)'/g)].map((match) => match[1]);
 const sitemapPaths = [...new Set(literalPaths)].filter((path) => path !== '/');
 for (const path of sitemapPaths) {
   if (/^\/(en|es|zh)\/blog\/[^/]+$/.test(path)) {
