@@ -79,29 +79,32 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         if (!destinatarios.length) { stats.sem_destinatario++; continue; }
         const now = new Date().toISOString();
         const id = randomUUID();
+        let reservationCreated = false;
         try {
-          await db.run(
+          const inserted = await db.run(
             `INSERT INTO relatorio_envios_mensais (id, empresa_id, periodo, status, destinatarios_json, created_at, updated_at, tentativas)
              VALUES (?, ?, ?, 'processing', ?, ?, ?, 1)
              ON CONFLICT (empresa_id, periodo) DO NOTHING`,
             [id, empresa.id, periodo, JSON.stringify(destinatarios), now, now]
           );
+          reservationCreated = Number(inserted.changes || 0) > 0;
         } catch (error: any) {
           console.warn('[monthly-report] reserva falhou:', error?.message || error);
           stats.falhas++;
           continue;
         }
-        let reservation = await db.get('SELECT status, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, periodo]) as any;
+        const reservation = await db.get('SELECT status, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, periodo]) as any;
         if (reservation?.status === 'sent') { stats.pulados++; continue; }
-        if (reservation?.status === 'processing' && reservation.updated_at !== now) {
-          const updatedAt = new Date(String(reservation.updated_at || 0)).getTime();
-          if (Number.isFinite(updatedAt) && Date.now() - updatedAt < 30 * 60 * 1000) { stats.pulados++; continue; }
-        }
-        if (reservation?.status !== 'processing' || reservation.updated_at !== now) {
+        if (!reservationCreated) {
+          const updatedAt = new Date(String(reservation?.updated_at || '')).getTime();
+          const staleProcessing = reservation?.status === 'processing' && Number.isFinite(updatedAt) && Date.now() - updatedAt >= 30 * 60 * 1000;
+          if (reservation?.status === 'processing' && !staleProcessing) { stats.pulados++; continue; }
+          if (reservation?.status !== 'failed' && !staleProcessing) { stats.pulados++; continue; }
+          const expectedStatus = staleProcessing ? 'processing' : 'failed';
           const retry = await db.run(
             `UPDATE relatorio_envios_mensais SET status = 'processing', updated_at = ?, erro = NULL, tentativas = tentativas + 1, destinatarios_json = ?
-             WHERE empresa_id = ? AND periodo = ? AND status <> 'sent' AND (status <> 'processing' OR updated_at = ?)`,
-            [now, JSON.stringify(destinatarios), empresa.id, periodo, reservation?.updated_at]
+             WHERE empresa_id = ? AND periodo = ? AND status = ? AND updated_at = ?`,
+            [now, JSON.stringify(destinatarios), empresa.id, periodo, expectedStatus, reservation.updated_at]
           );
           if (!retry.changes) { stats.pulados++; continue; }
         }
