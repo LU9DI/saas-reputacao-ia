@@ -164,8 +164,8 @@ function buildSummary(plan: string, kpi: any): string {
     kpi.nota_media >= 4 ? 'desempenho positivo' :
     kpi.nota_media >= 3 ? 'desempenho estável, com pontos de atenção' :
     'cenário que merece atenção prioritária';
-  const plan = planLabel(plan);
-  return `No período analisado, o ${plan} registrou ${kpi.avaliacoes} avaliações, nota média de ${kpi.nota_media.toFixed(1)} e ${kpi.percentual_positivas}% de avaliações positivas. O cenário indica ${quality}.`;
+  const planName = planLabel(plan);
+  return `No período analisado, o ${planName} registrou ${kpi.avaliacoes} avaliações, nota média de ${kpi.nota_media.toFixed(1)} e ${kpi.percentual_positivas}% de avaliações positivas. O cenário indica ${quality}.`;
 }
 
 function buildRecommendations(kpi: any, themes: any): string[] {
