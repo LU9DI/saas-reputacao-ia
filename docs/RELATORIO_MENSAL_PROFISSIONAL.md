@@ -1,6 +1,13 @@
 # Relatório profissional mensal
 
-O relatório mensal é um entregável independente do painel. Esta implementação não altera componentes, rotas de tela ou fluxos do painel; mantém os endpoints PDF existentes por compatibilidade.
+O relatório profissional mensal passa a ter uma seção própria no painel do cliente. A seção nova não faz chamadas de rede próprias: calcula a visualização com as avaliações já carregadas pela tela do painel. O Relatório Inteligente legado e seus endpoints PDF permanecem intactos e fora do escopo de alteração.
+
+## Painel do cliente
+
+- Exibido para os planos Pro, Ultra, Corporativo e REI.
+- Permite selecionar um mês presente nas avaliações carregadas e apresenta indicadores, resumo executivo, pontos de atenção, recomendações e, conforme o plano, temas recorrentes e dados por unidade.
+- A seção não gera nem disponibiliza um PDF paralelo; o relatório é a experiência principal no painel.
+- Limite importante: o painel carrega um conjunto de avaliações recentes limitado pelo plano. A seção filtra esse conjunto por mês, portanto não garante um arquivo/snapshot persistido para cada mês nem acesso a meses ausentes do payload. O job mensal descrito abaixo ainda é um fluxo separado de distribuição e não alimenta a seção visual do painel.
 
 ## Identidade visual
 
