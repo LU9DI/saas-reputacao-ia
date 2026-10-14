@@ -80,6 +80,17 @@ describe('relatório profissional mensal', () => {
     assert.match(report.canais.email.html, /Relatório executivo mensal/);
   });
 
+  it('propaga falhas de consulta em vez de mascará-las como um mês sem avaliações', async () => {
+    const brokenDb = { all: async (sql: string) => {
+      if (/FROM reviews/i.test(sql)) throw new Error('column missing');
+      return [];
+    } } as any;
+    await assert.rejects(
+      () => buildRelatorioProfissional(brokenDb, { id: 'company-db-error', nome_empresa: 'Falha DB', plan: 'pro' }, '2026-09'),
+      /Falha ao consultar avaliações usando createdAt e created_at/,
+    );
+  });
+
   it('explica com clareza quando não há avaliações válidas no período', async () => {
     const report = await buildRelatorioProfissional(fakeDb([]), { id: 'company-empty', nome_empresa: 'Sem Dados', plan: 'pro' }, '2026-09');
     assert.equal(report.kpis.avaliacoes, 0);

@@ -248,7 +248,9 @@ export async function buildRelatorioProfissional(
           'SELECT * FROM reviews WHERE empresa_id = ? AND created_at >= ? AND created_at < ? ORDER BY created_at DESC LIMIT 20000',
           [empresa.id, start, end],
         ) as Review[];
-      } catch { return []; }
+      } catch (fallbackError) {
+        throw new Error('Falha ao consultar avaliações usando createdAt e created_at.', { cause: fallbackError });
+      }
     }
   }
   // Limite por mês, não pela soma dos dois meses: um mês movimentado não pode expulsar
