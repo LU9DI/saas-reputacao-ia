@@ -80,6 +80,18 @@ describe('relatório profissional mensal', () => {
     assert.match(report.canais.email.html, /Relatório executivo mensal/);
   });
 
+  it('propaga falhas de consulta de unidades nos planos Corporativo e REI', async () => {
+    const brokenDb = { all: async (sql: string) => {
+      if (/FROM reviews/i.test(sql)) return reviews;
+      if (/FROM unidades/i.test(sql)) throw new Error('units table unavailable');
+      return [];
+    } } as any;
+    await assert.rejects(
+      () => buildRelatorioProfissional(brokenDb, { id: 'company-units-error', nome_empresa: 'Falha unidades', plan: 'corporativo' }, '2026-09'),
+      /Falha ao consultar unidades para o relatório profissional/,
+    );
+  });
+
   it('propaga falhas de consulta em vez de mascará-las como um mês sem avaliações', async () => {
     const brokenDb = { all: async (sql: string) => {
       if (/FROM reviews/i.test(sql)) throw new Error('column missing');
