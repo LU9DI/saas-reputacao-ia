@@ -1,6 +1,7 @@
 import { after, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildRelatorioProfissional } from '../services/relatorioProfissional.js';
+import { planLabel } from '../lib/plans.js';
 
 const originalGroq = process.env.GROQ_API_KEY;
 const originalGemini = process.env.GEMINI_API_KEY;
@@ -36,6 +37,11 @@ const reviews = [
 ];
 
 describe('relatório profissional mensal', () => {
+  it('usa a grafia oficial REI e mantém o catálogo de benefícios separado por plano', () => {
+    assert.equal(planLabel('rei'), 'REI');
+    assert.equal(planLabel('corporativo'), 'Corporativo');
+  });
+
   it('gera KPIs, ranking e prioridades operacionais para Corporativo sem alterar o painel', async () => {
     const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-1', nome_empresa: 'Empresa Teste', plan: 'corporativo' }, '2026-09');
     assert.equal(report.periodo, '2026-09');
