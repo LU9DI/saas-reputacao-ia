@@ -44,6 +44,7 @@
   "login_error": "Error al entrar",
   "login_fail": "Error de acceso",
   "feat_pdf": "Informe inteligente",
+  "feat_report": "1 informe profesional al mes",
   "feat_report_missing": "Informe inteligente",
   "panel_report_btn": "Informe inteligente",
   "panel_report_loading": "Generando…",
@@ -192,11 +193,11 @@
   "webauthn_save_error": "No se pudo guardar la clave de acceso.",
   "webauthn_error": "No se pudo registrar la clave de acceso.",
   "push_active_badge": "Activo",
-  "feat_unit_ranking": "Ranking de unidades",
-  "feat_unit_links": "Enlaces de evaluación por unidad",
-  "feat_unit_insights": "Insights operativos por unidad",
-  "feat_priorities": "Prioridades operativas",
-  "feat_strategic_radar": "Radar estratégico",
-  "feat_growth": "Oportunidades de crecimiento",
-  "feat_executive_report": "Informe ejecutivo completo"
+  "feat_unit_ranking": "Clasificación comparativa del desempeño por unidad",
+  "feat_unit_links": "Enlaces de reseña exclusivos para cada unidad",
+  "feat_unit_insights": "Análisis de resultados y temas por unidad",
+  "feat_priorities": "Prioridades de acción basadas en las reseñas",
+  "feat_strategic_radar": "Radar estratégico de riesgos y tendencias",
+  "feat_growth": "Oportunidades de crecimiento basadas en datos",
+  "feat_executive_report": "Informe ejecutivo mensual para la dirección"
 }
