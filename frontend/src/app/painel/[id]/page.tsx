@@ -16,6 +16,7 @@ import { ReviewsList } from '../../components/ReviewsList';
 import { BrandMark } from '../../components/BrandMark';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { RelatorioInteligentePanel } from '../../components/RelatorioInteligentePanel';
+import { RelatorioProfissionalMensalPanel } from '../../../components/RelatorioProfissionalMensalPanel';
 import { useLanguage } from '../../Contexts/LanguageContext';
 
 function authHeaders(json = true): HeadersInit {
@@ -296,8 +297,11 @@ export default function PainelEmpresa() {
             <a href="#reviews" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <MessageSquare size={17} /> {t.panel_reviews || 'Avaliações'}
             </a>
+            <a href="#professional-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
+              <FileText size={17} /> Relatório profissional
+            </a>
             <a href="#ai-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
-              <FileText size={17} /> {t.panel_ai_report || 'Relatório IA'}
+              <Bot size={17} /> {t.panel_ai_report || 'Relatório IA'}
             </a>
             <a href="#alerts" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <Bell size={17} /> {t.panel_alerts || 'Alertas'}
@@ -336,6 +340,7 @@ export default function PainelEmpresa() {
               {[
                 ['#overview', t.panel_overview || 'Visão geral'],
                 ['#reviews', t.panel_reviews || 'Avaliações'],
+                ['#professional-report', 'Relatório profissional'],
                 ['#ai-report', t.panel_ai_report || 'Relatório IA'],
                 ['#alerts', t.panel_alerts || 'Alertas'],
                 ['#settings', t.panel_settings || 'Configurações'],
@@ -686,6 +691,8 @@ export default function PainelEmpresa() {
                 </div>
               </section>
             )}
+
+            <RelatorioProfissionalMensalPanel empresa={empresa} reviews={reviews} unidades={Array.isArray(data.unidades) ? data.unidades : []} />
 
             <section id="ai-report" className="scroll-mt-28">
               {reportOk ? (
