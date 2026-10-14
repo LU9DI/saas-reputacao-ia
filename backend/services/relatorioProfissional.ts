@@ -60,7 +60,7 @@ const PLAN_BENEFITS: Record<string, string[]> = {
   ],
   trial: [
     'Experiência de avaliação por 7 dias',
-    'Relatório mensal com indicadores, sentimento e temas disponíveis no período',
+    'Acesso de avaliação por 7 dias',
     'Análises com inteligência artificial durante o teste',
   ],
   rei: [
