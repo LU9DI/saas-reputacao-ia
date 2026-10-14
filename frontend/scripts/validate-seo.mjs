@@ -64,9 +64,9 @@ function slugsForLanguage(source, language) {
     .map((next) => new RegExp('^\\s*' + next + ':\\[', 'm').exec(source.slice(start + 1)))
     .filter(Boolean)
     .map((match) => start + 1 + match.index);
-  const end = ends.length ? Math.min(...ends) : source.indexOf('\\n};', start + 1);
+  const end = ends.length ? Math.min(...ends) : source.indexOf('\n};', start + 1);
   const block = source.slice(start, end < 0 ? source.length : end);
-  return new Set([...block.matchAll(/slug:\\s*'([^']+)'/g)].map((match) => match[1]));
+  return new Set([...block.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
 }
 const localizedSlugs = Object.fromEntries(['en', 'es', 'zh'].map((lang) => [lang, slugsForLanguage(localizedPages, lang)]));
 const localizedBlogSlugs = Object.fromEntries(['en', 'es', 'zh'].map((lang) => [lang, slugsForLanguage(localizedBlogs, lang)]));
