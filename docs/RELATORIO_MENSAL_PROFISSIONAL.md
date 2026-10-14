@@ -2,6 +2,10 @@
 
 O relatório mensal é um entregável independente do painel. Esta implementação não altera componentes, rotas de tela ou fluxos do painel; mantém os endpoints PDF existentes por compatibilidade.
 
+## Identidade visual
+
+O relatório HTML inclui o logotipo oficial do Filtra.AI no cabeçalho e uma marca-d’água tipográfica discreta “FILTRA.AI” no corpo. A identidade visual é aplicada ao novo entregável mensal, sem alterar o painel nem os endpoints e conteúdos legados de PDF.
+
 ## Conteúdo
 
 - Resumo executivo e indicadores calculados no servidor.
