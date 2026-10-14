@@ -228,13 +228,13 @@ export async function buildRelatorioProfissional(
   let rows: Review[] = [];
   try {
     rows = await db.all(
-      'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 10000',
+      'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC LIMIT 20000',
       [empresa.id],
     ) as Review[];
   } catch {
     try {
       rows = await db.all(
-        'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY created_at DESC LIMIT 10000',
+        'SELECT * FROM reviews WHERE empresa_id = ? ORDER BY created_at DESC LIMIT 20000',
         [empresa.id],
       ) as Review[];
     } catch { rows = []; }
