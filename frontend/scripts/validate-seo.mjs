@@ -21,7 +21,7 @@ check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans c
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
 check(!plansPage.includes('window.location.replace'), 'Plans page must render content instead of redirecting client-side');
 check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pricing cards');
-check(robots.includes('https://filtraai.com/sitemap.xml'), 'Next robots metadata must reference the sitemap');
+check(robots.includes("const base = 'https://filtraai.com'") && robots.includes('sitemap: `${base}/sitemap.xml`'), 'Next robots metadata must reference the canonical sitemap URL');
 check(publicRobots.includes('https://filtraai.com/sitemap.xml'), 'public/robots.txt must reference the sitemap');
 
 const start = sitemap.indexOf('const canonicalPaths = [');
