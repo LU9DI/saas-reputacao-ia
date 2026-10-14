@@ -250,7 +250,7 @@ export async function buildRelatorioProfissional(
   const soma = reais.reduce((sum, row) => sum + Number(row.rating || 0), 0);
   const notaMedia = avaliacoes ? Math.round((soma / avaliacoes) * 10) / 10 : 0;
   const positivas = reais.filter((row) => Number(row.rating) >= 4).length;
-  const criticas = reais.filter((row) => Number(row.rating) <= 2).length;
+  const criticas = reais.filter((row) => Number(row.rating) <= 3).length;
   const tratadas = reais.filter((row) => row.treated_at && Number(row.rating) <= 3).length;
   const distribuicao = [1, 2, 3, 4, 5].map((rating) => reais.filter((row) => Number(row.rating) === rating).length);
   const sent = reais.reduce((acc, row) => {
@@ -281,7 +281,7 @@ export async function buildRelatorioProfissional(
         const reviews = reais.filter((r) => String(r.unidade_id || '') === String(u.id));
         const total = reviews.length;
         const avg = total ? Math.round((reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / total) * 10) / 10 : 0;
-        return { id: u.id, nome: u.nome, avaliacoes: total, nota_media: avg, criticas: reviews.filter((r) => Number(r.rating) <= 2).length };
+        return { id: u.id, nome: u.nome, avaliacoes: total, nota_media: avg, criticas: reviews.filter((r) => Number(r.rating) <= 3).length };
       }).filter((u) => u.avaliacoes > 0);
     } catch { unidades = []; }
   }
