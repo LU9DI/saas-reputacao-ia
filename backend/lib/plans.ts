@@ -16,20 +16,22 @@ export function allowPlanSwitch(): boolean {
   return process.env.NODE_ENV !== 'production';
 }
 
-/** Trial / teste de 7 dias — tudo incluso (IA, PDF, dashboard completo). */
+/** Trial / teste de 7 dias. Benefícios exclusivos do REI não devem ser inferidos automaticamente para o Trial. */
 export function isTrialPlan(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
   return p === 'trial' || p === 'teste' || p === 'trialing' || p.startsWith('trial');
 }
 
-/** PDF mensal: Pro e acima + trial (tudo incluso nos 7 dias). Inicial pago não tem PDF. */
-export function planTemPdf(plan: string | null | undefined): boolean {
+/** Entrega profissional mensal: Pro e acima. Trial mantém apenas a elegibilidade legada do PDF durante a compatibilidade. */
+export function planTemRelatorioMensal(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
-  if (isTrialPlan(p)) return true;
-  if (['pro', 'ultra', 'corporativo', 'corp', 'rei'].includes(p)) return true;
-  return false;
+  return ['pro', 'ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(p);
 }
 
+/** Alias legado mantido para que rotas antigas não quebrem enquanto o PDF é aposentado como entregável. */
+export function planTemPdf(plan: string | null | undefined): boolean {
+  return isTrialPlan(plan) || planTemRelatorioMensal(plan);
+}
 /** Alias usado por alguns módulos legados */
 export function empresaTemPdf(empresa: { plan?: string; status?: string } | null): boolean {
   if (!empresa) return false;
@@ -46,7 +48,7 @@ export function planLabel(plan: string): string {
     ultra: 'Ultra',
     corporativo: 'Corporativo',
     corp: 'Corporativo',
-    rei: 'Rei',
+    rei: 'REI',
   };
   return map[String(plan || '').toLowerCase()] || String(plan || '—');
 }

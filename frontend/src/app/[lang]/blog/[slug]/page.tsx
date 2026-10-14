@@ -18,6 +18,10 @@ const families=[
   {pt:'/blog/agencia-vender-gestao-reputacao',en:'/en/blog/agency-reputation-management',es:'/es/blog/agencia-gestion-reputacion',zh:'/zh/blog/agency-reputation-management'}
 ] as const;
 
+const translatedFamilies = [
+  { en: '/en/blog/ai-review-analysis-guide', es: '/es/blog/analisis-resenas-ia', zh: '/zh/blog/ai-review-analysis-guide' },
+] as const;
+
 const articles:Record<Lang,Article[]>={
   en:[
     {slug:'agency-reputation-management',title:'Agency Reputation Management: How to Build a Recurring Local SEO Service',description:'A practical guide for SEO agencies that want to offer reputation management as a recurring local SEO service.',kicker:'Agencies · Local SEO',lead:'Agencies can turn reputation management into a repeatable service when review monitoring, analysis, response workflows and reporting are packaged around each client.',sections:[{heading:'Package reputation as part of local SEO',body:'Reputation is closely connected to local search because reviews shape trust around the business profile. Agencies can make it a recurring deliverable instead of treating reviews as an occasional task.'},{heading:'Standardize the workflow without losing local context',body:'Create a repeatable process for monitoring reviews, identifying recurring themes, organizing responses and reporting results. Keep each client and location tied to its own operational context.',bullets:['Define the scope per client or location','Set a recurring review and reporting cadence','Separate operational issues from response tasks','Track changes over time']},{heading:'Use AI to scale analysis, not judgment',body:'AI can group reviews, surface recurring topics and reduce manual reading. The agency should still validate context, choose priorities and keep client-facing decisions accountable.'},{heading:'Show the value in recurring reports',body:'Reports should connect review volume, rating movement, recurring themes, response activity and improvement opportunities. The goal is to make reputation visible as an ongoing local SEO service.'}]},
@@ -113,7 +117,8 @@ function get(lang:string,slug:string){
 }
 
 function familyFor(lang:Lang,slug:string){
-  return families.find(family => family[lang] === '/'+lang+'/blog/'+slug || family[lang] === '/blog/'+slug);
+  return families.find(family => family[lang] === '/'+lang+'/blog/'+slug || family[lang] === '/blog/'+slug)
+    || translatedFamilies.find(family => family[lang] === '/'+lang+'/blog/'+slug);
 }
 
 function familyPath(lang:Lang,slug:string){
@@ -178,12 +183,16 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
     robots:{index:true,follow:true}
   };
   const languages:Record<string,string>={
-    'pt-BR':base+family.pt,
     en:base+family.en,
     es:base+family.es,
-    zh:base+family.zh,
-    'x-default':base+family.pt
+    zh:base+family.zh
   };
+  if ('pt' in family) {
+    languages['pt-BR']=base+family.pt;
+    languages['x-default']=base+family.pt;
+  } else {
+    languages['x-default']=base+family.en;
+  }
   return {
     title:found.item.title,
     description:found.item.description,

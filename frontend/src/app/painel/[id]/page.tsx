@@ -16,6 +16,7 @@ import { ReviewsList } from '../../components/ReviewsList';
 import { BrandMark } from '../../components/BrandMark';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { RelatorioInteligentePanel } from '../../components/RelatorioInteligentePanel';
+import { RelatorioProfissionalMensalPanel } from '../../../components/RelatorioProfissionalMensalPanel';
 import { useLanguage } from '../../Contexts/LanguageContext';
 
 function authHeaders(json = true): HeadersInit {
@@ -278,6 +279,7 @@ export default function PainelEmpresa() {
   const dist = metricas.distribuicao || [0, 0, 0, 0, 0];
   const nivel = dashboard?.nivel || 'basico';
   const reportOk = planAllowsReport(empresa.plan, empresa.status, dashboard);
+  const reportMensalOk = ['pro', 'ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(String(empresa.plan || '').toLowerCase());
   const planLabel = String(empresa.plan || 'trial').toUpperCase();
   const status = empresa.status_acesso || String(empresa.status || '').toUpperCase();
   const reviews = Array.isArray(data.reviews) ? data.reviews : [];
@@ -296,8 +298,11 @@ export default function PainelEmpresa() {
             <a href="#reviews" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <MessageSquare size={17} /> {t.panel_reviews || 'Avaliações'}
             </a>
+            {reportMensalOk && <a href="#professional-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
+              <FileText size={17} /> Relatório profissional
+            </a>}
             <a href="#ai-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
-              <FileText size={17} /> {t.panel_ai_report || 'Relatório IA'}
+              <Bot size={17} /> {t.panel_ai_report || 'Relatório IA'}
             </a>
             <a href="#alerts" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <Bell size={17} /> {t.panel_alerts || 'Alertas'}
@@ -336,10 +341,11 @@ export default function PainelEmpresa() {
               {[
                 ['#overview', t.panel_overview || 'Visão geral'],
                 ['#reviews', t.panel_reviews || 'Avaliações'],
+                ['#professional-report', 'Relatório profissional'],
                 ['#ai-report', t.panel_ai_report || 'Relatório IA'],
                 ['#alerts', t.panel_alerts || 'Alertas'],
                 ['#settings', t.panel_settings || 'Configurações'],
-              ].map(([href, text]) => (
+              ].filter(([href]) => href !== '#professional-report' || reportMensalOk).map(([href, text]) => (
                 <a key={href} href={href} className="shrink-0 rounded-lg px-3 py-1.5 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">
                   {text}
                 </a>
@@ -686,6 +692,8 @@ export default function PainelEmpresa() {
                 </div>
               </section>
             )}
+
+            {reportMensalOk && <RelatorioProfissionalMensalPanel empresa={empresa} monthlyReports={Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />}
 
             <section id="ai-report" className="scroll-mt-28">
               {reportOk ? (

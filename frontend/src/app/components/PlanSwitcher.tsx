@@ -10,7 +10,7 @@ const PLANOS = [
   { key: 'pro', label: 'Pro' },
   { key: 'ultra', label: 'Ultra' },
   { key: 'corporativo', label: 'Corporativo' },
-  { key: 'rei', label: 'Rei' },
+  { key: 'rei', label: 'REI' },
 ] as const;
 
 type Props = {
@@ -79,7 +79,7 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
           Modo teste — alternar plano
         </p>
         <p className="text-sm text-zinc-400 mt-1">
-          Sem cobrança Stripe. Use para validar PDF e recursos. É preciso estar logado.
+          Sem cobrança Stripe. Use para validar os recursos de cada plano. É preciso estar logado.
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
