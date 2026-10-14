@@ -1,20 +1,24 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { resolve, relative, sep } from 'node:path';
 import assert from 'node:assert/strict';
 
+const appRoot = resolve(process.cwd(), 'src/app');
 const read = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 const sitemap = read('src/app/sitemap.ts');
 const plansLayout = read('src/app/planos/layout.tsx');
+const plansPage = read('src/app/planos/page.tsx');
 const robots = read('src/app/robots.ts');
 const publicRobots = read('public/robots.txt');
+const localizedPages = read('src/app/[lang]/[slug]/page.tsx');
+const localizedBlogs = read('src/app/[lang]/blog/[slug]/page.tsx');
 const errors = [];
 const check = (condition, message) => { if (!condition) errors.push(message); };
 
 check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
 check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans canonical must point to /planos');
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
-check(!plansLayout.includes("canonical: 'https://filtraai.com/'"), 'Plans canonical must not point to the homepage');
-check(!plansLayout.includes("url: 'https://filtraai.com/'"), 'Plans Open Graph URL must not point to the homepage');
+check(!plansPage.includes('window.location.replace'), 'Plans page must render content instead of redirecting client-side');
+check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pricing cards');
 check(robots.includes('https://filtraai.com/sitemap.xml'), 'Next robots metadata must reference the sitemap');
 check(publicRobots.includes('https://filtraai.com/sitemap.xml'), 'public/robots.txt must reference the sitemap');
 
@@ -31,7 +35,41 @@ for (const [, family, body] of families) {
   const targets = [...body.matchAll(/(?:'[^']+'|[a-z-]+):\s*'([^']+)'/g)].map((match) => match[1]);
   check(new Set(targets).size === targets.length, `hreflang family ${family} maps multiple languages to the same URL`);
   check(targets.every((path) => path.startsWith('/')), `hreflang family ${family} contains a non-local path`);
+  check(targets.length === 4, `hreflang family ${family} should define pt-BR, en, es and zh`);
+}
+
+function collectPageRoutes(directory = appRoot) {
+  const found = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = resolve(directory, entry.name);
+    if (entry.isDirectory()) found.push(...collectPageRoutes(fullPath));
+    else if (entry.isFile() && entry.name === 'page.tsx') {
+      const appPath = relative(appRoot, fullPath).split(sep).join('/');
+      const route = appPath === 'page.tsx' ? '/' : `/${appPath.replace(/\/page\.tsx$/, '')}`;
+      if (!route.includes('[') && !route.includes('(')) found.push(route.replace(/\/+/g, '/'));
+    }
+  }
+  return found;
+}
+
+const staticRoutes = new Set(collectPageRoutes());
+const localizedSlugs = new Set([...localizedPages.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
+const localizedBlogSlugs = new Set([...localizedBlogs.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
+const literalPaths = [...sitemap.matchAll(/'((?:\/)[^']*)'/g)].map((match) => match[1]);
+const sitemapPaths = [...new Set(literalPaths)].filter((path) => path !== '/');
+for (const path of sitemapPaths) {
+  if (/^\/(en|es|zh)\/blog\/[^/]+$/.test(path)) {
+    const slug = path.split('/').at(-1);
+    check(localizedBlogSlugs.has(slug), `Sitemap blog route has no matching localized article slug: ${path}`);
+  } else if (/^\/(en|es|zh)\/[^/]+$/.test(path)) {
+    const slug = path.split('/').at(-1);
+    check(localizedSlugs.has(slug), `Sitemap localized route has no matching page slug: ${path}`);
+  } else if (/^\/(en|es|zh)$/.test(path)) {
+    check(staticRoutes.has('/[lang]'), 'Localized home route /[lang] must exist');
+  } else if (!staticRoutes.has(path)) {
+    check(false, `Sitemap route has no matching static page: ${path}`);
+  }
 }
 
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
-console.log(`SEO source validation passed: ${paths.length} canonical paths and ${families.length} hreflang families checked.`);
+console.log(`SEO source validation passed: ${paths.length} canonical paths, ${families.length} hreflang families and ${sitemapPaths.length} unique sitemap path literals checked.`);
