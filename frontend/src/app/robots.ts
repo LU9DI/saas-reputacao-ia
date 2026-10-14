@@ -6,9 +6,10 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: '*',
+      // Private pages declare noindex in HTML. Keep them crawlable so bots can
+      // observe that directive; only API endpoints are blocked from crawling.
       allow: '/',
-      // These are application/private endpoints, not public search landing pages.
-      disallow: ['/painel/', '/admin/', '/api/', '/avaliacao/', '/widget/'],
+      disallow: ['/api/'],
     },
     sitemap: `${base}/sitemap.xml`,
   };
