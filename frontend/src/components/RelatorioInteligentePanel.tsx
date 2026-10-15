@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../app/Contexts/LanguageContext';
 
 type Review = { rating?: unknown; comment?: unknown; sentiment?: unknown; ai_tags?: unknown; createdAt?: unknown; created_at?: unknown; is_test?: unknown };
@@ -20,13 +20,11 @@ function langOf(v: string): Lang { return v === 'en' || v === 'es' || v === 'zh'
 function num(v: unknown) { const x = Number(v); return Number.isFinite(x) ? x : null; }
 function reviewSentiment(v: unknown): 'pos'|'neu'|'neg'|null { const s = String(v ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); if (s.includes('pos')) return 'pos'; if (s.includes('neg')) return 'neg'; if (s.includes('neu')) return 'neu'; return null; }
 function tagsOf(v: unknown) { let x = v; if (typeof x === 'string') { try { x = JSON.parse(x || '[]'); } catch { x = []; } } return Array.isArray(x) ? x.map(String).map(s => s.trim()).filter(Boolean) : []; }
-function safeName(v: unknown) { return String(v ?? 'empresa').replace(/[^a-z0-9]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase() || 'empresa'; }
 
 export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelData }: Props) {
   const { language } = useLanguage();
   const [fallback, setFallback] = useState<PanelData | null>(null);
   const [loading, setLoading] = useState(!panelData);
-  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     if (panelData) { setFallback(null); setLoading(false); return; }
@@ -74,24 +72,9 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
     ...(stats.issueThemes.length ? [l === 'en' ? `Investigate recurring issue: “${stats.issueThemes[0][0]}”.` : l === 'es' ? `Investiga el problema recurrente: “${stats.issueThemes[0][0]}”.` : l === 'zh' ? `调查反复出现的问题：“${stats.issueThemes[0][0]}”。` : `Investigue o problema recorrente: “${stats.issueThemes[0][0]}”.`] : [])
   ].slice(0, 4) : [t.noData];
 
-  const download = async () => {
-    if (downloading) return;
-    setDownloading(true);
-    try {
-      const url = `${api}/api/empresa/${encodeURIComponent(empresaId)}/relatorio-inteligente.pdf?lang=${encodeURIComponent(l)}`;
-      const r = await fetch(url, { credentials: 'include', headers: authHeaders(false), cache: 'no-store' });
-      const ct = r.headers.get('content-type') || '';
-      if (!r.ok) { let msg = ''; try { const body = await r.json(); msg = String(body?.error || ''); } catch {} throw new Error(msg || `PDF: HTTP ${r.status}`); }
-      if (!ct.includes('application/pdf')) throw new Error(t.downloadError);
-      const blob = await r.blob(); if (!blob.size) throw new Error(t.downloadError);
-      const objectUrl = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = objectUrl; a.download = `relatorio-inteligente-${safeName(empresa.nome_empresa)}.pdf`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
-    } catch (e) { console.error('[relatorio-inteligente]', e); window.alert(e instanceof Error ? e.message : t.downloadError); }
-    finally { setDownloading(false); }
-  };
-
   if (loading && !source) return <section className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-6 text-sm text-zinc-500">{t.title}…</section>;
   return <section className="bg-zinc-900 border border-zinc-800 rounded-2xl px-6 py-6 space-y-6" aria-labelledby="relatorio-inteligente-title">
-    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4"><div><div className="flex items-center gap-2"><FileText size={18} className="text-indigo-400"/><h2 id="relatorio-inteligente-title" className="text-base font-semibold text-zinc-100">{t.title}</h2></div><p className="text-xs text-zinc-500 mt-1 max-w-2xl">{t.desc}</p></div><button type="button" onClick={download} disabled={downloading} className="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-xl border border-zinc-700 bg-zinc-950 hover:bg-zinc-800 disabled:opacity-50"><Download size={15}/>{downloading ? t.generating : t.export}</button></div>
+    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4"><div><div className="flex items-center gap-2"><FileText size={18} className="text-indigo-400"/><h2 id="relatorio-inteligente-title" className="text-base font-semibold text-zinc-100">{t.title}</h2></div><p className="text-xs text-zinc-500 mt-1 max-w-2xl">{t.desc}</p></div></div>
     {stats.total === 0 ? <div className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-5 text-sm text-zinc-400">{t.noData}</div> : <><div className="grid grid-cols-2 lg:grid-cols-4 gap-3">{[[t.avg, stats.average.toFixed(1)], [t.reviews, String(stats.total)], [t.positive, String(stats.positive)], [t.critical, String(stats.critical)]].map(([label, value]) => <div key={label} className="rounded-xl border border-zinc-800 bg-zinc-950/40 p-4"><div className="text-xs text-zinc-500">{label}</div><div className="text-2xl font-semibold text-zinc-100 mt-1">{value}</div></div>)}</div><div className="grid lg:grid-cols-2 gap-4"><div className="rounded-xl border border-zinc-800 p-4"><div className="flex items-center gap-2 text-sm font-medium text-zinc-200"><TrendingUp size={16}/>{t.evolution}</div><div className="mt-3 text-sm text-zinc-400">{trend === null ? t.insufficient : trend > 0 ? `${t.improving} (+${trend.toFixed(1)})` : trend < 0 ? `${t.attention} (${trend.toFixed(1)})` : t.stable}</div></div><div className="rounded-xl border border-zinc-800 p-4"><div className="text-sm font-medium text-zinc-200">{t.sentiment}</div><div className="mt-3 grid grid-cols-3 gap-2 text-sm"><div>{t.pos}: <b>{stats.sentiment.pos}</b></div><div>{t.neu}: <b>{stats.sentiment.neu}</b></div><div>{t.neg}: <b>{stats.sentiment.neg}</b></div></div></div></div><div className="grid lg:grid-cols-2 gap-4"><div className="rounded-xl border border-zinc-800 p-4"><div className="flex items-center gap-2 text-sm font-medium text-zinc-200"><CheckCircle2 size={16}/>{t.good}</div><div className="mt-3 space-y-2">{stats.goodThemes.length ? stats.goodThemes.map(([x,n]) => <div key={x} className="flex justify-between text-sm text-zinc-400"><span>{x}</span><span>{n}</span></div>) : <span className="text-sm text-zinc-500">—</span>}</div></div><div className="rounded-xl border border-zinc-800 p-4"><div className="flex items-center gap-2 text-sm font-medium text-zinc-200"><AlertTriangle size={16}/>{t.issues}</div><div className="mt-3 space-y-2">{stats.issueThemes.length ? stats.issueThemes.map(([x,n]) => <div key={x} className="flex justify-between text-sm text-zinc-400"><span>{x}</span><span>{n}</span></div>) : <span className="text-sm text-zinc-500">—</span>}</div></div></div><div className="rounded-xl border border-zinc-800 p-4"><div className="flex items-center gap-2 text-sm font-medium text-zinc-200"><Lightbulb size={16}/>{t.recommendations}</div><ul className="mt-3 space-y-2 list-disc pl-5 text-sm text-zinc-400">{recommendations.map((x,i) => <li key={`${i}-${x}`}>{x}</li>)}</ul></div></>}
     <div className="text-[11px] text-zinc-600">{t.updated}</div>
   </section>;
