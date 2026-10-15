@@ -95,7 +95,6 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const early = textOrFallback(t.feat_early, 'Acesso antecipado a novas funções');
   const ranking = textOrFallback(t.feat_unit_ranking, 'Ranking comparativo de desempenho por unidade');
   const unitLinks = textOrFallback(t.feat_unit_links, 'Links de avaliação exclusivos por unidade');
-  const executive = textOrFallback(t.feat_executive_report, 'Relatório executivo mensal para a diretoria');
   const unitInsights = textOrFallback(t.feat_unit_insights, 'Análise de resultados e temas por unidade');
   const priorities = textOrFallback(t.feat_priorities, 'Prioridades de ação baseadas nas avaliações');
   const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico de riscos e tendências');
@@ -113,7 +112,7 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     rei: {
       features: [
         fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities,
-        strategicRadar, growth, unitLinks, executive, support, early,
+        strategicRadar, growth, unitLinks, support, early,
       ],
     },
   };
@@ -305,7 +304,18 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     if (lower.includes('wpp') || lower.includes('whatsapp')) {
       icon = MessageCircle;
       badgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
-    } else if (lower.includes('ranking') || lower.includes('unidade') || lower.includes('executivo')) {
+    } else if (
+      lower.includes('ranking') ||
+      lower.includes('unidade') ||
+      lower.includes('executivo') ||
+      lower.includes('links de avaliação') ||
+      lower.includes('temas por unidade') ||
+      lower.includes('prioridades de ação') ||
+      lower.includes('radar estratégico') ||
+      lower.includes('oportunidades de crescimento') ||
+      lower.includes('riscos e tendências')
+    ) {
+      icon = BarChart3;
       badgeClass = 'text-blue-700 bg-blue-50 border-blue-200/60';
     } else if (lower.includes('ia') || lower.includes('ai') || lower.includes('智能')) {
       icon = Sparkles;
