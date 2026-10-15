@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Download, FileText, Lightbulb, TrendingUp } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, FileText, Lightbulb, TrendingUp } from 'lucide-react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { exportReportClient } from '../utils/reportPdfClient';
-import { pdfReleaseStatus } from '../utils/pdfReleaseGate';
 import { uiCopy } from '../utils/relatorioUiCopy';
 
 type Review = {
@@ -37,7 +35,6 @@ type Props = {
   panelData?: PanelData | null;
 };
 
-const PDF_LANGS = new Set(['pt', 'en', 'es', 'zh']);
 const MONTH_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 function currentMonth(): string {
@@ -95,14 +92,6 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
   const copy = useMemo(() => uiCopy(language), [language]);
   const mesesOpcoes = useMemo(() => buildMonthOptions(), []);
   const [mesReport, setMesReport] = useState(currentMonth);
-  const [pdfLang, setPdfLang] = useState<string>(() => (PDF_LANGS.has(language) ? String(language) : 'pt'));
-
-  useEffect(() => {
-    if (PDF_LANGS.has(language)) setPdfLang(String(language));
-  }, [language]);
-
-  const [downloading, setDownloading] = useState(false);
-  const [downloadError, setDownloadError] = useState('');
   const [reportMetrics, setReportMetrics] = useState<{
     total?: number;
     media?: number;
@@ -145,7 +134,6 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
 
   const empresa = panelData?.empresa || {};
   const metricas = panelData?.metricas || {};
-  const pdfGate = pdfReleaseStatus(empresa);
 
   const reviews: Review[] = useMemo(() => {
     if (!Array.isArray(panelData?.reviews)) return [];
@@ -232,71 +220,6 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
     return out.slice(0, 4);
   }, [stats, copy]);
 
-  const downloadPdf = async () => {
-    if (!pdfGate.released) {
-      setDownloadError(
-        pdfGate.unlockLabel
-          ? `${copy.pdfUnlock}: ${pdfGate.unlockLabel}`
-          : copy.pdfLocked
-      );
-      return;
-    }
-    if (!MONTH_RE.test(mesReport)) {
-      setDownloadError(copy.errPeriod);
-      return;
-    }
-    setDownloading(true);
-    setDownloadError('');
-    try {
-      const lang = PDF_LANGS.has(pdfLang) ? pdfLang : 'pt';
-      const pdfCopy = uiCopy(lang);
-      const result = exportReportClient({
-        companyName: String(empresa?.nome_empresa || 'Empresa'),
-        periodLabel: labelMes(mesReport, lang),
-        lang,
-        plan: String(empresa?.plan || 'trial'),
-        stats: {
-          total: stats.total,
-          ratedCount: stats.ratedCount,
-          positive: stats.positive,
-          critical: stats.critical,
-          average: stats.average,
-          sentiment: stats.sentiment,
-          themes: stats.themes,
-          distribution: stats.distribution,
-        },
-        evolution,
-        recommendations,
-        labels: {
-          title: pdfCopy.title,
-          avg: pdfCopy.avg,
-          reviews: pdfCopy.reviews,
-          positive: pdfCopy.positive,
-          critical: pdfCopy.critical,
-          evolution: pdfCopy.evolution,
-          evolutionEmpty: pdfCopy.evolutionEmpty,
-          evolutionText: pdfCopy.evolutionText,
-          sentiment: pdfCopy.sentiment,
-          sentPos: pdfCopy.sentPos,
-          sentNeu: pdfCopy.sentNeu,
-          sentNeg: pdfCopy.sentNeg,
-          pointsPos: pdfCopy.pointsPos,
-          pointsCrit: pdfCopy.pointsCrit,
-          recommendations: pdfCopy.recommendations,
-          themes: pdfCopy.themes,
-          footer: pdfCopy.footer,
-          brand: pdfCopy.brand,
-          rights: pdfCopy.rights,
-        },
-      });
-      if (!result.ok) setDownloadError(copy.errFail);
-    } catch {
-      setDownloadError(copy.errFail);
-    } finally {
-      setDownloading(false);
-    }
-  };
-
   return (
     <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
@@ -322,51 +245,8 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
               ))}
             </select>
           </label>
-          <label className="text-xs font-medium text-zinc-400">
-            {copy.pdfLang}
-            <select
-              className="ml-2 rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
-              value={pdfLang}
-              onChange={(e) => setPdfLang(e.target.value)}
-            >
-              <option value="pt">Português</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-              <option value="zh">中文</option>
-            </select>
-          </label>
-          <button
-            type="button"
-            onClick={() => void downloadPdf()}
-            disabled={downloading || !pdfGate.released}
-            title={
-              !pdfGate.released && pdfGate.unlockLabel
-                ? `${copy.pdfUnlock}: ${pdfGate.unlockLabel}`
-                : undefined
-            }
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-60"
-          >
-            <Download className="h-4 w-4" />
-            {downloading ? copy.generating : copy.exportPdf}
-          </button>
         </div>
       </div>
-
-      {!pdfGate.released && (
-        <div className="mb-4 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95">
-          {copy.pdfLocked}
-          {pdfGate.unlockLabel ? (
-            <>
-              {' '}
-              ({copy.pdfUnlock}: <strong className="text-amber-50">{pdfGate.unlockLabel}</strong>).
-            </>
-          ) : (
-            '.'
-          )}
-        </div>
-      )}
-
-      {downloadError ? <p className="mb-4 text-sm text-red-400">{downloadError}</p> : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3">
