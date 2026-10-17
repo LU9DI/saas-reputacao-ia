@@ -43,7 +43,7 @@ export async function withDbTransaction<T>(work: (tx: Database) => Promise<T>): 
   }
 }
 
-export async function pingDb: Promise<{ ok: boolean; engine: string; error?: string }> {
+export async function pingDb(): Promise<{ ok: boolean; engine: string; error?: string }> {
   try {
     const db = getDb();
     await db.get('SELECT 1 AS ok');

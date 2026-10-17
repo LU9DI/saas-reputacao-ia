@@ -14,6 +14,7 @@ import { findEmpresa } from '../lib/db.js';
 import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
+import { selectDotModel } from '../services/dotModelRouting.js';
 import { getTokenLimit, tokensUsadosMes } from '../lib/quota.js';
 import { ensureDotInternalPermissionBaseline, requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
 
@@ -213,18 +214,19 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
     if (process.env.DOT_DEMO_MODE === '1' && process.env.NODE_ENV !== 'production') {
       return { allowed: true, demo: true, plan: 'rei', planLabel: 'Rei', userId: null };
     }
-    return { allowed: false, demo: false, reason: 'Autenticação necessária.' };
+    return { allowed: false, demo: false, userId: null, reason: 'Autenticação necessária.' };
   }
 
   try {
     const payload = verifyAccessToken(token);
+    const userId = String(payload.id || '') || null;
     if (isAdminUser({ empresa_id: payload.empresa_id, role: payload.role })) {
-      return { allowed: false, demo: false, reason: 'Conta admin não possui acesso ao Dot de empresa.' };
+      return { allowed: false, demo: false, userId, reason: 'Conta admin não possui acesso ao Dot de empresa.' };
     }
 
     const empresa = await findEmpresa(payload.empresa_id);
     if (!empresa || !empresaTemAcesso(empresa)) {
-      return { allowed: false, demo: false, reason: 'Assinatura/trial inativo.' };
+      return { allowed: false, demo: false, userId, reason: 'Assinatura/trial inativo.' };
     }
 
     const plan = String(empresa.plan || '').toLowerCase();
@@ -236,6 +238,7 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
         empresaId: empresa.id,
         plan,
         planLabel: planLabel(plan),
+        userId,
         reason: 'O Filtra Dot está em acesso antecipado para os planos Rei e Corporativo.',
       };
     }
@@ -250,6 +253,7 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
         empresaId: empresa.id,
         plan,
         planLabel: planLabel(plan),
+        userId,
         reason: 'Não foi possível inicializar as permissões internas do DOT.',
       };
     }
@@ -260,10 +264,10 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
       empresaId: empresa.id,
       plan,
       planLabel: planLabel(plan),
-      userId: String(payload.id || '') || null,
+      userId,
     };
   } catch {
-    return { allowed: false, demo: false, reason: 'Token inválido ou expirado.' };
+    return { allowed: false, demo: false, userId: null, reason: 'Token inválido ou expirado.' };
   }
 }
 
@@ -742,6 +746,7 @@ CONTEXTO: ${contextResult.decision.mode}. ${contextResult.decision.reason}
 REGRA DE FRESCOR: use fatos persistidos do contexto quando suficientes; quando a pergunta pedir estado atual, causa, impacto, comparação, recomendação ou decisão, raciocine novamente com os dados verificados nesta solicitação.
 Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: conclusão, evidências, impacto, recomendação e próximo passo. Evite introduções e repetições desnecessárias.`;
 
+      const routing = selectDotModel(message);
       const result = await callAI(
         responseSystem,
         buildConversation(contextResult.context, history, message),
@@ -751,6 +756,7 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
           empresaId: access.empresaId || null,
           tipo: 'filtra_dot_chat',
           feature: 'dot',
+          model: routing.model,
         }
       );
 
