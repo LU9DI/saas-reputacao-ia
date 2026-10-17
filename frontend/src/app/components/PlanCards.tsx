@@ -98,8 +98,6 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const unitInsights = textOrFallback(t.feat_unit_insights, 'Análise de resultados e temas por unidade');
   const priorities = textOrFallback(t.feat_priorities, 'Prioridades de ação baseadas nas avaliações');
   const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico de riscos e tendências');
-  // Benefícios aprovados do REI (chaves já traduzidas nos 4 dicionários).
-  const executive = textOrFallback(t.feat_executive_report, 'Relatório executivo mensal para a diretoria');
   const growth = textOrFallback(t.feat_growth, 'Oportunidades de crescimento identificadas nos dados');
 
   const map: Record<string, { features: string[]; missing?: string[] }> = {
@@ -114,7 +112,7 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     rei: {
       features: [
         fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities,
-        strategicRadar, growth, unitLinks, executive, support, early,
+        strategicRadar, growth, unitLinks, support, early,
       ],
     },
   };
