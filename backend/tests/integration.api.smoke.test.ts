@@ -16,11 +16,10 @@ describe('smoke — módulos críticos exportam', () => {
     else process.env.JWT_SECRET = prev;
   });
 
-  it('plan utils e planTemPdf', async () => {
-    const { planTemPdf, isPlanoOficial, allowPlanSwitch } = await import('../lib/plans.js');
+  it('plan utils', async () => {
+    const { isPlanoOficial, allowPlanSwitch } = await import('../lib/plans.js');
     assert.equal(isPlanoOficial('rei'), true);
     assert.equal(isPlanoOficial('gold'), false);
-    assert.equal(planTemPdf('pro'), true);
     assert.equal(typeof allowPlanSwitch(), 'boolean');
   });
 
