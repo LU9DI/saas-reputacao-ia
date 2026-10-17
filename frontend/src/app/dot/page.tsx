@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, Bot, CheckCircle2, Clock3, Play, RefreshCw, ShieldCheck, Target, XCircle } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { apiFetch } from '../utils/apiFailover';
-import { BrandMark } from '../../components/BrandMark';
+import { BrandMark } from '../components/BrandMark';
 
 type DotData = {
   status: any;
@@ -133,12 +134,12 @@ export default function DotPage() {
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {[
+          {([
             [pending, 'Decisões aguardando tratamento', AlertTriangle],
             [prepared, 'Ações preparadas', Target],
             [approved, 'Ações aprovadas', CheckCircle2],
             [activeCases, 'Casos internos ativos', ShieldCheck],
-          ].map(([value, label, Icon]) => (
+          ] as [unknown, string, LucideIcon][]).map(([value, label, Icon]) => (
             <div key={String(label)} className={`${panel} p-5`}>
               <Icon size={17} className="text-indigo-300" />
               <div className="mt-4 text-2xl font-semibold">{String(value)}</div>
