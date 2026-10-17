@@ -248,7 +248,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
       }
     },
 
-    async close()
+    async close() {
       await pool?.end();
       pool = null;
     },
