@@ -100,17 +100,18 @@ export async function executeDotActionThroughGateway(
     return { ok: false, id: actionId, status: 'approved', simulated: true, executor: definition.executorKey, startedAt, reason: 'Ação já está sendo processada ou mudou de estado.' };
   }
 
-  await recordDotActionAudit({
-    empresaId,
-    actionId,
-    decisionId: Number(row.decision_id),
-    event: 'execution_started',
-    actorType: 'user',
-    actorId: actorUserId || null,
-    metadata: { executor: definition.executorKey, policy },
-  });
-
+  let auditWarning: string | null = null;
   try {
+    await recordDotActionAudit({
+      empresaId,
+      actionId,
+      decisionId: Number(row.decision_id),
+      event: 'execution_started',
+      actorType: 'user',
+      actorId: actorUserId || null,
+      metadata: { executor: definition.executorKey, policy },
+    });
+
     const decision = await db.get(
       'SELECT event_id, priority, reason FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1',
       [Number(row.decision_id), empresaId],
@@ -126,6 +127,8 @@ export async function executeDotActionThroughGateway(
       priority: decision.priority ?? null,
       reason: decision.reason ?? null,
     });
+    await createDotFollowUp(empresaId, Number(row.decision_id), actionId, 24);
+
     const executedAt = new Date().toISOString();
     const finished = await db.run(
       "UPDATE dot_action_queue SET status = 'executed', executed_at = ? WHERE id = ? AND empresa_id = ? AND status = 'executing'",
@@ -135,25 +138,28 @@ export async function executeDotActionThroughGateway(
       throw new Error('Executor perdeu a posse da ação durante a execução.');
     }
 
-    await recordDotActionAudit({
-      empresaId,
-      actionId,
-      decisionId: Number(row.decision_id),
-      event: 'executed',
-      actorType: 'user',
-      actorId: actorUserId || null,
-      metadata: {
-        executor: definition.executorKey,
-        simulated: false,
-        externalSideEffect: false,
-        internalCaseId: internal.caseId,
-        internalStatus: internal.status,
-        nextStep: internal.nextStep,
-        created: internal.created,
-      },
-    });
-
-    await createDotFollowUp(empresaId, Number(row.decision_id), actionId, 24);
+    try {
+      await recordDotActionAudit({
+        empresaId,
+        actionId,
+        decisionId: Number(row.decision_id),
+        event: 'executed',
+        actorType: 'user',
+        actorId: actorUserId || null,
+        metadata: {
+          executor: definition.executorKey,
+          simulated: false,
+          externalSideEffect: false,
+          internalCaseId: internal.caseId,
+          internalStatus: internal.status,
+          nextStep: internal.nextStep,
+          created: internal.created,
+        },
+      })
+    } catch (auditError: any) {
+      auditWarning = String(auditError?.message || auditError).slice(0, 500);
+      console.error('[dot] executed audit pending:', auditWarning);
+    };
 
     return {
       ok: true,
@@ -163,7 +169,9 @@ export async function executeDotActionThroughGateway(
       executor: definition.executorKey,
       startedAt,
       executedAt,
-      reason: `Caso interno ${internal.created ? 'criado' : 'atualizado'} (#${internal.caseId}) para acompanhamento.`
+      reason: auditWarning
+        ? `Caso interno ${internal.created ? 'criado' : 'atualizado'} (#${internal.caseId}) para acompanhamento. Ação executada; auditoria pendente: ${auditWarning}`
+        : `Caso interno ${internal.created ? 'criado' : 'atualizado'} (#${internal.caseId}) para acompanhamento.`
     };
 
   } catch (error: any) {
@@ -172,15 +180,19 @@ export async function executeDotActionThroughGateway(
       "UPDATE dot_action_queue SET status = 'failed', error = ? WHERE id = ? AND empresa_id = ? AND status = 'executing'",
       [reason, actionId, empresaId],
     );
-    await recordDotActionAudit({
-      empresaId,
-      actionId,
-      decisionId: Number(row.decision_id),
-      event: 'failed',
-      actorType: 'user',
-      actorId: actorUserId || null,
-      metadata: { executor: definition.executorKey, error: reason },
-    });
+    try {
+      await recordDotActionAudit({
+        empresaId,
+        actionId,
+        decisionId: Number(row.decision_id),
+        event: 'failed',
+        actorType: 'user',
+        actorId: actorUserId || null,
+        metadata: { executor: definition.executorKey, error: reason },
+      })
+    } catch (auditError: any) {
+      console.error('[dot] failed audit write failed:', auditError?.message || auditError);
+    };
     return { ok: false, id: actionId, status: 'failed', simulated: true, executor: definition.executorKey, startedAt, reason };
   }
 }
