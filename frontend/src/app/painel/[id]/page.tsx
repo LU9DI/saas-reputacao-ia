@@ -295,6 +295,11 @@ export default function PainelEmpresa() {
             <a href="#overview" className="flex items-center gap-3 rounded-xl bg-indigo-500/10 px-3 py-2.5 text-sm font-medium text-indigo-200">
               <LayoutDashboard size={17} /> {t.panel_overview || 'Visão geral'}
             </a>
+            {['corporativo', 'rei'].includes(String(empresa.plan || '').toLowerCase()) && (
+              <a href="/dot" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
+                <Bot size={17} /> Filtra Dot
+              </a>
+            )}
             <a href="#reviews" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <MessageSquare size={17} /> {t.panel_reviews || 'Avaliações'}
             </a>
@@ -340,6 +345,7 @@ export default function PainelEmpresa() {
             <div className="flex gap-1 overflow-x-auto border-t border-white/5 px-4 py-2 lg:hidden">
               {[
                 ['#overview', t.panel_overview || 'Visão geral'],
+                ...(['corporativo', 'rei'].includes(String(empresa.plan || '').toLowerCase()) ? [['/dot', 'Filtra Dot']] : []),
                 ['#reviews', t.panel_reviews || 'Avaliações'],
                 ['#professional-report', 'Relatório profissional'],
                 ['#ai-report', t.panel_ai_report || 'Relatório IA'],

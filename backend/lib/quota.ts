@@ -16,7 +16,7 @@ export function getTokenLimit(plan: string): number { return PLAN_TOKEN_LIMITS[S
 function monthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); return `${m}-01T00:00:00.000Z`; }
 function nextMonthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); const [y, mo] = m.split('-').map(Number); return new Date(Date.UTC(y, mo, 1)).toISOString(); }
 
-export async function tokensUsadosMes(empresaId: string): Promise<number> {
+export async function tokensUsadosMes(empresaId: string, _feature?: string): Promise<number> {
   const db = getDb(); const mes = getCurrentMonth();
   try {
     if (dbEngine() === 'postgres') {
