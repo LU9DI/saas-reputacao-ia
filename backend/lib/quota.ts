@@ -16,16 +16,37 @@ export function getTokenLimit(plan: string): number { return PLAN_TOKEN_LIMITS[S
 function monthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); return `${m}-01T00:00:00.000Z`; }
 function nextMonthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); const [y, mo] = m.split('-').map(Number); return new Date(Date.UTC(y, mo, 1)).toISOString(); }
 
-export async function tokensUsadosMes(empresaId: string, _feature?: string): Promise<number> {
-  const db = getDb(); const mes = getCurrentMonth();
+export async function tokensUsadosMes(empresaId: string, feature?: string): Promise<number> {
+  const db = getDb();
+  const mes = getCurrentMonth();
+  // DOT tem um orçamento isolado. Seus eventos são registrados como filtra_dot_*;
+  // sem feature, preservamos o total agregado usado pelas cotas gerais de IA.
+  const featureSql = feature === 'dot'
+    ? " AND (tipo = ? OR tipo LIKE ?)"
+    : feature
+      ? " AND tipo = ?"
+      : "";
+  const featureParams = feature === 'dot'
+    ? ['dot', 'filtra_dot%']
+    : feature
+      ? [feature]
+      : [];
   try {
     if (dbEngine() === 'postgres') {
-      const row = await db.get(`SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage WHERE empresa_id = ? AND criado_em >= ? AND criado_em < ?`, [empresaId, monthStartIso(mes), nextMonthStartIso(mes)]);
+      const row = await db.get(
+        `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage WHERE empresa_id = ? AND criado_em >= ? AND criado_em < ?${featureSql}`,
+        [empresaId, monthStartIso(mes), nextMonthStartIso(mes), ...featureParams],
+      );
       return Number(row?.t || 0);
     }
-    const row = await db.get(`SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage WHERE empresa_id = ? AND substr(criado_em, 1, 7) = ?`, [empresaId, mes]);
+    const row = await db.get(
+      `SELECT COALESCE(SUM(tokens),0) as t FROM ai_usage WHERE empresa_id = ? AND substr(criado_em, 1, 7) = ?${featureSql}`,
+      [empresaId, mes, ...featureParams],
+    );
     return Number(row?.t || 0);
-  } catch { return 0; }
+  } catch {
+    return 0;
+  }
 }
 
 export async function assertEmpresaTokenQuota(empresaId: string | null | undefined, plan: string | null | undefined): Promise<{ ok: boolean; used: number; reserved: number; limit: number }> {
