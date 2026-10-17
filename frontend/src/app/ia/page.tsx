@@ -14,6 +14,19 @@ export const metadata: Metadata = {
       'x-default': 'https://filtraai.com/ia',
     },
   },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/ia',
+    siteName: 'Filtra.AI',
+    locale: 'pt_BR',
+    title: 'IA para ChatGPT, Claude e Grok | Análise de reputação',
+    description: 'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação. Conecte o endpoint MCP oficial e leve os dados da sua empresa para seus agentes de IA.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'IA para ChatGPT, Claude e Grok | Análise de reputação',
+    description: 'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação.',
+  },
 };
 
 export default function Page() {
