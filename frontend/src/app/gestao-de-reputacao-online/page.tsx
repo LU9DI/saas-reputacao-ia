@@ -15,6 +15,19 @@ export async function generateMetadata(): Promise<Metadata> {
       'x-default': 'https://filtraai.com/gestao-de-reputacao-online',
     },
   },
+    openGraph: {
+      type: 'website',
+      url: 'https://filtraai.com/gestao-de-reputacao-online',
+      siteName: 'Filtra.AI',
+      locale: 'pt_BR',
+      title: 'Gestão de reputação online para empresas | Avaliações Google e IA | Filtra.AI',
+      description: 'Gestão de reputação online para empresas: monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Gestão de reputação online para empresas | Avaliações Google e IA | Filtra.AI',
+      description: 'Monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
+    },
   };
 }
 
