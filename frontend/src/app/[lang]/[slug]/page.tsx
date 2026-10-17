@@ -5,6 +5,7 @@ import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
 
 type Lang = 'en' | 'es' | 'zh';
+function isLang(value: string): value is Lang { return value === 'en' || value === 'es' || value === 'zh'; }
 type Item = { slug:string; title:string; description:string; h1:string; intro:string; bullets:string[]; cta:string };
 
 const base='https://filtraai.com';
@@ -181,6 +182,7 @@ function relatedIndexes(index:number,count:number){
 
 export async function generateMetadata({params}:{params:Promise<{lang:string;slug:string}>}):Promise<Metadata>{
   const {lang,slug}=await params;
+  if(!isLang(lang))return{};
   const found=get(lang,slug);
   if(!found)return{};
   const family=familyForPage(lang,slug);
@@ -209,6 +211,7 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
 
 export default async function Page({params}:{params:Promise<{lang:string;slug:string}>}){
   const {lang,slug}=await params;
+  if(!isLang(lang))notFound();
   const found=get(lang,slug);
   if(!found)notFound();
 

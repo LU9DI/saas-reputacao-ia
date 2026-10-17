@@ -25,13 +25,13 @@ describe('validateBody + schemaTrialAtivar', () => {
     const { res, nextCalled } = run(schemaTrialAtivar, {});
     assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(res.body.fields);
   });
-  it('rejeita CNPJ inválido', () => {
-    const { res, nextCalled } = run(schemaTrialAtivar, { cnpj: '11111111111111', nome_empresa: 'Loja Teste', email: 'a@b.com', senha: 'Senha@12' });
-    assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(String(res.body.error).toLowerCase().includes('identificador'));
+  it('rejeita e-mail inválido', () => {
+    const { res, nextCalled } = run(schemaTrialAtivar, { nome_empresa: 'Loja Teste', email: 'nao-e-email', senha: 'Senha@12' });
+    assert.equal(nextCalled, false); assert.equal(res.statusCode, 400); assert.ok(res.body.fields.email);
   });
-  it('aceita payload válido', () => {
-    const { res, nextCalled, req } = run(schemaTrialAtivar, { cnpj: '11.222.333/0001-81', nome_empresa: 'Loja Teste', email: 'Dono@Email.COM', senha: 'Senha@12' });
-    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.cnpj, '11222333000181'); assert.equal(req.body.email, 'dono@email.com');
+  it('aceita payload válido e normaliza o e-mail (contrato atual: cadastro por e-mail)', () => {
+    const { res, nextCalled, req } = run(schemaTrialAtivar, { nome_empresa: 'Loja Teste', email: 'Dono@Email.COM', senha: 'Senha@12' });
+    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.email, 'dono@email.com'); assert.equal(req.body.nome_empresa, 'Loja Teste');
   });
 });
 
@@ -48,9 +48,15 @@ describe('schemaReview', () => {
 });
 
 describe('schemaLoginEmpresa', () => {
-  it('deixa a validação do identificador para ensureLoginIdentifier', () => {
-    const { res, nextCalled, req } = run(schemaLoginEmpresa, { cnpj: '123', senha: 'x' });
-    assert.equal(nextCalled, true); assert.equal(res.statusCode, 200); assert.equal(req.body.cnpj, '123');
+  it('exige e-mail válido, normaliza o e-mail e mantém a senha obrigatória', () => {
+    const ok = run(schemaLoginEmpresa, { email: 'Dono@Empresa.COM', senha: 'x' });
+    assert.equal(ok.nextCalled, true); assert.equal(ok.res.statusCode, 200); assert.equal(ok.req.body.email, 'dono@empresa.com');
+
+    const missing = run(schemaLoginEmpresa, { senha: 'x' });
+    assert.equal(missing.nextCalled, false); assert.equal(missing.res.statusCode, 400); assert.ok(missing.res.body.fields.email);
+
+    const invalid = run(schemaLoginEmpresa, { email: 'sem-arroba', senha: 'x' });
+    assert.equal(invalid.nextCalled, false); assert.equal(invalid.res.statusCode, 400);
   });
 });
 

@@ -5,7 +5,7 @@ import {
   classifySpendEvent,
   shouldFailoverForStatus,
   shouldRespectCooldown,
-} from '../../frontend/src/lib/failoverCore.ts';
+} from '../../frontend/src/lib/failoverCore.js';
 
 test('Vercel HMAC-SHA1 signature is deterministic', () => {
   const body = '{"thresholdPercent":100}';

@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { SeoPageHeader } from './SeoPageHeader';
 
-type Section = { heading: string; body: string };
+type Section = { heading: string; body: ReactNode };
 type ContextLink = { href: string; title: string; description: string };
 
 const UI = {
