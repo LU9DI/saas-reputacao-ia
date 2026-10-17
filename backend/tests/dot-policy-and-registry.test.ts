@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { evaluateDotPolicy } from '../services/dotPolicy.js';
 import { dotActionRequiresApproval, getDotActionDefinition, isDotActionAllowed } from '../services/dotActionRegistry.js';
+import { isDotPermissionActive } from '../services/dotAccessControl.js';
 
 test('DOT policy never auto-executes an action', () => {
   for (const autonomy of ['observador', 'assistente', 'proativo', 'autonomo_controlado'] as const) {
@@ -36,4 +37,11 @@ test('DOT registry keeps all current actions behind explicit approval', () => {
 test('DOT registry rejects unknown actions', () => {
   assert.equal(getDotActionDefinition('enviar_whatsapp_sem_aprovacao'), null);
   assert.equal(dotActionRequiresApproval('enviar_whatsapp_sem_aprovacao'), true);
+});
+
+
+test('DOT user-level permission revocation overrides inherited company grants', () => {
+  assert.equal(isDotPermissionActive({ granted: 1, revoked_at: null }), true);
+  assert.equal(isDotPermissionActive({ granted: 0, revoked_at: new Date().toISOString() }), false);
+  assert.equal(isDotPermissionActive(null), false);
 });
