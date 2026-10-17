@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Avaliações Google para restaurantes ',
+  title: 'Avaliações Google para restaurantes',
   description:
     'QR na mesa, pedido de feedback e convite para avaliações genuínas no Google. Organize comentários, identifique padrões e transforme a experiência do cliente em ações. Trial de 7 dias.',
   alternates: {

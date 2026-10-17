@@ -5,7 +5,7 @@ import { BlogArticle, H2 } from '../../components/BlogArticle';
 const canonical = 'https://filtraai.com/blog/reputacao-online-hoteis';
 
 export const metadata: Metadata = {
-  title: 'Reputação online para hotéis: como aprender com avaliações de hóspedes ',
+  title: 'Reputação online para hotéis: como aprender com avaliações de hóspedes',
   description:
     'Como hotéis podem analisar avaliações de hóspedes, identificar padrões de experiência e transformar feedback em prioridades operacionais.',
   alternates: { canonical },

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
-  title: 'Filtra.AI — Gestão de reputação online com IA',
+  title: 'Plataforma de gestão de reputação online com IA',
   description:
     'Filtra.AI: plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.',
   alternates: {

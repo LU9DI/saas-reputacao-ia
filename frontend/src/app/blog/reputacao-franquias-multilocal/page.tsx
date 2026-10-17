@@ -5,7 +5,7 @@ import { BlogArticle, H2 } from '../../components/BlogArticle';
 const canonical = 'https://filtraai.com/blog/reputacao-franquias-multilocal';
 
 export const metadata: Metadata = {
-  title: 'Reputação para franquias multilocal: como comparar unidades ',
+  title: 'Reputação para franquias multilocal: como comparar unidades',
   description:
     'Como redes de franquias podem organizar avaliações por unidade, encontrar padrões e transformar diferenças locais em ação.',
   alternates: { canonical },

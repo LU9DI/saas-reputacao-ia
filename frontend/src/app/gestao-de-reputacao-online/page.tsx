@@ -3,7 +3,7 @@ import { SeoLanding } from '../components/SeoLanding';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Gestão de reputação online para empresas | Avaliações Google e IA | Filtra.AI',
+    title: 'Gestão de reputação online para empresas',
   description: 'Gestão de reputação online para empresas: monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
   alternates: {
     canonical: 'https://filtraai.com/gestao-de-reputacao-online',

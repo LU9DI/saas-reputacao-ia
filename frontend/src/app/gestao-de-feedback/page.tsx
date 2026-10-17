@@ -3,7 +3,7 @@ import { SeoLanding } from '../components/SeoLanding';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Gestão de feedback de clientes: método e ferramentas | Filtra.AI',
+    title: 'Gestão de feedback de clientes: método e ferramentas',
   description:
     'Como estruturar coleta, análise e acompanhamento de feedback de clientes para transformar opiniões em melhoria operacional.',
   alternates: {

@@ -5,7 +5,7 @@ import { BlogArticle, H2 } from '../../components/BlogArticle';
 const canonical = 'https://filtraai.com/blog/reputacao-online-clinicas';
 
 export const metadata: Metadata = {
-  title: 'Reputação online para clínicas: guia prático de avaliações e feedback ',
+  title: 'Reputação online para clínicas: guia prático de avaliações e feedback',
   description:
     'Como clínicas podem transformar avaliações de pacientes e feedback privado em uma rotina de melhoria de experiência e reputação local.',
   alternates: { canonical },

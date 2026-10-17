@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BrandMark } from '../../../components/BrandMark';
 import { LanguageSwitcher } from '../../../components/LanguageSwitcher';
+import { serpTitle } from '../../../lib/seoTitle';
 
 type Lang='en'|'es'|'zh';
 type Section={heading:string;body:string;bullets?:string[]};
@@ -170,14 +171,14 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
   if(!found)return{};
   const family=familyFor(lang,slug);
   if(!family)return {
-    title:found.item.title,
+    title:serpTitle(found.item.title),
     description:found.item.description,
     alternates:{canonical:base+'/'+lang+'/blog/'+slug},
     openGraph:{
       type:'article',
       url:base+'/'+lang+'/blog/'+slug,
       siteName:'Filtra.AI',
-      title:found.item.title,
+      title:serpTitle(found.item.title),
       description:found.item.description
     },
     robots:{index:true,follow:true}
@@ -194,14 +195,14 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
     languages['x-default']=base+family.en;
   }
   return {
-    title:found.item.title,
+    title:serpTitle(found.item.title),
     description:found.item.description,
     alternates:{canonical:base+'/'+lang+'/blog/'+slug,languages},
     openGraph:{
       type:'article',
       url:base+'/'+lang+'/blog/'+slug,
       siteName:'Filtra.AI',
-      title:found.item.title,
+      title:serpTitle(found.item.title),
       description:found.item.description
     },
     robots:{index:true,follow:true}

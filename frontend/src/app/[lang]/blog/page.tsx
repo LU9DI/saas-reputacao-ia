@@ -11,7 +11,7 @@ const base='https://filtraai.com';
 
 const content:Record<Lang,{title:string;description:string;heading:string;intro:string;articles:Article[];cta:string}>={
   en:{
-    title:'Filtra.AI Blog | Reviews, Reputation and AI',
+    title:'Blog: reviews, reputation and AI',
     description:'Guides about Google reviews, online reputation management, AI review analysis and local SEO.',
     heading:'Reviews, reputation and customer experience',
     intro:'Practical guides for businesses that want to turn customer feedback into better decisions, stronger reputation and sustainable local growth.',
@@ -26,7 +26,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
     cta:'Start your 7-day free trial'
   },
   es:{
-    title:'Blog Filtra.AI | Reseñas, reputación e IA',
+    title:'Blog: reseñas, reputación e IA',
     description:'Guías sobre reseñas de Google, gestión de reputación, análisis con IA y SEO local.',
     heading:'Reseñas, reputación y experiencia del cliente',
     intro:'Guías prácticas para empresas que quieren convertir el feedback de clientes en mejores decisiones, una reputación más sólida y crecimiento local sostenible.',

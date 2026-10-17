@@ -232,5 +232,6 @@
   "feat_dashboard": "Dashboard with analytics",
   "feat_multi": "Consolidated multi-location management",
   "feat_support": "Priority support",
-  "feat_early": "Early access to selected new features"
+  "feat_early": "Early access to selected new features",
+  "feat_dot": "Filtra Dot: AI reputation agent"
 }

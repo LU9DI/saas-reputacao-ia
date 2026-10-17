@@ -3,7 +3,7 @@ import { AuditoriaGratuitaClient } from './AuditoriaGratuitaClient';
 import { SeoPageHeader } from '../components/SeoPageHeader';
 
 export const metadata: Metadata = {
-  title: 'Auditoria gratuita de avaliações e reputação online | Filtra.AI',
+  title: 'Auditoria gratuita de avaliações e reputação online',
   description:
     'Faça uma auditoria gratuita das avaliações da sua empresa. Identifique pontos fortes, riscos e temas recorrentes e veja oportunidades de melhoria.',
   alternates: {

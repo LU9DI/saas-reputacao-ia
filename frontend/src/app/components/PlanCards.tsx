@@ -99,6 +99,15 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const priorities = textOrFallback(t.feat_priorities, 'Prioridades de ação baseadas nas avaliações');
   const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico de riscos e tendências');
   const growth = textOrFallback(t.feat_growth, 'Oportunidades de crescimento identificadas nos dados');
+  const dotFallback =
+    t.lang_name === 'English'
+      ? 'Filtra Dot: AI reputation agent'
+      : t.lang_name === 'Español'
+        ? 'Filtra Dot: agente de reputación con IA'
+        : t.lang_name === '中文'
+          ? 'Filtra Dot：AI 声誉代理'
+          : 'Filtra Dot: agente de reputação com IA';
+  const dot = textOrFallback(t.feat_dot, dotFallback);
 
   const map: Record<string, { features: string[]; missing?: string[] }> = {
     inicial: { features: [fb, wpp, dashboard], missing: [report, aiMissing] },
@@ -106,13 +115,13 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     ultra: { features: [fb, wpp, ai, report, analytics] },
     corporativo: {
       features: [
-        fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities, unitLinks, support, early,
+        fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities, unitLinks, support, early, dot,
       ],
     },
     rei: {
       features: [
         fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities,
-        strategicRadar, growth, unitLinks, support, early,
+        strategicRadar, growth, unitLinks, support, early, dot,
       ],
     },
   };

@@ -208,5 +208,6 @@
   "feat_dashboard": "Panel con análisis avanzados",
   "feat_multi": "Gestión consolidada de múltiples unidades",
   "feat_support": "Soporte prioritario",
-  "feat_early": "Acceso anticipado a nuevas funciones seleccionadas"
+  "feat_early": "Acceso anticipado a nuevas funciones seleccionadas",
+  "feat_dot": "Filtra Dot: agente de reputación con IA"
 }

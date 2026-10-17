@@ -4,7 +4,7 @@ import { SeoLanding } from '../components/SeoLanding';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'SEO local para agências: reputação | Filtra.AI',
+    title: 'SEO local para agências: reputação e avaliações',
     description: 'Gestão de reputação e avaliações Google para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.',
     alternates: {
       canonical: 'https://filtraai.com/agencias',

@@ -5,7 +5,7 @@ import { BlogArticle, H2 } from '../../components/BlogArticle';
 const canonical = 'https://filtraai.com/blog/feedback-cliente-para-reputacao';
 
 export const metadata: Metadata = {
-  title: 'Feedback do cliente para reputação: como fechar o ciclo ',
+  title: 'Feedback do cliente para reputação: como fechar o ciclo',
   description:
     'Como transformar feedback de clientes em um processo: coleta, análise, prioridade, ação e acompanhamento da reputação.',
   alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/customer-feedback-reputation', es: 'https://filtraai.com/es/blog/feedback-clientes-reputacion', zh: 'https://filtraai.com/zh/blog/customer-feedback-reputation', 'x-default': canonical } },

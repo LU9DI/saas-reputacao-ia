@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 
 export const metadata: Metadata = {
-  title: 'Gestão de feedback de clientes com IA | Filtra.AI',
+  title: 'Gestão de feedback de clientes com IA',
   description:
     'Centralize feedback de clientes, encontre padrões e transforme opiniões em prioridades de crescimento com inteligência artificial.',
   alternates: {
