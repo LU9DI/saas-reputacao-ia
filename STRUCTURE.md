@@ -46,5 +46,5 @@ saas-reputacao-ia/
 
 ## Legado (ainda no repo, evitar expandir)
 
-- `backend/relatorioPdf.ts` + rota PDF — relatório do painel hoje é texto via canais (WPP/SMS/e-mail/WeChat)
+- Relatórios: conteúdo inteligente em texto; endpoints PDF legados respondem HTTP 410
 - Re-exports na raiz do backend (`mailer.ts`, `authMiddleware.ts`) → preferir `lib/` e `middleware/`
