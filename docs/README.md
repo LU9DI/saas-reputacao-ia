@@ -24,7 +24,7 @@
 | `PASSWORD_WIRE.md` | Reset de senha |
 | `RESET_ADMIN.md` | Resetar admin |
 
-> `RELATORIO_PDF.md` descreve o gerador PDF legado. O painel atual envia **relatório em texto** pelos canais escolhidos.
+> Os geradores PDF foram removidos. O painel disponibiliza o relatório inteligente em tela; endpoints PDF legados respondem HTTP 410.
 
 ## Limpeza
 

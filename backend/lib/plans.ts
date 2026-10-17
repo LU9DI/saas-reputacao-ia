@@ -22,20 +22,10 @@ export function isTrialPlan(plan: string | null | undefined): boolean {
   return p === 'trial' || p === 'teste' || p === 'trialing' || p.startsWith('trial');
 }
 
-/** Entrega profissional mensal: Pro e acima. Trial mantém apenas a elegibilidade legada do PDF durante a compatibilidade. */
+/** Entrega profissional mensal: Pro e acima.  */
 export function planTemRelatorioMensal(plan: string | null | undefined): boolean {
   const p = String(plan || '').toLowerCase();
   return ['pro', 'ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(p);
-}
-
-/** Alias legado mantido para que rotas antigas não quebrem enquanto o PDF é aposentado como entregável. */
-export function planTemPdf(plan: string | null | undefined): boolean {
-  return isTrialPlan(plan) || planTemRelatorioMensal(plan);
-}
-/** Alias usado por alguns módulos legados */
-export function empresaTemPdf(empresa: { plan?: string; status?: string } | null): boolean {
-  if (!empresa) return false;
-  return planTemPdf(empresa.plan || empresa.status);
 }
 
 export function planLabel(plan: string): string {

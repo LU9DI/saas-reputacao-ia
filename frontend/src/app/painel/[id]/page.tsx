@@ -33,7 +33,7 @@ function authHeaders(json = true): HeadersInit {
 
 /** Relatório inteligente: Trial e Pro+ (não no Inicial pago). */
 function planAllowsReport(plan?: string, status?: string, dashboard?: any): boolean {
-  if (dashboard?.pdf_disponivel || dashboard?.relatorio_disponivel) return true;
+  if (dashboard?.relatorio_disponivel) return true;
   if (dashboard?.trial_completo) return true;
   const p = String(plan || '').toLowerCase();
   const s = String(status || '').toLowerCase();
