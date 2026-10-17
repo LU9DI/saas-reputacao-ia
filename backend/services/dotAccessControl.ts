@@ -119,16 +119,22 @@ async function recordAccess(empresaId: string, userId: string | null | undefined
   );
 }
 
+export function isDotPermissionActive(row: { granted?: unknown; revoked_at?: unknown } | null | undefined): boolean {
+  return Boolean(row && Number(row.granted) === 1 && !row.revoked_at);
+}
+
 export async function dotAccessAllowed(empresaId: string, resource: DotAccessResource, action: DotAccessAction, userId?: string | null, context?: unknown) {
   await ensureDotAccessSchema();
   const db = getDb();
+  // Resolve the most specific row first, including explicit denies. Filtering
+  // granted=1 before ordering would let a company-wide grant override a user revoke.
   const row = await db.get(
-    `SELECT granted FROM dot_agent_permissions
-      WHERE empresa_id=? AND resource=? AND action=? AND granted=1 AND (user_id IS NULL OR user_id=?)
-        AND revoked_at IS NULL ORDER BY CASE WHEN user_id=? THEN 0 ELSE 1 END LIMIT 1`,
+    `SELECT granted, revoked_at, user_id FROM dot_agent_permissions
+      WHERE empresa_id=? AND resource=? AND action=? AND (user_id IS NULL OR user_id=?)
+      ORDER BY CASE WHEN user_id=? THEN 0 ELSE 1 END LIMIT 1`,
     [empresaId, resource, action, userId || null, userId || null],
   );
-  const allowed = Boolean(row);
+  const allowed = isDotPermissionActive(row);
   await recordAccess(empresaId, userId, resource, action, allowed, allowed ? 'permission_granted' : 'permission_denied', context);
   return allowed;
 }
