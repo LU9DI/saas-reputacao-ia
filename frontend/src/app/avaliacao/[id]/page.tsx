@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import Client from './Client';
 
 export const metadata: Metadata = {
-  title: 'Enviar avaliação | Filtra.AI',
+  title: 'Enviar avaliação',
   robots: { index: false, follow: false },
 };
 

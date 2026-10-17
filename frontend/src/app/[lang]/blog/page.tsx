@@ -41,7 +41,7 @@ const content:Record<Lang,{title:string;description:string;heading:string;intro:
     cta:'Comenzar prueba gratuita de 7 días'
   },
   zh:{
-    title:'Filtra.AI 博客 | Google 评价、声誉与 AI',
+    title:'博客：Google 评价、声誉与 AI',
     description:'关于 Google 评价、在线声誉管理、AI 评论分析和本地 SEO 的实用指南。',
     heading:'评价、声誉与客户体验',
     intro:'为希望把客户反馈转化为管理决策、品牌信任和可持续本地增长的企业提供实用指南。',

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Administração | Filtra.AI',
+  title: 'Administração',
   robots: { index: false, follow: false },
 };
 

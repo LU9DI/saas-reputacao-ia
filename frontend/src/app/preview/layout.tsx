@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Prévia da plataforma | Filtra.AI',
+  title: 'Prévia da plataforma',
   robots: { index: false, follow: false },
 };
 

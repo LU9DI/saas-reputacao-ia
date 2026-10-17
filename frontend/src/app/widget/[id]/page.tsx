@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Client from './Client';
 
 export const metadata: Metadata = {
-  title: 'Widget de avaliações | Filtra.AI',
+  title: 'Widget de avaliações',
   robots: { index: false, follow: false },
 };
 

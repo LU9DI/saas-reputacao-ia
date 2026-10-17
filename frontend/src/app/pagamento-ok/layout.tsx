@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Pagamento confirmado | Filtra.AI',
+  title: 'Pagamento confirmado',
   robots: { index: false, follow: false },
 };
 
