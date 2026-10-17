@@ -44,7 +44,9 @@ export async function tokensUsadosMes(empresaId: string, feature?: string): Prom
       [empresaId, mes, ...featureParams],
     );
     return Number(row?.t || 0);
-  } catch {
+  } catch (error) {
+    // A cota isolada do DOT falha fechada: erro de leitura não pode liberar tokens ilimitados.
+    if (feature) throw error;
     return 0;
   }
 }
