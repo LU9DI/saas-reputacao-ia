@@ -24,6 +24,13 @@ export default function VerifyTrialEmail() {
           { credentials: 'include', timeoutMs: 15000 }
         );
         const data = await response.json();
+        if (response.status === 410 || data.code === 'TRIAL_EMAIL_CONFIRMATION_RETIRED') {
+          // Fluxo atual: o trial ativa na hora (e-mail validado por MX); confirmação por link foi aposentada.
+          setStatus('ok');
+          setMessage(data.error || 'A confirmação por e-mail não é mais necessária. Acesse o painel com seu e-mail e senha.');
+          window.setTimeout(() => { window.location.href = '/login'; }, 1200);
+          return;
+        }
         if (!response.ok) throw new Error(data.error || 'Não foi possível confirmar o e-mail.');
         if (data.token) persistFiltraToken(data.token);
         setStatus('ok');
