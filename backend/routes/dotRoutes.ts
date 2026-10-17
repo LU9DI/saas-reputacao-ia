@@ -15,7 +15,7 @@ import { planLabel } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { getTokenLimit, tokensUsadosMes } from '../lib/quota.js';
-import { requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
+import { ensureDotInternalPermissionBaseline, requireDotAccess, type DotAccessResource, type DotAccessAction } from '../services/dotAccessControl.js';
 
 const dotLimiter = rateLimit({
   windowMs: 60_000,
@@ -237,6 +237,20 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
         plan,
         planLabel: planLabel(plan),
         reason: 'O Filtra Dot está em acesso antecipado para os planos Rei e Corporativo.',
+      };
+    }
+
+    try {
+      await ensureDotInternalPermissionBaseline(String(empresa.id));
+    } catch (error: any) {
+      console.error('[dot] failed to initialize internal permission baseline:', error?.message || error);
+      return {
+        allowed: false,
+        demo: false,
+        empresaId: empresa.id,
+        plan,
+        planLabel: planLabel(plan),
+        reason: 'Não foi possível inicializar as permissões internas do DOT.',
       };
     }
 
