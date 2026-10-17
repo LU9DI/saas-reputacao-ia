@@ -20,6 +20,40 @@ export async function ensureDotAccessSchema() {
   await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_access_audit_empresa ON dot_access_audit(empresa_id, created_at)');
 }
 
+const internalBaseline: Array<{ resource: DotAccessResource; action: DotAccessAction }> = [
+  { resource: 'filtra', action: 'read' },
+  { resource: 'filtra', action: 'analyze' },
+  { resource: 'filtra', action: 'create' },
+  { resource: 'filtra', action: 'update' },
+  { resource: 'filtra', action: 'execute' },
+  { resource: 'operations', action: 'read' },
+  { resource: 'operations', action: 'update' },
+  { resource: 'operations', action: 'execute' },
+];
+const internalBaselineReady = new Set<string>();
+
+/**
+ * Permite o núcleo interno do DOT sem exigir configuração manual inicial.
+ * Não concede CRM, e-mail, WhatsApp, envio externo ou qualquer conector externo.
+ * Conflitos são ignorados para preservar revogações explícitas feitas pelo cliente.
+ */
+export async function ensureDotInternalPermissionBaseline(empresaId: string) {
+  if (!empresaId || internalBaselineReady.has(empresaId)) return;
+  await ensureDotAccessSchema();
+  const db = getDb();
+  const now = new Date().toISOString();
+  for (const permission of internalBaseline) {
+    await db.run(
+      `INSERT INTO dot_agent_permissions
+        (empresa_id,user_id,resource,action,granted,granted_by,granted_at,revoked_at,created_at,updated_at)
+        VALUES (?,NULL,?,?,1,NULL,?,NULL,?,?)
+        ON CONFLICT DO NOTHING`,
+      [empresaId, permission.resource, permission.action, now, now, now],
+    );
+  }
+  internalBaselineReady.add(empresaId);
+}
+
 export async function listDotPermissions(empresaId: string, userId?: string | null) {
   await ensureDotAccessSchema();
   return getDb().all(
