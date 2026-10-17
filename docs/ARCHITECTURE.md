@@ -15,7 +15,6 @@ saas-reputacao-ia/
 │   ├── stripeBilling.ts
 │   ├── groqService.ts
 │   ├── mfa.ts
-│   └── relatorioPdf.ts
 ├── frontend/                # Next.js App Router
 │   └── src/app/
 ├── docs/                    # Documentação
@@ -32,7 +31,7 @@ saas-reputacao-ia/
 | `lib/` | DB, JWT, CORS, quota, e-mail, CNPJ |
 | `middleware/` | Validação e erros |
 
-Arquivos ainda na **raiz do backend** (`stripe*`, `mfa`, `groqService`, `relatorioPdf`) são legados com comportamento estável. Imports antigos (`quota.ts`, `mailer.ts`) **re-exportam** de `lib/` para não quebrar nada.
+Arquivos ainda na **raiz do backend** (`stripe*`, `mfa`, `groqService`) são legados com comportamento estável. Imports antigos (`quota.ts`, `mailer.ts`) **re-exportam** de `lib/` para não quebrar nada.
 
 ## Frontend
 
