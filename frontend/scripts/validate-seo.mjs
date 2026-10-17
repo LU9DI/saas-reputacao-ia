@@ -9,7 +9,6 @@ const rootLayout = read('src/app/layout.tsx');
 const plansLayout = read('src/app/planos/layout.tsx');
 const plansPage = read('src/app/planos/page.tsx');
 const robots = read('src/app/robots.ts');
-const publicRobots = read('public/robots.txt');
 const localizedPages = read('src/app/[lang]/[slug]/page.tsx');
 const localizedBlogs = read('src/app/[lang]/blog/[slug]/page.tsx');
 const localizedHome = read('src/app/[lang]/page.tsx');
@@ -24,7 +23,7 @@ check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Gr
 check(!plansPage.includes('window.location.replace'), 'Plans page must render content instead of redirecting client-side');
 check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pricing cards');
 check(robots.includes("const base = 'https://filtraai.com'") && robots.includes('sitemap: `${base}/sitemap.xml`'), 'Next robots metadata must reference the canonical sitemap URL');
-check(publicRobots.includes('https://filtraai.com/sitemap.xml'), 'public/robots.txt must reference the sitemap');
+check(robots.includes("disallow: ['/api/']"), 'robots metadata must disallow API endpoints only');
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
 check(localizedBlogs.includes('const translatedFamilies') && localizedBlogs.includes("if ('pt' in family)"), 'Translated blog metadata must cross-link all available languages without inventing a Portuguese equivalent');
 
