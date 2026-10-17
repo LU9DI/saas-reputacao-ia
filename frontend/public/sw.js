@@ -14,7 +14,6 @@ function isCacheableApi(url) {
     '/api/push/',
     '/api/webauthn/',
     '/api/mfa',
-    'relatorio.pdf',
   ];
   if (deny.some((d) => url.pathname.includes(d))) return false;
   // allowlist
