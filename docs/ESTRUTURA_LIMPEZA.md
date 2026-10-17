@@ -17,7 +17,6 @@ mkdir -p backend/services backend/routes
 # mover e ajustar imports relativos:
 #   groqService.ts → services/
 #   stripeBilling.ts → services/
-#   relatorioPdf.ts → services/
 #   stripeRoutes.ts → routes/
 #   mfa.ts, admin*Route*.ts, passwordResetRoutes.ts → routes/
 # atualizar server.ts imports
