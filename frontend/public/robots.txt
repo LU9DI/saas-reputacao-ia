@@ -1,8 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /painel/
-Disallow: /admin/
 Disallow: /api/
-Disallow: /avaliacao/
 
 Sitemap: https://filtraai.com/sitemap.xml

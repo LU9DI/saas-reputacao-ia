@@ -107,6 +107,9 @@ jobs:
       - name: Build Next.js
         run: npm run build
 
+      - name: Audit static export indexability
+        run: npm run seo:audit
+
   summary:
     name: CI summary
     runs-on: ubuntu-latest
