@@ -155,11 +155,11 @@ export async function executeDotActionThroughGateway(
           nextStep: internal.nextStep,
           created: internal.created,
         },
-      })
+      });
     } catch (auditError: any) {
       auditWarning = String(auditError?.message || auditError).slice(0, 500);
       console.error('[dot] executed audit pending:', auditWarning);
-    };
+    }
 
     return {
       ok: true,
@@ -189,10 +189,10 @@ export async function executeDotActionThroughGateway(
         actorType: 'user',
         actorId: actorUserId || null,
         metadata: { executor: definition.executorKey, error: reason },
-      })
+      });
     } catch (auditError: any) {
       console.error('[dot] failed audit write failed:', auditError?.message || auditError);
-    };
+    }
     return { ok: false, id: actionId, status: 'failed', simulated: true, executor: definition.executorKey, startedAt, reason };
   }
 }
