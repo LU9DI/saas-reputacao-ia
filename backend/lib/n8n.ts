@@ -19,7 +19,8 @@ export type N8nEvent =
   | 'lead.whatsapp'
   | 'empresa.bloqueada'
   | 'lead.capturado'
-  | 'report.generated';
+  | 'report.generated'
+  | 'trial.verificacao_pendente';
 
 export function n8nConfigured(): boolean {
   const url = process.env.N8N_WEBHOOK_URL?.trim();
