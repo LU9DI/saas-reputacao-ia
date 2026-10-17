@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/painel/', '/admin/', '/api/', '/avaliacao/'],
+      // Private pages carry noindex in HTML; keep them crawlable so crawlers can observe it.
+      disallow: ['/api/'],
     },
     sitemap: `${base}/sitemap.xml`,
   };

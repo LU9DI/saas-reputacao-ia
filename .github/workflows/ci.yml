@@ -83,6 +83,9 @@ jobs:
         working-directory: frontend
     env:
       NEXT_PUBLIC_API_URL: http://127.0.0.1:5000
+      # O passo "Audit static export indexability" valida o artefato de
+      # exportação estática (out/), que só é gerado com CLOUDFLARE_PAGES=1.
+      CLOUDFLARE_PAGES: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -106,6 +109,9 @@ jobs:
 
       - name: Build Next.js
         run: npm run build
+
+      - name: Audit static export indexability
+        run: npm run seo:audit
 
   summary:
     name: CI summary
