@@ -53,7 +53,6 @@ Extensões: ESLint + Prettier (`.vscode/extensions.json`).
 
 ## 6. Legado (não expandir)
 
-- PDF: `backend/relatorioPdf.ts` + `RELATORIO_PDF.md`
 - Re-exports: `backend/mailer.ts`, `authMiddleware.ts` → use `lib/` e `middleware/`
 
 ## 7. Marca
@@ -66,4 +65,4 @@ Sempre **Filtra.AI**.
 - [x] `.vscode` settings + extensions
 - [x] `next.config` rewrite só em dev
 - [x] Dicionários PT/EN/ES/ZH com chaves do painel
-- [x] PDF documentado como legado
+- [x] Geradores PDF removidos; endpoints legados respondem HTTP 410
