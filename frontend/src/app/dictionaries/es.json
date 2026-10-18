@@ -213,5 +213,7 @@
   "feat_multi": "Gestión consolidada de múltiples unidades",
   "feat_support": "Soporte prioritario",
   "feat_early": "Acceso anticipado a nuevas funciones seleccionadas",
-  "feat_dot": "Filtra Dot: agente de reputación con IA"
+  "feat_dot": "Filtra Dot: agente de reputación con IA",
+  "feat_unit_management": "Gestión de múltiples unidades con enlaces exclusivos de reseñas",
+  "feat_unit_performance": "Ranking por unidad, análisis de temas y prioridades de acción"
 }
