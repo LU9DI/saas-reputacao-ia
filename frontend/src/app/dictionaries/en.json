@@ -237,5 +237,7 @@
   "feat_multi": "Consolidated multi-location management",
   "feat_support": "Priority support",
   "feat_early": "Early access to selected new features",
-  "feat_dot": "Filtra Dot: AI reputation agent"
+  "feat_dot": "Filtra Dot: AI reputation agent",
+  "feat_unit_management": "Multi-location management with dedicated review links",
+  "feat_unit_performance": "Location rankings, theme analysis, and action priorities"
 }
