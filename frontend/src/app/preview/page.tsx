@@ -32,6 +32,12 @@ type Copy = {
   featuresTitle: string;
   featuresText: string;
   features: [string, string][];
+  dotEyebrow: string;
+  dotTitle: string;
+  dotText: string;
+  dotPoints: [string, string][];
+  dotGuardrail: string;
+  dotCta: string;
   plansEyebrow: string;
   plansTitle: string;
   plansText: string;
@@ -77,6 +83,12 @@ const copy: Record<Language, Copy> = {
     featuresTitle: 'Mais do que avaliações.',
     featuresText: 'Uma camada de inteligência para entender a experiência do cliente e proteger a reputação da empresa.',
     features: [['IA para feedback', 'Transforme centenas de avaliações em sinais claros sobre atendimento, produto e experiência.'], ['Respostas mais rápidas', 'Identifique o que merece atenção e acelere a rotina de resposta com apoio da IA.'], ['Visão da reputação', 'Acompanhe notas, tendências, temas e evolução em um único painel.'], ['Alertas inteligentes', 'Saiba quando uma experiência ruim precisa de atenção antes que vire um problema maior.']],
+    dotEyebrow: 'Conheça o Filtra Dot',
+    dotTitle: 'Sua inteligência de reputação, pronta para entrar em ação.',
+    dotText: 'O Filtra Dot é o agente de IA da plataforma: ajuda a interpretar sinais, organizar prioridades e conduzir tarefas autorizadas para sua equipe sair da análise e chegar à ação.',
+    dotPoints: [['Entende o cenário', 'Cruza feedbacks e sinais para destacar padrões, riscos e oportunidades.'], ['Organiza o próximo passo', 'Transforma descobertas em recomendações claras e tarefas priorizadas.'], ['Age com limites definidos', 'Pode executar ações permitidas pelas regras e integrações da empresa.']],
+    dotGuardrail: 'Você mantém o controle: permissões definem o que o Dot pode fazer; ações críticas podem exigir aprovação e as atividades devem ser auditáveis.',
+    dotCta: 'Conhecer os planos',
     plansEyebrow: 'Planos',
     plansTitle: 'Comece pequeno. Cresça quando precisar.',
     plansText: 'Os planos atuais continuam aqui; esta versão apenas muda a forma como o visitante chega até eles.',
@@ -110,6 +122,12 @@ const copy: Record<Language, Copy> = {
     featuresTitle: 'More than reviews.',
     featuresText: 'An intelligence layer to understand customer experience and protect your company reputation.',
     features: [['AI for feedback', 'Turn hundreds of reviews into clear signals about service, product, and experience.'], ['Faster responses', 'Identify what needs attention and speed up your response workflow with AI support.'], ['Reputation view', 'Track ratings, trends, topics, and progress in one dashboard.'], ['Smart alerts', 'Know when a poor experience needs attention before it becomes a bigger issue.']],
+    dotEyebrow: 'Meet Filtra Dot',
+    dotTitle: 'Reputation intelligence that helps turn insight into action.',
+    dotText: 'Filtra Dot is the platform’s AI agent. It helps interpret signals, organize priorities, and carry out authorized tasks so your team can move from analysis to action.',
+    dotPoints: [['Understands the situation', 'Connects feedback and signals to surface patterns, risks, and opportunities.'], ['Plans the next step', 'Turns findings into clear recommendations and prioritized tasks.'], ['Acts within defined limits', 'Can perform actions allowed by company rules and connected systems.']],
+    dotGuardrail: 'You stay in control: permissions define what Dot can do; critical actions may require approval, and activity should be auditable.',
+    dotCta: 'Explore plans',
     plansEyebrow: 'Plans',
     plansTitle: 'Start small. Grow when you need to.',
     plansText: 'The current plans remain here; this version only changes how visitors reach them.',
@@ -143,6 +161,12 @@ const copy: Record<Language, Copy> = {
     featuresTitle: 'Mucho más que reseñas.',
     featuresText: 'Una capa de inteligencia para entender la experiencia del cliente y proteger la reputación de la empresa.',
     features: [['IA para comentarios', 'Convierte cientos de reseñas en señales claras sobre atención, producto y experiencia.'], ['Respuestas más rápidas', 'Identifica lo que merece atención y acelera las respuestas con apoyo de la IA.'], ['Visión de reputación', 'Acompaña notas, tendencias, temas y evolución en un solo panel.'], ['Alertas inteligentes', 'Sabe cuándo una mala experiencia necesita atención antes de convertirse en un problema mayor.']],
+    dotEyebrow: 'Conoce Filtra Dot',
+    dotTitle: 'Inteligencia de reputación que ayuda a pasar del análisis a la acción.',
+    dotText: 'Filtra Dot es el agente de IA de la plataforma. Ayuda a interpretar señales, organizar prioridades y realizar tareas autorizadas para que el equipo pase del análisis a la acción.',
+    dotPoints: [['Entiende el contexto', 'Relaciona comentarios y señales para destacar patrones, riesgos y oportunidades.'], ['Organiza el siguiente paso', 'Convierte los hallazgos en recomendaciones claras y tareas prioritarias.'], ['Actúa con límites definidos', 'Puede ejecutar acciones permitidas por las reglas y las integraciones de la empresa.']],
+    dotGuardrail: 'El control sigue siendo tuyo: los permisos definen lo que Dot puede hacer; las acciones críticas pueden requerir aprobación y la actividad debe poder auditarse.',
+    dotCta: 'Ver planes',
     plansEyebrow: 'Planes',
     plansTitle: 'Empieza pequeño. Crece cuando lo necesites.',
     plansText: 'Los planes actuales siguen aquí; esta versión solo cambia la forma en que el visitante llega a ellos.',
@@ -176,6 +200,12 @@ const copy: Record<Language, Copy> = {
     featuresTitle: '不只是评价。',
     featuresText: '用智能分析了解客户体验，并保护企业声誉。',
     features: [['AI 分析反馈', '将数百条评价转化为关于服务、产品和体验的清晰信号。'], ['更快回复', '快速发现需要关注的内容，并借助 AI 加速回复流程。'], ['声誉视图', '在一个面板中跟踪评分、趋势、主题和变化。'], ['智能提醒', '在糟糕体验扩大之前及时发现需要处理的问题。']],
+    dotEyebrow: '认识 Filtra Dot',
+    dotTitle: '让声誉洞察更进一步，转化为实际行动。',
+    dotText: 'Filtra Dot 是平台的 AI 智能代理，可帮助解读信号、安排优先事项，并执行获得授权的任务，让团队从分析走向行动。',
+    dotPoints: [['理解业务情况', '结合客户反馈与相关信号，发现模式、风险和机会。'], ['规划下一步', '将分析结果整理为清晰建议和优先任务。'], ['在明确边界内执行', '可执行企业规则与已连接系统允许的操作。']],
+    dotGuardrail: '控制权始终在您手中：权限决定 Dot 可以执行什么；关键操作可能需要审批，所有活动应可供审计。',
+    dotCta: '查看方案',
     plansEyebrow: '方案',
     plansTitle: '从小开始，按需成长。',
     plansText: '现有方案保持不变；这个版本只是改变访客到达方案页面的方式。',
@@ -298,6 +328,7 @@ export default function LandingPreview() {
           <div className="flex items-center gap-3"><div className="hidden items-center gap-7 text-sm text-zinc-400 md:flex">
             <a href="#como-funciona" className="hover:text-white">{c.howEyebrow}</a>
             <a href="#recursos" className="hover:text-white">{c.featuresEyebrow}</a>
+            <a href="#filtra-dot" className="hover:text-white">Filtra Dot</a>
             <a href="#planos" className="hover:text-white">{c.plansEyebrow}</a>
           </div>
           <div className="flex items-center gap-3">
@@ -336,6 +367,32 @@ export default function LandingPreview() {
         <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
           <div className="max-w-2xl"><span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.featuresEyebrow}</span><h2 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{c.featuresTitle}</h2><p className="mt-5 text-lg leading-8 text-zinc-400">{c.featuresText}</p></div>
           <div className="mt-12 grid gap-4 sm:grid-cols-2">{c.features.map(([title, text], i) => { const Icon = icons[i]; return <div key={title} className="rounded-3xl border border-white/10 bg-black/20 p-7"><Icon size={22} className="text-indigo-300" /><h3 className="mt-5 text-xl font-semibold">{title}</h3><p className="mt-2 leading-7 text-zinc-500">{text}</p></div>; })}</div>
+        </div>
+      </section>
+
+      <section id="filtra-dot" className="relative overflow-hidden border-y border-indigo-400/15 bg-[#08080d]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_35%,rgba(99,102,241,.22),transparent_32%),radial-gradient(circle_at_85%_75%,rgba(56,189,248,.10),transparent_28%)]" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-24 lg:grid-cols-[.9fr_1.1fr] lg:px-8">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-300/20 bg-indigo-400/10 px-3 py-1.5 text-xs font-medium text-indigo-200"><Bot size={14} /> {c.dotEyebrow}</div>
+            <h2 className="mt-5 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{c.dotTitle}</h2>
+            <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-400">{c.dotText}</p>
+            <a href="#planos" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.dotCta} <ArrowRight size={17} /></a>
+            <div className="mt-5 flex items-start gap-2 text-sm leading-6 text-zinc-400"><ShieldCheck size={18} className="mt-0.5 shrink-0 text-emerald-300" /><span>{c.dotGuardrail}</span></div>
+          </div>
+          <div className="relative">
+            <div className="absolute -inset-3 rounded-[32px] bg-indigo-500/10 blur-2xl" />
+            <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950/90 p-5 shadow-2xl shadow-indigo-950/30 sm:p-7">
+              <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-5">
+                <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-400 to-sky-400 text-white"><Bot size={23} /></div><div><div className="font-semibold text-white">Filtra Dot</div><div className="mt-1 text-xs text-zinc-500">AI · Reputation operations</div></div></div>
+                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">Permission-aware</span>
+              </div>
+              <div className="mt-5 space-y-3">
+                {c.dotPoints.map(([title, text], i) => <div key={title} className="flex gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-400/10 text-sm font-semibold text-indigo-200">0{i+1}</div><div><h3 className="font-semibold text-zinc-100">{title}</h3><p className="mt-1 text-sm leading-6 text-zinc-500">{text}</p></div></div>)}
+              </div>
+              <div className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.06] px-4 py-3 text-xs leading-5 text-emerald-200"><ShieldCheck size={15} className="shrink-0" /> {c.dotGuardrail}</div>
+            </div>
+          </div>
         </div>
       </section>
 
