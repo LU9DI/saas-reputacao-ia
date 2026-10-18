@@ -121,7 +121,7 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     rei: {
       features: [
         fb, wpp, ai, report, analytics, multi, unitLinks, ranking, unitInsights, priorities,
-        strategicRadar, growth, dot, support, early,
+        strategicRadar, dot, support, early,
       ],
     },
   };
