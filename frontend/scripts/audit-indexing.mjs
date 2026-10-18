@@ -28,7 +28,7 @@ const REQUIRED_URLS = [
   'https://filtraai.com/zh',
 ];
 const NEVER_INDEX = [
-  /^\/(?:admin|painel|api|avaliacao|widget)(?:\/|$)/,
+  /^\/(?:admin|painel|api|avaliacao|widget|dot)(?:\/|$)/,
   /^\/(?:login|recuperar-senha|teste|preview|pagamento-ok|suporte)(?:\/|$)/,
 ];
 const NOINDEX_ROUTES = [
