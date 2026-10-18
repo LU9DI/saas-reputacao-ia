@@ -275,7 +275,7 @@ function ClientPanelMockup({ c }: { c: Copy }) {
         <aside className="hidden border-r border-white/10 bg-black/30 p-4 md:block">
           <div className="mb-8 text-xs font-semibold text-white">Filtra.AI</div>
           <div className="space-y-2 text-xs">
-            {['Visão geral', 'Avaliações', 'Relatório IA', 'Alertas', 'Configurações'].map((item, i) => (
+            {['Visão geral', 'Avaliações', 'Relatório Inteligente', 'Alertas', 'Configurações'].map((item, i) => (
               <div key={item} className={`rounded-lg px-3 py-2 ${i === 0 ? 'bg-indigo-500/15 text-indigo-200' : 'text-zinc-500'}`}>{item}</div>
             ))}
           </div>
