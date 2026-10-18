@@ -213,5 +213,7 @@
   "feat_multi": "多门店统一管理",
   "feat_support": "优先支持",
   "feat_early": "优先体验部分新功能",
-  "feat_dot": "Filtra Dot：AI 声誉代理"
+  "feat_dot": "Filtra Dot：AI 声誉代理",
+  "feat_unit_management": "多门店统一管理与专属评价链接",
+  "feat_unit_performance": "门店排名、主题分析与行动优先级"
 }
