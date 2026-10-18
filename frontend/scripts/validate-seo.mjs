@@ -23,6 +23,7 @@ check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
 check(rootLayout.includes('localized-document-language') && rootLayout.includes('document.documentElement.lang'), 'Root layout must set the document language for localized routes before hydration');
 check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans canonical must point to /planos');
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
+check(plansLayout.includes('Planos e preços da Filtra.AI'), 'Plans Twitter title must not inherit the homepage title');
 check(blogLayout.includes("canonical: 'https://filtraai.com/blog'"), 'Blog canonical must point to /blog');
 check(blogLayout.includes("url: 'https://filtraai.com/blog'"), 'Blog Open Graph URL must point to /blog');
 check(blogLayout.includes('Blog | Reputação, avaliações Google e SEO local'), 'Blog must have a unique title instead of inheriting the homepage title');
