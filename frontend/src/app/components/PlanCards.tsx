@@ -90,13 +90,10 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const report = textOrFallback(t.feat_report, reportFallback);
   const aiMissing = textOrFallback(t.feat_ai_missing, 'IA integrada');
   const analytics = textOrFallback(t.feat_dashboard, 'Dashboard com análises');
-  const multi = textOrFallback(t.feat_multi, 'Dashboard Multi-unidades');
+  const unitManagement = textOrFallback(t.feat_unit_management, 'Gestão de múltiplas unidades com links exclusivos de avaliação');
+  const unitPerformance = textOrFallback(t.feat_unit_performance, 'Ranking por unidade, análise de temas e prioridades de ação');
   const support = textOrFallback(t.feat_support, 'Suporte Prioritário');
   const early = textOrFallback(t.feat_early, 'Acesso antecipado a novas funções');
-  const ranking = textOrFallback(t.feat_unit_ranking, 'Ranking comparativo de desempenho por unidade');
-  const unitLinks = textOrFallback(t.feat_unit_links, 'Links de avaliação exclusivos por unidade');
-  const unitInsights = textOrFallback(t.feat_unit_insights, 'Análise de resultados e temas por unidade');
-  const priorities = textOrFallback(t.feat_priorities, 'Prioridades de ação baseadas nas avaliações');
   const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico de riscos e tendências');
   const dotFallback =
     t.lang_name === 'English'
@@ -114,12 +111,12 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     ultra: { features: [fb, wpp, ai, report, analytics] },
     corporativo: {
       features: [
-        fb, wpp, ai, report, analytics, multi, unitLinks, ranking, unitInsights, priorities, dot, support, early,
+        fb, wpp, ai, report, analytics, unitManagement, unitPerformance, dot, support, early,
       ],
     },
     rei: {
       features: [
-        fb, wpp, ai, report, analytics, multi, unitLinks, ranking, unitInsights, priorities,
+        fb, wpp, ai, report, analytics, unitManagement, unitPerformance,
         strategicRadar, dot, support, early,
       ],
     },
