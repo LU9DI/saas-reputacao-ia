@@ -53,16 +53,19 @@ export default function DotPage() {
     setLoading(true);
     setError('');
     try {
-      const [status, decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
-        getJson('/api/dot/status'),
+      // Verifica primeiro o gate no backend. Não dispara consultas de dados
+      // do Dot até confirmar que a sessão pertence ao proprietário autorizado.
+      const status = await getJson('/api/dot/status');
+      if (!status.access) {
+        throw new Error(status.error || 'O Filtra Dot está disponível apenas para o proprietário da empresa.');
+      }
+      const [decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
         getJson('/api/dot/decisions'),
         getJson('/api/dot/actions'),
         getJson('/api/dot/cases'),
         getJson('/api/dot/followups'),
         getJson('/api/dot/events'),
         getJson('/api/dot/briefing'),
-        // Estado administrativo: se indisponível (ex.: ordem de publicação
-        // entre frontend e API), a página continua funcionando normalmente.
         getJson('/api/dot/admin/state').catch(() => null),
       ]);
       setData({
