@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { subscriptionReportDue } from '../routes/monthlyReportJobsRoutes.js';
+import { hasUnresolvedMonthlyReport, subscriptionReportDue } from '../routes/monthlyReportJobsRoutes.js';
 
 test('monthly report runs on the subscription anniversary day', () => {
   assert.equal(subscriptionReportDue(18, new Date('2026-10-18T12:00:00.000Z')), true);
@@ -18,4 +18,19 @@ test('invalid subscription days never trigger scheduled reports', () => {
   for (const day of [null, undefined, 0, -1, 32, 'invalid']) {
     assert.equal(subscriptionReportDue(day, now), false);
   }
+});
+
+test('unresolved monthly report reservations retry after the anniversary day', () => {
+  const now = new Date('2026-10-22T12:00:00.000Z');
+  assert.equal(hasUnresolvedMonthlyReport('failed', null, '2026-10-18T12:00:00.000Z', now), true);
+  assert.equal(hasUnresolvedMonthlyReport('generated', '{"ok":true}', '2026-10-18T12:00:00.000Z', now), true);
+  assert.equal(hasUnresolvedMonthlyReport('accepted', null, '2026-10-18T12:00:00.000Z', now), true);
+  assert.equal(hasUnresolvedMonthlyReport('accepted', '{"ok":true}', '2026-10-18T12:00:00.000Z', now), false);
+});
+
+test('processing reservation is retried only after the 30-minute lease expires', () => {
+  const now = new Date('2026-10-18T12:45:00.000Z');
+  assert.equal(hasUnresolvedMonthlyReport('processing', null, '2026-10-18T12:20:00.000Z', now), false);
+  assert.equal(hasUnresolvedMonthlyReport('processing', null, '2026-10-18T12:10:00.000Z', now), true);
+  assert.equal(hasUnresolvedMonthlyReport('pending', null, '2026-10-18T12:00:00.000Z', now), false);
 });
