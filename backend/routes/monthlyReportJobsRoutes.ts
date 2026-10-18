@@ -134,7 +134,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           }
           const existing = await db.get(
             'SELECT status, report_json, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?',
-            [empresa.id, periodo],
+            [empresa.id, reportPeriod],
           ) as any;
           const unresolved = hasUnresolvedMonthlyReport(existing?.status, existing?.report_json, existing?.updated_at);
           if (!subscriptionReportDue(anchorDay) && !unresolved) { stats.pulados++; continue; }
@@ -149,7 +149,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
             `INSERT INTO relatorio_envios_mensais (id, empresa_id, periodo, status, destinatarios_json, created_at, updated_at, tentativas)
              VALUES (?, ?, ?, 'processing', ?, ?, ?, 1)
              ON CONFLICT (empresa_id, periodo) DO NOTHING`,
-            [id, empresa.id, periodo, JSON.stringify(configuredDestinatarios), now, now]
+            [id, empresa.id, reportPeriod, JSON.stringify(configuredDestinatarios), now, now]
           );
           reservationCreated = Number(inserted.changes || 0) > 0;
         } catch (error: any) {
@@ -157,14 +157,14 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           stats.falhas++;
           continue;
         }
-        const reservation = await db.get('SELECT status, updated_at, report_json FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, periodo]) as any;
+        const reservation = await db.get('SELECT status, updated_at, report_json FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, reportPeriod]) as any;
         if (reservation?.status === 'accepted') {
           if (reservation.report_json) { stats.pulados++; continue; }
           try {
-            const recoveredReport = await buildRelatorioProfissional(db, empresa, periodo);
+            const recoveredReport = await buildRelatorioProfissional(db, empresa, reportPeriod);
             const saved = await db.run(
               `UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL`,
-              [JSON.stringify(recoveredReport), new Date().toISOString(), empresa.id, periodo]
+              [JSON.stringify(recoveredReport), new Date().toISOString(), empresa.id, reportPeriod]
             );
             if (saved.changes) stats.snapshots_recuperados++;
             else stats.pulados++;
@@ -183,24 +183,24 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
           const retry = await db.run(
             `UPDATE relatorio_envios_mensais SET status = 'processing', updated_at = ?, erro = NULL, tentativas = tentativas + 1, destinatarios_json = ?
              WHERE empresa_id = ? AND periodo = ? AND status = ? AND updated_at = ?`,
-            [now, JSON.stringify(configuredDestinatarios), empresa.id, periodo, expectedStatus, reservation.updated_at]
+            [now, JSON.stringify(configuredDestinatarios), empresa.id, reportPeriod, expectedStatus, reservation.updated_at]
           );
           if (!retry.changes) { stats.pulados++; continue; }
         }
         try {
-          const report = reservation?.report_json ? JSON.parse(String(reservation.report_json)) : await buildRelatorioProfissional(db, empresa, periodo);
+          const report = reservation?.report_json ? JSON.parse(String(reservation.report_json)) : await buildRelatorioProfissional(db, empresa, reportPeriod);
           // Persist the generated snapshot before resolving recipients or attempting delivery.
-          const snapshotSaved = await db.run(`UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(report), new Date().toISOString(), empresa.id, periodo]);
+          const snapshotSaved = await db.run(`UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(report), new Date().toISOString(), empresa.id, reportPeriod]);
           if (snapshotSaved.changes && !reservation?.report_json) stats.snapshots_gerados++;
           const destinatarios = await resolveMonthlyReportRecipients(db, String(empresa.id), empresa.relatorio_destinatarios);
-          await db.run(`UPDATE relatorio_envios_mensais SET destinatarios_json = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(destinatarios), empresa.id, periodo]);
+          await db.run(`UPDATE relatorio_envios_mensais SET destinatarios_json = ? WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [JSON.stringify(destinatarios), empresa.id, reportPeriod]);
           if (!destinatarios.length) {
-            await db.run(`UPDATE relatorio_envios_mensais SET status = 'generated', updated_at = ?, erro = NULL WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [new Date().toISOString(), empresa.id, periodo]);
+            await db.run(`UPDATE relatorio_envios_mensais SET status = 'generated', updated_at = ?, erro = NULL WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [new Date().toISOString(), empresa.id, reportPeriod]);
             stats.sem_destinatario++;
             continue;
           }
           if (!n8nConfigured()) {
-            await db.run(`UPDATE relatorio_envios_mensais SET status = 'generated', updated_at = ?, erro = NULL WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [new Date().toISOString(), empresa.id, periodo]);
+            await db.run(`UPDATE relatorio_envios_mensais SET status = 'generated', updated_at = ?, erro = NULL WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`, [new Date().toISOString(), empresa.id, reportPeriod]);
             stats.distribuicao_indisponivel++;
             continue;
           }
@@ -212,23 +212,23 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
             slug: empresa.slug || null,
             nome_empresa: empresa.nome_empresa || 'Empresa',
             plan: empresa.plan,
-            periodo,
+            periodo: reportPeriod,
             report,
             relatorio: report,
             channels,
             destinatarios,
             email: destinatarios.find((d: any) => d.canal === 'email')?.destino || null,
-            idempotency_key: 'monthly-professional-report:' + empresa.id + ':' + periodo,
+            idempotency_key: 'monthly-professional-report:' + empresa.id + ':' + reportPeriod,
             entrega: 'mensal',
             modelo_ia: report.geracao?.modelo_ia || null,
             tokens: report.geracao?.tokens || 0,
           });
           if (!accepted) throw new Error('Webhook de distribuição não confirmou o recebimento.');
-          await db.run(`UPDATE relatorio_envios_mensais SET status = 'accepted', updated_at = ?, enviado_em = ?, erro = NULL WHERE empresa_id = ? AND periodo = ?`, [new Date().toISOString(), new Date().toISOString(), empresa.id, periodo]);
+          await db.run(`UPDATE relatorio_envios_mensais SET status = 'accepted', updated_at = ?, enviado_em = ?, erro = NULL WHERE empresa_id = ? AND periodo = ?`, [new Date().toISOString(), new Date().toISOString(), empresa.id, reportPeriod]);
           stats.encaminhados++;
         } catch (error: any) {
           const message = String(error?.message || error).slice(0, 500);
-          await db.run(`UPDATE relatorio_envios_mensais SET status = 'failed', updated_at = ?, erro = ? WHERE empresa_id = ? AND periodo = ? AND status <> 'accepted'`, [new Date().toISOString(), message, empresa.id, periodo]);
+          await db.run(`UPDATE relatorio_envios_mensais SET status = 'failed', updated_at = ?, erro = ? WHERE empresa_id = ? AND periodo = ? AND status <> 'accepted'`, [new Date().toISOString(), message, empresa.id, reportPeriod]);
           stats.falhas++;
           console.warn('[monthly-report] falha empresa=' + empresa.id + ':', message);
         }
