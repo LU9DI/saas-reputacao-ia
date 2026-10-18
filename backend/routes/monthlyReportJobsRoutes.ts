@@ -127,7 +127,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         // Não inferimos o aniversário de expira_em: em meses curtos, o dia original pode ser ambíguo.
         if (!manualRecovery) {
           const anchorDay = Number(empresa.relatorio_dia_assinatura);
-          if (!Number.isInteger(anchorDay) || anchorDay < 1 || anchorDay > 31) {
+          if ((!Number.isInteger(anchorDay) || anchorDay < 1 || anchorDay > 31) && !pendingReport?.periodo) {
             stats.sem_dia_assinatura++;
             stats.pulados++;
             continue;
