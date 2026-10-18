@@ -697,6 +697,7 @@ export default function PainelEmpresa() {
 
             <section id="ai-report" className="scroll-mt-28 space-y-4">
               {reportOk ? (
+                <>
                 <RelatorioInteligentePanel
                   empresaId={empresaId}
                   api={api}
@@ -719,6 +720,7 @@ export default function PainelEmpresa() {
                 {reportMensalOk && mostrarRelatorioMensal && (
                   <RelatorioProfissionalMensalPanel empresa={empresa} monthlyReports={Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />
                 )}
+                </>
               ) : (
                 <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-6">
                   <div className="flex items-start gap-3">
