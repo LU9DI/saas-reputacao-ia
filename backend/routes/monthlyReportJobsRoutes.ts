@@ -15,7 +15,7 @@ export function authorizedMonthlyReportJob(req: Pick<Request, 'headers'>): boole
 }
 
 function currentMonthUtc(): string { return new Date().toISOString().slice(0, 7); }
-function subscriptionReportDue(anchorDay: unknown, now = new Date()): boolean {
+export function subscriptionReportDue(anchorDay: unknown, now = new Date()): boolean {
   const day = Number(anchorDay);
   if (!Number.isInteger(day) || day < 1 || day > 31) return false;
   const lastDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)).getUTCDate();
