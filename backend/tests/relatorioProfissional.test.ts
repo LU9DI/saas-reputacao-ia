@@ -85,7 +85,7 @@ describe('relatório profissional mensal', () => {
     const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-2', nome_empresa: 'Rede Teste', plan: 'rei' }, '2026-09');
     assert.ok(report.radar_estrategico.some((x: any) => /nota média/i.test(x.sinal)));
     assert.ok(Array.isArray(report.oportunidades_crescimento));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /diretoria/i.test(x)));
+    assert.ok(!report.plano.beneficios_incluidos.some((x: string) => /relatório executivo mensal para a diretoria|oportunidades de crescimento identificadas nos dados/i.test(x)), 'REI executive analysis belongs to Relatório Inteligente, not separate plan-card benefits');
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /dashboard com análises/i.test(x)));
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
