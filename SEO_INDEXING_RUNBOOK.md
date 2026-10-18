@@ -34,7 +34,7 @@ This runbook is for the production publication window. Do not submit URLs before
 
 - Confirm all sitemap URLs return the intended page (not a generic shell, 404, login, or fallback error).
 - Confirm redirects and canonical URLs converge on HTTPS `filtraai.com` and do not point to an obsolete deployment host.
-- Confirm the sitemap contains only public, canonical URLs; private dashboard, evaluation, widget, admin, recovery, and test routes must not appear.
+- Confirm the sitemap contains only public, canonical URLs; private dashboard, Dot (`/dot`), evaluation, widget, admin, recovery, and test routes must not appear.
 - Confirm `robots.txt` does not block pages whose HTML must communicate `noindex`. Blocking crawling can prevent search engines from observing that directive.
 - Re-run the CI audit on every material SEO or routing change.
 
