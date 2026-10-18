@@ -347,7 +347,7 @@ export default function PainelEmpresa() {
                 ['#ai-report', t.panel_ai_report || 'Relatório Inteligente'],
                 ['#alerts', t.panel_alerts || 'Alertas'],
                 ['#settings', t.panel_settings || 'Configurações'],
-              ].filter(([href]) => href !== '#professional-report' || reportMensalOk).map(([href, text]) => (
+              ].map(([href, text]) => (
                 <a key={href} href={href} className="shrink-0 rounded-lg px-3 py-1.5 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">
                   {text}
                 </a>
