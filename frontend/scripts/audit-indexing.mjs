@@ -46,6 +46,7 @@ const NOINDEX_ROUTES = [
   '/teste/verificar',
   '/recuperar-senha',
   '/suporte',
+  '/dot',
 ];
 
 function fail(message) {
