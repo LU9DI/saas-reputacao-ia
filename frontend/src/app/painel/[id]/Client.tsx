@@ -437,8 +437,9 @@ export default function PainelEmpresa() {
                 />
               </div>
 
+              <div id="unit-analysis" className="scroll-mt-28">
               {nivel === 'executivo' && Array.isArray(metricas.unidades_ranking) && metricas.unidades_ranking.length > 0 && (
-                <section id="unit-analysis" className="mt-5 scroll-mt-28 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+                <section className="mt-5 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
                   {String(empresa.plan || '').toLowerCase() === 'corporativo' && metricas.unidades_resumo && (
                     <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                       {[
@@ -552,6 +553,7 @@ export default function PainelEmpresa() {
                   </div>
                 </section>
               )}
+              </div>
             </section>
 
             {String(empresa.plan || '').toLowerCase() === 'rei' && metricas.radar_estrategico && (
