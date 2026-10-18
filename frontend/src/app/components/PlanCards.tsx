@@ -115,13 +115,13 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     ultra: { features: [fb, wpp, ai, report, analytics] },
     corporativo: {
       features: [
-        fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities, unitLinks, dot, support, early,
+        fb, wpp, ai, report, analytics, multi, unitLinks, ranking, unitInsights, priorities, dot, support, early,
       ],
     },
     rei: {
       features: [
-        fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities,
-        strategicRadar, growth, unitLinks, dot, support, early,
+        fb, wpp, ai, report, analytics, multi, unitLinks, ranking, unitInsights, priorities,
+        strategicRadar, growth, dot, support, early,
       ],
     },
   };
