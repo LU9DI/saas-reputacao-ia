@@ -304,7 +304,7 @@ export default function PainelEmpresa() {
               <MessageSquare size={17} /> {t.panel_reviews || 'Avaliações'}
             </a>
             <a href="#ai-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
-              <Bot size={17} /> {t.panel_ai_report || 'Relatório IA'}
+              <Bot size={17} /> {t.panel_ai_report || 'Relatório Inteligente'}
             </a>
             <a href="#alerts" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <Bell size={17} /> {t.panel_alerts || 'Alertas'}
@@ -344,7 +344,7 @@ export default function PainelEmpresa() {
                 ['#overview', t.panel_overview || 'Visão geral'],
                 ...(['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) ? [['/dot', 'Filtra Dot']] : []),
                 ['#reviews', t.panel_reviews || 'Avaliações'],
-                ['#ai-report', t.panel_ai_report || 'Relatório IA'],
+                ['#ai-report', t.panel_ai_report || 'Relatório Inteligente'],
                 ['#alerts', t.panel_alerts || 'Alertas'],
                 ['#settings', t.panel_settings || 'Configurações'],
               ].filter(([href]) => href !== '#professional-report' || reportMensalOk).map(([href, text]) => (
