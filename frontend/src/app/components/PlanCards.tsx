@@ -328,6 +328,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
       [
         'feat_unit_ranking',
         'feat_unit_links',
+        'feat_unit_management',
+        'feat_unit_performance',
         'feat_unit_insights',
         'feat_priorities',
         'feat_strategic_radar',
