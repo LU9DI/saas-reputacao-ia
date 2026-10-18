@@ -37,6 +37,8 @@ type Copy = {
   dotText: string;
   dotPoints: [string, string][];
   dotGuardrail: string;
+  dotRole: string;
+  dotStatus: string;
   dotCta: string;
   plansEyebrow: string;
   plansTitle: string;
@@ -88,6 +90,8 @@ const copy: Record<Language, Copy> = {
     dotText: 'O Filtra Dot é o agente de IA da plataforma: ajuda a interpretar sinais, organizar prioridades e conduzir tarefas autorizadas para sua equipe sair da análise e chegar à ação.',
     dotPoints: [['Entende o cenário', 'Cruza feedbacks e sinais para destacar padrões, riscos e oportunidades.'], ['Organiza o próximo passo', 'Transforma descobertas em recomendações claras e tarefas priorizadas.'], ['Age com limites definidos', 'Pode executar ações permitidas pelas regras e integrações da empresa.']],
     dotGuardrail: 'Você mantém o controle: permissões definem o que o Dot pode fazer; ações críticas podem exigir aprovação e as atividades devem ser auditáveis.',
+    dotRole: 'Agente de IA · Operações de reputação',
+    dotStatus: 'Acesso controlado',
     dotCta: 'Conhecer os planos',
     plansEyebrow: 'Planos',
     plansTitle: 'Comece pequeno. Cresça quando precisar.',
@@ -127,6 +131,8 @@ const copy: Record<Language, Copy> = {
     dotText: 'Filtra Dot is the platform’s AI agent. It helps interpret signals, organize priorities, and carry out authorized tasks so your team can move from analysis to action.',
     dotPoints: [['Understands the situation', 'Connects feedback and signals to surface patterns, risks, and opportunities.'], ['Plans the next step', 'Turns findings into clear recommendations and prioritized tasks.'], ['Acts within defined limits', 'Can perform actions allowed by company rules and connected systems.']],
     dotGuardrail: 'You stay in control: permissions define what Dot can do; critical actions may require approval, and activity should be auditable.',
+    dotRole: 'AI agent · Reputation operations',
+    dotStatus: 'Permission-aware',
     dotCta: 'Explore plans',
     plansEyebrow: 'Plans',
     plansTitle: 'Start small. Grow when you need to.',
@@ -166,6 +172,8 @@ const copy: Record<Language, Copy> = {
     dotText: 'Filtra Dot es el agente de IA de la plataforma. Ayuda a interpretar señales, organizar prioridades y realizar tareas autorizadas para que el equipo pase del análisis a la acción.',
     dotPoints: [['Entiende el contexto', 'Relaciona comentarios y señales para destacar patrones, riesgos y oportunidades.'], ['Organiza el siguiente paso', 'Convierte los hallazgos en recomendaciones claras y tareas prioritarias.'], ['Actúa con límites definidos', 'Puede ejecutar acciones permitidas por las reglas y las integraciones de la empresa.']],
     dotGuardrail: 'El control sigue siendo tuyo: los permisos definen lo que Dot puede hacer; las acciones críticas pueden requerir aprobación y la actividad debe poder auditarse.',
+    dotRole: 'Agente de IA · Operaciones de reputación',
+    dotStatus: 'Acceso controlado',
     dotCta: 'Ver planes',
     plansEyebrow: 'Planes',
     plansTitle: 'Empieza pequeño. Crece cuando lo necesites.',
@@ -205,6 +213,8 @@ const copy: Record<Language, Copy> = {
     dotText: 'Filtra Dot 是平台的 AI 智能代理，可帮助解读信号、安排优先事项，并执行获得授权的任务，让团队从分析走向行动。',
     dotPoints: [['理解业务情况', '结合客户反馈与相关信号，发现模式、风险和机会。'], ['规划下一步', '将分析结果整理为清晰建议和优先任务。'], ['在明确边界内执行', '可执行企业规则与已连接系统允许的操作。']],
     dotGuardrail: '控制权始终在您手中：权限决定 Dot 可以执行什么；关键操作可能需要审批，所有活动应可供审计。',
+    dotRole: 'AI 智能代理 · 声誉运营',
+    dotStatus: '权限控制',
     dotCta: '查看方案',
     plansEyebrow: '方案',
     plansTitle: '从小开始，按需成长。',
@@ -384,13 +394,12 @@ export default function LandingPreview() {
             <div className="absolute -inset-3 rounded-[32px] bg-indigo-500/10 blur-2xl" />
             <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950/90 p-5 shadow-2xl shadow-indigo-950/30 sm:p-7">
               <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-5">
-                <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-400 to-sky-400 text-white"><Bot size={23} /></div><div><div className="font-semibold text-white">Filtra Dot</div><div className="mt-1 text-xs text-zinc-500">AI · Reputation operations</div></div></div>
-                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">Permission-aware</span>
+                <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-400 to-sky-400 text-white"><Bot size={23} /></div><div><div className="font-semibold text-white">Filtra Dot</div><div className="mt-1 text-xs text-zinc-500">{c.dotRole}</div></div></div>
+                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">{c.dotStatus}</span>
               </div>
               <div className="mt-5 space-y-3">
                 {c.dotPoints.map(([title, text], i) => <div key={title} className="flex gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-400/10 text-sm font-semibold text-indigo-200">0{i+1}</div><div><h3 className="font-semibold text-zinc-100">{title}</h3><p className="mt-1 text-sm leading-6 text-zinc-500">{text}</p></div></div>)}
               </div>
-              <div className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.06] px-4 py-3 text-xs leading-5 text-emerald-200"><ShieldCheck size={15} className="shrink-0" /> {c.dotGuardrail}</div>
             </div>
           </div>
         </div>
