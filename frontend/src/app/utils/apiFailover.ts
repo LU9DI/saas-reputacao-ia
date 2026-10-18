@@ -5,6 +5,10 @@
  *  1. NEXT_PUBLIC_API_URL          (principal — Render)
  *  2. NEXT_PUBLIC_API_URL_BACKUP   (stand-by — Oracle / outro)
  *  3. NEXT_PUBLIC_API_URLS         (lista extra, separada por vírgula)
+ *  4. https://api.filtraai.com     (canônica — garantida em produção)
+ *
+ * Hosts comprovadamente obsoletos (ex.: serviços descomissionados) nunca
+ * entram na rotação.
  *
  * Troca quando: rede falha, timeout, ou HTTP 502/503/504.
  * Mantém a base que funcionou por 5 min (sticky) para não ficar oscilando.
@@ -14,6 +18,28 @@
 
 const STICKY_MS = 5 * 60 * 1000;
 const DEFAULT_TIMEOUT_MS = 12_000;
+
+/**
+ * API canônica de produção. É garantida na lista mesmo quando a configuração
+ * (NEXT_PUBLIC_API_URL / _BACKUP / _URLS) estiver ausente ou apontar para um
+ * host comprovadamente morto — o frontend nunca fica sem uma base válida.
+ */
+const CANONICAL_API_URL = 'https://api.filtraai.com';
+
+/**
+ * Hosts comprovadamente obsoletos (respondem erro de aplicação e não fazem
+ * parte da produção). Ficam fora da rotação para não atrasar o boot nem
+ * segurar o sticky num host morto.
+ */
+const OBSOLETE_API_HOSTS = new Set(['filtra-ai-dot-api.onrender.com']);
+
+function isObsoleteApiBase(base: string): boolean {
+  try {
+    return OBSOLETE_API_HOSTS.has(new URL(base).host);
+  } catch {
+    return false;
+  }
+}
 
 let stickyBase: string | null = null;
 let stickyUntil = 0;
@@ -40,7 +66,16 @@ export function listApiBases(): string[] {
       .filter(Boolean);
 
   const raw = [primary, backup, ...extras].map(stripSlash).filter(Boolean);
-  return [...new Set(raw)];
+  const bases = [...new Set(raw)].filter((base) => !isObsoleteApiBase(base));
+  // Canônica garantida em produção mesmo com env ausente/desatualizada.
+  if (
+    typeof process !== 'undefined' &&
+    process.env.NODE_ENV === 'production' &&
+    !bases.includes(CANONICAL_API_URL)
+  ) {
+    bases.push(CANONICAL_API_URL);
+  }
+  return bases;
 }
 
 /** Base preferida no momento (sticky ou primeira da lista). */
