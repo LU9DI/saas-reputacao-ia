@@ -8,9 +8,16 @@ const CACHE_TTL_MS = 30_000;
 const CACHE_MAX_COMPANIES = 250;
 const reviewCache = new Map<string, ReviewCacheEntry>();
 const inFlight = new Map<string, Promise<any[]>>();
+const databaseIds = new WeakMap<object, number>();
+let nextDatabaseId = 1;
+function cacheKey(db: object, empresaId: string): string {
+  let databaseId = databaseIds.get(db);
+  if (!databaseId) { databaseId = nextDatabaseId++; databaseIds.set(db, databaseId); }
+  return `${databaseId}:${String(empresaId)}`;
+}
 
 export async function loadCompanyReviewsCached(db: any, empresaId: string): Promise<any[]> {
-  const key = String(empresaId);
+  const key = cacheKey(db, empresaId);
   const now = Date.now();
   const cached = reviewCache.get(key);
   if (cached && cached.expiresAt > now) {
@@ -59,5 +66,6 @@ export async function loadCompanyReviewsCached(db: any, empresaId: string): Prom
 
 /** Invalida após mutações de avaliações quando a rota de escrita puder fazê-lo. */
 export function invalidateCompanyReviewsCache(empresaId: string): void {
-  reviewCache.delete(String(empresaId));
+  const suffix = `:${String(empresaId)}`;
+  for (const key of reviewCache.keys()) if (key.endsWith(suffix)) reviewCache.delete(key);
 }
