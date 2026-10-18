@@ -121,6 +121,7 @@ export default function PainelEmpresa() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
+  const [mostrarRelatorioMensal, setMostrarRelatorioMensal] = useState(false);
   const [precisaLogin, setPrecisaLogin] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [whatsappInput, setWhatsappInput] = useState('');
@@ -302,9 +303,6 @@ export default function PainelEmpresa() {
             <a href="#reviews" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <MessageSquare size={17} /> {t.panel_reviews || 'Avaliações'}
             </a>
-            {reportMensalOk && <a href="#professional-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
-              <FileText size={17} /> Relatório profissional
-            </a>}
             <a href="#ai-report" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <Bot size={17} /> {t.panel_ai_report || 'Relatório IA'}
             </a>
@@ -346,7 +344,6 @@ export default function PainelEmpresa() {
                 ['#overview', t.panel_overview || 'Visão geral'],
                 ...(['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) ? [['/dot', 'Filtra Dot']] : []),
                 ['#reviews', t.panel_reviews || 'Avaliações'],
-                ['#professional-report', 'Relatório profissional'],
                 ['#ai-report', t.panel_ai_report || 'Relatório IA'],
                 ['#alerts', t.panel_alerts || 'Alertas'],
                 ['#settings', t.panel_settings || 'Configurações'],
@@ -698,9 +695,7 @@ export default function PainelEmpresa() {
               </section>
             )}
 
-            {reportMensalOk && <RelatorioProfissionalMensalPanel empresa={empresa} monthlyReports={Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />}
-
-            <section id="ai-report" className="scroll-mt-28">
+            <section id="ai-report" className="scroll-mt-28 space-y-4">
               {reportOk ? (
                 <RelatorioInteligentePanel
                   empresaId={empresaId}
@@ -708,6 +703,22 @@ export default function PainelEmpresa() {
                   authHeaders={authHeaders}
                   panelData={data}
                 />
+                {reportMensalOk && (
+                  <div className="mt-4 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h3 className="text-sm font-semibold text-white">{t.panel_monthly_report || 'Relatório Mensal'}</h3>
+                        <p className="mt-1 text-xs text-zinc-400">{t.panel_monthly_report_desc || 'Consulte o relatório do mês e o histórico disponível.'}</p>
+                      </div>
+                      <button type="button" onClick={() => setMostrarRelatorioMensal((open) => !open)} aria-expanded={mostrarRelatorioMensal} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-4 py-2.5 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
+                        <FileText size={16} /> {mostrarRelatorioMensal ? (t.panel_monthly_report_hide || 'Ocultar relatório mensal') : (t.panel_monthly_report_open || 'Abrir Relatório Mensal')}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {reportMensalOk && mostrarRelatorioMensal && (
+                  <RelatorioProfissionalMensalPanel empresa={empresa} monthlyReports={Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />
+                )}
               ) : (
                 <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-6">
                   <div className="flex items-start gap-3">
