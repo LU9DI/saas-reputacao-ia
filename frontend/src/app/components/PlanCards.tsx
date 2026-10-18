@@ -303,9 +303,18 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     // Classifique pela chave semântica do dicionário, não pelo texto traduzido.
     // Assim todos os idiomas recebem os mesmos ícones, cores e sombreamento.
     const featureKey =
-      Object.entries(t).find(
-        ([key, value]) => key.startsWith('feat_') && String(value) === text
-      )?.[0] ?? '';
+      Object.entries(t).find(([key, value]) => {
+        if (!key.startsWith('feat_')) return false;
+        const translated = String(value);
+        if (translated === text) return true;
+        // feat_feedbacks contém {n}; comparar o modelo traduzido preserva
+        // a chave semântica depois de inserir o limite mensal em qualquer idioma.
+        if (key === 'feat_feedbacks' && translated.includes('{n}')) {
+          const [before, after] = translated.split('{n}');
+          return text.startsWith(before) && text.endsWith(after);
+        }
+        return false;
+      })?.[0] ?? '';
     const Badge = ({ className, icon: Icon, children }: any) => (
       <span
         className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}
