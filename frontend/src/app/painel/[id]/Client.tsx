@@ -732,7 +732,7 @@ export default function PainelEmpresa() {
               )}
             </section>
 
-            <section id="reviews"            <section id="reviews" className="scroll-mt-28">
+            <section id="reviews" className="scroll-mt-28">
               <div className="mb-3 flex items-end justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[.18em] text-indigo-400">{t.panel_reviews || 'Avaliações'}</p>
