@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bell, Bot, FileText, LayoutDashboard, LogOut, MessageSquare, RefreshCw, Settings, ShieldCheck, Star, TrendingUp } from 'lucide-react';
+import { Bell, Bot, ChevronDown, ChevronRight, FileText, Layers, LayoutDashboard, LogOut, MessageSquare, RefreshCw, Settings, ShieldCheck, Star, TrendingUp } from 'lucide-react';
 import { useRouteId } from '../../utils/useRouteId';
 import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
@@ -122,6 +122,7 @@ export default function PainelEmpresa() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [mostrarRelatorioMensal, setMostrarRelatorioMensal] = useState(false);
+  const [unidadesMenuOpen, setUnidadesMenuOpen] = useState(false);
   const [precisaLogin, setPrecisaLogin] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [whatsappInput, setWhatsappInput] = useState('');
@@ -296,9 +297,25 @@ export default function PainelEmpresa() {
               <LayoutDashboard size={17} /> {t.panel_overview || 'Visão geral'}
             </a>
             {['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) && (
-              <a href="/dot" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
-                <Bot size={17} /> Filtra Dot
-              </a>
+              <>
+                <button type="button" onClick={() => setUnidadesMenuOpen((open) => !open)} aria-expanded={unidadesMenuOpen} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-zinc-300 hover:bg-white/5 hover:text-white">
+                  <Layers size={17} />
+                  <span className="flex-1">Gestão de unidades</span>
+                  {unidadesMenuOpen ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
+                </button>
+                {unidadesMenuOpen && (
+                  <div className="ml-4 space-y-1 border-l border-white/10 pl-3">
+                    <a href="#unit-management" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">Unidades e links exclusivos</a>
+                    <a href="#unit-analysis" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">Ranking, temas e prioridades</a>
+                    {String(empresa.plan || '').toLowerCase() === 'rei' && (
+                      <a href="#rei-strategic-radar" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">Radar estratégico</a>
+                    )}
+                  </div>
+                )}
+                <a href="/dot" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
+                  <Bot size={17} /> Filtra Dot
+                </a>
+              </>
             )}
             <a href="#reviews" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
               <MessageSquare size={17} /> {t.panel_reviews || 'Avaliações'}
@@ -421,7 +438,7 @@ export default function PainelEmpresa() {
               </div>
 
               {nivel === 'executivo' && Array.isArray(metricas.unidades_ranking) && metricas.unidades_ranking.length > 0 && (
-                <section className="mt-5 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+                <section id="unit-analysis" className="mt-5 scroll-mt-28 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
                   {String(empresa.plan || '').toLowerCase() === 'corporativo' && metricas.unidades_resumo && (
                     <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                       {[
@@ -538,7 +555,7 @@ export default function PainelEmpresa() {
             </section>
 
             {String(empresa.plan || '').toLowerCase() === 'rei' && metricas.radar_estrategico && (
-              <section className="scroll-mt-28 rounded-3xl border border-violet-400/15 bg-violet-500/[0.04] p-5 sm:p-6">
+              <section id="rei-strategic-radar" className="scroll-mt-28 rounded-3xl border border-violet-400/15 bg-violet-500/[0.04] p-5 sm:p-6">
                 <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-violet-300">REI · Inteligência estratégica</p>
@@ -796,6 +813,7 @@ export default function PainelEmpresa() {
                 status={empresa.status}
               />
 
+              <div id="unit-management" className="scroll-mt-28">
               <UnidadesPanel
                 empresaRef={empresaId}
                 enabled={
@@ -803,6 +821,7 @@ export default function PainelEmpresa() {
                   ['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase())
                 }
               />
+              </div>
 
               <div className="grid gap-4 lg:grid-cols-2">
                 <section className={`${card} px-6 py-6 space-y-3`}>
