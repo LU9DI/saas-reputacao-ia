@@ -115,13 +115,13 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     ultra: { features: [fb, wpp, ai, report, analytics] },
     corporativo: {
       features: [
-        fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities, unitLinks, support, early, dot,
+        fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities, unitLinks, dot, support, early,
       ],
     },
     rei: {
       features: [
         fb, wpp, ai, report, analytics, multi, ranking, unitInsights, priorities,
-        strategicRadar, growth, unitLinks, support, early, dot,
+        strategicRadar, growth, unitLinks, dot, support, early,
       ],
     },
   };
@@ -300,6 +300,12 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
       );
     }
     const lower = String(text).toLowerCase();
+    // Classifique pela chave semântica do dicionário, não pelo texto traduzido.
+    // Assim todos os idiomas recebem os mesmos ícones, cores e sombreamento.
+    const featureKey =
+      Object.entries(t).find(
+        ([key, value]) => key.startsWith('feat_') && String(value) === text
+      )?.[0] ?? '';
     const Badge = ({ className, icon: Icon, children }: any) => (
       <span
         className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}
@@ -310,12 +316,21 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     );
     let icon = null;
     let badgeClass = 'text-indigo-700 bg-indigo-50 border-indigo-200/60';
-    if (lower.includes('wpp') || lower.includes('whatsapp')) {
+    if (featureKey === 'feat_wpp' || lower.includes('wpp') || lower.includes('whatsapp')) {
       icon = MessageCircle;
       badgeClass = 'text-emerald-700 bg-emerald-50 border-emerald-200/60';
     } else if (
+      [
+        'feat_unit_ranking',
+        'feat_unit_links',
+        'feat_unit_insights',
+        'feat_priorities',
+        'feat_strategic_radar',
+        'feat_growth',
+      ].includes(featureKey) ||
       lower.includes('ranking') ||
       lower.includes('unidade') ||
+      lower.includes('ejecutivo') ||
       lower.includes('executivo') ||
       lower.includes('links de avaliação') ||
       lower.includes('temas por unidade') ||
@@ -326,22 +341,41 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
     ) {
       icon = BarChart3;
       badgeClass = 'text-blue-700 bg-blue-50 border-blue-200/60';
-    } else if (lower.includes('ia') || lower.includes('ai') || lower.includes('智能')) {
+    } else if (
+      ['feat_ai', 'feat_ai_missing', 'feat_dot'].includes(featureKey) ||
+      lower.includes('ia') ||
+      lower.includes('ai') ||
+      lower.includes('智能')
+    ) {
       icon = Sparkles;
     } else if (
+      featureKey === 'feat_report' ||
       lower.includes('relatório') ||
       lower.includes('report') ||
       lower.includes('informe') ||
       lower.includes('报告')
     ) {
       icon = FileText;
-    } else if (lower.includes('dashboard') || lower.includes('chart') || lower.includes('graf')) {
+    } else if (
+      ['feat_dashboard', 'feat_basic_charts', 'feat_multi'].includes(featureKey) ||
+      lower.includes('dashboard') ||
+      lower.includes('chart') ||
+      lower.includes('graf')
+    ) {
       icon = BarChart3;
-    } else if (lower.includes('suporte') || lower.includes('support')) {
+    } else if (
+      featureKey === 'feat_support' ||
+      lower.includes('suporte') ||
+      lower.includes('support')
+    ) {
       icon = Headset;
-    } else if (lower.includes('early') || lower.includes('antecip')) {
+    } else if (
+      featureKey === 'feat_early' ||
+      lower.includes('early') ||
+      lower.includes('antecip')
+    ) {
       icon = Rocket;
-    } else if (lower.includes('feedback')) {
+    } else if (featureKey === 'feat_feedbacks' || lower.includes('feedback')) {
       icon = Layers;
     }
     if (icon) {
