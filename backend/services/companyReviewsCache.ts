@@ -41,7 +41,7 @@ export async function loadCompanyReviewsCached(db: any, empresaId: string): Prom
     let lastError: unknown;
     for (const query of queries) {
       try {
-        const rows = await db.all(query, [key]);
+        const rows = await db.all(query, [empresaId]);
         const safeRows = Array.isArray(rows) ? rows : [];
         reviewCache.set(key, { rows: safeRows, expiresAt: Date.now() + CACHE_TTL_MS });
         while (reviewCache.size > CACHE_MAX_COMPANIES) {
