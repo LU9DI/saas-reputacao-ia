@@ -37,6 +37,7 @@ export default function Page() {
         { href: '/como-melhorar-avaliacoes-google', title: 'Como melhorar avaliações Google', description: 'Melhore experiência, reduza fricção e construa uma rotina de coleta.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial da reputação e dos pontos de atenção.' },
         { href: '/filtra-ai', title: 'Conheça a Filtra.AI', description: 'Plataforma para gestão de reputação, avaliações e feedback com IA.' },
+        { href: '/planos', title: 'Planos da Filtra.AI', description: 'Compare os recursos disponíveis para sua empresa ou rede.' },
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Estruture avaliações e reputação como serviço para clientes.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como avaliações e reputação entram em uma oferta de SEO local.' },
       ]}
@@ -85,6 +86,14 @@ export default function Page() {
         {
           heading: 'Onde a IA ajuda',
           body: 'IA acelera classificação, agrupamento, resumo e busca de padrões. Ela funciona melhor como camada de triagem e inteligência sobre a operação, preservando revisão humana quando o contexto do cliente exige interpretação.'
+        },
+        {
+          heading: 'Como escolher um software de gestão de avaliações Google',
+          body: 'Antes de contratar, confirme quais fontes de dados a ferramenta realmente recebe, como organiza temas, se permite comparar períodos e unidades, quais relatórios estão incluídos e como a equipe transforma os achados em ações. Diferencie coleta de feedback, análise de comentários e automação direta do Perfil da Empresa no Google: nem toda plataforma oferece as mesmas integrações. Um piloto com dados e rotinas reais ajuda a validar o encaixe.'
+        },
+        {
+          heading: 'O que avaliar na Filtra.AI',
+          body: 'A Filtra.AI combina links e QR Codes para coletar feedback, painel de acompanhamento, análise por IA e relatório profissional mensal; os planos Corporativo e REI acrescentam recursos para operações com múltiplas unidades. Confira os recursos e limites na página de planos e valide as integrações necessárias para sua operação antes de contratar. O objetivo é transformar feedback em prioridades verificáveis, não prometer que uma nota isolada explica toda a reputação.'
         },
       ]}
     />
