@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Bot, CheckCircle2, Clock3, Play, RefreshCw, ShieldCheck, Target, XCircle } from 'lucide-react';
+import { AlertTriangle, Bot, CheckCircle2, Clock3, KeyRound, Lock, Play, RefreshCw, ShieldCheck, Target, Unlock, XCircle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { apiFetch } from '../utils/apiFailover';
 import { BrandMark } from '../components/BrandMark';
@@ -22,6 +22,8 @@ function headers(): HeadersInit {
     const token = localStorage.getItem('filtra_token');
     if (token) h.Authorization = `Bearer ${token}`;
   } catch {}
+  // Operações administrativas do Dot exigem o cabeçalho canônico (anti-CSRF).
+  h['X-Dot-Admin'] = '1';
   return h;
 }
 
@@ -41,12 +43,17 @@ export default function DotPage() {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [adminState, setAdminState] = useState<any>(null);
+  const [pinInput, setPinInput] = useState('');
+  const [resetPin, setResetPin] = useState('');
+  const [resetSenha, setResetSenha] = useState('');
+  const [adminBusy, setAdminBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const [status, decisions, actions, cases, followups, events, briefing] = await Promise.all([
+      const [status, decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
         getJson('/api/dot/status'),
         getJson('/api/dot/decisions'),
         getJson('/api/dot/actions'),
@@ -54,6 +61,9 @@ export default function DotPage() {
         getJson('/api/dot/followups'),
         getJson('/api/dot/events'),
         getJson('/api/dot/briefing'),
+        // Estado administrativo: se indisponível (ex.: ordem de publicação
+        // entre frontend e API), a página continua funcionando normalmente.
+        getJson('/api/dot/admin/state').catch(() => null),
       ]);
       setData({
         status,
@@ -64,6 +74,7 @@ export default function DotPage() {
         events: events.events || [],
         briefing,
       });
+      setAdminState(admin);
     } catch (e: any) {
       setError(e?.message || 'Não foi possível carregar o Filtra Dot.');
     } finally {
@@ -84,6 +95,24 @@ export default function DotPage() {
       setError(e?.message || 'Operação não concluída.');
     } finally {
       setBusy(null);
+    }
+  };
+
+  const runAdmin = async (path: string, options: RequestInit, successMessage: string) => {
+    setAdminBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      await getJson(path, options);
+      setNotice(successMessage);
+      setPinInput('');
+      setResetPin('');
+      setResetSenha('');
+      await load();
+    } catch (e: any) {
+      setError(e?.message || 'Operação administrativa não concluída.');
+    } finally {
+      setAdminBusy(false);
     }
   };
 
@@ -132,6 +161,64 @@ export default function DotPage() {
             </div>
           </div>
         </section>
+
+        {adminState?.is_owner && (
+          <section className={`${panel} p-5 sm:p-6`}>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-indigo-300"><KeyRound size={18} /><span className="text-sm font-semibold">Administração do Dot (PIN)</span></div>
+                <p className="mt-1 max-w-2xl text-xs leading-5 text-zinc-500">
+                  {adminState.pin_configured
+                    ? 'O PIN protege a execução de ações aprovadas e operações administrativas do Dot. A sessão dura 30 minutos e vale apenas para a sua conta.'
+                    : 'Defina o PIN administrativo da empresa: ele protege a execução de ações aprovadas e operações administrativas sensíveis.'}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {adminState.session_active ? (
+                  <>
+                    <span className={`${pill} border-emerald-400/20 bg-emerald-400/5 text-emerald-200`}>administração desbloqueada</span>
+                    <button type="button" disabled={adminBusy} onClick={() => void runAdmin('/api/dot/admin/session', { method: 'DELETE' }, 'Administração bloqueada.')} className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-50">
+                      <Lock size={13} /> Bloquear
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <input
+                      value={pinInput}
+                      onChange={(ev) => setPinInput(ev.target.value.replace(/\D/g, '').slice(0, 6))}
+                      type="password"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      placeholder="PIN de 6 dígitos"
+                      className="w-40 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-400/40"
+                    />
+                    {adminState.pin_configured ? (
+                      <button type="button" disabled={adminBusy || pinInput.length !== 6} onClick={() => void runAdmin('/api/dot/admin/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: pinInput }) }, 'Administração desbloqueada por 30 minutos.')} className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-500 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
+                        <Unlock size={13} /> Desbloquear
+                      </button>
+                    ) : (
+                      <button type="button" disabled={adminBusy || pinInput.length !== 6} onClick={() => void runAdmin('/api/dot/admin/pin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: pinInput }) }, 'PIN administrativo definido.')} className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-500 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
+                        <KeyRound size={13} /> Definir PIN
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+            {adminState.pin_configured && (
+              <details className="mt-4 border-t border-white/5 pt-3">
+                <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-300">Esqueci o PIN — redefinir com a senha da conta</summary>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <input value={resetPin} onChange={(ev) => setResetPin(ev.target.value.replace(/\D/g, '').slice(0, 6))} type="password" inputMode="numeric" autoComplete="off" placeholder="Novo PIN (6 dígitos)" className="w-44 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-400/40" />
+                  <input value={resetSenha} onChange={(ev) => setResetSenha(ev.target.value)} type="password" autoComplete="current-password" placeholder="Senha atual da conta" className="w-52 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-400/40" />
+                  <button type="button" disabled={adminBusy || resetPin.length !== 6 || resetSenha.length < 4} onClick={() => void runAdmin('/api/dot/admin/pin/reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: resetPin, senha: resetSenha }) }, 'PIN redefinido. As sessões anteriores foram encerradas.')} className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-50">
+                    <KeyRound size={13} /> Redefinir PIN
+                  </button>
+                </div>
+              </details>
+            )}
+          </section>
+        )}
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {([
