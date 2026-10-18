@@ -90,7 +90,10 @@ describe('relatório profissional mensal', () => {
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
     assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
     assert.match(report.canais.email.html, /Radar estratégico/);
-    assert.match(report.canais.email.html, /Relatório executivo mensal/);
+    assert.ok(
+      !/Relatório executivo mensal para a diretoria|identificadas nos dados/i.test(report.canais.email.html),
+      'REI executive analysis must not appear as a standalone benefit in the client email',
+    );
   });
 
   it('propaga falhas de consulta de unidades nos planos Corporativo e REI', async () => {
@@ -112,7 +115,7 @@ describe('relatório profissional mensal', () => {
     } } as any;
     await assert.rejects(
       () => buildRelatorioProfissional(brokenDb, { id: 'company-db-error', nome_empresa: 'Falha DB', plan: 'pro' }, '2026-09'),
-      /Falha ao consultar avaliações usando createdAt e created_at/,
+      /column missing/,
     );
   });
 

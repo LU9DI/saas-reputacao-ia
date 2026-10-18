@@ -106,9 +106,10 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         // Recupera primeiro a reserva pendente mais antiga, mesmo que o mês corrente tenha mudado.
         // Sem isso, uma falha atravessando a virada do mês ficaria órfã da cadência automática.
         let reportPeriod = periodo;
+        let pendingReport: any = null;
         if (!manualRecovery) {
           const retryCutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-          const pendingReport = await db.get(
+          pendingReport = await db.get(
             `SELECT periodo FROM relatorio_envios_mensais
              WHERE empresa_id = ? AND (
                status IN ('failed', 'generated') OR
