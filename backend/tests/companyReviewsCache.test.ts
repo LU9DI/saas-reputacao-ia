@@ -19,6 +19,29 @@ describe('company reviews shared cache', () => {
     invalidateCompanyReviewsCache('cache-test-company');
   });
 
+  it('does not repopulate stale cache when invalidated during an in-flight query', async () => {
+    let releaseOld!: (rows: any[]) => void;
+    let calls = 0;
+    const db = {
+      all: async () => {
+        calls++;
+        if (calls === 1) return await new Promise<any[]>((resolve) => { releaseOld = resolve; });
+        return [{ id: 'fresh-after-invalidation' }];
+      },
+    };
+    const company = 'cache-invalidation-race';
+    const oldLoad = loadCompanyReviewsCached(db, company);
+    invalidateCompanyReviewsCache(company);
+    const fresh = await loadCompanyReviewsCached(db, company);
+    releaseOld([{ id: 'stale-before-invalidation' }]);
+    await oldLoad;
+    const subsequent = await loadCompanyReviewsCached(db, company);
+    assert.equal(fresh[0].id, 'fresh-after-invalidation');
+    assert.equal(subsequent[0].id, 'fresh-after-invalidation');
+    assert.equal(calls, 2);
+    invalidateCompanyReviewsCache(company);
+  });
+
   it('does not share cached rows between distinct database connections', async () => {
     const first = { all: async () => [{ id: 'first-db' }] };
     const second = { all: async () => [{ id: 'second-db' }] };

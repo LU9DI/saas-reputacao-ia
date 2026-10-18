@@ -7,7 +7,8 @@ type ReviewCacheEntry = { expiresAt: number; rows: any[] };
 const CACHE_TTL_MS = 30_000;
 const CACHE_MAX_COMPANIES = 250;
 const reviewCache = new Map<string, ReviewCacheEntry>();
-const inFlight = new Map<string, Promise<any[]>>();
+const inFlight = new Map<string, { version: number; promise: Promise<any[]> }>();
+const cacheVersions = new Map<string, number>();
 const databaseIds = new WeakMap<object, number>();
 let nextDatabaseId = 1;
 function cacheKey(db: object, empresaId: string): string {
@@ -27,8 +28,9 @@ export async function loadCompanyReviewsCached(db: any, empresaId: string): Prom
     return cached.rows;
   }
   if (cached) reviewCache.delete(key);
+  const version = cacheVersions.get(key) ?? 0;
   const pending = inFlight.get(key);
-  if (pending) return pending;
+  if (pending && pending.version === version) return pending.promise;
 
   const load = (async () => {
     const queries = [
@@ -43,7 +45,12 @@ export async function loadCompanyReviewsCached(db: any, empresaId: string): Prom
       try {
         const rows = await db.all(query, [empresaId]);
         const safeRows = Array.isArray(rows) ? rows : [];
-        reviewCache.set(key, { rows: safeRows, expiresAt: Date.now() + CACHE_TTL_MS });
+        // Uma escrita pode invalidar o cache enquanto a consulta está em andamento.
+        // Nesse caso, a resposta antiga pode ser devolvida a quem já aguardava,
+        // mas não pode repovoar o cache nem sobrescrever a leitura mais nova.
+        if ((cacheVersions.get(key) ?? 0) === version) {
+          reviewCache.set(key, { rows: safeRows, expiresAt: Date.now() + CACHE_TTL_MS });
+        }
         while (reviewCache.size > CACHE_MAX_COMPANIES) {
           const oldest = reviewCache.keys().next().value;
           if (oldest === undefined) break;
@@ -56,16 +63,23 @@ export async function loadCompanyReviewsCached(db: any, empresaId: string): Prom
     }
     throw lastError instanceof Error ? lastError : new Error('Falha ao carregar avaliações da empresa.');
   })();
-  inFlight.set(key, load);
+  const entry = { version, promise: load };
+  inFlight.set(key, entry);
   try {
     return await load;
   } finally {
-    inFlight.delete(key);
+    if (inFlight.get(key) === entry) inFlight.delete(key);
   }
 }
 
-/** Invalida após mutações de avaliações quando a rota de escrita puder fazê-lo. */
+/** Invalida todas as conexões em cache para a empresa, inclusive consultas em andamento. */
 export function invalidateCompanyReviewsCache(empresaId: string): void {
   const suffix = `:${String(empresaId)}`;
-  for (const key of reviewCache.keys()) if (key.endsWith(suffix)) reviewCache.delete(key);
+  const keys = new Set([...reviewCache.keys(), ...inFlight.keys(), ...cacheVersions.keys()]);
+  for (const key of keys) {
+    if (!key.endsWith(suffix)) continue;
+    cacheVersions.set(key, (cacheVersions.get(key) ?? 0) + 1);
+    reviewCache.delete(key);
+    inFlight.delete(key);
+  }
 }
