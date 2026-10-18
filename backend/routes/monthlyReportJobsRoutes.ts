@@ -15,6 +15,19 @@ export function authorizedMonthlyReportJob(req: Pick<Request, 'headers'>): boole
 }
 
 function currentMonthUtc(): string { return new Date().toISOString().slice(0, 7); }
+function subscriptionReportDue(anchorDay: unknown, now = new Date()): boolean {
+  const day = Number(anchorDay);
+  if (!Number.isInteger(day) || day < 1 || day > 31) return false;
+  const lastDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)).getUTCDate();
+  return now.getUTCDate() === Math.min(day, lastDay);
+}
+function legacyAnchorDay(expiraEm: unknown, billingCycle: unknown): number | null {
+  const expiration = new Date(String(expiraEm || ''));
+  if (!Number.isFinite(expiration.getTime())) return null;
+  const days = String(billingCycle || '').toLowerCase() === 'year' ? 365 : 30;
+  expiration.setUTCDate(expiration.getUTCDate() - days);
+  return expiration.getUTCDate();
+}
 function previousMonthUtc(): string {
   const date = new Date();
   date.setUTCDate(1);
@@ -43,6 +56,8 @@ export async function resolveMonthlyReportRecipients(db: any, empresaId: string,
 async function ensureMonthlyReportSchema(db: any) {
   try { await db.exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS relatorio_destinatarios TEXT'); }
   catch { try { await db.exec('ALTER TABLE empresas ADD COLUMN relatorio_destinatarios TEXT'); } catch { /* coluna já existe ou engine não permite */ } }
+  try { await db.exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS relatorio_dia_assinatura INTEGER'); }
+  catch { try { await db.exec('ALTER TABLE empresas ADD COLUMN relatorio_dia_assinatura INTEGER'); } catch { /* coluna já existe */ } }
   try { await db.exec('ALTER TABLE relatorio_envios_mensais ADD COLUMN report_json TEXT'); } catch { /* coluna já existe ou tabela ainda não foi criada */ }
   await db.exec(`CREATE TABLE IF NOT EXISTS relatorio_envios_mensais (
     id TEXT PRIMARY KEY,
@@ -64,13 +79,15 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
   app.post('/api/jobs/monthly-reports', async (req: Request, res: Response) => {
     if (!authorizedMonthlyReportJob(req)) return res.status(401).json({ error: 'Unauthorized' });
     const requested = String(req.query.mes || req.body?.mes || '');
+    const manualRecovery = Boolean(requested);
     const periodo = requested ? requested : previousMonthUtc();
     if (!isMonth(periodo)) return res.status(400).json({ error: 'Informe um mês encerrado no formato YYYY-MM.', code: 'INVALID_REPORT_MONTH' });
     const db = getDb();
     try {
       await ensureMonthlyReportSchema(db);
       const companies = await db.all(
-        `SELECT e.id, e.nome_empresa, e.slug, e.plan, e.status, e.relatorio_destinatarios
+        `SELECT e.id, e.nome_empresa, e.slug, e.plan, e.status, e.relatorio_destinatarios,
+                e.relatorio_dia_assinatura, e.expira_em, e.billing_cycle
          FROM empresas e
          WHERE lower(COALESCE(e.plan, '')) IN ('pro','ultra','corporativo','corporate','corp','rei')
            AND lower(COALESCE(e.status, '')) IN ('ativo','active')
@@ -80,6 +97,22 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
       for (const empresa of companies) {
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
+        // O cron diário só processa o cliente no aniversário mensal da assinatura.
+        // ?mes=YYYY-MM continua disponível para recuperação administrativa de períodos encerrados.
+        if (!manualRecovery) {
+          let anchorDay = Number(empresa.relatorio_dia_assinatura);
+          if (!Number.isInteger(anchorDay) || anchorDay < 1 || anchorDay > 31) {
+            anchorDay = legacyAnchorDay(empresa.expira_em, empresa.billing_cycle) || 0;
+            if (anchorDay) {
+              try {
+                await db.run('UPDATE empresas SET relatorio_dia_assinatura = ? WHERE id = ? AND relatorio_dia_assinatura IS NULL', [anchorDay, empresa.id]);
+              } catch (error: any) {
+                console.warn('[monthly-report] não foi possível persistir o dia da assinatura:', error?.message || error);
+              }
+            }
+          }
+          if (!subscriptionReportDue(anchorDay)) { stats.pulados++; continue; }
+        }
         // Destinatários não podem bloquear a criação do snapshot: a reserva começa com a configuração explícita, mesmo vazia.
         const configuredDestinatarios = parseDestinations(empresa.relatorio_destinatarios);
         const now = new Date().toISOString();
