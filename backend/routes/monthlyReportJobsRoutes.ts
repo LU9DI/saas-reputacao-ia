@@ -21,6 +21,19 @@ export function subscriptionReportDue(anchorDay: unknown, now = new Date()): boo
   const lastDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)).getUTCDate();
   return now.getUTCDate() === Math.min(day, lastDay);
 }
+export function hasUnresolvedMonthlyReport(
+  status: unknown,
+  reportJson: unknown,
+  updatedAt: unknown,
+  now = new Date(),
+): boolean {
+  const state = String(status || '');
+  if (state === 'failed' || state === 'generated') return true;
+  if (state === 'accepted' && !reportJson) return true;
+  if (state !== 'processing') return false;
+  const updated = new Date(String(updatedAt || '')).getTime();
+  return Number.isFinite(updated) && now.getTime() - updated >= 30 * 60 * 1000;
+}
 function previousMonthUtc(): string {
   const date = new Date();
   date.setUTCDate(1);
@@ -103,11 +116,10 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
             continue;
           }
           const existing = await db.get(
-            'SELECT status FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?',
+            'SELECT status, report_json, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?',
             [empresa.id, periodo],
           ) as any;
-          const unresolved = ['failed', 'generated'].includes(String(existing?.status || '')) ||
-            (existing?.status === 'processing' && (() => true)());
+          const unresolved = hasUnresolvedMonthlyReport(existing?.status, existing?.report_json, existing?.updated_at);
           if (!subscriptionReportDue(anchorDay) && !unresolved) { stats.pulados++; continue; }
         }
         // Destinatários não podem bloquear a criação do snapshot: a reserva começa com a configuração explícita, mesmo vazia.
