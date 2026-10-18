@@ -697,44 +697,42 @@ export default function PainelEmpresa() {
 
             <section id="ai-report" className="scroll-mt-28 space-y-4">
               {reportOk ? (
-                <>
                 <RelatorioInteligentePanel
                   empresaId={empresaId}
                   api={api}
                   authHeaders={authHeaders}
                   panelData={data}
                 />
-                {reportMensalOk && (
-                  <div className="mt-4 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-4">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <h3 className="text-sm font-semibold text-white">{t.panel_monthly_report || 'Relatório Mensal'}</h3>
-                        <p className="mt-1 text-xs text-zinc-400">{t.panel_monthly_report_desc || 'Consulte o relatório do mês e o histórico disponível.'}</p>
-                      </div>
-                      <button type="button" onClick={() => setMostrarRelatorioMensal((open) => !open)} aria-expanded={mostrarRelatorioMensal} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-4 py-2.5 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
-                        <FileText size={16} /> {mostrarRelatorioMensal ? (t.panel_monthly_report_hide || 'Ocultar relatório mensal') : (t.panel_monthly_report_open || 'Abrir Relatório Mensal')}
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {reportMensalOk && mostrarRelatorioMensal && (
-                  <RelatorioProfissionalMensalPanel empresa={empresa} monthlyReports={Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />
-                )}
-                </>
               ) : (
                 <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-6">
                   <div className="flex items-start gap-3">
                     <Bot className="mt-0.5 text-indigo-300" size={20} />
                     <div>
-                      <h3 className="font-semibold text-white">{t.panel_ai_report || 'Relatório inteligente'}</h3>
+                      <h3 className="font-semibold text-white">{t.panel_ai_report || 'Relatório Inteligente'}</h3>
                       <p className="mt-1 text-sm text-zinc-400">{t.panel_report_unavailable || 'Relatório inteligente disponível nos planos Trial e Pro+.'}</p>
                     </div>
                   </div>
                 </div>
               )}
+              {reportMensalOk && (
+                <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h3 className="text-sm font-semibold text-white">{t.panel_monthly_report || 'Relatório Mensal'}</h3>
+                      <p className="mt-1 text-xs text-zinc-400">{t.panel_monthly_report_desc || 'Consulte o relatório do mês e o histórico disponível.'}</p>
+                    </div>
+                    <button type="button" onClick={() => setMostrarRelatorioMensal((open) => !open)} aria-expanded={mostrarRelatorioMensal} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-4 py-2.5 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
+                      <FileText size={16} /> {mostrarRelatorioMensal ? (t.panel_monthly_report_hide || 'Ocultar relatório mensal') : (t.panel_monthly_report_open || 'Abrir Relatório Mensal')}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {reportMensalOk && mostrarRelatorioMensal && (
+                <RelatorioProfissionalMensalPanel empresa={empresa} monthlyReports={Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []} unidades={Array.isArray(metricas.unidades_ranking) ? metricas.unidades_ranking : []} lang={t.lang_name} />
+              )}
             </section>
 
-            <section id="reviews" className="scroll-mt-28">
+            <section id="reviews"            <section id="reviews" className="scroll-mt-28">
               <div className="mb-3 flex items-end justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[.18em] text-indigo-400">{t.panel_reviews || 'Avaliações'}</p>
