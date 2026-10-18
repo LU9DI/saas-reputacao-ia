@@ -103,6 +103,23 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
       ) as any[];
       const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0, sem_dia_assinatura: 0, snapshots_gerados: 0, snapshots_recuperados: 0 };
       for (const empresa of companies) {
+        // Recupera primeiro a reserva pendente mais antiga, mesmo que o mês corrente tenha mudado.
+        // Sem isso, uma falha atravessando a virada do mês ficaria órfã da cadência automática.
+        let reportPeriod = periodo;
+        if (!manualRecovery) {
+          const retryCutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+          const pendingReport = await db.get(
+            `SELECT periodo FROM relatorio_envios_mensais
+             WHERE empresa_id = ? AND (
+               status IN ('failed', 'generated') OR
+               (status = 'accepted' AND report_json IS NULL) OR
+               (status = 'processing' AND updated_at <= ?)
+             )
+             ORDER BY periodo ASC LIMIT 1`,
+            [empresa.id, retryCutoff],
+          ) as any;
+          if (pendingReport?.periodo && isMonth(pendingReport.periodo)) reportPeriod = String(pendingReport.periodo);
+        }
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
         // O cron diário processa o relatório no aniversário mensal.
