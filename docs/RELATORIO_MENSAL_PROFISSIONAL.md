@@ -37,7 +37,8 @@ O job mantém a tabela `relatorio_envios_mensais` e reserva uma combinação ún
 - `JOBS_SECRET` definido no ambiente de produção. Envie-o no header `Authorization: Bearer ...` ou `x-jobs-secret`; não use query string para segredo.
 - `N8N_WEBHOOK_URL` configurada e `N8N_ENABLED` não desativado.
 - Workflow n8n que reconheça o evento `report.generated`, entregue o relatório aos canais informados e use `idempotency_key` para impedir duplicações na própria camada de distribuição.
-- Agendador externo configurado para chamar o endpoint autenticado mensalmente (recomendação: dia 1, depois da virada UTC). Pode ser executado diariamente com segurança, pois a idempotência evita reenvios do mesmo mês.
+- Agendador externo configurado para chamar o endpoint autenticado **diariamente** (UTC). O job verifica o dia de aniversário salvo em `empresas.relatorio_dia_assinatura` e prepara o relatório do mês calendário anterior. Não use apenas uma execução no dia 1: ela não atende assinantes com outros dias de aniversário.
+- Assinaturas novas gravam o dia de aniversário na ativação e renovações preservam o valor. Para empresas antigas sem `relatorio_dia_assinatura`, o job não inventa a data a partir de `expira_em` (meses curtos tornam essa inferência ambígua); elas são contabilizadas em `sem_dia_assinatura` e precisam de backfill confiável a partir do registro original de assinatura antes de receberem o agendamento automático.
 
 **Importante:** a resposta HTTP positiva do webhook confirma que o n8n aceitou o encaminhamento; a confirmação final de e-mail/WhatsApp/SMS depende do resultado do workflow e dos provedores de destino. Não se deve marcar uma entrega final como concluída se o workflow só tiver colocado o evento em uma fila sem acompanhar o resultado.
 
