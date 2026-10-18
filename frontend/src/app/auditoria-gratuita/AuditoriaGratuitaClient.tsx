@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
 import { SeoPageHeader } from '../components/SeoPageHeader';
+import { getEnv } from '../utils/env';
 
 
 const COPY:Record<Language,Record<string,string>>={
@@ -33,7 +34,7 @@ type Diagnostic = {
   confidence?: string;
 };
 
-const API = process.env.NEXT_PUBLIC_API_URL || '';
+const API = getEnv('NEXT_PUBLIC_API_URL');
 
 export function AuditoriaGratuitaClient() {
   const { language } = useLanguage();

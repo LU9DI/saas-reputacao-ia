@@ -30,7 +30,7 @@ export default function QrCodesPage() {
 
     const buscarEmpresas = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const apiUrl = getEnv('NEXT_PUBLIC_API_URL');
         const response = await fetch(`${apiUrl}/api/admin/empresas`, {
           headers: { Authorization: `Bearer ${token}` },
         });

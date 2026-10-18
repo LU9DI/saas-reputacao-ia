@@ -20,6 +20,7 @@ import {
   Check,
   X,
 } from 'lucide-react';
+import { getEnv } from '../utils/env';
 
 interface Empresa {
   id: string;
@@ -97,7 +98,7 @@ interface Integracoes {
 }
 
 const TOKEN_KEY = 'admin_saas_token';
-const apiUrl = () => (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+const apiUrl = () => getEnv('NEXT_PUBLIC_API_URL').replace(/\/$/, '');
 
 function authHeaders(): HeadersInit {
   const h: Record<string, string> = { 'Content-Type': 'application/json' };

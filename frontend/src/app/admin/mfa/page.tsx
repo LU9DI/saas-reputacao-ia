@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Shield, Loader2, AlertCircle, CheckCircle2, Copy } from 'lucide-react';
+import { getEnv } from '../../utils/env';
 
 export default function AdminMfaPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function AdminMfaPage() {
   const [backups, setBackups] = useState<string[]>([]);
   const [disableCode, setDisableCode] = useState('');
 
-  const api = () => process.env.NEXT_PUBLIC_API_URL;
+  const api = () => getEnv('NEXT_PUBLIC_API_URL');
 
   const carregar = async () => {
     setLoading(true);

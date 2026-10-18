@@ -3,13 +3,14 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Lock, Mail, AlertCircle, Loader2, Shield, KeyRound } from 'lucide-react';
+import { getEnv } from '../../utils/env';
 
 type Step = 'senha' | 'mfa' | 'recuperar' | 'redefinir';
 
 const TOKEN_KEY = 'admin_saas_token';
 
 function apiBase() {
-  return (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+  return getEnv('NEXT_PUBLIC_API_URL').replace(/\/$/, '');
 }
 
 function AdminLoginForm() {

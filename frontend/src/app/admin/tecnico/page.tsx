@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { getEnv } from '../../utils/env';
 
 const TOKEN_KEY = 'admin_saas_token';
-const apiUrl = () => (process.env.NEXT_PUBLIC_API_URL || 'https://api.filtraai.com').replace(/\/$/, '');
+const apiUrl = () => getEnv('NEXT_PUBLIC_API_URL').replace(/\/$/, '');
 
 function authHeaders(): HeadersInit {
   const h: Record<string, string> = { 'Content-Type': 'application/json' };
