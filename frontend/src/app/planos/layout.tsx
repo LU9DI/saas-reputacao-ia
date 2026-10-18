@@ -14,6 +14,13 @@ export const metadata: Metadata = {
     url: 'https://filtraai.com/planos',
     siteName: 'Filtra.AI',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Planos e preços da Filtra.AI',
+    description:
+      'Compare os planos da Filtra.AI para gestão de reputação, avaliações e análise com IA.',
+    images: ['https://filtraai.com/og-image.svg'],
+  },
 };
 
 export default function PlanosLayout({ children }: { children: React.ReactNode }) {
