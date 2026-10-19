@@ -161,4 +161,17 @@ describe('POST /api/reviews', () => {
     assert.equal(status, 201);
     assert.equal(data.success, true);
   });
+
+  it('persiste unidade_id informado pelo link exclusivo da unidade', async () => {
+    const { status, data } = await post('/api/reviews', {
+      rating: 5,
+      name: 'Cliente Unidade',
+      unidade_id: 'u-link-1',
+    });
+    assert.equal(status, 201);
+    assert.equal(data.success, true);
+    const { getDb } = await import('../lib/db.js');
+    const row = await getDb().get('SELECT unidade_id FROM reviews WHERE id = ?', [data.id]);
+    assert.equal(row?.unidade_id, 'u-link-1');
+  });
 });
