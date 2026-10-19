@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { getDb } from '../lib/db.js';
 import { planTemRelatorioMensal } from '../lib/plans.js';
 import { n8nConfigured, notifyN8nAsync } from '../lib/n8n.js';
-import { buildRelatorioProfissional, normalizeDestinatarios } from '../services/relatorioProfissional.js';
+import { adaptRelatorioProfissionalAoPlano, buildRelatorioProfissional, normalizeDestinatarios } from '../services/relatorioProfissional.js';
 
 export function authorizedMonthlyReportJob(req: Pick<Request, 'headers'>): boolean {
   const secret = process.env.JOBS_SECRET?.trim();
@@ -92,7 +92,7 @@ export async function getOrGenerateMonthlyReportSnapshot(
     try {
       const report = JSON.parse(String(row.report_json));
       if (!report || report.empresa?.id !== empresaId || report.periodo !== periodo) return null;
-      return report;
+      return adaptRelatorioProfissionalAoPlano(report, empresa.plan);
     } catch {
       return null;
     }
