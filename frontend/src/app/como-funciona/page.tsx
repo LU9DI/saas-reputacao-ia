@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/como-funciona',
       en: 'https://filtraai.com/en/how-it-works',
       es: 'https://filtraai.com/es/como-funciona',
-      zh: 'https://filtraai.com/zh/how-it-works',
       'x-default': 'https://filtraai.com/como-funciona',
     },
   },

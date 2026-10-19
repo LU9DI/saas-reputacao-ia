@@ -12,7 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
       'pt-BR': 'https://filtraai.com/como-melhorar-avaliacoes-google',
       en: 'https://filtraai.com/en/improve-google-reviews',
       es: 'https://filtraai.com/es/mejorar-resenas-google',
-      zh: 'https://filtraai.com/zh/improve-google-reviews',
       'x-default': 'https://filtraai.com/como-melhorar-avaliacoes-google',
     },
   },

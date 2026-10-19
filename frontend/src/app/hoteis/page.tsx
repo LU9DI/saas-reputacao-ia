@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/hoteis',
       en: 'https://filtraai.com/en/hotels',
       es: 'https://filtraai.com/es/hoteles',
-      zh: 'https://filtraai.com/zh/hotels',
       'x-default': 'https://filtraai.com/hoteis',
     },
   },

@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/auditoria-gratuita',
       en: 'https://filtraai.com/en/free-review-audit',
       es: 'https://filtraai.com/es/auditoria-gratuita',
-      zh: 'https://filtraai.com/zh/free-review-audit',
       'x-default': 'https://filtraai.com/auditoria-gratuita',
     },
   },

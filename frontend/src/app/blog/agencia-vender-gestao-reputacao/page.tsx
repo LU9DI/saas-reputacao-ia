@@ -6,7 +6,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Vender gestão de reputação recorrente',
     description: 'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.',
-    alternates: { canonical: 'https://filtraai.com/blog/agencia-vender-gestao-reputacao', languages: { 'pt-BR':'https://filtraai.com/blog/agencia-vender-gestao-reputacao', en:'https://filtraai.com/en/blog/agency-reputation-management', es:'https://filtraai.com/es/blog/agencia-gestion-reputacion', zh:'https://filtraai.com/zh/blog/agency-reputation-management', 'x-default':'https://filtraai.com/blog/agencia-vender-gestao-reputacao' } },
+    alternates: { canonical: 'https://filtraai.com/blog/agencia-vender-gestao-reputacao', languages: { 'pt-BR':'https://filtraai.com/blog/agencia-vender-gestao-reputacao', en:'https://filtraai.com/en/blog/agency-reputation-management', es:'https://filtraai.com/es/blog/agencia-gestion-reputacion', 'x-default':'https://filtraai.com/blog/agencia-vender-gestao-reputacao' } },
     openGraph: { title:'Vender gestão de reputação recorrente', description:'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.', url:'https://filtraai.com/blog/agencia-vender-gestao-reputacao', type:'article' },
   };
 }

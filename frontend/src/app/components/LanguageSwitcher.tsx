@@ -78,6 +78,10 @@ export function LanguageSwitcher({
   const pathLang = pathname.match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || language;
   const seoArticle = isSeoArticlePath(pathname);
+  // ZH foi cortado do índice: não linkar para páginas noindex a partir das páginas SEO.
+  const languages = seoArticle
+    ? SUPPORTED_LANGUAGES.filter((item) => item.code !== 'zh')
+    : SUPPORTED_LANGUAGES;
 
   const goToLanguage = (next: Language) => {
     if (next === current && next === language) return;
@@ -110,7 +114,7 @@ export function LanguageSwitcher({
         aria-label={tx('language', 'Idioma')}
         data-lang-switcher="compact"
       >
-        {SUPPORTED_LANGUAGES.map((item) => {
+        {languages.map((item) => {
           const active = current === item.code;
           const href = seoArticle ? targetFor(pathname, item.code) : undefined;
 
@@ -160,7 +164,7 @@ export function LanguageSwitcher({
           onChange={(e) => goToLanguage(e.target.value as Language)}
           className="h-9 min-w-[132px] cursor-pointer rounded-lg border border-white/10 bg-zinc-950 px-3 text-sm font-medium text-zinc-100 outline-hidden transition hover:border-white/20 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
         >
-          {SUPPORTED_LANGUAGES.map((item) => (
+          {languages.map((item) => (
             <option key={item.code} value={item.code}>
               {item.flag} {item.label}
             </option>
@@ -177,7 +181,7 @@ export function LanguageSwitcher({
         aria-label={tx('language', 'Idioma')}
         data-lang-switcher="v4"
       >
-        {SUPPORTED_LANGUAGES.map((item) => {
+        {languages.map((item) => {
           const active = current === item.code;
           const href = seoArticle ? targetFor(pathname, item.code) : undefined;
 

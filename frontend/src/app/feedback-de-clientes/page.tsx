@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/feedback-de-clientes',
       en: 'https://filtraai.com/en/customer-feedback',
       es: 'https://filtraai.com/es/feedback-clientes',
-      zh: 'https://filtraai.com/zh/customer-feedback',
       'x-default': 'https://filtraai.com/feedback-de-clientes',
     },
   },

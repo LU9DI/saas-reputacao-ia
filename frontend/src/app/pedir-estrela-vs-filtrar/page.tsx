@@ -5,7 +5,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Pedir avaliações vs gerenciar feedback',
     description: 'Compare pedir uma avaliação diretamente no Google com um fluxo de feedback que ajuda a entender a experiência, facilita avaliações genuínas e organiza melhorias. Trial Filtra.AI.',
-    alternates: { canonical:'https://filtraai.com/pedir-estrela-vs-filtrar', languages:{ 'pt-BR':'https://filtraai.com/pedir-estrela-vs-filtrar', en:'https://filtraai.com/en/ask-for-stars-vs-filtering', es:'https://filtraai.com/es/pedir-estrellas-vs-filtrar', zh:'https://filtraai.com/zh/request-stars-vs-filter', 'x-default':'https://filtraai.com/pedir-estrela-vs-filtrar' } },
+    alternates: { canonical:'https://filtraai.com/pedir-estrela-vs-filtrar', languages:{ 'pt-BR':'https://filtraai.com/pedir-estrela-vs-filtrar', en:'https://filtraai.com/en/ask-for-stars-vs-filtering', es:'https://filtraai.com/es/pedir-estrellas-vs-filtrar', 'x-default':'https://filtraai.com/pedir-estrela-vs-filtrar' } },
     openGraph: { title:'Pedir avaliações vs gerenciar feedback | Filtra.AI', description:'Compare pedir uma avaliação diretamente no Google com um fluxo de feedback que ajuda a entender a experiência, facilita avaliações genuínas e organiza melhorias. Trial Filtra.AI.', url:'https://filtraai.com/pedir-estrela-vs-filtrar', type:'website' },
   };
 }

@@ -25,7 +25,6 @@ const REQUIRED_URLS = [
   'https://filtraai.com/gestao-de-feedback',
   'https://filtraai.com/en',
   'https://filtraai.com/es',
-  'https://filtraai.com/zh',
 ];
 const NEVER_INDEX = [
   /^\/(?:admin|painel|api|avaliacao|widget)(?:\/|$)/,
@@ -165,6 +164,20 @@ for (const route of NOINDEX_ROUTES) {
     /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html) ||
     /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
   if (!hasNoindex) fail(`route lacks a robots noindex directive: ${route}`);
+}
+
+// Corte do ZH: páginas seguem acessíveis, mas fora do sitemap e com noindex.
+for (const route of ['/zh', '/zh/google-reviews', '/zh/blog']) {
+  if (normalized.has(normalize(`https://filtraai.com${route}`))) {
+    fail(`ZH route must not be in sitemap: ${route}`);
+  }
+  const htmlPath = findHtml(route);
+  if (!htmlPath) continue;
+  const html = readFileSync(htmlPath, 'utf8');
+  const hasNoindex =
+    /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html) ||
+    /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
+  if (!hasNoindex) fail(`ZH route lacks a robots noindex directive: ${route}`);
 }
 
 if (process.exitCode) process.exit(process.exitCode);

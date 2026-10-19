@@ -10,7 +10,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/avaliacoes-google',
       en: 'https://filtraai.com/en/google-reviews',
       es: 'https://filtraai.com/es/resenas-google',
-      zh: 'https://filtraai.com/zh/google-reviews',
       'x-default': 'https://filtraai.com/avaliacoes-google',
     },
   },

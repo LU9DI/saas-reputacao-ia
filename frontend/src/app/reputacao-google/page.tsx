@@ -12,7 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
       'pt-BR': 'https://filtraai.com/reputacao-google',
       en: 'https://filtraai.com/en/google-reputation',
       es: 'https://filtraai.com/es/reputacion-google',
-      zh: 'https://filtraai.com/zh/google-reputation',
       'x-default': 'https://filtraai.com/reputacao-google',
     },
   },

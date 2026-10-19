@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/parceiros',
       en: 'https://filtraai.com/en/partners',
       es: 'https://filtraai.com/es/socios',
-      zh: 'https://filtraai.com/zh/partners',
       'x-default': 'https://filtraai.com/parceiros',
     },
   },

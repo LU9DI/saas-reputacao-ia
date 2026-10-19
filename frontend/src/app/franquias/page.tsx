@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/franquias',
       en: 'https://filtraai.com/en/franchises',
       es: 'https://filtraai.com/es/franquicias',
-      zh: 'https://filtraai.com/zh/franchises',
       'x-default': 'https://filtraai.com/franquias',
     },
   },

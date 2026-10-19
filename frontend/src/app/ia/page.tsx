@@ -10,7 +10,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/ia',
       en: 'https://filtraai.com/en/ai',
       es: 'https://filtraai.com/es/ia',
-      zh: 'https://filtraai.com/zh/ai',
       'x-default': 'https://filtraai.com/ia',
     },
   },

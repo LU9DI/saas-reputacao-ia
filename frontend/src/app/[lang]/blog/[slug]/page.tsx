@@ -181,12 +181,11 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
       title:serpTitle(found.item.title),
       description:found.item.description
     },
-    robots:{index:true,follow:true}
+    robots:{index:lang!=='zh',follow:true}
   };
   const languages:Record<string,string>={
     en:base+family.en,
-    es:base+family.es,
-    zh:base+family.zh
+    es:base+family.es
   };
   if ('pt' in family) {
     languages['pt-BR']=base+family.pt;
@@ -205,7 +204,7 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
       title:serpTitle(found.item.title),
       description:found.item.description
     },
-    robots:{index:true,follow:true}
+    robots:{index:lang!=='zh',follow:true}
   };
 }
 

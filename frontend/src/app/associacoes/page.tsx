@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/associacoes',
       en: 'https://filtraai.com/en/associations',
       es: 'https://filtraai.com/es/asociaciones',
-      zh: 'https://filtraai.com/zh/associations',
       'x-default': 'https://filtraai.com/associacoes',
     },
   },

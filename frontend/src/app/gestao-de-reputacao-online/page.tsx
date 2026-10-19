@@ -11,7 +11,6 @@ export async function generateMetadata(): Promise<Metadata> {
       'pt-BR': 'https://filtraai.com/gestao-de-reputacao-online',
       en: 'https://filtraai.com/en/online-reputation-management',
       es: 'https://filtraai.com/es/gestion-reputacion-online',
-      zh: 'https://filtraai.com/zh/online-reputation-management',
       'x-default': 'https://filtraai.com/gestao-de-reputacao-online',
     },
   },

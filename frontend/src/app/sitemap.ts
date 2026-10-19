@@ -28,6 +28,15 @@ const LAST_MODIFIED: Record<string, string> = {
   '/franquias': '2026-10-19',
   '/es/reputacion-google': '2026-10-19',
   '/es/gestion-reputacion-online': '2026-10-19',
+  '/en/google-reviews': '2026-10-19',
+  '/en/google-reputation': '2026-10-19',
+  '/en/customer-feedback': '2026-10-19',
+  '/en/clinics': '2026-10-19',
+  '/en/agencies': '2026-10-19',
+  '/es/resenas-google': '2026-10-19',
+  '/es/mejorar-resenas-google': '2026-10-19',
+  '/es/monitoreo-reputacion-online': '2026-10-19',
+  '/es/clinicas': '2026-10-19',
 };
 
 // Next 16 + `output: export` exigem rota explicitamente estática.
@@ -126,7 +135,9 @@ function localizedAlternates(path: string) {
     if (Object.values(family).includes(path)) {
       return {
         languages: Object.fromEntries(
-          Object.entries(family).map(([lang, target]) => [lang, base + target]),
+          Object.entries(family)
+            .filter(([lang]) => lang !== 'zh')
+            .map(([lang, target]) => [lang, base + target]),
         ),
       };
     }
@@ -135,7 +146,9 @@ function localizedAlternates(path: string) {
     if (Object.values(family).includes(path as (typeof family)[keyof typeof family])) {
       return {
         languages: Object.fromEntries(
-          Object.entries(family).map(([lang, target]) => [lang, base + target]),
+          Object.entries(family)
+            .filter(([lang]) => lang !== 'zh')
+            .map(([lang, target]) => [lang, base + target]),
         ),
       };
     }
@@ -159,10 +172,11 @@ function entry(path: string): MetadataRoute.Sitemap[number] {
 const translatedBlogPaths = [
   '/en/blog/ai-review-analysis-guide',
   '/es/blog/analisis-resenas-ia',
-  '/zh/blog/ai-review-analysis-guide',
 ];
 
+// Corte do ZH: as páginas continuam acessíveis, mas com noindex e fora do sitemap.
 const allPaths = [...canonicalPaths, ...localizedPaths, ...translatedBlogPaths]
+  .filter((path) => path !== '/zh' && !path.startsWith('/zh/'))
   .filter((path, index, arr) => arr.indexOf(path) === index);
 
 export default function sitemap(): MetadataRoute.Sitemap {

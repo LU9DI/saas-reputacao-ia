@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Gestão de reputação online: guia completo para empresas',
   description:
     'Guia completo de gestão de reputação online para empresas: processo, boas práticas, indicadores e o que avaliar em serviços de gestão de reputação.',
-  alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/online-reputation-management-guide', es: 'https://filtraai.com/es/blog/guia-gestion-reputacion-online', zh: 'https://filtraai.com/zh/blog/online-reputation-management-guide', 'x-default': canonical } },
+  alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/online-reputation-management-guide', es: 'https://filtraai.com/es/blog/guia-gestion-reputacion-online', 'x-default': canonical } },
   openGraph: {
     title: 'Gestão de reputação online: avaliações, feedback e melhoria',
     description:

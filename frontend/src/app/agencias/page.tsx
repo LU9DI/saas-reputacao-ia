@@ -12,7 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
         'pt-BR': 'https://filtraai.com/agencias',
         en: 'https://filtraai.com/en/agencies',
         es: 'https://filtraai.com/es/agencias',
-        zh: 'https://filtraai.com/zh/agencies',
         'x-default': 'https://filtraai.com/agencias',
       },
     },

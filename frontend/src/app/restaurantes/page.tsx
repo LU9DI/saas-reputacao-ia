@@ -11,7 +11,6 @@ export const metadata: Metadata = {
       'pt-BR': 'https://filtraai.com/restaurantes',
       en: 'https://filtraai.com/en/restaurants',
       es: 'https://filtraai.com/es/restaurantes',
-      zh: 'https://filtraai.com/zh/restaurants',
       'x-default': 'https://filtraai.com/restaurantes',
     },
   },

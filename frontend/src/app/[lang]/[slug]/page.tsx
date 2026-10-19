@@ -174,6 +174,402 @@ const UNIQUE_CONTENT: Partial<Record<string,{sections:Section[];faq:Faq[]}>> = {
       },
     ],
   },
+  'en:google-reviews': {
+    sections: [
+      {
+        heading: 'What to measure in a Google reviews program',
+        body: 'A Google reviews program is not a race to the highest star rating. Track review volume, recency, response rate, response time and the themes that appear across comments. A profile with recent reviews and thoughtful replies often converts better than a profile with a large but old review history.',
+        points: [
+          'Volume and recency: new reviews show that the business is active.',
+          'Response rate and time: unanswered reviews signal neglect.',
+          'Themes: waiting time, communication, price, quality and staff.',
+          'Profile completeness: categories, hours, services, photos and location.',
+        ],
+      },
+      {
+        heading: 'How reviews connect to local search and revenue',
+        body: 'Reviews influence trust before a customer clicks, and they add fresh content to your Google Business Profile. Use the same themes to fix operations, train the team and improve the customer journey. The goal is a repeatable flow: ask at the right moment, make the review easy, respond with context and act on what you learn.',
+      },
+      {
+        heading: 'A review request that does not look like spam',
+        body: 'Ask every customer, not only the happy ones, and never offer incentives for a positive rating. Use a direct link or QR code at the moment of value, keep the message short and let the customer decide. Filtering or pressuring customers violates Google policies and damages trust.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How many Google reviews do I need?',
+        answer: 'There is no fixed number. Consistency, recency and the context of your category matter more than a large total. A steady flow of recent, detailed reviews is a stronger signal than a burst of old or generic comments.',
+      },
+      {
+        question: 'Can I ask customers to leave a review?',
+        answer: 'Yes, as long as the request is honest and does not offer rewards for a positive rating or filter out unhappy customers. Ask everyone at the right moment and make the process simple.',
+      },
+      {
+        question: 'Should I reply to every review?',
+        answer: 'Prioritize negative and recent reviews, but a short, personal reply to positive reviews also reinforces trust. Avoid identical templates and never argue in public.',
+      },
+      {
+        question: 'Do Google reviews affect local SEO?',
+        answer: 'Reviews are part of the trust and relevance signals around a local business and can influence click-through and conversion. They are not the only ranking factor, but they shape how customers and search engines perceive the profile.',
+      },
+      {
+        question: 'How do I get more reviews without spam?',
+        answer: 'Build the request into the customer journey, train the team to ask naturally, use a direct link or QR code and follow up once. Do not buy reviews or pressure customers.',
+      },
+    ],
+  },
+  'en:google-reputation': {
+    sections: [
+      {
+        heading: 'Google reputation is more than a star rating',
+        body: 'The rating is a summary, not a diagnosis. Look at what customers praise and complain about, how recent the comments are, whether the business replies and whether the profile matches the real experience. A 4.6 profile with unanswered complaints can lose more trust than a 4.3 profile with clear, consistent responses.',
+        points: [
+          'Recent reviews reveal the current experience.',
+          'Repeated themes show where the operation fails.',
+          'Unanswered negative reviews stay visible to future customers.',
+          'Profile accuracy reduces doubt before the first contact.',
+        ],
+      },
+      {
+        heading: 'A weekly routine to protect your Google reputation',
+        body: 'Review new comments, reply to the critical ones, log the theme and assign an owner for the fix. Check the profile for wrong hours, outdated services or missing photos. Once a month, compare themes and response time with the previous period instead of looking only at the average.',
+      },
+      {
+        heading: 'When a negative review appears',
+        body: 'Respond calmly, acknowledge the experience and move the conversation to a private channel when personal data is involved. Investigate the cause, fix what can be fixed and document the action. Never buy fake reviews or retaliate; short-term tricks create long-term risk.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How can I improve my Google reputation?',
+        answer: 'Start with the real experience: fix the causes behind recurring complaints, ask customers for honest feedback, reply with context and keep the profile complete. Reputation improves when the operation improves and customers notice it.',
+      },
+      {
+        question: 'Can I remove a negative Google review?',
+        answer: 'Only if it violates Google policies, such as spam, hate speech or personal data. Otherwise, respond professionally and use the feedback to correct the cause. Reporting a legitimate negative review rarely removes it.',
+      },
+      {
+        question: 'How often should I check Google reviews?',
+        answer: 'A weekly check is enough for most businesses. If you receive a high volume of reviews or operate in a sensitive category, set up alerts for new comments and review the critical ones daily.',
+      },
+      {
+        question: 'Does responding to reviews help?',
+        answer: 'Yes. Responses show that the business listens, give context to future customers and can reduce the impact of a negative comment. Personal, specific replies work better than templates.',
+      },
+      {
+        question: 'What if a competitor leaves a fake review?',
+        answer: 'Report it to Google, document the evidence and keep your review flow honest. Do not retaliate with fake reviews; that creates policy risk and can damage the profile.',
+      },
+    ],
+  },
+  'en:customer-feedback': {
+    sections: [
+      {
+        heading: 'Feedback is a system, not a survey',
+        body: 'Customer feedback should reach the team while there is still time to act. Collect it after key moments, not only once a year, and connect public reviews with private surveys and support conversations. A single comment is an anecdote; a recurring theme is a management signal.',
+        points: [
+          'Collect at the moment of value: after a purchase, delivery or service.',
+          'Separate public reviews from private feedback and support tickets.',
+          'Tag themes so the same issue can be compared over time.',
+          'Close the loop with the customer when possible.',
+        ],
+      },
+      {
+        heading: 'From feedback to retention',
+        body: 'Prioritize issues by frequency, severity and impact on revenue or risk. Assign an owner, define a deadline and check whether the change reduced the theme in the next period. Customers who see a response are more likely to stay, even when the first experience was not perfect.',
+      },
+      {
+        heading: 'What to measure beyond CSAT and NPS',
+        body: 'Track response rate, recurrence of themes, time to resolution and the percentage of customers who received a follow-up. Use CSAT and NPS as context, not as the only truth. A stable score can hide a growing operational problem.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is customer feedback management?',
+        answer: 'It is the process of collecting, organizing, analyzing and acting on customer signals across reviews, surveys, support and other channels. The goal is to turn feedback into decisions, not just store comments.',
+      },
+      {
+        question: 'How often should we collect feedback?',
+        answer: 'After key moments in the journey, such as a purchase, delivery, support contact or service completion. A periodic relationship survey can complement the touchpoint feedback.',
+      },
+      {
+        question: 'What is a closed-loop feedback process?',
+        answer: 'It means responding to the customer, fixing the cause when possible and checking whether the change improved the experience. Closing the loop turns feedback into trust.',
+      },
+      {
+        question: 'How do we prioritize feedback?',
+        answer: 'Combine frequency, severity and business impact. A rare but serious issue may deserve more attention than a frequent low-impact complaint.',
+      },
+      {
+        question: 'Which metrics matter most?',
+        answer: 'Response rate, recurrence of themes, resolution time and follow-up completion. CSAT and NPS help, but they should be read together with the themes and the actions taken.',
+      },
+    ],
+  },
+  'en:clinics': {
+    sections: [
+      {
+        heading: 'Why patient reviews matter for clinics',
+        body: 'Patients often compare clinics through local search before booking. Reviews, ratings, photos and profile details reduce uncertainty, while unanswered complaints can send them to a competitor. Reputation is part of the patient journey, not a separate marketing task.',
+        points: [
+          'Recent reviews show how the clinic is performing now.',
+          'Themes such as waiting time, communication and staff matter more than the average alone.',
+          'Complete profiles with services, hours and location reduce doubt.',
+          'Public replies must protect patient privacy.',
+        ],
+      },
+      {
+        heading: 'A compliant review workflow for clinics',
+        body: 'Ask for feedback after care, when the patient has enough information to evaluate the experience. Use a simple link or QR code, ask all patients and never offer incentives for a positive rating. When a review mentions clinical details, reply without confirming the case and move the conversation to a private channel.',
+      },
+      {
+        heading: 'What clinic teams should monitor',
+        body: 'Track review volume and recency, recurring themes, response time and the share of reviews without a reply. Share the themes with reception, scheduling and clinical leadership so the fix reaches the cause. A monthly review is enough to spot trends; critical comments should be routed immediately.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Can clinics ask patients for reviews?',
+        answer: 'Yes, if the request is honest, does not offer rewards for a positive rating and does not select only satisfied patients. Ask everyone at the right moment and keep the process simple.',
+      },
+      {
+        question: 'How should a clinic respond to a negative review?',
+        answer: 'Acknowledge the experience, avoid confirming clinical or personal data and invite the patient to continue in a private channel. Investigate the cause internally and document the action.',
+      },
+      {
+        question: 'Do Google reviews affect patient choice?',
+        answer: 'They influence trust and are often part of the first comparison. A complete profile with recent reviews and careful replies helps reduce uncertainty before booking.',
+      },
+      {
+        question: 'What should a clinic measure?',
+        answer: 'Review volume and recency, recurring themes, response time, unanswered reviews and the actions taken. The average rating is useful, but it does not show the cause of the perception.',
+      },
+      {
+        question: 'How do we get more reviews without pressuring patients?',
+        answer: 'Build the request into the post-care flow, explain that the feedback helps other patients and provide a direct link or QR code. Never pressure or reward.',
+      },
+    ],
+  },
+  'en:agencies': {
+    sections: [
+      {
+        heading: 'Reputation management as an agency service',
+        body: 'Agencies can productize reputation management with a clear scope: audit, monitoring, review response, theme analysis and monthly reporting. Standardize the workflow across clients while keeping the local context of each business. The value is not only in the tool; it is in the operating routine the agency installs.',
+        points: [
+          'Audit the profile, review volume, response rate and recurring themes.',
+          'Define a response standard and an escalation path for sensitive cases.',
+          'Separate the consolidated view from the local view of each unit.',
+          'Report actions and outcomes, not only the star rating.',
+        ],
+      },
+      {
+        heading: 'How to prove value to clients',
+        body: 'Start with a baseline and compare the same period after the work. Show review velocity, response time, theme recurrence and the operational fixes completed. Connect reputation signals to commercial outcomes when possible, such as leads, bookings or retention. A monthly narrative is more persuasive than a dashboard alone.',
+      },
+      {
+        heading: 'Scaling without losing quality',
+        body: 'Use templates for structure, not for the words. Give each client a voice guide, a list of sensitive topics and a clear owner for approval. Automate collection and analysis, but keep a human review for critical comments and public replies.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How do agencies manage reputation for multiple clients?',
+        answer: 'With a standardized workflow: audit, monitoring, response, reporting and a clear owner per client. Templates help with structure, but replies and recommendations need client context.',
+      },
+      {
+        question: 'What should a reputation audit include?',
+        answer: 'Profile completeness, review volume and recency, rating, response rate, recurring themes, competitor comparison and the main operational gaps. The audit should end with a prioritized action plan.',
+      },
+      {
+        question: 'How do you price reputation management?',
+        answer: 'Price by scope, number of locations, review volume and the level of response and reporting. A monthly retainer fits the ongoing nature of the work better than a one-off project.',
+      },
+      {
+        question: 'How do you report results?',
+        answer: 'Show trends, themes, response time, review velocity and the actions completed. Connect the work to commercial outcomes when the data allows, and explain what changed and why.',
+      },
+      {
+        question: 'Can agencies respond to reviews on behalf of clients?',
+        answer: 'Yes, with permission and a clear voice guide. Sensitive cases should be escalated to the client, especially when they involve personal data, legal risk or clinical details.',
+      },
+    ],
+  },
+  'es:resenas-google': {
+    sections: [
+      {
+        heading: 'Qué analizar en las reseñas de Google',
+        body: 'La nota media resume la percepción, pero no explica qué está pasando. Revisa el volumen y la antigüedad de las reseñas, la proporción de respuestas, los temas que se repiten y la coherencia de la ficha de Google Business Profile. Una ficha con reseñas recientes y respuestas cuidadas transmite más confianza que un historial antiguo sin interacción.',
+        points: [
+          'Reseñas recientes: muestran la experiencia actual.',
+          'Temas recurrentes: espera, atención, comunicación, precio y calidad.',
+          'Reseñas sin respuesta: especialmente las negativas y las más visibles.',
+          'Ficha completa: categoría, horarios, servicios, fotos y ubicación.',
+        ],
+      },
+      {
+        heading: 'Cómo usar las reseñas para mejorar la operación',
+        body: 'Clasifica los comentarios por tema y por unidad, identifica patrones y asigna un responsable a cada acción. Responde con contexto y sin discutir en público; si el caso requiere datos personales, traslada la conversación a un canal privado. El objetivo no es maquillar la nota, sino corregir la causa que genera insatisfacción.',
+      },
+      {
+        heading: 'Cómo pedir reseñas sin parecer spam',
+        body: 'Pide opinión a todos los clientes, no solo a los satisfechos, y nunca ofrezcas incentivos por una valoración positiva. Usa un enlace directo o un código QR en el momento adecuado, mantén el mensaje corto y deja que el cliente decida. Filtrar o presionar clientes va contra las políticas de Google y daña la confianza.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cuántas reseñas necesito en Google?',
+        answer: 'No hay un número fijo. Importan la constancia, la recencia y el contexto de tu categoría. Un flujo estable de reseñas recientes y detalladas es más fuerte que un pico de comentarios antiguos o genéricos.',
+      },
+      {
+        question: '¿Puedo pedir reseñas a mis clientes?',
+        answer: 'Sí, siempre que la solicitud sea honesta y no ofrezca recompensas por una valoración positiva ni filtre a los clientes insatisfechos. Pide a todos en el momento adecuado y facilita el proceso.',
+      },
+      {
+        question: '¿Debo responder a todas las reseñas?',
+        answer: 'Prioriza las negativas y las más recientes, pero una respuesta breve y personal a las positivas también refuerza la confianza. Evita plantillas idénticas y nunca discutas en público.',
+      },
+      {
+        question: '¿Las reseñas influyen en el SEO local?',
+        answer: 'Forman parte de las señales de confianza y relevancia de un negocio local y pueden influir en el clic y la conversión. No son el único factor de posicionamiento, pero moldean la percepción de clientes y buscadores.',
+      },
+      {
+        question: '¿Cómo consigo más reseñas sin hacer spam?',
+        answer: 'Integra la solicitud en la experiencia, entrena al equipo para pedir de forma natural, usa un enlace directo o QR y haz un seguimiento único. No compres reseñas ni presiones a los clientes.',
+      },
+    ],
+  },
+  'es:mejorar-resenas-google': {
+    sections: [
+      {
+        heading: 'Mejorar la experiencia antes de pedir una reseña',
+        body: 'La nota media no cambia solo porque se pidan más reseñas. Empieza por los problemas que aparecen en los comentarios: espera, comunicación, precio, resultado y trato. Corrige lo que se repite y pide opinión cuando el cliente ya recibió el valor; pedir antes de tiempo suele generar comentarios negativos.',
+        points: [
+          'Identifica los temas que más se repiten en las reseñas negativas.',
+          'Define un responsable y un plazo para cada corrección.',
+          'Pide feedback después del momento de valor, no antes.',
+          'Responde a las reseñas para cerrar el ciclo con el cliente.',
+        ],
+      },
+      {
+        heading: 'Cómo pedir reseñas de forma honesta y sistemática',
+        body: 'Crea un flujo simple: mensaje corto, enlace directo o QR, pedido a todos los clientes y un único recordatorio. Explica que la opinión ayuda a mejorar el servicio y nunca condicione la atención a una valoración positiva. La autenticidad es lo que sostiene la reputación a largo plazo.',
+      },
+      {
+        heading: 'Qué esperar y cómo medir la evolución',
+        body: 'Los resultados dependen del volumen de clientes, de la frecuencia de solicitud y de la experiencia real. Mide el volumen de reseñas nuevas, la proporción de respuestas, la recurrencia de temas y la evolución por periodo. No compares solo la nota: compara si el problema de fondo disminuyó.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cómo puedo mejorar la nota media en Google?',
+        answer: 'Mejora la experiencia, corrige los temas recurrentes, pide opinión a todos los clientes y responde con transparencia. La nota es una consecuencia; la causa está en la operación y en la forma de solicitar feedback.',
+      },
+      {
+        question: '¿Cuánto tarda en mejorar la reputación?',
+        answer: 'Depende del volumen de clientes y de la recencia de las reseñas. Con un flujo constante, los cambios suelen ser visibles en semanas o meses, no de un día para otro.',
+      },
+      {
+        question: '¿Puedo ofrecer un descuento por una reseña?',
+        answer: 'No. Ofrecer incentivos por una valoración positiva va contra las políticas de Google y puede dañar la credibilidad. Puedes agradecer el feedback, pero no comprarlo.',
+      },
+      {
+        question: '¿Debo pedir reseñas a todos los clientes?',
+        answer: 'Sí. Pedir solo a los satisfechos se considera filtrado y distorsiona la percepción. Pide a todos, en el momento adecuado y sin presión.',
+      },
+      {
+        question: '¿Qué hago con una reseña negativa?',
+        answer: 'Responde con respeto, reconoce la experiencia, explica el siguiente paso y traslada los datos personales a un canal privado. Registra el tema y corrige la causa.',
+      },
+    ],
+  },
+  'es:monitoreo-reputacion-online': {
+    sections: [
+      {
+        heading: 'Qué monitorear además de la nota media',
+        body: 'El monitoreo de reputación online no se limita a mirar la puntuación. Sigue las reseñas nuevas, los temas recurrentes, el tiempo de respuesta, las reseñas sin responder y los cambios en la ficha de Google. Si la empresa tiene varias unidades, compara el consolidado con el contexto local de cada una.',
+        points: [
+          'Volumen y recencia de reseñas en Google y portales del sector.',
+          'Temas recurrentes y su evolución en el tiempo.',
+          'Tiempo de respuesta y porcentaje de reseñas sin responder.',
+          'Cambios en la ficha: horarios, servicios, fotos y categorías.',
+        ],
+      },
+      {
+        heading: 'Cómo montar una rutina de monitoreo',
+        body: 'Define una revisión semanal de señales críticas y una mensual de tendencias. Asigna un responsable, registra los temas y las acciones, y usa alertas para comentarios sensibles. La rutina debe producir decisiones, no solo un informe.',
+      },
+      {
+        heading: 'Qué medir para saber si la reputación mejora',
+        body: 'Además de la nota, acompaña la proporción de respuestas, el tiempo de respuesta, la recurrencia de cada tema y el porcentaje de acciones cerradas. Compara periodos equivalentes y registra las intervenciones para saber qué funcionó.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Qué es el monitoreo de reputación online?',
+        answer: 'Es el proceso de observar de forma continua las señales que forman la percepción de la empresa: reseñas, feedback, redes sociales, encuestas y atención al cliente. El objetivo es detectar cambios y actuar a tiempo.',
+      },
+      {
+        question: '¿Cada cuánto tiempo debo revisar la reputación?',
+        answer: 'Una revisión semanal de señales críticas y una mensual de tendencias suele ser suficiente para empezar. La frecuencia depende del volumen de clientes y de la sensibilidad del sector.',
+      },
+      {
+        question: '¿Qué herramientas necesito?',
+        answer: 'Puedes empezar con las alertas de Google, una hoja de cálculo y una rutina de revisión. Cuando el volumen crece, una plataforma centraliza reseñas, temas y reportes.',
+      },
+      {
+        question: '¿Qué métricas importan más?',
+        answer: 'Volumen y recencia de reseñas, temas recurrentes, tiempo de respuesta, reseñas sin responder y evolución de la percepción. La nota media es un resumen, no el diagnóstico.',
+      },
+      {
+        question: '¿Cómo monitorear varias unidades?',
+        answer: 'Combina una vista consolidada con una vista por unidad. Compara temas y tendencias, pero conserva el contexto local y asigna un responsable por unidad.',
+      },
+    ],
+  },
+  'es:clinicas': {
+    sections: [
+      {
+        heading: 'Por qué las reseñas importan en una clínica',
+        body: 'El paciente suele comparar clínicas en la búsqueda local antes de agendar. Las reseñas, la nota, las fotos y los datos de la ficha reducen la incertidumbre; las quejas sin respuesta pueden llevar al paciente a otra opción. La reputación forma parte de la jornada del paciente, no es una tarea aparte.',
+        points: [
+          'Reseñas recientes muestran el desempeño actual de la clínica.',
+          'Espera, comunicación, trato y resultado importan más que la media sola.',
+          'Una ficha completa con servicios, horarios y ubicación reduce dudas.',
+          'Las respuestas públicas deben proteger la privacidad del paciente.',
+        ],
+      },
+      {
+        heading: 'Un flujo de reseñas compatible con la privacidad',
+        body: 'Pide feedback después de la atención, cuando el paciente tiene información suficiente para evaluar la experiencia. Usa un enlace o QR simple, pide a todos los pacientes y no ofrezcas incentivos por una nota positiva. Si una reseña menciona datos clínicos, responde sin confirmar el caso y traslada la conversación a un canal privado.',
+      },
+      {
+        heading: 'Qué debe monitorear el equipo de la clínica',
+        body: 'Sigue el volumen y la recencia de las reseñas, los temas recurrentes, el tiempo de respuesta y las reseñas sin responder. Comparte los temas con recepción, agenda y liderazgo clínico para que la corrección llegue a la causa. Una revisión mensual es suficiente para ver tendencias; los comentarios críticos deben escalarse de inmediato.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Puede una clínica pedir reseñas a sus pacientes?',
+        answer: 'Sí, si la solicitud es honesta, no ofrece recompensas por una valoración positiva y no selecciona solo a los pacientes satisfechos. Pide a todos en el momento adecuado y facilita el proceso.',
+      },
+      {
+        question: '¿Cómo responder a una reseña negativa de un paciente?',
+        answer: 'Reconoce la experiencia, evita confirmar datos clínicos o personales e invita al paciente a continuar en un canal privado. Investiga la causa internamente y documenta la acción.',
+      },
+      {
+        question: '¿Las reseñas de Google influyen en la elección del paciente?',
+        answer: 'Influyen en la confianza y suelen formar parte de la primera comparación. Una ficha completa, con reseñas recientes y respuestas cuidadas, reduce la incertidumbre antes de agendar.',
+      },
+      {
+        question: '¿Qué debe medir una clínica?',
+        answer: 'Volumen y recencia de reseñas, temas recurrentes, tiempo de respuesta, reseñas sin responder y acciones tomadas. La nota media es útil, pero no muestra la causa de la percepción.',
+      },
+      {
+        question: '¿Cómo conseguir más reseñas sin presionar al paciente?',
+        answer: 'Integra la solicitud en el flujo posterior a la atención, explica que la opinión ayuda a otros pacientes y ofrece un enlace directo o QR. Nunca presiones ni recompenses.',
+      },
+    ],
+  },
 };
 
 const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google','/filtra-ai','/reputacao-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback','/hoteis','/turismo','/agencias','/clinicas','/franquias','/associacoes','/restaurantes','/como-funciona','/parceiros','/pedir-estrela-vs-filtrar','/auditoria-gratuita'];
@@ -287,13 +683,12 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
     description:found.item.description,
     alternates:{canonical:base+'/'+lang+'/'+slug},
     openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},
-    robots:{index:true,follow:true}
+    robots:{index:lang!=='zh',follow:true}
   };
   const languages:Record<string,string>={
     'pt-BR':base+family.pt,
     en:base+family.en,
     es:base+family.es,
-    zh:base+family.zh,
     'x-default':base+family.pt
   };
   return {
@@ -301,7 +696,7 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
     description:found.item.description,
     alternates:{canonical:base+'/'+lang+'/'+slug,languages},
     openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},
-    robots:{index:true,follow:true}
+    robots:{index:lang!=='zh',follow:true}
   };
 }
 

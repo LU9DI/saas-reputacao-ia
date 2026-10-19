@@ -12,7 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
       'pt-BR': 'https://filtraai.com/gestao-de-feedback',
       en: 'https://filtraai.com/en/customer-feedback-management',
       es: 'https://filtraai.com/es/gestion-feedback-clientes',
-      zh: 'https://filtraai.com/zh/customer-feedback-management',
       'x-default': 'https://filtraai.com/gestao-de-feedback',
     },
   },

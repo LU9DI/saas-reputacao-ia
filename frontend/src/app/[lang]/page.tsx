@@ -97,9 +97,9 @@ export async function generateMetadata({params}:{params:Promise<{lang:string}>})
   return {
     title:content[lang].title,
     description:content[lang].description,
-    alternates:{canonical:urls[lang],languages:{'pt-BR':urls.pt,en:urls.en,es:urls.es,zh:urls.zh,'x-default':urls.pt}},
+    alternates:{canonical:urls[lang],languages:{'pt-BR':urls.pt,en:urls.en,es:urls.es,'x-default':urls.pt}},
     openGraph:{type:'website',url:urls[lang],siteName:'Filtra.AI',title:content[lang].title,description:content[lang].description,locale:lang==='en'?'en_US':lang==='es'?'es_ES':'zh_CN'},
-    robots:{index:true,follow:true}
+    robots:{index:lang!=='zh',follow:true}
   };
 }
 

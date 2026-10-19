@@ -76,12 +76,11 @@ export async function generateMetadata({params}:{params:Promise<{lang:string}>})
         'pt-BR':base+'/blog',
         en:base+blog.en,
         es:base+blog.es,
-        zh:base+blog.zh,
         'x-default':base+'/blog'
       }
     },
     openGraph:{type:'website',url:base+blog[lang],siteName:'Filtra.AI',title:t.title,description:t.description},
-    robots:{index:true,follow:true}
+    robots:{index:lang!=='zh',follow:true}
   };
 }
 
