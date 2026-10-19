@@ -1,15 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { CalendarDays, FileText, Loader2, RefreshCw } from 'lucide-react';
+import { CalendarDays, FileText } from 'lucide-react';
 
 type Props = {
   empresa: { id?: string; nome_empresa?: string; plan?: string };
   monthlyReports?: any[];
   lang?: string;
-  gerando?: boolean;
-  erro?: string;
-  onGerar?: () => void;
 };
 
 const COPY: Record<string, Record<string, string>> = {
@@ -143,7 +140,7 @@ function languageOf(name: unknown): string {
   return 'pt';
 }
 
-export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [], lang: languageName, gerando = false, erro = '', onGerar }: Props) {
+export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [], lang: languageName }: Props) {
   const [selectedMonth, setSelectedMonth] = useState('');
   const lang = languageOf(languageName);
   const t = COPY[lang] || COPY.pt;
@@ -192,12 +189,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
         <span className="rounded-full border border-white/10 px-3 py-1.5">{empresa.nome_empresa || 'Empresa'}</span>
         <span className="rounded-full border border-white/10 px-3 py-1.5">{activeMonth || '—'}</span>
       </div>
-      {gerando && !activeReport ? (
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.05] px-4 py-5 text-sm text-indigo-100">
-          <Loader2 size={18} className="animate-spin" />
-          {t.generating}
-        </div>
-      ) : activeReport ? (
+      {activeReport ? (
         <div className="mt-6 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.04] px-4 py-3 text-xs text-emerald-200">
             <span>{t.savedNote}</span>
@@ -241,14 +233,14 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
             </article>
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.action}</h3>
-              {hasAdvancedAnalysis && activeReport.recomendacoes?.length ? (
+              {activeReport.recomendacoes?.length ? (
                 <ul className="mt-3 space-y-2">
                   {activeReport.recomendacoes.map((item: string, index: number) => (
                     <li key={index} className="rounded-xl border border-white/5 px-3 py-2 text-sm leading-5 text-zinc-300">{item}</li>
                   ))}
                 </ul>
               ) : <p className="mt-3 text-sm text-zinc-400">{t.noRecommendations}</p>}
-              {hasAdvancedAnalysis && (activeReport.riscos?.length || 0) > 0 && (
+              {(activeReport.riscos?.length || 0) > 0 && (
                 <>
                   <h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-amber-300">{t.attention}</h4>
                   <ul className="mt-2 space-y-2">
@@ -261,7 +253,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
                   </ul>
                 </>
               )}
-              {planCode !== 'rei' && (activeReport.oportunidades?.length || 0) > 0 && (
+              {(activeReport.oportunidades?.length || 0) > 0 && (
                 <>
                   <h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-emerald-300">{t.growth}</h4>
                   <ul className="mt-2 space-y-2">
@@ -336,23 +328,10 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
             </article>
           )}
         </div>
-      ) : erro ? (
-        <div className="mt-6 rounded-2xl border border-red-400/15 bg-red-500/[0.05] px-4 py-5 text-sm text-red-200">
-          <p>{erro}</p>
-          {onGerar && (
-            <button type="button" onClick={onGerar} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-red-400/25 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-100 hover:bg-red-500/20">
-              <RefreshCw size={14} /> {t.retry}
-            </button>
-          )}
-        </div>
       ) : (
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 px-4 py-5 text-sm text-zinc-400">
-          <p>{gerando ? t.generating : t.noHistory}</p>
-          {!gerando && onGerar && (
-            <button type="button" onClick={onGerar} className="mt-3 inline-flex items-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-3 py-2 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
-              <FileText size={14} /> {t.generate}
-            </button>
-          )}
+          <p>{t.noHistory}</p>
+          <p className="mt-2 text-xs text-zinc-500">O painel exibe apenas snapshots já disponibilizados no carregamento normal. Nenhuma requisição de geração é disparada por este componente.</p>
         </div>
       )}
     </section>
