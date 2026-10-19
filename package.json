@@ -2,7 +2,7 @@
   "name": "saas-reputacao-ia",
   "private": true,
   "version": "1.0.0",
-  "description": "Filtra.IA — micro-SaaS de gestão de reputação",
+  "description": "Filtra.AI — micro-SaaS de gestão de reputação",
   "scripts": {
     "dev": "concurrently -n api,web -c blue,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:api": "npm run dev --prefix backend",
@@ -18,6 +18,5 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
-  },
-  "dependencies": {}
+  }
 }

@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.4",
-  "description": "API Filtra.IA",
+  "description": "API Filtra.AI",
   "main": "server.ts",
   "type": "module",
   "scripts": {
