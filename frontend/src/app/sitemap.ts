@@ -2,6 +2,31 @@ import type { MetadataRoute } from 'next';
 
 const base = 'https://filtraai.com';
 
+// Só declare datas reais de alteração de conteúdo: lastmod inconsistente perde confiança.
+// 2026-10-19: páginas alteradas no lote de CTR/conteúdo (títulos, seções, FAQ e nav do blog).
+const LAST_MODIFIED: Record<string, string> = {
+  '/': '2026-10-19',
+  '/filtra-ai': '2026-10-19',
+  '/gestao-de-reputacao-online': '2026-10-19',
+  '/blog': '2026-10-19',
+  '/blog/gestao-reputacao-online-guia': '2026-10-19',
+  '/blog/seo-local-avaliacoes-local-pack': '2026-10-19',
+  '/blog/como-responder-avaliacoes-negativas': '2026-10-19',
+  '/blog/como-conseguir-avaliacoes-google': '2026-10-19',
+  '/blog/agencia-vender-gestao-reputacao': '2026-10-19',
+  '/blog/avaliacoes-google-restaurantes': '2026-10-19',
+  '/blog/google-business-profile-avaliacoes': '2026-10-19',
+  '/blog/clinica-checklist-avaliacoes-google': '2026-10-19',
+  '/blog/feedback-cliente-para-reputacao': '2026-10-19',
+  '/blog/whatsapp-pedir-estrela-vs-filtrar-qr': '2026-10-19',
+  '/blog/qr-code-balcao-reviews': '2026-10-19',
+  '/blog/reputacao-online-clinicas': '2026-10-19',
+  '/blog/reputacao-franquias-multilocal': '2026-10-19',
+  '/blog/review-1-estrela-primeiras-24-horas': '2026-10-19',
+  '/blog/velocity-reviews-google-maps-2026': '2026-10-19',
+  '/blog/reputacao-online-hoteis': '2026-10-19',
+};
+
 // Next 16 + `output: export` exigem rota explicitamente estática.
 export const dynamic = 'force-static';
 
@@ -124,6 +149,7 @@ function entry(path: string): MetadataRoute.Sitemap[number] {
     changeFrequency: authorityCore.has(canonical) || isBlog ? 'weekly' : 'monthly',
     priority,
     alternates: localizedAlternates(canonical),
+    lastModified: LAST_MODIFIED[canonical] ? new Date(LAST_MODIFIED[canonical]) : undefined,
   };
 }
 
