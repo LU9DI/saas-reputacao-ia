@@ -119,10 +119,10 @@
   "panel_reviews": "评价",
   "panel_ai_report": "智能报告",
   "panel_monthly_report": "月度报告",
-  "panel_monthly_report_desc": "上个月的专业报告，由 AI 生成，可下载 PDF。",
+  "panel_monthly_report_desc": "使用面板已加载的数据展示上个月的专业报告。",
   "panel_monthly_report_open": "打开月度报告",
   "panel_monthly_report_hide": "隐藏月度报告",
-  "panel_monthly_report_generating": "正在生成月度报告…",
+  
   "panel_monthly_report_failed": "暂时无法生成月度报告。",
   "panel_units_menu": "门店管理",
   "panel_units_menu_units": "门店与专属评价链接",
