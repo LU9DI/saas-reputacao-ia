@@ -19,7 +19,18 @@ const limiter = rateLimit({
 const TERMOS_VERSAO = '2026-09-15';
 const PRIVACIDADE_VERSAO = '2026-09-15';
 
-export function mountLegalAcceptRoutes(app: Express) {
+type LegalAcceptRouteDependencies = {
+  getDb?: typeof getDb;
+  writeAuditFromReq?: typeof writeAuditFromReq;
+};
+
+export function mountLegalAcceptRoutes(
+  app: Express,
+  dependencies: LegalAcceptRouteDependencies = {}
+) {
+  const resolveDb = dependencies.getDb ?? getDb;
+  const recordAudit = dependencies.writeAuditFromReq ?? writeAuditFromReq;
+
   app.post(
     '/api/legal/aceite',
     limiter,
@@ -38,8 +49,8 @@ export function mountLegalAcceptRoutes(app: Express) {
       const versaoTermos = String(body.versao_termos || TERMOS_VERSAO).slice(0, 32);
       const versaoPriv = String(body.versao_privacidade || PRIVACIDADE_VERSAO).slice(0, 32);
 
-      const db = getDb();
-      await writeAuditFromReq(db, req, {
+      const db = resolveDb();
+      await recordAudit(db, req, {
         action: contexto === 'trial' ? 'legal.aceite_trial' : 'legal.aceite_checkout',
         actor_user_id: email,
         empresa_id: empresaId,
