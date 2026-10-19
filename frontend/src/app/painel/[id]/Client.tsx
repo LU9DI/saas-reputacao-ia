@@ -31,14 +31,6 @@ function authHeaders(json = true): HeadersInit {
   return h;
 }
 
-/** Ciclo do relatório mensal: último mês encerrado (mesmo cálculo do backend). */
-function mesDeReferencia(): string {
-  const d = new Date();
-  d.setUTCDate(1);
-  d.setUTCMonth(d.getUTCMonth() - 1);
-  return d.toISOString().slice(0, 7);
-}
-
 /** Relatório inteligente: Trial e Pro+ (não no Inicial pago). */
 function planAllowsReport(plan?: string, status?: string, dashboard?: any): boolean {
   if (dashboard?.relatorio_disponivel) return true;
@@ -131,8 +123,6 @@ export default function PainelEmpresa() {
   const [erro, setErro] = useState('');
   const [mostrarRelatorioMensal, setMostrarRelatorioMensal] = useState(false);
   const [relatorioMensalLocal, setRelatorioMensalLocal] = useState<any[]>([]);
-  const [gerandoRelatorioMensal, setGerandoRelatorioMensal] = useState(false);
-  const [erroRelatorioMensal, setErroRelatorioMensal] = useState('');
   const [unidadesMenuOpen, setUnidadesMenuOpen] = useState(false);
   const [precisaLogin, setPrecisaLogin] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
@@ -180,69 +170,13 @@ export default function PainelEmpresa() {
     }
   };
 
-  // Relatório mensal profissional: primeira leitura do ciclo gera e salva (uma vez);
-  // reaberturas e downloads ilimitados usam o snapshot em cache, sem novo consumo de IA.
-  const solicitarRelatorioMensal = async () => {
-    if (!empresaId || gerandoRelatorioMensal) return;
-    setGerandoRelatorioMensal(true);
-    setErroRelatorioMensal('');
-    try {
-      let json: any = null;
-      for (let attempt = 0; attempt < 4; attempt += 1) {
-        const res = await apiFetch(`/api/empresa/${empresaId}/relatorio-mensal`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: authHeaders(),
-          timeoutMs: 60_000,
-        });
-        json = await res.json().catch(() => ({}));
-        if (res.status === 202) {
-          // Outra geração do mesmo ciclo está em andamento: aguarda e tenta novamente.
-          await new Promise((resolve) => setTimeout(resolve, Number(json?.retry_after_ms) || 3000));
-          continue;
-        }
-        if (res.status === 401 || res.status === 403) {
-          throw new Error(json.error || t.panel_need_login || 'Faça login com a conta da empresa.');
-        }
-        if (!res.ok) throw new Error(json.error || `Erro ${res.status}`);
-        break;
-      }
-      if (json?.report) {
-        const report = { ...json.report, gerado_em: new Date().toISOString() };
-        setRelatorioMensalLocal((prev) => [
-          report,
-          ...prev.filter((r) => r?.periodo !== report.periodo),
-        ]);
-      } else {
-        throw new Error(
-          t.panel_monthly_report_failed || 'O relatório está sendo gerado. Tente novamente em instantes.'
-        );
-      }
-    } catch (e: any) {
-      setErroRelatorioMensal(
-        e?.message === 'Failed to fetch'
-          ? t.panel_offline || 'Não foi possível conectar ao servidor.'
-          : e?.message || 'Não foi possível gerar o relatório agora.'
-      );
-    } finally {
-      setGerandoRelatorioMensal(false);
-    }
-  };
-
   const relatoriosMensais = [
     ...relatorioMensalLocal,
     ...(Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []),
   ].filter((r, index, arr) => r && arr.findIndex((x) => x?.periodo === r?.periodo) === index);
 
   const alternarRelatorioMensal = () => {
-    if (mostrarRelatorioMensal) {
-      setMostrarRelatorioMensal(false);
-      return;
-    }
-    setMostrarRelatorioMensal(true);
-    const ciclo = mesDeReferencia();
-    const jaTemCiclo = relatoriosMensais.some((r) => r?.periodo === ciclo && r?.kpis);
-    if (!jaTemCiclo) void solicitarRelatorioMensal();
+    setMostrarRelatorioMensal((visible) => !visible);
   };
 
   useEffect(() => {
@@ -822,7 +756,7 @@ export default function PainelEmpresa() {
                       <p className="mt-1 text-xs text-zinc-400">{t.panel_monthly_report_desc || 'Relatório profissional do mês anterior, gerado por IA, com download em PDF.'}</p>
                     </div>
                     <button type="button" onClick={alternarRelatorioMensal} aria-expanded={mostrarRelatorioMensal} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-4 py-2.5 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
-                      <FileText size={16} /> {gerandoRelatorioMensal ? (t.panel_monthly_report_generating || 'Gerando relatório…') : mostrarRelatorioMensal ? (t.panel_monthly_report_hide || 'Ocultar relatório mensal') : (t.panel_monthly_report_open || 'Abrir Relatório Mensal')}
+                      <FileText size={16} /> {mostrarRelatorioMensal ? (t.panel_monthly_report_hide || 'Ocultar relatório mensal') : (t.panel_monthly_report_open || 'Abrir Relatório Mensal')}
                     </button>
                   </div>
                 </div>
@@ -832,9 +766,6 @@ export default function PainelEmpresa() {
                   empresa={empresa}
                   monthlyReports={relatoriosMensais}
                   lang={t.lang_name}
-                  gerando={gerandoRelatorioMensal}
-                  erro={erroRelatorioMensal}
-                  onGerar={() => void solicitarRelatorioMensal()}
                 />
               )}
             </section>
