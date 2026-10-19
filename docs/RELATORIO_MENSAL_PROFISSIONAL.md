@@ -1,6 +1,6 @@
 # Relatório profissional mensal
 
-O relatório profissional mensal é acessado por um único botão dentro da seção do Relatório Inteligente no painel do cliente. O documento é progressivo e libera módulos conforme os benefícios do plano contratado e é gerado uma única vez por ciclo mensal: o primeiro acesso do mês gera e persiste o snapshot em `relatorio_envios_mensais.report_json`; reaberturas e downloads ilimitados leem esse snapshot em cache, sem novo consumo de IA.
+O Relatório Inteligente mensal é acessado por um único botão no painel do cliente. O painel é somente de leitura: não chama o endpoint de geração, não solicita nova análise e não faz chamadas de rede específicas do relatório. Ele renderiza snapshots já incluídos no payload do carregamento normal do painel (`relatorios_profissionais_mensais`). A preparação do snapshot ocorre fora da interação do cliente; reabrir o relatório apenas reutiliza os dados já carregados.
 
 O Relatório Inteligente legado e seus endpoints permanecem intactos e fora do escopo desta entrega.
 
@@ -8,9 +8,9 @@ O Relatório Inteligente legado e seus endpoints permanecem intactos e fora do e
 
 - Exibido para os planos Pro, Ultra, Corporativo e REI (o plano Inicial continua fora da entrega mensal).
 - O botão fica na área do Relatório Inteligente e abre o painel do mês de referência (mês calendário anterior).
-- No primeiro clique de um ciclo sem snapshot, o painel mostra o estado "Gerando o relatório deste mês…" e chama `POST /api/empresa/:ref/relatorio-mensal`. Nos cliques seguintes o relatório abre imediatamente do cache local/persistido.
+- O botão apenas mostra/oculta o relatório já carregado na memória do painel. Não dispara `POST /api/empresa/:ref/relatorio-mensal` nem outra chamada de rede.
 - Permite selecionar entre snapshots mensais persistidos (histórico), com indicadores, resumo executivo, sentimento, temas, riscos, oportunidades, recomendações, ranking de unidades (quando há dados), prioridades operacionais e radar estratégico (quando há dados).
-- Contém o botão **Baixar PDF**: abre o HTML profissional persistido (`canais.email.html`) em nova aba com as regras de impressão A4 e aciona a impressão/salvamento em PDF. Se o navegador bloquear a janela, o arquivo HTML é baixado como fallback. Nenhum download consome IA.
+- O relatório é apresentado em linguagem profissional diretamente no painel; não há download de PDF.
 - Os snapshots ficam persistidos por empresa e mês, são verificados contra a empresa autenticada e também são incluídos no carregamento normal do painel (`relatorios_profissionais_mensais`), com o sinalizador `dashboard.mostrar_relatorio_mensal`.
 
 ## Conteúdo progressivo por plano
@@ -22,9 +22,9 @@ O Relatório Inteligente legado e seus endpoints permanecem intactos e fora do e
 - O Inicial não tem direito ao relatório mensal. Não há bloco comercial ou comparativo de preços no documento; só aparecem módulos incluídos no plano atual.
 - Se o plano mudar depois da criação do snapshot, a apresentação e os metadados são adaptados a partir do mesmo snapshot, sem uma nova chamada à IA.
 
-## Geração, cache e limites de tokens
+## Preparação do snapshot, cache e limites de tokens
 
-- `POST /api/empresa/:ref/relatorio-mensal` (autenticado pelo token da empresa) opera no modo "get-or-generate" para o mês de referência (mês calendário anterior, calculado no servidor):
+- O endpoint `POST /api/empresa/:ref/relatorio-mensal` permanece disponível para processos internos/administrativos e compatibilidade, mas não é chamado pelo frontend do painel. A apresentação do cliente usa somente os snapshots que chegam no payload do carregamento normal do painel.
   - snapshot existente → `200 { success: true, cached: true, report }`;
   - primeira leitura do ciclo → gera uma única vez, persiste e responde `200 { cached: false, report }`;
   - geração concorrente em andamento → `202 { status: 'generating', retry_after_ms }` sem duplicar custo;
@@ -66,4 +66,4 @@ O job mantém a tabela `relatorio_envios_mensais` e reserva uma combinação ún
 
 ## Benefícios por plano
 
-O relatório mensal está incluído a partir do Pro e seu conteúdo progride conforme os benefícios: Pro (indicadores), Ultra (análise avançada), Corporativo (comparativo e prioridades por unidade) e REI (radar estratégico e oportunidades executivas). Reabrir, gerar novamente ou baixar o relatório no mesmo ciclo reutiliza o snapshot em cache e não dispara novas chamadas à IA.
+O relatório mensal está incluído a partir do Pro e seu conteúdo progride conforme os benefícios: Pro (indicadores), Ultra (análise avançada), Corporativo (comparativo e prioridades por unidade) e REI (radar estratégico e oportunidades executivas). Reabrir o relatório no painel reutiliza os dados já carregados e não dispara chamadas ao backend nem à IA.
