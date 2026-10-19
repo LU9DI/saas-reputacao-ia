@@ -151,7 +151,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
   const hasRadarSection = strategicRadar.length > 0 || growthOpportunities.length > 0;
 
   return (
-    <section id="professional-report" className="scroll-mt-28 rounded-3xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/[0.08] via-zinc-950 to-zinc-950 p-5 sm:p-7">
+    <section id="professional-report" className="scroll-mt-28 rounded-3xl border border-indigo-400/20 bg-linear-to-br from-indigo-500/8 via-zinc-950 to-zinc-950 p-5 sm:p-7">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div className="flex items-start gap-3">
           <span className="rounded-xl border border-indigo-300/20 bg-indigo-400/10 p-3 text-indigo-200"><FileText size={22} /></span>
@@ -166,7 +166,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
             <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-300">
               <CalendarDays size={15} />
               <span className="sr-only">{t.period}</span>
-              <select aria-label={t.period} value={activeMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="max-w-40 bg-transparent text-sm outline-none">
+              <select aria-label={t.period} value={activeMonth} onChange={(e) => setSelectedMonth(e.target.value)} className="max-w-40 bg-transparent text-sm outline-hidden">
                 {availableMonths.map((m) => <option key={m} value={m} className="bg-zinc-900">{m}</option>)}
               </select>
             </label>
@@ -179,7 +179,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
       </div>
       {activeReport ? (
         <div className="mt-6 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.04] px-4 py-3 text-xs text-emerald-200">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-400/15 bg-emerald-400/4 px-4 py-3 text-xs text-emerald-200">
             <span>{t.savedNote}</span>
             <span>{activeReport.geracao?.modo === 'ia' ? t.aiMode : t.detMode}</span>
           </div>
@@ -272,7 +272,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
             </article>
           )}
           {hasUnitAnalysis && (activeReport.prioridades_operacionais?.length || 0) > 0 && (
-            <article className="rounded-2xl border border-amber-400/10 bg-amber-400/[0.02] p-5">
+            <article className="rounded-2xl border border-amber-400/10 bg-amber-400/2 p-5">
               <h3 className="text-sm font-semibold text-white">{t.priorities}</h3>
               <div className="mt-3 space-y-3">
                 {activeReport.prioridades_operacionais.map((item: any, index: number) => (
@@ -286,7 +286,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
             </article>
           )}
           {hasStrategicAnalysis && hasRadarSection && (
-            <article className="rounded-2xl border border-violet-400/15 bg-violet-400/[0.03] p-5">
+            <article className="rounded-2xl border border-violet-400/15 bg-violet-400/3 p-5">
               <h3 className="text-sm font-semibold text-white">{t.strategicRadar}</h3>
               {strategicRadar.length ? (
                 <div className="mt-3 space-y-3">
