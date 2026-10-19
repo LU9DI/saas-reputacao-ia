@@ -219,7 +219,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
                 </ul>
               ) : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}
             </article>
-            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+            {hasAdvancedAnalysis && <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.action}</h3>
               {activeReport.recomendacoes?.length ? (
                 <ul className="mt-3 space-y-2">
@@ -255,7 +255,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
                   </ul>
                 </>
               )}
-            </article>
+            </article>}
           </div>}
           {hasUnitAnalysis && (activeReport.ranking_unidades?.length || 0) > 0 && (
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
