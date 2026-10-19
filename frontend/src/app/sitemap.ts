@@ -37,6 +37,16 @@ const LAST_MODIFIED: Record<string, string> = {
   '/es/mejorar-resenas-google': '2026-10-19',
   '/es/monitoreo-reputacion-online': '2026-10-19',
   '/es/clinicas': '2026-10-19',
+  '/en/improve-google-reviews': '2026-10-19',
+  '/en/customer-feedback-management': '2026-10-19',
+  '/en/filtra-ai': '2026-10-19',
+  '/en/free-review-audit': '2026-10-19',
+  '/en/how-it-works': '2026-10-19',
+  '/es/gestion-feedback-clientes': '2026-10-19',
+  '/es/filtra-ai': '2026-10-19',
+  '/es/ia': '2026-10-19',
+  '/es/analisis-resenas-ia': '2026-10-19',
+  '/es/auditoria-gratuita': '2026-10-19',
 };
 
 // Next 16 + `output: export` exigem rota explicitamente estática.

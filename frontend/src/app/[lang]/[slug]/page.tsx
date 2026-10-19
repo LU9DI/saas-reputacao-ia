@@ -570,6 +570,446 @@ const UNIQUE_CONTENT: Partial<Record<string,{sections:Section[];faq:Faq[]}>> = {
       },
     ],
   },
+  'en:improve-google-reviews': {
+    sections: [
+      {
+        heading: 'Fix the experience before asking for more reviews',
+        body: 'A higher rating starts with the experience customers have, not with the request. Look at recurring complaints in your reviews and support conversations: waiting time, communication, price, quality and staff. Fix what repeats, then ask for feedback when the customer has already received the value. Asking too early tends to produce negative comments.',
+        points: [
+          'List the themes behind your negative reviews.',
+          'Assign an owner and a deadline for each fix.',
+          'Ask for feedback after the moment of value.',
+          'Reply to reviews to close the loop with the customer.',
+        ],
+      },
+      {
+        heading: 'A simple review flow that works',
+        body: 'Keep the process light: a short message, a direct link or QR code, a request to every customer and one reminder. Explain that the feedback helps improve the service and never tie the request to a benefit. Authenticity is what sustains the rating over time.',
+      },
+      {
+        heading: 'Track progress, not just the average',
+        body: 'Measure new review volume, response rate, theme recurrence and the trend by period. The average matters, but it hides the reason behind the perception. A rising volume of recent reviews with fewer repeated complaints is a better sign than a small jump in the score.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How can I improve my Google reviews?',
+        answer: 'Improve the experience, fix recurring themes, ask every customer in the right moment and reply with transparency. The rating is a consequence of the operation and the way you request feedback.',
+      },
+      {
+        question: 'How long does it take to improve the rating?',
+        answer: 'It depends on your customer volume and how recent your reviews are. With a steady flow, changes usually become visible over weeks or months, not overnight.',
+      },
+      {
+        question: 'Can I offer a discount for a review?',
+        answer: 'No. Rewards for positive ratings violate Google policies and damage credibility. You can thank customers for feedback, but you cannot buy it.',
+      },
+      {
+        question: 'Should I ask all customers for a review?',
+        answer: 'Yes. Asking only happy customers is considered review gating and distorts perception. Ask everyone at the right moment, without pressure.',
+      },
+      {
+        question: 'What should I do with a negative review?',
+        answer: 'Reply respectfully, acknowledge the experience, explain the next step and move personal data to a private channel. Log the theme and fix the cause.',
+      },
+    ],
+  },
+  'en:customer-feedback-management': {
+    sections: [
+      {
+        heading: 'What a feedback management program includes',
+        body: 'Managing feedback at scale means more than reading comments. It means defining which channels feed the program, who owns each theme, how issues are prioritized and how results are reported. Reviews, surveys, support tickets and sales conversations should reach the same analysis layer.',
+        points: [
+          'Define the channels and the collection moments.',
+          'Tag themes with a shared taxonomy across teams.',
+          'Assign an owner and a service level per theme.',
+          'Report outcomes monthly, not only the volume collected.',
+        ],
+      },
+      {
+        heading: 'Governance: who does what',
+        body: 'Customer experience, operations, support and leadership all touch feedback. Give each team a clear responsibility: route, fix, reply or decide. Without ownership, feedback becomes a report nobody acts on. A short weekly meeting is usually enough to keep the loop running.',
+      },
+      {
+        heading: 'KPIs that connect feedback to the business',
+        body: 'Track response rate, theme recurrence, time to resolution, follow-up completion and the share of issues that turned into a fix. Combine them with retention, repeat purchase or conversion data when available. The goal is to show that listening changed the operation.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is customer feedback management?',
+        answer: 'It is the operating system around customer signals: collection, taxonomy, routing, action and reporting. It turns comments into decisions and connects teams to the same customer view.',
+      },
+      {
+        question: 'Do we need a tool to start?',
+        answer: 'No. A spreadsheet and a weekly routine can work at low volume. A platform becomes valuable when the volume, the number of channels or the number of units grows.',
+      },
+      {
+        question: 'How do we avoid feedback fatigue?',
+        answer: 'Ask less and close the loop more. Focus on key moments, avoid duplicate surveys and show customers and teams what changed because of the feedback.',
+      },
+      {
+        question: 'Which teams should be involved?',
+        answer: 'Customer experience, operations, support and leadership. Each one needs a defined role in routing, fixing, replying or deciding priorities.',
+      },
+      {
+        question: 'How do we measure the program?',
+        answer: 'Response rate, theme recurrence, resolution time, follow-up completion and fixes shipped. Connect them to retention or conversion to show business impact.',
+      },
+    ],
+  },
+  'en:filtra-ai': {
+    sections: [
+      {
+        heading: 'What Filtra.AI does',
+        body: 'Filtra.AI brings reviews and customer feedback into one place, uses AI to classify themes and turns the analysis into a prioritized action list. Teams see what customers repeat, which units need attention and what changed after each fix. The platform supports reputation, customer experience and local growth.',
+        points: [
+          'Centralize Google reviews and feedback in one workflow.',
+          'Classify themes automatically and compare periods.',
+          'Prioritize issues by frequency, severity and unit.',
+          'Track responses, actions and outcomes over time.',
+        ],
+      },
+      {
+        heading: 'Who it is for',
+        body: 'The platform fits businesses with multiple locations, agencies managing several clients and teams that already collect feedback but struggle to act on it. If reviews and comments sit in different tools and nobody owns the follow-up, the first gain is the operating routine the platform installs.',
+      },
+      {
+        heading: 'How teams use it week to week',
+        body: 'A typical routine: review new signals, reply to critical comments, route themes to owners and check the actions from the previous week. Monthly, compare themes and response time across periods and units. The goal is not another dashboard; it is a shorter path from feedback to fix.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What makes Filtra.AI different from a review dashboard?',
+        answer: 'The focus is the action loop: classify themes, prioritize, assign owners and check whether the change reduced the problem. The dashboard is a means, not the end.',
+      },
+      {
+        question: 'Does it work for multiple locations?',
+        answer: 'Yes. You get a consolidated view to find patterns and a local view per unit, so each location keeps its own context and owner.',
+      },
+      {
+        question: 'Can agencies use it with clients?',
+        answer: 'Yes. Agencies can standardize the workflow across clients while keeping each brand voice, escalation path and reporting cadence.',
+      },
+      {
+        question: 'Which channels does it cover?',
+        answer: 'Google reviews are the starting point, combined with surveys, support conversations and other feedback channels your operation already uses.',
+      },
+      {
+        question: 'How long does implementation take?',
+        answer: 'Start with one unit or client to validate the flow, taxonomy and routine, then expand. Most of the work is defining owners and cadence, not the setup itself.',
+      },
+    ],
+  },
+  'en:free-review-audit': {
+    sections: [
+      {
+        heading: 'What the free review audit covers',
+        body: 'The audit looks at your Google Business Profile and the signals that shape perception: review volume and recency, rating trend, response rate, unanswered comments, recurring themes and how you compare with direct competitors. It ends with a short list of priority actions, not a generic report.',
+        points: [
+          'Profile completeness: categories, hours, services, photos and location.',
+          'Review volume, recency and rating trend.',
+          'Response rate, response time and unanswered reviews.',
+          'Recurring themes and competitor comparison.',
+        ],
+      },
+      {
+        heading: 'What you receive',
+        body: 'You get a clear diagnosis: what is working, what is costing trust and which three actions have the highest impact. The goal is to help you decide where to start, whether you run the program internally or with Filtra.AI.',
+      },
+      {
+        heading: 'How to prepare',
+        body: 'Have the Google Business Profile link and, if you have several units, a list of locations. If you already collect feedback, bring the channels you use. The audit works with public data plus what you choose to share.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Is the audit really free?',
+        answer: 'Yes. It is a diagnostic step to show where the main opportunities are. No commitment to continue with the platform.',
+      },
+      {
+        question: 'How long does it take?',
+        answer: 'For a single location, usually a few business days. Multi-unit or multi-brand audits take longer because more profiles and themes are compared.',
+      },
+      {
+        question: 'What do I need to provide?',
+        answer: 'The Google Business Profile link and a list of units if you have more than one. Any feedback or support data you already collect helps deepen the analysis.',
+      },
+      {
+        question: 'Do you need access to my Google account?',
+        answer: 'No. The audit uses public profile data and whatever you choose to share. Account access is only needed later, if you decide to use the platform.',
+      },
+      {
+        question: 'What happens after the audit?',
+        answer: 'You receive the diagnosis and the priority actions. You can implement them internally or use Filtra.AI to run the ongoing routine.',
+      },
+    ],
+  },
+  'en:how-it-works': {
+    sections: [
+      {
+        heading: 'From connection to first insight',
+        body: 'The first step is connecting your Google Business Profile and, if you use them, your feedback channels. The platform organizes reviews and comments, classifies themes and shows the current picture: what customers repeat, what is unanswered and where the trend is going.',
+        points: [
+          'Connect the profile and the feedback sources.',
+          'Classify themes with a shared taxonomy.',
+          'See the current picture by unit and by period.',
+          'Define owners and priorities from the first list.',
+        ],
+      },
+      {
+        heading: 'The weekly and monthly routine',
+        body: 'Weekly, the team reviews new signals, replies to critical comments and works on the priority list. Monthly, it compares themes, response time and outcomes across periods and locations. The cadence is what turns the platform into results.',
+      },
+      {
+        heading: 'Roles and escalation',
+        body: 'A local owner handles replies and operational fixes. A central team watches the consolidated view, shares standards and steps in on sensitive cases. Clear escalation keeps responses fast and preserves the context of each unit.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How long does setup take?',
+        answer: 'The initial connection is quick. Most of the time goes into defining the taxonomy, owners and cadence that fit your operation.',
+      },
+      {
+        question: 'Do I need to change my current tools?',
+        answer: 'No. Filtra.AI can work alongside your current survey or support tools and bring the signals into one analysis layer.',
+      },
+      {
+        question: 'Who should use the platform day to day?',
+        answer: 'Usually a local owner for replies and fixes, supported by a central team that monitors the consolidated view and standards.',
+      },
+      {
+        question: 'How are sensitive reviews handled?',
+        answer: 'They follow an escalation path to the responsible team or central contact, especially when they involve personal data, legal risk or clinical details.',
+      },
+      {
+        question: 'How do we know it is working?',
+        answer: 'Track theme recurrence, response time, unanswered reviews and the actions completed. Improvement shows up when the same complaint appears less often.',
+      },
+    ],
+  },
+  'es:gestion-feedback-clientes': {
+    sections: [
+      {
+        heading: 'Qué incluye gestionar el feedback de clientes',
+        body: 'Gestionar feedback a escala es más que leer comentarios. Implica definir qué canales alimentan el programa, quién es responsable de cada tema, cómo se priorizan los problemas y cómo se reportan los resultados. Reseñas, encuestas, tickets de soporte y conversaciones comerciales deben llegar a la misma capa de análisis.',
+        points: [
+          'Define los canales y los momentos de recogida.',
+          'Clasifica temas con una taxonomía compartida.',
+          'Asigna un responsable y un plazo por tema.',
+          'Reporta resultados mensualmente, no solo el volumen recogido.',
+        ],
+      },
+      {
+        heading: 'Gobernanza: quién hace qué',
+        body: 'Experiencia del cliente, operaciones, soporte y dirección tocan el feedback. Da a cada equipo una responsabilidad clara: enrutar, corregir, responder o decidir. Sin responsables, el feedback se convierte en un informe que nadie acciona. Una reunión semanal corta suele ser suficiente para mantener el ciclo.',
+      },
+      {
+        heading: 'Métricas que conectan feedback y negocio',
+        body: 'Sigue la tasa de respuesta, la recurrencia de temas, el tiempo de resolución, el seguimiento completado y el porcentaje de problemas que se convirtieron en una corrección. Combínalos con retención, recompra o conversión cuando sea posible. El objetivo es demostrar que escuchar cambió la operación.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Qué es la gestión del feedback de clientes?',
+        answer: 'Es el sistema operativo alrededor de las señales del cliente: recogida, taxonomía, enrutamiento, acción y reporte. Convierte comentarios en decisiones y conecta a los equipos con la misma visión.',
+      },
+      {
+        question: '¿Necesito una herramienta para empezar?',
+        answer: 'No. Una hoja de cálculo y una rutina semanal funcionan con poco volumen. Una plataforma aporta valor cuando crecen el volumen, los canales o las unidades.',
+      },
+      {
+        question: '¿Cómo evitamos la fatiga de encuestas?',
+        answer: 'Pregunta menos y cierra más ciclos. Enfócate en momentos clave, evita encuestas duplicadas y muestra a clientes y equipos qué cambió gracias al feedback.',
+      },
+      {
+        question: '¿Qué equipos deben participar?',
+        answer: 'Experiencia del cliente, operaciones, soporte y dirección. Cada uno necesita un rol definido para enrutar, corregir, responder o decidir prioridades.',
+      },
+      {
+        question: '¿Cómo medimos el programa?',
+        answer: 'Tasa de respuesta, recurrencia de temas, tiempo de resolución, seguimiento completado y correcciones implementadas. Conéctalos con retención o conversión para mostrar impacto.',
+      },
+    ],
+  },
+  'es:filtra-ai': {
+    sections: [
+      {
+        heading: 'Qué hace Filtra.AI',
+        body: 'Filtra.AI reúne reseñas y feedback de clientes en un solo lugar, usa IA para clasificar temas y convierte el análisis en una lista de acciones priorizadas. Los equipos ven qué repiten los clientes, qué unidades necesitan atención y qué cambió después de cada corrección. La plataforma apoya reputación, experiencia del cliente y crecimiento local.',
+        points: [
+          'Centraliza reseñas de Google y feedback en un solo flujo.',
+          'Clasifica temas automáticamente y compara periodos.',
+          'Prioriza por frecuencia, gravedad y unidad.',
+          'Sigue respuestas, acciones y resultados en el tiempo.',
+        ],
+      },
+      {
+        heading: 'Para quién es',
+        body: 'La plataforma encaja en negocios con varias unidades, agencias que gestionan varios clientes y equipos que ya recogen feedback pero no consiguen accionarlo. Si las reseñas y los comentarios viven en herramientas distintas y nadie es dueño del seguimiento, la primera ganancia es la rutina operativa que instala la plataforma.',
+      },
+      {
+        heading: 'La rutina semanal del equipo',
+        body: 'Una rutina típica: revisar señales nuevas, responder comentarios críticos, enrutar temas a responsables y comprobar las acciones de la semana anterior. Cada mes, comparar temas y tiempo de respuesta entre periodos y unidades. El objetivo no es otro panel; es acortar el camino del feedback a la corrección.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿En qué se diferencia de un panel de reseñas?',
+        answer: 'El foco es el ciclo de acción: clasificar temas, priorizar, asignar responsables y comprobar si el cambio redujo el problema. El panel es un medio, no el fin.',
+      },
+      {
+        question: '¿Funciona para varias ubicaciones?',
+        answer: 'Sí. Tienes una vista consolidada para encontrar patrones y una vista por unidad, de modo que cada local conserva su contexto y responsable.',
+      },
+      {
+        question: '¿Pueden usarla las agencias con sus clientes?',
+        answer: 'Sí. Las agencias pueden estandarizar el flujo entre clientes manteniendo la voz de cada marca, la escalación y la cadencia de reporte.',
+      },
+      {
+        question: '¿Qué canales cubre?',
+        answer: 'Las reseñas de Google son el punto de partida, combinadas con encuestas, conversaciones de soporte y otros canales de feedback que ya use tu operación.',
+      },
+      {
+        question: '¿Cuánto tarda la implementación?',
+        answer: 'Empieza con una unidad o cliente para validar el flujo, la taxonomía y la rutina, y luego expande. La mayor parte del trabajo es definir responsables y cadencia, no la configuración.',
+      },
+    ],
+  },
+  'es:ia': {
+    sections: [
+      {
+        heading: 'Qué hace la IA en la gestión de reputación',
+        body: 'La IA no decide la estrategia por ti. Su valor está en procesar volumen: clasificar reseñas y comentarios por tema, detectar patrones que se repiten, medir la evolución y ayudar a priorizar. Eso libera al equipo para lo que realmente importa: corregir la causa y responder con contexto.',
+        points: [
+          'Clasificación automática de temas y sentimiento.',
+          'Detección de patrones entre periodos y unidades.',
+          'Priorización por frecuencia, gravedad e impacto.',
+          'Sugerencias de respuesta que el equipo revisa.',
+        ],
+      },
+      {
+        heading: 'Dónde la IA ayuda de verdad',
+        body: 'Con cientos o miles de comentarios, leer uno por uno no escala. La IA compara el lenguaje de los clientes con la operación y muestra dónde se repiten los problemas. También detecta cambios de tono antes de que aparezcan en la nota media.',
+      },
+      {
+        heading: 'Límites y buenas prácticas',
+        body: 'La IA puede equivocarse con ironía, contexto local o comentarios ambiguos. Mantén revisión humana en respuestas públicas y casos sensibles, define una taxonomía clara y revisa las clasificaciones al principio. La tecnología acelera el análisis; la decisión y la relación con el cliente siguen siendo humanas.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿La IA responde a las reseñas automáticamente?',
+        answer: 'Puede sugerir respuestas, pero la revisión humana es recomendable, especialmente en casos negativos o sensibles. La autenticidad y el contexto local importan más que la velocidad.',
+      },
+      {
+        question: '¿Cómo clasifica los temas?',
+        answer: 'Con una taxonomía definida por la empresa: espera, atención, comunicación, precio, calidad, resultado y otros temas propios del negocio. Una taxonomía clara mejora la precisión.',
+      },
+      {
+        question: '¿Funciona en varios idiomas?',
+        answer: 'Sí, el análisis puede trabajar con reseñas y comentarios en distintos idiomas, lo que ayuda a operaciones multi-país.',
+      },
+      {
+        question: '¿Se pierde el contexto local?',
+        answer: 'No si la plataforma mantiene la vista por unidad. El análisis consolidado encuentra patrones; la vista local conserva el contexto de cada operación.',
+      },
+      {
+        question: '¿Qué necesito para empezar?',
+        answer: 'Reseñas y feedback de los últimos meses y una idea clara de qué temas importan para el negocio. Con eso se define la taxonomía y se priorizan las primeras acciones.',
+      },
+    ],
+  },
+  'es:analisis-resenas-ia': {
+    sections: [
+      {
+        heading: 'Qué analizar en las reseñas',
+        body: 'Un buen análisis de reseñas va más allá del sentimiento general. Mira el volumen y la recencia, la distribución de notas, los temas que se repiten, el tiempo de respuesta y la evolución por periodo. Cada capa responde a una pregunta distinta sobre la experiencia del cliente.',
+        points: [
+          'Volumen y recencia: ¿la percepción está actualizada?',
+          'Distribución de notas: ¿dónde se concentra la insatisfacción?',
+          'Temas: ¿qué problema se repite y en qué unidades?',
+          'Respuestas: ¿qué comentarios siguen sin atención?',
+        ],
+      },
+      {
+        heading: 'Cómo usar IA en el análisis',
+        body: 'La IA clasifica los comentarios por tema y sentimiento, agrupa casos similares y señala cambios en el lenguaje de los clientes. En lugar de leer cientos de reseñas una por una, el equipo empieza por los temas priorizados y por los casos que más afectan la percepción.',
+      },
+      {
+        heading: 'Del análisis a la acción',
+        body: 'Termina el análisis con una lista corta: qué corregir, quién es responsable y en qué plazo. Vuelve a medir el tema en el siguiente periodo para saber si la acción funcionó. Un análisis sin acción es solo un informe.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Qué métricas analizar en las reseñas?',
+        answer: 'Volumen, recencia, distribución de notas, temas recurrentes, tasa y tiempo de respuesta y evolución por unidad. La nota media es el resumen, no el diagnóstico.',
+      },
+      {
+        question: '¿Cómo priorizo los temas?',
+        answer: 'Combina frecuencia, gravedad e impacto en el negocio. Un problema grave pero poco frecuente puede requerir más atención que una queja común de bajo impacto.',
+      },
+      {
+        question: '¿La IA sustituye al análisis humano?',
+        answer: 'No. La IA procesa volumen y encuentra patrones; el equipo interpreta el contexto, decide prioridades y conversa con el cliente.',
+      },
+      {
+        question: '¿Cada cuánto revisar el análisis?',
+        answer: 'Semanal para señales críticas y mensual para tendencias. La comparación entre periodos muestra si las acciones están funcionando.',
+      },
+      {
+        question: '¿Qué hago con los temas detectados?',
+        answer: 'Convierte cada tema en una acción con responsable y plazo, y comprueba en el siguiente periodo si la recurrencia bajó.',
+      },
+    ],
+  },
+  'es:auditoria-gratuita': {
+    sections: [
+      {
+        heading: 'Qué cubre la auditoría gratuita',
+        body: 'La auditoría revisa tu ficha de Google Business Profile y las señales que forman la percepción: volumen y recencia de reseñas, evolución de la nota, tasa de respuesta, comentarios sin contestar, temas recurrentes y comparación con competidores directos. Termina con una lista corta de acciones prioritarias, no con un informe genérico.',
+        points: [
+          'Ficha completa: categorías, horarios, servicios, fotos y ubicación.',
+          'Volumen, recencia y evolución de la nota.',
+          'Tasa de respuesta, tiempo de respuesta y reseñas sin contestar.',
+          'Temas recurrentes y comparación con competidores.',
+        ],
+      },
+      {
+        heading: 'Qué recibes',
+        body: 'Recibes un diagnóstico claro: qué funciona, qué está costando confianza y qué tres acciones tienen más impacto. El objetivo es ayudarte a decidir por dónde empezar, tanto si ejecutas el programa internamente como con Filtra.AI.',
+      },
+      {
+        heading: 'Cómo prepararte',
+        body: 'Ten a mano el enlace de la ficha de Google Business Profile y, si tienes varias unidades, la lista de locales. Si ya recoges feedback, trae los canales que usas. La auditoría trabaja con datos públicos y con lo que decidas compartir.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿La auditoría es realmente gratuita?',
+        answer: 'Sí. Es un paso de diagnóstico para mostrar dónde están las principales oportunidades, sin compromiso de continuar con la plataforma.',
+      },
+      {
+        question: '¿Cuánto tarda?',
+        answer: 'Para un solo local, normalmente unos días hábiles. Las auditorías multi-unidad o multi-marca tardan más porque se comparan más fichas y temas.',
+      },
+      {
+        question: '¿Qué necesito aportar?',
+        answer: 'El enlace de la ficha de Google Business Profile y la lista de unidades si hay más de una. Datos de feedback o soporte que ya recojas ayudan a profundizar el análisis.',
+      },
+      {
+        question: '¿Necesitan acceso a mi cuenta de Google?',
+        answer: 'No. La auditoría usa datos públicos de la ficha y lo que decidas compartir. El acceso a la cuenta solo es necesario después, si decides usar la plataforma.',
+      },
+      {
+        question: '¿Qué pasa después de la auditoría?',
+        answer: 'Recibes el diagnóstico y las acciones prioritarias. Puedes implementarlas internamente o usar Filtra.AI para ejecutar la rutina continua.',
+      },
+    ],
+  },
 };
 
 const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google','/filtra-ai','/reputacao-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback','/hoteis','/turismo','/agencias','/clinicas','/franquias','/associacoes','/restaurantes','/como-funciona','/parceiros','/pedir-estrela-vs-filtrar','/auditoria-gratuita'];
