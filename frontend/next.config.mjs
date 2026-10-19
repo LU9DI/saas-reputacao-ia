@@ -6,13 +6,16 @@ const nextConfig = {
     : {}),
   poweredByHeader: false,
 
+  // Builds determinísticos: fixa a raiz do Turbopack nesta pasta
+  // (a raiz do repo tem outro lockfile e o Next pede desambiguação).
+  turbopack: {
+    root: import.meta.dirname,
+  },
+
   // Production frontend is a static export for Cloudflare Pages.
 
   typescript: {
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 
   // In development, proxy /api to the local backend.

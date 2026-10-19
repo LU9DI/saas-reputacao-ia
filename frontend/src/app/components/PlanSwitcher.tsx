@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { getEnv } from '../utils/env';
 import { apiFetch } from '../utils/apiFailover';
 
 const PLANOS = [
@@ -35,7 +34,6 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
   const [plan, setPlan] = useState(String(planAtual || 'trial').toLowerCase());
-  const api = getEnv('NEXT_PUBLIC_API_URL');
 
   if (!enabled) return null;
 
@@ -59,7 +57,7 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
       if (res.status === 401 || res.status === 403) {
         throw new Error(
           data.error ||
-            'Sessão inválida. Entre em /login com CNPJ e senha da empresa e tente de novo.'
+            'Sessão inválida. Entre em /login com e-mail e senha da empresa e tente de novo.'
         );
       }
       if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);

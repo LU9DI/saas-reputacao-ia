@@ -10,10 +10,11 @@ import 'dotenv/config';
 // Seed script – cria uma empresa de exemplo e um usuário (funcionário)
 // ------------------------------------------------------------
 // Ajuste as constantes abaixo antes de executar.
-const EXAMPLE_CNPJ = '12345678000199'; // CNPJ da empresa (apenas números)
+const EXAMPLE_IDENTIFICADOR = 'em00000000000000'; // identificador interno da empresa (coluna legada "cnpj")
 const EXAMPLE_NOME_EMPRESA = 'Empresa Exemplo Ltda';
 const EXAMPLE_NOME_FUNCIONARIO = 'Ana Silva';
 const EXAMPLE_SENHA = 'SenhaSegura123!';
+const EXAMPLE_EMAIL = 'demo@exemplo.com'; // e-mail de acesso do usuário demo
 
 async function getDbPath() {
   const isProd = process.env.NODE_ENV === 'production';
@@ -28,7 +29,7 @@ async function main() {
   const db = await open({ filename: dbPath, driver: sqlite3.Database });
 
   // 1️⃣ Inserir empresa (se ainda não existir)
-  const empresaExiste = await db.get('SELECT id FROM empresas WHERE cnpj = ?', [EXAMPLE_CNPJ]);
+  const empresaExiste = await db.get('SELECT id FROM empresas WHERE cnpj = ?', [EXAMPLE_IDENTIFICADOR]);
   if (empresaExiste) {
     console.log('⚠️  Empresa já existe com id', empresaExiste.id);
     await db.close();
@@ -46,7 +47,7 @@ async function main() {
 
   await db.run(
     `INSERT INTO empresas (id, cnpj, nome_empresa, slug, status, plan, criado_em, expira_em) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [empresaId, EXAMPLE_CNPJ, EXAMPLE_NOME_EMPRESA, slug, 'teste', 'teste', criadoEm, expiraEm]
+    [empresaId, EXAMPLE_IDENTIFICADOR, EXAMPLE_NOME_EMPRESA, slug, 'teste', 'teste', criadoEm, expiraEm]
   );
   console.log('✅  Empresa criada com id', empresaId);
 
@@ -55,10 +56,10 @@ async function main() {
   const usuarioId = crypto.randomUUID();
 
   await db.run(
-    `INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash) VALUES (?, ?, ?, ?, ?)`,
-    [usuarioId, EXAMPLE_CNPJ, EXAMPLE_NOME_FUNCIONARIO, empresaId, senhaHash]
+    `INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email) VALUES (?, ?, ?, ?, ?, ?)`,
+    [usuarioId, EXAMPLE_IDENTIFICADOR, EXAMPLE_NOME_FUNCIONARIO, empresaId, senhaHash, EXAMPLE_EMAIL]
   );
-  console.log('✅  Usuário criado – CNPJ', EXAMPLE_CNPJ, 'Nome', EXAMPLE_NOME_FUNCIONARIO);
+  console.log('✅  Usuário criado – e-mail', EXAMPLE_EMAIL, 'Nome', EXAMPLE_NOME_FUNCIONARIO);
 
   await db.close();
 }

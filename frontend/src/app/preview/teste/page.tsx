@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ArrowRight, Building2, Check, Link2, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 import { BrandMark } from '../../components/BrandMark';
 import { PreviewNavigator } from '../../components/PreviewNavigator';
 import { useLanguage } from '../../Contexts/LanguageContext';
@@ -14,7 +15,7 @@ const TERMOS_VERSAO = '2026-09-15';
 const PRIV_VERSAO = '2026-09-15';
 
 export default function PreviewTrial() {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -103,7 +104,7 @@ export default function PreviewTrial() {
       // A rota de preview é offline no localhost. Nunca tente 127.0.0.1:5000 aqui.
       // O fluxo real de ativação continua usando a API quando executado fora do preview local.
       if (localDemo) {
-        window.location.href = '/painel/preview';
+        window.location.href = new URL('/painel/preview', window.location.origin).toString();
         return;
       }
       try {
@@ -163,7 +164,7 @@ export default function PreviewTrial() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(14,165,233,.14),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(99,102,241,.22),transparent_32%)]" />
       <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
         <BrandMark size="md" subtitle="Reputação" href="/preview" />
-        <div className="flex items-center gap-3"><a href="/preview" className="hidden text-sm text-zinc-400 hover:text-white sm:block">{copy.back}</a></div>
+        <div className="flex items-center gap-3"><Link href="/preview" className="hidden text-sm text-zinc-400 hover:text-white sm:block">{copy.back}</Link></div>
       </nav>
 
       <section className="relative mx-auto grid max-w-6xl gap-12 px-6 pb-20 pt-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:pt-16">
@@ -192,10 +193,10 @@ export default function PreviewTrial() {
             {erro && <div role="alert" className="mb-4 rounded-xl border border-red-900/70 bg-red-950/40 px-4 py-3 text-sm text-red-300">{erro}</div>}
             {status === 'success' && !erro && <div role="status" className="mb-4 rounded-xl border border-emerald-900/70 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-300">{copy.success}</div>}
             <form onSubmit={submit} className="space-y-4">
-              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Building2 size={14}/>{copy.company}</span><input required value={nomeEmpresa} onChange={e=>setNomeEmpresa(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="Hotel Aurora" /></label>
-              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Mail size={14}/>{copy.email}</span><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="voce@empresa.com" /></label>
-              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Link2 size={14}/>{language === 'pt' ? 'Link do Google (opcional)' : language === 'en' ? 'Google link (optional)' : language === 'es' ? 'Enlace de Google (opcional)' : 'Google 链接（可选）'}</span><input type="url" value={googleUrl} onChange={e=>setGoogleUrl(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="https://maps.google.com/..." /></label>
-              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Lock size={14}/>{copy.password}</span><input required minLength={8} type="password" value={senha} onChange={e=>setSenha(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-sm outline-none focus:border-indigo-400/60" placeholder="••••••••" /><span className="mt-2 block text-[11px] text-zinc-600">{SENHA_EMPRESA_HINT}</span></label>
+              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Building2 size={14}/>{copy.company}</span><input required value={nomeEmpresa} onChange={e=>setNomeEmpresa(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/3 px-4 py-3.5 text-sm outline-hidden focus:border-indigo-400/60" placeholder="Hotel Aurora" /></label>
+              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Mail size={14}/>{copy.email}</span><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/3 px-4 py-3.5 text-sm outline-hidden focus:border-indigo-400/60" placeholder="voce@empresa.com" /></label>
+              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Link2 size={14}/>{language === 'pt' ? 'Link do Google (opcional)' : language === 'en' ? 'Google link (optional)' : language === 'es' ? 'Enlace de Google (opcional)' : 'Google 链接（可选）'}</span><input type="url" value={googleUrl} onChange={e=>setGoogleUrl(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/3 px-4 py-3.5 text-sm outline-hidden focus:border-indigo-400/60" placeholder="https://maps.google.com/..." /></label>
+              <label className="block"><span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400"><Lock size={14}/>{copy.password}</span><input required minLength={8} type="password" value={senha} onChange={e=>setSenha(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/3 px-4 py-3.5 text-sm outline-hidden focus:border-indigo-400/60" placeholder="••••••••" /><span className="mt-2 block text-[11px] text-zinc-600">{SENHA_EMPRESA_HINT}</span></label>
               <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-zinc-400"><input type="checkbox" checked={aceite} onChange={e=>setAceite(e.target.checked)} className="mt-1 h-4 w-4 accent-indigo-500" /><span>{copy.note} <a href="/termos" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">{language === 'pt' ? 'Termos' : language === 'en' ? 'Terms' : language === 'es' ? 'Términos' : '条款'}</a> · <a href="/privacidade" target="_blank" rel="noopener noreferrer" className="text-indigo-300 underline">{language === 'pt' ? 'Privacidade' : language === 'en' ? 'Privacy' : language === 'es' ? 'Privacidad' : '隐私'}</a>.</span></label>
               <button disabled={loading} className="group flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-5 py-4 font-semibold text-white transition hover:bg-indigo-400 disabled:opacity-50">{loading ? '…' : copy.button}<ArrowRight size={17} className="transition group-hover:translate-x-0.5"/></button>
             </form>
@@ -204,7 +205,7 @@ export default function PreviewTrial() {
         </div>
       </section>
 
-      <section className="relative border-y border-white/[0.06] bg-white/[0.02]">
+      <section className="relative border-y border-white/6 bg-white/2">
         <div className="mx-auto grid max-w-6xl gap-5 px-6 py-10 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-black/20 p-5"><div className="text-sm font-semibold">{copy.sideTitle}</div><p className="mt-2 text-sm leading-6 text-zinc-500">{copy.sideText}</p></div>
           <div className="rounded-2xl border border-white/10 bg-black/20 p-5"><div className="text-sm font-semibold">1</div><p className="mt-2 text-sm leading-6 text-zinc-500">{copy.support}</p></div>

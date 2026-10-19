@@ -96,7 +96,7 @@ export default function QrCodesPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 p-6">
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xs border border-slate-200 p-8 space-y-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600">
             <QrCode size={22} />
@@ -123,7 +123,7 @@ export default function QrCodesPage() {
               id="empresa"
               value={empresaSelecionada}
               onChange={(e) => setEmpresaSelecionada(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
             >
               {empresas.map((emp) => (
                 <option key={emp.id} value={emp.id}>
@@ -145,7 +145,7 @@ export default function QrCodesPage() {
               value={tableNumber}
               onChange={(e) => setTableNumber(e.target.value)}
               placeholder="Ex: 12"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm bg-slate-50/50"
             />
           </div>
         </div>
@@ -161,6 +161,7 @@ export default function QrCodesPage() {
         {qrCodeUrl && (
           <div className="text-center space-y-4 pt-4 border-t border-slate-200">
             <h3 className="font-semibold text-slate-800">QR Code - Mesa {tableNumber}</h3>
+            {/* eslint-disable-next-line @next/next/no-img-element -- QR (data URL): otimização do next/image não se aplica */}
             <img
               src={qrCodeUrl}
               alt={`QR Code para mesa ${tableNumber}`}

@@ -142,7 +142,6 @@ async function registrarAceite(payload: Record<string, unknown>) {
 export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const { t } = useLanguage();
   const [plans, setPlans] = useState<PlanCard[]>(DEFAULT_PLANS);
-  const [loadingPrices, setLoadingPrices] = useState(true);
   const [loading, setLoading] = useState<string | null>(null);
   const [erro, setErro] = useState('');
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
@@ -167,7 +166,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         window.location.hostname === '127.0.0.1');
 
     if (isPreviewLocal) {
-      setLoadingPrices(false);
       return;
     }
 
@@ -204,8 +202,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         }
       } catch {
         /* defaults */
-      } finally {
-        if (!cancelled) setLoadingPrices(false);
       }
     };
     carregar();
@@ -316,7 +312,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
       })?.[0] ?? '';
     const Badge = ({ className, icon: Icon, children }: any) => (
       <span
-        className={`font-bold border shadow-sm px-2 py-0.5 rounded align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}
+        className={`font-bold border shadow-xs px-2 py-0.5 rounded-sm align-middle inline-flex items-center gap-1.5 mt-0.5 tracking-tight ${className}`}
       >
         {Icon && <Icon size={12} strokeWidth={2.5} />}
         {children}
@@ -418,8 +414,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           <button
             type="button"
             onClick={() => setCiclo('mensal')}
-            className={`min-w-[5.5rem] px-5 py-2 rounded-full font-semibold transition-colors ${
-              ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'
+            className={`min-w-22 px-5 py-2 rounded-full font-semibold transition-colors ${
+              ciclo === 'mensal' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-300 hover:text-white'
             }`}
           >
             {labelMensal}
@@ -427,8 +423,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           <button
             type="button"
             onClick={() => setCiclo('anual')}
-            className={`min-w-[5.5rem] px-5 py-2 rounded-full font-semibold transition-colors ${
-              ciclo === 'anual' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-300 hover:text-white'
+            className={`min-w-22 px-5 py-2 rounded-full font-semibold transition-colors ${
+              ciclo === 'anual' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-300 hover:text-white'
             }`}
           >
             {labelAnual}
@@ -459,14 +455,14 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
               className={`rounded-2xl p-6 flex flex-col justify-between bg-white min-w-0 transition-all duration-300 ${
                 p.highlight
                   ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-900/20 transform md:-translate-y-2'
-                  : 'border border-slate-200 hover:border-indigo-300 shadow-sm'
+                  : 'border border-slate-200 hover:border-indigo-300 shadow-xs'
               }`}
             >
               <div>
-                <div className="flex items-center justify-between gap-2 mb-4 min-h-[1.5rem]">
+                <div className="flex items-center justify-between gap-2 mb-4 min-h-6">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{p.label}</p>
                   {p.highlight && labelPopular ? (
-                    <span className="shrink-0 bg-indigo-600 text-white text-[10px] tracking-wide font-bold py-0.5 px-2 rounded-full uppercase shadow-sm leading-none">
+                    <span className="shrink-0 bg-indigo-600 text-white text-[10px] tracking-wide font-bold py-0.5 px-2 rounded-full uppercase shadow-xs leading-none">
                       {labelPopular}
                     </span>
                   ) : null}
@@ -517,7 +513,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
           );
         })}
       </div>
-      <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 shadow-sm">
+      <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-2xl mx-auto bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-5 shadow-xs">
         <div className="bg-emerald-500/20 p-2.5 rounded-full shrink-0">
           <ShieldCheck className="text-emerald-400" size={26} strokeWidth={2.5} />
         </div>
@@ -530,7 +526,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
       </div>
 
       {pending && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs overflow-y-auto">
           <div
             role="dialog"
             aria-modal="true"
@@ -572,7 +568,7 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
                 type="checkbox"
                 checked={aceite}
                 onChange={(e) => setAceite(e.target.checked)}
-                className="mt-1 rounded border-zinc-600"
+                className="mt-1 rounded-sm border-zinc-600"
               />
               <span>Li e aceito os Termos de Uso e a Política de Privacidade para esta contratação.</span>
             </label>

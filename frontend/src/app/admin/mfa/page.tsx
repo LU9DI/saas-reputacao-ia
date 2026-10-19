@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Shield, Loader2, AlertCircle, CheckCircle2, Copy } from 'lucide-react';
 import { getEnv } from '../../utils/env';
 
@@ -41,7 +42,9 @@ export default function AdminMfaPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial do status MFA
     carregar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- roda apenas na montagem, de propósito
   }, []);
 
   const iniciarSetup = async () => {
@@ -141,9 +144,9 @@ export default function AdminMfaPage() {
               <p className="text-sm text-slate-500">Proteção extra do painel admin</p>
             </div>
           </div>
-          <a href="/admin" className="text-sm text-indigo-600 underline">
+          <Link href="/admin" className="text-sm text-indigo-600 underline">
             Voltar ao painel
-          </a>
+          </Link>
         </div>
 
         {erro && (
@@ -231,7 +234,7 @@ export default function AdminMfaPage() {
               <p className="text-sm font-semibold text-amber-900">Códigos de backup (salve agora)</p>
               <ul className="grid grid-cols-2 gap-1 font-mono text-xs text-amber-950">
                 {backups.map((c) => (
-                  <li key={c} className="bg-white/70 rounded px-2 py-1">
+                  <li key={c} className="bg-white/70 rounded-sm px-2 py-1">
                     {c}
                   </li>
                 ))}

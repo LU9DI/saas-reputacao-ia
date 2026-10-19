@@ -41,4 +41,4 @@ Não deve listar arquivos de banco.
 - Camada `backend/services/` (trial, review, auth)
 - Routes finas com `asyncHandler`
 - Layout dos planos: grid até 5 colunas + texto abaixo sempre visível
-- Testes de integração HTTP em `backend/tests/integration.trial.test.ts`
+- Testes de integração HTTP em `backend/tests/integration.reviews.test.ts` e `backend/tests/integration.lead-legal.test.ts`

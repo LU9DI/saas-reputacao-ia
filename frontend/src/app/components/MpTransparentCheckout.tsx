@@ -69,6 +69,7 @@ export function MpTransparentCheckout({
   useEffect(() => {
     if (!open) {
       destroyBrick();
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset do estado ao fechar o modal
       setPago(false);
       setErro('');
       setPixQr(null);
@@ -216,7 +217,7 @@ export function MpTransparentCheckout({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm overflow-y-auto overscroll-contain">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xs overflow-y-auto overscroll-contain">
       <div className="w-full max-w-lg max-h-[min(92dvh,920px)] overflow-y-auto overflow-x-hidden bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-4 sm:p-5 md:p-6 space-y-4 relative my-3 sm:my-6">
         <button
           type="button"
@@ -276,6 +277,7 @@ export function MpTransparentCheckout({
             )}
             {pixQr && (
               <div className="flex justify-center w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element -- QR Pix (data URL) */}
                 <img
                   src={`data:image/png;base64,${pixQr}`}
                   alt="QR Pix"

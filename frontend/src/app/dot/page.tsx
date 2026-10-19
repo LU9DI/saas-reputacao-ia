@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Bot, CheckCircle2, Clock3, KeyRound, Lock, Play, RefreshCw, ShieldCheck, Target, Unlock, XCircle } from 'lucide-react';
+import { AlertTriangle, Bot, CheckCircle2, Clock3, KeyRound, Lock, Play, RefreshCw, ShieldCheck, Target, Unlock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { apiFetch } from '../utils/apiFailover';
 import { BrandMark } from '../components/BrandMark';
@@ -35,7 +35,7 @@ async function getJson(path: string, options: RequestInit = {}) {
 }
 
 const pill = 'rounded-full border px-2.5 py-1 text-[11px] font-medium';
-const panel = 'rounded-2xl border border-white/10 bg-white/[0.025]';
+const panel = 'rounded-2xl border border-white/10 bg-white/2.5';
 
 export default function DotPage() {
   const [data, setData] = useState<DotData | null>(null);
@@ -82,7 +82,10 @@ export default function DotPage() {
     }
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial do painel Dot (fetch)
+    void load();
+  }, [load]);
 
   const mutate = async (key: string, path: string, options: RequestInit = {}) => {
     setBusy(key);
@@ -157,7 +160,7 @@ export default function DotPage() {
             <div className="flex flex-wrap gap-2">
               <span className={`${pill} border-indigo-400/20 bg-indigo-400/5 text-indigo-200`}>{String(data?.status?.plan_label || data?.status?.plan || 'REI')}</span>
               <span className={`${pill} ${data?.status?.enabled ? 'border-emerald-400/20 bg-emerald-400/5 text-emerald-200' : 'border-amber-400/20 bg-amber-400/5 text-amber-200'}`}>{data?.status?.enabled ? 'ATIVO' : 'DESLIGADO'}</span>
-              <span className={`${pill} border-white/10 bg-white/[.03] text-zinc-400`}>aprovação humana obrigatória</span>
+              <span className={`${pill} border-white/10 bg-white/3 text-zinc-400`}>aprovação humana obrigatória</span>
             </div>
           </div>
         </section>
@@ -190,7 +193,7 @@ export default function DotPage() {
                       inputMode="numeric"
                       autoComplete="off"
                       placeholder="PIN de 6 dígitos"
-                      className="w-40 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-400/40"
+                      className="w-40 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-hidden focus:border-indigo-400/40"
                     />
                     {adminState.pin_configured ? (
                       <button type="button" disabled={adminBusy || pinInput.length !== 6} onClick={() => void runAdmin('/api/dot/admin/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: pinInput }) }, 'Administração desbloqueada por 30 minutos.')} className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-500 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">
@@ -209,8 +212,8 @@ export default function DotPage() {
               <details className="mt-4 border-t border-white/5 pt-3">
                 <summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-300">Esqueci o PIN — redefinir com a senha da conta</summary>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <input value={resetPin} onChange={(ev) => setResetPin(ev.target.value.replace(/\D/g, '').slice(0, 6))} type="password" inputMode="numeric" autoComplete="off" placeholder="Novo PIN (6 dígitos)" className="w-44 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-400/40" />
-                  <input value={resetSenha} onChange={(ev) => setResetSenha(ev.target.value)} type="password" autoComplete="current-password" placeholder="Senha atual da conta" className="w-52 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-400/40" />
+                  <input value={resetPin} onChange={(ev) => setResetPin(ev.target.value.replace(/\D/g, '').slice(0, 6))} type="password" inputMode="numeric" autoComplete="off" placeholder="Novo PIN (6 dígitos)" className="w-44 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-hidden focus:border-indigo-400/40" />
+                  <input value={resetSenha} onChange={(ev) => setResetSenha(ev.target.value)} type="password" autoComplete="current-password" placeholder="Senha atual da conta" className="w-52 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-100 outline-hidden focus:border-indigo-400/40" />
                   <button type="button" disabled={adminBusy || resetPin.length !== 6 || resetSenha.length < 4} onClick={() => void runAdmin('/api/dot/admin/pin/reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: resetPin, senha: resetSenha }) }, 'PIN redefinido. As sessões anteriores foram encerradas.')} className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-50">
                     <KeyRound size={13} /> Redefinir PIN
                   </button>
@@ -250,7 +253,7 @@ export default function DotPage() {
                   <div className="flex flex-col justify-between gap-3 sm:flex-row">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className={`${pill} border-white/10 bg-white/[.03] text-zinc-300`}>{String(d.priority || 'media').toUpperCase()}</span>
+                        <span className={`${pill} border-white/10 bg-white/3 text-zinc-300`}>{String(d.priority || 'media').toUpperCase()}</span>
                         <span className="text-xs text-zinc-600">#{d.id}</span>
                       </div>
                       <h3 className="mt-2 text-sm font-semibold">{String(d.reason || 'Sinal detectado')}</h3>
@@ -275,7 +278,7 @@ export default function DotPage() {
               {!data?.actions.length && <div className="px-5 py-8 text-sm text-zinc-500">A fila está vazia.</div>}
               {data?.actions.slice(0, 12).map((a) => (
                 <div key={String(a.id)} className="p-5">
-                  <div className="flex items-start justify-between gap-3"><div><div className="text-sm font-medium">{String(a.action)}</div><div className="mt-1 text-xs text-zinc-600">Ação #{a.id}</div></div><span className={`${pill} border-white/10 bg-white/[.03] text-zinc-400`}>{String(a.status)}</span></div>
+                  <div className="flex items-start justify-between gap-3"><div><div className="text-sm font-medium">{String(a.action)}</div><div className="mt-1 text-xs text-zinc-600">Ação #{a.id}</div></div><span className={`${pill} border-white/10 bg-white/3 text-zinc-400`}>{String(a.status)}</span></div>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {a.status === 'prepared' && <button type="button" disabled={busy === `approve-${a.id}`} onClick={() => void mutate(`approve-${a.id}`, `/api/dot/actions/${a.id}/approve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })} className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-500 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"><CheckCircle2 size={13}/> Aprovar</button>}
                     {a.status === 'approved' && <button type="button" disabled={busy === `run-${a.id}`} onClick={() => void mutate(`run-${a.id}`, `/api/dot/actions/${a.id}/run`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })} className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs font-semibold text-emerald-200 disabled:opacity-50"><Play size={13}/> Executar</button>}

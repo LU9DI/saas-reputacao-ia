@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useRouteId } from '../../utils/useRouteId';
 import { apiFetch } from '../../utils/apiFailover';
@@ -8,6 +9,35 @@ import { readApiError } from '../../utils/apiError';
 import { useLanguage } from '../../Contexts/LanguageContext';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
+
+/** Barra de idioma fixa (topo direito). */
+function LangBar() {
+  return (
+    <div className="fixed top-3 right-3 z-50">
+      <LanguageSwitcher compact />
+    </div>
+  );
+}
+
+/** Marca no topo, centralizada. */
+function BrandTop({ className = '' }: { className?: string }) {
+  return (
+    <div className={`flex justify-center mb-6 ${className}`}>
+      <BrandMark href="/" size="sm" centered subtitle="Online Reputation" />
+    </div>
+  );
+}
+
+/** Cabeçalho com o nome da empresa avaliada. */
+function HeaderEmpresa({ nome, tx }: { nome: string; tx: (key: string) => string }) {
+  if (!nome) return null;
+  return (
+    <div className="text-center mb-6 space-y-1">
+      <p className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">{tx('eval_label')}</p>
+      <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{nome}</h1>
+    </div>
+  );
+}
 
 /** Textos da página de avaliação — fallback se a chave faltar no dicionário. */
 const EVAL_FALLBACK: Record<string, Record<string, string>> = {
@@ -159,7 +189,6 @@ export default function PaginaAvaliacao() {
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState('');
   const [clientWhatsapp, setClientWhatsapp] = useState('');
-  const [website, setWebsite] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
@@ -190,6 +219,7 @@ export default function PaginaAvaliacao() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- validação inicial do link via API
     validarAcesso();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaId]);
@@ -199,7 +229,7 @@ export default function PaginaAvaliacao() {
     rating: selectedRating,
     comment: selectedRating <= 3 ? comment : '',
     empresa_id: empresaId,
-    website,
+    website: '',
     client_whatsapp: selectedRating <= 3 ? clientWhatsapp.trim() : undefined,
     locale: language,
     ...(unidadeId ? { unidade_id: unidadeId } : {}),
@@ -236,6 +266,7 @@ export default function PaginaAvaliacao() {
           setErro(await readApiError(response, tx('send_error')));
           return;
         }
+        // eslint-disable-next-line react-hooks/immutability -- destino externo (Google Maps)
         window.location.href = googleReviewUrl || 'https://www.google.com/maps';
       } catch {
         setErro(tx('send_error'));
@@ -270,6 +301,7 @@ export default function PaginaAvaliacao() {
       }
       if (whatsappUrl) {
         const sep = whatsappUrl.includes('?') ? '&' : '?';
+        // eslint-disable-next-line react-hooks/immutability, @next/next/no-location-assign-relative-destination -- URL externa vinda da API (WhatsApp)
         window.location.href = `${whatsappUrl}${sep}text=${encodeURIComponent(mensagemClienteParaEmpresa())}`;
         return;
       }
@@ -280,24 +312,6 @@ export default function PaginaAvaliacao() {
       setLoading(false);
     }
   };
-
-  const BrandTop = ({ className = '' }: { className?: string }) => (
-    <div className={`flex justify-center mb-6 ${className}`}>
-      <BrandMark href="/" size="sm" centered subtitle="Online Reputation" />
-    </div>
-  );
-  const HeaderEmpresa = () =>
-    nomeEmpresa ? (
-      <div className="text-center mb-6 space-y-1">
-        <p className="text-[11px] uppercase tracking-widest text-zinc-500 font-medium">{tx('eval_label')}</p>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{nomeEmpresa}</h1>
-      </div>
-    ) : null;
-  const LangBar = () => (
-    <div className="fixed top-3 right-3 z-50">
-      <LanguageSwitcher compact />
-    </div>
-  );
 
   if (erroValidacao)
     return (
@@ -329,9 +343,9 @@ export default function PaginaAvaliacao() {
         <BrandTop />
         {nomeEmpresa && <p className="text-lg font-semibold text-zinc-300 mb-2">{nomeEmpresa}</p>}
         <h1 className="text-2xl font-bold mb-4">{tx('access_closed')}</h1>
-        <a href="/" className="bg-indigo-600 px-6 py-3 rounded-xl font-semibold">
+        <Link href="/" className="bg-indigo-600 px-6 py-3 rounded-xl font-semibold">
           {tx('see_plans')}
-        </a>
+        </Link>
       </div>
     );
   if (submitted)
@@ -339,7 +353,7 @@ export default function PaginaAvaliacao() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-4">
         <LangBar />
         <BrandTop />
-        <HeaderEmpresa />
+        <HeaderEmpresa nome={nomeEmpresa} tx={tx} />
         <div className="max-w-md text-center">
           <h1 className="text-2xl font-bold mb-3">{tx('thanks_title')}</h1>
           <p className="text-zinc-400">{tx('thanks_body')}</p>
@@ -352,7 +366,7 @@ export default function PaginaAvaliacao() {
       <LangBar />
       <div className="max-w-xl mx-auto pt-8">
         <BrandTop />
-        <HeaderEmpresa />
+        <HeaderEmpresa nome={nomeEmpresa} tx={tx} />
         <div className="rounded-3xl border border-zinc-800 bg-zinc-950 p-5 sm:p-8 shadow-2xl">
           <p className="text-zinc-300 text-center mb-6">{tx('subtitle')}</p>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -362,7 +376,7 @@ export default function PaginaAvaliacao() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={tx('name_placeholder')}
-                className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-hidden focus:border-indigo-500"
               />
             </div>
             <div>
@@ -394,7 +408,7 @@ export default function PaginaAvaliacao() {
                     placeholder={tx('comment_placeholder')}
                     rows={5}
                     required
-                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-hidden focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -406,7 +420,7 @@ export default function PaginaAvaliacao() {
                     onChange={(e) => setClientWhatsapp(e.target.value)}
                     placeholder={tx('wpp_placeholder')}
                     required
-                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-hidden focus:border-indigo-500"
                   />
                   <p className="text-xs text-zinc-500 mt-2">{tx('wpp_hint')}</p>
                 </div>

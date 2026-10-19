@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { getEnv } from '../utils/env';
 import { apiFetch } from '../utils/apiFailover';
 
 function authHeaders(json = true): HeadersInit {
@@ -48,8 +47,6 @@ export function WebAuthnSetup() {
   const { t } = useLanguage();
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
-  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
-
   const supported =
     typeof window === 'undefined' ? true : Boolean(window.PublicKeyCredential);
 

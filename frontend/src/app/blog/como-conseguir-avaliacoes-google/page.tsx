@@ -137,6 +137,9 @@ export default function BlogAvaliacoesGooglePage() {
         </div>
 
         <nav className="flex flex-wrap gap-3 text-xs text-zinc-500 pt-4 border-t border-zinc-800">
+          <Link href="/blog/gestao-reputacao-online-guia" className="hover:text-zinc-300">
+            Guia de reputação online
+          </Link>
           <Link href="/restaurantes" className="hover:text-zinc-300">
             Para restaurantes
           </Link>

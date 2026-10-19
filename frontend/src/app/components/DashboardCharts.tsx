@@ -47,7 +47,7 @@ function BarDist({ values }: { values: number[] }) {
             <button
               key={i}
               type="button"
-              className="flex-1 flex flex-col items-center gap-1 h-full justify-end group focus:outline-none"
+              className="flex-1 flex flex-col items-center gap-1 h-full justify-end group focus:outline-hidden"
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(null)}
               onFocus={() => setHover(i)}

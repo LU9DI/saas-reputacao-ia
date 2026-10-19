@@ -6,9 +6,9 @@ const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
 const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: guia para empresas',
+  title: 'Gestão de reputação online: guia completo para empresas',
   description:
-    'Guia de gestão de reputação online para empresas: avaliações, feedback, respostas, indicadores e melhoria contínua.',
+    'Guia completo de gestão de reputação online para empresas: processo, boas práticas, indicadores e o que avaliar em serviços de gestão de reputação.',
   alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/online-reputation-management-guide', es: 'https://filtraai.com/es/blog/guia-gestion-reputacion-online', zh: 'https://filtraai.com/zh/blog/online-reputation-management-guide', 'x-default': canonical } },
   openGraph: {
     title: 'Gestão de reputação online: avaliações, feedback e melhoria',
@@ -27,7 +27,7 @@ const articleSchema = {
     'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   datePublished: '2026-09-30',
-  dateModified: '2026-10-06',
+  dateModified: '2026-10-19',
   author: {
     '@type': 'Organization',
     name: 'Filtra.AI',
@@ -43,9 +43,37 @@ const articleSchema = {
   },
 };
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Como gerir a reputação de uma grande empresa?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Consolide avaliações e feedback por unidade ou região, defina quem responde e quem decide cada correção, e leve para a gestão uma leitura com evidências: temas que crescem, temas corrigidos e riscos em aberto.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Quais são boas práticas de reputação para empresas?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Pedir avaliações de forma neutra, responder críticas com contexto, tratar problemas recorrentes como agenda de operação e medir a evolução por período e por unidade — sem comprar estrelas ou prometer remoção de comentários.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'O que avaliar em serviços de gestão de reputação?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Processo de monitoramento, classificação de temas, cadência de respostas, formato da leitura periódica e critérios de resultado. Desconfie de garantias de posição no Google ou de remoção garantida de avaliações.' },
+    },
+    {
+      '@type': 'Question',
+      name: 'Com que frequência acompanhar avaliações e feedback?',
+      acceptedAnswer: { '@type': 'Answer', text: 'A leitura de novos sinais deve ser frequente, no mínimo semanal em operações com volume. A revisão de temas recorrentes, ações e resultados pode seguir ciclo mensal ou trimestral, sempre comparando períodos.' },
+    },
+  ],
+};
+
 export default function BlogReputacaoOnlinePage() {
   return <>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Blog" href="/" />
@@ -117,6 +145,35 @@ export default function BlogReputacaoOnlinePage() {
         </section>
 
         <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Gerir a reputação de uma empresa ou organização</h2>
+          <p>Em uma organização, gerir reputação exige definir quem acompanha os sinais, quem responde e quem decide a correção. Sem responsáveis claros, a crítica fica visível e a ação não acontece.</p>
+          <p>Divida a rotina em três camadas: leitura contínua de avaliações e feedback; decisões sobre temas que reaparecem; e revisão periódica com prioridades ligadas à operação. Registre o que foi feito para comparar os ciclos seguintes.</p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Gestão de reputação para grandes empresas</h2>
+          <p>Em empresas de maior porte, a reputação cruza áreas diferentes — atendimento, operações, jurídico e comunicação. O processo precisa de um responsável claro, critérios de escalonamento e leitura executiva com evidências, em vez de apenas a nota média.</p>
+          <p>Na prática: consolide avaliações e feedback por região, unidade ou serviço; defina o que é tratado localmente e o que sobe na organização; e acompanhe os temas críticos até deixarem de aparecer.</p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Boas práticas de reputação que se sustentam</h2>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Pedir avaliações de forma neutra, sem comprar estrelas ou oferecer vantagens</li>
+            <li>Responder críticas com contexto, sem transformar a resposta pública em disputa</li>
+            <li>Tratar temas recorrentes como problemas de operação, não apenas de imagem</li>
+            <li>Medir evolução por período e por unidade, não apenas a média da marca</li>
+            <li>Manter site, perfil da empresa e canais de atendimento consistentes entre si</li>
+          </ul>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Serviços de gestão de reputação: o que avaliar antes de contratar</h2>
+          <p>Ao comparar fornecedores, prefira quem apresenta processo: como as avaliações serão acompanhadas, como os temas são classificados, com que frequência existe leitura do período e como o resultado será medido. Desconfie de promessas de posição garantida no Google ou de remoção garantida de comentários.</p>
+          <p>Para agências e prestadores de SEO local, o mesmo critério vale ao estruturar o serviço para clientes — veja <Link href="/blog/agencia-vender-gestao-reputacao" className="text-indigo-400 underline">como vender gestão de reputação</Link> e a página de <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências</Link>. Para diagnosticar o próprio negócio, comece pela <Link href="/auditoria-gratuita" className="text-indigo-400 underline">auditoria gratuita</Link>.</p>
+        </section>
+
+        <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">Checklist para gerir a reputação da empresa</h2>
           <ul className="list-disc pl-5 space-y-1">
             <li>Monitorar avaliações e feedback</li>
@@ -127,6 +184,28 @@ export default function BlogReputacaoOnlinePage() {
             <li>Comparar unidades quando houver operação multiunidade</li>
             <li>Conectar reputação a aquisição e SEO local</li>
           </ul>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Perguntas frequentes sobre gestão de reputação</h2>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <p className="font-medium text-zinc-100">Como gerir a reputação de uma grande empresa?</p>
+              <p>Consolide avaliações e feedback por unidade ou região, defina quem responde e quem decide cada correção, e leve para a gestão uma leitura com evidências: temas que crescem, temas corrigidos e riscos em aberto.</p>
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium text-zinc-100">Quais são boas práticas de reputação para empresas?</p>
+              <p>Pedir avaliações de forma neutra, responder críticas com contexto, tratar problemas recorrentes como agenda de operação e medir a evolução por período e por unidade — sem comprar estrelas ou prometer remoção de comentários.</p>
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium text-zinc-100">O que avaliar em serviços de gestão de reputação?</p>
+              <p>Processo de monitoramento, classificação de temas, cadência de respostas, formato da leitura periódica e critérios de resultado. Desconfie de garantias de posição no Google ou de remoção garantida de avaliações.</p>
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium text-zinc-100">Com que frequência acompanhar avaliações e feedback?</p>
+              <p>A leitura de novos sinais deve ser frequente, no mínimo semanal em operações com volume. A revisão de temas recorrentes, ações e resultados pode seguir ciclo mensal ou trimestral, sempre comparando períodos.</p>
+            </div>
+          </div>
         </section>
 
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 space-y-3">

@@ -158,7 +158,7 @@ export function LanguageSwitcher({
           aria-label={tx('language', 'Idioma')}
           value={current}
           onChange={(e) => goToLanguage(e.target.value as Language)}
-          className="h-9 min-w-[132px] cursor-pointer rounded-lg border border-white/10 bg-zinc-950 px-3 text-sm font-medium text-zinc-100 outline-none transition hover:border-white/20 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+          className="h-9 min-w-[132px] cursor-pointer rounded-lg border border-white/10 bg-zinc-950 px-3 text-sm font-medium text-zinc-100 outline-hidden transition hover:border-white/20 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
         >
           {SUPPORTED_LANGUAGES.map((item) => (
             <option key={item.code} value={item.code}>

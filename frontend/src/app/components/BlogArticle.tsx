@@ -57,6 +57,12 @@ export function BlogArticle({
           <Link href="/gestao-de-reputacao-online" className="hover:text-zinc-300">
             Gestão de reputação online
           </Link>
+          <Link href="/blog/gestao-reputacao-online-guia" className="hover:text-zinc-300">
+            Guia de reputação online
+          </Link>
+          <Link href="/blog/seo-local-avaliacoes-local-pack" className="hover:text-zinc-300">
+            Pacotes de SEO local
+          </Link>
           <Link href="/auditoria-gratuita" className="hover:text-zinc-300">
             Auditoria gratuita
           </Link>

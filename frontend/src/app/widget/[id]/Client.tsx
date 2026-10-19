@@ -19,6 +19,7 @@ export default function WidgetProvas() {
 
   useEffect(() => {
     if (!id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- rota inválida: falha rápida no mount
       setErro('ID inválido');
       setLoading(false);
       return;

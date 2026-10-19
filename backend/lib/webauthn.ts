@@ -34,7 +34,7 @@ export type WebAuthnCredentialRow = {
 
 const challenges = new Map<
   string,
-  { challenge: string; userId?: string; cnpj?: string; type: 'reg' | 'auth'; expires: number }
+  { challenge: string; userId?: string; type: 'reg' | 'auth'; expires: number }
 >();
 
 function rpId(): string {
@@ -105,14 +105,13 @@ function fromB64url(s: string): Buffer {
 
 export function createChallenge(
   type: 'reg' | 'auth',
-  opts: { userId?: string; cnpj?: string }
+  opts: { userId?: string }
 ): { challengeId: string; challenge: string } {
   const challenge = b64url(crypto.randomBytes(32));
   const challengeId = crypto.randomUUID();
   challenges.set(challengeId, {
     challenge,
     userId: opts.userId,
-    cnpj: opts.cnpj,
     type,
     expires: Date.now() + 5 * 60 * 1000,
   });
@@ -126,13 +125,13 @@ export function createChallenge(
 export function consumeChallenge(
   challengeId: string,
   expectedType: 'reg' | 'auth'
-): { challenge: string; userId?: string; cnpj?: string } {
+): { challenge: string; userId?: string } {
   const row = challenges.get(challengeId);
   if (!row) throw new Error('Challenge inválido ou expirado.');
   challenges.delete(challengeId);
   if (row.expires < Date.now()) throw new Error('Challenge expirado. Tente novamente.');
   if (row.type !== expectedType) throw new Error('Tipo de challenge incorreto.');
-  return { challenge: row.challenge, userId: row.userId, cnpj: row.cnpj };
+  return { challenge: row.challenge, userId: row.userId };
 }
 
 export async function listCredentials(db: Database, userId: string) {
@@ -163,7 +162,7 @@ export async function findCredentialByCredId(
  */
 export async function registrationOptions(
   db: Database,
-  user: { id: string; nome: string; cnpj: string }
+  user: { id: string; nome: string; identificador: string }
 ) {
   const n = await countCredentials(db, user.id);
   if (n >= maxCreds()) {
@@ -179,7 +178,7 @@ export async function registrationOptions(
       rp: { id: rpId(), name: rpName() },
       user: {
         id: b64url(Buffer.from(user.id)),
-        name: user.cnpj || user.id,
+        name: user.identificador || user.id,
         displayName: user.nome || 'Usuário',
       },
       pubKeyCredParams: [
@@ -265,14 +264,17 @@ export async function finishRegistration(
   return { id, credentialId: credId };
 }
 
-export async function authenticationOptions(db: Database, cnpj: string) {
-  const user = await db.get('SELECT * FROM usuarios WHERE cnpj = ?', [cnpj]);
-  if (!user) throw new Error('CNPJ não encontrado.');
+export async function authenticationOptions(db: Database, email: string) {
+  const user = await db.get(
+    'SELECT * FROM usuarios WHERE lower(email) = lower(?) LIMIT 1',
+    [email]
+  );
+  if (!user) throw new Error('E-mail não encontrado.');
   const creds = await listCredentials(db, user.id);
   if (!creds.length) {
-    throw new Error('Nenhuma digital cadastrada. Entre com senha e registre a digital no painel.');
+    throw new Error('Nenhuma digital cadastrada. Entre com e-mail e senha e registre a digital no painel.');
   }
-  const { challengeId, challenge } = createChallenge('auth', { userId: user.id, cnpj });
+  const { challengeId, challenge } = createChallenge('auth', { userId: user.id });
   return {
     challengeId,
     publicKey: {

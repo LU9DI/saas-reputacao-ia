@@ -2,6 +2,9 @@ import type { MetadataRoute } from 'next';
 
 const base = 'https://filtraai.com';
 
+// Next 16 + `output: export` exigem rota explicitamente estática.
+export const dynamic = 'force-static';
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {

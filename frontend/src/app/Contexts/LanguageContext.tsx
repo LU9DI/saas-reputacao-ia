@@ -217,6 +217,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode; initial?: Languag
     } catch {
       next = initial || "pt";
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hidrata idioma salvo (localStorage/cookie) após o mount
     setLanguageState(next);
     applyDocumentLang(next);
     // limpa chave antiga que forçava inglês

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, Mail, AlertCircle, Loader2, Shield, KeyRound } from 'lucide-react';
 import { getEnv } from '../../utils/env';
 
@@ -14,6 +14,7 @@ function apiBase() {
 }
 
 function AdminLoginForm() {
+  const router = useRouter();
   const search = useSearchParams();
   const tokenFromUrl = search.get('token') || '';
 
@@ -31,12 +32,7 @@ function AdminLoginForm() {
   const [msg, setMsg] = useState('');
   const [recoveryLink, setRecoveryLink] = useState('');
 
-  useEffect(() => {
-    if (tokenFromUrl) {
-      setToken(tokenFromUrl);
-      setStep('redefinir');
-    }
-  }, [tokenFromUrl]);
+  // `token` e `step` já nascem de tokenFromUrl (useState acima) — sem efeito de sincronização.
 
   const entrarNoPainel = (jwt?: string) => {
     if (jwt) {
@@ -47,7 +43,7 @@ function AdminLoginForm() {
       }
     }
     localStorage.removeItem('token_saas_reputacao');
-    window.location.assign('/admin');
+    router.replace('/admin');
   };
 
   const titulo =
@@ -186,7 +182,7 @@ function AdminLoginForm() {
   };
 
   const inputCls =
-    'w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900';
+    'w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900';
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">

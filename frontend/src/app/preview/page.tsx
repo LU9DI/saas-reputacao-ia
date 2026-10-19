@@ -237,23 +237,23 @@ function DashboardMockup({ c }: { c: Copy }) {
       </div>
       <div className="grid gap-4 p-5 sm:grid-cols-[1.1fr_.9fr]">
         <div className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="rounded-2xl border border-white/10 bg-white/3 p-4">
             <div className="flex items-center justify-between">
               <span className="text-xs text-zinc-500">{c.reputation}</span>
               <span className="text-xs text-emerald-400">+18,4%</span>
             </div>
             <div className="mt-2 flex items-end gap-3"><strong className="text-4xl text-white">4,8</strong><span className="pb-1 text-sm text-zinc-500">/ 5,0</span></div>
-            <div className="mt-4 h-20 rounded-xl bg-gradient-to-b from-indigo-500/20 to-transparent p-2">
+            <div className="mt-4 h-20 rounded-xl bg-linear-to-b from-indigo-500/20 to-transparent p-2">
               <svg viewBox="0 0 500 90" className="h-full w-full"><path d="M0 70 C80 58 95 65 145 48 S220 55 270 36 S350 42 400 22 S450 30 500 8" fill="none" stroke="currentColor" strokeWidth="4" className="text-indigo-400" /></svg>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             {[[ '1.284', c.feedbacks ], [ '91%', c.positives ], [ '37', c.alerts ]].map(([value, label]) => (
-              <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-3"><div className="text-lg font-semibold text-white">{value}</div><div className="mt-1 text-[10px] text-zinc-500">{label}</div></div>
+              <div key={label} className="rounded-2xl border border-white/10 bg-white/3 p-3"><div className="text-lg font-semibold text-white">{value}</div><div className="mt-1 text-[10px] text-zinc-500">{label}</div></div>
             ))}
           </div>
         </div>
-        <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.06] p-4">
+        <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/6 p-4">
           <div className="flex items-center gap-2 text-sm font-medium text-white"><Bot size={16} className="text-indigo-300" /> {c.patterns}</div>
           <div className="mt-4 space-y-3">
             {['Atendimento elogiado', 'Tempo de espera', 'Equipe bem avaliada'].map((item, i) => (
@@ -286,26 +286,26 @@ function ClientPanelMockup({ c }: { c: Copy }) {
             <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-xs text-emerald-300">TRIAL · ATIVO</div>
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-4">
-            {[['4,8', c.panelRating], ['1.284', c.panelReviews], ['91%', c.panelPositive], ['37', c.panelAttention]].map(([v,l],i) => (
-              <div key={l} className="rounded-2xl border border-white/10 bg-white/[0.025] p-3"><div className="text-xl font-semibold text-white">{v}</div><div className="mt-1 text-[10px] text-zinc-500">{l}</div></div>
+            {[['4,8', c.panelRating], ['1.284', c.panelReviews], ['91%', c.panelPositive], ['37', c.panelAttention]].map(([v,l]) => (
+              <div key={l} className="rounded-2xl border border-white/10 bg-white/2.5 p-3"><div className="text-xl font-semibold text-white">{v}</div><div className="mt-1 text-[10px] text-zinc-500">{l}</div></div>
             ))}
           </div>
           <div className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_.8fr]">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/2.5 p-4">
               <div className="flex items-center justify-between"><span className="text-xs text-zinc-500">Evolução · 14 dias</span><span className="text-xs text-emerald-400">+18,4%</span></div>
-              <div className="mt-5 h-32 rounded-xl bg-gradient-to-b from-indigo-500/15 to-transparent p-2">
+              <div className="mt-5 h-32 rounded-xl bg-linear-to-b from-indigo-500/15 to-transparent p-2">
                 <svg viewBox="0 0 500 120" className="h-full w-full"><path d="M0 95 C60 85 90 90 135 70 S220 82 265 55 S350 60 405 32 S455 40 500 12" fill="none" stroke="currentColor" strokeWidth="4" className="text-indigo-400" /></svg>
               </div>
             </div>
-            <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.06] p-4">
+            <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/6 p-4">
               <div className="flex items-center gap-2 text-sm font-medium text-white"><Bot size={16} className="text-indigo-300" /> {c.panelAi}</div>
               <div className="mt-4 space-y-3">{['Atendimento', 'Tempo de espera', 'Equipe'].map((x,i)=><div key={x}><div className="flex justify-between text-[11px] text-zinc-400"><span>{x}</span><span>{[82,64,91][i]}%</span></div><div className="mt-1 h-1 rounded-full bg-white/10"><div className="h-1 rounded-full bg-indigo-400" style={{width: [82,64,91][i] + '%'}} /></div></div>)}</div>
               <div className="mt-4 rounded-lg bg-emerald-400/5 p-2 text-[11px] text-emerald-300">✓ {c.panelReport}</div>
             </div>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="text-xs text-zinc-500">QR Code · WhatsApp · Google</div><div className="mt-2 text-sm text-zinc-200">Canais e link de avaliação centralizados</div></div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-4"><div className="text-xs text-zinc-500">Feedbacks recentes</div><div className="mt-2 text-sm text-zinc-200">3 avaliações precisam de atenção</div></div>
+            <div className="rounded-2xl border border-white/10 bg-white/2.5 p-4"><div className="text-xs text-zinc-500">QR Code · WhatsApp · Google</div><div className="mt-2 text-sm text-zinc-200">Canais e link de avaliação centralizados</div></div>
+            <div className="rounded-2xl border border-white/10 bg-white/2.5 p-4"><div className="text-xs text-zinc-500">Feedbacks recentes</div><div className="mt-2 text-sm text-zinc-200">3 avaliações precisam de atenção</div></div>
           </div>
         </div>
       </div>
@@ -350,11 +350,11 @@ export default function LandingPreview() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-14 lg:grid-cols-[.9fr_1.1fr] lg:px-8 lg:pb-32 lg:pt-20">
           <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-400/10 px-3 py-1.5 text-xs text-indigo-200"><Zap size={13} /> {c.badge}</div>
-            <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-.045em] sm:text-6xl lg:text-7xl">{c.heroTitle} <span className="bg-gradient-to-r from-sky-300 via-indigo-300 to-violet-300 bg-clip-text text-transparent">{c.heroAccent}</span></h1>
+            <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-.045em] sm:text-6xl lg:text-7xl">{c.heroTitle} <span className="bg-linear-to-r from-sky-300 via-indigo-300 to-violet-300 bg-clip-text text-transparent">{c.heroAccent}</span></h1>
             <p className="mt-7 max-w-xl text-lg leading-8 text-zinc-400 sm:text-xl">{c.heroText}</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <a href="/teste" className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 font-semibold shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.start} <ArrowRight size={17} /></a>
-              <a href="#como-funciona" className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-6 py-3.5 font-medium text-zinc-200 hover:bg-white/[0.06]">{c.howCta}</a>
+              <Link href="/teste" className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 font-semibold shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.start} <ArrowRight size={17} /></Link>
+              <a href="#como-funciona" className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/3 px-6 py-3.5 font-medium text-zinc-200 hover:bg-white/6">{c.howCta}</a>
             </div>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-500"><span>✓ {c.noCard}</span><span>✓ {c.quick}</span><span>✓ {c.cancel}</span></div>
           </div>
@@ -362,7 +362,7 @@ export default function LandingPreview() {
         </div>
       </section>
 
-      <section className="border-y border-white/[0.06] bg-white/[0.02]">
+      <section className="border-y border-white/6 bg-white/2">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-8 sm:grid-cols-3 lg:px-8">
           {c.strip.map(([title, text]) => <div key={title} className="flex gap-3"><Check className="mt-0.5 text-indigo-400" size={18} /><div><div className="font-medium text-zinc-200">{title}</div><div className="mt-1 text-sm text-zinc-500">{text}</div></div></div>)}
         </div>
@@ -370,10 +370,10 @@ export default function LandingPreview() {
 
       <section id="como-funciona" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
         <div className="max-w-2xl"><span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.howEyebrow}</span><h2 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{c.howTitle}</h2><p className="mt-5 text-lg leading-8 text-zinc-400">{c.howText}</p></div>
-        <div className="mt-14 grid gap-5 md:grid-cols-3">{c.steps.map(([n, title, text]) => <div key={n} className="rounded-3xl border border-white/10 bg-white/[0.025] p-7"><div className="text-sm text-indigo-400">{n}</div><h3 className="mt-5 text-2xl font-semibold">{title}</h3><p className="mt-3 leading-7 text-zinc-500">{text}</p></div>)}</div>
+        <div className="mt-14 grid gap-5 md:grid-cols-3">{c.steps.map(([n, title, text]) => <div key={n} className="rounded-3xl border border-white/10 bg-white/2.5 p-7"><div className="text-sm text-indigo-400">{n}</div><h3 className="mt-5 text-2xl font-semibold">{title}</h3><p className="mt-3 leading-7 text-zinc-500">{text}</p></div>)}</div>
       </section>
 
-      <section id="recursos" className="border-y border-white/[0.06] bg-white/[0.015]">
+      <section id="recursos" className="border-y border-white/6 bg-white/1.5">
         <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
           <div className="max-w-2xl"><span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.featuresEyebrow}</span><h2 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{c.featuresTitle}</h2><p className="mt-5 text-lg leading-8 text-zinc-400">{c.featuresText}</p></div>
           <div className="mt-12 grid gap-4 sm:grid-cols-2">{c.features.map(([title, text], i) => { const Icon = icons[i]; return <div key={title} className="rounded-3xl border border-white/10 bg-black/20 p-7"><Icon size={22} className="text-indigo-300" /><h3 className="mt-5 text-xl font-semibold">{title}</h3><p className="mt-2 leading-7 text-zinc-500">{text}</p></div>; })}</div>
@@ -394,18 +394,18 @@ export default function LandingPreview() {
             <div className="absolute -inset-3 rounded-[32px] bg-indigo-500/10 blur-2xl" />
             <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-zinc-950/90 p-5 shadow-2xl shadow-indigo-950/30 sm:p-7">
               <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-5">
-                <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-400 to-sky-400 text-white"><Bot size={23} /></div><div><div className="font-semibold text-white">Filtra Dot</div><div className="mt-1 text-xs text-zinc-500">{c.dotRole}</div></div></div>
+                <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-400 to-sky-400 text-white"><Bot size={23} /></div><div><div className="font-semibold text-white">Filtra Dot</div><div className="mt-1 text-xs text-zinc-500">{c.dotRole}</div></div></div>
                 <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">{c.dotStatus}</span>
               </div>
               <div className="mt-5 space-y-3">
-                {c.dotPoints.map(([title, text], i) => <div key={title} className="flex gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-400/10 text-sm font-semibold text-indigo-200">0{i+1}</div><div><h3 className="font-semibold text-zinc-100">{title}</h3><p className="mt-1 text-sm leading-6 text-zinc-500">{text}</p></div></div>)}
+                {c.dotPoints.map(([title, text], i) => <div key={title} className="flex gap-3 rounded-2xl border border-white/8 bg-white/2.5 p-4"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-400/10 text-sm font-semibold text-indigo-200">0{i+1}</div><div><h3 className="font-semibold text-zinc-100">{title}</h3><p className="mt-1 text-sm leading-6 text-zinc-500">{text}</p></div></div>)}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="border-y border-white/[0.06] bg-white/[0.015]">
+      <section className="border-y border-white/6 bg-white/1.5">
         <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-[.75fr_1.25fr]">
             <div>
@@ -421,7 +421,7 @@ export default function LandingPreview() {
         </div>
       </section>
 
-      <section className="border-y border-white/[0.06] bg-black/20">
+      <section className="border-y border-white/6 bg-black/20">
         <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
           <div className="max-w-2xl">
             <span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{seo.eyebrow}</span>
@@ -429,17 +429,18 @@ export default function LandingPreview() {
             <p className="mt-4 text-base leading-7 text-zinc-400">{seo.text}</p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {seo.links.map(([href,title,description]) => <Link key={href} href={href} className="group rounded-2xl border border-white/10 bg-white/[0.025] p-5 transition hover:border-indigo-400/30 hover:bg-white/[0.04]"><h3 className="font-semibold text-zinc-100 group-hover:text-indigo-200">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p><span className="mt-4 inline-block text-xs font-medium text-indigo-300">{seo.more}</span></Link>)}
+            {seo.links.map(([href,title,description]) => <Link key={href} href={href} className="group rounded-2xl border border-white/10 bg-white/2.5 p-5 transition hover:border-indigo-400/30 hover:bg-white/4"><h3 className="font-semibold text-zinc-100 group-hover:text-indigo-200">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p><span className="mt-4 inline-block text-xs font-medium text-indigo-300">{seo.more}</span></Link>)}
           </div>
           <div className="mt-8">
             <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">{seo.segment}</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {seo.segments.map(([href,title,description]) => <Link key={href} href={href} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 transition hover:border-indigo-400/30"><h3 className="font-medium text-zinc-100">{title}</h3><p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p></Link>)}
+              {seo.segments.map(([href,title,description]) => <Link key={href} href={href} className="rounded-xl border border-white/10 bg-white/2 p-4 transition hover:border-indigo-400/30"><h3 className="font-medium text-zinc-100">{title}</h3><p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p></Link>)}
             </div>
           </div>
           <div className="mt-8 border-t border-white/10 pt-6">
             <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">{seo.guides}</p>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <Link href="/blog/gestao-reputacao-online-guia" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Guia de gestão de reputação':language==='en'?'Reputation management guide':language==='es'?'Guía de gestión de reputación':'声誉管理指南'}</Link>
               <Link href="/blog/como-conseguir-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como conseguir avaliações no Google':language==='en'?'How to get Google reviews':language==='es'?'Cómo conseguir reseñas en Google':'如何获得 Google 评价'}</Link>
               <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'SEO local e avaliações':language==='en'?'Local SEO and reviews':language==='es'?'SEO local y reseñas':'本地 SEO 与评价'}</Link>
               <Link href="/blog/review-1-estrela-primeiras-24-horas" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como agir diante de uma avaliação de 1 estrela':language==='en'?'What to do after a 1-star review':language==='es'?'Qué hacer ante una reseña de 1 estrella':'收到一星评价后怎么办'}</Link>
@@ -455,16 +456,16 @@ export default function LandingPreview() {
       </section>
 
       <section className="px-6 pb-24 lg:px-8">
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-[32px] border border-indigo-400/20 bg-gradient-to-br from-indigo-500/15 via-white/[0.03] to-violet-500/10 p-8 text-center sm:p-14">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-[32px] border border-indigo-400/20 bg-linear-to-br from-indigo-500/15 via-white/3 to-violet-500/10 p-8 text-center sm:p-14">
           <Star className="mx-auto text-indigo-300" size={26} fill="currentColor" />
           <h2 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">{c.finalTitle}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-zinc-400">{c.finalText}</p>
-          <a href="/teste" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 font-semibold text-black hover:bg-zinc-200">{c.start} <ArrowRight size={17} /></a>
+          <Link href="/teste" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 font-semibold text-black hover:bg-zinc-200">{c.start} <ArrowRight size={17} /></Link>
         </div>
       </section>
 
-      <footer className="border-t border-white/[0.06] px-6 py-10 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><a href="/privacidade" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.privacy}</a><a href="/termos" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.terms}</a><span className="text-zinc-700">{c.footer}</span></div></div>
+      <footer className="border-t border-white/6 px-6 py-10 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><Link href="/privacidade" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.privacy}</Link><Link href="/termos" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.terms}</Link><span className="text-zinc-700">{c.footer}</span></div></div>
       </footer>
     </main>
     </>

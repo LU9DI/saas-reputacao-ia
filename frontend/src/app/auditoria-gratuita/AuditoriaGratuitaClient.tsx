@@ -198,7 +198,7 @@ export function AuditoriaGratuitaClient() {
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               placeholder={c.placeholder}
-              className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-none focus:border-indigo-500"
+              className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-hidden focus:border-indigo-500"
             />
             <label className="block text-sm font-medium">{c.email} <span className="text-zinc-500">({c.optional})</span></label>
             <input
@@ -206,7 +206,7 @@ export function AuditoriaGratuitaClient() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={c.emailPlaceholder}
-              className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-none focus:border-indigo-500"
+              className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-hidden focus:border-indigo-500"
             />
             <label className="flex items-start gap-3 text-sm text-zinc-400">
               <input
@@ -224,7 +224,7 @@ export function AuditoriaGratuitaClient() {
               value={raw}
               onChange={(e) => setRaw(e.target.value)}
               rows={8}
-              className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 font-mono text-sm outline-none focus:border-indigo-500"
+              className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 font-mono text-sm outline-hidden focus:border-indigo-500"
             />
             {error ? <p className="text-sm text-red-400">{error}</p> : null}
             <button

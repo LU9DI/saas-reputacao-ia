@@ -1,6 +1,7 @@
 /**
- * Testes de integração HTTP — trial + health.
+ * Testes de integração HTTP — avaliações (reviews) + health.
  * Usa banco temporário isolado (não toca no database.sqlite de dev).
+ * Não depende de DNS nem de serviços externos.
  */
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,7 +11,7 @@ import os from 'os';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const tmpDb = path.join(os.tmpdir(), `filtra-test-${Date.now()}.sqlite`);
+const tmpDb = path.join(os.tmpdir(), `filtra-reviews-${Date.now()}.sqlite`);
 
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-jwt-secret-min-32-chars-long!!';
@@ -18,18 +19,17 @@ process.env.SQLITE_DB_PATH = tmpDb;
 process.env.APP_URL = 'http://localhost:3000';
 process.env.ADMIN_EMAIL = 'admin-test@example.com';
 process.env.ADMIN_PASSWORD = 'AdminTest@123';
+delete process.env.N8N_WEBHOOK_URL;
 
 let app: any;
 let server: any;
 let baseUrl = '';
 
 before(async () => {
-  // Import dinâmico depois de setar env
   const { default: express } = await import('express');
   const cors = (await import('cors')).default;
   const cookieParser = (await import('cookie-parser')).default;
   const { initDB } = await import('../lib/db.js');
-  const { mountTrialRoutes } = await import('../routes/trialRoutes.js');
   const { mountReviewRoutes } = await import('../routes/reviewRoutes.js');
   const { notFoundHandler, errorHandler } = await import('../middleware/errorHandler.js');
 
@@ -40,7 +40,6 @@ before(async () => {
   e.use(express.json({ limit: '20kb' }));
   e.use(cors({ origin: true, credentials: true }));
   e.get('/api/health', (_req, res) => res.json({ ok: true }));
-  mountTrialRoutes(e);
   mountReviewRoutes(e);
   e.use(notFoundHandler);
   e.use(errorHandler);
@@ -80,57 +79,6 @@ describe('GET /api/health', () => {
     assert.equal(res.status, 200);
     const data = await res.json();
     assert.equal(data.ok, true);
-  });
-});
-
-describe('POST /api/trial/ativar', () => {
-  it('rejeita body inválido (sem CNPJ)', async () => {
-    const { status, data } = await post('/api/trial/ativar', {
-      nome_empresa: 'Teste SA',
-      email: 'a@b.com',
-      senha: 'Senha@12x',
-    });
-    assert.equal(status, 400);
-    assert.ok(data.error);
-  });
-
-  it('rejeita CNPJ inválido', async () => {
-    const { status, data } = await post('/api/trial/ativar', {
-      cnpj: '11111111111111',
-      nome_empresa: 'Teste SA',
-      email: 'valido@teste.com',
-      senha: 'Senha@12x',
-    });
-    assert.equal(status, 400);
-    assert.ok(data.error);
-  });
-
-  it('ativa trial com CNPJ válido', async () => {
-    // 11.222.333/0001-81 é válido nos testes unitários de CNPJ
-    const { status, data } = await post('/api/trial/ativar', {
-      cnpj: '11222333000181',
-      nome_empresa: 'Empresa Integração Teste',
-      email: `trial-${Date.now()}@teste.com`,
-      senha: 'Senha@12x',
-    });
-    assert.equal(status, 201);
-    assert.equal(data.success, true);
-    assert.ok(data.empresa_id);
-    assert.ok(data.slug);
-    assert.ok(String(data.link_acesso).includes('/avaliacao/'));
-  });
-
-  it('bloqueia CNPJ duplicado', async () => {
-    const email = `dup-${Date.now()}@teste.com`;
-    // usa outro CNPJ válido gerado com base diferente — se o anterior já ocupou 11222333000181,
-    // este segundo request com o mesmo CNPJ deve ser 409
-    const { status } = await post('/api/trial/ativar', {
-      cnpj: '11222333000181',
-      nome_empresa: 'Duplicada',
-      email,
-      senha: 'Senha@12x',
-    });
-    assert.equal(status, 409);
   });
 });
 

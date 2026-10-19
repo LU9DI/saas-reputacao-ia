@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
-  title: 'Pacotes de SEO local: preço e escopo',
+  title: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)',
   description:
     'Veja o que incluir e como precificar pacotes de SEO local, com Perfil da Empresa no Google, avaliações, reputação, conteúdo e acompanhamento.',
   alternates: { canonical: 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', languages: { 'pt-BR': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack', en: 'https://filtraai.com/en/blog/local-seo-google-reviews', es: 'https://filtraai.com/es/blog/seo-local-resenas-google', zh: 'https://filtraai.com/zh/blog/local-seo-google-reviews', 'x-default': 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack' } },
@@ -302,7 +302,7 @@ export default function Page() {
 
       <H2>Como transformar o pacote em rotina</H2>
       <p>
-        Uma operação recorrente também precisa de acompanhamento contínuo. A <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">gestão de reputação online</Link> conecta avaliações, feedback e prioridades; o <Link href="/monitoramento-reputacao-online" className="text-indigo-400 underline">monitoramento de reputação</Link> ajuda a acompanhar mudanças ao longo do tempo.
+        Uma operação recorrente também precisa de acompanhamento contínuo. A <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">gestão de reputação online</Link> conecta avaliações, feedback e prioridades; o <Link href="/monitoramento-reputacao-online" className="text-indigo-400 underline">monitoramento de reputação</Link> ajuda a acompanhar mudanças ao longo do tempo. Para organizar esse ciclo desde o início, veja o <Link href="/blog/gestao-reputacao-online-guia" className="text-indigo-400 underline">guia de gestão de reputação online</Link>.
       </p>
       <p>
         Uma rotina eficiente começa pelo diagnóstico, passa por prioridades e termina com uma revisão do que mudou.

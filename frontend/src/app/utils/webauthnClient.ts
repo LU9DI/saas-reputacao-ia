@@ -91,11 +91,11 @@ export async function registerPasskey(apiUrl: string, token: string) {
   return data;
 }
 
-export async function loginWithPasskey(apiUrl: string, cnpj: string) {
+export async function loginWithPasskey(apiUrl: string, email: string) {
   const optRes = await apiFetch('/api/webauthn/login/options', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cnpj }),
+    body: JSON.stringify({ email }),
   });
   const opt = await optRes.json();
   if (!optRes.ok) throw new Error(opt.error || 'Falha ao iniciar login digital');

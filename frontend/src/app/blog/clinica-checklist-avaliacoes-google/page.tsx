@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,7 +40,7 @@ export default function Page() {
       <p>
         O feedback privado também ajuda a identificar padrões que ainda não aparecem nas avaliações públicas.
         Para entender como esse processo pode ser estruturado, veja o guia de{' '}
-        <a href="/feedback-de-clientes" className="underline">feedback de clientes</a>.
+        <Link href="/feedback-de-clientes" className="underline">feedback de clientes</Link>.
       </p>
 
       <H2>3. Trate avaliações públicas como parte da operação</H2>
@@ -58,7 +59,7 @@ export default function Page() {
       </p>
       <p>
         Para transformar grandes volumes de comentários em sinais operacionais, conheça a{' '}
-        <a href="/analise-de-avaliacoes-com-ia" className="underline">análise de avaliações com IA</a>.
+        <Link href="/analise-de-avaliacoes-com-ia" className="underline">análise de avaliações com IA</Link>.
       </p>
 
       <H2>5. Transforme os dados em ações</H2>
@@ -95,7 +96,7 @@ export default function Page() {
       </p>
       <p>
         Para uma visão mais ampla da presença local, veja o guia de{' '}
-        <a href="/blog/seo-local-avaliacoes-local-pack" className="underline">SEO local e avaliações</a>.
+        <Link href="/blog/seo-local-avaliacoes-local-pack" className="underline">SEO local e avaliações</Link>.
       </p>
 
       <H2>9. Da reputação para o crescimento</H2>
@@ -106,10 +107,10 @@ export default function Page() {
         decisões de operação, atendimento e crescimento.
       </p>
       <p>
-        A <a href="/filtra-ai" className="underline">Filtra.AI</a> é uma plataforma brasileira de gestão de
+        A <Link href="/filtra-ai" className="underline">Filtra.AI</Link> é uma plataforma brasileira de gestão de
         reputação online, avaliações Google e feedback de clientes com inteligência artificial. Se quiser avaliar
         a situação atual da sua reputação, comece pela{' '}
-        <a href="/auditoria-gratuita" className="underline">auditoria gratuita</a>.
+        <Link href="/auditoria-gratuita" className="underline">auditoria gratuita</Link>.
       </p>
     </BlogArticle>
   );
