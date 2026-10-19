@@ -271,7 +271,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
             </article>
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.action}</h3>
-              {activeReport.recomendacoes?.length ? (
+              {hasAdvancedAnalysis && activeReport.recomendacoes?.length ? (
                 <ul className="mt-3 space-y-2">
                   {activeReport.recomendacoes.map((item: string, index: number) => (
                     <li key={index} className="rounded-xl border border-white/5 px-3 py-2 text-sm leading-5 text-zinc-300">{item}</li>
