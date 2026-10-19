@@ -122,7 +122,6 @@ export default function PainelEmpresa() {
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [mostrarRelatorioMensal, setMostrarRelatorioMensal] = useState(false);
-  const [relatorioMensalLocal, setRelatorioMensalLocal] = useState<any[]>([]);
   const [unidadesMenuOpen, setUnidadesMenuOpen] = useState(false);
   const [precisaLogin, setPrecisaLogin] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
@@ -170,10 +169,8 @@ export default function PainelEmpresa() {
     }
   };
 
-  const relatoriosMensais = [
-    ...relatorioMensalLocal,
-    ...(Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : []),
-  ].filter((r, index, arr) => r && arr.findIndex((x) => x?.periodo === r?.periodo) === index);
+  const relatoriosMensais = (Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : [])
+    .filter((r, index, arr) => r && arr.findIndex((x) => x?.periodo === r?.periodo) === index);
 
   const alternarRelatorioMensal = () => {
     setMostrarRelatorioMensal((visible) => !visible);
