@@ -1,6 +1,6 @@
 # Relatório profissional mensal
 
-O relatório profissional mensal é um botão dentro da seção do Relatório Inteligente no painel do cliente. O documento tem conteúdo padronizado (sem diferenciação por plano) e é gerado uma única vez por ciclo mensal: o primeiro acesso do mês gera e persiste o snapshot em `relatorio_envios_mensais.report_json`; reaberturas e downloads ilimitados leem esse snapshot em cache, sem novo consumo de IA.
+O relatório profissional mensal é acessado por um único botão dentro da seção do Relatório Inteligente no painel do cliente. O documento é progressivo e libera módulos conforme os benefícios do plano contratado e é gerado uma única vez por ciclo mensal: o primeiro acesso do mês gera e persiste o snapshot em `relatorio_envios_mensais.report_json`; reaberturas e downloads ilimitados leem esse snapshot em cache, sem novo consumo de IA.
 
 O Relatório Inteligente legado e seus endpoints permanecem intactos e fora do escopo desta entrega.
 
@@ -13,11 +13,14 @@ O Relatório Inteligente legado e seus endpoints permanecem intactos e fora do e
 - Contém o botão **Baixar PDF**: abre o HTML profissional persistido (`canais.email.html`) em nova aba com as regras de impressão A4 e aciona a impressão/salvamento em PDF. Se o navegador bloquear a janela, o arquivo HTML é baixado como fallback. Nenhum download consome IA.
 - Os snapshots ficam persistidos por empresa e mês, são verificados contra a empresa autenticada e também são incluídos no carregamento normal do painel (`relatorios_profissionais_mensais`), com o sinalizador `dashboard.mostrar_relatorio_mensal`.
 
-## Uniformidade entre planos
+## Conteúdo progressivo por plano
 
-- O documento renderizado é idêntico para todos os planos elegíveis: as seções (unidades, prioridades, radar, oportunidades) dependem apenas dos dados do período, nunca do plano contratado.
-- Não há bloco comercial, "escopo do plano" ou comparativo de planos dentro do relatório (nem no HTML, nem no texto dos canais).
-- A narrativa interpretativa é redigida por IA para todos os planos elegíveis, uma vez por ciclo.
+- **Pro:** resumo executivo e indicadores essenciais do mês.
+- **Ultra:** conteúdo do Pro + análise profissional de sentimento, temas recorrentes, riscos, oportunidades e interpretação por IA.
+- **Corporativo:** conteúdo do Ultra + ranking comparativo entre unidades e prioridades operacionais baseadas em evidências.
+- **REI:** conteúdo do Corporativo + radar estratégico, tendências comparativas e oportunidades de crescimento com recomendações executivas.
+- O Inicial não tem direito ao relatório mensal. Não há bloco comercial ou comparativo de preços no documento; só aparecem módulos incluídos no plano atual.
+- Se o plano mudar depois da criação do snapshot, a apresentação e os metadados são adaptados a partir do mesmo snapshot, sem uma nova chamada à IA.
 
 ## Geração, cache e limites de tokens
 
@@ -63,4 +66,4 @@ O job mantém a tabela `relatorio_envios_mensais` e reserva uma combinação ún
 
 ## Benefícios por plano
 
-O relatório mensal está incluído a partir do Pro, com o mesmo conteúdo profissional em todos os planos elegíveis (Pro, Ultra, Corporativo e REI). Os demais recursos de cada plano continuam seguindo os gates existentes no painel e nos textos comerciais; o conteúdo do relatório mensal não é hierarquizado pelo plano.
+O relatório mensal está incluído a partir do Pro e seu conteúdo progride conforme os benefícios: Pro (indicadores), Ultra (análise avançada), Corporativo (comparativo e prioridades por unidade) e REI (radar estratégico e oportunidades executivas). Reabrir, gerar novamente ou baixar o relatório no mesmo ciclo reutiliza o snapshot em cache e não dispara novas chamadas à IA.
