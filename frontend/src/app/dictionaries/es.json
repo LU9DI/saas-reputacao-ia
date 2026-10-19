@@ -119,10 +119,10 @@
   "panel_reviews": "Reseñas",
   "panel_ai_report": "Informe inteligente",
   "panel_monthly_report": "Informe mensual",
-  "panel_monthly_report_desc": "Informe profesional del mes anterior, generado por IA, con descarga en PDF.",
+  "panel_monthly_report_desc": "Informe profesional del mes anterior, mostrado con los datos ya cargados en el panel.",
   "panel_monthly_report_open": "Abrir informe mensual",
   "panel_monthly_report_hide": "Ocultar informe mensual",
-  "panel_monthly_report_generating": "Generando el informe del mes…",
+  
   "panel_monthly_report_failed": "No se pudo generar el informe mensual ahora.",
   "panel_units_menu": "Gestión de unidades",
   "panel_units_menu_units": "Unidades y enlaces exclusivos de reseñas",
