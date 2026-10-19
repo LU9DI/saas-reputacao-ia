@@ -122,6 +122,10 @@ describe('cache do relatório mensal sob demanda', () => {
     assert.equal(result.report.plano.codigo, 'pro');
     assert.equal(Object.hasOwn(result.report, 'sentimento'), false);
     assert.equal(Object.hasOwn(result.report, 'temas'), false);
+    // A resposta respeita o plano, mas o snapshot integral continua persistido para upgrades.
+    const persisted = JSON.parse(db.rows.get(`e1|${periodo}`).report_json);
+    assert.equal(persisted.sentimento.negativo, 99);
+    assert.equal(persisted.temas.atencao[0].tema, 'premium');
     assert.equal(String(result.report.canais.email.html).includes('snapshot antigo'), false);
     assert.equal(buildCalls, 0, 'build não deve ser chamado quando existe snapshot salvo');
   });
