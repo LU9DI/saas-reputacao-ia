@@ -440,6 +440,7 @@ export default function LandingPreview() {
           <div className="mt-8 border-t border-white/10 pt-6">
             <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">{seo.guides}</p>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <Link href="/blog/gestao-reputacao-online-guia" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Guia de gestão de reputação':language==='en'?'Reputation management guide':language==='es'?'Guía de gestión de reputación':'声誉管理指南'}</Link>
               <Link href="/blog/como-conseguir-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como conseguir avaliações no Google':language==='en'?'How to get Google reviews':language==='es'?'Cómo conseguir reseñas en Google':'如何获得 Google 评价'}</Link>
               <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'SEO local e avaliações':language==='en'?'Local SEO and reviews':language==='es'?'SEO local y reseñas':'本地 SEO 与评价'}</Link>
               <Link href="/blog/review-1-estrela-primeiras-24-horas" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como agir diante de uma avaliação de 1 estrela':language==='en'?'What to do after a 1-star review':language==='es'?'Qué hacer ante una reseña de 1 estrella':'收到一星评价后怎么办'}</Link>

@@ -3,8 +3,8 @@ import { SeoLanding } from '../components/SeoLanding';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Gestão de reputação online para empresas',
-  description: 'Gestão de reputação online para empresas: monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
+    title: 'Gestão de reputação online para empresas | Filtra.AI',
+  description: 'Gestão de reputação online para empresas: monitore avaliações Google, feedback e temas recorrentes, e transforme sinais de clientes em melhorias com IA.',
   alternates: {
     canonical: 'https://filtraai.com/gestao-de-reputacao-online',
     languages: {
@@ -105,6 +105,10 @@ export default function Page() {
         {
           heading: 'Como gerir a reputação de uma empresa ou organização',
           body: 'Gerir a reputação de uma empresa significa acompanhar o que clientes e mercado estão dizendo, identificar padrões e transformar esses sinais em decisões. Para uma organização com várias áreas ou unidades, a rotina precisa unir visão central da marca, contexto local, responsáveis por cada tema e acompanhamento das ações.',
+        },
+        {
+          heading: 'Serviços de gestão de reputação online: o que avaliar',
+          body: 'Ao contratar ou estruturar o serviço, verifique o que será monitorado, como os temas são classificados, qual a cadência de respostas e de leitura do período e como o resultado será medido. Um bom serviço deixa claro o que a empresa faz internamente e o que o fornecedor entrega — sem prometer posição garantida no Google ou remoção de avaliações.',
         },
         {
           heading: 'Por que usar IA nesse processo',
