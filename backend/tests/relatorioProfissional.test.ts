@@ -92,6 +92,18 @@ describe('relatório profissional mensal', () => {
     assert.ok(rei.canais.email.text.includes('RADAR ESTRATÉGICO'));
     assert.equal(rei.resumo_executivo, pro.resumo_executivo);
     assert.equal(rei.geracao.tokens, pro.geracao.tokens);
+
+    // Downgrades também devem adaptar o snapshot em memória, sem apagar a cópia persistida.
+    const corporativo = adaptRelatorioProfissionalAoPlano(rei, 'corporativo');
+    const ultra = adaptRelatorioProfissionalAoPlano(rei, 'ultra');
+    const downgradePro = adaptRelatorioProfissionalAoPlano(rei, 'pro');
+    assert.ok(!corporativo.canais.email.text.includes('RADAR ESTRATÉGICO'));
+    assert.ok(!corporativo.canais.email.html.includes('Radar estratégico'));
+    assert.ok(!ultra.canais.email.text.includes('RANKING DAS UNIDADES'));
+    assert.ok(!ultra.canais.email.text.includes('PRIORIDADES OPERACIONAIS'));
+    assert.ok(!downgradePro.canais.email.text.includes('TEMAS RECORRENTES'));
+    assert.ok(!Object.hasOwn(downgradePro, 'sentimento'));
+    assert.ok(rei.canais.email.text.includes('RADAR ESTRATÉGICO'), 'adaptar o snapshot não deve mutar o relatório original');
   });
   it('mantém o radar comparativo com evidências do mês anterior', async () => {
     const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-2', nome_empresa: 'Rede Teste', plan: 'rei' }, '2026-09');
