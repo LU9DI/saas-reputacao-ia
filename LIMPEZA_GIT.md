@@ -1,44 +1,25 @@
-# Limpeza Git — banco e artefatos
+# Higiene do repositório Git
 
-## 1. Parar de trackear bancos (obrigatório no seu PC)
+Este documento descreve práticas seguras para manter o repositório Filtra.AI organizado.
 
-```bash
-cd C:\Projetos\saas-reputacao-ia
+## Regras
 
-git rm --cached backend/prisma/dev.db 2>nul
-git rm --cached -r data 2>nul
-git rm --cached *.sqlite 2>nul
-git rm --cached **/*.db 2>nul
+- Não versionar `.env`, credenciais, tokens, bancos locais (`*.db`, `*.sqlite`) ou diretórios de build/cache.
+- Conferir `.gitignore` antes de adicionar artefatos gerados.
+- Não remover bancos ou arquivos de configuração de produção como parte de uma limpeza genérica.
+- Não reescrever o histórico compartilhado nem usar `git push --force` para remover arquivos.
+- Antes de remover um arquivo, verificar imports, referências, scripts de build, workflows e uso em runtime.
+- Fazer a limpeza em branch própria e validar os testes aplicáveis antes de abrir PR.
 
-git add .gitignore backend/.gitignore
-git commit -m "chore: stop tracking database files"
-git push origin main
-```
+## Se um segredo ou dado sensível foi versionado
 
-## 2. Remover do histórico (recomendado se o repo já foi compartilhado)
+Remover o arquivo do último commit não elimina cópias do histórico. Rotacione/revogue o segredo primeiro e siga um procedimento de resposta a incidente; reescrita de histórico exige planejamento e coordenação explícitos.
 
-```bash
-npx git-filter-repo --path backend/prisma/dev.db --invert-paths
-npx git-filter-repo --path-glob "*.sqlite" --invert-paths
-npx git-filter-repo --path-glob "*.db" --invert-paths
-
-git push origin main --force
-```
-
-> **Atenção:** `--force` reescreve o histórico. Avise qualquer colaborador.
-
-## 3. Conferir
+## Verificação local
 
 ```bash
-git ls-files | findstr /i "sqlite .db"
+git status --short
+git ls-files | grep -Ei '(^|/)(\.env|.*\.(db|sqlite))$'
 ```
 
-Não deve listar arquivos de banco.
-
-## 4. O que já foi feito neste commit
-
-- `.gitignore` reforçado (`*.db`, `*.sqlite`, `backend/prisma/*.db`, `data/`)
-- Camada `backend/services/` (trial, review, auth)
-- Routes finas com `asyncHandler`
-- Layout dos planos: grid até 5 colunas + texto abaixo sempre visível
-- Testes de integração HTTP em `backend/tests/integration.trial.test.ts`
+O segundo comando deve ser revisado manualmente: arquivos de exemplo como `.env.example` podem ser legítimos e não devem ser removidos.

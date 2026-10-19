@@ -40,7 +40,7 @@ saas-reputacao-ia/
 
 ## Não usar
 
-- Subpasta `backend/saas-reputacao-ia/` (cópia aninhada — ver `LIMPEZA_ESTRUTURA.md`)
+- Manter `backend/` e `frontend/` como diretórios irmãos na raiz.
 - Editar regra de negócio em `server.ts` — só bootstrap
 - Commitar `.env`, `*.sqlite`, `.aider*`
 

@@ -26,12 +26,11 @@
 
 > Os geradores PDF foram removidos. O painel disponibiliza o relatório inteligente em tela; endpoints PDF legados respondem HTTP 410.
 
-## Limpeza
+## Manutenção
 
 | Doc | Conteúdo |
 |------|----------|
-| [../LIMPEZA_ESTRUTURA.md](../LIMPEZA_ESTRUTURA.md) | Pasta duplicada / submódulo |
-| [../LIMPEZA_GIT.md](../LIMPEZA_GIT.md) | Bancos no Git |
+| [../LIMPEZA_GIT.md](../LIMPEZA_GIT.md) | Regras seguras de higiene do repositório |
 | [LIMPEZA_CODIGO.md](LIMPEZA_CODIGO.md) | Organização no VS Code |
 
 ## Convenções
