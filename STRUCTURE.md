@@ -47,4 +47,4 @@ saas-reputacao-ia/
 ## Legado (ainda no repo, evitar expandir)
 
 - Relatórios: conteúdo inteligente em texto; endpoints PDF legados respondem HTTP 410
-- Re-exports na raiz do backend (`mailer.ts`, `authMiddleware.ts`) → preferir `lib/` e `middleware/`
+- Os módulos canônicos ficam em `backend/lib/` e `backend/middleware/`; re-exports internos sem uso foram removidos.
