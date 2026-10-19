@@ -232,7 +232,7 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
     dateModified:'2026-10-05',
     inLanguage:lang==='en'?'en':lang==='es'?'es':'zh-CN',
     isPartOf:{'@type':'WebSite',name:'Filtra.AI',url:base},
-    image:base+'/og-image.svg'
+    image:base+'/og-image.png'
   };
 
   return <main lang={lang} className="min-h-screen bg-black text-zinc-100">

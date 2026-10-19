@@ -7,7 +7,7 @@ const graph = {
       '@type': 'Organization',
       '@id': `${siteUrl}/#organization`,
       name: 'Filtra.AI',
-      alternateName: ['Filtra AI', 'Filtra.AI Gestão de Reputação'],
+      alternateName: ['Filtra AI', 'FiltraAI', 'Filtra.AI Gestão de Reputação'],
       url: siteUrl,
       email: 'projetosaas1@gmail.com',
       description: 'Plataforma brasileira de gestão de reputação online, avaliações e feedback de clientes com inteligência artificial. O site oficial é filtraai.com.',

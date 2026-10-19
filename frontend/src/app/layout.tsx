@@ -5,7 +5,7 @@ import { Providers } from './Providers';
 import { JsonLd } from './components/JsonLd';
 
 const siteUrl = 'https://filtraai.com';
-const ogImage = `${siteUrl}/og-image.svg`;
+const ogImage = `${siteUrl}/og-image.png`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
