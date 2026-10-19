@@ -32,6 +32,14 @@ function authHeaders(json = true): HeadersInit {
   return h;
 }
 
+/** Ciclo do relatório mensal: último mês encerrado (mesmo cálculo do backend). */
+function mesDeReferencia(): string {
+  const d = new Date();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() - 1);
+  return d.toISOString().slice(0, 7);
+}
+
 /** Relatório inteligente: Trial e Pro+ (não no Inicial pago). */
 function planAllowsReport(plan?: string, status?: string, dashboard?: any): boolean {
   if (dashboard?.relatorio_disponivel) return true;
@@ -170,6 +178,7 @@ export default function PainelEmpresa() {
     }
   };
 
+  // O relatório é somente leitura: usa exclusivamente os snapshots já carregados no painel.
   const relatoriosMensais = (Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : [])
     .filter((r, index, arr) => r && arr.findIndex((x) => x?.periodo === r?.periodo) === index);
 
