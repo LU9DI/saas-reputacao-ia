@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { validarSenhaEmpresa } from '../passwordPolicy.js';
+import { validarSenhaEmpresa } from '../lib/passwordPolicy.js';
 
 describe('validarSenhaEmpresa', () => {
   it('rejeita senha curta', () => {

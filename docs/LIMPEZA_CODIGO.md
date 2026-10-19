@@ -1,68 +1,34 @@
-# Limpeza e organização no VS Code
+# Manutenção e organização do Filtra.AI
 
-## 1. Abrir a pasta certa
+## Estrutura
 
-Abra **somente a raiz** do repositório:
+- `backend/`: API Express, regras de negócio e testes.
+- `frontend/`: aplicação Next.js, páginas públicas e painel do cliente.
+- `docs/`: documentação funcional, técnica e operacional.
+- `infra/`: configurações específicas de infraestrutura.
 
-```text
-saas-reputacao-ia/     ← File → Open Folder aqui
-  backend/
-  frontend/
-  docs/
-  .vscode/
-```
+Abra a raiz do repositório no editor para manter os caminhos relativos e os scripts funcionando.
 
-Não abra `backend/` ou `frontend/` isolados.
+## Onde alterar
 
-## 2. Atualizar e remover cópia aninhada
+| Objetivo | Local canônico |
+|---|---|
+| Endpoint HTTP | `backend/routes/` e montagem em `backend/server.ts` |
+| Regra de negócio | `backend/services/` ou `backend/lib/` |
+| Middleware | `backend/middleware/` |
+| Interface do painel | `frontend/src/app/painel/[id]/` e componentes compartilhados |
+| Relatório Inteligente | componentes e dicionários usados pelo painel |
+| Traduções | `frontend/src/app/dictionaries/` |
 
-```bash
-git pull origin main
+## Higiene do repositório
 
-rm -rf backend/saas-reputacao-ia
-git submodule deinit -f backend/saas-reputacao-ia 2>/dev/null || true
-git rm -f backend/saas-reputacao-ia 2>/dev/null || true
-```
+- Use os módulos canônicos em `backend/lib/` e `backend/middleware/`; os antigos re-exports internos foram removidos quando não havia referências no projeto.
+- Não adicione dependências sem confirmar uso no código.
+- Mantenha `package.json` e `package-lock.json` sincronizados em cada diretório de aplicação.
+- Não versione `.env`, credenciais, bancos locais, logs, `node_modules`, `.next` ou artefatos de build.
+- Antes de remover rotas ou componentes, procure referências em páginas, links, scripts, workflows e testes.
+- Valide com `npm ci`, testes, typecheck e build aplicáveis antes de integrar uma limpeza.
 
-## 3. Limpar lixo local
+## Marca
 
-```bash
-rm -rf frontend/.next backend/dist
-# se precisar reinstalar:
-# rm -rf frontend/node_modules backend/node_modules
-# cd backend && npm install && cd ../frontend && npm install
-```
-
-Não commitar: `.env`, `*.sqlite`, `.aider*`, `node_modules/`.
-
-## 4. Explorer
-
-`.vscode/settings.json` oculta `node_modules`, `.next`, `*.sqlite`.
-
-Extensões: ESLint + Prettier (`.vscode/extensions.json`).
-
-## 5. Onde editar
-
-| Objetivo | Arquivo |
-|----------|---------|
-| Nova rota API | `backend/routes/*.ts` + montar em `server.ts` |
-| UI do painel | `frontend/src/app/painel/[id]/page.tsx` |
-| Relatório (canais) | `frontend/src/app/components/RelatorioInteligentePanel.tsx` |
-| Textos / idiomas | `frontend/src/app/dictionaries/*.json` |
-| Login | `frontend/src/app/login/page.tsx` |
-
-## 6. Legado (não expandir)
-
-- Re-exports: `backend/mailer.ts`, `authMiddleware.ts` → use `lib/` e `middleware/`
-
-## 7. Marca
-
-Sempre **Filtra.AI**.
-
-## Feito nesta limpeza
-
-- [x] README / STRUCTURE / docs com Filtra.AI
-- [x] `.vscode` settings + extensions
-- [x] `next.config` rewrite só em dev
-- [x] Dicionários PT/EN/ES/ZH com chaves do painel
-- [x] Geradores PDF removidos; endpoints legados respondem HTTP 410
+Use sempre **Filtra.AI**.

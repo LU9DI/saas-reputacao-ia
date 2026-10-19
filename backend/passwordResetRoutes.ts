@@ -8,7 +8,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import rateLimit from 'express-rate-limit';
 import { enviarEmail, smtpConfigured } from './lib/mailer.js';
-import { validarSenhaEmpresa } from './passwordPolicy.js';
+import { validarSenhaEmpresa } from './lib/passwordPolicy.js';
 
 const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
   /\/$/,
