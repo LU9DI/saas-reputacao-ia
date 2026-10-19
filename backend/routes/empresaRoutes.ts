@@ -32,6 +32,7 @@ import {
   getOrGenerateMonthlyReportSnapshot,
   previousMonthUtc,
 } from './monthlyReportJobsRoutes.js';
+import { adaptRelatorioProfissionalAoPlano } from '../services/relatorioProfissional.js';
 
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -791,7 +792,8 @@ export function mountEmpresaRoutes(app: Express) {
               try {
                 const report = JSON.parse(String(item.report_json || ''));
                 if (!report || report.empresa?.id !== String(empresa.id) || report.periodo !== String(item.periodo)) return [];
-                return [{ ...report, status_distribuicao: item.status, gerado_em: item.updated_at }];
+                const adapted = adaptRelatorioProfissionalAoPlano(report, planAtual);
+                return [{ ...adapted, status_distribuicao: item.status, gerado_em: item.updated_at }];
               } catch {
                 return [];
               }
