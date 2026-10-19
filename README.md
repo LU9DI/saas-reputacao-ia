@@ -59,17 +59,3 @@ cd backend && npm test
 
 Produção: [DEPLOY.md](DEPLOY.md) · [GO_LIVE.md](GO_LIVE.md)
 
-## Limpeza local
-
-Se ainda existir pasta duplicada:
-
-```bash
-# ver LIMPEZA_ESTRUTURA.md
-rm -rf backend/saas-reputacao-ia
-git pull origin main
-```
-
-No VS Code: abra a **raiz** do repo (`saas-reputacao-ia`), não uma subpasta. Settings em `.vscode/`.
-
-
-<!-- Vercel production deployment trigger: Filtra.AI SEO entity update -->

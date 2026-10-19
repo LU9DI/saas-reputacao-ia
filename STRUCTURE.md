@@ -40,11 +40,11 @@ saas-reputacao-ia/
 
 ## Não usar
 
-- Subpasta `backend/saas-reputacao-ia/` (cópia aninhada — ver `LIMPEZA_ESTRUTURA.md`)
+- Manter `backend/` e `frontend/` como diretórios irmãos na raiz.
 - Editar regra de negócio em `server.ts` — só bootstrap
 - Commitar `.env`, `*.sqlite`, `.aider*`
 
 ## Legado (ainda no repo, evitar expandir)
 
 - Relatórios: conteúdo inteligente em texto; endpoints PDF legados respondem HTTP 410
-- Re-exports na raiz do backend (`mailer.ts`, `authMiddleware.ts`) → preferir `lib/` e `middleware/`
+- Os módulos canônicos ficam em `backend/lib/` e `backend/middleware/`; re-exports internos sem uso foram removidos.
