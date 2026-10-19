@@ -74,7 +74,9 @@ function textOrFallback(value: unknown, fallback: string): string {
 function featuresForPlan(plan: string, limit: number, t: any) {
   const fb = textOrFallback(t.feat_feedbacks, '{n} feedbacks/mês').replace(
     '{n}',
-    limit.toLocaleString(undefined)
+    // Locale fixo: garante o mesmo texto no SSR (build) e no cliente,
+    // evitando mismatch de hidratação quando o runtime do build não é pt-BR.
+    limit.toLocaleString('pt-BR')
   );
   const wpp = textOrFallback(t.feat_wpp, 'WhatsApp integrado');
   const dashboard = textOrFallback(t.feat_basic_charts, 'Dashboard');
