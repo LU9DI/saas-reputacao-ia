@@ -133,6 +133,8 @@ describe('cache do relatório mensal sob demanda', () => {
     const build = async () => { buildCalls += 1; return fakeReport('novo'); };
     const first = await getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, { build });
     assert.equal(first.state, 'generated');
+    assert.equal(first.report.plano.codigo, 'pro');
+    assert.equal(Object.hasOwn(first.report, 'sentimento'), false);
     assert.equal(buildCalls, 1);
     const second = await getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, { build });
     assert.equal(second.state, 'cached');
@@ -187,6 +189,7 @@ describe('cache do relatório mensal sob demanda', () => {
       build: async () => fakeReport('recuperado'),
     });
     assert.equal(result.state, 'generated');
+    assert.equal(result.report.plano.codigo, 'pro');
     const row = db.rows.get(`e1|${periodo}`);
     assert.equal(row.status, 'accepted', 'status de entrega deve ser preservado');
     assert.equal(JSON.parse(row.report_json).origem, 'recuperado');
