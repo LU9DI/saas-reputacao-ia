@@ -92,7 +92,7 @@ export async function getOrGenerateMonthlyReportSnapshot(
     try {
       const report = JSON.parse(String(row.report_json));
       if (!report || report.empresa?.id !== empresaId || report.periodo !== periodo) return null;
-      return adaptRelatorioProfissionalAoPlano(report, empresa.plan);
+      return report.canais ? adaptRelatorioProfissionalAoPlano(report, empresa.plan) : report;
     } catch {
       return null;
     }
