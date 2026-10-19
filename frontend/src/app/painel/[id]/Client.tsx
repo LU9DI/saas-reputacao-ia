@@ -300,15 +300,18 @@ export default function PainelEmpresa() {
               <>
                 <button type="button" onClick={() => setUnidadesMenuOpen((open) => !open)} aria-expanded={unidadesMenuOpen} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-zinc-300 hover:bg-white/5 hover:text-white">
                   <Layers size={17} />
-                  <span className="flex-1">Gestão de unidades</span>
+                  <span className="flex-1">{t.panel_units_menu || 'Gestão de unidades'}</span>
                   {unidadesMenuOpen ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
                 </button>
                 {unidadesMenuOpen && (
                   <div className="ml-4 space-y-1 border-l border-white/10 pl-3">
-                    <a href="#unit-management" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">Unidades e links exclusivos</a>
-                    <a href="#unit-analysis" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">Ranking, temas e prioridades</a>
+                    <a href="#unit-management" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">{t.panel_units_menu_units || 'Unidades e links exclusivos'}</a>
+                    <a href="#unit-analysis" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">{t.panel_units_menu_analysis || 'Ranking, temas e prioridades'}</a>
                     {String(empresa.plan || '').toLowerCase() === 'rei' && (
-                      <a href="#rei-strategic-radar" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">Radar estratégico</a>
+                      <>
+                        <a href="#rei-strategic-radar" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">{t.panel_units_menu_radar || 'Radar estratégico'}</a>
+                        <a href="#rei-opportunities" className="block rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/5 hover:text-white">{t.panel_units_menu_opportunities || 'Oportunidades de crescimento'}</a>
+                      </>
                     )}
                   </div>
                 )}
@@ -440,7 +443,7 @@ export default function PainelEmpresa() {
               <div id="unit-analysis" className="scroll-mt-28">
               {nivel === 'executivo' && Array.isArray(metricas.unidades_ranking) && metricas.unidades_ranking.length > 0 && (
                 <section className="mt-5 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
-                  {String(empresa.plan || '').toLowerCase() === 'corporativo' && metricas.unidades_resumo && (
+                  {['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) && metricas.unidades_resumo && (
                     <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                       {[
                         ['Melhor unidade', metricas.unidades_resumo.melhor_unidade?.nome || '—', metricas.unidades_resumo.melhor_unidade?.nota ? String(metricas.unidades_resumo.melhor_unidade.nota) + '★' : ''],
@@ -463,7 +466,7 @@ export default function PainelEmpresa() {
                     </div>
                     <p className="text-xs text-zinc-500">Baseado nos feedbacks reais disponíveis no painel</p>
                   </div>
-                  {String(empresa.plan || '').toLowerCase() === 'corporativo' && Array.isArray(metricas.unidades_insights) && metricas.unidades_insights.length > 0 && (
+                  {['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) && Array.isArray(metricas.unidades_insights) && metricas.unidades_insights.length > 0 && (
                     <div className="mb-5 grid gap-3 lg:grid-cols-2">
                       {metricas.unidades_insights.filter((u: any) => u.pontos_fortes?.length || u.pontos_atencao?.length).map((u: any) => (
                         <div key={u.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
@@ -482,7 +485,7 @@ export default function PainelEmpresa() {
                       ))}
                     </div>
                   )}
-                  {String(empresa.plan || '').toLowerCase() === 'corporativo' && Array.isArray(metricas.prioridades_operacionais) && metricas.prioridades_operacionais.length > 0 && (
+                  {['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) && Array.isArray(metricas.prioridades_operacionais) && metricas.prioridades_operacionais.length > 0 && (
                     <div className="mb-5 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-4 sm:p-5">
                       <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                         <div>
@@ -595,7 +598,7 @@ export default function PainelEmpresa() {
                 </div>
 
                 {Array.isArray(metricas.oportunidades_estrategicas) && metricas.oportunidades_estrategicas.length > 0 && (
-                  <div className="mt-4 rounded-2xl border border-violet-400/10 bg-violet-400/[0.03] p-4">
+                  <div id="rei-opportunities" className="mt-4 scroll-mt-28 rounded-2xl border border-violet-400/10 bg-violet-400/[0.03] p-4">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                       <div>
                         <div className="text-sm font-semibold text-white">Top oportunidades estratégicas</div>
