@@ -151,8 +151,11 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
   const [selectedMonth, setSelectedMonth] = useState('');
   const lang = languageOf(languageName);
   const t = COPY[lang] || COPY.pt;
-  // A interface exibe apenas snapshots persistidos recebidos no payload do painel
-  // (ou recém-gerados pelo endpoint de cache). O conteúdo não varia por plano.
+  const planCode = String(empresa.plan || 'pro').trim().toLowerCase();
+  const hasAdvancedAnalysis = ['ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(planCode);
+  const hasUnitAnalysis = ['corporativo', 'corporate', 'corp', 'rei'].includes(planCode);
+  const hasStrategicAnalysis = planCode === 'rei';
+  // O snapshot é persistido; a interface revela apenas os módulos incluídos no plano.
   const savedReports = useMemo(
     () => monthlyReports
       .filter((r) => typeof r?.periodo === 'string' && r?.kpis && r?.empresa?.id === String(empresa.id || ''))
@@ -241,10 +244,10 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
           <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
             <h3 className="text-sm font-semibold text-white">{t.summary}</h3>
             <p className="mt-3 text-sm leading-6 text-zinc-300">{activeReport.resumo_executivo || '—'}</p>
-            {activeReport.narrativa?.por_que_importa && <p className="mt-3 text-sm leading-6 text-zinc-400">{activeReport.narrativa.por_que_importa}</p>}
+            {hasAdvancedAnalysis && activeReport.narrativa?.por_que_importa && <p className="mt-3 text-sm leading-6 text-zinc-400">{activeReport.narrativa.por_que_importa}</p>}
           </article>
           <div className="grid gap-4 lg:grid-cols-2">
-            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+            {hasAdvancedAnalysis && <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.sentiment}</h3>
               <div className="mt-3 grid grid-cols-3 gap-2">
                 {[[t.positive, activeReport.sentimento?.positivo || 0], [t.neutral, activeReport.sentimento?.neutro || 0], [t.negative, activeReport.sentimento?.negativo || 0]].map(([name, count]) => (
@@ -265,7 +268,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
                   ))}
                 </ul>
               ) : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}
-            </article>
+            </article>}
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.action}</h3>
               {activeReport.recomendacoes?.length ? (
@@ -275,7 +278,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
                   ))}
                 </ul>
               ) : <p className="mt-3 text-sm text-zinc-400">{t.noRecommendations}</p>}
-              {(activeReport.riscos?.length || 0) > 0 && (
+              {hasAdvancedAnalysis && (activeReport.riscos?.length || 0) > 0 && (
                 <>
                   <h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-amber-300">{t.attention}</h4>
                   <ul className="mt-2 space-y-2">
@@ -290,7 +293,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
               )}
             </article>
           </div>
-          {(activeReport.ranking_unidades?.length || 0) > 0 && (
+          {hasUnitAnalysis && (activeReport.ranking_unidades?.length || 0) > 0 && (
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.units}</h3>
               <div className="mt-3 space-y-2">
@@ -304,7 +307,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
               </div>
             </article>
           )}
-          {(activeReport.prioridades_operacionais?.length || 0) > 0 && (
+          {hasUnitAnalysis && (activeReport.prioridades_operacionais?.length || 0) > 0 && (
             <article className="rounded-2xl border border-amber-400/10 bg-amber-400/[0.02] p-5">
               <h3 className="text-sm font-semibold text-white">{t.priorities}</h3>
               <div className="mt-3 space-y-3">
@@ -318,7 +321,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
               </div>
             </article>
           )}
-          {hasRadarSection && (
+          {hasStrategicAnalysis && hasRadarSection && (
             <article className="rounded-2xl border border-violet-400/15 bg-violet-400/[0.03] p-5">
               <h3 className="text-sm font-semibold text-white">{t.strategicRadar}</h3>
               {strategicRadar.length ? (
