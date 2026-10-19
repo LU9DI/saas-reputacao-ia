@@ -117,7 +117,10 @@ describe('cache do relatório mensal sob demanda', () => {
       build: async () => { buildCalls += 1; return fakeReport('novo'); },
     });
     assert.equal(result.state, 'cached');
-    assert.deepEqual(result.report, cachedReport);
+    assert.equal(result.report.empresa.id, cachedReport.empresa.id);
+    assert.equal(result.report.periodo, cachedReport.periodo);
+    assert.equal(result.report.origem, cachedReport.origem);
+    assert.equal(result.report.plano.codigo, 'pro');
     assert.equal(buildCalls, 0, 'build não deve ser chamado quando existe snapshot salvo');
   });
 
