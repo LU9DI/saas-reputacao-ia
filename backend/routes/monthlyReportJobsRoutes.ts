@@ -34,7 +34,7 @@ export function hasUnresolvedMonthlyReport(
   const updated = new Date(String(updatedAt || '')).getTime();
   return Number.isFinite(updated) && now.getTime() - updated >= 30 * 60 * 1000;
 }
-function previousMonthUtc(): string {
+export function previousMonthUtc(): string {
   const date = new Date();
   date.setUTCDate(1);
   date.setUTCMonth(date.getUTCMonth() - 1);
@@ -59,7 +59,116 @@ export async function resolveMonthlyReportRecipients(db: any, empresaId: string,
   return destinatarios;
 }
 
-async function ensureMonthlyReportSchema(db: any) {
+const SNAPSHOT_STALE_MS = 30 * 60 * 1000;
+
+export type MonthlyReportSnapshotResult = {
+  state: 'cached' | 'generated' | 'generating';
+  report?: any;
+};
+
+/**
+ * Relatório mensal sob demanda com cache por ciclo (empresa + mês).
+ * - Snapshot existente: devolvido sem novo consumo de IA (reaberturas/downloads ilimitados).
+ * - Primeira leitura do ciclo: gera uma única vez e persiste para as próximas.
+ * - Geração concorrente: devolve `generating` sem duplicar custo.
+ */
+export async function getOrGenerateMonthlyReportSnapshot(
+  db: any,
+  empresa: any,
+  periodo: string,
+  opts?: {
+    locale?: string | null;
+    build?: typeof buildRelatorioProfissional;
+  },
+): Promise<MonthlyReportSnapshotResult> {
+  const build = opts?.build || buildRelatorioProfissional;
+  const empresaId = String(empresa.id);
+  const readRow = () => db.get(
+    'SELECT status, report_json, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?',
+    [empresaId, periodo],
+  ) as Promise<any>;
+  const parseReport = (row: any) => {
+    if (!row?.report_json) return null;
+    try {
+      const report = JSON.parse(String(row.report_json));
+      if (!report || report.empresa?.id !== empresaId || report.periodo !== periodo) return null;
+      return report;
+    } catch {
+      return null;
+    }
+  };
+
+  const existing = await readRow();
+  const cached = parseReport(existing);
+  if (cached) return { state: 'cached', report: cached };
+
+  // Reserva antiga aceita pela distribuição mas sem snapshot: apenas completa o conteúdo,
+  // preservando o estado de entrega.
+  if (existing && String(existing.status) === 'accepted') {
+    const report = await build(db, empresa, periodo, opts?.locale || null);
+    const saved = await db.run(
+      `UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ?
+       WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL`,
+      [JSON.stringify(report), new Date().toISOString(), empresaId, periodo],
+    );
+    if (Number(saved?.changes || 0) > 0) return { state: 'generated', report };
+    const again = parseReport(await readRow());
+    return again ? { state: 'cached', report: again } : { state: 'generating' };
+  }
+
+  const now = new Date().toISOString();
+  let reservationCreated = false;
+  try {
+    const inserted = await db.run(
+      `INSERT INTO relatorio_envios_mensais (id, empresa_id, periodo, status, destinatarios_json, created_at, updated_at, tentativas)
+       VALUES (?, ?, ?, 'processing', '[]', ?, ?, 1)
+       ON CONFLICT (empresa_id, periodo) DO NOTHING`,
+      [randomUUID(), empresaId, periodo, now, now],
+    );
+    reservationCreated = Number(inserted?.changes || 0) > 0;
+  } catch (error: any) {
+    throw new Error('Falha ao reservar o ciclo do relatório mensal: ' + String(error?.message || error));
+  }
+
+  if (!reservationCreated) {
+    const row = await readRow();
+    const report = parseReport(row);
+    if (report) return { state: 'cached', report };
+    const updatedMs = Date.parse(String(row?.updated_at || ''));
+    const stale = String(row?.status) === 'processing' && Number.isFinite(updatedMs) && Date.now() - updatedMs >= SNAPSHOT_STALE_MS;
+    if (String(row?.status) === 'processing' && !stale) return { state: 'generating' };
+    if (!['failed', 'generated'].includes(String(row?.status || '')) && !stale) return { state: 'generating' };
+    const expectedStatus = stale ? 'processing' : String(row?.status);
+    const retry = await db.run(
+      `UPDATE relatorio_envios_mensais SET status = 'processing', updated_at = ?, erro = NULL, tentativas = tentativas + 1
+       WHERE empresa_id = ? AND periodo = ? AND status = ? AND updated_at = ?`,
+      [now, empresaId, periodo, expectedStatus, String(row?.updated_at || '')],
+    );
+    if (Number(retry?.changes || 0) <= 0) return { state: 'generating' };
+  }
+
+  let report: any;
+  try {
+    report = await build(db, empresa, periodo, opts?.locale || null);
+  } catch (error: any) {
+    await db.run(
+      `UPDATE relatorio_envios_mensais SET status = 'failed', updated_at = ?, erro = ?
+       WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`,
+      [new Date().toISOString(), String(error?.message || error).slice(0, 500), empresaId, periodo],
+    ).catch(() => { /* preserva o erro original */ });
+    throw error;
+  }
+  const saved = await db.run(
+    `UPDATE relatorio_envios_mensais SET report_json = ?, status = 'generated', updated_at = ?, erro = NULL
+     WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`,
+    [JSON.stringify(report), new Date().toISOString(), empresaId, periodo],
+  );
+  if (Number(saved?.changes || 0) > 0) return { state: 'generated', report };
+  const again = parseReport(await readRow());
+  return again ? { state: 'cached', report: again } : { state: 'generating' };
+}
+
+export async function ensureMonthlyReportSchema(db: any) {
   try { await db.exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS relatorio_destinatarios TEXT'); }
   catch { try { await db.exec('ALTER TABLE empresas ADD COLUMN relatorio_destinatarios TEXT'); } catch { /* coluna já existe ou engine não permite */ } }
   try { await db.exec('ALTER TABLE empresas ADD COLUMN IF NOT EXISTS relatorio_dia_assinatura INTEGER'); }

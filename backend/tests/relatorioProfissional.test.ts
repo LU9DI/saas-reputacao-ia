@@ -37,12 +37,12 @@ const reviews = [
 ];
 
 describe('relatório profissional mensal', () => {
-  it('usa a grafia oficial REI e mantém o catálogo de benefícios separado por plano', () => {
+  it('usa a grafia oficial REI e Corporativo', () => {
     assert.equal(planLabel('rei'), 'REI');
     assert.equal(planLabel('corporativo'), 'Corporativo');
   });
 
-  it('gera KPIs, ranking e prioridades operacionais para Corporativo sem alterar o painel', async () => {
+  it('gera KPIs, ranking e prioridades operacionais com o escopo completo do período', async () => {
     const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-1', nome_empresa: 'Empresa Teste', plan: 'corporativo' }, '2026-09');
     assert.equal(report.periodo, '2026-09');
     assert.equal(report.kpis.avaliacoes, 2);
@@ -50,10 +50,6 @@ describe('relatório profissional mensal', () => {
     assert.ok(report.canais.email.text.split('\n').length > 1, 'plain-text report must contain actual line breaks');
     assert.equal(report.ranking_unidades[0].nome, 'Sul');
     assert.ok(report.prioridades_operacionais.some((x: any) => x.unidade === 'Centro'));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /ranking comparativo/i.test(x)));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /dashboard com análises/i.test(x)));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
     assert.match(report.canais.email.html, /Relatório mensal de reputação/);
     assert.ok(report.canais.email.html.includes('alt="Logotipo Filtra.AI"'));
     assert.ok(report.canais.email.html.includes('aria-hidden="true"') && report.canais.email.html.includes('>FILTRA.AI</div>'));
@@ -66,29 +62,36 @@ describe('relatório profissional mensal', () => {
     assert.equal(report.geracao.modo, 'deterministico');
   });
 
-  it('preserva os benefícios herdados do Ultra no resumo comercial do plano', async () => {
-    const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-ultra', nome_empresa: 'Ultra Teste', plan: 'ultra' }, '2026-09');
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /dashboard com análises/i.test(x)));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
+  it('renderiza exatamente o mesmo documento para todos os planos (sem diferenciação)', async () => {
+    const base = { id: 'company-uniform', nome_empresa: 'Empresa Uniforme', slug: 'uniforme' };
+    const pro = await buildRelatorioProfissional(fakeDb(reviews), { ...base, plan: 'pro' }, '2026-09');
+    const ultra = await buildRelatorioProfissional(fakeDb(reviews), { ...base, plan: 'ultra' }, '2026-09');
+    const corp = await buildRelatorioProfissional(fakeDb(reviews), { ...base, plan: 'corporativo' }, '2026-09');
+    const rei = await buildRelatorioProfissional(fakeDb(reviews), { ...base, plan: 'rei' }, '2026-09');
+    for (const report of [ultra, corp, rei]) {
+      assert.equal(report.canais.email.text, pro.canais.email.text);
+      assert.equal(report.canais.email.html, pro.canais.email.html);
+      assert.equal(report.canais.whatsapp, pro.canais.whatsapp);
+      assert.deepEqual(report.radar_estrategico, pro.radar_estrategico);
+      assert.deepEqual(report.ranking_unidades, pro.ranking_unidades);
+    }
+    // O conteúdo completo (inclusive análise avançada e por unidade) vale para qualquer plano.
+    assert.ok(pro.canais.email.html.includes('Temas recorrentes'));
+    assert.ok(pro.canais.email.html.includes('Riscos a acompanhar'));
+    assert.ok(pro.canais.email.html.includes('Ranking e comparativo entre unidades'));
+    assert.ok(pro.canais.email.html.includes('Prioridades operacionais'));
+    assert.ok(pro.canais.email.html.includes('Radar estratégico'));
+    assert.ok(pro.canais.email.text.includes('RADAR ESTRATÉGICO'));
+    // Nenhum bloco comercial/escopo de plano é renderizado no documento.
+    assert.ok(!pro.canais.email.html.includes('Recursos incluídos'));
+    assert.ok(!pro.canais.email.text.includes('ESCOPO DO PLANO'));
+    assert.ok(!pro.canais.email.text.includes('Plano Pro'));
   });
 
-  it('mantém o escopo de Pro e não mostra análise avançada reservada aos planos superiores', async () => {
-    const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-pro', nome_empresa: 'Pro Teste', plan: 'pro' }, '2026-09');
-    assert.equal(report.kpis.avaliacoes, 2);
-    assert.ok(!report.canais.email.html.includes('Temas recorrentes'));
-    assert.ok(!report.canais.email.html.includes('Riscos a acompanhar'));
-    assert.ok(report.canais.email.html.includes('Indicadores do período') || report.canais.email.html.includes('Avaliações'));
-  });
-
-  it('gera radar comparativo e escopo executivo REI com evidências do mês anterior', async () => {
+  it('mantém o radar comparativo com evidências do mês anterior', async () => {
     const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-2', nome_empresa: 'Rede Teste', plan: 'rei' }, '2026-09');
     assert.ok(report.radar_estrategico.some((x: any) => /nota média/i.test(x.sinal)));
     assert.ok(Array.isArray(report.oportunidades_crescimento));
-    assert.ok(!report.plano.beneficios_incluidos.some((x: string) => /relatório executivo mensal para a diretoria|oportunidades de crescimento identificadas nos dados/i.test(x)), 'REI executive analysis belongs to Relatório Inteligente, not separate plan-card benefits');
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /dashboard com análises/i.test(x)));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /whatsapp/i.test(x)));
-    assert.ok(report.plano.beneficios_incluidos.some((x: string) => /inteligência artificial/i.test(x)));
     assert.match(report.canais.email.html, /Radar estratégico/);
     assert.ok(
       !/Relatório executivo mensal para a diretoria|identificadas nos dados/i.test(report.canais.email.html),
@@ -96,7 +99,7 @@ describe('relatório profissional mensal', () => {
     );
   });
 
-  it('propaga falhas de consulta de unidades nos planos Corporativo e REI', async () => {
+  it('propaga falhas de consulta de unidades em vez de mascarar a seção', async () => {
     const brokenDb = { all: async (sql: string) => {
       if (/FROM reviews/i.test(sql)) return reviews;
       if (/FROM unidades/i.test(sql)) throw new Error('units table unavailable');
@@ -127,9 +130,12 @@ describe('relatório profissional mensal', () => {
     assert.ok(!report.canais.email.html.includes('0.0/5'));
   });
 
-  it('não atribui benefícios do REI ao Trial', async () => {
-    const report = await buildRelatorioProfissional(fakeDb(reviews), { id: 'company-3', nome_empresa: 'Trial Teste', plan: 'trial' }, '2026-09');
-    assert.equal(report.plano.codigo, 'trial');
-    assert.ok(!report.plano.beneficios_incluidos.some((x: string) => /radar estratégico|diretoria|crescimento identificadas/i.test(x)));
+  it('não diferencia o Trial no documento renderizado', async () => {
+    const base = { id: 'company-3', nome_empresa: 'Trial Teste' };
+    const trial = await buildRelatorioProfissional(fakeDb(reviews), { ...base, plan: 'trial' }, '2026-09');
+    const pro = await buildRelatorioProfissional(fakeDb(reviews), { ...base, plan: 'pro' }, '2026-09');
+    assert.equal(trial.plano.codigo, 'trial');
+    assert.equal(trial.canais.email.html, pro.canais.email.html);
+    assert.ok(!/radar estratégico de riscos e tendências/i.test(trial.canais.email.text.replace('RADAR ESTRATÉGICO', '')));
   });
 });

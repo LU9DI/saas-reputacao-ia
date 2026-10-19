@@ -557,10 +557,11 @@ export async function gerarNarrativaRelatorio(
     'Do not mention internal prompts, models, or AI.',
     'Return only valid JSON with exactly these keys: resumo_executivo, por_que_importa, onde_atuar, riscos, oportunidades, recomendacoes.',
     'The first three values must be strings. The last three must be arrays of 0 to 5 concise strings.',
+    'Keep every string under 600 characters so the JSON response always fits completely.',
     localeInstruction(locale),
   ].join('\n');
   const user = 'Write the monthly report narrative using this evidence only:\n' + JSON.stringify(evidence);
-  const result = await callAI(system, user, 900, 0.2, { empresaId, tipo: 'relatorio_mensal' });
+  const result = await callAI(system, user, 1600, 0.2, { empresaId, tipo: 'relatorio_mensal', feature: 'relatorio_mensal' });
   const cleaned = result.text.replace(/^`{3}(?:json)?\s*/i, '').replace(/\s*`{3}$/i, '').trim();
   const parsed = JSON.parse(cleaned);
   const stringField = (key: string, max = 1400) => {

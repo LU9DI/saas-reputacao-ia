@@ -14,6 +14,7 @@ import {
   planLabel,
   isTrialPlan,
   isPlanoOficial,
+  planTemRelatorioMensal,
 } from '../lib/plans.js';
 import {
   planTemIA,
@@ -26,6 +27,11 @@ import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
 import { ensureUnidadesSchema } from '../lib/unidades.js';
 import { loadCompanyReviewsCached } from '../services/companyReviewsCache.js';
+import {
+  ensureMonthlyReportSchema,
+  getOrGenerateMonthlyReportSnapshot,
+  previousMonthUtc,
+} from './monthlyReportJobsRoutes.js';
 
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -573,6 +579,7 @@ function emptyPainelPayload(empresa: any, reason?: string) {
         ? PLANOS_OFICIAIS.map((p) => ({ key: p, label: planLabel(p) }))
         : [],
       mostrar_graficos: true,
+      mostrar_relatorio_mensal: planTemRelatorioMensal(plan),
       mostrar_tendencia: trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
       mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo'),
       mostrar_crise: true,
@@ -771,7 +778,7 @@ export function mountEmpresaRoutes(app: Express) {
 
         // Pre-generated monthly snapshots are returned with the existing panel payload.
         let relatoriosProfissionaisMensais: any[] = [];
-        if (['pro', 'ultra', 'corporativo', 'corporate', 'corp', 'rei'].includes(planAtual)) {
+        if (planTemRelatorioMensal(planAtual)) {
           try {
             const savedReports = await db.all(
               `SELECT periodo, report_json, status, updated_at
@@ -1002,6 +1009,7 @@ export function mountEmpresaRoutes(app: Express) {
               ? PLANOS_OFICIAIS.map((p) => ({ key: p, label: planLabel(p) }))
               : [],
             mostrar_graficos: true,
+      mostrar_relatorio_mensal: planTemRelatorioMensal(plan),
             mostrar_tendencia: trial || nivel === 'pro' || nivel === 'ultra' || nivel === 'executivo',
             mostrar_tags: tem_ia && (trial || nivel === 'ultra' || nivel === 'executivo'),
             mostrar_crise: true,
@@ -1032,6 +1040,57 @@ export function mountEmpresaRoutes(app: Express) {
       } catch (e: any) {
         console.error('painel error:', e?.message || e);
         return res.json(emptyPainelPayload(empresa, e?.message || 'degraded'));
+      }
+    })
+  );
+
+  // Relatório mensal profissional sob demanda: a primeira leitura do ciclo gera e
+  // persiste o snapshot; reaberturas e downloads ilimitados usam o cache (sem IA).
+  app.post(
+    '/api/empresa/:ref/relatorio-mensal',
+    autenticarToken,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+      const empresa = await findEmpresa(req.params.ref);
+      if (!empresa) {
+        return res.status(404).json({ error: 'Empresa não encontrada.' });
+      }
+      if (!podeGerirEmpresa(req, empresa.id)) {
+        return res.status(403).json({
+          error: 'Sem permissão. Faça login com a conta desta empresa.',
+          code: 'FORBIDDEN_PAINEL',
+        });
+      }
+      const plan = String(empresa.plan || '').toLowerCase();
+      if (!planTemRelatorioMensal(plan)) {
+        return res.status(403).json({
+          error: 'O relatório mensal não está incluído neste plano.',
+          code: 'REPORT_NOT_INCLUDED',
+        });
+      }
+      const periodo = previousMonthUtc();
+      try {
+        const db = getDb();
+        await ensureMonthlyReportSchema(db);
+        const result = await getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, {
+          locale: empresa.locale || empresa.idioma || empresa.language || 'pt',
+        });
+        if (result.state === 'generating') {
+          return res
+            .status(202)
+            .json({ success: false, status: 'generating', periodo, retry_after_ms: 3000 });
+        }
+        return res.json({
+          success: true,
+          cached: result.state === 'cached',
+          periodo,
+          report: result.report,
+        });
+      } catch (e: any) {
+        console.error('relatorio mensal on-demand:', e?.message || e);
+        return res.status(500).json({
+          error: 'Não foi possível gerar o relatório mensal agora. Tente novamente em instantes.',
+          code: 'MONTHLY_REPORT_FAILED',
+        });
       }
     })
   );

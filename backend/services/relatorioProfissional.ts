@@ -7,7 +7,6 @@
  */
 import type { Database } from 'sqlite';
 import { planLabel, PLANOS_OFICIAIS } from '../lib/plans.js';
-import { planTemIA, assertEmpresaTokenQuota } from '../lib/quota.js';
 import { aiConfigured, gerarNarrativaRelatorio } from '../groqService.js';
 import { loadCompanyReviewsCached } from './companyReviewsCache.js';
 
@@ -189,14 +188,15 @@ function channelTexts(report: any) {
   const themes = [...(report.temas?.atencao || []), ...(report.temas?.positivos || [])].slice(0, 8);
   const units = (report.unidades || []).slice().sort((a: any, b: any) => a.nota_media - b.nota_media);
   const recs = report.recomendacoes || [];
-  const planCode = String(report.plano.codigo || 'pro');
-  const hasAdvancedAnalysis = ['ultra', 'corporativo', 'rei'].includes(planCode);
-  const hasUnitAnalysis = ['corporativo', 'rei'].includes(planCode);
-  const hasStrategicAnalysis = planCode === 'rei';
+  // Relatório unificado: as seções abaixo dependem apenas dos dados do período
+  // e nunca variam conforme o plano contratado.
+  const hasAdvancedAnalysis = true;
+  const hasUnitAnalysis = true;
+  const hasStrategicAnalysis = true;
   const averageLabel = k.avaliacoes ? Number(k.nota_media).toFixed(1) + '/5' : '—';
   const textParts = [
     'FILTRA.AI | RELATÓRIO MENSAL DE REPUTAÇÃO',
-    report.empresa.nome + ' · ' + report.periodo + ' · Plano ' + report.plano.nome,
+    report.empresa.nome + ' · ' + report.periodo,
     '', 'RESUMO EXECUTIVO', report.resumo_executivo,
     '', 'INDICADORES DO PERÍODO',
     'Avaliações: ' + k.avaliacoes + ' | Nota média: ' + averageLabel + ' | Positivas: ' + k.percentual_positivas + '% | Críticas (≤3★): ' + k.criticas,
@@ -209,14 +209,13 @@ function channelTexts(report: any) {
   if (hasUnitAnalysis && units.length) textParts.push('', 'RANKING DAS UNIDADES', (report.ranking_unidades || units).map((u: any) => '• ' + (u.posicao ? u.posicao + 'º — ' : '') + u.nome + ': média ' + Number(u.nota_media).toFixed(1) + ', ' + u.avaliacoes + ' avaliações').join('\n'));
   if (hasUnitAnalysis && report.prioridades_operacionais?.length) textParts.push('', 'PRIORIDADES OPERACIONAIS', report.prioridades_operacionais.map((x: any) => '• [' + x.prioridade.toUpperCase() + '] ' + x.unidade + ': ' + x.evidencia + ' Ação: ' + x.acao_recomendada).join('\n'));
   if (hasStrategicAnalysis && report.radar_estrategico?.length) textParts.push('', 'RADAR ESTRATÉGICO', report.radar_estrategico.map((x: any) => '• ' + x.sinal + ': ' + x.evidencia + ' Ação: ' + x.acao).join('\n'));
-  textParts.push('', 'ESCOPO DO PLANO ' + String(report.plano.nome).toUpperCase(), report.plano.beneficios_incluidos.map((x: string) => '• ' + x).join('\n'));
   textParts.push('', 'Metodologia: análise baseada nas avaliações válidas registradas no período. Os sinais apontam temas a investigar e não comprovam, isoladamente, relações de causa e efeito.');
   const text = textParts.join('\n');
   const cards = [[String(k.avaliacoes), 'Avaliações'], [averageLabel, 'Nota média'], [String(k.percentual_positivas) + '%', 'Positivas'], [String(k.criticas), 'Críticas (≤3★)']];
   const cardsHtml = cards.map(([value, label]) => '<td style="width:25%;padding:6px"><div style="background:#f3f6fb;border:1px solid #e0e7f0;border-radius:8px;padding:14px"><div style="font-size:22px;font-weight:700;color:#183b62">' + escapeHtml(value) + '</div><div style="font-size:12px;color:#64748b;margin-top:5px">' + escapeHtml(label) + '</div></div></td>').join('');
   const section = (title: string, body: string) => '<h2 style="font-size:17px;color:#12304a;margin:26px 0 8px">' + title + '</h2>' + body;
   const printStyles = '<style>@page{size:A4;margin:14mm}html,body{margin:0;padding:0;background:#fff!important;color:#172033;-webkit-print-color-adjust:exact;print-color-adjust:exact}article{max-width:none!important;margin:0!important;border:0!important;border-radius:0!important;overflow:visible!important}header{break-inside:avoid;page-break-inside:avoid}h1,h2,h3{break-after:avoid-page;page-break-after:avoid}h2{margin-top:18px!important}p,li{orphans:3;widows:3}tr,td,th{break-inside:avoid;page-break-inside:avoid}table{max-width:100%;break-inside:auto;page-break-inside:auto}main{overflow:visible!important;padding:8mm!important}.report-shell{background:#fff!important;padding:0!important}.report-watermark{position:fixed!important;top:45%!important;left:8%!important;opacity:.045!important}img{max-width:100%}</style>';
-  const html = printStyles + '<div class="report-shell" style="background:#f3f6fb;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#172033"><article style="max-width:760px;margin:auto;background:#fff;border:1px solid #e0e7f0;border-radius:12px;overflow:hidden"><header style="background:#11243b;padding:28px 30px;color:#fff"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><img src="https://filtraai.com/icons/icon-512.png" alt="Logotipo Filtra.AI" width="44" height="44" style="display:block;width:44px;height:44px;object-fit:contain;border-radius:10px;background:#fff;padding:4px"/><div style="font-size:12px;letter-spacing:1.4px;color:#b9d5ff">FILTRA.AI · INTELIGÊNCIA DE REPUTAÇÃO</div></div><h1 style="font-size:25px;line-height:1.25;margin:12px 0 8px">Relatório mensal de reputação</h1><p style="margin:0;color:#d8e5f5">' + escapeHtml(report.empresa.nome) + ' · ' + escapeHtml(report.periodo) + ' · Plano ' + escapeHtml(report.plano.nome) + '</p></header><main style="padding:26px 30px;position:relative;overflow:hidden"><div class="report-watermark" aria-hidden="true" style="position:absolute;top:42%;left:5%;transform:rotate(-28deg);font-size:58px;font-weight:800;letter-spacing:8px;color:#12304a;opacity:.055;white-space:nowrap;pointer-events:none;z-index:0">FILTRA.AI</div><div style="position:relative;z-index:1">' + section('Resumo executivo', '<p style="font-size:15px;line-height:1.65">' + escapeHtml(report.resumo_executivo) + '</p>') + section('Indicadores do período', '<p style="font-size:12px;color:#64748b;line-height:1.5;margin:0">Os indicadores abaixo resumem o volume, a nota média e a proporção de avaliações positivas e críticas do mês.</p>') + '<table role="presentation" style="width:100%;border-collapse:separate;margin:18px 0"><tr>' + cardsHtml + '</tr></table>' + (hasAdvancedAnalysis ? section('Por que isso importa', '<p style="line-height:1.65">' + escapeHtml(report.narrativa.por_que_importa) + '</p>') + section('Onde atuar', '<p style="line-height:1.65">' + escapeHtml(report.narrativa.onde_atuar) + '</p>') + section('Temas recorrentes', li(themes, (x: any) => '<li><strong>' + escapeHtml(x.tema) + '</strong> — ' + Number(x.volume) + ' ocorrência(s)</li>')) + section('Riscos a acompanhar', li(report.riscos || [], (x: any) => '<li><strong>' + escapeHtml(x.titulo) + '</strong> — ' + escapeHtml(x.evidencias) + '</li>')) + section('Oportunidades', li(report.oportunidades || [], (x: any) => '<li><strong>' + escapeHtml(x.titulo) + '</strong> — ' + escapeHtml(x.evidencias) + (x.acao_recomendada ? '<br/>Ação recomendada: ' + escapeHtml(x.acao_recomendada) : '') + '</li>')) + section('Plano de ação recomendado', li(recs, (x: string) => '<li>' + escapeHtml(x) + '</li>')) : '')+ (hasUnitAnalysis && units.length ? section('Ranking e comparativo entre unidades', '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th align="left" style="padding:9px;border-bottom:1px solid #dbe3ee">Unidade</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Média</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Avaliações</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Críticas</th></tr></thead><tbody>' + (report.ranking_unidades || units).map((u: any) => '<tr><td style="padding:9px;border-bottom:1px solid #edf1f6">' + (u.posicao ? u.posicao + 'º — ' : '') + escapeHtml(u.nome) + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + Number(u.nota_media).toFixed(1) + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + u.avaliacoes + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + u.criticas + '</td></tr>').join('') + '</tbody></table>') : '') + (hasUnitAnalysis && report.prioridades_operacionais?.length ? section('Prioridades operacionais', li(report.prioridades_operacionais, (x: any) => '<li><strong>' + escapeHtml(x.prioridade.toUpperCase() + ' · ' + x.unidade) + '</strong> — ' + escapeHtml(x.evidencia) + '<br/>Ação recomendada: ' + escapeHtml(x.acao_recomendada) + '</li>')) : '') + (hasStrategicAnalysis && report.radar_estrategico?.length ? section('Radar estratégico', li(report.radar_estrategico, (x: any) => '<li><strong>' + escapeHtml(x.sinal) + '</strong> — ' + escapeHtml(x.evidencia) + '<br/>Ação recomendada: ' + escapeHtml(x.acao) + '</li>')) : '') + section('Recursos incluídos no plano ' + escapeHtml(report.plano.nome), li(report.plano.beneficios_incluidos, (x: string) => '<li>' + escapeHtml(x) + '</li>')) + '<p style="font-size:11px;color:#64748b;border-top:1px solid #e0e7f0;padding-top:16px;margin-top:28px">Análise baseada nas avaliações válidas registradas no período. Os sinais indicam pontos a investigar e não comprovam, isoladamente, relações de causa e efeito.</p></div></main></article></div>';
+  const html = printStyles + '<div class="report-shell" style="background:#f3f6fb;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#172033"><article style="max-width:760px;margin:auto;background:#fff;border:1px solid #e0e7f0;border-radius:12px;overflow:hidden"><header style="background:#11243b;padding:28px 30px;color:#fff"><div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><img src="https://filtraai.com/icons/icon-512.png" alt="Logotipo Filtra.AI" width="44" height="44" style="display:block;width:44px;height:44px;object-fit:contain;border-radius:10px;background:#fff;padding:4px"/><div style="font-size:12px;letter-spacing:1.4px;color:#b9d5ff">FILTRA.AI · INTELIGÊNCIA DE REPUTAÇÃO</div></div><h1 style="font-size:25px;line-height:1.25;margin:12px 0 8px">Relatório mensal de reputação</h1><p style="margin:0;color:#d8e5f5">' + escapeHtml(report.empresa.nome) + ' · ' + escapeHtml(report.periodo) + '</p></header><main style="padding:26px 30px;position:relative;overflow:hidden"><div class="report-watermark" aria-hidden="true" style="position:absolute;top:42%;left:5%;transform:rotate(-28deg);font-size:58px;font-weight:800;letter-spacing:8px;color:#12304a;opacity:.055;white-space:nowrap;pointer-events:none;z-index:0">FILTRA.AI</div><div style="position:relative;z-index:1">' + section('Resumo executivo', '<p style="font-size:15px;line-height:1.65">' + escapeHtml(report.resumo_executivo) + '</p>') + section('Indicadores do período', '<p style="font-size:12px;color:#64748b;line-height:1.5;margin:0">Os indicadores abaixo resumem o volume, a nota média e a proporção de avaliações positivas e críticas do mês.</p>') + '<table role="presentation" style="width:100%;border-collapse:separate;margin:18px 0"><tr>' + cardsHtml + '</tr></table>' + (hasAdvancedAnalysis ? section('Por que isso importa', '<p style="line-height:1.65">' + escapeHtml(report.narrativa.por_que_importa) + '</p>') + section('Onde atuar', '<p style="line-height:1.65">' + escapeHtml(report.narrativa.onde_atuar) + '</p>') + section('Temas recorrentes', li(themes, (x: any) => '<li><strong>' + escapeHtml(x.tema) + '</strong> — ' + Number(x.volume) + ' ocorrência(s)</li>')) + section('Riscos a acompanhar', li(report.riscos || [], (x: any) => '<li><strong>' + escapeHtml(x.titulo) + '</strong> — ' + escapeHtml(x.evidencias) + '</li>')) + section('Oportunidades', li(report.oportunidades || [], (x: any) => '<li><strong>' + escapeHtml(x.titulo) + '</strong> — ' + escapeHtml(x.evidencias) + (x.acao_recomendada ? '<br/>Ação recomendada: ' + escapeHtml(x.acao_recomendada) : '') + '</li>')) + section('Plano de ação recomendado', li(recs, (x: string) => '<li>' + escapeHtml(x) + '</li>')) : '')+ (hasUnitAnalysis && units.length ? section('Ranking e comparativo entre unidades', '<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th align="left" style="padding:9px;border-bottom:1px solid #dbe3ee">Unidade</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Média</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Avaliações</th><th align="right" style="padding:9px;border-bottom:1px solid #dbe3ee">Críticas</th></tr></thead><tbody>' + (report.ranking_unidades || units).map((u: any) => '<tr><td style="padding:9px;border-bottom:1px solid #edf1f6">' + (u.posicao ? u.posicao + 'º — ' : '') + escapeHtml(u.nome) + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + Number(u.nota_media).toFixed(1) + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + u.avaliacoes + '</td><td align="right" style="padding:9px;border-bottom:1px solid #edf1f6">' + u.criticas + '</td></tr>').join('') + '</tbody></table>') : '') + (hasUnitAnalysis && report.prioridades_operacionais?.length ? section('Prioridades operacionais', li(report.prioridades_operacionais, (x: any) => '<li><strong>' + escapeHtml(x.prioridade.toUpperCase() + ' · ' + x.unidade) + '</strong> — ' + escapeHtml(x.evidencia) + '<br/>Ação recomendada: ' + escapeHtml(x.acao_recomendada) + '</li>')) : '') + (hasStrategicAnalysis && report.radar_estrategico?.length ? section('Radar estratégico', li(report.radar_estrategico, (x: any) => '<li><strong>' + escapeHtml(x.sinal) + '</strong> — ' + escapeHtml(x.evidencia) + '<br/>Ação recomendada: ' + escapeHtml(x.acao) + '</li>')) : '') + '<p style="font-size:11px;color:#64748b;border-top:1px solid #e0e7f0;padding-top:16px;margin-top:28px">Análise baseada nas avaliações válidas registradas no período. Os sinais indicam pontos a investigar e não comprovam, isoladamente, relações de causa e efeito.</p></div></main></article></div>';
   const safeCompanyName = String(report.empresa.nome || 'Empresa').replace(/[\r\n]+/g, ' ').slice(0, 120);
   const compact = 'Filtra.AI | ' + safeCompanyName + ' | ' + report.periodo + ': ' + k.avaliacoes + ' avaliações, média ' + averageLabel + ', ' + k.percentual_positivas + '% positivas, ' + k.criticas + ' críticas. ' + (recs[0] || 'Acompanhe a evolução no próximo ciclo.');
   const whatsapp = text.length > 3800 ? text.slice(0, 3700) + '…' : text;
@@ -284,7 +283,8 @@ export async function buildRelatorioProfissional(
   };
 
   let unidades: any[] = [];
-  if (['corporativo', 'rei'].includes(plan)) {
+  // Dados por unidade não dependem do plano contratado: a seção aparece somente quando há dados.
+  {
     try {
       const raw = await db.all(
         'SELECT id, nome FROM unidades WHERE empresa_id = ? AND (ativo IS NULL OR ativo = 1 OR ativo = true) ORDER BY nome',
@@ -302,7 +302,7 @@ export async function buildRelatorioProfissional(
   }
 
   const rankingUnidades = unidades.slice().sort((a, b) => b.nota_media - a.nota_media || b.avaliacoes - a.avaliacoes).map((u, index) => ({ ...u, posicao: index + 1 }));
-  const prioridadesOperacionais = ['corporativo', 'rei'].includes(plan) ? unidades.map((u: any) => {
+  const prioridadesOperacionais = unidades.map((u: any) => {
     const unitReviews = reais.filter((r) => String(r.unidade_id || '') === String(u.id));
     const tagsCount = new Map<string, number>();
     for (const row of unitReviews) {
@@ -318,9 +318,10 @@ export async function buildRelatorioProfissional(
       tema_recorrente: topTheme ? topTheme[0] : null,
       acao_recomendada: topTheme ? 'Investigar o tema “' + topTheme[0] + '” nesta unidade, validar a causa com a equipe e acompanhar o indicador no próximo ciclo.' : 'Revisar as avaliações críticas desta unidade, identificar causas recorrentes e acompanhar a evolução no próximo ciclo.',
     };
-  }).filter(Boolean).sort((a: any, b: any) => (a.prioridade === 'alta' ? 0 : 1) - (b.prioridade === 'alta' ? 0 : 1)) : [];
+  }).filter(Boolean).sort((a: any, b: any) => (a.prioridade === 'alta' ? 0 : 1) - (b.prioridade === 'alta' ? 0 : 1));
   const radarEstrategico: any[] = [];
-  if (plan === 'rei') {
+  // Radar comparativo disponível em qualquer plano, com base nas variações do período.
+  {
     if (mediaAnterior !== null) {
       const delta = Math.round((notaMedia - mediaAnterior) * 10) / 10;
       if (delta <= -0.3) radarEstrategico.push({ nivel: 'alto', sinal: 'Queda na nota média', evidencia: 'A nota média passou de ' + mediaAnterior.toFixed(1) + ' para ' + notaMedia.toFixed(1) + ' em relação a ' + periodoAnterior + '.', acao: 'Investigar os temas e unidades que mais contribuíram para a queda antes de definir uma ação corretiva.' });
@@ -344,7 +345,7 @@ export async function buildRelatorioProfissional(
   const riscos = [];
   if (kpis.percentual_criticas >= 20) riscos.push({ nivel: 'alto', titulo: 'Concentração de avaliações críticas', evidencias: `${kpis.percentual_criticas}% das avaliações são críticas.` });
   if (sent.negativo > sent.positivo) riscos.push({ nivel: 'medio', titulo: 'Sentimento negativo predominante', evidencias: 'O volume de sinais negativos supera o positivo no período.' });
-  if (plan === 'rei' && unidades.length) {
+  if (unidades.length) {
     const worst = [...unidades].sort((a, b) => a.nota_media - b.nota_media)[0];
     if (worst) riscos.push({ nivel: 'medio', titulo: `Unidade com menor nota: ${worst.nome}`, evidencias: `Média ${worst.nota_media.toFixed(1)} com ${worst.avaliacoes} avaliações.` });
   }
@@ -352,8 +353,8 @@ export async function buildRelatorioProfissional(
   const oportunidades: any[] = [];
   if (kpis.percentual_positivas >= 80) oportunidades.push({ titulo: 'Fortalecer os pontos positivos', evidencias: kpis.percentual_positivas + '% das avaliações estão em 4–5 estrelas.', acao_recomendada: 'Identificar os temas positivos mais recorrentes e incorporá-los aos padrões de atendimento.' });
   if (temasPositivos.length) oportunidades.push({ titulo: 'Replicar o que funciona em ' + temasPositivos[0].tema, evidencias: temasPositivos[0].volume + ' ocorrências associadas a avaliações de 4–5 estrelas.', acao_recomendada: 'Validar com a equipe quais práticas estão associadas a esse tema e testar sua replicação.' });
-  if (plan === 'rei' && temasAtencao.length) oportunidades.push({ titulo: 'Testar uma melhoria para ' + temasAtencao[0].tema, evidencias: temasAtencao[0].volume + ' ocorrências associadas a avaliações não positivas.', acao_recomendada: 'Definir uma intervenção de baixo risco, acompanhar a resposta nas avaliações e comparar o próximo ciclo.' });
-  if (plan === 'rei' && unidades.length > 1) {
+  if (temasAtencao.length) oportunidades.push({ titulo: 'Testar uma melhoria para ' + temasAtencao[0].tema, evidencias: temasAtencao[0].volume + ' ocorrências associadas a avaliações não positivas.', acao_recomendada: 'Definir uma intervenção de baixo risco, acompanhar a resposta nas avaliações e comparar o próximo ciclo.' });
+  if (unidades.length > 1) {
     const bestUnit = [...unidades].sort((a, b) => b.nota_media - a.nota_media)[0];
     const worstUnit = [...unidades].sort((a, b) => a.nota_media - b.nota_media)[0];
     if (bestUnit && worstUnit && bestUnit.id !== worstUnit.id && bestUnit.nota_media - worstUnit.nota_media >= 0.3) {
@@ -384,10 +385,10 @@ export async function buildRelatorioProfissional(
     sentimento: sent,
     temas: { positivos: temasPositivos, atencao: temasAtencao },
     unidades,
-    ranking_unidades: ['corporativo', 'rei'].includes(plan) ? rankingUnidades : [],
+    ranking_unidades: rankingUnidades,
     prioridades_operacionais: prioridadesOperacionais,
-    radar_estrategico: plan === 'rei' ? radarEstrategico : [],
-    oportunidades_crescimento: plan === 'rei' ? oportunidades : [],
+    radar_estrategico: radarEstrategico,
+    oportunidades_crescimento: oportunidades,
     riscos,
     oportunidades,
     recomendacoes: buildRecommendations(kpis, temasAtencao),
@@ -408,14 +409,13 @@ export async function buildRelatorioProfissional(
 
   // A IA interpreta apenas métricas agregadas. O servidor continua sendo a fonte de verdade dos números.
   // Se o provedor falhar, a narrativa determinística existente continua disponível.
-  if (planTemIA(plan) && aiConfigured() && avaliacoes > 0) {
+  // A geração por IA acontece uma única vez por ciclo mensal (o snapshot fica em cache
+  // e é reutilizado). O orçamento é fixo e não há gate de cota que degrade o conteúdo.
+  if (aiConfigured() && avaliacoes > 0) {
     try {
-      const quota = await assertEmpresaTokenQuota(String(empresa.id), plan);
-      if (!quota.ok) throw new Error('Limite mensal de tokens de IA atingido; usando análise determinística.');
       const ai = await gerarNarrativaRelatorio({
         empresa: baseReport.empresa.nome,
         periodo,
-        plano: baseReport.plano.nome,
         kpis,
         sentimento: sent,
         temas: { positivos: temasPositivos, atencao: temasAtencao },

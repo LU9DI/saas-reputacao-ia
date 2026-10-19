@@ -1,6 +1,7 @@
 /** Limites de feedbacks/mês e cotas de IA (tokens). */
 import { getDb, dbEngine } from './db.js';
 import { getCurrentMonth } from './planUtils.js';
+import { ensureAiUsageSchema } from './aiUsage.js';
 
 export const PLAN_FEEDBACK_LIMITS: Record<string, number> = { trial: 30, teste: 30, inicial: 100, pro: 300, ultra: 800, corporativo: 2500, rei: 8000 };
 export const PLAN_TOKEN_LIMITS: Record<string, number> = { trial: 25_000, teste: 25_000, inicial: 0, pro: 0, ultra: 120_000, corporativo: 400_000, rei: 1_200_000 };
@@ -19,13 +20,16 @@ function nextMonthStartIso(mes?: string): string { const m = mes || getCurrentMo
 export async function tokensUsadosMes(empresaId: string, feature?: string): Promise<number> {
   const db = getDb();
   const mes = getCurrentMonth();
+  // Garante a coluna `feature` antes de filtrar por ela (instalações antigas).
+  try { await ensureAiUsageSchema(db); } catch { /* segue sem o filtro */ }
   // DOT tem um orçamento isolado. Seus eventos são registrados como filtra_dot_*;
-  // sem feature, preservamos o total agregado usado pelas cotas gerais de IA.
+  // sem feature, preservamos o total agregado usado pelas cotas gerais de IA — exceto
+  // o relatório mensal, que tem orçamento fixo por ciclo e não consome a cota geral.
   const featureSql = feature === 'dot'
     ? " AND (tipo = ? OR tipo LIKE ?)"
     : feature
       ? " AND tipo = ?"
-      : "";
+      : " AND (feature IS NULL OR feature <> 'relatorio_mensal')";
   const featureParams = feature === 'dot'
     ? ['dot', 'filtra_dot%']
     : feature
