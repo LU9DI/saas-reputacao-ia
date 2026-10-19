@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { CalendarDays, Download, FileText, Loader2, RefreshCw } from 'lucide-react';
+import { CalendarDays, FileText, Loader2, RefreshCw } from 'lucide-react';
 
 type Props = {
   empresa: { id?: string; nome_empresa?: string; plan?: string };
@@ -14,7 +14,7 @@ type Props = {
 
 const COPY: Record<string, Record<string, string>> = {
   pt: {
-    title: 'Relatório Mensal',
+    title: 'Relatório Inteligente',
     subtitle: 'Relatório profissional consolidado do mês selecionado.',
     period: 'Mês de referência',
     reviews: 'Avaliações',
@@ -35,7 +35,6 @@ const COPY: Record<string, Record<string, string>> = {
     noTags: 'Sem temas identificados nos dados deste período.',
     noRecommendations: 'Sem recomendações registradas.',
     noRadar: 'Sem sinais estratégicos adicionais neste ciclo.',
-    download: 'Baixar PDF',
     generating: 'Gerando o relatório deste mês…',
     generate: 'Gerar relatório do mês',
     retry: 'Tentar novamente',
@@ -45,7 +44,7 @@ const COPY: Record<string, Record<string, string>> = {
     noHistory: 'Ainda não há um relatório do mês de referência.',
   },
   en: {
-    title: 'Monthly Report',
+    title: 'Intelligent Report',
     subtitle: 'Consolidated professional report for the selected month.',
     period: 'Reporting month',
     reviews: 'Reviews',
@@ -66,7 +65,6 @@ const COPY: Record<string, Record<string, string>> = {
     noTags: 'No themes were identified in this period.',
     noRecommendations: 'No recommendations recorded.',
     noRadar: 'No additional strategic signals this cycle.',
-    download: 'Download PDF',
     generating: 'Generating this month’s report…',
     generate: 'Generate this month’s report',
     retry: 'Try again',
@@ -76,7 +74,7 @@ const COPY: Record<string, Record<string, string>> = {
     noHistory: 'There is no report for the reference month yet.',
   },
   es: {
-    title: 'Informe mensual',
+    title: 'Informe inteligente',
     subtitle: 'Informe profesional consolidado del mes seleccionado.',
     period: 'Mes de referencia',
     reviews: 'Reseñas',
@@ -97,7 +95,6 @@ const COPY: Record<string, Record<string, string>> = {
     noTags: 'No se identificaron temas en este período.',
     noRecommendations: 'Sin recomendaciones registradas.',
     noRadar: 'Sin señales estratégicas adicionales en este ciclo.',
-    download: 'Descargar PDF',
     generating: 'Generando el informe de este mes…',
     generate: 'Generar informe del mes',
     retry: 'Intentar de nuevo',
@@ -107,7 +104,7 @@ const COPY: Record<string, Record<string, string>> = {
     noHistory: 'Aún no hay un informe del mes de referencia.',
   },
   zh: {
-    title: '月度报告',
+    title: '智能报告',
     subtitle: '所选月份的专业汇总报告。',
     period: '报告月份',
     reviews: '评价数',
@@ -128,7 +125,6 @@ const COPY: Record<string, Record<string, string>> = {
     noTags: '此期间未识别到主题。',
     noRecommendations: '暂无建议记录。',
     noRadar: '本周期暂无更多战略信号。',
-    download: '下载 PDF',
     generating: '正在生成本月报告…',
     generate: '生成本月报告',
     retry: '重试',
@@ -169,27 +165,6 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
   const strategicRadar = activeReport?.radar_estrategico || [];
   const hasRadarSection = strategicRadar.length > 0 || growthOpportunities.length > 0;
 
-  const baixarPdf = () => {
-    const html = activeReport?.canais?.email?.html;
-    if (!html || typeof window === 'undefined') return;
-    const win = window.open('', '_blank');
-    if (win) {
-      win.document.open();
-      win.document.write(`${String(html)}<script>setTimeout(function(){window.print();},450);</script>`);
-      win.document.close();
-      return;
-    }
-    // Fallback (pop-up bloqueado): baixa o HTML pronto para impressão.
-    const blob = new Blob([String(html)], { type: 'text/html' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `relatorio-mensal-${activeReport.periodo}.html`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(link.href);
-  };
-
   return (
     <section id="professional-report" className="scroll-mt-28 rounded-3xl border border-indigo-400/20 bg-gradient-to-br from-indigo-500/[0.08] via-zinc-950 to-zinc-950 p-5 sm:p-7">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
@@ -202,11 +177,6 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 print:hidden">
-          {activeReport && (
-            <button type="button" onClick={baixarPdf} className="inline-flex items-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-3 py-2 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
-              <Download size={15} /> {t.download}
-            </button>
-          )}
           {availableMonths.length > 0 && (
             <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm text-zinc-300">
               <CalendarDays size={15} />
