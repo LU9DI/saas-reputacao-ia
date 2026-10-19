@@ -54,7 +54,7 @@ export function PushEnable() {
     return () => {
       cancelled = true;
     };
-  }, [api]);
+  }, [api, t.push_api_error, t.push_config_error]);
 
   return (
     <div className="rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3">

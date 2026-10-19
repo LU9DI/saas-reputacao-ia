@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Bot, CheckCircle2, Clock3, KeyRound, Lock, Play, RefreshCw, ShieldCheck, Target, Unlock, XCircle } from 'lucide-react';
+import { AlertTriangle, Bot, CheckCircle2, Clock3, KeyRound, Lock, Play, RefreshCw, ShieldCheck, Target, Unlock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { apiFetch } from '../utils/apiFailover';
 import { BrandMark } from '../components/BrandMark';
@@ -82,7 +82,10 @@ export default function DotPage() {
     }
   }, []);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial do painel Dot (fetch)
+    void load();
+  }, [load]);
 
   const mutate = async (key: string, path: string, options: RequestInit = {}) => {
     setBusy(key);

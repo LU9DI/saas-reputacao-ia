@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useLanguage } from '../Contexts/LanguageContext';
-import { getEnv } from '../utils/env';
 import { apiFetch } from '../utils/apiFailover';
 
 type Props = {
@@ -30,7 +29,6 @@ export function SubscriptionActions({
   status,
 }: Props) {
   const { t } = useLanguage();
-  const api = (getEnv('NEXT_PUBLIC_API_URL') || 'http://127.0.0.1:5000').replace(/\/$/, '');
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
 

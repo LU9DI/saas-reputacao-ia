@@ -56,7 +56,6 @@ export function ReviewsList({
   reviews,
   showCopiar = true,
   showTratar = true,
-  apiBase,
   authHeaders,
   onRefresh,
 }: Props) {

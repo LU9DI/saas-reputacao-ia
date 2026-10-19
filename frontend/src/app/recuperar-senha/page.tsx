@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getEnv } from '../utils/env';
+import Link from 'next/link';
 import { apiFetch } from '../utils/apiFailover';
 import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from '../utils/passwordPolicy';
 import { BrandMark } from '../components/BrandMark';
@@ -26,14 +26,7 @@ function RecuperarForm() {
   const [avisoSmtp, setAvisoSmtp] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (tokenFromUrl) {
-      setToken(tokenFromUrl);
-      setModo('redefinir');
-    }
-  }, [tokenFromUrl]);
-
-  const api = () => getEnv('NEXT_PUBLIC_API_URL') || 'http://localhost:5000';
+  // `modo` e `token` já nascem do parâmetro da URL (linhas acima) — sem efeito de sincronização.
 
   const pedirLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -230,13 +223,13 @@ function RecuperarForm() {
         )}
 
         <p className="text-center text-xs text-zinc-500">
-          <a href="/login" className="underline hover:text-zinc-300">
+          <Link href="/login" className="underline hover:text-zinc-300">
             {t.recovery_back_login || 'Voltar ao login'}
-          </a>
+          </Link>
           {' · '}
-          <a href="/" className="underline hover:text-zinc-300">
+          <Link href="/" className="underline hover:text-zinc-300">
             {t.recovery_home || 'Início'}
-          </a>
+          </Link>
         </p>
       </div>
     </div>

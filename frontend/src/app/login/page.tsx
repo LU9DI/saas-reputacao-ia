@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { BrandMark } from '../components/BrandMark';
@@ -49,7 +50,7 @@ export default function LoginPage() {
       return;
     }
     const empresaId = data.tokenPayload?.empresa_id;
-    if (empresaId) window.location.assign(`/painel/${empresaId}`);
+    if (empresaId) window.location.assign(new URL(`/painel/${empresaId}`, window.location.origin).toString());
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -191,12 +192,12 @@ export default function LoginPage() {
               </form>
 
               <div className="mt-7 flex flex-col gap-3 text-center text-sm">
-                <a href="/preview/teste" className="font-medium text-indigo-300 hover:text-indigo-200">
+                <Link href="/preview/teste" className="font-medium text-indigo-300 hover:text-indigo-200">
                   {t.trial_cta || 'Começar 7 dias grátis'}
-                </a>
-                <a href="/" className="text-zinc-500 hover:text-zinc-300">
+                </Link>
+                <Link href="/" className="text-zinc-500 hover:text-zinc-300">
                   Voltar
-                </a>
+                </Link>
               </div>
             </div>
           </section>

@@ -24,6 +24,7 @@ export function PwaRegister() {
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- lê display-mode no mount (só existe no cliente)
     if (standalone) setInstalled(true);
 
     const onBip = (e: Event) => {

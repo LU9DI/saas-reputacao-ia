@@ -161,6 +161,7 @@ export default function QrCodesPage() {
         {qrCodeUrl && (
           <div className="text-center space-y-4 pt-4 border-t border-slate-200">
             <h3 className="font-semibold text-slate-800">QR Code - Mesa {tableNumber}</h3>
+            {/* eslint-disable-next-line @next/next/no-img-element -- QR (data URL): otimização do next/image não se aplica */}
             <img
               src={qrCodeUrl}
               alt={`QR Code para mesa ${tableNumber}`}

@@ -61,7 +61,10 @@ export default function AdminTecnicoPage() {
     finally { setLoading(false); }
   }, [router]);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial da área técnica (fetch)
+    carregar();
+  }, [carregar]);
   useEffect(() => { if (!auto) return; const id = setInterval(carregar, 15000); return () => clearInterval(id); }, [auto, carregar]);
 
   if (loading && !data) return <div className="min-h-screen bg-black flex items-center justify-center text-zinc-500 text-sm">Carregando área técnica…</div>;

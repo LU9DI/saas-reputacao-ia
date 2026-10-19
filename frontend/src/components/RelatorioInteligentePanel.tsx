@@ -27,6 +27,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
   const [loading, setLoading] = useState(!panelData);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fallback quando o painel-pai não fornece dados
     if (panelData) { setFallback(null); setLoading(false); return; }
     let cancelled = false;
     fetch(`${api}/api/empresa/${encodeURIComponent(empresaId)}/painel`, { credentials: 'include', headers: authHeaders(false), cache: 'no-store' })
@@ -37,7 +38,6 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
   }, [empresaId, api, panelData, authHeaders]);
 
   const source = panelData ?? fallback;
-  const empresa = source?.empresa ?? {};
   const metricas = source?.metricas ?? {};
   const reviews = useMemo(() => Array.isArray(source?.reviews) ? source.reviews.filter(r => r && r.is_test !== true && r.is_test !== 'true') : [], [source?.reviews]);
   const l = langOf(language);

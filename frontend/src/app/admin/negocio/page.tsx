@@ -19,10 +19,6 @@ function authHeaders(): HeadersInit {
   return h;
 }
 
-function fmtMoney(n: number) {
-  return Number(n).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
-
 function Pill({ ok, label }: { ok: boolean | null; label?: string }) {
   const color =
     ok === true
@@ -93,6 +89,7 @@ export default function AdminNegocioPage() {
   }, [router]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial via API (padrão de montagem)
     carregar();
   }, [carregar]);
 

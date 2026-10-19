@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Bell, Bot, ChevronDown, ChevronRight, FileText, Layers, LayoutDashboard, LogOut, MessageSquare, RefreshCw, Settings, ShieldCheck, Star, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
 import { useRouteId } from '../../utils/useRouteId';
 import QRCode from 'qrcode';
 import { getEnv } from '../../utils/env';
@@ -70,7 +71,7 @@ function LocalPreviewPanel() {
           <div className="flex items-center gap-3">
             <span className="hidden text-xs text-zinc-500 sm:block">Modo demonstração · localhost</span>
             <LanguageSwitcher compact />
-            <a href="/" className="rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white">{t.panel_start_trial || "Começar 7 dias"}</a>
+            <Link href="/" className="rounded-xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white">{t.panel_start_trial || "Começar 7 dias"}</Link>
           </div>
         </div>
       </header>
@@ -247,12 +248,14 @@ export default function PainelEmpresa() {
 
   useEffect(() => {
     if (isLocalPreview) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial do painel (fetch)
     carregar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaId]);
 
   useEffect(() => {
     if (!linkAvaliacao || !data) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset do QR quando não há link/dados
       setQrUrl(null);
       return;
     }
@@ -280,7 +283,7 @@ export default function PainelEmpresa() {
     } catch {
       /* */
     }
-    window.location.href = '/login';
+    window.location.href = new URL('/login', window.location.origin).toString();
   };
 
   const salvarWhatsapp = async () => {
@@ -393,9 +396,9 @@ export default function PainelEmpresa() {
                     )}
                   </div>
                 )}
-                <a href="/dot" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
+                <Link href="/dot" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
                   <Bot size={17} /> Filtra Dot
-                </a>
+                </Link>
               </>
             )}
             <a href="#reviews" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">
@@ -959,6 +962,7 @@ export default function PainelEmpresa() {
                   {qrUrl && (
                     <div className="flex shrink-0 flex-col items-center gap-2">
                       <BrandMark size="sm" href={null} iconOnly subtitle={null} />
+                      {/* eslint-disable-next-line @next/next/no-img-element -- QR (data URL) */}
                       <img src={qrUrl} alt="QR code — Filtra.AI" className="h-36 w-36 rounded-lg border border-zinc-700" />
                       <p className="text-[10px] uppercase tracking-wider text-zinc-600">{t.panel_qr_hint || 'Escaneie para avaliar'}</p>
                     </div>

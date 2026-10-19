@@ -61,6 +61,7 @@ export function UnidadesPanel({ empresaRef, enabled }: Props) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial via API (padrão de montagem)
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [empresaRef, enabled]);

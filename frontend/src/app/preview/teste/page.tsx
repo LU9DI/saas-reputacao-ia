@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ArrowRight, Building2, Check, Link2, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 import { BrandMark } from '../../components/BrandMark';
 import { PreviewNavigator } from '../../components/PreviewNavigator';
 import { useLanguage } from '../../Contexts/LanguageContext';
@@ -14,7 +15,7 @@ const TERMOS_VERSAO = '2026-09-15';
 const PRIV_VERSAO = '2026-09-15';
 
 export default function PreviewTrial() {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -103,7 +104,7 @@ export default function PreviewTrial() {
       // A rota de preview é offline no localhost. Nunca tente 127.0.0.1:5000 aqui.
       // O fluxo real de ativação continua usando a API quando executado fora do preview local.
       if (localDemo) {
-        window.location.href = '/painel/preview';
+        window.location.href = new URL('/painel/preview', window.location.origin).toString();
         return;
       }
       try {
@@ -163,7 +164,7 @@ export default function PreviewTrial() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(14,165,233,.14),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(99,102,241,.22),transparent_32%)]" />
       <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
         <BrandMark size="md" subtitle="Reputação" href="/preview" />
-        <div className="flex items-center gap-3"><a href="/preview" className="hidden text-sm text-zinc-400 hover:text-white sm:block">{copy.back}</a></div>
+        <div className="flex items-center gap-3"><Link href="/preview" className="hidden text-sm text-zinc-400 hover:text-white sm:block">{copy.back}</Link></div>
       </nav>
 
       <section className="relative mx-auto grid max-w-6xl gap-12 px-6 pb-20 pt-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:pt-16">

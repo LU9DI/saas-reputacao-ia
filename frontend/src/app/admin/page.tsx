@@ -187,6 +187,7 @@ export default function AdminDashboard() {
   }, [router]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial do admin (fetch)
     carregarDados();
   }, [carregarDados]);
 
@@ -280,7 +281,7 @@ export default function AdminDashboard() {
     } catch {
       /* */
     }
-    window.location.assign('/admin/login');
+    router.replace('/admin/login');
   };
 
   if (loading) {

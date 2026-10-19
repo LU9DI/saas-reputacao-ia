@@ -69,6 +69,7 @@ export function MpTransparentCheckout({
   useEffect(() => {
     if (!open) {
       destroyBrick();
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset do estado ao fechar o modal
       setPago(false);
       setErro('');
       setPixQr(null);
@@ -276,6 +277,7 @@ export function MpTransparentCheckout({
             )}
             {pixQr && (
               <div className="flex justify-center w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element -- QR Pix (data URL) */}
                 <img
                   src={`data:image/png;base64,${pixQr}`}
                   alt="QR Pix"

@@ -12,6 +12,7 @@ export default function VerifyTrialEmail() {
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get('token') || '';
     if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- falha rápida no mount (sem token)
       setStatus('error');
       setMessage('Link de confirmação inválido.');
       return;
@@ -28,7 +29,7 @@ export default function VerifyTrialEmail() {
           // Fluxo atual: o trial ativa na hora (e-mail validado por MX); confirmação por link foi aposentada.
           setStatus('ok');
           setMessage(data.error || 'A confirmação por e-mail não é mais necessária. Acesse o painel com seu e-mail e senha.');
-          window.setTimeout(() => { window.location.href = '/login'; }, 1200);
+          window.setTimeout(() => { window.location.href = new URL('/login', window.location.origin).toString(); }, 1200);
           return;
         }
         if (!response.ok) throw new Error(data.error || 'Não foi possível confirmar o e-mail.');

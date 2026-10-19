@@ -142,7 +142,6 @@ async function registrarAceite(payload: Record<string, unknown>) {
 export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
   const { t } = useLanguage();
   const [plans, setPlans] = useState<PlanCard[]>(DEFAULT_PLANS);
-  const [loadingPrices, setLoadingPrices] = useState(true);
   const [loading, setLoading] = useState<string | null>(null);
   const [erro, setErro] = useState('');
   const [ciclo, setCiclo] = useState<'mensal' | 'anual'>('mensal');
@@ -167,7 +166,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         window.location.hostname === '127.0.0.1');
 
     if (isPreviewLocal) {
-      setLoadingPrices(false);
       return;
     }
 
@@ -204,8 +202,6 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
         }
       } catch {
         /* defaults */
-      } finally {
-        if (!cancelled) setLoadingPrices(false);
       }
     };
     carregar();

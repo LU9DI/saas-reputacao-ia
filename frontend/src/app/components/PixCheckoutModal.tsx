@@ -78,6 +78,7 @@ export function PixCheckoutModal({
   }, [planoKey, empresaId, email]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- dispara a criação do Pix ao abrir
     if (open) criar();
   }, [open, criar]);
 
@@ -151,6 +152,7 @@ export function PixCheckoutModal({
           <div className="space-y-4">
             {pix.qr_code_base64 && (
               <div className="flex justify-center w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element -- QR Pix (data URL) */}
                 <img
                   src={`data:image/png;base64,${pix.qr_code_base64}`}
                   alt="QR Code Pix"
