@@ -163,7 +163,7 @@ export async function getOrGenerateMonthlyReportSnapshot(
      WHERE empresa_id = ? AND periodo = ? AND status = 'processing'`,
     [JSON.stringify(report), new Date().toISOString(), empresaId, periodo],
   );
-  if (Number(saved?.changes || 0) > 0) return { state: 'generated', report };
+  if (Number(saved?.changes || 0) > 0) return { state: 'generated', report: adaptRelatorioProfissionalAoPlano(report, empresa.plan) };
   const again = parseReport(await readRow());
   return again ? { state: 'cached', report: again } : { state: 'generating' };
 }
