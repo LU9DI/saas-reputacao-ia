@@ -59,7 +59,7 @@ export function PlanSwitcher({ empresaRef, planAtual, enabled, onChanged }: Prop
       if (res.status === 401 || res.status === 403) {
         throw new Error(
           data.error ||
-            'Sessão inválida. Entre em /login com CNPJ e senha da empresa e tente de novo.'
+            'Sessão inválida. Entre em /login com e-mail e senha da empresa e tente de novo.'
         );
       }
       if (!res.ok) throw new Error(data.error || `Erro ${res.status}`);

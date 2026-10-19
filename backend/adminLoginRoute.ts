@@ -53,7 +53,7 @@ export function mountAdminLoginRoute(
       if (!isAdminUser(usuario)) {
         return res.status(403).json({
           error:
-            'Acesso restrito ao painel administrativo. Use /login com CNPJ para o painel da empresa.',
+            'Acesso restrito ao painel administrativo. Use /login com e-mail e senha para o painel da empresa.',
         });
       }
 

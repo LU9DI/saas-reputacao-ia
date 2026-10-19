@@ -15,10 +15,6 @@ const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://loca
   ''
 );
 
-function normalizarCnpj(cnpj: string): string {
-  return String(cnpj || '').replace(/\D/g, '');
-}
-
 function emailValido(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -78,7 +74,7 @@ export async function createUsuarioForEmpresa(
   db: Database,
   opts: {
     empresaId: string;
-    cnpj: string;
+    identificador: string;
     nome: string;
     email: string;
     senha: string;
@@ -99,7 +95,7 @@ export async function createUsuarioForEmpresa(
   await db.run(
     `INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email)
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [id, normalizarCnpj(opts.cnpj), opts.nome.slice(0, 120), opts.empresaId, hash, email]
+    [id, String(opts.identificador || '').trim(), opts.nome.slice(0, 120), opts.empresaId, hash, email]
   );
   return { id };
 }
@@ -122,7 +118,6 @@ export function mountPasswordResetRoutes(app: Express, getDb: () => Database) {
       const db = getDb();
       await ensureAuthColumns(db);
 
-      const cnpj = normalizarCnpj(req.body.cnpj || '');
       const email = String(req.body.email || '')
         .trim()
         .toLowerCase();
@@ -130,14 +125,10 @@ export function mountPasswordResetRoutes(app: Express, getDb: () => Database) {
       const okMsg =
         'Se os dados estiverem corretos, você receberá um e-mail com instruções para redefinir a senha.';
 
-      let usuario: any = null;
-      if (email && emailValido(email)) {
-        usuario = await db.get('SELECT * FROM usuarios WHERE email = ?', [email]);
-      } else if (cnpj.length === 14) {
-        usuario = await db.get('SELECT * FROM usuarios WHERE cnpj = ?', [cnpj]);
-      } else {
+      if (!email || !emailValido(email)) {
         return res.status(400).json({ error: 'Informe o e-mail cadastrado.' });
       }
+      const usuario: any = await db.get('SELECT * FROM usuarios WHERE email = ?', [email]);
 
       if (usuario && isAdminAccount(usuario)) {
         return res.json({

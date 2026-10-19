@@ -79,7 +79,7 @@ export function mountWebAuthnRoutes(app: Express) {
         const opts = await registrationOptions(db, {
           id: user.id,
           nome: user.nome_funcionario,
-          cnpj: user.cnpj,
+          identificador: String(user.email || user.id),
         });
         res.json(opts);
       } catch (e: any) {
@@ -108,12 +108,14 @@ export function mountWebAuthnRoutes(app: Express) {
     asyncHandler(async (req, res) => {
       const db = getDb();
       await ensureWebAuthnSchema(db);
-      const cnpj = String(req.body?.cnpj || '').replace(/\D/g, '');
-      if (cnpj.length < 11) {
-        return res.status(400).json({ error: 'Informe o CNPJ para usar a digital.' });
+      const email = String(req.body?.email || '')
+        .trim()
+        .toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({ error: 'Informe o e-mail para usar a digital.' });
       }
       try {
-        const opts = await authenticationOptions(db, cnpj);
+        const opts = await authenticationOptions(db, email);
         res.json(opts);
       } catch (e: any) {
         res.status(400).json({ error: e.message || 'Falha ao iniciar login biométrico.' });

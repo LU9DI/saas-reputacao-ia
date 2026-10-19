@@ -76,7 +76,7 @@ function isUniqueViolation(e: any): boolean {
   );
 }
 
-/** Identificador interno único derivado do e-mail (coluna cnpj no banco). */
+/** Identificador interno único derivado do e-mail (guardado na coluna legada `cnpj` do banco). */
 function syntheticIdFromEmail(email: string): string {
   const h = crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex').slice(0, 14);
   return `em${h}`;
@@ -218,7 +218,7 @@ export async function ativarTrial(
   try {
     const u = await createUsuarioForEmpresa(db, {
       empresaId: id,
-      cnpj: syntheticId,
+      identificador: syntheticId,
       nome,
       email,
       senha,
