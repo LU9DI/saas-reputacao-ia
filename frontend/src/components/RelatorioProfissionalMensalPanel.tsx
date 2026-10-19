@@ -246,8 +246,8 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
             <p className="mt-3 text-sm leading-6 text-zinc-300">{activeReport.resumo_executivo || '—'}</p>
             {hasAdvancedAnalysis && activeReport.narrativa?.por_que_importa && <p className="mt-3 text-sm leading-6 text-zinc-400">{activeReport.narrativa.por_que_importa}</p>}
           </article>
-          <div className="grid gap-4 lg:grid-cols-2">
-            {hasAdvancedAnalysis && <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
+          {hasAdvancedAnalysis && <div className="grid gap-4 lg:grid-cols-2">
+            <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.sentiment}</h3>
               <div className="mt-3 grid grid-cols-3 gap-2">
                 {[[t.positive, activeReport.sentimento?.positivo || 0], [t.neutral, activeReport.sentimento?.neutro || 0], [t.negative, activeReport.sentimento?.negativo || 0]].map(([name, count]) => (
@@ -268,7 +268,7 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
                   ))}
                 </ul>
               ) : <p className="mt-2 text-sm text-zinc-500">{t.noTags}</p>}
-            </article>}
+            </article>
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.action}</h3>
               {activeReport.recomendacoes?.length ? (
@@ -291,8 +291,22 @@ export function RelatorioProfissionalMensalPanel({ empresa, monthlyReports = [],
                   </ul>
                 </>
               )}
+              {planCode !== 'rei' && (activeReport.oportunidades?.length || 0) > 0 && (
+                <>
+                  <h4 className="mt-5 text-xs font-semibold uppercase tracking-wide text-emerald-300">{t.growth}</h4>
+                  <ul className="mt-2 space-y-2">
+                    {activeReport.oportunidades.map((item: any, index: number) => (
+                      <li key={index} className="rounded-xl border border-white/5 px-3 py-2 text-sm">
+                        <span className="font-medium text-white">{item.titulo}</span>
+                        <p className="mt-1 text-zinc-400">{item.evidencias}</p>
+                        {item.acao_recomendada && <p className="mt-2 text-zinc-300">{item.acao_recomendada}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </article>
-          </div>
+          </div>}
           {hasUnitAnalysis && (activeReport.ranking_unidades?.length || 0) > 0 && (
             <article className="rounded-2xl border border-white/10 bg-black/20 p-5">
               <h3 className="text-sm font-semibold text-white">{t.units}</h3>
