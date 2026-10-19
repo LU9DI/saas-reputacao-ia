@@ -750,7 +750,7 @@ export default function PainelEmpresa() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h3 className="text-sm font-semibold text-white">{t.panel_monthly_report || 'Relatório Mensal'}</h3>
-                      <p className="mt-1 text-xs text-zinc-400">{t.panel_monthly_report_desc || 'Relatório profissional do mês anterior, gerado por IA, com download em PDF.'}</p>
+                      <p className="mt-1 text-xs text-zinc-400">{t.panel_monthly_report_desc || 'Relatório profissional do mês anterior, exibido com os dados já carregados no painel.'}</p>
                     </div>
                     <button type="button" onClick={alternarRelatorioMensal} aria-expanded={mostrarRelatorioMensal} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-4 py-2.5 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
                       <FileText size={16} /> {mostrarRelatorioMensal ? (t.panel_monthly_report_hide || 'Ocultar relatório mensal') : (t.panel_monthly_report_open || 'Abrir Relatório Mensal')}
