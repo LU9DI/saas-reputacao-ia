@@ -280,7 +280,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
   return <main lang={lang} className="min-h-screen bg-black text-zinc-100">
     <header className="border-b border-zinc-800">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href={`/${lang}`} className="font-semibold tracking-tight text-white"><BrandMark/></Link>
+        <BrandMark href={`/${lang}`} />
         <LanguageSwitcher compact/>
       </div>
     </header>

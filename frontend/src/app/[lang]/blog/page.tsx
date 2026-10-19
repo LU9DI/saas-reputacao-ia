@@ -94,7 +94,7 @@ export default async function LocalizedBlogIndex({params}:{params:Promise<{lang:
   return <main lang={lang} className="min-h-screen bg-black text-zinc-100">
     <header className="border-b border-zinc-800">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-        <Link href={home[lang]} className="font-semibold tracking-tight text-white"><BrandMark/></Link>
+        <BrandMark href={home[lang]} />
         <LanguageSwitcher compact/>
       </div>
     </header>
