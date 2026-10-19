@@ -74,6 +74,9 @@ describe('relatório profissional mensal', () => {
     assert.ok(ultra.canais.email.text.includes('TEMAS RECORRENTES'));
     assert.ok(ultra.canais.email.text.includes('RISCOS A ACOMPANHAR'));
     assert.ok(!ultra.canais.email.text.includes('RANKING DAS UNIDADES'));
+    assert.ok(!ultra.canais.email.html.includes('Onde atuar'), 'Ultra não deve receber a seção operacional exclusiva de Corporativo/REI');
+    assert.ok(corp.canais.email.html.includes('Onde atuar'), 'Corporativo deve receber a seção operacional por unidade');
+    assert.ok(corp.canais.email.text.includes('ONDE ATUAR'));
     assert.ok(corp.canais.email.text.includes('RANKING DAS UNIDADES'));
     assert.ok(corp.canais.email.text.includes('PRIORIDADES OPERACIONAIS'));
     assert.ok(!corp.canais.email.text.includes('RADAR ESTRATÉGICO'));
