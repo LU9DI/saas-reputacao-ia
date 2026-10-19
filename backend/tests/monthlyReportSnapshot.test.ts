@@ -123,7 +123,6 @@ describe('cache do relatório mensal sob demanda', () => {
     assert.equal(Object.hasOwn(result.report, 'sentimento'), false);
     assert.equal(Object.hasOwn(result.report, 'temas'), false);
     assert.equal(String(result.report.canais.email.html).includes('snapshot antigo'), false);
-    assert.equal(buildCalls, 0, 'adaptação de cache não deve gerar novamente');
     assert.equal(buildCalls, 0, 'build não deve ser chamado quando existe snapshot salvo');
   });
 
@@ -239,6 +238,8 @@ describe('benefícios progressivos do relatório mensal', () => {
     assert.equal(Object.hasOwn(adapted, 'radar_estrategico'), false);
     assert.equal(Object.hasOwn(adapted, 'oportunidades_crescimento'), false);
     assert.equal(adapted.narrativa.onde_atuar, undefined);
+    assert.equal(String(adapted.canais.email.text).includes('ONDE ATUAR'), false);
+    assert.equal(String(adapted.canais.email.html).includes('Onde atuar'), false);
   });
 
   it('Corporativo recebe comparativo e prioridades, mas não módulos estratégicos REI', () => {
