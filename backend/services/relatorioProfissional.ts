@@ -474,7 +474,8 @@ export function adaptRelatorioProfissionalAoPlano(report: any, planValue: unknow
     delete adapted.oportunidades_crescimento;
     delete adapted.sinais_crescimento;
     delete adapted.canais;
-    adapted.recomendacoes = undefined;
+    delete adapted.distribuicao_estrelas;
+    delete adapted.recomendacoes;
   } else if (plan === 'ultra') {
     delete adapted.unidades;
     delete adapted.ranking_unidades;
@@ -482,12 +483,18 @@ export function adaptRelatorioProfissionalAoPlano(report: any, planValue: unknow
     delete adapted.radar_estrategico;
     delete adapted.oportunidades_crescimento;
     delete adapted.sinais_crescimento;
+    if (adapted.narrativa) {
+      const { onde_atuar: _unitNarrative, ...narrativa } = adapted.narrativa;
+      adapted.narrativa = narrativa;
+    }
   } else if (plan === 'corporativo') {
     delete adapted.radar_estrategico;
     delete adapted.oportunidades_crescimento;
     delete adapted.sinais_crescimento;
   }
 
+  // HTML e demais canais são sempre regenerados a partir da versão já filtrada.
+  // Isso evita que o JSON seja restrito, mas o download preserve módulos premium antigos.
   adapted.canais = channelTexts(adapted);
   return adapted;
 }
