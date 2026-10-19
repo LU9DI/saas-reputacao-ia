@@ -111,7 +111,7 @@ function seedRow(overrides?: Partial<Row>): Row {
 
 describe('cache do relatório mensal sob demanda', () => {
   it('devolve o snapshot salvo sem nova geração (reaberturas e downloads ilimitados)', async () => {
-    const cachedReport = fakeReport('cached');
+    const cachedReport = { ...fakeReport('cached'), sentimento: { negativo: 99 }, temas: { atencao: [{ tema: 'premium' }] } };
     const db = fakeMonthlyDb([seedRow({ report_json: JSON.stringify(cachedReport) })]);
     let buildCalls = 0;
     const result = await getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, {
@@ -120,6 +120,8 @@ describe('cache do relatório mensal sob demanda', () => {
     assert.equal(result.state, 'cached');
     assert.equal(result.report.origem, 'cached');
     assert.equal(result.report.plano.codigo, 'pro');
+    assert.equal(Object.hasOwn(result.report, 'sentimento'), false);
+    assert.equal(Object.hasOwn(result.report, 'temas'), false);
     assert.equal(String(result.report.canais.email.html).includes('snapshot antigo'), false);
     assert.equal(buildCalls, 0, 'adaptação de cache não deve gerar novamente');
     assert.equal(buildCalls, 0, 'build não deve ser chamado quando existe snapshot salvo');
