@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import Script from 'next/script';
 import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 import { JsonLd } from './components/JsonLd';
@@ -62,8 +61,14 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className="h-full" suppressHydrationWarning>
-      <Script id="localized-document-language" strategy="beforeInteractive">{`(function(){var segment=window.location.pathname.split('/')[1];var languages={en:'en',es:'es',zh:'zh'};document.documentElement.lang=languages[segment]||'pt-BR';})();`}</Script>
       <body className="min-h-full bg-black text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
+        <script
+          id="localized-document-language"
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var segment=window.location.pathname.split('/')[1];var languages={en:'en',es:'es',zh:'zh'};document.documentElement.lang=languages[segment]||'pt-BR';}catch(e){}})();",
+          }}
+        />
         <JsonLd />
         <Providers>
           {children}
