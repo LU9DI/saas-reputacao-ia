@@ -7,6 +7,8 @@ import { serpTitle } from '../../lib/seoTitle';
 
 type Lang = 'en' | 'es' | 'zh';
 function isLang(value: string): value is Lang { return value === 'en' || value === 'es' || value === 'zh'; }
+type Section = { heading: string; body: string; points?: string[] };
+type Faq = { question: string; answer: string };
 type Item = { slug:string; title:string; description:string; h1:string; intro:string; bullets:string[]; cta:string };
 
 const base='https://filtraai.com';
@@ -81,6 +83,99 @@ zh:[
 ]
 };
 
+// Conteúdo único por página localizada. Sem isto, o template repete o mesmo
+// boilerplate em todas as URLs e o Google trata as páginas como duplicadas.
+const UNIQUE_CONTENT: Partial<Record<string,{sections:Section[];faq:Faq[]}>> = {
+  'es:reputacion-google': {
+    sections: [
+      {
+        heading: 'Qué señales de Google revisar primero',
+        body: 'La reputación en Google no depende solo de la nota media. Revisa el volumen y la antigüedad de las reseñas, la proporción de respuestas, los temas que se repiten y la coherencia entre la ficha de Google Business Profile, el sitio web y lo que dicen los clientes. Una ficha incompleta o desactualizada puede aumentar la desconfianza incluso cuando la nota es alta.',
+        points: [
+          'Reseñas recientes: la percepción actual pesa más que un promedio antiguo.',
+          'Temas recurrentes: espera, atención, precio, resultado y comunicación.',
+          'Reseñas sin respuesta: especialmente las negativas y las de mayor alcance.',
+          'Coherencia de la ficha: categoría, horarios, servicios, fotos y ubicación.',
+        ],
+      },
+      {
+        heading: 'Cómo convertir reseñas de Google en decisiones',
+        body: 'Clasifica los comentarios por tema y por unidad, identifica qué problemas se repiten y asigna un responsable a cada acción. Responde con contexto y sin discutir en público; cuando el caso requiera datos personales, traslada la conversación a un canal privado. El objetivo no es maquillar la nota, sino corregir la causa que genera insatisfacción.',
+      },
+      {
+        heading: 'Qué medir además de las estrellas',
+        body: 'Sigue la evolución del volumen de reseñas, la proporción de respuestas, el tiempo de respuesta, la recurrencia de temas y la percepción por unidad. Compara periodos similares y evita conclusiones a partir de una sola reseña. Una rutina semanal de revisión permite detectar cambios antes de que se conviertan en un problema de reputación.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cómo puedo mejorar la reputación en Google?',
+        answer: 'Empieza por la experiencia real: corrige los problemas que aparecen en las reseñas, facilita opiniones honestas en el momento adecuado, responde con transparencia y revisa los temas de forma periódica. La reputación mejora cuando la operación mejora y los clientes lo perciben.',
+      },
+      {
+        question: '¿Cuántas reseñas necesito para tener buena reputación?',
+        answer: 'No hay un número único. Importan la coherencia, la recencia y el contexto de tu categoría. Una ficha con reseñas recientes y respuestas cuidadas transmite más confianza que un volumen alto de comentarios antiguos o genéricos.',
+      },
+      {
+        question: '¿Debo responder todas las reseñas de Google?',
+        answer: 'Lo ideal es responder especialmente las negativas y las más recientes, pero una respuesta breve y personalizada en las positivas también refuerza la percepción de atención. Evita respuestas automáticas idénticas y nunca discutas en público.',
+      },
+      {
+        question: '¿Las reseñas influyen en el SEO local?',
+        answer: 'Las reseñas son una señal de confianza y pueden influir en la decisión del usuario, además de aportar contenido actualizado a la ficha. No son el único factor de posicionamiento local, pero forman parte de la experiencia que Google y los clientes observan.',
+      },
+      {
+        question: '¿Puedo pedir reseñas a mis clientes?',
+        answer: 'Sí, siempre que la solicitud sea honesta y no ofrezca incentivos a cambio de una valoración positiva ni filtre a los clientes insatisfechos. Pide opiniones a todos los clientes en el momento adecuado y facilita el proceso con un enlace directo.',
+      },
+    ],
+  },
+  'es:gestion-reputacion-online': {
+    sections: [
+      {
+        heading: 'Qué incluye la gestión de reputación online',
+        body: 'Gestionar la reputación online no es eliminar comentarios negativos ni responder solo cuando aparece una crisis. Es un proceso continuo para entender qué perciben los clientes en Google, portales del sector, redes sociales, encuestas y canales de atención, y convertir esas señales en decisiones de operación.',
+        points: [
+          'Escuchar en los canales donde el cliente opina.',
+          'Separar señales públicas de feedback privado.',
+          'Priorizar por impacto, gravedad y recurrencia.',
+          'Asignar responsables y medir el cierre de cada acción.',
+        ],
+      },
+      {
+        heading: 'Un ciclo de trabajo en cuatro pasos',
+        body: 'Primero recoge señales de forma ordenada; después analiza temas y patrones en lugar de leer casos aislados; luego lleva cada problema al equipo que puede corregirlo; finalmente mide si la percepción cambió. El ciclo se repite con una cadencia semanal para los síntomas y mensual para las tendencias.',
+      },
+      {
+        heading: 'Cómo medir la evolución sin quedarte en la nota media',
+        body: 'La nota media es un resumen útil, pero esconde el motivo de la percepción. Acompaña el volumen y la recencia de las reseñas, los temas recurrentes, el tiempo de respuesta, la proporción de casos cerrados y la evolución por unidad. Compara periodos equivalentes y registra las acciones para saber qué funcionó.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Qué es la gestión de reputación online?',
+        answer: 'Es el proceso de escuchar, analizar y actuar sobre las señales que forman la percepción de una empresa: reseñas, feedback, redes sociales, encuestas y atención al cliente. No se limita a la nota pública; incluye la experiencia que genera esa percepción.',
+      },
+      {
+        question: '¿En qué se diferencia de responder reseñas?',
+        answer: 'Responder reseñas es una parte del proceso. La gestión de reputación online también incluye detectar patrones, priorizar causas, asignar responsables, corregir la operación y medir si la percepción cambió con el tiempo.',
+      },
+      {
+        question: '¿Cada cuánto tiempo debo revisar la reputación?',
+        answer: 'Una revisión semanal de señales críticas y una revisión mensual de tendencias suele ser un buen punto de partida. La frecuencia depende del volumen de clientes y de la velocidad con la que cambian los canales donde tu empresa recibe feedback.',
+      },
+      {
+        question: '¿Sirve para empresas con varias unidades?',
+        answer: 'Sí. La gestión centralizada permite comparar temas entre unidades, detectar problemas sistémicos y preservar el contexto local. Cada unidad debe tener un responsable y un plan de acción, mientras la central mantiene la visión consolidada.',
+      },
+      {
+        question: '¿Cómo empezar sin una herramienta?',
+        answer: 'Reúne las reseñas y el feedback de los últimos meses, clasifica los temas recurrentes y elige dos o tres problemas prioritarios. Define un responsable y un plazo para cada acción. Cuando el volumen crezca, automatiza la recogida y el análisis para mantener la rutina.',
+      },
+    ],
+  },
+};
+
 const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google','/filtra-ai','/reputacao-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback','/hoteis','/turismo','/agencias','/clinicas','/franquias','/associacoes','/restaurantes','/como-funciona','/parceiros','/pedir-estrela-vs-filtrar','/auditoria-gratuita'];
 
 export function generateStaticParams(){return (Object.entries(pages) as [Lang,Item[]][]).flatMap(([lang,items])=>items.map(x=>({lang,slug:x.slug})));}
@@ -131,9 +226,9 @@ function localizedPath(lang:Lang,sourcePath:string,fallbackSlug:string){
 }
 
 const labels={
-  en:{topics:'Explore related topics',resources:'Guides and resources',why:'What this page helps you solve',how:'A practical workflow',benefits:'What to look for',next:'Continue with Filtra.AI',back:'See the full strategy'},
-  es:{topics:'Explora temas relacionados',resources:'Guías y recursos',why:'Qué problema ayuda a resolver esta página',how:'Un flujo de trabajo práctico',benefits:'Qué debes observar',next:'Continúa con Filtra.AI',back:'Ver la estrategia completa'},
-  zh:{topics:'探索相关主题',resources:'指南与资源',why:'本页面可以帮助解决什么问题',how:'实用的管理流程',benefits:'重点关注什么',next:'继续了解 Filtra.AI',back:'查看完整策略'}
+  en:{topics:'Explore related topics',resources:'Guides and resources',why:'What this page helps you solve',how:'A practical workflow',benefits:'What to look for',next:'Continue with Filtra.AI',back:'See the full strategy',faq:'Frequently asked questions'},
+  es:{topics:'Explora temas relacionados',resources:'Guías y recursos',why:'Qué problema ayuda a resolver esta página',how:'Un flujo de trabajo práctico',benefits:'Qué debes observar',next:'Continúa con Filtra.AI',back:'Ver la estrategia completa',faq:'Preguntas frecuentes'},
+  zh:{topics:'探索相关主题',resources:'指南与资源',why:'本页面可以帮助解决什么问题',how:'实用的管理流程',benefits:'重点关注什么',next:'继续了解 Filtra.AI',back:'查看完整策略',faq:'常见问题'}
 };
 
 const RELATED_BY_SOURCE:Record<string,string[]>={
@@ -218,6 +313,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
 
   const t=labels[lang];
   const topic=found.item;
+  const unique=UNIQUE_CONTENT[`${lang}:${slug}`];
   const related=relatedIndexes(found.index,4);
   const relatedCopy=related.map(i=>pages[lang][i]);
   const primary=localizedPath(lang,sourcePaths[found.index],slug);
@@ -312,15 +408,39 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
         ]
       })}}
     />
+    {unique && unique.faq.length>0 && (
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{__html:JSON.stringify({
+          '@context':'https://schema.org',
+          '@type':'FAQPage',
+          mainEntity:unique.faq.map(item=>({'@type':'Question',name:item.question,acceptedAnswer:{'@type':'Answer',text:item.answer}}))
+        })}}
+      />
+    )}
     <section className="mx-auto max-w-5xl px-6 py-20">
       <p className="mb-4 text-sm font-medium text-indigo-400">Filtra.AI</p>
       <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-6xl">{topic.h1}</h1>
       <p className="mt-6 max-w-3xl text-lg leading-8 text-zinc-300">{topic.intro}</p>
 
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold tracking-tight">{t.why}</h2>
-        <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{sectionCopy.why}</p>
-      </section>
+      {unique ? (
+        unique.sections.map((section)=>(
+          <section key={section.heading} className="mt-12">
+            <h2 className="text-2xl font-bold tracking-tight">{section.heading}</h2>
+            <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{section.body}</p>
+            {section.points && (
+              <ul className="mt-4 max-w-3xl list-disc space-y-2 pl-5 text-base leading-8 text-zinc-300">
+                {section.points.map((point)=><li key={point}>{point}</li>)}
+              </ul>
+            )}
+          </section>
+        ))
+      ) : (
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold tracking-tight">{t.why}</h2>
+          <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{sectionCopy.why}</p>
+        </section>
+      )}
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         {topic.bullets.map(x=><div key={x} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 leading-7">{x}</div>)}
@@ -331,10 +451,26 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
         <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{benefits}</p>
       </section>
 
-      <section className="mt-14">
-        <h2 className="text-2xl font-bold tracking-tight">{t.how}</h2>
-        <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{sectionCopy.how}</p>
-      </section>
+      {!unique && (
+        <section className="mt-14">
+          <h2 className="text-2xl font-bold tracking-tight">{t.how}</h2>
+          <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{sectionCopy.how}</p>
+        </section>
+      )}
+
+      {unique && unique.faq.length>0 && (
+        <section className="mt-14">
+          <h2 className="text-2xl font-bold tracking-tight">{t.faq}</h2>
+          <div className="mt-6 space-y-3">
+            {unique.faq.map((item)=>(
+              <details key={item.question} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+                <summary className="cursor-pointer text-sm font-semibold text-zinc-100">{item.question}</summary>
+                <p className="mt-3 text-base leading-8 text-zinc-400">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
 
       <nav aria-label={t.topics} className="mt-16">
         <h2 className="text-2xl font-bold tracking-tight">{t.next}</h2>

@@ -63,6 +63,18 @@ export function BlogArticle({
           <Link href="/blog/seo-local-avaliacoes-local-pack" className="hover:text-zinc-300">
             Pacotes de SEO local
           </Link>
+          <Link href="/blog/avaliacoes-google-restaurantes" className="hover:text-zinc-300">
+            Avaliações em restaurantes
+          </Link>
+          <Link href="/blog/reputacao-online-clinicas" className="hover:text-zinc-300">
+            Reputação em clínicas
+          </Link>
+          <Link href="/blog/reputacao-franquias-multilocal" className="hover:text-zinc-300">
+            Redes e franquias
+          </Link>
+          <Link href="/blog/google-business-profile-avaliacoes" className="hover:text-zinc-300">
+            Google Business Profile
+          </Link>
           <Link href="/auditoria-gratuita" className="hover:text-zinc-300">
             Auditoria gratuita
           </Link>

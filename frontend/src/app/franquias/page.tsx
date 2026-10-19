@@ -74,6 +74,44 @@ export default function FranquiasPage() {
           heading: 'Reputação centralizada, contexto local',
           body: 'Uma rede precisa de visão consolidada para encontrar padrões e de visão por endereço para corrigir causas locais. A operação deve preservar o contexto de cada unidade em vez de aplicar a mesma resposta a problemas diferentes.',
         },
+        {
+          heading: 'Como priorizar unidades',
+          body: 'Nem toda unidade precisa da mesma atenção. Priorize pela combinação de volume de sinais, gravidade dos temas, recorrência e tendência. Uma unidade com poucas avaliações e um problema grave pode exigir mais atenção do que outra com nota menor, mas sem temas críticos. Registre a prioridade e o responsável para não transformar a comparação em uma lista sem ação.',
+        },
+        {
+          heading: 'Governança entre central e franqueado',
+          body: 'Defina quem responde, quem corrige a operação e quem acompanha o resultado. A central deve cuidar da diretriz, da comparação e dos temas sistêmicos; a unidade local precisa ter autonomia para responder com contexto e agir na causa. Um fluxo de escalonamento claro evita respostas genéricas e atrasos em casos sensíveis.',
+        },
+        {
+          heading: 'Erros comuns ao comparar unidades',
+          body: 'Comparar unidades de portes diferentes, ignorar sazonalidade, olhar apenas a nota média e tratar um caso isolado como padrão. Também é comum centralizar todas as respostas e perder o contexto local. A comparação deve considerar o tipo de operação, o volume de clientes e o período analisado.',
+        },
+      ]}
+      faq={[
+        {
+          question: 'Como comparar a reputação entre unidades de uma franquia?',
+          answer: 'Compare volume de avaliações, nota média, temas recorrentes, avaliações sem resposta e tempo de resposta. Evite ranquear unidades apenas pela nota: uma unidade com poucas avaliações pode ter um resultado instável, e uma unidade grande pode ter mais exposição. O ideal é olhar indicadores absolutos e relativos, sempre com o contexto de operação de cada endereço.',
+        },
+        {
+          question: 'Quem deve responder às avaliações: a central ou o franqueado?',
+          answer: 'A decisão pode variar. O importante é definir um responsável por unidade, um padrão mínimo de resposta e um fluxo de escalonamento para casos sensíveis. A central pode cuidar da diretriz e dos temas sistêmicos; o franqueado tende a ter mais contexto para responder sobre a operação local.',
+        },
+        {
+          question: 'Como lidar com uma avaliação negativa em uma unidade?',
+          answer: 'Responda com transparência, sem discutir detalhes pessoais em público. Registre o tema, acione o responsável local e acompanhe a correção. Se o caso envolver dados do cliente, migre para um canal privado. O objetivo é resolver a causa e demonstrar que a rede leva o feedback a sério.',
+        },
+        {
+          question: 'Como saber se a reputação da rede melhorou?',
+          answer: 'Acompanhe a evolução dos temas recorrentes, a proporção de avaliações respondidas, o tempo de resposta e a recorrência dos problemas. A nota média ajuda, mas não mostra se a causa foi corrigida. Compare períodos e unidades semelhantes e registre as ações tomadas.',
+        },
+        {
+          question: 'O que medir em cada unidade além da nota média?',
+          answer: 'Volume e recência das avaliações, temas de experiência, avaliações sem resposta, tempo de resposta, evolução dos temas e ações concluídas. Também vale comparar a percepção da unidade com a promessa da marca.',
+        },
+        {
+          question: 'Quantas unidades posso acompanhar?',
+          answer: 'O Filtra.AI foi pensado para redes com múltiplas unidades. Comece com uma unidade piloto para validar o fluxo, os temas e os responsáveis; depois expanda para as demais, mantendo a visão consolidada e o contexto local.',
+        },
       ]}
     />
   );

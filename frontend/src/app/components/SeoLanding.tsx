@@ -4,6 +4,7 @@ import { SeoPageHeader } from './SeoPageHeader';
 
 type Section = { heading: string; body: ReactNode };
 type ContextLink = { href: string; title: string; description: string };
+type FaqItem = { question: string; answer: string };
 
 const UI = {
   home: 'Início',
@@ -114,6 +115,7 @@ export function SeoLanding({
   breadcrumbHref,
   contextLinks,
   mcpEndpoint,
+  faq,
 }: {
   h1: string;
   lead: string;
@@ -123,6 +125,7 @@ export function SeoLanding({
   breadcrumbHref?: string;
   contextLinks?: ContextLink[];
   mcpEndpoint?: string;
+  faq?: FaqItem[];
 }) {
   const resolvedContextLinks = contextLinks || (breadcrumbHref ? CONTEXT_LINKS_BY_PATH[breadcrumbHref] : undefined) || DEFAULT_CONTEXT_LINKS;
   return (
@@ -182,6 +185,34 @@ export function SeoLanding({
             <p className="text-sm leading-relaxed text-zinc-300">{section.body}</p>
           </section>
         ))}
+
+        {faq && faq.length > 0 && (
+          <section className="space-y-3">
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  '@context': 'https://schema.org',
+                  '@type': 'FAQPage',
+                  mainEntity: faq.map((item) => ({
+                    '@type': 'Question',
+                    name: item.question,
+                    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+                  })),
+                }),
+              }}
+            />
+            <h2 className="text-lg font-semibold text-zinc-100">Perguntas frequentes</h2>
+            <div className="space-y-3">
+              {faq.map((item) => (
+                <details key={item.question} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+                  <summary className="cursor-pointer text-sm font-medium text-zinc-100">{item.question}</summary>
+                  <p className="mt-2 text-sm leading-relaxed text-zinc-400">{item.answer}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
 
         {mcpEndpoint && (
           <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5">

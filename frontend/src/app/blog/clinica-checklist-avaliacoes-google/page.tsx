@@ -2,6 +2,34 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
+const faq = [
+  {
+    question: 'Quantas avaliações uma clínica precisa ter no Google?',
+    answer:
+      'Não existe um número fixo. O mais importante é ter avaliações recentes, responder aos comentários e manter a ficha do Google completa. Uma clínica com poucas avaliações, mas recentes e bem respondidas, transmite mais confiança do que um histórico antigo sem interação.',
+  },
+  {
+    question: 'É permitido pedir avaliação ao paciente?',
+    answer:
+      'Sim, desde que o pedido seja honesto e não ofereça benefícios em troca de nota positiva. Peça a todos os pacientes, no momento adequado, e nunca selecione apenas quem está satisfeito. O objetivo é facilitar a opinião genuína, não manipular a nota.',
+  },
+  {
+    question: 'Como responder a uma avaliação negativa de paciente?',
+    answer:
+      'Responda com respeito e transparência, sem expor dados clínicos ou discutir em público. Reconheça a experiência, explique o próximo passo e migre a conversa para um canal privado quando envolver informações do paciente. Registre o tema para tratar a causa internamente.',
+  },
+  {
+    question: 'O que acompanhar além da nota média na clínica?',
+    answer:
+      'Acompanhe volume e recência das avaliações, temas recorrentes (espera, atendimento, comunicação, resultado), avaliações sem resposta, tempo de resposta e evolução por unidade. A nota média esconde o motivo da percepção; os temas mostram onde agir.',
+  },
+  {
+    question: 'Avaliações Google influenciam a escolha de uma clínica?',
+    answer:
+      'Sim. A pesquisa local costuma ser uma das primeiras etapas do paciente, e as avaliações visíveis influenciam confiança e decisão. A ficha completa, com endereço, horários, serviços e respostas, reduz a incerteza de quem está comparando opções.',
+  },
+];
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Clínicas: checklist de avaliações Google',
@@ -112,6 +140,28 @@ export default function Page() {
         a situação atual da sua reputação, comece pela{' '}
         <Link href="/auditoria-gratuita" className="underline">auditoria gratuita</Link>.
       </p>
+
+      <H2>10. Perguntas frequentes sobre avaliações Google em clínicas</H2>
+      {faq.map((item) => (
+        <div key={item.question} className="space-y-1">
+          <p className="font-medium text-zinc-100">{item.question}</p>
+          <p>{item.answer}</p>
+        </div>
+      ))}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faq.map((item) => ({
+              '@type': 'Question',
+              name: item.question,
+              acceptedAnswer: { '@type': 'Answer', text: item.answer },
+            })),
+          }),
+        }}
+      />
     </BlogArticle>
   );
 }

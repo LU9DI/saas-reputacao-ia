@@ -25,6 +25,9 @@ const LAST_MODIFIED: Record<string, string> = {
   '/blog/review-1-estrela-primeiras-24-horas': '2026-10-19',
   '/blog/velocity-reviews-google-maps-2026': '2026-10-19',
   '/blog/reputacao-online-hoteis': '2026-10-19',
+  '/franquias': '2026-10-19',
+  '/es/reputacion-google': '2026-10-19',
+  '/es/gestion-reputacion-online': '2026-10-19',
 };
 
 // Next 16 + `output: export` exigem rota explicitamente estática.
