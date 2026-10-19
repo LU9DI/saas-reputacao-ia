@@ -448,7 +448,7 @@ export async function buildRelatorioProfissional(
  */
 export function adaptRelatorioProfissionalAoPlano(report: any, planValue: unknown) {
   const plan = normalizePlan(planValue);
-  const adapted = {
+  const adapted: any = {
     ...report,
     plano: {
       ...(report.plano || {}),
@@ -458,6 +458,36 @@ export function adaptRelatorioProfissionalAoPlano(report: any, planValue: unknow
       proximo_plano: nextPlan(plan),
     },
   };
+
+  // Redige os módulos premium da resposta, mas preserva o snapshot integral no banco
+  // para que um upgrade no mesmo ciclo possa revelar os módulos já calculados.
+  if (!['ultra', 'corporativo', 'rei'].includes(plan)) {
+    delete adapted.sentimento;
+    delete adapted.temas;
+    delete adapted.riscos;
+    delete adapted.oportunidades;
+    delete adapted.narrativa;
+    delete adapted.unidades;
+    delete adapted.ranking_unidades;
+    delete adapted.prioridades_operacionais;
+    delete adapted.radar_estrategico;
+    delete adapted.oportunidades_crescimento;
+    delete adapted.sinais_crescimento;
+    delete adapted.canais;
+    adapted.recomendacoes = undefined;
+  } else if (plan === 'ultra') {
+    delete adapted.unidades;
+    delete adapted.ranking_unidades;
+    delete adapted.prioridades_operacionais;
+    delete adapted.radar_estrategico;
+    delete adapted.oportunidades_crescimento;
+    delete adapted.sinais_crescimento;
+  } else if (plan === 'corporativo') {
+    delete adapted.radar_estrategico;
+    delete adapted.oportunidades_crescimento;
+    delete adapted.sinais_crescimento;
+  }
+
   adapted.canais = channelTexts(adapted);
   return adapted;
 }
