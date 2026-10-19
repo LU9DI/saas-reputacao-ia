@@ -4,7 +4,7 @@ import { BrandMark } from '../components/BrandMark';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
 export const metadata: Metadata = {
-  title: 'Blog | Reputação, Google Reviews e SEO local',
+  title: 'Blog Filtra.AI | Reputação, avaliações Google e SEO local',
   description:
     'Guias da Filtra.AI sobre gestão de reputação online, avaliações Google, feedback de clientes, SEO local e crescimento para empresas e agências.',
   alternates: { canonical: 'https://filtraai.com/blog' },
