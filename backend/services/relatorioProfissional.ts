@@ -188,11 +188,11 @@ function channelTexts(report: any) {
   const themes = [...(report.temas?.atencao || []), ...(report.temas?.positivos || [])].slice(0, 8);
   const units = (report.unidades || []).slice().sort((a: any, b: any) => a.nota_media - b.nota_media);
   const recs = report.recomendacoes || [];
-  // Relatório unificado: as seções abaixo dependem apenas dos dados do período
-  // e nunca variam conforme o plano contratado.
-  const hasAdvancedAnalysis = true;
-  const hasUnitAnalysis = true;
-  const hasStrategicAnalysis = true;
+  // O snapshot pode ser reapresentado sem nova chamada à IA, respeitando o plano atual.
+  const plan = normalizePlan(report.plano?.codigo);
+  const hasAdvancedAnalysis = ['ultra', 'corporativo', 'rei'].includes(plan);
+  const hasUnitAnalysis = ['corporativo', 'rei'].includes(plan);
+  const hasStrategicAnalysis = plan === 'rei';
   const averageLabel = k.avaliacoes ? Number(k.nota_media).toFixed(1) + '/5' : '—';
   const textParts = [
     'FILTRA.AI | RELATÓRIO MENSAL DE REPUTAÇÃO',
@@ -440,6 +440,26 @@ export async function buildRelatorioProfissional(
   }
   baseReport.canais = channelTexts(baseReport);
   return baseReport;
+}
+
+/**
+ * Adapta somente metadados e apresentação de um snapshot já persistido.
+ * Não recalcula métricas nem chama a IA; cobre mudanças de plano no mesmo mês.
+ */
+export function adaptRelatorioProfissionalAoPlano(report: any, planValue: unknown) {
+  const plan = normalizePlan(planValue);
+  const adapted = {
+    ...report,
+    plano: {
+      ...(report.plano || {}),
+      codigo: plan,
+      nome: planLabel(plan),
+      beneficios_incluidos: planBenefits(plan),
+      proximo_plano: nextPlan(plan),
+    },
+  };
+  adapted.canais = channelTexts(adapted);
+  return adapted;
 }
 
 export function normalizeDestinatarios(body: any): RelatorioDestino[] {
