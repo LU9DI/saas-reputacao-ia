@@ -102,7 +102,7 @@ export function PixCheckoutModal({
   const copia = pix?.copia_e_cola || pix?.qr_code || '';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm overflow-y-auto overscroll-contain">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs overflow-y-auto overscroll-contain">
       <div className="w-full max-w-md max-h-[min(92dvh,860px)] overflow-y-auto overflow-x-hidden bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 relative my-3 sm:my-6">
         <button
           type="button"

@@ -10,7 +10,7 @@ import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { useLanguage } from '../Contexts/LanguageContext';
 
 const inputClass =
-  'mt-1.5 w-full px-4 py-3 rounded-xl border border-zinc-600 bg-zinc-950 text-zinc-100 text-base placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+  'mt-1.5 w-full px-4 py-3 rounded-xl border border-zinc-600 bg-zinc-950 text-zinc-100 text-base placeholder:text-zinc-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
 
 function RecuperarForm() {
   const { t } = useLanguage();

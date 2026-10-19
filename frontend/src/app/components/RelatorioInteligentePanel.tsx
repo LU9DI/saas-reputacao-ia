@@ -221,7 +221,7 @@ export function RelatorioInteligentePanel({ empresaId, api, authHeaders, panelDa
   }, [stats, copy]);
 
   return (
-    <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-sm">
+    <section className="rounded-2xl border border-zinc-800 bg-zinc-950 p-5 shadow-xs">
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-zinc-50">

@@ -362,7 +362,7 @@ export default function PaginaAvaliacao() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={tx('name_placeholder')}
-                className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-hidden focus:border-indigo-500"
               />
             </div>
             <div>
@@ -394,7 +394,7 @@ export default function PaginaAvaliacao() {
                     placeholder={tx('comment_placeholder')}
                     rows={5}
                     required
-                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-hidden focus:border-indigo-500"
                   />
                 </div>
                 <div>
@@ -406,7 +406,7 @@ export default function PaginaAvaliacao() {
                     onChange={(e) => setClientWhatsapp(e.target.value)}
                     placeholder={tx('wpp_placeholder')}
                     required
-                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-indigo-500"
+                    className="w-full rounded-xl bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-hidden focus:border-indigo-500"
                   />
                   <p className="text-xs text-zinc-500 mt-2">{tx('wpp_hint')}</p>
                 </div>

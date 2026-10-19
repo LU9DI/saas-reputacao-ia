@@ -231,7 +231,7 @@ export default function AdminMfaPage() {
               <p className="text-sm font-semibold text-amber-900">Códigos de backup (salve agora)</p>
               <ul className="grid grid-cols-2 gap-1 font-mono text-xs text-amber-950">
                 {backups.map((c) => (
-                  <li key={c} className="bg-white/70 rounded px-2 py-1">
+                  <li key={c} className="bg-white/70 rounded-sm px-2 py-1">
                     {c}
                   </li>
                 ))}

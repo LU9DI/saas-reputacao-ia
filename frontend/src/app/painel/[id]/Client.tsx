@@ -88,17 +88,17 @@ function LocalPreviewPanel() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {cards.map(([value, title, trend]) => <div key={title} className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><div className="flex items-start justify-between"><div className="text-2xl font-semibold text-white">{value}</div><span className="text-[11px] text-emerald-400">{trend}</span></div><div className="mt-2 text-xs text-zinc-500">{title}</div></div>)}
+          {cards.map(([value, title, trend]) => <div key={title} className="rounded-2xl border border-white/10 bg-white/2.5 p-5"><div className="flex items-start justify-between"><div className="text-2xl font-semibold text-white">{value}</div><span className="text-[11px] text-emerald-400">{trend}</span></div><div className="mt-2 text-xs text-zinc-500">{title}</div></div>)}
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-[1.35fr_.65fr]">
-          <section className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+          <section className="rounded-3xl border border-white/10 bg-white/2.5 p-5 sm:p-6">
             <div className="flex items-center justify-between"><div><div className="text-sm font-medium text-white">Evolução da reputação</div><div className="mt-1 text-xs text-zinc-500">Últimos 14 dias</div></div><TrendingUp size={18} className="text-emerald-400"/></div>
-            <div className="mt-6 h-48 rounded-2xl bg-gradient-to-b from-indigo-500/15 to-transparent p-3">
+            <div className="mt-6 h-48 rounded-2xl bg-linear-to-b from-indigo-500/15 to-transparent p-3">
               <svg viewBox="0 0 700 180" className="h-full w-full" role="img" aria-label="Evolução ilustrativa da reputação"><path d="M0 145 C70 132 90 142 145 116 S230 128 285 91 S380 104 430 69 S520 82 580 42 S640 53 700 20" fill="none" stroke="currentColor" strokeWidth="5" className="text-indigo-400"/></svg>
             </div>
           </section>
-          <section className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.06] p-5 sm:p-6">
+          <section className="rounded-3xl border border-indigo-400/15 bg-indigo-500/6 p-5 sm:p-6">
             <div className="flex items-center gap-2 text-sm font-semibold"><Bot size={17} className="text-indigo-300"/> IA encontrou 3 temas</div>
             <div className="mt-5 space-y-4">
               {[['Atendimento',82],['Tempo de espera',64],['Equipe',91]].map(([name,value]) => <div key={String(name)}><div className="flex justify-between text-xs text-zinc-400"><span>{name}</span><span>{value}%</span></div><div className="mt-2 h-1.5 rounded-full bg-white/10"><div className="h-1.5 rounded-full bg-indigo-400" style={{width: value + '%'}}/></div></div>)}
@@ -108,12 +108,12 @@ function LocalPreviewPanel() {
         </div>
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><div className="flex items-center gap-2 text-sm font-medium"><Bell size={16} className="text-amber-300"/> Alertas</div><div className="mt-4 text-3xl font-semibold">3</div><p className="mt-1 text-xs text-zinc-500">precisam de atenção hoje</p></section>
-          <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><div className="flex items-center gap-2 text-sm font-medium"><MessageSquare size={16} className="text-indigo-300"/> Feedbacks recentes</div><p className="mt-4 text-sm text-zinc-300">“Atendimento excelente, equipe muito atenciosa.”</p><p className="mt-2 text-xs text-zinc-600">há 2 horas · Google</p></section>
-          <section className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><div className="flex items-center gap-2 text-sm font-medium"><Star size={16} className="text-amber-300"/> {t.panel_quick_actions}</div><div className="mt-4 flex flex-wrap gap-2 text-xs"><span className="rounded-lg border border-white/10 px-3 py-2 text-zinc-400">{t.panel_qr}</span><span className="rounded-lg border border-white/10 px-3 py-2 text-zinc-400">WhatsApp</span><span className="rounded-lg border border-white/10 px-3 py-2 text-zinc-400">Google</span></div></section>
+          <section className="rounded-2xl border border-white/10 bg-white/2.5 p-5"><div className="flex items-center gap-2 text-sm font-medium"><Bell size={16} className="text-amber-300"/> Alertas</div><div className="mt-4 text-3xl font-semibold">3</div><p className="mt-1 text-xs text-zinc-500">precisam de atenção hoje</p></section>
+          <section className="rounded-2xl border border-white/10 bg-white/2.5 p-5"><div className="flex items-center gap-2 text-sm font-medium"><MessageSquare size={16} className="text-indigo-300"/> Feedbacks recentes</div><p className="mt-4 text-sm text-zinc-300">“Atendimento excelente, equipe muito atenciosa.”</p><p className="mt-2 text-xs text-zinc-600">há 2 horas · Google</p></section>
+          <section className="rounded-2xl border border-white/10 bg-white/2.5 p-5"><div className="flex items-center gap-2 text-sm font-medium"><Star size={16} className="text-amber-300"/> {t.panel_quick_actions}</div><div className="mt-4 flex flex-wrap gap-2 text-xs"><span className="rounded-lg border border-white/10 px-3 py-2 text-zinc-400">{t.panel_qr}</span><span className="rounded-lg border border-white/10 px-3 py-2 text-zinc-400">WhatsApp</span><span className="rounded-lg border border-white/10 px-3 py-2 text-zinc-400">Google</span></div></section>
         </div>
 
-        <section className="mt-4 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+        <section className="mt-4 rounded-3xl border border-white/10 bg-white/2.5 p-5 sm:p-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><div className="text-sm font-semibold">{t.panel_shortcuts}</div><div className="mt-1 text-xs text-zinc-500">{t.panel_shortcuts_desc}</div></div><div className="flex flex-wrap gap-2 text-xs"><span className="rounded-full border border-white/10 px-3 py-1.5">{t.panel_overview}</span><span className="rounded-full border border-white/10 px-3 py-1.5">{t.panel_reviews}</span><span className="rounded-full border border-white/10 px-3 py-1.5">{t.panel_ai_report}</span><span className="rounded-full border border-white/10 px-3 py-1.5">{t.panel_alerts}</span><span className="rounded-full border border-white/10 px-3 py-1.5">{t.panel_settings}</span></div></div>
         </section>
       </main>
@@ -472,7 +472,7 @@ export default function PainelEmpresa() {
                 </div>
                 <div className="flex items-center gap-2">
                   {dashboard?.tem_ia && <span className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-400/20 bg-indigo-500/10 px-3 py-2 text-xs text-indigo-200"><Bot size={14} /> {t.panel_ai_active}</span>}
-                  <span className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-400"><ShieldCheck size={14} /> {status}</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/3 px-3 py-2 text-xs text-zinc-400"><ShieldCheck size={14} /> {status}</span>
                 </div>
               </div>
 
@@ -483,7 +483,7 @@ export default function PainelEmpresa() {
                   [String(metricas.positivas ?? 0), t.panel_positive || 'Positivas', ''],
                   [String(metricas.crises_24h ?? 0), t.panel_attention || 'Pontos de atenção', '24h'],
                 ].map(([value, title, suffix]) => (
-                  <div key={String(title)} className="rounded-2xl border border-white/10 bg-white/[0.025] p-5">
+                  <div key={String(title)} className="rounded-2xl border border-white/10 bg-white/2.5 p-5">
                     <div className="flex items-start justify-between gap-3">
                       <div className="text-2xl font-semibold tracking-tight text-white">{value}{suffix === '★' ? '★' : ''}</div>
                       {suffix && suffix !== '★' && <span className="text-[11px] text-amber-300">{suffix}</span>}
@@ -503,7 +503,7 @@ export default function PainelEmpresa() {
                 />
               </div>
 
-              <div className="mt-4 rounded-3xl border border-white/10 bg-white/[0.025] p-1 sm:p-2">
+              <div className="mt-4 rounded-3xl border border-white/10 bg-white/2.5 p-1 sm:p-2">
                 <DashboardCharts
                   distribuicao={dist}
                   positivas={metricas.positivas}
@@ -520,7 +520,7 @@ export default function PainelEmpresa() {
 
               <div id="unit-analysis" className="scroll-mt-28">
               {nivel === 'executivo' && Array.isArray(metricas.unidades_ranking) && metricas.unidades_ranking.length > 0 && (
-                <section className="mt-5 rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6">
+                <section className="mt-5 rounded-3xl border border-white/10 bg-white/2.5 p-5 sm:p-6">
                   {['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) && metricas.unidades_resumo && (
                     <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                       {[
@@ -564,7 +564,7 @@ export default function PainelEmpresa() {
                     </div>
                   )}
                   {['corporativo', 'corp', 'corporate', 'rei'].includes(String(empresa.plan || '').toLowerCase()) && Array.isArray(metricas.prioridades_operacionais) && metricas.prioridades_operacionais.length > 0 && (
-                    <div className="mb-5 rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-4 sm:p-5">
+                    <div className="mb-5 rounded-2xl border border-indigo-400/15 bg-indigo-500/4 p-4 sm:p-5">
                       <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                           <div className="text-[10px] font-semibold uppercase tracking-wide text-indigo-400">Prioridades operacionais</div>
@@ -588,15 +588,15 @@ export default function PainelEmpresa() {
                             </div>
                             <p className="mt-2 text-xs leading-5 text-zinc-400">{item.problema}</p>
                             <div className="mt-3 grid gap-2 sm:grid-cols-3">
-                              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                              <div className="rounded-xl border border-white/5 bg-white/2 p-2.5">
                                 <div className="text-[9px] uppercase tracking-wide text-zinc-600">Nota</div>
                                 <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencia?.nota || '—'}</div>
                               </div>
-                              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                              <div className="rounded-xl border border-white/5 bg-white/2 p-2.5">
                                 <div className="text-[9px] uppercase tracking-wide text-zinc-600">Tema</div>
                                 <div className="mt-1 truncate text-xs font-semibold text-zinc-200">{item.evidencia?.tag || 'Desempenho'}</div>
                               </div>
-                              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                              <div className="rounded-xl border border-white/5 bg-white/2 p-2.5">
                                 <div className="text-[9px] uppercase tracking-wide text-zinc-600">Tendência</div>
                                 <div className={Number(item.evidencia?.tendencia_14d || 0) < 0 ? 'mt-1 text-xs font-semibold text-red-300' : 'mt-1 text-xs font-semibold text-emerald-300'}>
                                   {Number(item.evidencia?.tendencia_14d || 0) > 0 ? '+' : ''}{item.evidencia?.tendencia_14d || '0.0'}
@@ -638,7 +638,7 @@ export default function PainelEmpresa() {
             </section>
 
             {String(empresa.plan || '').toLowerCase() === 'rei' && metricas.radar_estrategico && (
-              <section id="rei-strategic-radar" className="scroll-mt-28 rounded-3xl border border-violet-400/15 bg-violet-500/[0.04] p-5 sm:p-6">
+              <section id="rei-strategic-radar" className="scroll-mt-28 rounded-3xl border border-violet-400/15 bg-violet-500/4 p-5 sm:p-6">
                 <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-violet-300">REI · Inteligência estratégica</p>
@@ -676,7 +676,7 @@ export default function PainelEmpresa() {
                 </div>
 
                 {Array.isArray(metricas.oportunidades_estrategicas) && metricas.oportunidades_estrategicas.length > 0 && (
-                  <div id="rei-opportunities" className="mt-4 scroll-mt-28 rounded-2xl border border-violet-400/10 bg-violet-400/[0.03] p-4">
+                  <div id="rei-opportunities" className="mt-4 scroll-mt-28 rounded-2xl border border-violet-400/10 bg-violet-400/3 p-4">
                     <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                       <div>
                         <div className="text-sm font-semibold text-white">Top oportunidades estratégicas</div>
@@ -704,37 +704,37 @@ export default function PainelEmpresa() {
                             </span>
                           </div>
                           <div className="mt-3 grid gap-2 sm:grid-cols-4">
-                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                            <div className="rounded-xl border border-white/5 bg-white/2 p-2.5">
                               <div className="text-[9px] uppercase tracking-wide text-zinc-600">Ocorrências</div>
                               <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencias?.ocorrencias || 0}</div>
                             </div>
-                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                            <div className="rounded-xl border border-white/5 bg-white/2 p-2.5">
                               <div className="text-[9px] uppercase tracking-wide text-zinc-600">Unidades</div>
                               <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencias?.unidades_afetadas || 0}</div>
                             </div>
-                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                            <div className="rounded-xl border border-white/5 bg-white/2 p-2.5">
                               <div className="text-[9px] uppercase tracking-wide text-zinc-600">Tendência</div>
                               <div className={Number(item.evidencias?.tendencia_14d || 0) > 0 ? 'mt-1 text-xs font-semibold text-red-300' : 'mt-1 text-xs font-semibold text-zinc-300'}>
                                 {Number(item.evidencias?.tendencia_14d || 0) > 0 ? '+' : ''}{item.evidencias?.tendencia_14d || 0}
                               </div>
                             </div>
-                            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-2.5">
+                            <div className="rounded-xl border border-white/5 bg-white/2 p-2.5">
                               <div className="text-[9px] uppercase tracking-wide text-zinc-600">Nota média</div>
                               <div className="mt-1 text-xs font-semibold text-zinc-200">{item.evidencias?.media_nota || '—'}</div>
                             </div>
                           </div>
-                          <div className="mt-3 rounded-xl border border-emerald-400/10 bg-emerald-400/[0.03] p-3">
+                          <div className="mt-3 rounded-xl border border-emerald-400/10 bg-emerald-400/3 p-3">
                             <div className="text-[9px] uppercase tracking-wide text-emerald-300">Impacto no negócio</div>
                             <div className="mt-1 text-xs leading-5 text-zinc-300">{item.impacto_negocio}</div>
                           </div>
-                          <div className="mt-2 rounded-xl border border-indigo-400/10 bg-indigo-400/[0.03] p-3">
+                          <div className="mt-2 rounded-xl border border-indigo-400/10 bg-indigo-400/3 p-3">
                             <div className="text-[9px] uppercase tracking-wide text-indigo-300">Ação recomendada</div>
                             <div className="mt-1 text-xs leading-5 text-indigo-100">{item.acao_recomendada}</div>
                           </div>
                           {Array.isArray(item.unidades_afetadas) && item.unidades_afetadas.length > 0 && (
                             <div className="mt-3 flex flex-wrap gap-1.5">
                               {item.unidades_afetadas.slice(0, 6).map((u: any) => (
-                                <span key={u.id} className="rounded-lg border border-white/5 bg-white/[0.02] px-2 py-1 text-[10px] text-zinc-500">
+                                <span key={u.id} className="rounded-lg border border-white/5 bg-white/2 px-2 py-1 text-[10px] text-zinc-500">
                                   {u.nome}
                                 </span>
                               ))}
@@ -747,7 +747,7 @@ export default function PainelEmpresa() {
                 )}
 
                 {Array.isArray(metricas.radar_estrategico.sinais_crescimento) && metricas.radar_estrategico.sinais_crescimento.length > 0 && (
-                  <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/[0.03] p-4">
+                  <div className="mt-4 rounded-2xl border border-emerald-400/10 bg-emerald-400/3 p-4">
                     <div className="flex items-end justify-between gap-3">
                       <div>
                         <div className="text-sm font-semibold text-white">Sinais de crescimento</div>
@@ -782,7 +782,7 @@ export default function PainelEmpresa() {
                       <div className="text-sm font-semibold text-white">{title}</div>
                       <div className="mt-3 space-y-2">
                         {(Array.isArray(items) ? items : []).slice(0, 5).map((item: any) => (
-                          <div key={item.tema} className="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2.5">
+                          <div key={item.tema} className="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-white/2 px-3 py-2.5">
                             <span className="min-w-0 truncate text-xs text-zinc-300">{item.tema}</span>
                             <span className={tone === 'emerald' ? 'shrink-0 text-xs font-semibold text-emerald-300' : tone === 'amber' ? 'shrink-0 text-xs font-semibold text-amber-300' : 'shrink-0 text-xs font-semibold text-violet-300'}>{item.ocorrencias}</span>
                           </div>
@@ -804,7 +804,7 @@ export default function PainelEmpresa() {
                   panelData={data}
                 />
               ) : (
-                <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/[0.05] p-6">
+                <div className="rounded-3xl border border-indigo-400/15 bg-indigo-500/5 p-6">
                   <div className="flex items-start gap-3">
                     <Bot className="mt-0.5 text-indigo-300" size={20} />
                     <div>
@@ -815,7 +815,7 @@ export default function PainelEmpresa() {
                 </div>
               )}
               {reportMensalOk && (
-                <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/[0.04] p-4">
+                <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/4 p-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <h3 className="text-sm font-semibold text-white">{t.panel_monthly_report || 'Relatório Mensal'}</h3>
@@ -858,7 +858,7 @@ export default function PainelEmpresa() {
             </section>
 
             <section id="alerts" className="scroll-mt-28">
-              <div className="rounded-3xl border border-amber-400/15 bg-amber-500/[0.04] p-6">
+              <div className="rounded-3xl border border-amber-400/15 bg-amber-500/4 p-6">
                 <div className="flex items-start gap-3">
                   <Bell className="mt-0.5 text-amber-300" size={20} />
                   <div className="min-w-0 flex-1">

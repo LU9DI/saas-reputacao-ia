@@ -110,7 +110,7 @@ export function BrandMark({
             }}
           >
             <span className="text-white">Filtra</span>
-            <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-sky-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
               .AI
             </span>
           </span>

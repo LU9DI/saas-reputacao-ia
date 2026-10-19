@@ -186,7 +186,7 @@ function AdminLoginForm() {
   };
 
   const inputCls =
-    'w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900';
+    'w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-sm bg-slate-50/50 text-slate-900';
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">

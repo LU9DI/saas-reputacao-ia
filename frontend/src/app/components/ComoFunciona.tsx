@@ -14,7 +14,7 @@ export function ComoFunciona() {
       className="w-full max-w-4xl mx-auto mt-10 mb-8"
     >
       <div className="rounded-3xl border border-slate-200/80 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)] overflow-hidden">
-        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 px-6 md:px-10 py-9 md:py-11 text-white">
+        <div className="bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 px-6 md:px-10 py-9 md:py-11 text-white">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-200/90 mb-2">
             {t.how_badge || 'Filtra.AI — Orientação ao cliente'}
           </p>

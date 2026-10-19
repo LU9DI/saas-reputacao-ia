@@ -47,7 +47,7 @@ export default function VerifyTrialEmail() {
 
   return (
     <main className="grid min-h-screen place-items-center bg-[#050507] px-6 text-white">
-      <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center">
+      <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/4 p-8 text-center">
         <div className="text-xs uppercase tracking-widest text-indigo-300">Filtra.AI</div>
         <h1 className="mt-3 text-2xl font-semibold">
           {status === 'loading' ? 'Confirmando e-mail' : status === 'ok' ? 'Tudo certo' : 'Não foi possível confirmar'}

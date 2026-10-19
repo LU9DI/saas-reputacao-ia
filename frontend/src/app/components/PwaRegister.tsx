@@ -48,7 +48,7 @@ export function PwaRegister() {
   if (installed || !show || !deferred) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-2xl border border-zinc-700 bg-zinc-900/95 p-4 shadow-xl backdrop-blur sm:left-auto">
+    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-2xl border border-zinc-700 bg-zinc-900/95 p-4 shadow-xl backdrop-blur-sm sm:left-auto">
       <p className="text-sm font-medium text-zinc-100">Instalar Filtra.IA</p>
       <p className="mt-1 text-xs text-zinc-400">
         Adicione à tela inicial e use como app no celular ou PC.

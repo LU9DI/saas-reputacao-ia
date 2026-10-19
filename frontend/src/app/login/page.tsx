@@ -9,7 +9,7 @@ import { useLanguage } from '../Contexts/LanguageContext';
 import { apiFetch } from '../utils/apiFailover';
 
 const inputCls =
-  'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm';
+  'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-sm';
 
 function nextPath(): string | null {
   if (typeof window === 'undefined') return null;
@@ -92,8 +92,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#050507] text-zinc-100">
       <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-8 sm:px-6">
-        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02] shadow-2xl lg:grid-cols-[1.05fr_.95fr]">
-          <section className="hidden border-r border-white/10 bg-gradient-to-br from-indigo-500/15 via-transparent to-transparent p-10 lg:flex lg:flex-col lg:justify-between">
+        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-white/2 shadow-2xl lg:grid-cols-[1.05fr_.95fr]">
+          <section className="hidden border-r border-white/10 bg-linear-to-br from-indigo-500/15 via-transparent to-transparent p-10 lg:flex lg:flex-col lg:justify-between">
             <div>
               <BrandMark size="sm" href="/" subtitle="Online Reputation" />
               <p className="mt-16 text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">Filtra.AI</p>
@@ -161,7 +161,7 @@ export default function LoginPage() {
                     value={identificador}
                     onChange={(e) => setIdentificador(e.target.value)}
                     placeholder={t.login_id_placeholder || 'seu@email.com'}
-                    className={inputCls.replace('bg-zinc-950', 'bg-white/[0.03]').replace('border-zinc-700', 'border-white/10')}
+                    className={inputCls.replace('bg-zinc-950', 'bg-white/3').replace('border-zinc-700', 'border-white/10')}
                   />
                   <p className="text-[11px] text-zinc-600">{t.login_id_hint || 'Use o e-mail cadastrado no trial.'}</p>
                 </div>
@@ -177,7 +177,7 @@ export default function LoginPage() {
                     autoComplete="current-password"
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
-                    className={inputCls.replace('bg-zinc-950', 'bg-white/[0.03]').replace('border-zinc-700', 'border-white/10')}
+                    className={inputCls.replace('bg-zinc-950', 'bg-white/3').replace('border-zinc-700', 'border-white/10')}
                   />
                 </div>
 

@@ -3,11 +3,49 @@
  * Layout e cores ficam nos componentes (Tailwind).
  * Evite regras amplas em input/button — quebram cards claros (PlanCards).
  */
-@tailwind base;
+@import 'tailwindcss';
 
-@tailwind components;
+@theme {
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
 
-@tailwind utilities;
+  --shadow-soft: 0 4px 24px -4px rgba(15, 23, 42, 0.08);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/* Utilitário opcional: formulários em área escura (use className="form-dark" no container) */
+
+@utility form-dark {
+  & input {
+    color-scheme: dark;
+  }
+  & textarea {
+    color-scheme: dark;
+  }
+  & select {
+    color-scheme: dark;
+  }
+}
 
 @layer base {
   *,
@@ -52,14 +90,5 @@
   /* Botões herdam fonte */
   button {
     font-family: inherit;
-  }
-}
-
-/* Utilitário opcional: formulários em área escura (use className="form-dark" no container) */
-@layer components {
-  .form-dark input,
-  .form-dark textarea,
-  .form-dark select {
-    color-scheme: dark;
   }
 }
