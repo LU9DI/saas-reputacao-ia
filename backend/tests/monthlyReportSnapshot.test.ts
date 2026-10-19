@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { getOrGenerateMonthlyReportSnapshot } from '../routes/monthlyReportJobsRoutes.js';
+import { adaptRelatorioProfissionalAoPlano } from '../services/relatorioProfissional.js';
 
 type Row = any;
 
@@ -184,5 +185,68 @@ describe('cache do relatório mensal sob demanda', () => {
     const row = db.rows.get(`e1|${periodo}`);
     assert.equal(row.status, 'accepted', 'status de entrega deve ser preservado');
     assert.equal(JSON.parse(row.report_json).origem, 'recuperado');
+  });
+});
+
+
+describe('benefícios progressivos do relatório mensal', () => {
+  const fullReport = () => ({
+    empresa: { id: 'e1', nome: 'Empresa Cache' },
+    periodo,
+    kpis: { avaliacoes: 12, nota_media: 4.2 },
+    resumo_executivo: 'Resumo comum',
+    distribuicao_estrelas: { cinco: 6 },
+    sentimento: { positivo: 8, neutro: 2, negativo: 2 },
+    temas: { positivos: [{ tema: 'qualidade', volume: 5 }], atencao: [{ tema: 'prazo', volume: 3 }] },
+    riscos: [{ titulo: 'Atraso', evidencias: '3 avaliações' }],
+    oportunidades: [{ titulo: 'Melhoria', evidencias: '4 avaliações' }],
+    recomendacoes: ['Investigar atrasos'],
+    narrativa: { o_que_aconteceu: 'Resumo', por_que_importa: 'Impacto', onde_atuar: 'Comparar unidades', riscos: ['Atraso'], oportunidades: ['Melhoria'], o_que_fazer_agora: ['Investigar'] },
+    unidades: [{ id: 'u1', nome: 'Unidade 1' }],
+    ranking_unidades: [{ id: 'u1', nome: 'Unidade 1', posicao: 1 }],
+    prioridades_operacionais: [{ titulo: 'Prazo' }],
+    radar_estrategico: [{ eixo: 'crescimento', valor: 3 }],
+    oportunidades_crescimento: [{ titulo: 'Expansão' }],
+    canais: { email: { html: '<html>snapshot antigo</html>' } },
+  });
+
+  it('Pro retorna apenas resumo e indicadores essenciais, sem módulos premium no JSON ou HTML', () => {
+    const adapted = adaptRelatorioProfissionalAoPlano(fullReport(), 'pro');
+    assert.equal(adapted.resumo_executivo, 'Resumo comum');
+    assert.equal(adapted.kpis.avaliacoes, 12);
+    for (const key of ['sentimento', 'temas', 'riscos', 'oportunidades', 'recomendacoes', 'narrativa', 'unidades', 'ranking_unidades', 'prioridades_operacionais', 'radar_estrategico', 'oportunidades_crescimento']) {
+      assert.equal(Object.hasOwn(adapted, key), false, 'campo premium removido: ' + key);
+    }
+    assert.equal(String(adapted.canais.email.html).includes('snapshot antigo'), false);
+  });
+
+  it('Ultra recebe análise avançada, mas não comparativo de unidades nem radar REI', () => {
+    const adapted = adaptRelatorioProfissionalAoPlano(fullReport(), 'ultra');
+    assert.ok(adapted.sentimento);
+    assert.ok(adapted.temas);
+    assert.ok(adapted.riscos);
+    assert.ok(adapted.oportunidades);
+    assert.equal(Object.hasOwn(adapted, 'ranking_unidades'), false);
+    assert.equal(Object.hasOwn(adapted, 'prioridades_operacionais'), false);
+    assert.equal(Object.hasOwn(adapted, 'radar_estrategico'), false);
+    assert.equal(Object.hasOwn(adapted, 'oportunidades_crescimento'), false);
+    assert.equal(adapted.narrativa.onde_atuar, undefined);
+  });
+
+  it('Corporativo recebe comparativo e prioridades, mas não módulos estratégicos REI', () => {
+    const adapted = adaptRelatorioProfissionalAoPlano(fullReport(), 'corporativo');
+    assert.ok(adapted.ranking_unidades);
+    assert.ok(adapted.prioridades_operacionais);
+    assert.equal(Object.hasOwn(adapted, 'radar_estrategico'), false);
+    assert.equal(Object.hasOwn(adapted, 'oportunidades_crescimento'), false);
+  });
+
+  it('REI mantém todos os módulos contratados', () => {
+    const adapted = adaptRelatorioProfissionalAoPlano(fullReport(), 'rei');
+    assert.ok(adapted.sentimento);
+    assert.ok(adapted.ranking_unidades);
+    assert.ok(adapted.prioridades_operacionais);
+    assert.ok(adapted.radar_estrategico);
+    assert.ok(adapted.oportunidades_crescimento);
   });
 });
