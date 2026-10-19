@@ -1,6 +1,6 @@
 import { after, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildRelatorioProfissional } from '../services/relatorioProfissional.js';
+import { adaptRelatorioProfissionalAoPlano, buildRelatorioProfissional } from '../services/relatorioProfissional.js';
 import { planLabel } from '../lib/plans.js';
 
 const originalGroq = process.env.GROQ_API_KEY;
