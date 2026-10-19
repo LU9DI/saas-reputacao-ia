@@ -122,6 +122,11 @@
   "panel_monthly_report_desc": "查看月度报告和可用历史记录。",
   "panel_monthly_report_open": "打开月度报告",
   "panel_monthly_report_hide": "隐藏月度报告",
+  "panel_units_menu": "门店管理",
+  "panel_units_menu_units": "门店与专属评价链接",
+  "panel_units_menu_analysis": "排名、主题与行动优先级",
+  "panel_units_menu_radar": "战略雷达",
+  "panel_units_menu_opportunities": "增长机会",
   "panel_alerts": "提醒",
   "panel_settings": "设置",
   "panel_dashboard": "客户面板",
@@ -202,7 +207,7 @@
   "feat_unit_insights": "各门店运营结果与主题分析",
   "feat_priorities": "基于客户评价的行动优先级",
   "feat_strategic_radar": "声誉风险与趋势战略雷达",
-  "feat_growth": "基于数据的增长机会",
+  "feat_growth": "优先排序的增长机会",
   "feat_executive_report": "面向管理层的月度执行报告",
   "feat_feedbacks": "每月 {n} 条客户评价",
   "feat_wpp": "WhatsApp 集成",
@@ -215,5 +220,5 @@
   "feat_early": "优先体验部分新功能",
   "feat_dot": "Filtra Dot：AI 声誉代理",
   "feat_unit_management": "多门店统一管理与专属评价链接",
-  "feat_unit_performance": "门店排名、主题分析与行动优先级"
+  "feat_unit_performance": "门店对比排名、结果分析与行动优先级"
 }

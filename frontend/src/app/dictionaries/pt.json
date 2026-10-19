@@ -169,6 +169,11 @@
   "panel_monthly_report_desc": "Consulte o relatório do mês e o histórico disponível.",
   "panel_monthly_report_open": "Abrir Relatório Mensal",
   "panel_monthly_report_hide": "Ocultar relatório mensal",
+  "panel_units_menu": "Gestão de unidades",
+  "panel_units_menu_units": "Unidades e links exclusivos",
+  "panel_units_menu_analysis": "Ranking, temas e prioridades",
+  "panel_units_menu_radar": "Radar estratégico",
+  "panel_units_menu_opportunities": "Oportunidades de crescimento",
   "panel_alerts": "Alertas",
   "panel_settings": "Configurações",
   "panel_dashboard": "Painel do cliente",
@@ -249,8 +254,8 @@
   "feat_unit_insights": "Análise de resultados e temas por unidade",
   "feat_priorities": "Prioridades de ação baseadas nas avaliações",
   "feat_strategic_radar": "Radar estratégico de riscos e tendências",
-  "feat_growth": "Oportunidades de crescimento identificadas nos dados",
+  "feat_growth": "Oportunidades de crescimento priorizadas",
   "feat_executive_report": "Relatório executivo mensal para a diretoria",
-  "feat_unit_management": "Gestão de múltiplas unidades com links exclusivos de avaliação",
-  "feat_unit_performance": "Ranking por unidade, análise de temas e prioridades de ação"
+  "feat_unit_management": "Gestão consolidada de múltiplas unidades com links exclusivos de avaliação",
+  "feat_unit_performance": "Ranking comparativo, análise de resultados e prioridades de ação por unidade"
 }

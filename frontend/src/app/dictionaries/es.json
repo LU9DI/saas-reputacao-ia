@@ -122,6 +122,11 @@
   "panel_monthly_report_desc": "Consulta el informe del mes y el historial disponible.",
   "panel_monthly_report_open": "Abrir informe mensual",
   "panel_monthly_report_hide": "Ocultar informe mensual",
+  "panel_units_menu": "Gestión de unidades",
+  "panel_units_menu_units": "Unidades y enlaces exclusivos de reseñas",
+  "panel_units_menu_analysis": "Ranking, temas y prioridades de acción",
+  "panel_units_menu_radar": "Radar estratégico",
+  "panel_units_menu_opportunities": "Oportunidades de crecimiento",
   "panel_alerts": "Alertas",
   "panel_settings": "Configuración",
   "panel_dashboard": "Panel del cliente",
@@ -202,7 +207,7 @@
   "feat_unit_insights": "Análisis de resultados y temas por unidad",
   "feat_priorities": "Prioridades de acción basadas en las reseñas",
   "feat_strategic_radar": "Radar estratégico de riesgos y tendencias de reputación",
-  "feat_growth": "Oportunidades de crecimiento basadas en datos",
+  "feat_growth": "Oportunidades de crecimiento priorizadas",
   "feat_executive_report": "Informe ejecutivo mensual para la dirección",
   "feat_feedbacks": "{n} reseñas de clientes/mes",
   "feat_wpp": "Integración con WhatsApp",
@@ -214,6 +219,6 @@
   "feat_support": "Soporte prioritario",
   "feat_early": "Acceso anticipado a nuevas funciones seleccionadas",
   "feat_dot": "Filtra Dot: agente de reputación con IA",
-  "feat_unit_management": "Gestión de múltiples unidades con enlaces exclusivos de reseñas",
-  "feat_unit_performance": "Ranking por unidad, análisis de temas y prioridades de acción"
+  "feat_unit_management": "Gestión consolidada de múltiples unidades con enlaces exclusivos de reseñas",
+  "feat_unit_performance": "Ranking comparativo, análisis de resultados y prioridades de acción por unidad"
 }

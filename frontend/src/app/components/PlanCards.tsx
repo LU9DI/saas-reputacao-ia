@@ -90,11 +90,12 @@ function featuresForPlan(plan: string, limit: number, t: any) {
   const report = textOrFallback(t.feat_report, reportFallback);
   const aiMissing = textOrFallback(t.feat_ai_missing, 'IA integrada');
   const analytics = textOrFallback(t.feat_dashboard, 'Dashboard com análises');
-  const unitManagement = textOrFallback(t.feat_unit_management, 'Gestão de múltiplas unidades com links exclusivos de avaliação');
-  const unitPerformance = textOrFallback(t.feat_unit_performance, 'Ranking por unidade, análise de temas e prioridades de ação');
+  const unitManagement = textOrFallback(t.feat_unit_management, 'Gestão consolidada de múltiplas unidades com links exclusivos de avaliação');
+  const unitPerformance = textOrFallback(t.feat_unit_performance, 'Ranking comparativo, análise de resultados e prioridades de ação por unidade');
   const support = textOrFallback(t.feat_support, 'Suporte Prioritário');
   const early = textOrFallback(t.feat_early, 'Acesso antecipado a novas funções');
   const strategicRadar = textOrFallback(t.feat_strategic_radar, 'Radar estratégico de riscos e tendências');
+  const growth = textOrFallback(t.feat_growth, 'Oportunidades de crescimento priorizadas');
   const dotFallback =
     t.lang_name === 'English'
       ? 'Filtra Dot: AI reputation agent'
@@ -117,7 +118,7 @@ function featuresForPlan(plan: string, limit: number, t: any) {
     rei: {
       features: [
         fb, wpp, ai, report, analytics, unitManagement, unitPerformance,
-        strategicRadar, dot, support, early,
+        strategicRadar, growth, dot, support, early,
       ],
     },
   };
