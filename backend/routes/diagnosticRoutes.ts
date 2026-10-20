@@ -45,7 +45,7 @@ export function mountDiagnosticRoutes(app: Express) {
           await ensureAcquisitionSchema(db);
           await db.run(`INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json)
             VALUES (?,?,?,?,CURRENT_TIMESTAMP,?) ON CONFLICT(id) DO NOTHING`, [
-            crypto.randomUUID(), leadId, 'diagnostic.completed', attribution.utm_source || 'website', JSON.stringify({ company, locale, review_count: reviews.length, attribution }).slice(0, 20000)
+            crypto.randomUUID(), leadId, 'diagnostic.completed', attribution.utm_source || 'website', JSON.stringify({ locale, review_count: reviews.length, attribution }).slice(0, 20000)
           ]);
           await db.run(`UPDATE acquisition_leads SET acquisition_stage='diagnosed', acquisition_next_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE id=? AND COALESCE(acquisition_suppressed,0)=0`, [leadId]);
         } catch (persistError: any) {
