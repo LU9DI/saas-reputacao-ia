@@ -154,7 +154,7 @@ export function buildPublicReputationIndex(
 
     // Only the first valid occurrence is counted, preventing duplicate IDs
     // from inflating the public sample.
-    const dedupeKey = `${businessId}:${reviewId}`;
+    const dedupeKey = JSON.stringify([businessId, reviewId]);
     if (uniqueReviews.has(dedupeKey)) continue;
     uniqueReviews.set(dedupeKey, {
       businessId,
