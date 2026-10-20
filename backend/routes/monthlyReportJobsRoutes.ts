@@ -41,6 +41,39 @@ export function previousMonthUtc(): string {
   return date.toISOString().slice(0, 7);
 }
 
+/** Próximo mês (YYYY-MM) depois do período informado. */
+export function nextMonthUtc(periodo: string): string {
+  const year = Number(periodo.slice(0, 4));
+  const month = Number(periodo.slice(5, 7));
+  return new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 7);
+}
+
+/**
+ * Recuperação de lacuna: se o último snapshot salvo é anterior ao mês anterior
+ * fechado, devolve o mês mais antigo em falta; caso contrário, o período normal.
+ */
+export function resolveCatchUpPeriod(ultimo: unknown, periodo: string): string {
+  const last = String(ultimo || '');
+  if (!/^\d{4}-\d{2}$/.test(last)) return periodo;
+  const next = nextMonthUtc(last);
+  return next < periodo ? next : periodo;
+}
+
+/** Verdadeiro quando o aniversário do mês corrente já passou (recuperação de dia pulado). */
+export function subscriptionReportOverdue(anchorDay: unknown, now = new Date()): boolean {
+  const day = Number(anchorDay);
+  if (!Number.isInteger(day) || day < 1 || day > 31) return false;
+  const lastDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)).getUTCDate();
+  return now.getUTCDate() > Math.min(day, lastDay);
+}
+
+/** Evita gerar período anterior à criação da empresa; sem data confiável, não bloqueia. */
+export function companyExistedInPeriod(criadoEm: unknown, periodo: string): boolean {
+  const iso = String(criadoEm || '').trim();
+  const month = /^\d{4}-\d{2}/.test(iso) ? iso.slice(0, 7) : '';
+  return !month || month <= periodo;
+}
+
 /**
  * Deriva o dia do aniversário a partir do fim do ciclo atual.
  * Usado apenas no backfill de assinaturas antigas (sem `relatorio_dia_assinatura`).
@@ -239,50 +272,96 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
       await ensureMonthlyReportSchema(db);
       const companies = await db.all(
         `SELECT e.id, e.nome_empresa, e.slug, e.plan, e.status, e.relatorio_destinatarios,
-                e.relatorio_dia_assinatura, e.expira_em, e.billing_cycle
+                e.relatorio_dia_assinatura, e.expira_em, e.criado_em, e.billing_cycle
          FROM empresas e
          WHERE lower(COALESCE(e.plan, '')) IN ('pro','ultra','corporativo','corporate','corp','rei')
            AND lower(COALESCE(e.status, '')) IN ('ativo','active')
          ORDER BY e.id`
       ) as any[];
-      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0, sem_dia_assinatura: 0, snapshots_gerados: 0, snapshots_recuperados: 0 };
+      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0, sem_dia_assinatura: 0, snapshots_gerados: 0, snapshots_recuperados: 0, recuperacoes_aniversario: 0, recuperacoes_lacuna: 0 };
       for (const empresa of companies) {
-        // Recupera primeiro a reserva pendente mais antiga, mesmo que o mês corrente tenha mudado.
-        // Sem isso, uma falha atravessando a virada do mês ficaria órfã da cadência automática.
+        // Prioridade da execução diária:
+        // 1) snapshot incompleto (sem report_json) de qualquer mês;
+        // 2) mês fechado faltante entre o último snapshot e o mês anterior;
+        // 3) cadência normal do aniversário (com recuperação se o dia passou);
+        // 4) entrega pendente de um snapshot já salvo.
+        // Assim, uma falha de e-mail não impede a geração dos meses seguintes.
         let reportPeriod = periodo;
         let pendingReport: any = null;
+        let gapRecovery = false;
+        let recovery = '';
         if (!manualRecovery) {
           const retryCutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
           pendingReport = await db.get(
             `SELECT periodo FROM relatorio_envios_mensais
-             WHERE empresa_id = ? AND (
-               status IN ('failed', 'generated') OR
-               (status = 'accepted' AND report_json IS NULL) OR
+             WHERE empresa_id = ? AND report_json IS NULL AND (
+               status IN ('failed', 'generated', 'accepted') OR
                (status = 'processing' AND updated_at <= ?)
              )
              ORDER BY periodo ASC LIMIT 1`,
             [empresa.id, retryCutoff],
           ) as any;
-          if (pendingReport?.periodo && isMonth(pendingReport.periodo)) reportPeriod = String(pendingReport.periodo);
+          if (pendingReport?.periodo && isMonth(pendingReport.periodo)) {
+            reportPeriod = String(pendingReport.periodo);
+            recovery = 'generation';
+          } else {
+            pendingReport = null;
+            // Lacuna: já existe histórico, mas falta um mês fechado intermediário.
+            // Retoma o mais antigo em falta (um mês por execução) antes de voltar à cadência normal.
+            const lastSaved = await db.get(
+              `SELECT MAX(periodo) AS ultimo FROM relatorio_envios_mensais WHERE empresa_id = ? AND report_json IS NOT NULL`,
+              [empresa.id],
+            ) as any;
+            const catchUp = resolveCatchUpPeriod(lastSaved?.ultimo, periodo);
+            if (catchUp !== periodo) {
+              reportPeriod = catchUp;
+              gapRecovery = true;
+              recovery = 'generation';
+            }
+          }
         }
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
-        // O cron diário processa o relatório no aniversário mensal.
-        // Reservas ainda não resolvidas podem ser retomadas em dias seguintes, sem esperar outro mês.
+        // Cadência: no aniversário mensal, gera o mês anterior fechado.
+        // Recuperações: (1) aniversário já vencido e snapshot ausente no mesmo mês;
+        // (2) mês fechado faltante entre o último snapshot e o mês anterior.
         // Não inferimos o aniversário de expira_em: em meses curtos, o dia original pode ser ambíguo.
         if (!manualRecovery) {
           const anchorDay = Number(empresa.relatorio_dia_assinatura);
-          if ((!Number.isInteger(anchorDay) || anchorDay < 1 || anchorDay > 31) && !pendingReport?.periodo) {
-            stats.sem_dia_assinatura++;
-            stats.pulados++;
-            continue;
+          const anchorOk = Number.isInteger(anchorDay) && anchorDay >= 1 && anchorDay <= 31;
+          if (recovery === 'generation') {
+            if (gapRecovery) stats.recuperacoes_lacuna++;
+          } else {
+            const existing = await db.get(
+              'SELECT status, report_json, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?',
+              [empresa.id, reportPeriod],
+            ) as any;
+            const due = anchorOk && subscriptionReportDue(anchorDay);
+            const missedAnniversary = anchorOk && !existing?.report_json && subscriptionReportOverdue(anchorDay)
+              && companyExistedInPeriod(empresa.criado_em, reportPeriod);
+            if (due || missedAnniversary) {
+              if (missedAnniversary) stats.recuperacoes_aniversario++;
+            } else {
+              // Nenhuma geração pendente: tenta a entrega mais antiga já salva.
+              const deliveryPending = await db.get(
+                `SELECT periodo FROM relatorio_envios_mensais
+                 WHERE empresa_id = ? AND report_json IS NOT NULL AND status IN ('failed', 'generated')
+                 ORDER BY periodo ASC LIMIT 1`,
+                [empresa.id],
+              ) as any;
+              if (deliveryPending?.periodo && isMonth(deliveryPending.periodo)) {
+                reportPeriod = String(deliveryPending.periodo);
+                pendingReport = deliveryPending;
+              } else if (!anchorOk) {
+                stats.sem_dia_assinatura++;
+                stats.pulados++;
+                continue;
+              } else {
+                stats.pulados++;
+                continue;
+              }
+            }
           }
-          const existing = await db.get(
-            'SELECT status, report_json, updated_at FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?',
-            [empresa.id, reportPeriod],
-          ) as any;
-          const unresolved = hasUnresolvedMonthlyReport(existing?.status, existing?.report_json, existing?.updated_at);
-          if (!subscriptionReportDue(anchorDay) && !unresolved) { stats.pulados++; continue; }
         }
         // Destinatários não podem bloquear a criação do snapshot: a reserva começa com a configuração explícita, mesmo vazia.
         const configuredDestinatarios = parseDestinations(empresa.relatorio_destinatarios);

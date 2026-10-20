@@ -63,7 +63,9 @@ O armazenamento do snapshot mantém a chave de empresa + mês para evitar geraç
 
 ## Operação do job mensal
 
-O agendador externo deve chamar **diariamente** `POST /api/jobs/monthly-reports`, autenticando com `JOBS_SECRET` (`Authorization: Bearer …` ou header `x-jobs-secret`). No dia do aniversário de cada assinatura elegível, o job gera e persiste o snapshot do mês anterior; reservas criadas que falharem são retomadas nas execuções seguintes, sem duplicar geração. Para recuperação manual de um mês específico, use `?mes=YYYY-MM`.
+O agendador externo deve chamar **diariamente** `POST /api/jobs/monthly-reports`, autenticando com `JOBS_SECRET` (`Authorization: Bearer …` ou header `x-jobs-secret`). No dia do aniversário de cada assinatura elegível, o job gera e persiste o snapshot do mês anterior.
+
+Se o dia do aniversário for pulado, o job recupera o snapshot nos dias seguintes do mesmo mês. Se um mês inteiro ficar para trás e a empresa já tiver histórico, o job retoma o mês mais antigo em falta nas execuções seguintes, um por execução, sem gerar períodos anteriores à criação da empresa. Falhas de geração e de distribuição são tratadas separadamente: uma entrega de e-mail que falhou não impede a geração dos meses seguintes. Para recuperação manual de um mês específico, use `?mes=YYYY-MM`.
 
 O agendador não faz parte deste repositório (Render/Cloudflare ou equivalente). Sem ele, nenhuma geração automática roda — a leitura do painel continua funcionando e não consome tokens, mas depende de snapshots já existentes.
 
