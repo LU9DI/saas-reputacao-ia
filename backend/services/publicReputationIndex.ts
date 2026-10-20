@@ -12,7 +12,7 @@ export type ReputationIndexInput = {
   isTest?: boolean;
 };
 
-export type PublicReputationIndicator = {
+type NormalizedReview = {\n  businessId: string;\n  sector: string;\n  region: string;\n  period: string;\n  rating: 1 | 2 | 3 | 4 | 5;\n};\n\nexport type PublicReputationIndicator = {
   sector: string;
   region: string;
   period: string;
@@ -81,7 +81,7 @@ export function buildPublicReputationIndex(
     });
   }
 
-  const groups = new Map<string, typeof uniqueReviews extends Map<string, infer V> ? V[] : never>();
+  const groups = new Map<string, NormalizedReview[]>();
   for (const review of uniqueReviews.values()) {
     const key = [review.sector, review.region, review.period].join('|');
     const group = groups.get(key) || [];
