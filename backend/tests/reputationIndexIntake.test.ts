@@ -92,6 +92,20 @@ describe('prepareAuthorizedResearchBatch', () => {
     assert.equal(malformedConsentResult.audit.reasons.company_consent_missing_or_invalid, 1);
   });
 
+  it('fails closed when source approvals or company consent records conflict', () => {
+    const conflictingSources = prepareAuthorizedResearchBatch(
+      [record], [approval, { ...approval, approvedForPublicResearch: false }], [consent], now,
+    );
+    assert.equal(conflictingSources.eligible.length, 0);
+    assert.equal(conflictingSources.audit.reasons.source_approval_ambiguous, 1);
+
+    const conflictingConsents = prepareAuthorizedResearchBatch(
+      [record], [approval], [consent, { ...consent, consentRecordId: 'other-consent' }], now,
+    );
+    assert.equal(conflictingConsents.eligible.length, 0);
+    assert.equal(conflictingConsents.audit.reasons.company_consent_ambiguous, 1);
+  });
+
   it('does not expose raw company keys in audit output', () => {
     const result = prepareAuthorizedResearchBatch([record], [approval], [consent], now);
     assert.equal(JSON.stringify(result.audit).includes('pseudonymous-company-1'), false);
