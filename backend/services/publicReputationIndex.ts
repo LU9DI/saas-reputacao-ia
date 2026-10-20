@@ -12,7 +12,15 @@ export type ReputationIndexInput = {
   isTest?: boolean;
 };
 
-type NormalizedReview = {\n  businessId: string;\n  sector: string;\n  region: string;\n  period: string;\n  rating: 1 | 2 | 3 | 4 | 5;\n};\n\nexport type PublicReputationIndicator = {
+type NormalizedReview = {
+  businessId: string;
+  sector: string;
+  region: string;
+  period: string;
+  rating: 1 | 2 | 3 | 4 | 5;
+};
+
+export type PublicReputationIndicator = {
   sector: string;
   region: string;
   period: string;
