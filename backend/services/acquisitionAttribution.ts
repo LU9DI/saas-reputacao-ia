@@ -59,6 +59,7 @@ export type AcquisitionEventRow = {
 export function summarizeAcquisitionEvents(events: AcquisitionEventRow[]) {
   type LeadSummary = {
     attribution: AcquisitionAttribution;
+    attributionAt: string;
     consented: boolean;
     diagnosed: boolean;
     lastEventAt: string;
@@ -84,8 +85,16 @@ export function summarizeAcquisitionEvents(events: AcquisitionEventRow[]) {
     const hasAttribution = Object.values(attribution).some(Boolean);
     const priorHasAttribution = previous && Object.values(previous.attribution).some(Boolean);
     const eventAt = String(event.occurred_at || '');
+    // Stable first-touch attribution: choose the earliest event carrying valid attribution,
+    // regardless of database result ordering.
+    const useThisAttribution = hasAttribution && (
+      !priorHasAttribution ||
+      !previous?.attributionAt ||
+      (eventAt && eventAt < previous.attributionAt)
+    );
     leads.set(leadId, {
-      attribution: hasAttribution ? attribution : (priorHasAttribution ? previous.attribution : attribution),
+      attribution: useThisAttribution ? attribution : (priorHasAttribution ? previous.attribution : attribution),
+      attributionAt: useThisAttribution ? eventAt : (previous?.attributionAt || ''),
       consented: Boolean(previous?.consented || eventType === 'consent.granted'),
       diagnosed: Boolean(previous?.diagnosed || eventType === 'diagnostic.completed'),
       lastEventAt: eventAt > (previous?.lastEventAt || '') ? eventAt : (previous?.lastEventAt || eventAt),
@@ -113,7 +122,7 @@ export function summarizeAcquisitionEvents(events: AcquisitionEventRow[]) {
     const content = a.utm_content || 'unspecified';
     const key = JSON.stringify([source, medium, campaign, content]);
     const group = groups.get(key) || { source, medium, campaign, content, leads: new Set<string>(), diagnosed: new Set<string>() };
-    group.leads.add(leadId);
+    if (summary.consented) group.leads.add(leadId);
     if (summary.diagnosed) group.diagnosed.add(leadId);
     groups.set(key, group);
   }
