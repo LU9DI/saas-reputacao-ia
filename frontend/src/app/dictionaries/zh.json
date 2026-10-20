@@ -119,7 +119,7 @@
   "panel_reviews": "评价",
   "panel_ai_report": "智能报告",
   "panel_monthly_report": "月度报告",
-  "panel_monthly_report_desc": "使用面板已加载的数据展示上个月的专业报告。",
+  "panel_monthly_report_desc": "参考月份的专业、易懂报告。从已保存的快照打开或下载 HTML，不会发起新的服务器请求。",
   "panel_monthly_report_open": "打开月度报告",
   "panel_monthly_report_hide": "隐藏月度报告",
   

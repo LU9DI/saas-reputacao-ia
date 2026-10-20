@@ -1,12 +1,13 @@
 /**
- * E2E (integração): pagamento Stripe simulado → plano ativado.
+ * E2E (integração): webhook Stripe e leitura da assinatura.
  *
- * Fluxo:
- *  1. Cria empresa trial no SQLite temporário
- *  2. POST /api/webhook/stripe com checkout.session.completed (sem assinatura HMAC em test)
- *  3. Assert status=ativo, plan=pro, stripe_customer_id preenchido
+ * Casos cobertos:
+ *  1. Stripe desativado → webhook rejeitado (400) e empresa permanece em trial.
+ *  2. Webhook assinado (HMAC) com checkout.session.completed → ativa plan=pro.
+ *  3. GET /api/empresa/:id/assinatura sem JWT → 401.
+ *  4. GET /api/empresa/:id/assinatura com JWT válido → 200 com status/plano.
  *
- * Não exige STRIPE_SECRET_KEY real — só a lógica de ativação pós-pagamento.
+ * Não exige STRIPE_SECRET_KEY real — usa apenas o segredo de webhook de teste.
  */
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
@@ -26,8 +27,9 @@ process.env.APP_URL = 'http://localhost:3000';
 process.env.FRONTEND_URL = 'http://localhost:3000';
 process.env.ADMIN_EMAIL = 'admin-stripe-e2e@example.com';
 process.env.ADMIN_PASSWORD = 'AdminTest@123';
-// Sem STRIPE_WEBHOOK_SECRET → constructStripeEvent aceita JSON cru em non-prod
+// Sem STRIPE_ENABLED/STRIPE_WEBHOOK_SECRET → o webhook deve rejeitar sem ativar.
 delete process.env.STRIPE_WEBHOOK_SECRET;
+delete process.env.STRIPE_ENABLED;
 delete process.env.DATABASE_URL;
 
 let server: any;
@@ -92,59 +94,119 @@ after(async () => {
   }
 });
 
+function signedStripeHeaders(body: string, secret: string) {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const signature = crypto
+    .createHmac('sha256', secret)
+    .update(`${timestamp}.${body}`, 'utf8')
+    .digest('hex');
+  return {
+    'Content-Type': 'application/json',
+    'stripe-signature': `t=${timestamp},v1=${signature}`,
+  };
+}
+
+function checkoutEvent(empresaId: string) {
+  return {
+    id: `evt_test_${Date.now()}`,
+    type: 'checkout.session.completed',
+    data: {
+      object: {
+        object: 'checkout.session',
+        id: `cs_test_${Date.now()}`,
+        payment_status: 'paid',
+        customer: 'cus_test_e2e',
+        subscription: 'sub_test_e2e',
+        client_reference_id: empresaId,
+        metadata: {
+          empresa_id: empresaId,
+          plan_db: 'pro',
+          plano: 'pro',
+        },
+      },
+    },
+  };
+}
+
 describe('E2E Stripe webhook → ativação de plano', () => {
-  it('checkout.session.completed ativa plan=pro', async () => {
+  it('rejeita webhook quando Stripe está desativado e não altera a empresa', async () => {
+    delete process.env.STRIPE_ENABLED;
     const empresaId = (global as any).__stripeE2EEmpresaId as string;
     assert.ok(empresaId);
 
     const before = await getDb().get('SELECT * FROM empresas WHERE id = ?', [empresaId]);
     assert.equal(before.status, 'trial');
 
-    const event = {
-      id: `evt_test_${Date.now()}`,
-      type: 'checkout.session.completed',
-      data: {
-        object: {
-          object: 'checkout.session',
-          id: `cs_test_${Date.now()}`,
-          payment_status: 'paid',
-          customer: 'cus_test_e2e',
-          subscription: 'sub_test_e2e',
-          client_reference_id: empresaId,
-          metadata: {
-            empresa_id: empresaId,
-            plan_db: 'pro',
-            plano: 'pro',
-          },
-        },
-      },
-    };
-
-    const body = JSON.stringify(event);
     const res = await fetch(`${baseUrl}/api/webhook/stripe`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // sem stripe-signature: ok em NODE_ENV=test sem STRIPE_WEBHOOK_SECRET
-      },
-      body,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(checkoutEvent(empresaId)),
     });
 
     const data = await res.json().catch(() => ({}));
-    assert.equal(res.status, 200, JSON.stringify(data));
-    assert.equal(data.ok, true);
-    assert.equal(data.action, 'activate');
+    assert.equal(res.status, 400);
+    assert.match(String(data.error), /Stripe está desativado/);
 
     const after = await getDb().get('SELECT * FROM empresas WHERE id = ?', [empresaId]);
-    assert.equal(after.status, 'ativo');
-    assert.equal(after.plan, 'pro');
-    assert.equal(after.stripe_customer_id, 'cus_test_e2e');
-    assert.equal(after.stripe_subscription_id, 'sub_test_e2e');
+    assert.equal(after.status, 'trial');
+    assert.equal(after.plan, 'trial');
   });
 
-  it('GET /api/empresa/:id/assinatura reflete acesso pago', async () => {
+  it('checkout.session.completed com assinatura válida ativa plan=pro', async () => {
+    const empresaId = (global as any).__stripeE2EEmpresaId as string;
+    assert.ok(empresaId);
+
+    const secret = 'whsec_test_e2e';
+    process.env.STRIPE_ENABLED = 'true';
+    process.env.STRIPE_WEBHOOK_SECRET = secret;
+    try {
+      const body = JSON.stringify(checkoutEvent(empresaId));
+      const res = await fetch(`${baseUrl}/api/webhook/stripe`, {
+        method: 'POST',
+        headers: signedStripeHeaders(body, secret),
+        body,
+      });
+
+      const data = await res.json().catch(() => ({}));
+      assert.equal(res.status, 200, JSON.stringify(data));
+      assert.equal(data.ok, true);
+      assert.equal(data.action, 'activate');
+
+      const after = await getDb().get('SELECT * FROM empresas WHERE id = ?', [empresaId]);
+      assert.equal(after.status, 'ativo');
+      assert.equal(after.plan, 'pro');
+      assert.equal(after.stripe_customer_id, 'cus_test_e2e');
+      assert.equal(after.stripe_subscription_id, 'sub_test_e2e');
+    } finally {
+      delete process.env.STRIPE_ENABLED;
+      delete process.env.STRIPE_WEBHOOK_SECRET;
+    }
+  });
+
+  it('GET /api/empresa/:id/assinatura exige autenticação', async () => {
     const empresaId = (global as any).__stripeE2EEmpresaId as string;
     const res = await fetch(`${baseUrl}/api/empresa/${empresaId}/assinatura`);
+    assert.equal(res.status, 401);
+  });
+
+  it('GET /api/empresa/:id/assinatura reflete acesso pago com JWT válido', async () => {
+    const empresaId = (global as any).__stripeE2EEmpresaId as string;
+    const expira = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    await getDb().run(
+      `UPDATE empresas SET status = 'ativo', plan = 'pro', expira_em = ? WHERE id = ?`,
+      [expira, empresaId],
+    );
+
+    const { signAccessToken } = await import('../lib/jwtKeys.js');
+    const token = signAccessToken({
+      id: 'user-stripe-e2e',
+      nome_funcionario: 'Teste E2E',
+      empresa_id: empresaId,
+    });
+
+    const res = await fetch(`${baseUrl}/api/empresa/${empresaId}/assinatura`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     assert.equal(res.status, 200);
     const data = await res.json();
     assert.equal(data.status, 'ativo');

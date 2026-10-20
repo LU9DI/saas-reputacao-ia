@@ -215,7 +215,7 @@ describe('benefícios progressivos do relatório mensal', () => {
     narrativa: { o_que_aconteceu: 'Resumo', por_que_importa: 'Impacto', onde_atuar: 'Comparar unidades', riscos: ['Atraso'], oportunidades: ['Melhoria'], o_que_fazer_agora: ['Investigar'] },
     unidades: [{ id: 'u1', nome: 'Unidade 1' }],
     ranking_unidades: [{ id: 'u1', nome: 'Unidade 1', posicao: 1 }],
-    prioridades_operacionais: [{ titulo: 'Prazo' }],
+    prioridades_operacionais: [{ unidade: 'Unidade 1', evidencia: 'Média 3,0/5 em 4 avaliações.', acao_recomendada: 'Revisar o atendimento.' }],
     radar_estrategico: [{ eixo: 'crescimento', valor: 3 }],
     oportunidades_crescimento: [{ titulo: 'Expansão' }],
     canais: { email: { html: '<html>snapshot antigo</html>' } },
@@ -250,6 +250,8 @@ describe('benefícios progressivos do relatório mensal', () => {
     const adapted = adaptRelatorioProfissionalAoPlano(fullReport(), 'corporativo');
     assert.ok(adapted.ranking_unidades);
     assert.ok(adapted.prioridades_operacionais);
+    assert.match(String(adapted.canais.email.text), /NÃO CLASSIFICADA/);
+    assert.match(String(adapted.canais.email.html), /NÃO CLASSIFICADA/);
     assert.equal(Object.hasOwn(adapted, 'radar_estrategico'), false);
     assert.equal(Object.hasOwn(adapted, 'oportunidades_crescimento'), false);
   });

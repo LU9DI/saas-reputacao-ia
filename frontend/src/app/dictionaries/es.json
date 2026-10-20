@@ -119,7 +119,7 @@
   "panel_reviews": "Reseñas",
   "panel_ai_report": "Informe inteligente",
   "panel_monthly_report": "Informe mensual",
-  "panel_monthly_report_desc": "Informe profesional del mes anterior, mostrado con los datos ya cargados en el panel.",
+  "panel_monthly_report_desc": "Informe profesional y didáctico del mes de referencia. Ábralo o descárguelo en HTML desde el snapshot guardado, sin nueva consulta al servidor.",
   "panel_monthly_report_open": "Abrir informe mensual",
   "panel_monthly_report_hide": "Ocultar informe mensual",
   

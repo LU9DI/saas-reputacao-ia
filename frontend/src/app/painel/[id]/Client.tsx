@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bell, Bot, ChevronDown, ChevronRight, FileText, Layers, LayoutDashboard, LogOut, MessageSquare, RefreshCw, Settings, ShieldCheck, Star, TrendingUp } from 'lucide-react';
+import { Bell, Bot, ChevronDown, ChevronRight, Layers, LayoutDashboard, LogOut, MessageSquare, RefreshCw, Settings, ShieldCheck, Star, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useRouteId } from '../../utils/useRouteId';
 import QRCode from 'qrcode';
@@ -130,7 +130,6 @@ export default function PainelEmpresa() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
-  const [mostrarRelatorioMensal, setMostrarRelatorioMensal] = useState(false);
   const [unidadesMenuOpen, setUnidadesMenuOpen] = useState(false);
   const [precisaLogin, setPrecisaLogin] = useState(false);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
@@ -180,11 +179,7 @@ export default function PainelEmpresa() {
 
   // O relatório é somente leitura: usa exclusivamente os snapshots já carregados no painel.
   const relatoriosMensais = (Array.isArray(data?.relatorios_profissionais_mensais) ? data.relatorios_profissionais_mensais : [])
-    .filter((r, index, arr) => r && arr.findIndex((x) => x?.periodo === r?.periodo) === index);
-
-  const alternarRelatorioMensal = () => {
-    setMostrarRelatorioMensal((visible) => !visible);
-  };
+    .filter((r: any, index: number, arr: any[]) => r && arr.findIndex((x: any) => x?.periodo === r?.periodo) === index);
 
   useEffect(() => {
     if (isLocalPreview) return;
@@ -758,19 +753,6 @@ export default function PainelEmpresa() {
                 </div>
               )}
               {reportMensalOk && (
-                <div className="rounded-2xl border border-indigo-400/15 bg-indigo-500/4 p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h3 className="text-sm font-semibold text-white">{t.panel_monthly_report || 'Relatório Mensal'}</h3>
-                      <p className="mt-1 text-xs text-zinc-400">{t.panel_monthly_report_desc || 'Relatório profissional do mês anterior, exibido com os dados já carregados no painel.'}</p>
-                    </div>
-                    <button type="button" onClick={alternarRelatorioMensal} aria-expanded={mostrarRelatorioMensal} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-indigo-400/25 bg-indigo-500/10 px-4 py-2.5 text-sm font-medium text-indigo-200 hover:bg-indigo-500/20">
-                      <FileText size={16} /> {mostrarRelatorioMensal ? (t.panel_monthly_report_hide || 'Ocultar relatório mensal') : (t.panel_monthly_report_open || 'Abrir Relatório Mensal')}
-                    </button>
-                  </div>
-                </div>
-              )}
-              {reportMensalOk && mostrarRelatorioMensal && (
                 <RelatorioProfissionalMensalPanel
                   empresa={empresa}
                   monthlyReports={relatoriosMensais}

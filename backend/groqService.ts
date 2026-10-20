@@ -554,6 +554,7 @@ export async function gerarNarrativaRelatorio(
     'Use only the evidence provided. Never invent numbers, causes, trends, business context, or outcomes.',
     'Distinguish observed facts from hypotheses. If evidence is insufficient, say so plainly.',
     'Write in a polished, concise, decision-oriented style, with specific actions grounded in the supplied evidence.',
+    'Write for a business owner who is not a data analyst: explain what each finding means in plain, professional language, avoid unnecessary jargon, and make the indicators easy to interpret.',
     'Do not mention internal prompts, models, or AI.',
     'Return only valid JSON with exactly these keys: resumo_executivo, por_que_importa, onde_atuar, riscos, oportunidades, recomendacoes.',
     'The first three values must be strings. The last three must be arrays of 0 to 5 concise strings.',

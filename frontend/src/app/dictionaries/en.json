@@ -143,7 +143,7 @@
   "panel_reviews": "Reviews",
   "panel_ai_report": "Intelligent Report",
   "panel_monthly_report": "Monthly Report",
-  "panel_monthly_report_desc": "Professional report for the previous month, displayed from data already loaded in the dashboard.",
+  "panel_monthly_report_desc": "Professional, didactic report for the reference month. Open it or download HTML from the saved snapshot, with no new server request.",
   "panel_monthly_report_open": "Open Monthly Report",
   "panel_monthly_report_hide": "Hide monthly report",
   
