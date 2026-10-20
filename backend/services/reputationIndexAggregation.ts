@@ -181,7 +181,7 @@ export function aggregateReputationIndex(
     }
   }
 
-  const overall = aggregate('Brasil', eligible, minCompanies, minReviews);
+  const overall = aggregate('Amostra elegível', eligible, minCompanies, minReviews);
   const sectorAggregates = [...bySector.entries()]
     .map(([label, rows]) => aggregate(label, rows, minCompanies, minReviews))
     .filter((item): item is ReputationAggregate => item !== null)
