@@ -16,7 +16,7 @@
 - `public.empresas`: 8 empresas cadastradas.
 - O esquema de `empresas` não possui campos estruturados de setor econômico, município/UF ou região.
 - `reviews` inclui identificadores da empresa, nota, comentário, datas, tags/sentimento e sinalização de teste, entre outros campos operacionais. Esses campos não devem ser expostos em páginas públicas em nível individual.
-- RLS aparece habilitado nas tabelas Filtra consultadas. Isso não comprova, por si só, que todas as políticas de acesso estejam corretas; não foi feita alteração de políticas nesta tarefa.
+- A consulta de contagens e esquema de `reviews` e `empresas` não foi uma auditoria completa de RLS. Uma triagem separada identificou RLS desabilitado em sete tabelas internas: `leads_basis_backup_20261008`, `relatorio_generation_log`, `relatorio_envios_mensais`, `empresa_owners`, `dot_admin_pins`, `dot_admin_pin_attempts` e `dot_admin_sessions`. As verificações de grants disponíveis não indicaram `SELECT`/`INSERT` para `anon` ou `authenticated` nessas tabelas; portanto, RLS desabilitado é um alerta que exige revisão por tabela, mas não prova isoladamente exposição pública. Nenhuma política ou permissão foi alterada. Ver `docs/INDICE_REPUTACAO_FONTE_DE_DADOS.md` para o plano de triagem.
 
 ## Decisão sobre a primeira página
 
