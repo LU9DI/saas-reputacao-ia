@@ -110,6 +110,34 @@ export default function IndiceReputacaoFiltraPage() {
         </p>
       </section>
 
+      <section aria-labelledby="research-pages-title" className="mt-14">
+        <h2 id="research-pages-title" className="text-2xl font-semibold">
+          Frentes de pesquisa em preparação
+        </h2>
+        <p className="mt-3 max-w-3xl leading-7 text-zinc-300">
+          As páginas abaixo registram o escopo e os critérios de cada frente. Ainda não são
+          relatórios de mercado e permanecem fora da indexação até a validação dos dados.
+        </p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <Link href="/indice-reputacao-filtra/setores" className="rounded-xl border border-white/10 p-5 transition hover:border-indigo-300/50">
+            <h3 className="font-semibold">Índice por setor</h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">Taxonomia, cobertura e comparabilidade entre atividades econômicas.</p>
+          </Link>
+          <Link href="/indice-reputacao-filtra/regioes" className="rounded-xl border border-white/10 p-5 transition hover:border-indigo-300/50">
+            <h3 className="font-semibold">Índice por região</h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">Localização verificável e critérios para comparações geográficas.</p>
+          </Link>
+          <Link href="/indice-reputacao-filtra/tendencias" className="rounded-xl border border-white/10 p-5 transition hover:border-indigo-300/50">
+            <h3 className="font-semibold">Tendências</h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">Séries temporais com regras consistentes e histórico de alterações.</p>
+          </Link>
+          <Link href="/indice-reputacao-filtra/relatorio-anual" className="rounded-xl border border-white/10 p-5 transition hover:border-indigo-300/50">
+            <h3 className="font-semibold">Relatório anual</h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">Descobertas auditáveis, limitações e metodologia versionada.</p>
+          </Link>
+        </div>
+      </section>
+
       <section aria-labelledby="updates-title" className="mt-14 border-t border-white/10 pt-8">
         <h2 id="updates-title" className="text-xl font-semibold">Transparência e atualizações</h2>
         <p className="mt-3 max-w-3xl leading-7 text-zinc-300">
