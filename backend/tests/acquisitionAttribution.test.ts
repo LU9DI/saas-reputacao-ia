@@ -33,5 +33,5 @@ test('removes control characters and caps field lengths', () => {
   });
   assert.equal(result.utm_source, 'linkedin');
   assert.equal(result.utm_campaign?.length, 120);
-  assert.equal(result.referrer_origin, 'https://example.com/some/private/path?token=secret');
+  assert.equal(result.referrer_origin, 'https://example.com');
 });
