@@ -109,3 +109,8 @@ test('normalizes known sector aliases and rejects uncontrolled micro-segments', 
   assert.equal(result[0].sector, 'clinicas');
   assert.deepEqual(buildPublicReputationIndex(unknown), []);
 });
+
+test('does not treat a consent boolean alone as publication authorization', () => {
+  const rows = makeRows(10, 10).map(({ publicationConsentEvidenceId, publicationConsentVersion, publicationConsentAt, publicationConsentScope, ...row }) => row);
+  assert.deepEqual(buildPublicReputationIndex(rows), []);
+});
