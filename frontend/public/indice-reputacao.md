@@ -18,7 +18,7 @@ Quando houver dados elegíveis, as publicações poderão apresentar:
 
 ## Regras de publicação
 
-Cada edição deverá indicar fonte, período, setor/região cobertos, tamanho da amostra, quantidade de negócios incluídos, critérios de inclusão, tratamento de duplicatas, dados ausentes, limitações e alterações de método.
+Cada edição deverá indicar fonte, período, setor/região cobertos, tamanho da amostra, quantidade de negócios incluídos, critérios de inclusão, tratamento de duplicatas, dados ausentes, limitações e alterações de método. O limite inicial planejado é de pelo menos 10 negócios distintos e 100 avaliações válidas por recorte mensal. Esses mínimos não garantem anonimato por si só: recortes adicionais serão suprimidos quando houver risco contextual de reidentificação.
 
 Não publicar recortes pequenos que possam revelar informações de um negócio. Não divulgar nomes de empresas, dados de contato, identificadores de clientes ou textos integrais identificáveis de avaliações. Não descrever amostras voluntárias como representativas do mercado inteiro sem desenho amostral adequado.
 
