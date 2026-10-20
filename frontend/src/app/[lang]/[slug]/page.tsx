@@ -970,12 +970,12 @@ const UNIQUE_CONTENT: Partial<Record<string,{sections:Section[];faq:Faq[]}>> = {
     sections: [
       {
         heading: 'Qué cubre la auditoría gratuita',
-        body: 'La auditoría revisa tu ficha de Google Business Profile y las señales que forman la percepción: volumen y recencia de reseñas, evolución de la nota, tasa de respuesta, comentarios sin contestar, temas recurrentes y comparación con competidores directos. Termina con una lista corta de acciones prioritarias, no con un informe genérico.',
+        body: 'La auditoría revisa tu ficha de Google Business Profile y las señales que forman la percepción: volumen y recencia de reseñas, evolución de la nota, tasa de respuesta, comentarios sin contestar, temas recurrentes y comparación por ubicación y periodo. Termina con una lista corta de acciones prioritarias, no con un informe genérico.',
         points: [
           'Ficha completa: categorías, horarios, servicios, fotos y ubicación.',
           'Volumen, recencia y evolución de la nota.',
           'Tasa de respuesta, tiempo de respuesta y reseñas sin contestar.',
-          'Temas recurrentes y comparación con competidores.',
+          'Temas recurrentes y evolución por periodo.',
         ],
       },
       {

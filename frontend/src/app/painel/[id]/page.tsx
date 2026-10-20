@@ -6,11 +6,12 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Export estático (Cloudflare Pages): uma única página-casca; o id real vem da URL no cliente
-// (ver utils/useRouteId e public/_redirects).
-export const dynamicParams = false;
+// The prebuild script replaces this file with the appropriate static-export
+// or runtime variant. Keep the committed default safe for the Render runtime.
+export const dynamicParams = true;
+
 export function generateStaticParams() {
-  return [{ id: '_' }];
+  return [];
 }
 
 export default function Page() {
