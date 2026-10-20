@@ -11,16 +11,10 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Contorno: repositório privado sem minutos/spending limit faz o GitHub
-# abortar jobs ANTES de provisionar runner (0 steps, BlobNotFound).
-# Com ENABLE_GITHUB_ACTIONS_CI != true, eventos push/PR ficam skipped.
-# workflow_dispatch permite uma tentativa manual, sujeita à cota do GitHub.
-# Para reativar a CI real: Settings → Secrets and variables → Actions →
-# Variables → ENABLE_GITHUB_ACTIONS_CI = true
+# CI executada automaticamente em push/PR; workflow_dispatch também permite execução manual.
 jobs:
   seo-brand:
     name: SEO + brand guardrail
-    if: ${{ vars.ENABLE_GITHUB_ACTIONS_CI == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -132,7 +126,7 @@ jobs:
     name: CI summary
     runs-on: ubuntu-latest
     needs: [seo-brand, backend, frontend]
-    if: ${{ always() && (vars.ENABLE_GITHUB_ACTIONS_CI == 'true' || github.event_name == 'workflow_dispatch') }}
+    if: always()
     steps:
       - name: Check results
         run: |
