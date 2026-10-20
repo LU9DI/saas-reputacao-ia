@@ -34,7 +34,6 @@ jobs:
 
   backend:
     name: Backend (test + typecheck)
-    if: ${{ vars.ENABLE_GITHUB_ACTIONS_CI == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -85,7 +84,6 @@ jobs:
 
   frontend:
     name: Frontend (lint + build)
-    if: ${{ vars.ENABLE_GITHUB_ACTIONS_CI == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     defaults:
       run:
