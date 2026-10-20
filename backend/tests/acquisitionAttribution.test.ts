@@ -139,3 +139,29 @@ test('does not count a diagnostic-only event as a consented campaign lead', () =
   assert.equal(diagnosticOnly?.consented_leads, 0);
   assert.equal(diagnosticOnly?.completed_diagnostics, 1);
 });
+
+test('normalizes SQLite UTC timestamps before choosing first-touch attribution', () => {
+  const report = summarizeAcquisitionEvents([
+    {
+      lead_id: 'mixed-timestamp-lead',
+      event_type: 'consent.granted',
+      occurred_at: '2026-10-20T10:00:00.000Z',
+      metadata_json: JSON.stringify({
+        attribution: { utm_source: 'chronologically-first', utm_campaign: 'first' },
+      }),
+    },
+    {
+      lead_id: 'mixed-timestamp-lead',
+      event_type: 'diagnostic.completed',
+      occurred_at: '2026-10-20 10:05:00',
+      metadata_json: JSON.stringify({
+        attribution: { utm_source: 'chronologically-later', utm_campaign: 'later' },
+      }),
+    },
+  ]);
+
+  assert.equal(report.campaigns[0].source, 'chronologically-first');
+  assert.equal(report.campaigns[0].campaign, 'first');
+  assert.equal(report.campaigns[0].consented_leads, 1);
+  assert.equal(report.campaigns[0].completed_diagnostics, 1);
+});
