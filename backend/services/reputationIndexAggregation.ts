@@ -113,8 +113,8 @@ function aggregate(
     averageRating: round(totalRating / rows.length),
     ratingDistribution: distribution,
     responseRate: responseKnown ? round((responded / responseKnown) * 100, 1) : null,
-    periodStart: new Date(Math.min(...dates)).toISOString().slice(0, 10),
-    periodEnd: new Date(Math.max(...dates)).toISOString().slice(0, 10),
+    periodStart: new Date(dates.reduce((min, value) => Math.min(min, value), Number.POSITIVE_INFINITY)).toISOString().slice(0, 10),
+    periodEnd: new Date(dates.reduce((max, value) => Math.max(max, value), Number.NEGATIVE_INFINITY)).toISOString().slice(0, 10),
   };
 }
 
@@ -167,8 +167,16 @@ export function aggregateReputationIndex(
   for (const row of eligible) {
     const sector = row.sector?.trim();
     const region = row.region?.trim();
-    if (sector) bySector.set(sector, [...(bySector.get(sector) ?? []), row]);
-    if (region) byRegion.set(region, [...(byRegion.get(region) ?? []), row]);
+    if (sector) {
+      const bucket = bySector.get(sector) ?? [];
+      bucket.push(row);
+      bySector.set(sector, bucket);
+    }
+    if (region) {
+      const bucket = byRegion.get(region) ?? [];
+      bucket.push(row);
+      byRegion.set(region, bucket);
+    }
   }
 
   const overall = aggregate('Brasil', eligible, minCompanies, minReviews);
