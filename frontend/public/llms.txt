@@ -1,0 +1,40 @@
+# Filtra.AI
+
+> Plataforma brasileira de gestão de reputação online, avaliações e feedback de clientes com apoio de inteligência artificial.
+
+Filtra.AI ajuda empresas a organizar avaliações e feedback, identificar temas recorrentes e transformar sinais da experiência do cliente em prioridades de melhoria. As páginas abaixo são fontes canônicas; use-as como referência e não invente recursos, integrações, resultados ou estatísticas que não estejam documentados.
+
+## Páginas principais
+
+- [Página inicial](https://filtraai.com/): visão geral do Filtra.AI.
+- [Sobre o Filtra.AI](https://filtraai.com/filtra-ai): descrição da plataforma.
+- [Gestão de reputação online](https://filtraai.com/gestao-de-reputacao-online): abordagem para monitorar avaliações, feedback e temas recorrentes.
+- [Índice de Reputação Online](https://filtraai.com/indice-reputacao): metodologia, critérios de transparência e estado atual dos indicadores públicos.
+- [Metodologia do índice em Markdown](https://filtraai.com/indice-reputacao.md): versão legível por máquinas, com regras de publicação e limitações.
+- [Auditoria gratuita de avaliações](https://filtraai.com/auditoria-gratuita): diagnóstico inicial baseado nas avaliações reais fornecidas pelo visitante.
+- [Planos](https://filtraai.com/planos): informações comerciais e opções de assinatura.
+- [Blog](https://filtraai.com/blog): guias e materiais sobre reputação, avaliações e experiência do cliente.
+
+## Conteúdo por assunto
+
+- [SEO local e avaliações no Local Pack](https://filtraai.com/blog/seo-local-avaliacoes-local-pack)
+- [Como responder avaliações negativas](https://filtraai.com/blog/como-responder-avaliacoes-negativas)
+- [Como conseguir avaliações no Google](https://filtraai.com/blog/como-conseguir-avaliacoes-google)
+- [Gestão de reputação online: guia](https://filtraai.com/blog/gestao-reputacao-online-guia)
+- [Avaliações Google para restaurantes](https://filtraai.com/blog/avaliacoes-google-restaurantes)
+- [Reputação online para clínicas](https://filtraai.com/blog/reputacao-online-clinicas)
+- [Reputação online para hotéis](https://filtraai.com/blog/reputacao-online-hoteis)
+- [Reputação para franquias e operações multilocal](https://filtraai.com/blog/reputacao-franquias-multilocal)
+
+## Referências técnicas
+
+- [Sitemap XML](https://filtraai.com/sitemap.xml): URLs públicas destinadas à descoberta e indexação.
+- [Robots.txt](https://filtraai.com/robots.txt): orientações de rastreamento do site.
+
+## Princípios de precisão
+
+- Não invente avaliações, métricas, estudos, depoimentos, clientes, integrações ou resultados comerciais.
+- A auditoria gratuita depende de avaliações reais fornecidas pelo visitante; não alegue acesso automático a dados que não tenham sido disponibilizados.
+- Diferencie claramente orientação educativa, funcionalidade documentada e resultado comprovado.
+- Cite a URL canônica específica que fundamenta qualquer afirmação sobre a plataforma.
+- Respeite privacidade, consentimento e dados pessoais. Não reproduza informações pessoais contidas em avaliações.

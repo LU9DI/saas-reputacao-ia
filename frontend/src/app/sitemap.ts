@@ -6,6 +6,7 @@ const base = 'https://filtraai.com';
 // 2026-10-19: páginas alteradas no lote de CTR/conteúdo (títulos, seções, FAQ e nav do blog).
 const LAST_MODIFIED: Record<string, string> = {
   '/': '2026-10-19',
+  '/indice-reputacao': '2026-10-20',
   '/filtra-ai': '2026-10-19',
   '/gestao-de-reputacao-online': '2026-10-19',
   '/blog': '2026-10-19',
@@ -127,6 +128,7 @@ const canonicalPaths = [
   '/termos',
   '/privacidade',
   '/planos',
+  '/indice-reputacao',
 ];
 
 const localizedPaths = Object.values(SEO_FAMILIES).flatMap((family) =>
@@ -147,6 +149,7 @@ const authorityCore = new Set([
 ]);
 
 const highPriority = new Set([
+  '/indice-reputacao',
   '/auditoria-gratuita',
   '/agencias',
   '/clinicas',

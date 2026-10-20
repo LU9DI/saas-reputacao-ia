@@ -4,6 +4,7 @@ import { callAI } from '../groqService.js';
 import crypto from 'crypto';
 import { getDb } from '../lib/db.js';
 import { ensureAcquisitionSchema } from './acquisitionRoutes.js';
+import { sanitizeAcquisitionAttribution } from '../services/acquisitionAttribution.js';
 
 const diagnosticLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 12, standardHeaders: true, legacyHeaders: false, message: { error: 'Limite de diagnósticos atingido. Tente novamente mais tarde.' } });
 type ReviewInput = { rating: number; text: string };
@@ -25,6 +26,7 @@ export function mountDiagnosticRoutes(app: Express) {
     const locale = String(req.body?.locale || 'pt').trim().slice(0, 10);
     const reviews = cleanReviews(req.body?.reviews);
     const leadId = String(req.body?.lead_id || '').trim().slice(0, 120);
+    const attribution = sanitizeAcquisitionAttribution(req.body?.attribution);
     if (company.length < 2) return res.status(400).json({ error: 'Informe o nome da empresa.' });
     if (reviews.length < 3) return res.status(400).json({ error: 'Envie pelo menos 3 avaliações reais para gerar o diagnóstico.' });
     const average = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
@@ -41,11 +43,23 @@ export function mountDiagnosticRoutes(app: Express) {
         try {
           const db = getDb();
           await ensureAcquisitionSchema(db);
-          await db.run(`INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json)
-            VALUES (?,?,?,?,CURRENT_TIMESTAMP,?) ON CONFLICT(id) DO NOTHING`, [
-            crypto.randomUUID(), leadId, 'diagnostic.completed', 'website', JSON.stringify({ company, locale, review_count: reviews.length }).slice(0, 20000)
-          ]);
-          await db.run(`UPDATE acquisition_leads SET acquisition_stage='diagnosed', acquisition_next_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE id=? AND COALESCE(acquisition_suppressed,0)=0`, [leadId]);
+          // The public client can submit an arbitrary lead_id. Only associate this
+          // diagnostic with a real, consented, eligible lead; otherwise it must not
+          // affect campaign metrics or acquisition follow-up state.
+          const eligibleLead = await db.get(
+            `SELECT id FROM acquisition_leads
+             WHERE id=? AND consent=1 AND status='eligible'
+               AND COALESCE(acquisition_suppressed,0)=0`,
+            [leadId]
+          );
+          if (eligibleLead?.id) {
+            await db.run(`INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json)
+              VALUES (?,?,?,?,CURRENT_TIMESTAMP,?) ON CONFLICT(id) DO NOTHING`, [
+              crypto.randomUUID(), eligibleLead.id, 'diagnostic.completed', attribution.utm_source || 'website', JSON.stringify({ locale, review_count: reviews.length, attribution }).slice(0, 20000)
+            ]);
+            await db.run(`UPDATE acquisition_leads SET acquisition_stage='diagnosed', acquisition_next_at=NULL, updated_at=CURRENT_TIMESTAMP
+              WHERE id=? AND consent=1 AND status='eligible' AND COALESCE(acquisition_suppressed,0)=0`, [eligibleLead.id]);
+          }
         } catch (persistError: any) {
           console.warn('[acquisition] diagnostic persistence failed:', persistError?.message || persistError);
         }
