@@ -8,6 +8,8 @@ test('keeps only allowlisted campaign fields and trims values', () => {
       utm_source: 'linkedin',
       utm_medium: 'organic_social',
       utm_campaign: 'filtra_48h',
+      utm_term: 'private@example.com',
+      utm_content: '11999998888',
       email: 'private@example.com',
       arbitrary: 'discard-me',
     }),
