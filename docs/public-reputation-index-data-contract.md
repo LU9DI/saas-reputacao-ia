@@ -39,7 +39,7 @@ Setores aceitos: restaurantes, hotéis, clínicas, franquias, varejo e serviços
 
 ## Regras de agregação da versão 1.0
 
-- Cohorte: setor + região + mês de observação.
+- Cohorte: setor + região + mês de observação normalizado para UTC. Datas sem horário são interpretadas como meia-noite UTC; timestamps precisam declarar `Z` ou offset explícito.
 - Deduplicação: por negócio e identificador de avaliação.
 - Elegibilidade: autorização explícita com evidência, versão e data de consentimento; nota inteira de 1 a 5; data de observação e consentimento em ISO estrito (`YYYY-MM-DD` ou timestamp com fuso); registro não marcado como teste.
 - Limite inicial obrigatório: no mínimo 10 negócios distintos e 100 avaliações válidas por coorte mensal. Chamadores podem elevar esses limites, mas o agregador rejeita configurações que tentem reduzi-los.
