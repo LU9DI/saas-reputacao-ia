@@ -8,7 +8,7 @@ O relatório protegido `POST /api/n8n/acquisition/report` considera apenas:
 - `consent.granted`: lead que autorizou contato comercial;
 - `diagnostic.completed`: diagnóstico concluído e associado a um lead elegível.
 
-O endpoint público de diagnóstico não confia no `lead_id` recebido do navegador: antes de persistir o evento ou alterar a etapa de aquisição, confirma no banco que o lead existe, tem consentimento, está elegível e não está suprimido. Diagnósticos anônimos continuam possíveis, mas não entram nas métricas de aquisição.
+O endpoint público de diagnóstico não confia no `lead_id` recebido do navegador: antes de persistir o evento ou alterar a etapa de aquisição, confirma no banco que o lead existe, tem consentimento, está elegível e não está suprimido. Diagnósticos anônimos continuam possíveis, mas não entram nas métricas de aquisição. O endpoint de consentimento também preserva supressões/unsubscribes: uma nova submissão genérica não emite `consent.granted`, não sincroniza o contato com HubSpot/Brevo e não habilita follow-up. Reinscrição exige um fluxo dedicado e auditável.
 
 O relatório usa eventos dentro da janela solicitada. Portanto, os totais representam eventos/lead únicos observados nessa janela, não uma reconstrução histórica de todos os leads da base.
 
