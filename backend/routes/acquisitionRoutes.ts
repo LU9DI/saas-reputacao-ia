@@ -1,7 +1,7 @@
 
 import { enviarEmail } from '../lib/mailer.js';
 import { syncConsentedAcquisitionLead } from '../services/crmAcquisitionSync.js';
-import { sanitizeAcquisitionAttribution } from '../services/acquisitionAttribution.js';
+import { sanitizeAcquisitionAttribution, summarizeAcquisitionEvents } from '../services/acquisitionAttribution.js';
 
 function acquisitionDailyLimit(): number {
   const configured = Number(process.env.ACQUISITION_DAILY_LIMIT || 80);
@@ -364,6 +364,37 @@ export function mountAcquisitionRoutes(app: Express) {
       [nowIso, nowIso]
     );
     return res.json({ ok: true, count: rows.length, leads: rows });
+  });
+
+  app.post('/api/n8n/acquisition/report', async (req: Request, res: Response) => {
+    if (!secretOk(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const db = (await import('../lib/db.js')).getDb();
+      await ensureAcquisitionSchema(db);
+      const requestedDays = Number(req.body?.days || req.query.days || 30);
+      const days = Math.min(90, Math.max(1, Number.isFinite(requestedDays) ? Math.floor(requestedDays) : 30));
+      const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+      const rows = await db.all(
+        `SELECT lead_id,event_type,source,occurred_at,metadata_json
+         FROM acquisition_events
+         WHERE event_type IN ('consent.granted','diagnostic.completed')
+         ORDER BY occurred_at DESC
+         LIMIT 10000`
+      );
+      const recent = (rows || []).filter((row: any) => {
+        const timestamp = Date.parse(String(row.occurred_at || ''));
+        return Number.isFinite(timestamp) && timestamp >= cutoff;
+      });
+      return res.json({
+        ok: true,
+        period_days: days,
+        generated_at: new Date().toISOString(),
+        ...summarizeAcquisitionEvents(recent),
+      });
+    } catch (error: any) {
+      console.error('[acquisition] report:', error?.message || error);
+      return res.status(500).json({ error: 'Não foi possível gerar o relatório de aquisição.' });
+    }
   });
 
   app.post('/api/n8n/acquisition/send', async (req: Request, res: Response) => {
