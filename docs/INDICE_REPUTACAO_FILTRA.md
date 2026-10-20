@@ -52,6 +52,15 @@ Estes são gates operacionais iniciais, não uma alegação de que a amostra se 
 - A nova página e os metadados precisam passar pela CI normal do projeto antes de merge.
 - A página permanece `noindex` e fora do sitemap até que exista um conjunto publicável e revisão de privacidade.
 
+## Implementação adicional na branch de fundação
+
+- Foram criadas páginas de escopo para setor, região, tendências e relatório anual. Todas têm canonical próprio, `noindex,follow` e não foram incluídas no sitemap. Elas explicam a metodologia planejada, não exibem resultados simulados.
+- A página metodológica liga às quatro frentes de pesquisa para navegação interna; a navegação não significa que os resultados estejam prontos para publicação.
+- Foi criado `backend/services/reputationIndexAggregation.ts`, um agregador puro e fail-closed que exige autorização da fonte e consentimento marcado, exclui registros de teste/inválidos/fora da janela, deduplica por fonte e ID da avaliação e só devolve agregados que atingem os limites configurados.
+- Foram adicionados testes unitários para os gates de publicação, deduplicação, distribuição de notas e ausência de identificadores individuais na saída.
+- O agregador ainda não está conectado a uma fonte real nem a uma rota pública. Essa separação é intencional: nenhuma credencial ou dado operacional deve ser usado sem aprovação formal da fonte e do tratamento.
+- O guardrail SEO foi ajustado para permitir menções educativas neutras a competidores e continuar sinalizando frases diretamente depreciativas. O teste de integração do backend recebe instalação de SQLite de teste na CI; as dependências são instaladas no job sem alterar o lockfile da aplicação.
+
 ## Próximo marco
 
 Escolher e validar a fonte autorizada de dados. Só depois gerar o primeiro relatório com números reais e habilitar indexação pública.
