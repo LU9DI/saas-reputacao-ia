@@ -37,7 +37,11 @@ export function sanitizeAcquisitionAttribution(value: unknown): AcquisitionAttri
       output[key] = cleaned.startsWith('/') && !cleaned.startsWith('//') ? cleaned.split(/[?#]/, 1)[0].slice(0, limit) : '/';
       continue;
     }
-    output[key] = cleaned;
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned) || /(?:https?:\/\/|www\.)/i.test(cleaned)) continue;
+    const digits = cleaned.replace(/\D/g, '');
+    if (digits.length >= 9 && digits.length >= cleaned.length * 0.7) continue;
+    const campaignValue = cleaned.normalize('NFKC').replace(/\s+/g, '-').replace(/[^\p{L}\p{N}._-]/gu, '').slice(0, limit);
+    if (campaignValue) output[key] = campaignValue;
   }
 
   return output;
