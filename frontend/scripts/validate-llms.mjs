@@ -11,6 +11,7 @@ const requiredUrls = [
   'https://filtraai.com/',
   'https://filtraai.com/filtra-ai',
   'https://filtraai.com/gestao-de-reputacao-online',
+  'https://filtraai.com/indice-reputacao',
   'https://filtraai.com/auditoria-gratuita',
   'https://filtraai.com/planos',
   'https://filtraai.com/blog',
