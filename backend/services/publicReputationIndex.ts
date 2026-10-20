@@ -61,13 +61,7 @@ export function buildPublicReputationIndex(
 ): PublicReputationIndicator[] {
   const minBusinesses = Math.max(2, Math.floor(options.minBusinesses ?? PUBLIC_INDEX_MIN_BUSINESSES));
   const minReviews = Math.max(10, Math.floor(options.minReviews ?? PUBLIC_INDEX_MIN_REVIEWS));
-  const uniqueReviews = new Map<string, {
-    businessId: string;
-    sector: string;
-    region: string;
-    period: string;
-    rating: 1 | 2 | 3 | 4 | 5;
-  }>();
+  const uniqueReviews = new Map<string, NormalizedReview>();
 
   for (const row of rows) {
     if (!row || row.publicationConsent !== true || row.isTest === true) continue;
@@ -79,8 +73,9 @@ export function buildPublicReputationIndex(
 
     // Only the first valid occurrence is counted, preventing duplicate IDs
     // from inflating the public sample.
-    if (uniqueReviews.has(reviewId)) continue;
-    uniqueReviews.set(reviewId, {
+    const dedupeKey = `${businessId}:${reviewId}`;
+    if (uniqueReviews.has(dedupeKey)) continue;
+    uniqueReviews.set(dedupeKey, {
       businessId,
       sector: normalizedLabel(row.sector, 'não-classificado'),
       region: normalizedLabel(row.region || '', 'brasil'),
