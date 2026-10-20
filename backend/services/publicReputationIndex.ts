@@ -1,6 +1,24 @@
 export const PUBLIC_INDEX_MIN_BUSINESSES = 10;
 export const PUBLIC_INDEX_MIN_REVIEWS = 100;
 
+export const PUBLIC_INDEX_SECTORS = [
+  'restaurantes',
+  'hoteis',
+  'clinicas',
+  'franquias',
+  'varejo',
+  'servicos',
+] as const;
+
+export const PUBLIC_INDEX_REGIONS = [
+  'brasil',
+  'norte',
+  'nordeste',
+  'centro-oeste',
+  'sudeste',
+  'sul',
+] as const;
+
 export type ReputationIndexInput = {
   reviewId: string;
   businessId: string;
@@ -32,14 +50,47 @@ export type PublicReputationIndicator = {
   methodologyVersion: '1.0';
 };
 
-function normalizedLabel(value: string, fallback: string): string {
-  const normalized = String(value || '')
-    .normalize('NFKC')
+function normalizedKey(value: string): string {
+  return String(value || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
     .trim()
     .toLocaleLowerCase('pt-BR')
-    .replace(/\s+/g, ' ')
+    .replace(/\s+/g, '-')
     .slice(0, 80);
-  return normalized || fallback;
+}
+
+function canonicalSector(value: string): string | null {
+  const key = normalizedKey(value);
+  const aliases: Record<string, string> = {
+    restaurante: 'restaurantes',
+    restaurantes: 'restaurantes',
+    hotel: 'hoteis',
+    hoteis: 'hoteis',
+    clinica: 'clinicas',
+    clinicas: 'clinicas',
+    franquia: 'franquias',
+    franquias: 'franquias',
+    varejo: 'varejo',
+    servico: 'servicos',
+    servicos: 'servicos',
+  };
+  const sector = aliases[key];
+  return sector && (PUBLIC_INDEX_SECTORS as readonly string[]).includes(sector) ? sector : null;
+}
+
+function canonicalRegion(value: string): string | null {
+  const key = normalizedKey(value);
+  const aliases: Record<string, string> = {
+    brasil: 'brasil',
+    norte: 'norte',
+    nordeste: 'nordeste',
+    'centro-oeste': 'centro-oeste',
+    sudeste: 'sudeste',
+    sul: 'sul',
+  };
+  const region = aliases[key];
+  return region && (PUBLIC_INDEX_REGIONS as readonly string[]).includes(region) ? region : null;
 }
 
 function periodFromDate(value: string): string | null {
@@ -69,7 +120,9 @@ export function buildPublicReputationIndex(
     const businessId = String(row.businessId || '').trim().slice(0, 160);
     const rating = Number(row.rating);
     const period = periodFromDate(String(row.observedAt || ''));
-    if (!reviewId || !businessId || !period || !Number.isInteger(rating) || rating < 1 || rating > 5) continue;
+    const sector = canonicalSector(row.sector);
+    const region = canonicalRegion(row.region || '');
+    if (!reviewId || !businessId || !period || !sector || !region || !Number.isInteger(rating) || rating < 1 || rating > 5) continue;
 
     // Only the first valid occurrence is counted, preventing duplicate IDs
     // from inflating the public sample.
@@ -77,8 +130,8 @@ export function buildPublicReputationIndex(
     if (uniqueReviews.has(dedupeKey)) continue;
     uniqueReviews.set(dedupeKey, {
       businessId,
-      sector: normalizedLabel(row.sector, 'não-classificado'),
-      region: normalizedLabel(row.region || '', 'brasil'),
+      sector,
+      region,
       period,
       rating: rating as 1 | 2 | 3 | 4 | 5,
     });
