@@ -378,23 +378,31 @@ export function mountAcquisitionRoutes(app: Express) {
       await ensureAcquisitionSchema(db);
       const requestedDays = Number(req.body?.days || req.query.days || 30);
       const days = Math.min(90, Math.max(1, Number.isFinite(requestedDays) ? Math.floor(requestedDays) : 30));
-      const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+      const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+      // SQLite stores some timestamps as "YYYY-MM-DD HH:mm:ss" and others as ISO
+      // strings. datetime() normalizes both before applying the report window.
+      // Fetch one extra row so we can fail explicitly instead of returning silently
+      // truncated campaign metrics.
       const rows = await db.all(
         `SELECT lead_id,event_type,source,occurred_at,metadata_json
          FROM acquisition_events
          WHERE event_type IN ('consent.granted','diagnostic.completed')
-         ORDER BY occurred_at DESC
-         LIMIT 10000`
+           AND datetime(occurred_at) >= datetime(?)
+         ORDER BY datetime(occurred_at) DESC
+         LIMIT 10001`,
+        [cutoff]
       );
-      const recent = (rows || []).filter((row: any) => {
-        const timestamp = Date.parse(String(row.occurred_at || ''));
-        return Number.isFinite(timestamp) && timestamp >= cutoff;
-      });
+      if ((rows || []).length > 10000) {
+        return res.status(422).json({
+          error: 'O período contém mais de 10.000 eventos. Reduza o intervalo para obter um relatório completo.',
+          max_events: 10000,
+        });
+      }
       return res.json({
         ok: true,
         period_days: days,
         generated_at: new Date().toISOString(),
-        ...summarizeAcquisitionEvents(recent),
+        ...summarizeAcquisitionEvents(rows || []),
       });
     } catch (error: any) {
       console.error('[acquisition] report:', error?.message || error);
