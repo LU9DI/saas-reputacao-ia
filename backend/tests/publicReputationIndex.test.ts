@@ -151,3 +151,13 @@ test('deduplication keys do not collide when identifiers contain separators', ()
   assert.equal(result.length, 1);
   assert.equal(result[0].reviewCount, 100);
 });
+
+test('normalizes timestamp offsets to UTC before assigning the monthly cohort', () => {
+  const rows = makeRows(10, 10).map((row) => ({
+    ...row,
+    observedAt: '2026-10-01T00:30:00+03:00',
+  }));
+  const result = buildPublicReputationIndex(rows);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].period, '2026-09');
+});
