@@ -23,7 +23,21 @@ export function sanitizeAcquisitionAttribution(value: unknown): AcquisitionAttri
     const raw = input[key];
     if (typeof raw !== 'string') continue;
     const cleaned = raw.replace(/[\\u0000-\\u001f\\u007f]/g, '').trim().slice(0, limit);
-    if (cleaned) output[key] = cleaned;
+    if (!cleaned) continue;
+    if (key === 'referrer_origin') {
+      try {
+        const parsed = new URL(cleaned);
+        if (parsed.protocol === 'https:' || parsed.protocol === 'http:') output[key] = parsed.origin;
+      } catch {
+        // Ignore malformed referrer values.
+      }
+      continue;
+    }
+    if (key === 'landing_path') {
+      output[key] = cleaned.startsWith('/') && !cleaned.startsWith('//') ? cleaned.split(/[?#]/, 1)[0].slice(0, limit) : '/';
+      continue;
+    }
+    output[key] = cleaned;
   }
 
   return output;
