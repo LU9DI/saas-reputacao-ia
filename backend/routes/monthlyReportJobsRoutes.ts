@@ -40,6 +40,39 @@ export function previousMonthUtc(): string {
   date.setUTCMonth(date.getUTCMonth() - 1);
   return date.toISOString().slice(0, 7);
 }
+
+/**
+ * Deriva o dia do aniversário a partir do fim do ciclo atual.
+ * Usado apenas no backfill de assinaturas antigas (sem `relatorio_dia_assinatura`).
+ */
+export function subscriptionDayFromExpiry(expiraEm: unknown, now = new Date()): number {
+  const expiry = new Date(String(expiraEm || ''));
+  return Number.isFinite(expiry.getTime()) ? expiry.getUTCDate() : now.getUTCDate();
+}
+
+/**
+ * Preenche `relatorio_dia_assinatura` de empresas ativas elegíveis que assinaram
+ * antes da coluna existir. O UPDATE condicional preserva quem já tem o valor;
+ * a partir daí o COALESCE das ativações/renovações mantém o aniversário estável.
+ */
+export async function backfillSubscriptionDays(db: any, now = new Date()): Promise<number> {
+  const rows = await db.all(
+    `SELECT id, expira_em FROM empresas
+     WHERE relatorio_dia_assinatura IS NULL
+       AND lower(COALESCE(plan, '')) IN ('pro','ultra','corporativo','corporate','corp','rei')
+       AND lower(COALESCE(status, '')) IN ('ativo','active')`,
+  ) as Array<{ id: string; expira_em?: string | null }>;
+  let updated = 0;
+  for (const row of rows || []) {
+    const day = subscriptionDayFromExpiry(row.expira_em, now);
+    const result = await db.run(
+      'UPDATE empresas SET relatorio_dia_assinatura = ? WHERE id = ? AND relatorio_dia_assinatura IS NULL',
+      [day, row.id],
+    );
+    if (Number(result?.changes || 0) > 0) updated += 1;
+  }
+  return updated;
+}
 function isMonth(value: unknown): value is string {
   if (typeof value !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return false;
   return value < currentMonthUtc();
@@ -190,6 +223,8 @@ export async function ensureMonthlyReportSchema(db: any) {
     tentativas INTEGER NOT NULL DEFAULT 0,
     UNIQUE (empresa_id, periodo)
   )`);
+  try { await backfillSubscriptionDays(db); }
+  catch { /* backfill é melhor esforço: não pode impedir o job de rodar */ }
 }
 
 export function mountMonthlyReportJobsRoutes(app: Express) {

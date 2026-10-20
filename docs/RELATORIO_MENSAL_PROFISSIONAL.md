@@ -55,11 +55,17 @@ KPIs e contagens são sempre calculados pelo backend. O relatório declara quand
 
 ## Cadência e idempotência
 
-O snapshot é preparado fora da interação do painel, uma vez por mês, no dia do aniversário da assinatura do plano (`relatorio_dia_assinatura`, gravado na ativação e preservado por `COALESCE`). Em meses mais curtos, os dias 29–31 caem no último dia do mês. Se uma execução falhar ou o disparo diário não ocorrer, o snapshot pendente é retomado na execução seguinte, sem duplicar geração.
+O snapshot é preparado fora da interação do painel, uma vez por mês, no dia do aniversário da assinatura do plano (`relatorio_dia_assinatura`, gravado na ativação e preservado por `COALESCE`). Em meses mais curtos, os dias 29–31 caem no último dia do mês. Empresas ativas que assinaram antes de a coluna existir são regularizadas na primeira execução do job, usando o dia do fim do ciclo de cobrança atual como aniversário; depois disso, o `COALESCE` preserva o valor.
 
 O painel não dispara jobs, webhooks ou distribuição por e-mail; apenas abre e baixa snapshots já presentes no payload carregado. O plano Inicial fica fora da entrega mensal; Pro, Ultra, Corporativo e REI são elegíveis.
 
 O armazenamento do snapshot mantém a chave de empresa + mês para evitar geração duplicada. Abrir, baixar ou reabrir o relatório não cria nem altera esse snapshot.
+
+## Operação do job mensal
+
+O agendador externo deve chamar **diariamente** `POST /api/jobs/monthly-reports`, autenticando com `JOBS_SECRET` (`Authorization: Bearer …` ou header `x-jobs-secret`). No dia do aniversário de cada assinatura elegível, o job gera e persiste o snapshot do mês anterior; reservas criadas que falharem são retomadas nas execuções seguintes, sem duplicar geração. Para recuperação manual de um mês específico, use `?mes=YYYY-MM`.
+
+O agendador não faz parte deste repositório (Render/Cloudflare ou equivalente). Sem ele, nenhuma geração automática roda — a leitura do painel continua funcionando e não consome tokens, mas depende de snapshots já existentes.
 
 ## Benefícios por plano
 
