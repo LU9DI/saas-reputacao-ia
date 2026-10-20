@@ -86,6 +86,26 @@ describe('aggregateReputationIndex', () => {
     assert.equal(result.overall?.reviewCount, 2);
   });
 
+  it('withholds small samples by default and includes the full final calendar day', () => {
+    const oneLateReview = review({ createdAt: '2026-10-31T23:59:59.999Z' });
+    const defaultThresholds = aggregateReputationIndex([oneLateReview], {
+      windowStart: '2026-10-01',
+      windowEnd: '2026-10-31',
+    });
+    assert.equal(defaultThresholds.overall, null);
+    assert.deepEqual(defaultThresholds.bySector, []);
+    assert.deepEqual(defaultThresholds.byRegion, []);
+
+    const lowThresholds = aggregateReputationIndex([oneLateReview], {
+      windowStart: '2026-10-01',
+      windowEnd: '2026-10-31',
+      minCompanies: 1,
+      minReviews: 1,
+    });
+    assert.equal(lowThresholds.quality.eligibleRecords, 1);
+    assert.equal(lowThresholds.overall?.periodEnd, '2026-10-31');
+  });
+
   it('rejects invalid windows and invalid publication thresholds', () => {
     assert.throws(() => aggregateReputationIndex([], {
       windowStart: '2026-11-01',
