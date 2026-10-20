@@ -30,7 +30,7 @@ test('preenche o aniversário de empresas ativas elegíveis sem o campo', async 
     },
   };
 
-  const total = await backfillSubscriptionDays(db as any, new Date('2026-10-07T00:00:00.000Z'));
+  const total = await backfillSubscriptionDays(db as any);
   assert.equal(total, 2);
   assert.deepEqual(updates, [
     { day: 18, id: 'e1' },
