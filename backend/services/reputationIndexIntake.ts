@@ -50,6 +50,12 @@ export function prepareAuthorizedResearchBatch(
 ): ReputationIntakeResult {
   const approvals = new Map(sourceApprovals.map((item) => [item.sourceId, item]));
   const consents = new Map(companyConsents.map((item) => [item.companyKey, item]));
+  const duplicateSourceIds = new Set(sourceApprovals
+    .filter((item, index) => sourceApprovals.findIndex((candidate) => candidate.sourceId === item.sourceId) !== index)
+    .map((item) => item.sourceId));
+  const duplicateCompanyKeys = new Set(companyConsents
+    .filter((item, index) => companyConsents.findIndex((candidate) => candidate.companyKey === item.companyKey) !== index)
+    .map((item) => item.companyKey));
   const eligible: ReputationResearchReview[] = [];
   const reasons: Record<string, number> = {};
 
@@ -58,6 +64,10 @@ export function prepareAuthorizedResearchBatch(
   };
 
   for (const record of records) {
+    if (duplicateSourceIds.has(record.sourceId)) {
+      exclude('source_approval_ambiguous');
+      continue;
+    }
     const approval = approvals.get(record.sourceId);
     if (!approval || !approval.approvedForPublicResearch ||
         !approval.authorizationId.trim() || !approval.reviewedBy.trim() ||
@@ -72,6 +82,10 @@ export function prepareAuthorizedResearchBatch(
       continue;
     }
 
+    if (duplicateCompanyKeys.has(record.companyKey)) {
+      exclude('company_consent_ambiguous');
+      continue;
+    }
     const consent = consents.get(record.companyKey);
     if (!consent || !consent.consentRecordId.trim() || !consent.consentVersion.trim() ||
         !validTimestamp(consent.grantedAt) || Date.parse(consent.grantedAt) > now.getTime()) {
