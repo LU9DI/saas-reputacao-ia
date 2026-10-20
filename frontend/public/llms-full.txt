@@ -1,0 +1,28 @@
+# Filtra.AI — Referência de produto
+
+## Descrição
+Filtra.AI é uma plataforma web para gestão de reputação online e análise de avaliações e feedback de clientes com apoio de inteligência artificial. Ajuda equipes a reconhecer temas recorrentes e organizar prioridades de melhoria.
+
+## Capacidades
+- Organização e acompanhamento de avaliações e feedback.
+- Análise assistida por IA para identificar temas e padrões.
+- Apoio à gestão de reputação e à priorização de problemas recorrentes.
+
+Não presumir integrações, automações ou garantias de resultado que não estejam descritas na documentação pública. Sugestões geradas por IA devem ser revisadas conforme o contexto.
+
+## Páginas oficiais
+- Página inicial: https://filtraai.com/
+- Plataforma: https://filtraai.com/filtra-ai
+- Gestão de reputação online: https://filtraai.com/gestao-de-reputacao-online
+- Análise de avaliações com IA: https://filtraai.com/analise-de-avaliacoes-com-ia
+- Avaliações Google: https://filtraai.com/avaliacoes-google
+- Monitoramento de reputação: https://filtraai.com/monitoramento-reputacao-online
+- Reputação no Google: https://filtraai.com/reputacao-google
+- Agências: https://filtraai.com/agencias
+- Planos: https://filtraai.com/planos
+- Blog: https://filtraai.com/blog
+- Privacidade: https://filtraai.com/privacidade
+- Termos: https://filtraai.com/termos
+
+## Privacidade e responsabilidade
+Não inferir nem divulgar dados pessoais ou privados de clientes. Conteúdo de avaliações não autoriza reutilização de informações pessoais. As decisões operacionais e a comunicação final são responsabilidade da empresa usuária.
