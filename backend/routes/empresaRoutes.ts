@@ -28,10 +28,13 @@ import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
 import { ensureUnidadesSchema } from '../lib/unidades.js';
 import { loadCompanyReviewsCached } from '../services/companyReviewsCache.js';
 import {
+  companyCreationMonth,
+  companyExistedInPeriod,
   ensureMonthlyReportSchema,
   getOrGenerateMonthlyReportSnapshot,
   previousMonthUtc,
 } from './monthlyReportJobsRoutes.js';
+import { adaptRelatorioProfissionalAoPlano } from '../services/relatorioProfissional.js';
 
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -780,18 +783,21 @@ export function mountEmpresaRoutes(app: Express) {
         let relatoriosProfissionaisMensais: any[] = [];
         if (planTemRelatorioMensal(planAtual)) {
           try {
+            const createdMonth = companyCreationMonth(empresa.criado_em);
             const savedReports = await db.all(
               `SELECT periodo, report_json, status, updated_at
                FROM relatorio_envios_mensais
                WHERE empresa_id = ? AND report_json IS NOT NULL
+                 AND (? = '' OR periodo >= ?)
                ORDER BY periodo DESC LIMIT 24`,
-              [empresa.id],
+              [empresa.id, createdMonth, createdMonth],
             ) as any[];
             relatoriosProfissionaisMensais = savedReports.flatMap((item: any) => {
               try {
                 const report = JSON.parse(String(item.report_json || ''));
                 if (!report || report.empresa?.id !== String(empresa.id) || report.periodo !== String(item.periodo)) return [];
-                return [{ ...report, status_distribuicao: item.status, gerado_em: item.updated_at }];
+                const adapted = adaptRelatorioProfissionalAoPlano(report, planAtual);
+                return [{ ...adapted, status_distribuicao: item.status, gerado_em: item.updated_at }];
               } catch {
                 return [];
               }
@@ -1068,6 +1074,12 @@ export function mountEmpresaRoutes(app: Express) {
         });
       }
       const periodo = previousMonthUtc();
+      if (!companyExistedInPeriod(empresa.criado_em, periodo)) {
+        return res.status(409).json({
+          error: 'O período de referência é anterior à criação desta empresa.',
+          code: 'REPORT_PERIOD_BEFORE_COMPANY',
+        });
+      }
       try {
         const db = getDb();
         await ensureMonthlyReportSchema(db);
