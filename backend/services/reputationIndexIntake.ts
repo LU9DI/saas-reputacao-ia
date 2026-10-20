@@ -50,12 +50,18 @@ export function prepareAuthorizedResearchBatch(
 ): ReputationIntakeResult {
   const approvals = new Map(sourceApprovals.map((item) => [item.sourceId, item]));
   const consents = new Map(companyConsents.map((item) => [item.companyKey, item]));
-  const duplicateSourceIds = new Set(sourceApprovals
-    .filter((item, index) => sourceApprovals.findIndex((candidate) => candidate.sourceId === item.sourceId) !== index)
-    .map((item) => item.sourceId));
-  const duplicateCompanyKeys = new Set(companyConsents
-    .filter((item, index) => companyConsents.findIndex((candidate) => candidate.companyKey === item.companyKey) !== index)
-    .map((item) => item.companyKey));
+  const duplicateSourceIds = new Set<string>();
+  const seenSourceIds = new Set<string>();
+  for (const item of sourceApprovals) {
+    if (seenSourceIds.has(item.sourceId)) duplicateSourceIds.add(item.sourceId);
+    seenSourceIds.add(item.sourceId);
+  }
+  const duplicateCompanyKeys = new Set<string>();
+  const seenCompanyKeys = new Set<string>();
+  for (const item of companyConsents) {
+    if (seenCompanyKeys.has(item.companyKey)) duplicateCompanyKeys.add(item.companyKey);
+    seenCompanyKeys.add(item.companyKey);
+  }
   const eligible: ReputationResearchReview[] = [];
   const reasons: Record<string, number> = {};
 
