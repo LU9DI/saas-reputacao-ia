@@ -114,8 +114,9 @@ export function buildPublicReputationIndex(
   rows: ReputationIndexInput[],
   options: { minBusinesses?: number; minReviews?: number } = {},
 ): PublicReputationIndicator[] {
-  const minBusinesses = Math.max(2, Math.floor(options.minBusinesses ?? PUBLIC_INDEX_MIN_BUSINESSES));
-  const minReviews = Math.max(10, Math.floor(options.minReviews ?? PUBLIC_INDEX_MIN_REVIEWS));
+  // Callers may raise the privacy thresholds, but must never lower the published minimums.
+  const minBusinesses = Math.max(PUBLIC_INDEX_MIN_BUSINESSES, Math.floor(options.minBusinesses ?? PUBLIC_INDEX_MIN_BUSINESSES));
+  const minReviews = Math.max(PUBLIC_INDEX_MIN_REVIEWS, Math.floor(options.minReviews ?? PUBLIC_INDEX_MIN_REVIEWS));
   const uniqueReviews = new Map<string, NormalizedReview>();
 
   for (const row of rows) {
