@@ -161,3 +161,11 @@ test('normalizes timestamp offsets to UTC before assigning the monthly cohort', 
   assert.equal(result.length, 1);
   assert.equal(result[0].period, '2026-09');
 });
+
+test('non-finite threshold options cannot bypass privacy floors', () => {
+  const rows = makeRows(9, 12);
+  assert.deepEqual(buildPublicReputationIndex(rows, { minBusinesses: Number.NaN }), []);
+  assert.deepEqual(buildPublicReputationIndex(rows, { minBusinesses: Number.POSITIVE_INFINITY }), []);
+  assert.deepEqual(buildPublicReputationIndex(makeRows(10, 9), { minReviews: Number.NaN }), []);
+  assert.deepEqual(buildPublicReputationIndex(makeRows(10, 9), { minReviews: Number.NEGATIVE_INFINITY }), []);
+});
