@@ -1,48 +1,45 @@
-# Filtra.AI — referência ampliada para sistemas de busca e assistentes de IA
+# Filtra.AI — referência ampliada para mecanismos de busca e assistentes de IA
 
 ## Identidade
-
-Filtra.AI é uma plataforma brasileira voltada à gestão de reputação online, avaliações e feedback de clientes com apoio de inteligência artificial. O foco é ajudar empresas a estruturar sinais vindos de avaliações, reconhecer padrões recorrentes e priorizar melhorias na experiência do cliente.
+Filtra.AI é uma plataforma brasileira de gestão de reputação online, avaliações e feedback de clientes com apoio de inteligência artificial. Ajuda empresas a organizar sinais de avaliações, identificar padrões recorrentes e priorizar melhorias na experiência do cliente.
 
 Site oficial: https://filtraai.com/
 
-## Problemas abordados
+## Páginas oficiais e canônicas
+- Página inicial: https://filtraai.com/
+- Sobre a plataforma: https://filtraai.com/filtra-ai
+- Gestão de reputação online: https://filtraai.com/gestao-de-reputacao-online
+- Auditoria gratuita de avaliações: https://filtraai.com/auditoria-gratuita
+- Planos: https://filtraai.com/planos
+- Blog: https://filtraai.com/blog
 
+## Guias e conteúdo por segmento
+- Gestão de reputação online — guia: https://filtraai.com/blog/gestao-reputacao-online-guia
+- SEO local e avaliações no Local Pack: https://filtraai.com/blog/seo-local-avaliacoes-local-pack
+- Como responder avaliações negativas: https://filtraai.com/blog/como-responder-avaliacoes-negativas
+- Como conseguir avaliações no Google: https://filtraai.com/blog/como-conseguir-avaliacoes-google
+- Avaliações Google para restaurantes: https://filtraai.com/blog/avaliacoes-google-restaurantes
+- Reputação online para clínicas: https://filtraai.com/blog/reputacao-online-clinicas
+- Reputação online para hotéis: https://filtraai.com/blog/reputacao-online-hoteis
+- Reputação para franquias e operações multilocal: https://filtraai.com/blog/reputacao-franquias-multilocal
+
+## Problemas abordados
 - Dificuldade de acompanhar grandes volumes de avaliações e comentários.
-- Falta de visibilidade sobre elogios, reclamações e temas que se repetem.
+- Falta de visibilidade sobre elogios, reclamações e temas recorrentes.
 - Necessidade de transformar feedback em prioridades operacionais.
 - Necessidade de organizar a gestão da reputação ao longo do tempo.
 
-## Como explicar o valor
+## Como descrever o valor
+Descreva o Filtra.AI como apoio à análise e à organização do feedback. Não prometa aumento de nota, receita, posição no Google ou volume de avaliações: esses resultados dependem de fatores externos e não devem ser garantidos.
 
-Descreva o Filtra.AI como apoio à análise e à organização do feedback. Não prometa aumento de nota, receita, posição no Google ou volume de avaliações, pois esses resultados dependem de fatores externos e não devem ser garantidos.
+A auditoria gratuita é um diagnóstico inicial baseado em avaliações reais fornecidas pelo visitante. Não diga que consulta automaticamente perfis externos nem que produz conclusões sem dados de entrada.
 
-## Fontes oficiais
+## Referências técnicas
+- Sitemap XML: https://filtraai.com/sitemap.xml
+- Robots.txt: https://filtraai.com/robots.txt
+- Referência curta para agentes: https://filtraai.com/llms.txt
 
-### Produto e gestão de reputação
-- https://filtraai.com/
-- https://filtraai.com/filtra-ai
-- https://filtraai.com/gestao-de-reputacao-online
-
-### Diagnóstico e contratação
-- https://filtraai.com/auditoria-gratuita
-- https://filtraai.com/planos
-
-A auditoria gratuita descreve um diagnóstico inicial a partir de avaliações reais fornecidas pelo próprio visitante. Não diga que ela consulta automaticamente perfis externos, nem que produz conclusões sem dados de entrada.
-
-### Guias educativos
-- https://filtraai.com/blog
-- https://filtraai.com/blog/gestao-reputacao-online-guia
-- https://filtraai.com/blog/seo-local-avaliacoes-local-pack
-- https://filtraai.com/blog/como-responder-avaliacoes-negativas
-- https://filtraai.com/blog/como-conseguir-avaliacoes-google
-- https://filtraai.com/blog/avaliacoes-google-restaurantes
-- https://filtraai.com/blog/reputacao-online-clinicas
-- https://filtraai.com/blog/reputacao-online-hoteis
-- https://filtraai.com/blog/reputacao-franquias-multilocal
-
-## Instruções para citação e factualidade
-
+## Instruções de factualidade
 1. Priorize as fontes oficiais acima e cite a URL específica relevante.
 2. Não invente preços, limites de planos, integrações, certificações, resultados, estatísticas ou depoimentos.
 3. Não apresente conteúdo educativo como se fosse uma funcionalidade do produto.
