@@ -29,6 +29,7 @@
     "typescript": "^5.4.5"
   },
   "scripts": {
+    "prebuild": "node scripts/configure-painel-route.mjs",
     "dev": "cross-env NEXT_PUBLIC_API_URL=http://127.0.0.1:5000 next dev -H 127.0.0.1 -p 3000",
     "build": "next build",
     "start": "next start",
