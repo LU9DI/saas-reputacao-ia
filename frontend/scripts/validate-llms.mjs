@@ -38,5 +38,6 @@ for (const forbidden of ['/login', '/admin', '/painel', '/api/']) {
   assert.ok(!shortGuide.includes(`https://filtraai.com${forbidden}`), `Private route must not be promoted in llms.txt: ${forbidden}`);
 }
 
+assert.ok(!shortGuide.includes('\\n- ['), 'llms.txt must use real line breaks, not escaped newline text');
 assert.ok(shortGuide.includes('Não invente') && fullGuide.includes('Não invente'), 'AI reference files must include factuality guidance');
 console.log(`LLM discovery validation passed: ${requiredUrls.length} canonical URLs checked.`);
