@@ -23,7 +23,7 @@ const questions = [
   {
     question: 'O índice já publica médias por setor ou cidade?',
     answer:
-      'Ainda não. O Filtra.AI não publica médias setoriais enquanto não houver uma amostra real, suficientemente ampla e verificável para sustentar cada recorte. Não usamos números simulados para preencher lacunas.',
+      'Ainda não. O Filtra.AI não publica médias setoriais enquanto não houver uma amostra real, suficientemente ampla e verificável para sustentar cada recorte. Não usamos números simulados para preencher lacunas. O critério inicial planejado para cada recorte mensal é de pelo menos 10 negócios distintos e 100 avaliações válidas, além de uma revisão de privacidade.',
   },
   {
     question: 'Os dados permitem identificar uma empresa?',
@@ -33,7 +33,7 @@ const questions = [
   {
     question: 'Como os resultados serão calculados?',
     answer:
-      'Cada publicação deverá informar período, setor, região quando aplicável, tamanho da amostra, origem dos dados, critérios de inclusão, tratamento de duplicatas e limitações. Comparações só serão feitas quando as amostras forem comparáveis.',
+      'Cada publicação deverá informar período, setor, região quando aplicável, tamanho da amostra, origem dos dados, critérios de inclusão, tratamento de duplicatas e limitações. O critério inicial planejado é um mínimo de 10 negócios distintos e 100 avaliações válidas por recorte mensal; atingir esse limite não dispensa revisão de risco de reidentificação. Comparações só serão feitas quando as amostras forem comparáveis.',
   },
   {
     question: 'O índice representa todas as empresas brasileiras?',
