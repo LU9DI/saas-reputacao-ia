@@ -150,6 +150,11 @@ export function buildRelatorioMensalHtml(
   const knownPlan = Boolean(PLAN_LABELS[planKey]);
   const planLabel = knownPlan ? PLAN_LABELS[planKey] : (planKey ? planKey.toUpperCase() : 'Plano contratado');
   const dataPlan = knownPlan ? planKey : 'full';
+  // Em produção o documento renderiza somente os módulos do plano. A prévia demo
+  // mantém todos os blocos no HTML para o seletor de plano ocultar por CSS.
+  const planAllowsUltra = demo || ['ultra', 'corporativo', 'rei'].includes(planKey);
+  const planAllowsCorporate = demo || ['corporativo', 'rei'].includes(planKey);
+  const planAllowsRei = demo || planKey === 'rei';
 
   const summary = String(
     report.resumo_executivo
@@ -187,9 +192,11 @@ export function buildRelatorioMensalHtml(
   for (const theme of list<ThemeItem>(report.temas?.positivos).slice(0, 4)) {
     if (theme?.tema) strengths.push(`${theme.tema}: ${count(theme.volume)} ocorrência(s) em avaliações de 4–5★.`);
   }
-  const bestUnit = list<RankingItem>(report.ranking_unidades)
-    .slice()
-    .sort((a, b) => count(b.nota_media) - count(a.nota_media))[0];
+  const bestUnit = planAllowsCorporate
+    ? list<RankingItem>(report.ranking_unidades)
+      .slice()
+      .sort((a, b) => count(b.nota_media) - count(a.nota_media))[0]
+    : undefined;
   if (bestUnit?.nome && count(bestUnit.nota_media) > 0) {
     strengths.push(`${bestUnit.nome}: melhor média do período (${oneDecimal(bestUnit.nota_media)}/5).`);
   }
@@ -221,19 +228,19 @@ export function buildRelatorioMensalHtml(
     ['Nota média', 'Média simples das notas do período, de 1 a 5.'],
     ['Positivas', 'Avaliações de 4 e 5 estrelas.'],
     ['Críticas (1–3★)', 'Avaliações de 1 a 3 estrelas; são o primeiro lugar para investigar causas.'],
-    ...(report.sentimento || themeItems.length
+    ...(planAllowsUltra && (report.sentimento || themeItems.length)
       ? [
           ['Sentimento', 'Leitura agregada de cada avaliação: positivo, neutro ou negativo.'],
           ['Temas', 'Assuntos mais citados; ajudam a localizar o que puxa a nota para cima ou para baixo.'],
         ]
       : []),
-    ...(risks.length
+    ...(planAllowsUltra && risks.length
       ? [['Riscos', 'Sinais que merecem acompanhamento. Apontam o que investigar, não provam causa isoladamente.']]
       : []),
-    ...(recommendations.length
+    ...(planAllowsUltra && recommendations.length
       ? [['Recomendações', 'Próximos passos sugeridos a partir das evidências do período.']]
       : []),
-    ...(radar.length || growth.length
+    ...(planAllowsRei && (radar.length || growth.length)
       ? [['Radar estratégico', 'Comparação com o mês anterior e diferenças entre unidades, quando há dados suficientes.']]
       : []),
     ['Relatório salvo', 'Abrir, baixar ou reabrir não gera nova análise de IA nem consome tokens.'],
@@ -371,18 +378,19 @@ export function buildRelatorioMensalHtml(
     ? `O próximo ciclo deve priorizar o tratamento ${criticals === 1 ? 'da avaliação crítica registrada' : `das ${criticals} avaliações críticas`} e o acompanhamento dos temas associados.`
     : 'O próximo ciclo deve manter o acompanhamento dos indicadores e consolidar o que já funciona.';
 
-  // Não basta esconder por CSS: módulos fora do plano não devem existir no HTML.
-  const hasSentimentCard = Boolean(report.sentimento) || themeItems.length > 0;
-  const hasStrengthsCard = strengths.length > 0 || Boolean(reasoning);
-  const hasRisksCard = risks.length > 0;
-  const hasRecommendationsCard = recommendations.length > 0;
+  // Módulos fora do plano não são serializados no HTML; o CSS de [data-plan]
+  // permanece apenas como salvaguarda da prévia demonstrativa.
+  const hasSentimentCard = planAllowsUltra && (Boolean(report.sentimento) || themeItems.length > 0);
+  const hasStrengthsCard = planAllowsUltra && (strengths.length > 0 || Boolean(reasoning));
+  const hasRisksCard = planAllowsUltra && risks.length > 0;
+  const hasRecommendationsCard = planAllowsUltra && recommendations.length > 0;
   const firstUltraRow = [hasSentimentCard ? sentimentCard : '', hasStrengthsCard ? strengthsCard : ''].join('');
   const secondUltraRow = [hasRisksCard ? risksCard : '', hasRecommendationsCard ? recommendationsCard : ''].join('');
-  const ultraBlock = (firstUltraRow || secondUltraRow || opportunitiesSection)
+  const ultraBlock = planAllowsUltra && (firstUltraRow || secondUltraRow || opportunitiesSection)
     ? `<div class="module-ultra">${firstUltraRow ? `<div class="two-col" style="margin-top:14px">${firstUltraRow}</div>` : ''}${secondUltraRow ? `<div class="two-col" style="margin-top:14px">${secondUltraRow}</div>` : ''}${opportunitiesSection}</div>`
     : '';
-  const corporateBlock = unitsSection ? `<div class="module-corporate">${unitsSection}</div>` : '';
-  const reiBlock = radarSection ? `<div class="module-rei">${radarSection}</div>` : '';
+  const corporateBlock = planAllowsCorporate && unitsSection ? `<div class="module-corporate">${unitsSection}</div>` : '';
+  const reiBlock = planAllowsRei && radarSection ? `<div class="module-rei">${radarSection}</div>` : '';
 
   const planButtons = ['pro', 'ultra', 'corporativo', 'rei']
     .map((plan) => `<button type="button" data-plan-btn="${plan}" aria-pressed="${plan === (knownPlan ? planKey : 'rei') ? 'true' : 'false'}">${PLAN_LABELS[plan]}</button>`)

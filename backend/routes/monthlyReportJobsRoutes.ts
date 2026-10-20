@@ -51,11 +51,15 @@ export function nextMonthUtc(periodo: string): string {
 /**
  * Recuperação de lacuna: se o último snapshot salvo é anterior ao mês anterior
  * fechado, devolve o mês mais antigo em falta; caso contrário, o período normal.
+ * `piso` evita retomar um mês anterior à criação da empresa quando existe um
+ * snapshot legado/importado mais antigo que ela.
  */
-export function resolveCatchUpPeriod(ultimo: unknown, periodo: string): string {
+export function resolveCatchUpPeriod(ultimo: unknown, periodo: string, piso?: unknown): string {
   const last = String(ultimo || '');
   if (!/^\d{4}-\d{2}$/.test(last)) return periodo;
-  const next = nextMonthUtc(last);
+  let next = nextMonthUtc(last);
+  const floor = /^\d{4}-\d{2}/.test(String(piso || '').trim()) ? String(piso).slice(0, 7) : '';
+  if (floor && next < floor) next = floor;
   return next < periodo ? next : periodo;
 }
 
@@ -68,9 +72,15 @@ export function subscriptionReportOverdue(anchorDay: unknown, now = new Date()):
 }
 
 /** Evita gerar período anterior à criação da empresa; sem data confiável, não bloqueia. */
-export function companyExistedInPeriod(criadoEm: unknown, periodo: string): boolean {
+/** Mês (YYYY-MM) da criação da empresa; vazio quando a data não está disponível. */
+export function companyCreationMonth(criadoEm: unknown): string {
   const iso = String(criadoEm || '').trim();
-  const month = /^\d{4}-\d{2}/.test(iso) ? iso.slice(0, 7) : '';
+  return /^\d{4}-\d{2}/.test(iso) ? iso.slice(0, 7) : '';
+}
+
+/** Uma empresa nunca deve receber relatório de período anterior ao mês da criação. */
+export function companyExistedInPeriod(criadoEm: unknown, periodo: string): boolean {
+  const month = companyCreationMonth(criadoEm);
   return !month || month <= periodo;
 }
 
@@ -125,6 +135,43 @@ export async function resolveMonthlyReportRecipients(db: any, empresaId: string,
   return destinatarios;
 }
 
+export type MonthlyReportDeliveryRecipient = { canal: string; destino: string };
+
+/**
+ * Monta o payload do webhook já adaptado ao plano atual.
+ * O snapshot persistido guarda o conteúdo integral (para upgrade no mesmo ciclo),
+ * mas a entrega externa nunca recebe módulos fora do plano contratado.
+ */
+export function buildMonthlyReportNotificationPayload(input: {
+  report: any;
+  empresa: { id: string; nome_empresa?: string | null; slug?: string | null };
+  plan: unknown;
+  periodo: string;
+  destinatarios: MonthlyReportDeliveryRecipient[];
+}) {
+  const report = adaptRelatorioProfissionalAoPlano(input.report, input.plan);
+  const destinatarios = Array.isArray(input.destinatarios) ? input.destinatarios : [];
+  const channels = [...new Set(destinatarios.map((item) => String(item?.canal || '')).filter(Boolean))];
+  return {
+    tipo: 'relatorio_profissional_mensal',
+    schema_version: report.schema_version,
+    empresa_id: String(input.empresa.id),
+    slug: input.empresa.slug || null,
+    nome_empresa: input.empresa.nome_empresa || 'Empresa',
+    plan: input.plan,
+    periodo: input.periodo,
+    report,
+    relatorio: report,
+    channels,
+    destinatarios,
+    email: destinatarios.find((item) => item.canal === 'email')?.destino || null,
+    idempotency_key: 'monthly-professional-report:' + input.empresa.id + ':' + input.periodo,
+    entrega: 'mensal',
+    modelo_ia: report.geracao?.modelo_ia || null,
+    tokens: report.geracao?.tokens || 0,
+  };
+}
+
 const SNAPSHOT_STALE_MS = 30 * 60 * 1000;
 
 export type MonthlyReportSnapshotResult = {
@@ -169,13 +216,37 @@ export async function getOrGenerateMonthlyReportSnapshot(
   if (cached) return { state: 'cached', report: cached };
 
   // Reserva antiga aceita pela distribuição mas sem snapshot: apenas completa o conteúdo,
-  // preservando o estado de entrega.
+  // preservando o estado de entrega. O claim por CAS (updated_at de origem) impede que
+  // duas leituras simultâneas gerem o mesmo snapshot e dupliquem o custo de IA.
   if (existing && String(existing.status) === 'accepted') {
-    const report = await build(db, empresa, periodo, opts?.locale || null);
+    const updatedMs = Date.parse(String(existing.updated_at || ''));
+    const claimedRecently = Number.isFinite(updatedMs) && Date.now() - updatedMs < SNAPSHOT_STALE_MS;
+    if (claimedRecently) return { state: 'generating' };
+    const claimedAt = new Date().toISOString();
+    const claim = await db.run(
+      `UPDATE relatorio_envios_mensais SET updated_at = ?
+       WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL AND updated_at = ?`,
+      [claimedAt, empresaId, periodo, String(existing.updated_at || '')],
+    );
+    if (Number(claim?.changes || 0) <= 0) {
+      const again = parseReport(await readRow());
+      return again ? { state: 'cached', report: again } : { state: 'generating' };
+    }
+    let report: any;
+    try {
+      report = await build(db, empresa, periodo, opts?.locale || null);
+    } catch (error: any) {
+      await db.run(
+        `UPDATE relatorio_envios_mensais SET erro = ?, updated_at = ?
+         WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL AND updated_at = ?`,
+        [String(error?.message || error).slice(0, 500), new Date().toISOString(), empresaId, periodo, claimedAt],
+      ).catch(() => { /* preserva o erro original */ });
+      throw error;
+    }
     const saved = await db.run(
-      `UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ?
-       WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL`,
-      [JSON.stringify(report), new Date().toISOString(), empresaId, periodo],
+      `UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ?, erro = NULL
+       WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL AND updated_at = ?`,
+      [JSON.stringify(report), new Date().toISOString(), empresaId, periodo, claimedAt],
     );
     if (Number(saved?.changes || 0) > 0) return { state: 'generated', report: adaptRelatorioProfissionalAoPlano(report, empresa.plan) };
     const again = parseReport(await readRow());
@@ -278,7 +349,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
            AND lower(COALESCE(e.status, '')) IN ('ativo','active')
          ORDER BY e.id`
       ) as any[];
-      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0, sem_dia_assinatura: 0, snapshots_gerados: 0, snapshots_recuperados: 0, recuperacoes_aniversario: 0, recuperacoes_lacuna: 0 };
+      const stats = { periodo, candidatos: companies.length, encaminhados: 0, pulados: 0, pulados_antes_criacao: 0, falhas: 0, sem_destinatario: 0, distribuicao_indisponivel: 0, sem_dia_assinatura: 0, snapshots_gerados: 0, snapshots_recuperados: 0, recuperacoes_aniversario: 0, recuperacoes_lacuna: 0 };
       for (const empresa of companies) {
         // Prioridade da execução diária:
         // 1) snapshot incompleto (sem report_json) de qualquer mês;
@@ -290,16 +361,21 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         let pendingReport: any = null;
         let gapRecovery = false;
         let recovery = '';
+        // Linhas legadas anteriores à criação não entram nas filas: sem esse filtro,
+        // elas ficariam em primeiro lugar e bloqueariam todos os meses seguintes.
+        const createdMonth = companyCreationMonth(empresa.criado_em);
         if (!manualRecovery) {
           const retryCutoff = new Date(Date.now() - 30 * 60 * 1000).toISOString();
           pendingReport = await db.get(
             `SELECT periodo FROM relatorio_envios_mensais
-             WHERE empresa_id = ? AND report_json IS NULL AND (
-               status IN ('failed', 'generated', 'accepted') OR
-               (status = 'processing' AND updated_at <= ?)
-             )
+             WHERE empresa_id = ? AND report_json IS NULL
+               AND (? = '' OR periodo >= ?)
+               AND (
+                 status IN ('failed', 'generated', 'accepted') OR
+                 (status = 'processing' AND updated_at <= ?)
+               )
              ORDER BY periodo ASC LIMIT 1`,
-            [empresa.id, retryCutoff],
+            [empresa.id, createdMonth, createdMonth, retryCutoff],
           ) as any;
           if (pendingReport?.periodo && isMonth(pendingReport.periodo)) {
             reportPeriod = String(pendingReport.periodo);
@@ -312,7 +388,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
               `SELECT MAX(periodo) AS ultimo FROM relatorio_envios_mensais WHERE empresa_id = ? AND report_json IS NOT NULL`,
               [empresa.id],
             ) as any;
-            const catchUp = resolveCatchUpPeriod(lastSaved?.ultimo, periodo);
+            const catchUp = resolveCatchUpPeriod(lastSaved?.ultimo, periodo, empresa.criado_em);
             if (catchUp !== periodo) {
               reportPeriod = catchUp;
               gapRecovery = true;
@@ -322,6 +398,13 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         }
         const plan = String(empresa.plan || '').toLowerCase();
         if (!planTemRelatorioMensal(plan)) { stats.pulados++; continue; }
+        // Nenhuma geração (automática ou em recuperação manual) pode criar período
+        // anterior à criação da empresa.
+        if (!companyExistedInPeriod(empresa.criado_em, reportPeriod)) {
+          stats.pulados++;
+          stats.pulados_antes_criacao++;
+          continue;
+        }
         // Cadência: no aniversário mensal, gera o mês anterior fechado.
         // Recuperações: (1) aniversário já vencido e snapshot ausente no mesmo mês;
         // (2) mês fechado faltante entre o último snapshot e o mês anterior.
@@ -337,8 +420,7 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
               [empresa.id, reportPeriod],
             ) as any;
             const due = anchorOk && subscriptionReportDue(anchorDay);
-            const missedAnniversary = anchorOk && !existing?.report_json && subscriptionReportOverdue(anchorDay)
-              && companyExistedInPeriod(empresa.criado_em, reportPeriod);
+            const missedAnniversary = anchorOk && !existing?.report_json && subscriptionReportOverdue(anchorDay);
             if (due || missedAnniversary) {
               if (missedAnniversary) stats.recuperacoes_aniversario++;
             } else {
@@ -346,8 +428,9 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
               const deliveryPending = await db.get(
                 `SELECT periodo FROM relatorio_envios_mensais
                  WHERE empresa_id = ? AND report_json IS NOT NULL AND status IN ('failed', 'generated')
+                   AND (? = '' OR periodo >= ?)
                  ORDER BY periodo ASC LIMIT 1`,
-                [empresa.id],
+                [empresa.id, createdMonth, createdMonth],
               ) as any;
               if (deliveryPending?.periodo && isMonth(deliveryPending.periodo)) {
                 reportPeriod = String(deliveryPending.periodo);
@@ -384,17 +467,36 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
         const reservation = await db.get('SELECT status, updated_at, report_json FROM relatorio_envios_mensais WHERE empresa_id = ? AND periodo = ?', [empresa.id, reportPeriod]) as any;
         if (reservation?.status === 'accepted') {
           if (reservation.report_json) { stats.pulados++; continue; }
+          // Claim por CAS: sem ele, duas execuções simultâneas gerariam o mesmo snapshot
+          // (e chamariam a IA duas vezes) para uma entrega já aceita sem report_json.
+          const acceptedUpdatedMs = Date.parse(String(reservation.updated_at || ''));
+          const claimedRecently = Number.isFinite(acceptedUpdatedMs) && Date.now() - acceptedUpdatedMs < 30 * 60 * 1000;
+          if (claimedRecently) { stats.pulados++; continue; }
+          const claimedAt = new Date().toISOString();
+          const claim = await db.run(
+            `UPDATE relatorio_envios_mensais SET updated_at = ?
+             WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL AND updated_at = ?`,
+            [claimedAt, empresa.id, reportPeriod, String(reservation.updated_at || '')]
+          );
+          if (!claim.changes) { stats.pulados++; continue; }
           try {
             const recoveredReport = await buildRelatorioProfissional(db, empresa, reportPeriod);
             const saved = await db.run(
-              `UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ? WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL`,
-              [JSON.stringify(recoveredReport), new Date().toISOString(), empresa.id, reportPeriod]
+              `UPDATE relatorio_envios_mensais SET report_json = ?, updated_at = ?, erro = NULL
+               WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL AND updated_at = ?`,
+              [JSON.stringify(recoveredReport), new Date().toISOString(), empresa.id, reportPeriod, claimedAt]
             );
             if (saved.changes) stats.snapshots_recuperados++;
             else stats.pulados++;
           } catch (error: any) {
+            const message = String(error?.message || error).slice(0, 500);
+            await db.run(
+              `UPDATE relatorio_envios_mensais SET erro = ?, updated_at = ?
+               WHERE empresa_id = ? AND periodo = ? AND status = 'accepted' AND report_json IS NULL AND updated_at = ?`,
+              [message, new Date().toISOString(), empresa.id, reportPeriod, claimedAt]
+            ).catch(() => { /* preserva o erro original */ });
             stats.falhas++;
-            console.warn('[monthly-report] recuperação de snapshot falhou empresa=' + empresa.id + ':', String(error?.message || error).slice(0, 500));
+            console.warn('[monthly-report] recuperação de snapshot falhou empresa=' + empresa.id + ':', message);
           }
           continue;
         }
@@ -428,25 +530,13 @@ export function mountMonthlyReportJobsRoutes(app: Express) {
             stats.distribuicao_indisponivel++;
             continue;
           }
-          const channels = [...new Set(destinatarios.map((d: any) => d.canal))];
-          const accepted = await notifyN8nAsync('report.generated', {
-            tipo: 'relatorio_profissional_mensal',
-            schema_version: report.schema_version,
-            empresa_id: String(empresa.id),
-            slug: empresa.slug || null,
-            nome_empresa: empresa.nome_empresa || 'Empresa',
+          const accepted = await notifyN8nAsync('report.generated', buildMonthlyReportNotificationPayload({
+            report,
+            empresa: { id: String(empresa.id), nome_empresa: empresa.nome_empresa, slug: empresa.slug },
             plan: empresa.plan,
             periodo: reportPeriod,
-            report,
-            relatorio: report,
-            channels,
             destinatarios,
-            email: destinatarios.find((d: any) => d.canal === 'email')?.destino || null,
-            idempotency_key: 'monthly-professional-report:' + empresa.id + ':' + reportPeriod,
-            entrega: 'mensal',
-            modelo_ia: report.geracao?.modelo_ia || null,
-            tokens: report.geracao?.tokens || 0,
-          });
+          }));
           if (!accepted) throw new Error('Webhook de distribuição não confirmou o recebimento.');
           await db.run(`UPDATE relatorio_envios_mensais SET status = 'accepted', updated_at = ?, enviado_em = ?, erro = NULL WHERE empresa_id = ? AND periodo = ?`, [new Date().toISOString(), new Date().toISOString(), empresa.id, reportPeriod]);
           stats.encaminhados++;

@@ -48,6 +48,35 @@ test('o relatório do plano Pro não expõe módulos avançados', () => {
   assert.match(html, /data-plan="pro"/);
 });
 
+test('snapshot integral entregue a plano Pro não serializa módulos premium no HTML-fonte', () => {
+  const html = buildRelatorioMensalHtml(fullReport, { plan: 'pro' });
+
+  assert.doesNotMatch(html, /Sentimento e temas/);
+  assert.doesNotMatch(html, /Pontos fortes/);
+  assert.doesNotMatch(html, /Riscos a acompanhar/);
+  assert.doesNotMatch(html, /Plano de ação recomendado/);
+  assert.doesNotMatch(html, /Desempenho por unidade/);
+  assert.doesNotMatch(html, /Prioridades operacionais/);
+  assert.doesNotMatch(html, /Radar estratégico/);
+  assert.equal(html.includes('class="module-ultra"'), false);
+  assert.equal(html.includes('class="module-corporate"'), false);
+  assert.equal(html.includes('class="module-rei"'), false);
+  assert.match(html, /data-plan="pro"/);
+});
+
+test('snapshot integral entregue a plano Ultra não serializa unidades nem radar REI', () => {
+  const html = buildRelatorioMensalHtml(fullReport, { plan: 'ultra' });
+
+  assert.match(html, /Sentimento e temas/);
+  assert.doesNotMatch(html, /Desempenho por unidade/);
+  assert.doesNotMatch(html, /Prioridades operacionais/);
+  assert.doesNotMatch(html, /Radar estratégico/);
+  assert.doesNotMatch(html, /Oportunidades de crescimento/);
+  assert.equal(html.includes('class="module-corporate"'), false);
+  assert.equal(html.includes('class="module-rei"'), false);
+  assert.match(html, /data-plan="ultra"/);
+});
+
 test('escapa conteúdo dinâmico e não injeta scripts', () => {
   const html = buildRelatorioMensalHtml({
     ...fullReport,

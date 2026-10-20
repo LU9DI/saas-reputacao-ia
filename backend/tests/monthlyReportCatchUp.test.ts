@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  companyCreationMonth,
   companyExistedInPeriod,
   nextMonthUtc,
   resolveCatchUpPeriod,
@@ -19,6 +20,12 @@ test('recupera o mês mais antigo em falta antes de voltar à cadência', () => 
   assert.equal(resolveCatchUpPeriod('2026-10', '2026-10'), '2026-10');
   assert.equal(resolveCatchUpPeriod(null, '2026-10'), '2026-10');
   assert.equal(resolveCatchUpPeriod('2026-12', '2027-02'), '2027-01');
+});
+
+test('não retoma lacuna anterior à criação da empresa', () => {
+  assert.equal(resolveCatchUpPeriod('2026-08', '2026-11', '2026-10'), '2026-10');
+  assert.equal(resolveCatchUpPeriod('2026-09', '2026-11', '2026-10'), '2026-10');
+  assert.equal(resolveCatchUpPeriod('2026-10', '2026-11', '2026-10'), '2026-11');
 });
 
 test('aniversário vencido no mês permite recuperação no dia seguinte', () => {
@@ -46,4 +53,11 @@ test('não recupera período anterior à criação da empresa', () => {
   assert.equal(companyExistedInPeriod('2026-09-30T12:00:00.000Z', '2026-09'), true);
   assert.equal(companyExistedInPeriod('2026-10-01T00:00:00.000Z', '2026-10'), true);
   assert.equal(companyExistedInPeriod(null, '2026-09'), true);
+});
+
+test('extrai o mês de criação para filtrar filas e payload do painel', () => {
+  assert.equal(companyCreationMonth('2026-10-25T12:00:00.000Z'), '2026-10');
+  assert.equal(companyCreationMonth('2026-10-25'), '2026-10');
+  assert.equal(companyCreationMonth(null), '');
+  assert.equal(companyCreationMonth('data-invalida'), '');
 });

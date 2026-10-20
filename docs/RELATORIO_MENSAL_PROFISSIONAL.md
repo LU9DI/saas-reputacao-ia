@@ -22,7 +22,7 @@ O Relatório Inteligente legado e seus endpoints permanecem intactos e fora do e
 - **Corporativo:** conteúdo do Ultra + ranking comparativo entre unidades e prioridades operacionais baseadas em evidências.
 - **REI:** conteúdo do Corporativo + radar estratégico, tendências comparativas e oportunidades de crescimento com recomendações executivas.
 - O Inicial não tem direito ao relatório mensal. Não há bloco comercial ou comparativo de preços no documento; só aparecem módulos incluídos no plano atual — os módulos fora do plano não são renderizados no HTML, e não apenas ocultados por CSS.
-- Se o plano mudar depois da criação do snapshot, a apresentação e os metadados são adaptados a partir do mesmo snapshot, sem uma nova chamada à IA.
+- Se o plano mudar depois da criação do snapshot, a apresentação e os metadados são adaptados a partir do mesmo snapshot, sem uma nova chamada à IA. O snapshot persistido guarda o conteúdo integral para permitir upgrade no mesmo ciclo; o payload do painel e o payload de entrega do job (n8n) são sempre adaptados ao plano atual antes de sair do backend.
 
 ## Preparação do snapshot, cache e limites de tokens
 
@@ -30,6 +30,7 @@ O Relatório Inteligente legado e seus endpoints permanecem intactos e fora do e
   - snapshot existente → `200 { success: true, cached: true, report }`;
   - uma solicitação interna autorizada sem snapshot pode gerar e persistir o relatório;
   - geração concorrente em andamento → `202 { status: 'generating', retry_after_ms }` sem duplicar custo;
+  - período anterior à criação da empresa → `409 { code: 'REPORT_PERIOD_BEFORE_COMPANY' }`, inclusive se houver snapshot legado;
   - plano sem direito → `403 { code: 'REPORT_NOT_INCLUDED' }`.
 
 Esses comportamentos de endpoint não são acionados pelo painel do cliente; abrir, baixar ou reabrir o relatório não envia requisições.
@@ -45,11 +46,11 @@ O documento HTML usa a identidade visual Filtra.AI, com seções numeradas, glos
 ## Conteúdo
 
 - Resumo executivo e indicadores calculados no servidor.
-- Distribuição de avaliações, sentimento e temas recorrentes.
+- Indicadores do período, sentimento e temas recorrentes.
 - Riscos e oportunidades sustentados pelas avaliações do período.
 - Ranking comparativo entre unidades e prioridades operacionais com evidências (quando a empresa tem unidades com avaliações no período).
 - Radar estratégico, comparação com o mês anterior e oportunidades de crescimento (quando há sinal suficiente).
-- Conteúdo textual estruturado para leitura em nova aba e download; não há distribuição por e-mail.
+- Conteúdo textual estruturado para leitura em nova aba e download. A distribuição por e-mail/WhatsApp é feita pelo job externo via n8n quando configurado, usando o mesmo snapshot adaptado ao plano.
 
 KPIs e contagens são sempre calculados pelo backend. O relatório declara quando não há histórico suficiente para comparação ou quando não houve avaliações válidas (nota média exibida como "—", nunca 0,0/5).
 

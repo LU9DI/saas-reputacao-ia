@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { getOrGenerateMonthlyReportSnapshot } from '../routes/monthlyReportJobsRoutes.js';
+import { buildMonthlyReportNotificationPayload, getOrGenerateMonthlyReportSnapshot } from '../routes/monthlyReportJobsRoutes.js';
 import { adaptRelatorioProfissionalAoPlano } from '../services/relatorioProfissional.js';
 
 type Row = any;
@@ -47,11 +47,31 @@ function fakeMonthlyDb(initial?: Row[]) {
         }
         return { changes: 0 };
       }
-      if (/status = 'accepted' AND report_json IS NULL/.test(sql)) {
-        const [reportJson, updatedAt, empresaId, periodo] = params;
+      if (/SET report_json = \?, updated_at = \?, erro = NULL/.test(sql) && /status = 'accepted' AND report_json IS NULL AND updated_at = \?/.test(sql)) {
+        const [reportJson, updatedAt, empresaId, periodo, expectedUpdatedAt] = params;
         const row = rows.get(`${empresaId}|${periodo}`);
-        if (row && row.status === 'accepted' && !row.report_json) {
+        if (row && row.status === 'accepted' && !row.report_json && row.updated_at === expectedUpdatedAt) {
           row.report_json = reportJson;
+          row.updated_at = updatedAt;
+          row.erro = null;
+          return { changes: 1 };
+        }
+        return { changes: 0 };
+      }
+      if (/SET erro = \?, updated_at = \?/.test(sql) && /status = 'accepted' AND report_json IS NULL AND updated_at = \?/.test(sql)) {
+        const [erro, updatedAt, empresaId, periodo, expectedUpdatedAt] = params;
+        const row = rows.get(`${empresaId}|${periodo}`);
+        if (row && row.status === 'accepted' && !row.report_json && row.updated_at === expectedUpdatedAt) {
+          row.erro = erro;
+          row.updated_at = updatedAt;
+          return { changes: 1 };
+        }
+        return { changes: 0 };
+      }
+      if (/SET updated_at = \?/.test(sql) && /status = 'accepted' AND report_json IS NULL AND updated_at = \?/.test(sql)) {
+        const [updatedAt, empresaId, periodo, expectedUpdatedAt] = params;
+        const row = rows.get(`${empresaId}|${periodo}`);
+        if (row && row.status === 'accepted' && !row.report_json && row.updated_at === expectedUpdatedAt) {
           row.updated_at = updatedAt;
           return { changes: 1 };
         }
@@ -187,7 +207,7 @@ describe('cache do relatório mensal sob demanda', () => {
   });
 
   it('completa snapshot ausente em entrega já aceita sem reenviar o relatório', async () => {
-    const db = fakeMonthlyDb([seedRow({ status: 'accepted', report_json: null })]);
+    const db = fakeMonthlyDb([seedRow({ status: 'accepted', report_json: null, updated_at: '2020-01-01T00:00:00.000Z' })]);
     const result = await getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, {
       build: async () => fakeReport('recuperado'),
     });
@@ -196,6 +216,48 @@ describe('cache do relatório mensal sob demanda', () => {
     const row = db.rows.get(`e1|${periodo}`);
     assert.equal(row.status, 'accepted', 'status de entrega deve ser preservado');
     assert.equal(JSON.parse(row.report_json).origem, 'recuperado');
+  });
+
+  it('duas leituras simultâneas do mesmo ciclo geram uma única vez', async () => {
+    const db = fakeMonthlyDb();
+    let buildCalls = 0;
+    let release: () => void = () => {};
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const build = async () => { buildCalls += 1; await gate; return fakeReport('concorrente'); };
+
+    const first = getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, { build });
+    const second = getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, { build });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.equal(buildCalls, 1, 'somente um concorrente deve iniciar a geração');
+    release();
+
+    const [a, b] = await Promise.all([first, second]);
+    assert.equal(a.state, 'generated');
+    assert.equal(b.state, 'generating');
+    assert.equal(buildCalls, 1, 'o perdedor não pode chamar a IA novamente');
+    assert.equal(JSON.parse(db.rows.get(`e1|${periodo}`).report_json).origem, 'concorrente');
+  });
+
+  it('duas leituras simultâneas de entrega aceita sem snapshot geram uma única vez', async () => {
+    const db = fakeMonthlyDb([seedRow({ status: 'accepted', report_json: null, updated_at: '2020-01-01T00:00:00.000Z' })]);
+    let buildCalls = 0;
+    let release: () => void = () => {};
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const build = async () => { buildCalls += 1; await gate; return fakeReport('aceito-concorrente'); };
+
+    const first = getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, { build });
+    const second = getOrGenerateMonthlyReportSnapshot(db, empresa, periodo, { build });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.equal(buildCalls, 1, 'somente um concorrente deve recuperar o snapshot aceito');
+    release();
+
+    const [a, b] = await Promise.all([first, second]);
+    assert.equal(a.state, 'generated');
+    assert.equal(b.state, 'generating');
+    assert.equal(buildCalls, 1);
+    const row = db.rows.get(`e1|${periodo}`);
+    assert.equal(row.status, 'accepted', 'o status de entrega continua aceito');
+    assert.equal(JSON.parse(row.report_json).origem, 'aceito-concorrente');
   });
 });
 
@@ -263,5 +325,38 @@ describe('benefícios progressivos do relatório mensal', () => {
     assert.ok(adapted.prioridades_operacionais);
     assert.ok(adapted.radar_estrategico);
     assert.ok(adapted.oportunidades_crescimento);
+  });
+
+  it('payload de entrega ao webhook remove módulos premium do plano Pro', () => {
+    const payload = buildMonthlyReportNotificationPayload({
+      report: fullReport(),
+      plan: 'pro',
+      empresa: { id: 'e1', nome_empresa: 'Empresa Cache', slug: 'cache' },
+      periodo,
+      destinatarios: [{ canal: 'email', destino: 'financeiro@example.com' }],
+    });
+    assert.equal(Object.hasOwn(payload.report, 'sentimento'), false);
+    assert.equal(Object.hasOwn(payload.relatorio, 'ranking_unidades'), false);
+    assert.equal(Object.hasOwn(payload.report, 'radar_estrategico'), false);
+    assert.equal(payload.report.plano.codigo, 'pro');
+    assert.equal(String(payload.report.canais.email.html).includes('snapshot antigo'), false);
+    assert.equal(payload.idempotency_key, 'monthly-professional-report:e1:' + periodo);
+    assert.equal(payload.email, 'financeiro@example.com');
+    assert.deepEqual(payload.channels, ['email']);
+  });
+
+  it('payload de entrega Corporativo mantém ranking e não envia radar REI', () => {
+    const payload = buildMonthlyReportNotificationPayload({
+      report: fullReport(),
+      plan: 'corporativo',
+      empresa: { id: 'e1', nome_empresa: 'Empresa Cache', slug: 'cache' },
+      periodo,
+      destinatarios: [],
+    });
+    assert.ok(payload.report.ranking_unidades);
+    assert.ok(payload.report.prioridades_operacionais);
+    assert.equal(Object.hasOwn(payload.report, 'radar_estrategico'), false);
+    assert.equal(Object.hasOwn(payload.report, 'oportunidades_crescimento'), false);
+    assert.deepEqual(payload.channels, []);
   });
 });
