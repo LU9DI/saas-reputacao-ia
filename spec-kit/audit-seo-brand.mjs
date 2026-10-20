@@ -9,6 +9,7 @@
  *   node spec-kit/audit-seo-brand.mjs
  */
 
+import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
@@ -31,6 +32,24 @@ const RULES = [
     pattern: /\b(pior\s+(que|do\s+que)|inferior\s+a|rid[ií]culo|inútil|fraude)\b/i,
   },
 ];
+
+const competitorAttackRule = RULES.find((rule) => rule.name === 'direct competitor attack');
+assert.ok(competitorAttackRule, 'direct competitor attack rule must exist');
+assert.equal(
+  competitorAttackRule.pattern.test('comparación con competidores directos'),
+  false,
+  'neutral educational competitor references must be allowed',
+);
+assert.equal(
+  competitorAttackRule.pattern.test('nossos concorrentes são uma fraude'),
+  true,
+  'direct disparagement of competitors must be blocked',
+);
+assert.equal(
+  competitorAttackRule.pattern.test('fraude comprovada praticada por competidores'),
+  true,
+  'disparagement before a competitor reference must be blocked',
+);
 
 const EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.md', '.mdx']);
 
