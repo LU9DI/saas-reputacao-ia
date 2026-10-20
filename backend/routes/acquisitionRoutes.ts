@@ -1,6 +1,7 @@
 
 import { enviarEmail } from '../lib/mailer.js';
 import { syncConsentedAcquisitionLead } from '../services/crmAcquisitionSync.js';
+import { sanitizeAcquisitionAttribution } from '../services/acquisitionAttribution.js';
 
 function acquisitionDailyLimit(): number {
   const configured = Number(process.env.ACQUISITION_DAILY_LIMIT || 80);
@@ -297,6 +298,7 @@ export function mountAcquisitionRoutes(app: Express) {
       const email = String(body.email || '').trim().toLowerCase();
       const company = String(body.company || '').trim().slice(0, 200);
       const source = String(body.source || 'website').trim().slice(0, 120) || 'website';
+      const attribution = sanitizeAcquisitionAttribution(body.attribution);
       if (!EMAIL_RE.test(email)) return res.status(400).json({ error: 'Informe um e-mail válido.' });
       if (body.consent !== true) return res.status(400).json({ error: 'Consentimento explícito é necessário.' });
 
@@ -325,7 +327,7 @@ export function mountAcquisitionRoutes(app: Express) {
       );
       await db.run(
         'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
-        [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ company, email }).slice(0, 20000)]
+        [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ company, email, attribution }).slice(0, 20000)]
       );
       const row = await db.get('SELECT id,email,company,consent,consent_at,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
       const crmSync = await syncConsentedAcquisitionLead(row);
