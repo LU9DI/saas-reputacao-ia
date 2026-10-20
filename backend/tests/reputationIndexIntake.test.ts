@@ -79,11 +79,17 @@ describe('prepareAuthorizedResearchBatch', () => {
       ...approval,
       termsReviewedAt: '2026-10-21T00:00:00.000Z',
     };
-    const result = prepareAuthorizedResearchBatch(
-      [record], [futureApproval], [{ ...consent, grantedAt: 'not-a-date' }], now,
+    const futureResult = prepareAuthorizedResearchBatch(
+      [record], [futureApproval], [consent], now,
     );
-    assert.equal(result.eligible.length, 0);
-    assert.equal(result.audit.reasons.source_not_approved, 1);
+    assert.equal(futureResult.eligible.length, 0);
+    assert.equal(futureResult.audit.reasons.source_not_approved, 1);
+
+    const malformedConsentResult = prepareAuthorizedResearchBatch(
+      [record], [approval], [{ ...consent, grantedAt: 'not-a-date' }], now,
+    );
+    assert.equal(malformedConsentResult.eligible.length, 0);
+    assert.equal(malformedConsentResult.audit.reasons.company_consent_missing_or_invalid, 1);
   });
 
   it('does not expose raw company keys in audit output', () => {
