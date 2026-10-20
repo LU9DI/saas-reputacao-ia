@@ -57,6 +57,17 @@ const LAST_MODIFIED: Record<string, string> = {
   '/es/franquicias': '2026-10-19',
   '/es/como-funciona': '2026-10-19',
   '/es/restaurantes': '2026-10-19',
+  '/en/ai': '2026-10-19',
+  '/en/hotels': '2026-10-19',
+  '/en/associations': '2026-10-19',
+  '/en/restaurants': '2026-10-19',
+  '/en/partners': '2026-10-19',
+  '/en/ask-for-stars-vs-filtering': '2026-10-19',
+  '/es/hoteles': '2026-10-19',
+  '/es/agencias': '2026-10-19',
+  '/es/asociaciones': '2026-10-19',
+  '/es/socios': '2026-10-19',
+  '/es/pedir-estrellas-vs-filtrar': '2026-10-19',
 };
 
 // Next 16 + `output: export` exigem rota explicitamente estática.

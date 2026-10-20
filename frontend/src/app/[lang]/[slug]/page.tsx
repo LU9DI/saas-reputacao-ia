@@ -1450,6 +1450,490 @@ const UNIQUE_CONTENT: Partial<Record<string,{sections:Section[];faq:Faq[]}>> = {
       },
     ],
   },
+  'en:ai': {
+    sections: [
+      {
+        heading: 'What the AI does with customer voice',
+        body: 'Filtra.AI reads reviews, surveys and support conversations and turns them into structured signals. It classifies themes, measures sentiment and groups similar cases across units, so the team sees patterns instead of isolated comments. The output is a prioritized list of what to fix and what to protect.',
+        points: [
+          'Classify themes and sentiment across channels.',
+          'Group similar cases by unit and period.',
+          'Prioritize by frequency, severity and impact.',
+          'Suggest responses that the team reviews.',
+        ],
+      },
+      {
+        heading: 'AI for analysis, humans for judgment',
+        body: 'The model handles volume and consistency; people handle context, relationships and decisions. Sensitive cases, legal risk and ambiguous comments should always pass through human review. The best setup combines fast classification with a clear escalation policy.',
+      },
+      {
+        heading: 'From insight to measurable outcome',
+        body: 'Each cycle ends with owners, deadlines and a small set of actions. In the next period, the platform compares the same themes to show whether recurrence fell. That loop is what turns customer voice into operational improvement and, eventually, into growth.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What can Filtra.AI analyze?',
+        answer: 'Google reviews, surveys, support conversations and other feedback channels. The platform classifies themes, sentiment and recurrence across periods and units.',
+      },
+      {
+        question: 'Does the AI write public responses?',
+        answer: 'It can suggest drafts, but public replies should be reviewed by the team, especially in negative or sensitive cases. Authenticity and context matter.',
+      },
+      {
+        question: 'How does the AI handle different languages?',
+        answer: 'It classifies content in multiple languages, which helps operations that serve international customers or manage units in different countries.',
+      },
+      {
+        question: 'Is the analysis reliable?',
+        answer: 'With a clear taxonomy and an initial sample review, classification is consistent enough for prioritization. Human review covers ambiguous or high-risk cases.',
+      },
+      {
+        question: 'What do I need to start?',
+        answer: 'A few months of reviews or feedback and a list of themes that matter to the business. The taxonomy is defined together at the start.',
+      },
+    ],
+  },
+  'en:hotels': {
+    sections: [
+      {
+        heading: 'The guest journey behind the review',
+        body: 'Hotel reviews rarely mention one thing. They mix room condition, cleanliness, breakfast, staff, check-in and location. Reading them one by one hides the pattern; grouping by stage of the stay shows which part of the operation needs attention first.',
+        points: [
+          'Room condition, cleanliness and maintenance.',
+          'Check-in, checkout and staff communication.',
+          'Breakfast, amenities and value perception.',
+          'Location and expectations set by photos.',
+        ],
+      },
+      {
+        heading: 'Google and booking platforms together',
+        body: 'Guests leave feedback on Google, booking platforms and internal surveys. Each channel has a different audience and a different response standard. Consolidating them avoids the trap of fixing only what appears on the platform with the most visible rating.',
+      },
+      {
+        heading: 'A routine that fits hotel operations',
+        body: 'Daily, the team handles critical reviews and pending replies. Weekly, it reviews recurring themes with housekeeping, maintenance and front desk. Monthly, it compares properties and periods. The cadence keeps small issues from becoming a seasonal pattern.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How do I improve my hotel rating?',
+        answer: 'Fix the recurring themes in the guest journey, ask for feedback at the right moments and reply consistently. The rating follows the experience, not the request.',
+      },
+      {
+        question: 'Should I respond to every review?',
+        answer: 'Prioritize negative and detailed reviews, but aim to reply to all. Responses show future guests how the hotel handles problems.',
+      },
+      {
+        question: 'How do I compare properties?',
+        answer: 'Compare each property with its own history and with similar properties. Different locations, categories and demand profiles start from different baselines.',
+      },
+      {
+        question: 'What should we do with OTA reviews?',
+        answer: 'Monitor them together with Google reviews, answer where the platform allows and route recurring themes to the same operational owners.',
+      },
+      {
+        question: 'How do we involve housekeeping and maintenance?',
+        answer: 'Translate review themes into specific checklists and routines for each team. Monthly, review recurrence with them, not only with management.',
+      },
+    ],
+  },
+  'en:associations': {
+    sections: [
+      {
+        heading: 'Feedback from members and stakeholders',
+        body: 'Associations serve several audiences at once: members, associated companies, partners and public bodies. Each group has different expectations, and a single survey rarely captures them. Structured collection by segment reveals what each audience values and where the association is failing to deliver.',
+        points: [
+          'Segment feedback by member profile and region.',
+          'Combine surveys, events and service channels.',
+          'Track themes over terms and administrations.',
+          'Report results to the board with clear priorities.',
+        ],
+      },
+      {
+        heading: 'Reputation beyond the member base',
+        body: 'Public perception also matters: how the association is cited in the press, in search results and in conversations within the sector. Monitoring those signals helps anticipate crises and strengthens the association as a reference for the category.',
+      },
+      {
+        heading: 'A routine for continuous management',
+        body: 'Define a calendar: quarterly surveys, event feedback, annual perception review and a monthly board summary. With a stable taxonomy, comparisons across years become possible and decisions stop depending on anecdotal comments.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How do associations collect member feedback?',
+        answer: 'Combine short surveys, event evaluations and messages from service channels, segmented by member profile. A stable taxonomy allows comparison over time.',
+      },
+      {
+        question: 'How do we measure association reputation?',
+        answer: 'Track member satisfaction, theme recurrence, participation and public mentions. Combine internal perception with external signals.',
+      },
+      {
+        question: 'What should be reported to the board?',
+        answer: 'Priority themes, evolution by segment, response rates and actions completed. Boards need decisions, not raw comment lists.',
+      },
+      {
+        question: 'How do we handle sensitive feedback?',
+        answer: 'Create a confidential channel and an escalation policy. Aggregate reporting protects identities while keeping the signal visible.',
+      },
+      {
+        question: 'How often should we survey members?',
+        answer: 'Usually quarterly for short pulses and annually for a deeper perception study. Avoid overloading the same audience with duplicate requests.',
+      },
+    ],
+  },
+  'en:restaurants': {
+    sections: [
+      {
+        heading: 'What diners review',
+        body: 'Restaurant reviews mix food, service, waiting time, ambience and price. The same complaint can come from the kitchen, the floor or the booking process. Grouping by theme and shift shows where the fix belongs, instead of treating every review as a communication problem.',
+        points: [
+          'Food consistency and menu expectations.',
+          'Waiting time and communication during the peak.',
+          'Service attention and team knowledge.',
+          'Ambience, cleanliness and perceived value.',
+        ],
+      },
+      {
+        heading: 'From QR code to public review',
+        body: 'A QR code on the bill captures feedback while the experience is fresh. It should invite an honest review, not filter unhappy customers. The private signal helps the team act; the public review helps future diners decide.',
+      },
+      {
+        heading: 'Weekly routine for the floor and the kitchen',
+        body: 'Share recurring themes with both teams every week, with examples and specific fixes. Track whether the theme reappears in the next period. Reviews become useful when they change prep, staffing or service flow.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How do I get more Google reviews for my restaurant?',
+        answer: 'Ask at the end of the meal with a QR code or direct link, keep the request simple and never condition it to a benefit or a positive rating.',
+      },
+      {
+        question: 'Should I reply to negative reviews?',
+        answer: 'Yes. Acknowledge the experience, explain the fix and move personal details to a private channel. Silence looks like indifference to future diners.',
+      },
+      {
+        question: 'How do I handle complaints about waiting time?',
+        answer: 'Check staffing and communication during peak hours, and tell customers how long the wait will be. Most complaints are about uncertainty, not only the delay.',
+      },
+      {
+        question: 'Do reviews help with local SEO?',
+        answer: 'Yes. Recent, detailed reviews and consistent replies strengthen the profile and give search engines more context about the restaurant.',
+      },
+      {
+        question: 'How do I use review themes in training?',
+        answer: 'Turn recurring themes into short training topics and checklists for the floor and kitchen teams, reviewed monthly.',
+      },
+    ],
+  },
+  'en:partners': {
+    sections: [
+      {
+        heading: 'Who the partner program is for',
+        body: 'The program fits consultancies, agencies and independent professionals who already advise businesses on marketing, customer experience or local growth. Instead of building a reputation practice from scratch, partners add the platform and a proven routine to the services they already sell.',
+        points: [
+          'Consultancies adding customer experience services.',
+          'Agencies selling local SEO and Google Business Profile.',
+          'Professionals serving clinics, restaurants and franchises.',
+          'Teams that want recurring revenue with clear evidence.',
+        ],
+      },
+      {
+        heading: 'How a partnership starts',
+        body: 'Start with one pilot client. Define the taxonomy, the owners and the monthly report together, then review the first results. The pilot becomes the case study for the next clients and the basis for a repeatable package.',
+      },
+      {
+        heading: 'What partners get',
+        body: 'Partners get the operational layer, reporting standards and support to run the routine. The commercial model, volume and responsibilities are defined per partner, so each one can price the service according to its market.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Do I need to be an agency to partner?',
+        answer: 'No. Consultancies and independent professionals also qualify if they already serve businesses and want to add reputation management to their offer.',
+      },
+      {
+        question: 'Is there a minimum volume?',
+        answer: 'The model is defined per partner. Starting with one pilot client is the recommended path before committing to a larger volume.',
+      },
+      {
+        question: 'Who handles the client relationship?',
+        answer: 'Usually the partner. Filtra.AI provides the platform, the operating method and support for analysis and reporting.',
+      },
+      {
+        question: 'Can I use my own brand?',
+        answer: 'The commercial arrangement, including branding and packaging, is defined with each partner. The platform runs underneath the service.',
+      },
+      {
+        question: 'How long does it take to launch?',
+        answer: 'A pilot can start in weeks. The main work is defining the taxonomy, the owners and the reporting cadence with the first client.',
+      },
+    ],
+  },
+  'en:ask-for-stars-vs-filtering': {
+    sections: [
+      {
+        heading: 'The direct ask',
+        body: 'Asking every customer for five stars sounds simple, but it creates two problems: customers feel pressured and the rating stops reflecting the real experience. Google policies also prohibit incentives and review gating. A direct ask works when it is neutral, voluntary and available to everyone.',
+        points: [
+          'Neutral invitation, without asking for a specific rating.',
+          'No rewards, discounts or conditions.',
+          'The same process for every customer.',
+          'A public reply policy for positive and negative feedback.',
+        ],
+      },
+      {
+        heading: 'The feedback-first approach',
+        body: 'A feedback-first flow invites the customer to comment privately before the public review. It is not about hiding unhappy customers; it is about understanding the problem while there is still time to fix it. The public invitation remains open to everyone, which keeps the process honest.',
+      },
+      {
+        heading: 'What actually improves the rating',
+        body: 'The rating improves when the experience improves and the review flow is consistent. Collect feedback at the right moment, fix recurring themes, reply well and measure the trend. Shortcuts that filter customers tend to backfire in the medium term.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Is asking for five stars against Google policies?',
+        answer: 'Asking for a specific rating is discouraged and incentives are prohibited. Invite customers to share an honest opinion instead of requesting a score.',
+      },
+      {
+        question: 'What is review gating?',
+        answer: 'It is the practice of filtering customers so only happy ones reach the public review. Google prohibits it and it distorts the perception of the business.',
+      },
+      {
+        question: 'Can I ask unhappy customers to complain privately?',
+        answer: 'Yes, as long as the public review is still available to everyone. Offering a private channel is service, not filtering.',
+      },
+      {
+        question: 'Does the feedback-first flow reduce negative reviews?',
+        answer: 'It can reduce surprises, because problems are addressed before becoming public. It should not be used to block anyone from reviewing.',
+      },
+      {
+        question: 'What is the best way to ask for a review?',
+        answer: 'At the moment of value, with a short message, a direct link and no pressure. One reminder is enough.',
+      },
+    ],
+  },
+  'es:hoteles': {
+    sections: [
+      {
+        heading: 'El recorrido del huésped detrás de la reseña',
+        body: 'Las reseñas de hoteles rara vez hablan de una sola cosa. Mezclan habitación, limpieza, desayuno, atención, check-in y ubicación. Leerlas una por una esconde el patrón; agruparlas por etapa de la estancia muestra qué parte de la operación necesita atención primero.',
+        points: [
+          'Estado de la habitación, limpieza y mantenimiento.',
+          'Check-in, check-out y comunicación del equipo.',
+          'Desayuno, servicios y percepción de valor.',
+          'Ubicación y expectativas creadas por las fotos.',
+        ],
+      },
+      {
+        heading: 'Google y las plataformas de reserva',
+        body: 'El huésped deja feedback en Google, en plataformas de reserva y en encuestas internas. Cada canal tiene un público y un estándar de respuesta distinto. Consolidarlos evita corregir solo lo que aparece en la plataforma con la nota más visible.',
+      },
+      {
+        heading: 'Una rutina que encaja en la operación',
+        body: 'A diario, el equipo atiende reseñas críticas y respuestas pendientes. Cada semana revisa temas recurrentes con limpieza, mantenimiento y recepción. Cada mes compara hoteles y periodos. La cadencia evita que problemas pequeños se conviertan en un patrón de temporada.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cómo mejoro la nota de mi hotel?',
+        answer: 'Corrige los temas recurrentes del recorrido del huésped, pide feedback en los momentos correctos y responde con consistencia. La nota sigue a la experiencia.',
+      },
+      {
+        question: '¿Debo responder todas las reseñas?',
+        answer: 'Prioriza las negativas y las detalladas, pero intenta responder todas. Las respuestas muestran a futuros huéspedes cómo gestiona el hotel los problemas.',
+      },
+      {
+        question: '¿Cómo comparo varios hoteles?',
+        answer: 'Compara cada hotel con su propia historia y con hoteles similares. Ubicaciones, categorías y demandas distintas parten de bases distintas.',
+      },
+      {
+        question: '¿Qué hago con las reseñas de las OTAs?',
+        answer: 'Haz seguimiento junto con Google, responde donde la plataforma lo permita y enruta los temas a los mismos responsables operativos.',
+      },
+      {
+        question: '¿Cómo involucro a limpieza y mantenimiento?',
+        answer: 'Traduce los temas en listas de verificación y rutinas concretas para cada equipo. Revisa la recurrencia mensualmente con ellos, no solo con la dirección.',
+      },
+    ],
+  },
+  'es:agencias': {
+    sections: [
+      {
+        heading: 'Reputación como servicio recurrente',
+        body: 'Las agencias ya gestionan SEO local, contenido y perfiles de Google Business Profile. La reputación encaja como una capa operativa: recoger feedback, clasificar temas, responder reseñas y reportar mejoras. Es un servicio mensual con evidencia concreta para el cliente.',
+        points: [
+          'Añade gestión de reseñas a los contratos actuales.',
+          'Usa las reseñas como evidencia para SEO local.',
+          'Estandariza informes mensuales por cliente.',
+          'Empieza con una cuenta piloto.',
+        ],
+      },
+      {
+        heading: 'Qué cambia en la operación de la agencia',
+        body: 'La agencia define la taxonomía, los responsables y la cadencia de reporte de cada cliente. La plataforma organiza los datos y la rutina semanal. Lo que antes era una tarea manual y dispersa se convierte en un proceso repetible.',
+      },
+      {
+        heading: 'Cómo vender el servicio',
+        body: 'Presenta el problema en términos del cliente: reseñas sin responder, temas que se repiten y falta de evidencia para priorizar. Muestra el diagnóstico del piloto y propone una rutina mensual con objetivos claros.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Necesito un equipo dedicado?',
+        answer: 'No al inicio. Una persona puede operar la rutina de varios clientes con la plataforma, apoyada por el equipo de la agencia para casos sensibles.',
+      },
+      {
+        question: '¿Cómo integro esto con SEO local?',
+        answer: 'Las reseñas y las respuestas aportan señales de actividad y contexto al perfil de Google. Úsalas junto con el trabajo de contenido y enlaces.',
+      },
+      {
+        question: '¿Puedo ofrecerlo a clientes pequeños?',
+        answer: 'Sí. Un paquete básico con monitoreo, respuestas y un informe mensual funciona para clientes con poco volumen.',
+      },
+      {
+        question: '¿Cómo demuestro resultados?',
+        answer: 'Muestra la evolución de temas, tasa y tiempo de respuesta, reseñas sin contestar y acciones completadas. Conecta con retención o conversión cuando sea posible.',
+      },
+      {
+        question: '¿La agencia mantiene la voz de cada marca?',
+        answer: 'Sí. La plataforma estandariza el proceso, pero los lineamientos de tono y los casos sensibles deben adaptarse a cada cliente.',
+      },
+    ],
+  },
+  'es:asociaciones': {
+    sections: [
+      {
+        heading: 'Feedback de asociados y públicos',
+        body: 'Una asociación atiende varios públicos a la vez: asociados, empresas vinculadas, aliados y organismos públicos. Cada grupo tiene expectativas distintas y una sola encuesta rara vez las captura. La recogida estructurada por segmento revela qué valora cada audiencia y dónde falla la entrega.',
+        points: [
+          'Segmenta el feedback por perfil de asociado y región.',
+          'Combina encuestas, eventos y canales de servicio.',
+          'Sigue los temas a lo largo de las gestiones.',
+          'Reporta resultados a la directiva con prioridades claras.',
+        ],
+      },
+      {
+        heading: 'Reputación más allá de los asociados',
+        body: 'La percepción pública también importa: cómo se cita la asociación en prensa, en resultados de búsqueda y en conversaciones del sector. Monitorear esas señales ayuda a anticipar crisis y refuerza la asociación como referencia de la categoría.',
+      },
+      {
+        heading: 'Una rutina de gestión continua',
+        body: 'Define un calendario: encuestas trimestrales, evaluación de eventos, revisión anual de percepción y resumen mensual para la directiva. Con una taxonomía estable, las comparaciones entre años se vuelven posibles y las decisiones dejan de depender de comentarios aislados.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cómo recoger feedback de los asociados?',
+        answer: 'Combina encuestas cortas, evaluación de eventos y mensajes de los canales de servicio, segmentados por perfil. Una taxonomía estable permite comparar en el tiempo.',
+      },
+      {
+        question: '¿Cómo medir la reputación de la asociación?',
+        answer: 'Sigue satisfacción de asociados, recurrencia de temas, participación y menciones públicas. Combina percepción interna y señales externas.',
+      },
+      {
+        question: '¿Qué reportar a la directiva?',
+        answer: 'Temas prioritarios, evolución por segmento, tasas de respuesta y acciones completadas. La directiva necesita decisiones, no listas de comentarios.',
+      },
+      {
+        question: '¿Cómo tratar feedback sensible?',
+        answer: 'Crea un canal confidencial y una política de escalación. El reporte agregado protege identidades sin ocultar la señal.',
+      },
+      {
+        question: '¿Cada cuánto encuestar?',
+        answer: 'Normalmente trimestral para pulsos cortos y anual para un estudio de percepción más profundo. Evita duplicar solicitudes al mismo público.',
+      },
+    ],
+  },
+  'es:socios': {
+    sections: [
+      {
+        heading: 'Para quién es el programa de socios',
+        body: 'El programa encaja en consultoras, agencias y profesionales independientes que ya asesoran a empresas en marketing, experiencia del cliente o crecimiento local. En lugar de construir una práctica de reputación desde cero, el socio añade la plataforma y una rutina probada a los servicios que ya vende.',
+        points: [
+          'Consultoras que añaden experiencia del cliente.',
+          'Agencias que venden SEO local y Google Business Profile.',
+          'Profesionales que atienden clínicas, restaurantes y franquicias.',
+          'Equipos que buscan ingresos recurrentes con evidencia.',
+        ],
+      },
+      {
+        heading: 'Cómo empieza una alianza',
+        body: 'Empieza con un cliente piloto. Define juntos la taxonomía, los responsables y el informe mensual, y revisa los primeros resultados. El piloto se convierte en el caso de estudio para los siguientes clientes y en la base de un paquete repetible.',
+      },
+      {
+        heading: 'Qué recibe el socio',
+        body: 'El socio recibe la capa operativa, los estándares de reporte y el soporte para ejecutar la rutina. El modelo comercial, el volumen y las responsabilidades se definen por socio, de modo que cada uno fija el precio según su mercado.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Necesito ser una agencia para ser socio?',
+        answer: 'No. Consultoras y profesionales independientes también pueden participar si ya atienden empresas y quieren añadir gestión de reputación a su oferta.',
+      },
+      {
+        question: '¿Hay un volumen mínimo?',
+        answer: 'El modelo se define por socio. Empezar con un cliente piloto es el camino recomendado antes de comprometer un volumen mayor.',
+      },
+      {
+        question: '¿Quién gestiona la relación con el cliente?',
+        answer: 'Normalmente el socio. Filtra.AI aporta la plataforma, el método operativo y soporte para el análisis y el reporte.',
+      },
+      {
+        question: '¿Puedo usar mi propia marca?',
+        answer: 'El acuerdo comercial, incluido el branding y el empaquetado, se define con cada socio. La plataforma funciona por debajo del servicio.',
+      },
+      {
+        question: '¿Cuánto tarda el lanzamiento?',
+        answer: 'Un piloto puede empezar en semanas. El trabajo principal es definir la taxonomía, los responsables y la cadencia de reporte con el primer cliente.',
+      },
+    ],
+  },
+  'es:pedir-estrellas-vs-filtrar': {
+    sections: [
+      {
+        heading: 'El pedido directo',
+        body: 'Pedir cinco estrellas a cada cliente parece simple, pero crea dos problemas: el cliente se siente presionado y la nota deja de reflejar la experiencia real. Las políticas de Google también prohíben incentivos y el filtrado de reseñas. El pedido directo funciona cuando es neutral, voluntario y está disponible para todos.',
+        points: [
+          'Invitación neutral, sin pedir una nota concreta.',
+          'Sin recompensas, descuentos ni condiciones.',
+          'El mismo proceso para todos los clientes.',
+          'Política pública de respuesta para feedback positivo y negativo.',
+        ],
+      },
+      {
+        heading: 'El enfoque feedback primero',
+        body: 'Un flujo feedback primero invita al cliente a comentar en privado antes de la reseña pública. No se trata de esconder a los insatisfechos, sino de entender el problema mientras aún hay tiempo de corregirlo. La invitación pública sigue abierta para todos, lo que mantiene el proceso honesto.',
+      },
+      {
+        heading: 'Qué mejora realmente la nota',
+        body: 'La nota mejora cuando la experiencia mejora y el flujo de reseñas es consistente. Recoge feedback en el momento correcto, corrige temas recurrentes, responde bien y mide la tendencia. Los atajos que filtran clientes suelen volverse en contra a medio plazo.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Pedir cinco estrellas viola las políticas de Google?',
+        answer: 'Pedir una nota concreta es desaconsejado y los incentivos están prohibidos. Invita al cliente a compartir una opinión honesta en lugar de exigir una puntuación.',
+      },
+      {
+        question: '¿Qué es el filtrado de reseñas?',
+        answer: 'Es la práctica de filtrar clientes para que solo los satisfechos lleguen a la reseña pública. Google lo prohíbe y distorsiona la percepción del negocio.',
+      },
+      {
+        question: '¿Puedo pedir a los insatisfechos que se quejen en privado?',
+        answer: 'Sí, siempre que la reseña pública siga disponible para todos. Ofrecer un canal privado es servicio, no filtrado.',
+      },
+      {
+        question: '¿El flujo feedback primero reduce reseñas negativas?',
+        answer: 'Puede reducir sorpresas, porque los problemas se atienden antes de hacerse públicos. No debe usarse para bloquear a nadie.',
+      },
+      {
+        question: '¿Cuál es la mejor forma de pedir una reseña?',
+        answer: 'En el momento del valor, con un mensaje corto, un enlace directo y sin presión. Un recordatorio es suficiente.',
+      },
+    ],
+  },
 };
 
 const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google','/filtra-ai','/reputacao-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback','/hoteis','/turismo','/agencias','/clinicas','/franquias','/associacoes','/restaurantes','/como-funciona','/parceiros','/pedir-estrela-vs-filtrar','/auditoria-gratuita'];
