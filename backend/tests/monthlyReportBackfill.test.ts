@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { backfillSubscriptionDays, subscriptionDayFromExpiry } from '../routes/monthlyReportJobsRoutes.js';
 
-test('usa o dia do fim do ciclo como aniversário e cai no dia atual quando ausente', () => {
-  const now = new Date('2026-10-07T00:00:00.000Z');
-  assert.equal(subscriptionDayFromExpiry('2026-11-18T12:00:00.000Z', now), 18);
-  assert.equal(subscriptionDayFromExpiry(null, now), 7);
-  assert.equal(subscriptionDayFromExpiry('data-inválida', now), 7);
+test('usa o dia do fim do ciclo quando válido e não inventa aniversário quando ausente/inválido', () => {
+  assert.equal(subscriptionDayFromExpiry('2026-11-18T12:00:00.000Z'), 18);
+  assert.equal(subscriptionDayFromExpiry(null), null);
+  assert.equal(subscriptionDayFromExpiry('  '), null);
+  assert.equal(subscriptionDayFromExpiry('data-inválida'), null);
 });
 
 test('preenche o aniversário de empresas ativas elegíveis sem o campo', async () => {
@@ -31,10 +31,9 @@ test('preenche o aniversário de empresas ativas elegíveis sem o campo', async 
   };
 
   const total = await backfillSubscriptionDays(db as any, new Date('2026-10-07T00:00:00.000Z'));
-  assert.equal(total, 3);
+  assert.equal(total, 2);
   assert.deepEqual(updates, [
     { day: 18, id: 'e1' },
-    { day: 7, id: 'e2' },
     { day: 31, id: 'e3' },
   ]);
 });
