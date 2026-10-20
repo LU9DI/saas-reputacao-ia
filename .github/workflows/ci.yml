@@ -70,6 +70,11 @@ jobs:
           # out of sync with package.json and tsx is absent from node_modules/.bin.
           find tests -type f -name '*.test.ts' ! -name 'integration.*.test.ts' -print0 | xargs -0 -r -n1 npx --yes tsx --test
 
+      # The focused integration test uses a temporary SQLite database.
+      # Install pinned test-only adapters without changing the checked-in lockfile.
+      - name: Install SQLite test dependencies
+        run: npm install --no-save --package-lock=false sqlite@5.1.1 sqlite3@5.1.7
+
       # Este teste usa banco temporário e não depende de DNS ou serviços externos.
       # Mantê-lo sempre ativo protege os contratos de consentimento e aceite legal.
       - name: Focused integration tests (lead + legal acceptance)
