@@ -130,3 +130,15 @@ test('does not allow callers to lower the minimum privacy thresholds', () => {
     0,
   );
 });
+
+test('rejects ambiguous dates and impossible calendar dates', () => {
+  const ambiguous = makeRows(10, 10).map((row) => ({ ...row, observedAt: '1' }));
+  const impossible = makeRows(10, 10).map((row) => ({ ...row, observedAt: '2026-02-30T12:00:00.000Z' }));
+  const invalidConsentDate = makeRows(10, 10).map((row) => ({
+    ...row,
+    publicationConsentAt: '2026-02-30',
+  }));
+  assert.deepEqual(buildPublicReputationIndex(ambiguous), []);
+  assert.deepEqual(buildPublicReputationIndex(impossible), []);
+  assert.deepEqual(buildPublicReputationIndex(invalidConsentDate), []);
+});
