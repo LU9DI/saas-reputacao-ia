@@ -62,9 +62,7 @@ export function AuditoriaGratuitaClient() {
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
-  const [raw, setRaw] = useState(
-    '5 | Atendimento rápido e equipe muito atenciosa.\n4 | Quarto confortável, mas o check-in demorou.\n2 | Tive dificuldade para resolver um problema e esperei bastante.'
-  );
+  const [raw, setRaw] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
@@ -130,6 +128,7 @@ export function AuditoriaGratuitaClient() {
             locale: language,
             reviews,
             lead_id: consentData?.lead_id || '',
+            attribution: getAcquisitionAttribution(),
           }),
         }
       );
@@ -245,6 +244,7 @@ export function AuditoriaGratuitaClient() {
               value={raw}
               onChange={(e) => setRaw(e.target.value)}
               rows={8}
+              placeholder={'5 | Cole uma avaliação real de um cliente…\n4 | Cole outra avaliação real…\n2 | Cole uma terceira avaliação real…'}
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 font-mono text-sm outline-hidden focus:border-indigo-500"
             />
             {error ? <p className="text-sm text-red-400">{error}</p> : null}
