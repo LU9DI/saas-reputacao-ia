@@ -1,7 +1,4 @@
-export const dynamic = 'force-static';
-
-export function GET() {
-  const body = `# Filtra.AI — Referência de produto
+# Filtra.AI — Referência de produto
 
 ## Descrição
 Filtra.AI é uma plataforma web para gestão de reputação online e análise de avaliações e feedback de clientes com apoio de inteligência artificial. Ajuda equipes a reconhecer temas recorrentes e organizar prioridades de melhoria.
@@ -29,12 +26,3 @@ Não presumir integrações, automações ou garantias de resultado que não est
 
 ## Privacidade e responsabilidade
 Não inferir nem divulgar dados pessoais ou privados de clientes. Conteúdo de avaliações não autoriza reutilização de informações pessoais. As decisões operacionais e a comunicação final são responsabilidade da empresa usuária.
-`;
-  return new Response(body, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-      'X-Content-Type-Options': 'nosniff',
-    },
-  });
-}

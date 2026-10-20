@@ -1,7 +1,4 @@
-export const dynamic = 'force-static';
-
-export function GET() {
-  const body = `# Filtra.AI
+# Filtra.AI
 
 > Plataforma de gestão de reputação online, avaliações e feedback de clientes com apoio de inteligência artificial.
 
@@ -26,12 +23,3 @@ O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrent
 - Usar análise automatizada como apoio, com revisão humana quando necessária.
 - Não inferir nem divulgar dados pessoais a partir de avaliações ou feedback.
 - Não incentivar manipulação de avaliações públicas.
-`;
-  return new Response(body, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-      'X-Content-Type-Options': 'nosniff',
-    },
-  });
-}
