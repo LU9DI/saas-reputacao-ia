@@ -133,7 +133,9 @@ export function aggregateReputationIndex(
   }
 
   const start = Date.parse(options.windowStart);
-  const end = Date.parse(options.windowEnd);
+  const end = options.windowEnd.length === 10
+    ? Date.parse(`${options.windowEnd}T23:59:59.999Z`)
+    : Date.parse(options.windowEnd);
   if (start > end) throw new Error('windowStart deve ser anterior ou igual a windowEnd.');
 
   const minCompanies = options.minCompanies ?? 30;
