@@ -114,3 +114,19 @@ test('does not treat a consent boolean alone as publication authorization', () =
   const rows = makeRows(10, 10).map(({ publicationConsentEvidenceId, publicationConsentVersion, publicationConsentAt, publicationConsentScope, ...row }) => row);
   assert.deepEqual(buildPublicReputationIndex(rows), []);
 });
+
+test('does not allow callers to lower the minimum privacy thresholds', () => {
+  const rows = makeRows(9, 12);
+  assert.deepEqual(
+    buildPublicReputationIndex(rows, { minBusinesses: 2, minReviews: 10 }),
+    [],
+  );
+  assert.deepEqual(
+    buildPublicReputationIndex(makeRows(10, 9), { minBusinesses: 2, minReviews: 10 }),
+    [],
+  );
+  assert.equal(
+    buildPublicReputationIndex(makeRows(10, 10), { minBusinesses: 50, minReviews: 500 }).length,
+    0,
+  );
+});
