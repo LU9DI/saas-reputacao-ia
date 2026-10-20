@@ -29,6 +29,7 @@ const REQUIRED_URLS = [
 const NEVER_INDEX = [
   /^\/(?:admin|painel|api|avaliacao|widget)(?:\/|$)/,
   /^\/(?:login|recuperar-senha|teste|preview|pagamento-ok|suporte)(?:\/|$)/,
+  /^\/indice-reputacao-filtra(?:\/|$)/,
 ];
 const NOINDEX_ROUTES = [
   '/login',
@@ -45,6 +46,11 @@ const NOINDEX_ROUTES = [
   '/teste/verificar',
   '/recuperar-senha',
   '/suporte',
+  '/indice-reputacao-filtra',
+  '/indice-reputacao-filtra/setores',
+  '/indice-reputacao-filtra/regioes',
+  '/indice-reputacao-filtra/tendencias',
+  '/indice-reputacao-filtra/relatorio-anual',
 ];
 
 function fail(message) {
