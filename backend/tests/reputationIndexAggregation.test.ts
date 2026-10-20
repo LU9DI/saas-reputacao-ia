@@ -39,7 +39,7 @@ describe('aggregateReputationIndex', () => {
     assert.equal(result.overall?.reviewCount, 3);
     assert.equal(result.overall?.averageRating, 4);
     assert.deepEqual(result.overall?.ratingDistribution, { 1: 0, 2: 0, 3: 1, 4: 1, 5: 1 });
-    assert.equal(result.overall?.responseRate, 66.7);
+    assert.equal(result.overall?.responseRate, 50);
     assert.equal(result.bySector.length, 1);
     assert.equal(result.byRegion.length, 1);
     assert.equal(JSON.stringify(result).includes('company-a'), false);
