@@ -20,8 +20,11 @@ const RULES = [
     pattern: /ferramentas?\s+de\s+filtros?\s+de\s+fotografia/i,
   },
   {
-    name: 'explicit competitor reference',
-    pattern: /\b(concorrente|concorrentes|competidor|competidores)\b/i,
+    name: 'direct competitor attack',
+    // Neutral educational references (e.g. "comparação com competidores") are
+    // allowed. Block only when competitor language is explicitly tied to an
+    // insulting or deceptive claim in the same short phrase.
+    pattern: /\b(?:concorrentes?|competidores?)\b.{0,80}\b(?:fraude|inútil|rid[ií]culo|pior(?:es)?|inferior(?:es)?|enganoso(?:s)?|desonesto(?:s)?)\b|\b(?:fraude|inútil|rid[ií]culo|pior(?:es)?|inferior(?:es)?|enganoso(?:s)?|desonesto(?:s)?)\b.{0,80}\b(?:concorrentes?|competidores?)\b/i,
   },
   {
     name: 'depreciative framing',
