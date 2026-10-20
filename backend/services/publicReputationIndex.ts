@@ -27,6 +27,10 @@ export type ReputationIndexInput = {
   rating: number;
   observedAt: string;
   publicationConsent: boolean;
+  publicationConsentEvidenceId?: string;
+  publicationConsentVersion?: string;
+  publicationConsentAt?: string;
+  publicationConsentScope?: string;
   isTest?: boolean;
 };
 
@@ -115,7 +119,15 @@ export function buildPublicReputationIndex(
   const uniqueReviews = new Map<string, NormalizedReview>();
 
   for (const row of rows) {
-    if (!row || row.publicationConsent !== true || row.isTest === true) continue;
+    if (
+      !row ||
+      row.publicationConsent !== true ||
+      row.publicationConsentScope !== 'public_aggregate_index' ||
+      !String(row.publicationConsentEvidenceId || '').trim() ||
+      !String(row.publicationConsentVersion || '').trim() ||
+      !periodFromDate(String(row.publicationConsentAt || '')) ||
+      row.isTest === true
+    ) continue;
     const reviewId = String(row.reviewId || '').trim().slice(0, 160);
     const businessId = String(row.businessId || '').trim().slice(0, 160);
     const rating = Number(row.rating);
