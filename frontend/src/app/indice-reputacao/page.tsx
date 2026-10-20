@@ -38,7 +38,7 @@ const questions = [
   {
     question: 'O índice representa todas as empresas brasileiras?',
     answer:
-      'Não necessariamente. A cobertura dependerá das fontes e da amostra disponível. Os resultados deverão descrever a população observada e não poderão ser apresentados como representativos do Brasil inteiro sem desenho amostral que sustente essa conclusão.',
+      'Não necessariamente. A cobertura dependerá das fontes e da amostra disponível. Os resultados deverão descrever a população observada e não poderão ser apresentados como representativos do Brasil inteiro sem desenho amostral que sustente essa conclusão. Na versão inicial, a taxonomia prevê recortes por região, não por cidade; recortes municipais exigirão validação própria de cobertura e privacidade.',
   },
 ];
 
@@ -155,7 +155,7 @@ export default function IndiceReputacaoPage() {
           <li><strong>Fonte e cobertura:</strong> declarar a origem dos dados, o período observado e quais setores ou regiões estão representados.</li>
           <li><strong>Amostra:</strong> divulgar quantidade de avaliações e negócios incluídos, com regras mínimas de publicação para reduzir risco de identificação.</li>
           <li><strong>Tratamento:</strong> documentar deduplicação, classificação de temas, dados ausentes e alterações metodológicas.</li>
-          <li><strong>Comparabilidade:</strong> explicar limitações e evitar comparações entre amostras com composição ou fontes diferentes.</li>
+          <li><strong>Comparabilidade:</strong> explicar limitações e evitar comparações entre amostras com composição ou fontes diferentes. A versão inicial não publica recortes por cidade.</li>
           <li><strong>Atualizações:</strong> datar cada edição e manter histórico das mudanças de metodologia.</li>
         </ol>
         <p className="mt-5 leading-7 text-slate-600">
