@@ -36,5 +36,8 @@
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "seo:validate": "node scripts/validate-seo.mjs",
     "seo:audit": "node scripts/audit-indexing.mjs"
+  },
+  "overrides": {
+    "braces": "github:BernydotJar/braces-security-backport#544c8970c62b6c21308ae8b84b043e88ebd8217b"
   }
 }
