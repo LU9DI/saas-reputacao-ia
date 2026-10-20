@@ -59,7 +59,10 @@ Estes são gates operacionais iniciais, não uma alegação de que a amostra se 
 - A auditoria do artefato estático agora exige que as cinco rotas permaneçam com `noindex` e falha se qualquer rota do índice entrar no sitemap.
 - Foi criado `backend/services/reputationIndexAggregation.ts`, um agregador puro e fail-closed que exige autorização da fonte e consentimento marcado, exclui registros de teste/inválidos/fora da janela, deduplica por fonte e ID da avaliação e só devolve agregados que atingem os limites configurados.
 - Foram adicionados testes unitários para os gates de publicação, deduplicação, distribuição de notas e ausência de identificadores individuais na saída.
-- O agregador ainda não está conectado a uma fonte real nem a uma rota pública. Essa separação é intencional: nenhuma credencial ou dado operacional deve ser usado sem aprovação formal da fonte e do tratamento.
+- O agregador e o validador de proveniência ainda não estão conectados a uma fonte real nem a uma rota pública. Essa separação é intencional: nenhuma credencial ou dado operacional deve ser usado sem aprovação formal da fonte e do tratamento.
+- Foi criado `backend/services/reputationIndexIntake.ts` para cruzar cada lote com registro de aprovação de fonte e consentimento revogável, com data de revisão, validade, versão do termo e motivos de exclusão agregados. O serviço ainda não está conectado a uma rota nem importa dados automaticamente.
+- Foram adicionados testes para aprovação ausente/pendente, expiração, retirada do consentimento e timestamps inválidos.
+- Foram preparados uma minuta de adesão voluntária (explicitamente marcada para revisão jurídica antes de uso) e um checklist de recebimento de lote. Nenhum formulário foi publicado e nenhuma coleta foi iniciada.
 - O guardrail SEO foi ajustado para permitir menções educativas neutras a competidores e continuar sinalizando frases diretamente depreciativas. O teste de integração do backend recebe instalação de SQLite de teste na CI; as dependências são instaladas no job sem alterar o lockfile da aplicação.
 
 ## Próximo marco
