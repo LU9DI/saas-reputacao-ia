@@ -41,8 +41,8 @@ Setores aceitos: restaurantes, hotéis, clínicas, franquias, varejo e serviços
 
 - Cohorte: setor + região + mês de observação.
 - Deduplicação: por negócio e identificador de avaliação.
-- Elegibilidade: autorização explícita; nota válida; data válida; registro não marcado como teste.
-- Limite inicial: no mínimo 10 negócios distintos e 100 avaliações válidas por cohorte mensal.
+- Elegibilidade: autorização explícita com evidência, versão e data de consentimento; nota inteira de 1 a 5; data de observação e consentimento em ISO estrito (`YYYY-MM-DD` ou timestamp com fuso); registro não marcado como teste.
+- Limite inicial obrigatório: no mínimo 10 negócios distintos e 100 avaliações válidas por coorte mensal. Chamadores podem elevar esses limites, mas o agregador rejeita configurações que tentem reduzi-los.
 - Supressão adicional obrigatória se contexto, combinações de filtros ou informação externa puderem revelar um negócio ou indivíduo.
 - Estatísticas: média de nota arredondada a duas casas, distribuição de notas, percentual de notas 4–5, número de avaliações e negócios elegíveis.
 - Ordenação e comparação só entre coortes com critérios de inclusão e cobertura comparáveis.
