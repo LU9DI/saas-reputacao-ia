@@ -19,6 +19,10 @@ function makeRows(businessCount: number, reviewsPerBusiness: number): Reputation
         rating: review % 5 + 1,
         observedAt: '2026-09-15T12:00:00.000Z',
         publicationConsent: true,
+        publicationConsentEvidenceId: `consent-${business}`,
+        publicationConsentVersion: 'public-index-v1',
+        publicationConsentAt: '2026-09-01T00:00:00.000Z',
+        publicationConsentScope: 'public_aggregate_index',
       });
     }
   }
