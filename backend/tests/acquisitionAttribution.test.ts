@@ -87,3 +87,55 @@ test('summarizes unique consented leads and completed diagnostics without exposi
   assert.equal(JSON.stringify(report).includes('private@example.com'), false);
   assert.equal(JSON.stringify(report).includes('Empresa B'), false);
 });
+
+test('uses stable first-touch attribution even when events arrive out of order', () => {
+  const report = summarizeAcquisitionEvents([
+    {
+      lead_id: 'lead-first-touch',
+      event_type: 'diagnostic.completed',
+      occurred_at: '2026-10-20T10:05:00.000Z',
+      metadata_json: JSON.stringify({
+        attribution: { utm_source: 'later-source', utm_campaign: 'later-campaign' },
+      }),
+    },
+    {
+      lead_id: 'lead-first-touch',
+      event_type: 'consent.granted',
+      occurred_at: '2026-10-20T10:00:00.000Z',
+      metadata_json: JSON.stringify({
+        attribution: { utm_source: 'first-source', utm_campaign: 'first-campaign' },
+      }),
+    },
+  ]);
+
+  assert.equal(report.campaigns[0].source, 'first-source');
+  assert.equal(report.campaigns[0].campaign, 'first-campaign');
+  assert.equal(report.campaigns[0].consented_leads, 1);
+  assert.equal(report.campaigns[0].completed_diagnostics, 1);
+});
+
+test('does not count a diagnostic-only event as a consented campaign lead', () => {
+  const report = summarizeAcquisitionEvents([
+    {
+      lead_id: 'consented-lead',
+      event_type: 'consent.granted',
+      occurred_at: '2026-10-20T10:00:00.000Z',
+      metadata_json: JSON.stringify({
+        attribution: { utm_source: 'source-a', utm_campaign: 'campaign-a' },
+      }),
+    },
+    {
+      lead_id: 'diagnostic-only-lead',
+      event_type: 'diagnostic.completed',
+      occurred_at: '2026-10-20T10:05:00.000Z',
+      metadata_json: JSON.stringify({
+        attribution: { utm_source: 'source-b', utm_campaign: 'campaign-b' },
+      }),
+    },
+  ]);
+
+  assert.deepEqual(report.totals, { consented_leads: 1, completed_diagnostics: 1 });
+  const diagnosticOnly = report.campaigns.find((item) => item.source === 'source-b');
+  assert.equal(diagnosticOnly?.consented_leads, 0);
+  assert.equal(diagnosticOnly?.completed_diagnostics, 1);
+});
