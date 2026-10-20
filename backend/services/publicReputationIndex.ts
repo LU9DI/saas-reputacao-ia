@@ -98,7 +98,22 @@ function canonicalRegion(value: string): string | null {
 }
 
 function periodFromDate(value: string): string | null {
-  const date = new Date(value);
+  const input = String(value || '').trim();
+  const dateOnly = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(input);
+  const timestamp = /^(\\d{4})-(\\d{2})-(\\d{2})T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,9})?(?:Z|[+-]\\d{2}:\\d{2})$/i.exec(input);
+  if (!dateOnly && !timestamp) return null;
+
+  const year = Number((dateOnly || timestamp)![1]);
+  const month = Number((dateOnly || timestamp)![2]);
+  const day = Number((dateOnly || timestamp)![3]);
+  const calendarDate = new Date(Date.UTC(year, month - 1, day));
+  if (
+    calendarDate.getUTCFullYear() !== year ||
+    calendarDate.getUTCMonth() + 1 !== month ||
+    calendarDate.getUTCDate() !== day
+  ) return null;
+
+  const date = new Date(input);
   if (!Number.isFinite(date.getTime())) return null;
   return date.toISOString().slice(0, 7);
 }
