@@ -59,7 +59,7 @@ function getAcquisitionAttribution() {
 export function AuditoriaGratuitaClient() {
   const { language } = useLanguage();
   const c = { ...COPY[language], ...cExtra(language) };
-  const steps = c.p4.split(/[;；]/).map((step) => step.replace(/^\\s*\\d+\\.\\s*/, '').trim()).filter(Boolean);
+  const steps = c.p4.split(/[;；]/).map((step) => step.replace(/^\s*\d+\.\s*/, '').trim()).filter(Boolean);
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
