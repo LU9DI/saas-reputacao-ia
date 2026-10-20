@@ -1,0 +1,98 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  buildPublicReputationIndex,
+  PUBLIC_INDEX_MIN_BUSINESSES,
+  PUBLIC_INDEX_MIN_REVIEWS,
+  type ReputationIndexInput,
+} from '../services/publicReputationIndex.js';
+
+function makeRows(businessCount: number, reviewsPerBusiness: number): ReputationIndexInput[] {
+  const rows: ReputationIndexInput[] = [];
+  for (let business = 1; business <= businessCount; business += 1) {
+    for (let review = 1; review <= reviewsPerBusiness; review += 1) {
+      rows.push({
+        reviewId: `review-${business}-${review}`,
+        businessId: `business-${business}`,
+        sector: 'Restaurantes',
+        region: 'Sudeste',
+        rating: review % 5 + 1,
+        observedAt: '2026-09-15T12:00:00.000Z',
+        publicationConsent: true,
+      });
+    }
+  }
+  return rows;
+}
+
+test('publishes no sector indicator below both privacy thresholds', () => {
+  assert.equal(PUBLIC_INDEX_MIN_BUSINESSES, 10);
+  assert.equal(PUBLIC_INDEX_MIN_REVIEWS, 100);
+  assert.deepEqual(buildPublicReputationIndex(makeRows(9, 12)), []);
+  assert.deepEqual(buildPublicReputationIndex(makeRows(10, 9)), []);
+});
+
+test('publishes aggregate metrics only when the sample meets thresholds', () => {
+  const result = buildPublicReputationIndex(makeRows(10, 10));
+  assert.equal(result.length, 1);
+  assert.deepEqual(
+    {
+      sector: result[0].sector,
+      region: result[0].region,
+      period: result[0].period,
+      businessCount: result[0].businessCount,
+      reviewCount: result[0].reviewCount,
+      averageRating: result[0].averageRating,
+      positiveReviewPercent: result[0].positiveReviewPercent,
+      methodologyVersion: result[0].methodologyVersion,
+    },
+    {
+      sector: 'restaurantes',
+      region: 'sudeste',
+      period: '2026-09',
+      businessCount: 10,
+      reviewCount: 100,
+      averageRating: 3,
+      positiveReviewPercent: 40,
+      methodologyVersion: '1.0',
+    },
+  );
+  assert.deepEqual(result[0].ratingDistribution, [
+    { rating: 1, count: 20 },
+    { rating: 2, count: 20 },
+    { rating: 3, count: 20 },
+    { rating: 4, count: 20 },
+    { rating: 5, count: 20 },
+  ]);
+  assert.equal(JSON.stringify(result).includes('business-1'), false);
+  assert.equal(JSON.stringify(result).includes('review-1-1'), false);
+});
+
+test('excludes records without explicit publication consent and test data', () => {
+  const rows = makeRows(10, 10).map((row, index) => ({
+    ...row,
+    publicationConsent: index < 80,
+    isTest: index >= 80,
+  }));
+  assert.deepEqual(buildPublicReputationIndex(rows), []);
+});
+
+test('deduplicates review IDs per business and ignores invalid rows', () => {
+  const rows = makeRows(10, 10);
+  rows.push({ ...rows[0], rating: 1 });
+  rows.push({ ...rows[1], rating: 9 });
+  rows.push({ ...rows[2], observedAt: 'not-a-date' });
+  const result = buildPublicReputationIndex(rows);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].reviewCount, 100);
+});
+
+test('keeps sector, region and month as separate comparison cohorts', () => {
+  const rows = makeRows(10, 10);
+  const anotherMonth = makeRows(10, 10).map((row) => ({
+    ...row,
+    reviewId: `oct-${row.reviewId}`,
+    observedAt: '2026-10-15T12:00:00.000Z',
+  }));
+  assert.equal(buildPublicReputationIndex([...rows, ...anotherMonth]).length, 2);
+});
