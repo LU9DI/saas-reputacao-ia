@@ -1010,6 +1010,446 @@ const UNIQUE_CONTENT: Partial<Record<string,{sections:Section[];faq:Faq[]}>> = {
       },
     ],
   },
+  'en:online-reputation-management': {
+    sections: [
+      {
+        heading: 'What online reputation management covers',
+        body: 'Online reputation management is the routine that connects what customers say in public to what the business does next. It includes monitoring reviews and mentions, responding with consistency, fixing recurring causes and reporting the evolution to leadership. The goal is not to hide criticism; it is to make the experience better and let the record show it.',
+        points: [
+          'Monitor reviews, social mentions and search results.',
+          'Respond with a consistent voice and clear policy.',
+          'Fix the operational causes behind recurring complaints.',
+          'Report trends to leadership every month.',
+        ],
+      },
+      {
+        heading: 'Reputation is built in the operation',
+        body: 'No communication strategy survives a service that fails. The strongest reputation programs start with the customer journey: where people get frustrated, where expectations are set and where the promise breaks. Reviews are the receipt of that journey, which is why fixing the cause beats deleting the comment.',
+      },
+      {
+        heading: 'A governance model that scales',
+        body: 'Define who monitors, who replies, who fixes and who decides priorities. Central teams keep standards and consolidated reporting; local teams keep context and speed. Without that split, multi-unit operations either respond slowly or lose consistency.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What is online reputation management?',
+        answer: 'It is the ongoing practice of monitoring, responding, fixing causes and reporting what customers say in public channels. It connects customer experience data to operational decisions.',
+      },
+      {
+        question: 'Does it mean deleting negative comments?',
+        answer: 'No. You cannot remove legitimate reviews, and trying to hide criticism damages trust. The work is to respond well, fix the cause and show improvement over time.',
+      },
+      {
+        question: 'How is it different from customer service?',
+        answer: 'Customer service resolves individual cases. Reputation management looks at patterns across cases and turns them into fixes, standards and public responses.',
+      },
+      {
+        question: 'Who should own it?',
+        answer: 'A central owner defines standards and reporting, while local owners handle replies and operational fixes. The split keeps speed and consistency.',
+      },
+      {
+        question: 'How do we measure reputation?',
+        answer: 'Track rating trend, review volume and recency, response rate and time, theme recurrence and the share of complaints that turned into fixes.',
+      },
+    ],
+  },
+  'en:online-reputation-monitoring': {
+    sections: [
+      {
+        heading: 'What to monitor',
+        body: 'Monitoring is more than watching the star average. Track new reviews and comments across channels, response times, recurring themes, sudden changes in tone and mentions outside your profiles. Each signal answers a different question about what customers are experiencing.',
+        points: [
+          'New reviews and comments across channels.',
+          'Response rate and time to first reply.',
+          'Theme recurrence and sentiment shifts.',
+          'Mentions in search, social and news.',
+        ],
+      },
+      {
+        heading: 'Alerts that lead to action',
+        body: 'An alert is only useful if it reaches someone who can act. Route critical reviews to the local owner, recurring themes to operations and sensitive cases to the right escalation path. A daily digest plus real-time alerts for high-risk cases usually covers most operations.',
+      },
+      {
+        heading: 'The monthly review',
+        body: 'Once a month, compare periods: volume, rating, themes, response time and actions completed. Look for what changed and why. Monitoring without a review ritual becomes noise; the meeting is where signals turn into priorities.',
+      },
+    ],
+    faq: [
+      {
+        question: 'What should I monitor in online reputation?',
+        answer: 'New reviews and comments, response rate and time, recurring themes, sentiment changes and mentions outside your profiles. The rating alone hides the causes.',
+      },
+      {
+        question: 'Do I need paid tools?',
+        answer: 'Not at low volume. Google Business Profile notifications, a shared inbox and a spreadsheet cover the basics. Tools help when volume, channels or units grow.',
+      },
+      {
+        question: 'How fast should we respond to a review?',
+        answer: 'Critical reviews deserve a reply within 24 to 48 hours. Routine reviews can follow a weekly cadence, but consistency matters more than speed alone.',
+      },
+      {
+        question: 'What is a reputation alert?',
+        answer: 'A notification for a signal that needs attention: a very negative review, a spike in a theme, a mention in the press or a sudden change in volume.',
+      },
+      {
+        question: 'How do we avoid alert fatigue?',
+        answer: 'Define severity levels and owners, send real-time alerts only for high-risk cases and keep the rest in a daily or weekly digest.',
+      },
+    ],
+  },
+  'en:ai-review-analysis': {
+    sections: [
+      {
+        heading: 'What AI adds to review analysis',
+        body: 'AI processes volume that humans cannot read line by line. It classifies reviews by theme and sentiment, groups similar cases and highlights what changed between periods. The team starts from the prioritized list instead of a random sample.',
+        points: [
+          'Theme and sentiment classification at scale.',
+          'Grouping of similar complaints across units.',
+          'Period comparison and trend detection.',
+          'Prioritization by frequency and severity.',
+        ],
+      },
+      {
+        heading: 'A method that works',
+        body: 'Start with a taxonomy that reflects your operation: waiting time, communication, price, quality, staff, result. Review a sample of classifications at the beginning and adjust. Then combine AI output with business context: a rare complaint about safety may matter more than fifty comments about parking.',
+      },
+      {
+        heading: 'From analysis to decision',
+        body: 'End each cycle with a short action list: what to fix, who owns it and when. Measure the same theme in the next period to check whether the action worked. The value of the analysis is the decision it triggers, not the dashboard it fills.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Can AI replace manual review analysis?',
+        answer: 'It can handle the volume and find patterns, but context, priorities and public responses still need human judgment. AI accelerates the reading; the team decides.',
+      },
+      {
+        question: 'How accurate is theme classification?',
+        answer: 'It depends on the taxonomy and the language of the comments. With clear categories and a reviewed sample at the start, accuracy is usually enough for prioritization.',
+      },
+      {
+        question: 'Does it work with reviews in different languages?',
+        answer: 'Yes. Multilingual analysis is one of the main advantages for operations that serve international customers.',
+      },
+      {
+        question: 'What do I need to start?',
+        answer: 'A few months of reviews and comments plus a clear list of themes that matter to the business. The taxonomy is the foundation.',
+      },
+      {
+        question: 'How do I know the analysis is working?',
+        answer: 'When the prioritized themes become actions and their recurrence drops in later periods. Track fixes, not only sentiment scores.',
+      },
+    ],
+  },
+  'en:tourism': {
+    sections: [
+      {
+        heading: 'Why reviews decide the booking',
+        body: 'Travel decisions happen before the first contact. Tourists compare ratings, read recent reviews and look for signs that the experience matches the photos. A profile with fresh, specific feedback converts better than a beautiful page with old comments.',
+        points: [
+          'Recent reviews matter more than the total count.',
+          'Travelers look for practical details: location, timing, guides, safety.',
+          'Responses show that the business listens before arrival.',
+          'Photos and review themes should tell the same story.',
+        ],
+      },
+      {
+        heading: 'Collect feedback at the right moment',
+        body: 'Ask during the experience, not weeks later. A QR code at check-in, a message after the tour and a follow-up at checkout capture impressions while they are fresh. Group tours need a light process; individual travelers can receive a personal message.',
+      },
+      {
+        heading: 'Turn themes into itinerary improvements',
+        body: 'Reviews from tourists repeat practical themes: waiting, transport, communication in other languages, guide knowledge, cleanliness and value. Route each theme to the responsible team and review them before the next season, not after the complaints pile up.',
+      },
+    ],
+    faq: [
+      {
+        question: 'How do I get more reviews for my tourism business?',
+        answer: 'Ask at the right moments: check-in, after the tour and at checkout. Make the link or QR code easy and explain how the feedback helps future travelers.',
+      },
+      {
+        question: 'Should I respond to reviews in other languages?',
+        answer: 'Yes, whenever possible. A short reply in the customer language or in English shows care and helps future international travelers.',
+      },
+      {
+        question: 'How do seasonality and reviews interact?',
+        answer: 'Volume follows the season. Compare the same period year over year and use the low season to fix themes before the next high season.',
+      },
+      {
+        question: 'What matters most in tourism reviews?',
+        answer: 'Recency, practical details and consistency between the listing and the experience. Travelers use reviews to reduce uncertainty.',
+      },
+      {
+        question: 'Can I ask guests to review during the stay?',
+        answer: 'Yes, as long as it is voluntary and not tied to benefits. The best moment is when the customer has just experienced the value.',
+      },
+    ],
+  },
+  'en:franchises': {
+    sections: [
+      {
+        heading: 'The franchise reputation problem',
+        body: 'In a franchise, the brand is shared but the experience is local. One unit with slow service affects the perception of the whole network, while a strong local team can lift its own results. Managing that tension requires standards without erasing local context.',
+        points: [
+          'A shared taxonomy so themes can be compared across units.',
+          'Local owners for replies and operational fixes.',
+          'Central visibility into trends and critical cases.',
+          'Consistent response standards with room for local voice.',
+        ],
+      },
+      {
+        heading: 'What the network should standardize',
+        body: 'Standardize what protects the brand: response time, tone, escalation rules, handling of sensitive cases and reporting. Leave flexibility for what depends on local context: menu, schedule, team and neighborhood. The franchisor sets the frame; the franchisee operates inside it.',
+      },
+      {
+        heading: 'Reporting that franchisees actually use',
+        body: 'A monthly view per unit, with themes, response time, rating trend and completed actions, gives franchisees a practical agenda. Compare units carefully: different locations start from different baselines. The goal is improvement, not a public ranking that encourages gaming.',
+      },
+    ],
+    faq: [
+      {
+        question: 'Who owns the review response in a franchise?',
+        answer: 'Usually the local unit, with standards and escalation defined by the franchisor. Central teams monitor critical cases and consolidated trends.',
+      },
+      {
+        question: 'Should all units use the same response template?',
+        answer: 'Use the same principles and tone guidelines, not identical texts. Generic replies are easy to spot and reduce trust.',
+      },
+      {
+        question: 'How do we compare units fairly?',
+        answer: 'Compare each unit with its own history and with similar locations. Absolute rankings ignore differences in traffic, competition and maturity.',
+      },
+      {
+        question: 'What should the franchisor monitor?',
+        answer: 'Theme recurrence, response time, critical cases and the share of units with pending actions. The consolidated view shows where the network needs support.',
+      },
+      {
+        question: 'How do we handle a crisis in one unit?',
+        answer: 'Follow a central escalation path, respond quickly with facts and keep the local context. Silence or deletion usually makes the crisis worse.',
+      },
+    ],
+  },
+  'es:feedback-clientes': {
+    sections: [
+      {
+        heading: 'Qué es el feedback de clientes',
+        body: 'El feedback de clientes es toda señal que el cliente deja sobre su experiencia: reseñas, encuestas, mensajes de soporte, comentarios en redes y conversaciones comerciales. Recogerlo bien significa elegir momentos clave y no saturar al cliente con preguntas.',
+        points: [
+          'Elige momentos clave: después de la compra, del soporte o de la visita.',
+          'Combina señales públicas y privadas.',
+          'Haz preguntas cortas y específicas.',
+          'Cierra el ciclo: muestra qué cambió.',
+        ],
+      },
+      {
+        heading: 'Cómo recoger feedback sin fatiga',
+        body: 'Menos encuestas y mejores momentos. Una pregunta en el instante adecuado vale más que un formulario de veinte campos enviado una semana después. Si el cliente ya dio su opinión en una reseña, no le pidas lo mismo otra vez por correo.',
+      },
+      {
+        heading: 'Del comentario a la decisión',
+        body: 'El feedback solo genera valor cuando alguien lo lee, lo clasifica y actúa. Define un responsable por tema, prioriza por frecuencia y gravedad, y revisa los resultados en el periodo siguiente. La respuesta al cliente también forma parte del ciclo.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Qué canales de feedback debo usar?',
+        answer: 'Los que el cliente ya usa: reseñas, encuestas post-servicio, soporte y redes. Es mejor cubrir pocos canales bien que muchos a medias.',
+      },
+      {
+        question: '¿Cada cuánto pedir feedback?',
+        answer: 'En momentos clave y con moderación. Evita encuestas duplicadas y respeta la frecuencia con la que el cliente interactúa con el negocio.',
+      },
+      {
+        question: '¿Qué hago con el feedback negativo?',
+        answer: 'Respóndelo con respeto, corrige la causa cuando sea posible y registra el tema para medir recurrencia. No lo elimines ni lo ignores.',
+      },
+      {
+        question: '¿Cómo sé si el programa funciona?',
+        answer: 'Cuando los temas priorizados generan acciones y su recurrencia baja en los periodos siguientes. También mejora la tasa de respuesta.',
+      },
+      {
+        question: '¿Necesito una herramienta?',
+        answer: 'Al principio, una hoja de cálculo y una rutina semanal bastan. La herramienta aporta cuando crecen el volumen, los canales o las unidades.',
+      },
+    ],
+  },
+  'es:turismo': {
+    sections: [
+      {
+        heading: 'Por qué las reseñas deciden la reserva',
+        body: 'La decisión de viaje ocurre antes del primer contacto. El turista compara notas, lee reseñas recientes y busca señales de que la experiencia coincide con las fotos. Un perfil con feedback fresco y específico convierte mejor que una página bonita con comentarios antiguos.',
+        points: [
+          'Las reseñas recientes pesan más que el total acumulado.',
+          'El viajero busca detalles prácticos: ubicación, horarios, guías, seguridad.',
+          'Las respuestas muestran que el negocio escucha antes de la llegada.',
+          'Fotos y temas de reseñas deben contar la misma historia.',
+        ],
+      },
+      {
+        heading: 'Pedir feedback en el momento correcto',
+        body: 'Pregunta durante la experiencia, no semanas después. Un código QR en el check-in, un mensaje después del tour y un seguimiento al salir capturan impresiones frescas. Los tours grupales necesitan un proceso ligero; el viajero individual acepta un mensaje personal.',
+      },
+      {
+        heading: 'Convertir temas en mejoras del itinerario',
+        body: 'Las reseñas de turistas repiten temas prácticos: espera, transporte, comunicación en otros idiomas, conocimiento del guía, limpieza y relación calidad-precio. Enruta cada tema al equipo responsable y revísalos antes de la próxima temporada, no cuando las quejas se acumulan.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cómo consigo más reseñas en turismo?',
+        answer: 'Pide en los momentos correctos: check-in, después del tour y al salir. Facilita el enlace o el QR y explica cómo la opinión ayuda a futuros viajeros.',
+      },
+      {
+        question: '¿Debo responder reseñas en otros idiomas?',
+        answer: 'Sí, cuando sea posible. Una respuesta breve en el idioma del cliente o en inglés muestra atención y ayuda a futuros viajeros internacionales.',
+      },
+      {
+        question: '¿Cómo influye la temporada?',
+        answer: 'El volumen sigue la temporada. Compara el mismo periodo de un año a otro y usa la temporada baja para corregir temas antes de la alta.',
+      },
+      {
+        question: '¿Qué importa más en las reseñas de turismo?',
+        answer: 'Recencia, detalles prácticos y coherencia entre el anuncio y la experiencia. El viajero usa las reseñas para reducir la incertidumbre.',
+      },
+      {
+        question: '¿Puedo pedir reseña durante la estancia?',
+        answer: 'Sí, siempre que sea voluntario y no esté ligado a beneficios. El mejor momento es cuando el cliente acaba de vivir el valor.',
+      },
+    ],
+  },
+  'es:franquicias': {
+    sections: [
+      {
+        heading: 'El problema de reputación en franquicias',
+        body: 'En una franquicia la marca es compartida, pero la experiencia es local. Una unidad con servicio lento afecta la percepción de toda la red, mientras un buen equipo local puede mejorar sus propios resultados. Gestionar esa tensión exige estándares sin borrar el contexto local.',
+        points: [
+          'Una taxonomía compartida para comparar temas entre unidades.',
+          'Responsables locales para respuestas y correcciones.',
+          'Visibilidad central de tendencias y casos críticos.',
+          'Estándares de respuesta con espacio para la voz local.',
+        ],
+      },
+      {
+        heading: 'Qué debe estandarizar la red',
+        body: 'Estandariza lo que protege la marca: tiempo de respuesta, tono, reglas de escalación, tratamiento de casos sensibles y reporte. Deja flexibilidad para lo que depende del contexto: menú, horario, equipo y barrio. La franquiciadora define el marco; el franquiciado opera dentro.',
+      },
+      {
+        heading: 'Un reporte que el franquiciado use',
+        body: 'Una vista mensual por unidad con temas, tiempo de respuesta, evolución de la nota y acciones completadas le da al franquiciado una agenda práctica. Compara con cuidado: cada local parte de una base distinta. El objetivo es mejorar, no publicar un ranking que incentive manipular.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Quién responde las reseñas en una franquicia?',
+        answer: 'Normalmente la unidad local, con estándares y escalación definidos por la franquiciadora. El equipo central monitorea casos críticos y tendencias.',
+      },
+      {
+        question: '¿Todas las unidades deben usar la misma plantilla?',
+        answer: 'Comparte principios y tono, no textos idénticos. Las respuestas genéricas se detectan y reducen la confianza.',
+      },
+      {
+        question: '¿Cómo comparar unidades de forma justa?',
+        answer: 'Compara cada unidad con su propia historia y con locales similares. Un ranking absoluto ignora diferencias de tráfico, competencia y madurez.',
+      },
+      {
+        question: '¿Qué debe monitorear la franquiciadora?',
+        answer: 'Recurrencia de temas, tiempo de respuesta, casos críticos y porcentaje de unidades con acciones pendientes.',
+      },
+      {
+        question: '¿Cómo manejar una crisis en una unidad?',
+        answer: 'Sigue una escalación central, responde rápido con hechos y conserva el contexto local. El silencio o borrar comentarios suele empeorar la crisis.',
+      },
+    ],
+  },
+  'es:como-funciona': {
+    sections: [
+      {
+        heading: 'De la conexión al primer insight',
+        body: 'El primer paso es conectar la ficha de Google Business Profile y, si los usas, tus canales de feedback. La plataforma organiza reseñas y comentarios, clasifica temas y muestra el panorama actual: qué repiten los clientes, qué está sin responder y hacia dónde va la tendencia.',
+        points: [
+          'Conecta la ficha y las fuentes de feedback.',
+          'Clasifica temas con una taxonomía compartida.',
+          'Consulta el panorama por unidad y por periodo.',
+          'Define responsables y prioridades desde la primera lista.',
+        ],
+      },
+      {
+        heading: 'La rutina semanal y mensual',
+        body: 'Cada semana el equipo revisa señales nuevas, responde comentarios críticos y trabaja la lista de prioridades. Cada mes compara temas, tiempo de respuesta y resultados entre periodos y locales. La cadencia es lo que convierte la plataforma en resultados.',
+      },
+      {
+        heading: 'Roles y escalación',
+        body: 'Un responsable local atiende respuestas y correcciones operativas. Un equipo central vigila la vista consolidada, comparte estándares e interviene en casos sensibles. Una escalación clara mantiene la respuesta rápida y conserva el contexto de cada unidad.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cuánto tarda la configuración?',
+        answer: 'La conexión inicial es rápida. La mayor parte del tiempo se dedica a definir la taxonomía, los responsables y la cadencia que encajan con la operación.',
+      },
+      {
+        question: '¿Tengo que cambiar mis herramientas actuales?',
+        answer: 'No. Filtra.AI puede convivir con tus encuestas o herramientas de soporte y reunir las señales en una sola capa de análisis.',
+      },
+      {
+        question: '¿Quién debe usar la plataforma a diario?',
+        answer: 'Normalmente un responsable local para respuestas y correcciones, apoyado por un equipo central que monitorea la vista consolidada y los estándares.',
+      },
+      {
+        question: '¿Cómo se tratan las reseñas sensibles?',
+        answer: 'Siguen una ruta de escalación al equipo responsable o al contacto central, especialmente si implican datos personales, riesgo legal o detalles clínicos.',
+      },
+      {
+        question: '¿Cómo sabemos si funciona?',
+        answer: 'Sigue la recurrencia de temas, el tiempo de respuesta, las reseñas sin contestar y las acciones completadas.',
+      },
+    ],
+  },
+  'es:restaurantes': {
+    sections: [
+      {
+        heading: 'La reseña empieza en la mesa',
+        body: 'En restaurantes, la percepción se forma en la experiencia: espera, comida, servicio, ambiente y precio. La reseña es la consecuencia. Antes de pedir más opiniones, revisa qué temas se repiten y qué se puede corregir esta misma semana.',
+        points: [
+          'Tiempo de espera y comunicación durante la espera.',
+          'Consistencia entre platos, fotos y expectativas.',
+          'Atención del equipo en hora punta.',
+          'Relación calidad-precio percibida.',
+        ],
+      },
+      {
+        heading: 'Pedir la reseña sin interrumpir',
+        body: 'El mejor momento es al final, cuando el cliente ya vivió la experiencia. Un QR en la cuenta, una tarjeta discreta o un mensaje después de la visita funcionan mejor que interrumpir la comida. Nunca condicione la reseña a un descuento.',
+      },
+      {
+        heading: 'Responder y corregir',
+        body: 'Responde las reseñas con nombre del plato o del turno cuando ayude, agradece el detalle y explica la corrección. Los temas repetidos deben llegar a la cocina y al salón como mejoras concretas, no quedarse en el panel de reputación.',
+      },
+    ],
+    faq: [
+      {
+        question: '¿Cómo consigo más reseñas para mi restaurante?',
+        answer: 'Pide al final de la experiencia con un QR o enlace directo, facilita el proceso y explica que la opinión ayuda a otros clientes.',
+      },
+      {
+        question: '¿Debo responder todas las reseñas?',
+        answer: 'Idealmente sí. Prioriza las negativas y las que aportan detalle; las respuestas muestran que el restaurante escucha.',
+      },
+      {
+        question: '¿Qué hago con una crítica sobre la comida?',
+        answer: 'Agradece el comentario, reconoce la experiencia, explica la corrección y ofrece un canal privado para el seguimiento.',
+      },
+      {
+        question: '¿Puedo ofrecer un postre a cambio de una reseña?',
+        answer: 'No. Incentivar reseñas positivas viola las políticas de Google y daña la credibilidad. Puedes agradecer el feedback, no comprarlo.',
+      },
+      {
+        question: '¿Cómo uso las reseñas para mejorar el menú?',
+        answer: 'Agrupa los temas por plato, turno y unidad, y revisa la recurrencia después de cada cambio.',
+      },
+    ],
+  },
 };
 
 const sourcePaths=['/ia','/feedback-de-clientes','/analise-de-avaliacoes-com-ia','/gestao-de-reputacao-online','/avaliacoes-google','/filtra-ai','/reputacao-google','/como-melhorar-avaliacoes-google','/monitoramento-reputacao-online','/gestao-de-feedback','/hoteis','/turismo','/agencias','/clinicas','/franquias','/associacoes','/restaurantes','/como-funciona','/parceiros','/pedir-estrela-vs-filtrar','/auditoria-gratuita'];

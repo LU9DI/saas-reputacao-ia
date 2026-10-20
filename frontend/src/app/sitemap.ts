@@ -47,6 +47,16 @@ const LAST_MODIFIED: Record<string, string> = {
   '/es/ia': '2026-10-19',
   '/es/analisis-resenas-ia': '2026-10-19',
   '/es/auditoria-gratuita': '2026-10-19',
+  '/en/online-reputation-management': '2026-10-19',
+  '/en/online-reputation-monitoring': '2026-10-19',
+  '/en/ai-review-analysis': '2026-10-19',
+  '/en/tourism': '2026-10-19',
+  '/en/franchises': '2026-10-19',
+  '/es/feedback-clientes': '2026-10-19',
+  '/es/turismo': '2026-10-19',
+  '/es/franquicias': '2026-10-19',
+  '/es/como-funciona': '2026-10-19',
+  '/es/restaurantes': '2026-10-19',
 };
 
 // Next 16 + `output: export` exigem rota explicitamente estática.
