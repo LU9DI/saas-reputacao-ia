@@ -43,11 +43,23 @@ export function mountDiagnosticRoutes(app: Express) {
         try {
           const db = getDb();
           await ensureAcquisitionSchema(db);
-          await db.run(`INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json)
-            VALUES (?,?,?,?,CURRENT_TIMESTAMP,?) ON CONFLICT(id) DO NOTHING`, [
-            crypto.randomUUID(), leadId, 'diagnostic.completed', attribution.utm_source || 'website', JSON.stringify({ locale, review_count: reviews.length, attribution }).slice(0, 20000)
-          ]);
-          await db.run(`UPDATE acquisition_leads SET acquisition_stage='diagnosed', acquisition_next_at=NULL, updated_at=CURRENT_TIMESTAMP WHERE id=? AND COALESCE(acquisition_suppressed,0)=0`, [leadId]);
+          // The public client can submit an arbitrary lead_id. Only associate this
+          // diagnostic with a real, consented, eligible lead; otherwise it must not
+          // affect campaign metrics or acquisition follow-up state.
+          const eligibleLead = await db.get(
+            `SELECT id FROM acquisition_leads
+             WHERE id=? AND consent=1 AND status='eligible'
+               AND COALESCE(acquisition_suppressed,0)=0`,
+            [leadId]
+          );
+          if (eligibleLead?.id) {
+            await db.run(`INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json)
+              VALUES (?,?,?,?,CURRENT_TIMESTAMP,?) ON CONFLICT(id) DO NOTHING`, [
+              crypto.randomUUID(), eligibleLead.id, 'diagnostic.completed', attribution.utm_source || 'website', JSON.stringify({ locale, review_count: reviews.length, attribution }).slice(0, 20000)
+            ]);
+            await db.run(`UPDATE acquisition_leads SET acquisition_stage='diagnosed', acquisition_next_at=NULL, updated_at=CURRENT_TIMESTAMP
+              WHERE id=? AND consent=1 AND status='eligible' AND COALESCE(acquisition_suppressed,0)=0`, [eligibleLead.id]);
+          }
         } catch (persistError: any) {
           console.warn('[acquisition] diagnostic persistence failed:', persistError?.message || persistError);
         }
