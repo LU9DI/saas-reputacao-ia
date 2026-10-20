@@ -330,17 +330,37 @@ export function mountAcquisitionRoutes(app: Express) {
            updated_at=CURRENT_TIMESTAMP`,
         [leadId, email, company || null, source]
       );
+      const row = await db.get('SELECT id,email,company,consent,consent_at,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
+      const suppressed = Number(row?.acquisition_suppressed || 0) === 1
+        || ['suppressed', 'unsubscribed'].includes(String(row?.acquisition_stage || ''));
+
+      // A new form submission must not silently reverse an explicit unsubscribe
+      // or re-add the contact to a marketing provider. Re-subscription needs a
+      // dedicated, auditable flow rather than this generic lead endpoint.
+      if (suppressed) {
+        await db.run(
+          'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
+          [crypto.randomUUID(), leadId, 'consent.received_suppressed', source, JSON.stringify({ attribution, crm_sync_skipped: true }).slice(0, 20000)]
+        );
+        return res.status(200).json({
+          ok: true,
+          lead_id: row.id,
+          lead: row,
+          acquisition: { eligible_for_followup: false },
+          crm_sync: { ok: true, skipped: true, reason: 'suppressed_contact' },
+        });
+      }
+
       await db.run(
         'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
         [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ attribution }).slice(0, 20000)]
       );
-      const row = await db.get('SELECT id,email,company,consent,consent_at,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
       const crmSync = await syncConsentedAcquisitionLead(row);
       await db.run(
         'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
         [crypto.randomUUID(), leadId, crmSync.ok ? 'crm.sync.completed' : 'crm.sync.partial', source, JSON.stringify(crmSync).slice(0, 20000)]
       );
-      return res.status(existing ? 200 : 201).json({ ok: true, lead_id: row.id, lead: row, crm_sync: crmSync });
+      return res.status(existing ? 200 : 201).json({ ok: true, lead_id: row.id, lead: row, acquisition: { eligible_for_followup: true }, crm_sync: crmSync });
     } catch (error: any) {
       console.error('[acquisition] consent:', error?.message || error);
       return res.status(503).json({ error: 'Não foi possível registrar o consentimento agora.' });
