@@ -22,7 +22,7 @@ export function sanitizeAcquisitionAttribution(value: unknown): AcquisitionAttri
   for (const [key, limit] of Object.entries(ATTRIBUTION_LIMITS) as Array<[keyof typeof ATTRIBUTION_LIMITS, number]>) {
     const raw = input[key];
     if (typeof raw !== 'string') continue;
-    const cleaned = raw.replace(/[\\u0000-\\u001f\\u007f]/g, '').trim().slice(0, limit);
+    const cleaned = raw.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, limit);
     if (!cleaned) continue;
     if (key === 'referrer_origin') {
       try {
