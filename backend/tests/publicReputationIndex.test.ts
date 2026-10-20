@@ -142,3 +142,12 @@ test('rejects ambiguous dates and impossible calendar dates', () => {
   assert.deepEqual(buildPublicReputationIndex(impossible), []);
   assert.deepEqual(buildPublicReputationIndex(invalidConsentDate), []);
 });
+
+test('deduplication keys do not collide when identifiers contain separators', () => {
+  const rows = makeRows(10, 10);
+  rows[0] = { ...rows[0], businessId: 'a:b', reviewId: 'c' };
+  rows[1] = { ...rows[1], businessId: 'a', reviewId: 'b:c' };
+  const result = buildPublicReputationIndex(rows);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].reviewCount, 100);
+});
