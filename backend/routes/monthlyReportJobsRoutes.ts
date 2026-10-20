@@ -88,9 +88,10 @@ export function companyExistedInPeriod(criadoEm: unknown, periodo: string): bool
  * Deriva o dia do aniversário a partir do fim do ciclo atual.
  * Usado apenas no backfill de assinaturas antigas (sem `relatorio_dia_assinatura`).
  */
-export function subscriptionDayFromExpiry(expiraEm: unknown, now = new Date()): number {
-  const expiry = new Date(String(expiraEm || ''));
-  return Number.isFinite(expiry.getTime()) ? expiry.getUTCDate() : now.getUTCDate();
+export function subscriptionDayFromExpiry(expiraEm: unknown): number | null {
+  if (expiraEm == null || String(expiraEm).trim() === '') return null;
+  const expiry = new Date(String(expiraEm));
+  return Number.isFinite(expiry.getTime()) ? expiry.getUTCDate() : null;
 }
 
 /**
@@ -107,7 +108,9 @@ export async function backfillSubscriptionDays(db: any, now = new Date()): Promi
   ) as Array<{ id: string; expira_em?: string | null }>;
   let updated = 0;
   for (const row of rows || []) {
-    const day = subscriptionDayFromExpiry(row.expira_em, now);
+    // Sem uma data de expiração válida, não inventamos um aniversário usando o dia do job.
+    const day = subscriptionDayFromExpiry(row.expira_em);
+    if (day == null) continue;
     const result = await db.run(
       'UPDATE empresas SET relatorio_dia_assinatura = ? WHERE id = ? AND relatorio_dia_assinatura IS NULL',
       [day, row.id],
