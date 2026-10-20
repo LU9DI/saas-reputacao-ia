@@ -56,6 +56,17 @@ export type AcquisitionEventRow = {
   metadata_json?: unknown;
 };
 
+function normalizeEventTimestamp(value: unknown): string {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  if (!raw) return '';
+  // SQLite CURRENT_TIMESTAMP uses "YYYY-MM-DD HH:mm:ss" without a zone.
+  // Treat that storage format as UTC, then compare normalized ISO timestamps.
+  const sqliteUtc = /^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?)$/.exec(raw);
+  const candidate = sqliteUtc ? `${sqliteUtc[1]}T${sqliteUtc[2]}Z` : raw;
+  const millis = Date.parse(candidate);
+  return Number.isFinite(millis) ? new Date(millis).toISOString() : '';
+}
+
 export function summarizeAcquisitionEvents(events: AcquisitionEventRow[]) {
   type LeadSummary = {
     attribution: AcquisitionAttribution;
@@ -84,7 +95,7 @@ export function summarizeAcquisitionEvents(events: AcquisitionEventRow[]) {
     const attribution = sanitizeAcquisitionAttribution(metadata.attribution);
     const hasAttribution = Object.values(attribution).some(Boolean);
     const priorHasAttribution = previous && Object.values(previous.attribution).some(Boolean);
-    const eventAt = String(event.occurred_at || '');
+    const eventAt = normalizeEventTimestamp(event.occurred_at);
     // Stable first-touch attribution: choose the earliest event carrying valid attribution,
     // regardless of database result ordering.
     const useThisAttribution = hasAttribution && (
