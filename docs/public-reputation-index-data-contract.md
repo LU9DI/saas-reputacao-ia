@@ -33,6 +33,10 @@ Cada registro de avaliação que entrar em um lote elegível precisa conter:
 
 Texto de avaliação, nome do autor, dados de contato e nomes de negócios não são necessários para calcular os indicadores e não devem ser passados ao agregador.
 
+## Taxonomia controlada da versão 1.0
+
+Setores aceitos: restaurantes, hotéis, clínicas, franquias, varejo e serviços. Regiões aceitas: Brasil (somente quando a cobertura realmente for nacional), Norte, Nordeste, Centro-Oeste, Sudeste e Sul. Sinônimos conhecidos são normalizados para uma chave canônica; setores não reconhecidos e recortes por cidade são rejeitados pelo agregador inicial, para evitar fragmentação e falsas alegações de cobertura.
+
 ## Regras de agregação da versão 1.0
 
 - Cohorte: setor + região + mês de observação.
