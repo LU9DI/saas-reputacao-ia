@@ -106,6 +106,21 @@ describe('aggregateReputationIndex', () => {
     assert.equal(lowThresholds.overall?.periodEnd, '2026-10-31');
   });
 
+  it('rejects impossible calendar dates and timestamps without a timezone', () => {
+    assert.throws(() => aggregateReputationIndex([], {
+      windowStart: '2026-02-31',
+      windowEnd: '2026-03-31',
+    }), /ISO válidas/);
+    assert.equal(aggregateReputationIndex([
+      review({ createdAt: '2026-10-10T12:00:00' }),
+    ], {
+      windowStart: '2026-10-01',
+      windowEnd: '2026-10-31',
+      minCompanies: 1,
+      minReviews: 1,
+    }).quality.eligibleRecords, 0);
+  });
+
   it('rejects invalid windows and invalid publication thresholds', () => {
     assert.throws(() => aggregateReputationIndex([], {
       windowStart: '2026-11-01',
