@@ -99,7 +99,7 @@ export function subscriptionDayFromExpiry(expiraEm: unknown): number | null {
  * antes da coluna existir. O UPDATE condicional preserva quem já tem o valor;
  * a partir daí o COALESCE das ativações/renovações mantém o aniversário estável.
  */
-export async function backfillSubscriptionDays(db: any, now = new Date()): Promise<number> {
+export async function backfillSubscriptionDays(db: any): Promise<number> {
   const rows = await db.all(
     `SELECT id, expira_em FROM empresas
      WHERE relatorio_dia_assinatura IS NULL
