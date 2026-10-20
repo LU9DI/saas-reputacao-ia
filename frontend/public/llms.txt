@@ -10,6 +10,7 @@ Filtra.AI ajuda empresas a organizar avaliações e feedback, identificar temas 
 - [Sobre o Filtra.AI](https://filtraai.com/filtra-ai): descrição da plataforma.
 - [Gestão de reputação online](https://filtraai.com/gestao-de-reputacao-online): abordagem para monitorar avaliações, feedback e temas recorrentes.
 - [Índice de Reputação Online](https://filtraai.com/indice-reputacao): metodologia, critérios de transparência e estado atual dos indicadores públicos.
+- [Metodologia do índice em Markdown](https://filtraai.com/indice-reputacao.md): versão legível por máquinas, com regras de publicação e limitações.
 - [Auditoria gratuita de avaliações](https://filtraai.com/auditoria-gratuita): diagnóstico inicial baseado nas avaliações reais fornecidas pelo visitante.
 - [Planos](https://filtraai.com/planos): informações comerciais e opções de assinatura.
 - [Blog](https://filtraai.com/blog): guias e materiais sobre reputação, avaliações e experiência do cliente.
