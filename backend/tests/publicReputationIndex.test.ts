@@ -96,3 +96,12 @@ test('keeps sector, region and month as separate comparison cohorts', () => {
   }));
   assert.equal(buildPublicReputationIndex([...rows, ...anotherMonth]).length, 2);
 });
+
+test('normalizes known sector aliases and rejects uncontrolled micro-segments', () => {
+  const known = makeRows(10, 10).map((row) => ({ ...row, sector: 'Clínica', region: 'Sudeste' }));
+  const unknown = makeRows(10, 10).map((row) => ({ ...row, sector: 'Clínica do bairro X', region: 'São Paulo capital' }));
+  const result = buildPublicReputationIndex(known);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].sector, 'clinicas');
+  assert.deepEqual(buildPublicReputationIndex(unknown), []);
+});
