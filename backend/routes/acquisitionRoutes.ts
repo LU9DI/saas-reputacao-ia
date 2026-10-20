@@ -327,7 +327,7 @@ export function mountAcquisitionRoutes(app: Express) {
       );
       await db.run(
         'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
-        [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ company, email, attribution }).slice(0, 20000)]
+        [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ attribution }).slice(0, 20000)]
       );
       const row = await db.get('SELECT id,email,company,consent,consent_at,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
       const crmSync = await syncConsentedAcquisitionLead(row);
