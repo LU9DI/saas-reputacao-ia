@@ -210,7 +210,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
 function secretOk(req: Request) {
   const supplied = String(req.headers['x-filtra-secret'] || req.headers['x-n8n-secret'] || '').trim();
   const expected = String(process.env.N8N_INBOUND_SECRET || process.env.N8N_WEBHOOK_SECRET || '').trim();
-  return Boolean(expected && supplied && supplied === expected);
+  if (!expected || !supplied) return false;
+
+  const suppliedBytes = Buffer.from(supplied, 'utf8');
+  const expectedBytes = Buffer.from(expected, 'utf8');
+  if (suppliedBytes.length !== expectedBytes.length) return false;
+  return crypto.timingSafeEqual(suppliedBytes, expectedBytes);
 }
 
 async function safeAlter(db: Database, sql: string) {
