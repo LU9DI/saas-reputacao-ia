@@ -27,7 +27,7 @@ const articleSchema = {
     'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   datePublished: '2026-09-30',
-  dateModified: '2026-10-21',
+  dateModified: '2026-10-20',
   author: {
     '@type': 'Organization',
     name: 'Filtra.AI',
