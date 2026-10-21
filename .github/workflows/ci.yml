@@ -5,11 +5,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# CI executada automaticamente em push/PR; workflow_dispatch também permite execução manual.
 jobs:
   seo-brand:
     name: SEO + brand guardrail
@@ -21,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Audit public SEO/content rules
         run: node spec-kit/audit-seo-brand.mjs
@@ -51,7 +53,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
@@ -67,6 +69,11 @@ jobs:
           # Use npm exec so CI remains resilient if the lockfile is temporarily
           # out of sync with package.json and tsx is absent from node_modules/.bin.
           find tests -type f -name '*.test.ts' ! -name 'integration.*.test.ts' -print0 | xargs -0 -r -n1 npx --yes tsx --test
+
+      # The focused integration test uses a temporary SQLite database.
+      # Install pinned test-only adapters without changing the checked-in lockfile.
+      - name: Install SQLite test dependencies
+        run: npm install --no-save --package-lock=false sqlite@5.1.1 sqlite3@5.1.7
 
       # Este teste usa banco temporário e não depende de DNS ou serviços externos.
       # Mantê-lo sempre ativo protege os contratos de consentimento e aceite legal.
@@ -98,7 +105,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
