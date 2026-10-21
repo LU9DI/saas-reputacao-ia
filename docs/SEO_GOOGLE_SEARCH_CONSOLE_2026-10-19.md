@@ -46,6 +46,17 @@ As exclusões por redirecionamento e `noindex` podem ser intencionais e não dev
 4. Revisar a indexação de URLs localizadas e páginas de baixo valor com base na lista real, não por suposição.
 5. Após publicação, acompanhar por URL impressões, cliques, CTR e posição em 14, 28 e 56 dias. Não declarar sucesso antes de haver amostra suficiente.
 
+
+## Verificação pública do site publicado (20/10/2026)
+
+Foi feita uma leitura do site público separadamente do código ainda em revisão:
+
+- `/robots.txt` responde com rastreamento permitido em geral, bloqueando apenas `/api/`, e referencia `https://filtraai.com/sitemap.xml`.
+- O sitemap público contém 100 URLs e ainda não inclui `/calculadora-nota-google`.
+- A rota pública `/calculadora-nota-google` retorna 404 neste momento. Isso é consistente com a funcionalidade estar somente na PR aberta e não deve ser interpretado como defeito do deploy atual. A rota só deve ser validada como publicada depois da aprovação e do deploy.
+- Na página pública de pacotes de SEO local, o título e a descrição Open Graph são específicos do artigo, mas os metadados Twitter herdavam o título/descrição genéricos do site. A PR corrige isso também no artigo de gestão de reputação e adiciona guardrails para evitar regressão.
+- Não foi enviado pedido de indexação: solicitar indexação antes de publicar produziria uma inspeção de uma URL ainda inexistente em produção.
+
 ## Restrições
 
 Nenhum deploy, alteração em produção ou pedido de indexação foi executado. A PR continua em rascunho até revisão e aprovação.
