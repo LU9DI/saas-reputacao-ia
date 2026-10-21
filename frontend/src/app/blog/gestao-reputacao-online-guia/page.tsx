@@ -6,12 +6,12 @@ const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
 const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
-  title: 'Gestão de reputação online: guia completo para empresas',
+  title: 'Como fazer gestão de reputação online: guia prático',
   description:
-    'Guia completo de gestão de reputação online para empresas: processo, boas práticas, indicadores e o que avaliar em serviços de gestão de reputação.',
+    'Aprenda como fazer gestão de reputação online com um processo prático, indicadores, checklist e um plano de 30 dias para transformar avaliações em melhorias.',
   alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/online-reputation-management-guide', es: 'https://filtraai.com/es/blog/guia-gestion-reputacion-online', 'x-default': canonical } },
   openGraph: {
-    title: 'Gestão de reputação online: avaliações, feedback e melhoria',
+    title: 'Como fazer gestão de reputação online: processo e indicadores',
     description:
       'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
     url: canonical,
@@ -22,12 +22,12 @@ export const metadata: Metadata = {
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'Article',
-  headline: 'Gestão de reputação online: guia para empresas',
+  headline: 'Como fazer gestão de reputação online: guia prático',
   description:
     'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   datePublished: '2026-09-30',
-  dateModified: '2026-10-19',
+  dateModified: '2026-10-21',
   author: {
     '@type': 'Organization',
     name: 'Filtra.AI',
@@ -67,6 +67,11 @@ const faqSchema = {
       name: 'Com que frequência acompanhar avaliações e feedback?',
       acceptedAnswer: { '@type': 'Answer', text: 'A leitura de novos sinais deve ser frequente, no mínimo semanal em operações com volume. A revisão de temas recorrentes, ações e resultados pode seguir ciclo mensal ou trimestral, sempre comparando períodos.' },
     },
+    {
+      '@type': 'Question',
+      name: 'Qual é a diferença entre gestão de reputação e um software de reputação?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Gestão de reputação é o processo de monitorar sinais, responder, corrigir causas e medir resultados. Um software ajuda a organizar dados, identificar padrões e acompanhar esse processo; ele não substitui as decisões e melhorias da equipe.' },
+    },
   ],
 };
 
@@ -82,8 +87,8 @@ export default function BlogReputacaoOnlinePage() {
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · Gestão de reputação online</p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Gestão de reputação online: guia para empresas</h1>
-          <p className="text-zinc-400">Gerir a reputação de uma empresa é acompanhar o que clientes dizem, entender padrões, responder publicamente e transformar sinais recorrentes em melhorias reais.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Como fazer gestão de reputação online: guia prático</h1>
+          <p className="text-zinc-400">Este guia mostra como montar uma rotina de gestão de reputação online: o que acompanhar, quem deve agir, quais indicadores revisar e como verificar se as mudanças resolveram os problemas relatados.</p>
         </div>
 
         <section className="space-y-3">
@@ -187,6 +192,32 @@ export default function BlogReputacaoOnlinePage() {
         </section>
 
         <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Plano prático de 30 dias para organizar a reputação</h2>
+          <p>Use este roteiro como ponto de partida e ajuste a cadência ao volume de avaliações, ao risco operacional e ao número de unidades. O prazo não garante melhora na nota ou no ranking; ele cria um ciclo de trabalho verificável.</p>
+          <ol className="list-decimal pl-5 space-y-2">
+            <li><strong>Dias 1–7 — estabelecer a linha de base:</strong> registre volume de avaliações, nota exibida, recência, temas mais citados, taxa de resposta e diferenças entre unidades. Anote a data e a fonte para comparar períodos equivalentes.</li>
+            <li><strong>Dias 8–14 — escolher prioridades:</strong> selecione até três temas recorrentes usando frequência, impacto para o cliente e capacidade de correção. Evite tratar uma única crítica como tendência sem evidência adicional.</li>
+            <li><strong>Dias 15–21 — executar correções:</strong> atribua responsável, ação, prazo e evidência esperada para cada tema. Responda publicamente quando necessário, sem divulgar dados pessoais ou discutir informações privadas.</li>
+            <li><strong>Dias 22–30 — revisar e decidir:</strong> compare os temas e indicadores com a linha de base, registre o que mudou e mantenha, ajuste ou encerre cada ação. Continue acompanhando depois do primeiro ciclo.</li>
+          </ol>
+          <p>Para facilitar a execução, use uma matriz simples: <strong>tema observado → evidências → impacto → responsável → ação → prazo → indicador de revisão</strong>. Esse registro evita que a operação fique limitada a responder comentários sem corrigir as causas.</p>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-zinc-100">Indicadores que ajudam a medir a gestão de reputação</h2>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><strong>Volume e recência:</strong> quantas avaliações chegaram no período e quando ocorreu a última.</li>
+            <li><strong>Distribuição de notas:</strong> acompanhe a proporção por faixa, não apenas a média.</li>
+            <li><strong>Temas recorrentes:</strong> frequência de assuntos como atendimento, espera, qualidade, preço ou comunicação.</li>
+            <li><strong>Tempo e cobertura de resposta:</strong> acompanhe quais avaliações precisam de resposta e quanto tempo a equipe leva, sem confundir resposta com resolução.</li>
+            <li><strong>Fechamento de ações:</strong> proporção de problemas prioritários com responsável, prazo e revisão concluída.</li>
+            <li><strong>Diferença entre unidades:</strong> compare períodos e contextos equivalentes para não esconder problemas locais em uma média geral.</li>
+          </ul>
+          <p>Não atribua automaticamente mudanças de tráfego ou de posição no Google a uma única ação de reputação. Registre mudanças de site, Perfil da Empresa, sazonalidade e concorrência para interpretar os resultados com cautela.</p>
+          <p>Para uma visão de produto, compare o processo descrito neste guia com o <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">software de gestão de reputação online da Filtra.AI</Link>. Para sinais específicos de busca local, leia também o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local e avaliações no Local Pack</Link>.</p>
+        </section>
+
+        <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">Perguntas frequentes sobre gestão de reputação</h2>
           <div className="space-y-3">
             <div className="space-y-1">
@@ -204,6 +235,10 @@ export default function BlogReputacaoOnlinePage() {
             <div className="space-y-1">
               <p className="font-medium text-zinc-100">Com que frequência acompanhar avaliações e feedback?</p>
               <p>A leitura de novos sinais deve ser frequente, no mínimo semanal em operações com volume. A revisão de temas recorrentes, ações e resultados pode seguir ciclo mensal ou trimestral, sempre comparando períodos.</p>
+            </div>
+            <div className="space-y-1">
+              <p className="font-medium text-zinc-100">Qual é a diferença entre gestão de reputação e um software de reputação?</p>
+              <p>Gestão de reputação é o processo de monitorar sinais, responder, corrigir causas e medir resultados. Um software ajuda a organizar dados, identificar padrões e acompanhar esse processo; ele não substitui as decisões e melhorias da equipe.</p>
             </div>
           </div>
         </section>
