@@ -17,6 +17,13 @@ export const metadata: Metadata = {
     url: canonical,
     type: 'article',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Como fazer gestão de reputação online: processo e indicadores',
+    description:
+      'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
+    images: ['/og-image.png'],
+  },
 };
 
 const articleSchema = {
