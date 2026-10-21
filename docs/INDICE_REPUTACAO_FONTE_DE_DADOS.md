@@ -84,7 +84,8 @@ Isso não prova exposição explorável sem conferir grants e políticas efetiva
 ## 7. Estado operacional atualizado
 
 - A PR #71 permanece em draft, sem merge ou deploy de produção.
-- A CI do commit `2e2744b21afccf7070bb10fbb5e7d0018e025f01` passou integralmente: frontend, SEO/brand guardrail, backend, testes unitários, integração focada e typecheck.
-- O agregador remove um grupo inteiro quando o mesmo identificador de avaliação tem conteúdo conflitante; duplicatas idênticas contam uma única vez. A ingestão rejeita timestamps opcionais inválidos e tipos de fonte não permitidos.
+- A CI do commit `5acd1c3fb56705c6f7c13ea85411cb5a75ac2b2a` passou integralmente: frontend (typecheck, build e auditoria de indexação), SEO/brand guardrail, backend (testes unitários, integração focada e typecheck) e summary: https://github.com/LU9DI/saas-reputacao-ia/actions/runs/39519729805.
+- O agregador remove um grupo inteiro quando o mesmo identificador de avaliação tem conteúdo conflitante; duplicatas idênticas contam uma única vez. A ingestão rejeita timestamps opcionais inválidos, tipos de fonte não permitidos, datas de referência inválidas e identificadores ausentes.
+- A validação de datas rejeita dias impossíveis, horas/minutos inválidos, timestamps sem fuso e fusos fora do intervalo permitido.
 - O estado de qualquer preview do Vercel precisa ser verificado novamente antes de uma tentativa de publicação; o registro anterior indicava falha de build e limitação de acesso aos logs do escopo `lu9di`.
-- Nenhum merge, deploy de produção, alteração de schema ou coleta externa foi executado nesta etapa. A CI do próximo HEAD deve ser revalidada antes de declarar esta etapa concluída.
+- Nenhum merge, deploy de produção, alteração de schema ou coleta externa foi executado nesta etapa. A PR continua em draft por depender de autorização real da fonte, amostra suficiente e revisão de privacidade.
