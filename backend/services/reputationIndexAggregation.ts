@@ -165,7 +165,7 @@ export function aggregateReputationIndex(
       excludedRecords += 1;
       continue;
     }
-    const key = `${row.sourceId.trim()}:${row.sourceReviewId.trim()}`;
+    const key = JSON.stringify([row.sourceId.trim(), row.sourceReviewId.trim()]);
     if (seen.has(key)) {
       duplicateRecords += 1;
       continue;
