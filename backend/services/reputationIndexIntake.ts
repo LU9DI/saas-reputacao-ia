@@ -34,7 +34,7 @@ export type ReputationIntakeResult = {
 };
 
 function validTimestamp(value: string): boolean {
-  const match = /^(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})(?:\\.\\d{1,3})?(Z|[+-](\\d{2}):(\\d{2}))$/.exec(value);
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|[+-](\d{2}):(\d{2}))$/.exec(value);
   if (!match || Number.isNaN(Date.parse(value))) return false;
   const [, yearText, monthText, dayText, hourText, minuteText, secondText, zone, offsetHourText, offsetMinuteText] = match;
   const year = Number(yearText), month = Number(monthText), day = Number(dayText);
