@@ -56,16 +56,29 @@ const round = (value: number, digits = 2) => {
 
 function validDate(value: string): boolean {
   const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  const timestamp = /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})$/.exec(value);
+  const timestamp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?(Z|[+-](\d{2}):(\d{2}))$/.exec(value);
   const match = dateOnly ?? timestamp;
   if (!match || Number.isNaN(Date.parse(value))) return false;
   const year = Number(match[1]);
   const month = Number(match[2]);
   const day = Number(match[3]);
   const calendar = new Date(Date.UTC(year, month - 1, day));
-  return calendar.getUTCFullYear() === year &&
-    calendar.getUTCMonth() === month - 1 &&
-    calendar.getUTCDate() === day;
+  if (calendar.getUTCFullYear() !== year ||
+      calendar.getUTCMonth() !== month - 1 ||
+      calendar.getUTCDate() !== day) return false;
+  if (timestamp) {
+    const hour = Number(timestamp[4]);
+    const minute = Number(timestamp[5]);
+    const second = timestamp[6] === undefined ? 0 : Number(timestamp[6]);
+    if (hour > 23 || minute > 59 || second > 59) return false;
+    if (timestamp[8] !== 'Z') {
+      const offsetHour = Number(timestamp[9]);
+      const offsetMinute = Number(timestamp[10]);
+      if (offsetHour > 14 || offsetMinute > 59 ||
+          (offsetHour === 14 && offsetMinute !== 0)) return false;
+    }
+  }
+  return true;
 }
 
 function isEligible(

@@ -140,19 +140,23 @@ describe('aggregateReputationIndex', () => {
     assert.equal(lowThresholds.overall?.periodEnd, '2026-10-31');
   });
 
-  it('rejects impossible calendar dates and timestamps without a timezone', () => {
+  it('rejects impossible calendar dates and malformed timestamps', () => {
     assert.throws(() => aggregateReputationIndex([], {
       windowStart: '2026-02-31',
       windowEnd: '2026-03-31',
     }), /ISO válidas/);
-    assert.equal(aggregateReputationIndex([
+    const result = aggregateReputationIndex([
       review({ createdAt: '2026-10-10T12:00:00' }),
+      review({ companyKey: 'company-b', sourceReviewId: 'review-2', createdAt: '2026-10-10T24:00:00Z' }),
+      review({ companyKey: 'company-c', sourceReviewId: 'review-3', createdAt: '2026-10-10T12:60:00Z' }),
+      review({ companyKey: 'company-d', sourceReviewId: 'review-4', createdAt: '2026-10-10T12:00:00+14:30' }),
     ], {
       windowStart: '2026-10-01',
       windowEnd: '2026-10-31',
       minCompanies: 1,
       minReviews: 1,
-    }).quality.eligibleRecords, 0);
+    });
+    assert.equal(result.quality.eligibleRecords, 0);
   });
 
   it('does not collide when source identifiers contain separators', () => {
