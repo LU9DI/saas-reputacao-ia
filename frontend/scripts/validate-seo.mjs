@@ -107,8 +107,12 @@ const localSeoArticle = read('src/app/blog/seo-local-avaliacoes-local-pack/page.
 const reputationGuide = read('src/app/blog/gestao-reputacao-online-guia/page.tsx');
 const blogIndex = read('src/app/blog/page.tsx');
 const ratingCalculator = read('src/app/calculadora-nota-google/page.tsx');
+const blogArticleComponent = read('src/app/components/BlogArticle.tsx');
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
+check(localSeoArticle.includes("'@type': 'BlogPosting'") && localSeoArticle.includes('JSON.stringify(articleSchema)'), 'Local SEO article must expose BlogPosting structured data');
+check(localSeoArticle.includes("dateModified: '2026-10-20'") && localSeoArticle.includes("'@id': canonical"), 'Local SEO BlogPosting schema must identify the canonical page and content update date');
+check(blogArticleComponent.includes('href="/calculadora-nota-google"') && blogArticleComponent.includes('Calculadora de nota do Google'), 'Shared blog article navigation must link to the rating calculator');
 check(blogIndex.includes("href: '/calculadora-nota-google'"), 'Blog hub must link to the Google rating calculator');
 check(blogIndex.includes('Como fazer gestão de reputação online: guia prático'), 'Blog hub title must match the informational reputation guide intent');
 check(localSeoArticle.includes("title: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)'"), 'Local SEO article title must match the package/pricing search intent');
