@@ -37,6 +37,7 @@ const CONTEXT_LINKS_BY_PATH: Record<string, ContextLink[]> = {
     { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões em grandes volumes de comentários.' },
     { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões em informação acionável.' },
     { href: '/blog/como-conseguir-avaliacoes-google', title: 'Como conseguir avaliações Google', description: 'Aprenda práticas para facilitar avaliações genuínas.' },
+    { href: '/calculadora-nota-google', title: 'Calculadora de nota do Google', description: 'Estime quantas avaliações seriam necessárias para atingir uma nota desejada.' },
   ],
   '/reputacao-google': [
     { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Organize a gestão das avaliações e seus sinais.' },
