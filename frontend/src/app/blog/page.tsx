@@ -22,7 +22,8 @@ export const metadata: Metadata = {
 };
 
 const posts = [
-  { href: '/blog/gestao-reputacao-online-guia', title: 'Gestão de reputação online: guia prático para empresas', intent: 'Guia · Reputação' },
+  { href: '/calculadora-nota-google', title: 'Calculadora de nota do Google: quantas avaliações faltam?', intent: 'Ferramenta gratuita' },
+  { href: '/blog/gestao-reputacao-online-guia', title: 'Como fazer gestão de reputação online: guia prático', intent: 'Guia · Reputação' },
   { href: '/blog/como-responder-avaliacoes-negativas', title: 'Como responder avaliações negativas: guia para empresas', intent: 'Guia · Avaliações' },
   { href: '/blog/como-conseguir-avaliacoes-google', title: 'Como conseguir mais avaliações no Google (sem parecer spam)', intent: 'Guia prático' },
   { href: '/blog/velocity-reviews-google-maps-2026', title: 'Como manter avaliações recentes no Google Maps em 2026', intent: 'Tendência / SEO local' },
