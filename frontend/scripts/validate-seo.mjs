@@ -125,7 +125,7 @@ check(sitemap.includes("'/blog/seo-local-avaliacoes-local-pack': '2026-10-20'"),
 check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-20'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
 check(ratingCalculator.includes('const faq = [') && ratingCalculator.includes("const canonical = 'https://filtraai.com/calculadora-nota-google'"), 'Rating calculator must keep its canonical and visible FAQ source');
 
-const localSeoInternalLinks = [...localSeoArticle.matchAll(/<Link\\s+href="(\\/[^"]+)"/g)].map((match) => match[1]);
+const localSeoInternalLinks = [...localSeoArticle.matchAll(/<Link\s+href="(\/[^"]+)"/g)].map((match) => match[1]);
 for (const path of localSeoInternalLinks) {
   check(staticRoutes.has(path), `Local SEO article links to a route without a static page: ${path}`);
 }
