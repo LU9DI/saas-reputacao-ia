@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     title: 'Calculadora de nota do Google | Filtra.AI',
     description: 'Simule quantas avaliações seriam necessárias para alcançar a nota desejada, com uma estimativa matemática transparente.',
     siteName: 'Filtra.AI',
+    images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
