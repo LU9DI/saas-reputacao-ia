@@ -110,6 +110,9 @@ export default function CalculadoraNotaGooglePage() {
           <p className="leading-7 text-zinc-300">
             Para transformar avaliações em uma rotina de gestão, conheça a <Link href="/avaliacoes-google" className="text-indigo-300 underline">gestão de avaliações Google</Link>, o guia sobre <Link href="/como-melhorar-avaliacoes-google" className="text-indigo-300 underline">como melhorar avaliações Google</Link> e as práticas de <Link href="/gestao-de-reputacao-online" className="text-indigo-300 underline">gestão de reputação online</Link>.
           </p>
+          <p className="leading-7 text-zinc-300">
+            Para planejar uma estratégia local mais ampla, consulte também o <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 underline">guia de pacotes de SEO local</Link>, que explica como combinar presença local, avaliações, conteúdo e métricas sem prometer posições específicas.
+          </p>
         </section>
 
         <section className="space-y-5">
