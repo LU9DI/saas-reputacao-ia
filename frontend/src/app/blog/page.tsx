@@ -13,11 +13,13 @@ export const metadata: Metadata = {
     url: 'https://filtraai.com/blog',
     title: 'Blog Filtra.AI: reputação, avaliações Google e SEO local',
     description: 'Guias práticos sobre gestão de reputação online, avaliações Google, feedback de clientes e SEO local.',
+    images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Blog Filtra.AI: reputação, avaliações Google e SEO local',
     description: 'Guias práticos sobre gestão de reputação online, avaliações Google, feedback de clientes e SEO local.',
+    images: ['/og-image.png'],
   },
 };
 
