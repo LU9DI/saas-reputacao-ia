@@ -113,6 +113,18 @@ const seoLandingComponent = read('src/app/components/SeoLanding.tsx');
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
 check(localSeoArticle.includes("'@type': 'BlogPosting'") && localSeoArticle.includes('JSON.stringify(articleSchema)'), 'Local SEO article must expose BlogPosting structured data');
 check(localSeoArticle.includes("dateModified: '2026-10-20'") && localSeoArticle.includes("'@id': canonical"), 'Local SEO BlogPosting schema must identify the canonical page and content update date');
+const hasSocialImage = (source, block) => {
+  const match = source.match(new RegExp(`${block}:\\s*\\{([\\s\\S]*?)\\n\\s{2,4}\\},`));
+  return Boolean(match?.[1].includes("images: ['/og-image.png']"));
+};
+check(hasSocialImage(blogIndex, 'openGraph'), 'Blog hub must define an Open Graph image');
+check(hasSocialImage(blogIndex, 'twitter'), 'Blog hub must define a Twitter image');
+check(hasSocialImage(ratingCalculator, 'openGraph'), 'Rating calculator must define an Open Graph image');
+check(hasSocialImage(reputationGuide, 'openGraph'), 'Reputation guide must define an Open Graph image');
+check(hasSocialImage(localSeoArticle, 'openGraph'), 'Local SEO article must define an Open Graph image');
+check(hasSocialImage(read('src/app/gestao-de-reputacao-online/page.tsx'), 'openGraph'), 'Commercial reputation landing page must define an Open Graph image');
+check(hasSocialImage(read('src/app/gestao-de-reputacao-online/page.tsx'), 'twitter'), 'Commercial reputation landing page must define a Twitter image');
+check(localSeoArticle.includes("datePublished: '2026-09-23'"), 'Local SEO BlogPosting schema must preserve the article publication date');
 check(localSeoArticle.includes("headline: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)'") && localSeoArticle.includes("image: 'https://filtraai.com/og-image.png'"), 'Local SEO BlogPosting headline and image must be explicit and consistent with page metadata');
 check(localSeoArticle.includes("title: 'Pacotes de SEO local: preço, escopo e o que incluir'") && localSeoArticle.includes("card: 'summary_large_image'") && localSeoArticle.includes("images: ['/og-image.png']"), 'Local SEO article must define article-specific Twitter metadata instead of inheriting generic site metadata');
 check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: processo e indicadores'") && reputationGuide.includes("card: 'summary_large_image'") && reputationGuide.includes("images: ['/og-image.png']"), 'Reputation guide must define article-specific Twitter metadata instead of inheriting generic site metadata');
