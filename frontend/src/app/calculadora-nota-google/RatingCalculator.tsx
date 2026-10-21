@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from 'react';
 
-function numeric(value: string, fallback: number, min: number, max: number, integer = false) {
+function numeric(value: string, min: number, max: number, integer = false) {
+  if (!value.trim()) return Number.NaN;
   const parsed = Number(value);
-  if (!Number.isFinite(parsed)) return fallback;
-  const bounded = Math.min(max, Math.max(min, parsed));
-  return integer ? Math.floor(bounded) : bounded;
+  if (!Number.isFinite(parsed) || parsed < min || parsed > max || (integer && !Number.isInteger(parsed))) {
+    return Number.NaN;
+  }
+  return parsed;
 }
 
 export function RatingCalculator() {
@@ -16,14 +18,15 @@ export function RatingCalculator() {
   const [futureAverage, setFutureAverage] = useState('5');
 
   const result = useMemo(() => {
-    const current = numeric(currentRating, 4.2, 1, 5);
-    const count = numeric(reviewCount, 100, 1, 100000000, true);
-    const target = numeric(targetRating, 4.7, 1, 5);
-    const expected = numeric(futureAverage, 5, 1, 5);
-    if (target <= current) return { kind: 'already', count: 0, current, target, expected };
-    if (expected <= target) return { kind: 'impossible', count: null, current, target, expected };
+    const current = numeric(currentRating, 1, 5);
+    const count = numeric(reviewCount, 1, 100000000, true);
+    const target = numeric(targetRating, 1, 5);
+    const expected = numeric(futureAverage, 1, 5);
+    if (![current, count, target, expected].every(Number.isFinite)) return { kind: 'invalid', count: null, current, currentCount: count, target, expected };
+    if (target <= current) return { kind: 'already', count: 0, current, currentCount: count, target, expected };
+    if (expected <= target) return { kind: 'impossible', count: null, current, currentCount: count, target, expected };
     const needed = Math.max(0, Math.ceil((count * (target - current)) / (expected - target)));
-    return { kind: 'estimate', count: needed, current, target, expected };
+    return { kind: 'estimate', count: needed, current, currentCount: count, target, expected };
   }, [currentRating, reviewCount, targetRating, futureAverage]);
 
   const number = (value: number) => new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(value);
@@ -55,7 +58,13 @@ export function RatingCalculator() {
         </div>
       </div>
       <div className="mt-5 rounded-xl border border-indigo-400/30 bg-indigo-500/10 p-5" aria-live="polite">
-        {result.kind === 'already' ? (
+        {result.kind === 'invalid' ? (
+          <>
+            <p className="text-sm font-medium text-amber-200">Confira os valores informados</p>
+            <p className="mt-1 text-lg font-semibold text-white">Use nota entre 1 e 5 e um total de avaliações inteiro maior que zero.</p>
+            <p className="mt-2 text-sm leading-6 text-zinc-300">A calculadora só apresenta um resultado quando todos os campos estão dentro dos limites permitidos.</p>
+          </>
+        ) : result.kind === 'already' ? (
           <>
             <p className="text-sm font-medium text-indigo-200">Sua nota informada já alcança a meta</p>
             <p className="mt-1 text-2xl font-bold text-white">0 avaliações adicionais para a meta matemática</p>
@@ -72,7 +81,7 @@ export function RatingCalculator() {
             <p className="text-sm font-medium text-indigo-200">Estimativa de avaliações adicionais</p>
             <p className="mt-1 text-4xl font-bold tracking-tight text-white">{number(result.count ?? 0)}</p>
             <p className="mt-2 text-sm leading-6 text-zinc-300">
-              Com nota atual de {number(result.current)}, {number(numeric(reviewCount, 100, 1, 100000000, true))} avaliações e média {number(result.expected)} nas novas avaliações, seriam necessárias aproximadamente {number(result.count ?? 0)} avaliações para atingir {number(result.target)} pela fórmula de média.
+              Com nota atual de {number(result.current)}, {number(result.currentCount ?? 0)} avaliações e média {number(result.expected)} nas novas avaliações, seriam necessárias aproximadamente {number(result.count ?? 0)} avaliações para atingir {number(result.target)} pela fórmula de média.
             </p>
           </>
         )}
