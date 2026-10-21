@@ -102,5 +102,26 @@ for (const path of sitemapPaths) {
   }
 }
 
+
+const localSeoArticle = read('src/app/blog/seo-local-avaliacoes-local-pack/page.tsx');
+const reputationGuide = read('src/app/blog/gestao-reputacao-online-guia/page.tsx');
+const blogIndex = read('src/app/blog/page.tsx');
+const ratingCalculator = read('src/app/calculadora-nota-google/page.tsx');
+
+check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
+check(localSeoArticle.includes("title: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)'"), 'Local SEO article title must match the package/pricing search intent');
+check(localSeoArticle.includes('href="/calculadora-nota-google"'), 'Local SEO article must link contextually to the Google rating calculator');
+check(localSeoArticle.includes('const faqs = [') && localSeoArticle.includes('mainEntity: faqs.map'), 'Local SEO FAQ schema must be generated from the same FAQ data as the visible page');
+check(localSeoArticle.includes('Pacote básico, recorrente ou multiunidade?') && localSeoArticle.includes('Como precificar pacotes de SEO local'), 'Local SEO article must cover package scope and pricing decisions');
+check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: guia prático'"), 'Reputation guide must target the informational how-to intent');
+check(reputationGuide.includes("dateModified: '2026-10-20'"), 'Reputation guide Article schema must use the actual content update date');
+check(sitemap.includes("'/blog/seo-local-avaliacoes-local-pack': '2026-10-20'"), 'Sitemap lastModified must reflect the local SEO article update');
+check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-20'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
+check(ratingCalculator.includes('const faq = [') && ratingCalculator.includes("const canonical = 'https://filtraai.com/calculadora-nota-google'"), 'Rating calculator must keep its canonical and visible FAQ source');
+
+const localSeoHeadings = [...localSeoArticle.matchAll(/<H2>([^<]+)<\\/H2>/g)].map((match) => match[1].trim().toLocaleLowerCase('pt-BR'));
+const repeatedLocalSeoHeadings = localSeoHeadings.filter((heading, index) => localSeoHeadings.indexOf(heading) !== index);
+check(repeatedLocalSeoHeadings.length === 0, `Local SEO article contains repeated headings: ${[...new Set(repeatedLocalSeoHeadings)].join(', ')}`);
+
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
 console.log(`SEO source validation passed: ${paths.length} canonical paths, ${families.length} hreflang families and ${sitemapPaths.length} unique sitemap path literals checked.`);
