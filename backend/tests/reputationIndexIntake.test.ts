@@ -106,6 +106,36 @@ describe('prepareAuthorizedResearchBatch', () => {
     assert.equal(conflictingConsents.audit.reasons.company_consent_ambiguous, 1);
   });
 
+  it('rejects impossible dates, timezone-free timestamps, and missing identifiers', () => {
+    for (const grantedAt of [
+      '2026-02-31T12:00:00Z',
+      '2026-10-02T12:00:00',
+    ]) {
+      const result = prepareAuthorizedResearchBatch(
+        [record], [approval], [{ ...consent, grantedAt }], now,
+      );
+      assert.equal(result.eligible.length, 0);
+      assert.equal(result.audit.reasons.company_consent_missing_or_invalid, 1);
+    }
+
+    const missingId = prepareAuthorizedResearchBatch(
+      [{ ...record, sourceReviewId: ' ' }], [approval], [consent], now,
+    );
+    assert.equal(missingId.eligible.length, 0);
+    assert.equal(missingId.audit.reasons.record_identifier_missing, 1);
+  });
+
+  it('normalizes source identifiers before detecting conflicting approvals', () => {
+    const result = prepareAuthorizedResearchBatch(
+      [record],
+      [approval, { ...approval, sourceId: ' authorized-source ' }],
+      [consent],
+      now,
+    );
+    assert.equal(result.eligible.length, 0);
+    assert.equal(result.audit.reasons.source_approval_ambiguous, 1);
+  });
+
   it('does not expose raw company keys in audit output', () => {
     const result = prepareAuthorizedResearchBatch([record], [approval], [consent], now);
     assert.equal(JSON.stringify(result.audit).includes('pseudonymous-company-1'), false);
