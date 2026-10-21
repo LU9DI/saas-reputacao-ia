@@ -109,6 +109,8 @@ const blogIndex = read('src/app/blog/page.tsx');
 const ratingCalculator = read('src/app/calculadora-nota-google/page.tsx');
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
+check(blogIndex.includes("href: '/calculadora-nota-google'"), 'Blog hub must link to the Google rating calculator');
+check(blogIndex.includes('Como fazer gestão de reputação online: guia prático'), 'Blog hub title must match the informational reputation guide intent');
 check(localSeoArticle.includes("title: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)'"), 'Local SEO article title must match the package/pricing search intent');
 check(localSeoArticle.includes('href="/calculadora-nota-google"'), 'Local SEO article must link contextually to the Google rating calculator');
 check(localSeoArticle.includes('const faqs = [') && localSeoArticle.includes('mainEntity: faqs.map'), 'Local SEO FAQ schema must be generated from the same FAQ data as the visible page');
