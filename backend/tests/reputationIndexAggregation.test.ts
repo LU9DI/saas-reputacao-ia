@@ -68,7 +68,7 @@ describe('aggregateReputationIndex', () => {
     assert.equal(result.overall?.reviewCount, 1);
   });
 
-  it('deduplicates reviews by source and source review identifier', () => {
+  it('fails closed for conflicting duplicates and preserves IDs from separate sources', () => {
     const records = [
       review(),
       review({ companyKey: 'company-b', sourceReviewId: 'review-1' }),
@@ -81,9 +81,43 @@ describe('aggregateReputationIndex', () => {
       minReviews: 1,
     });
 
-    assert.equal(result.quality.eligibleRecords, 2);
+    assert.equal(result.quality.eligibleRecords, 1);
+    assert.equal(result.quality.conflictingRecords, 2);
+    assert.equal(result.quality.duplicateRecords, 0);
+    assert.equal(result.overall?.reviewCount, 1);
+  });
+
+  it('drops every record when the same source review ID has conflicting data', () => {
+    const result = aggregateReputationIndex([
+      review({ companyKey: 'company-a', rating: 5 }),
+      review({ companyKey: 'company-b', rating: 1 }),
+      review({ companyKey: 'company-c', sourceId: 'other-provider', sourceReviewId: 'review-2', rating: 4 }),
+    ], {
+      windowStart: '2026-10-01',
+      windowEnd: '2026-10-31',
+      minCompanies: 1,
+      minReviews: 1,
+    });
+    assert.equal(result.quality.eligibleRecords, 1);
+    assert.equal(result.quality.conflictingRecords, 2);
+    assert.equal(result.quality.excludedRecords, 2);
+    assert.equal(result.overall?.reviewCount, 1);
+    assert.equal(result.overall?.averageRating, 4);
+  });
+
+  it('deduplicates exact repeated records without counting them twice', () => {
+    const result = aggregateReputationIndex([
+      review(),
+      review(),
+    ], {
+      windowStart: '2026-10-01',
+      windowEnd: '2026-10-31',
+      minCompanies: 1,
+      minReviews: 1,
+    });
+    assert.equal(result.quality.eligibleRecords, 1);
     assert.equal(result.quality.duplicateRecords, 1);
-    assert.equal(result.overall?.reviewCount, 2);
+    assert.equal(result.quality.conflictingRecords, 0);
   });
 
   it('withholds small samples by default and includes the full final calendar day', () => {

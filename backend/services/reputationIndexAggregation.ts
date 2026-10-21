@@ -45,6 +45,7 @@ export type ReputationAggregationResult = {
     eligibleRecords: number;
     excludedRecords: number;
     duplicateRecords: number;
+    conflictingRecords: number;
   };
 };
 
@@ -155,10 +156,10 @@ export function aggregateReputationIndex(
     throw new Error('Os limites mínimos de publicação devem ser inteiros positivos.');
   }
 
-  const seen = new Set<string>();
-  const eligible: ReputationResearchReview[] = [];
+  const groups = new Map<string, { rows: ReputationResearchReview[]; fingerprint: string }>();
   let excludedRecords = 0;
   let duplicateRecords = 0;
+  let conflictingRecords = 0;
 
   for (const row of records) {
     if (!isEligible(row, start, end)) {
@@ -166,12 +167,43 @@ export function aggregateReputationIndex(
       continue;
     }
     const key = JSON.stringify([row.sourceId.trim(), row.sourceReviewId.trim()]);
-    if (seen.has(key)) {
-      duplicateRecords += 1;
+    const fingerprint = JSON.stringify([
+      row.companyKey.trim(),
+      row.rating,
+      Date.parse(row.createdAt),
+      row.sector?.trim() ?? null,
+      row.region?.trim() ?? null,
+      typeof row.hasResponse === 'boolean' ? row.hasResponse : null,
+    ]);
+    const group = groups.get(key);
+    if (group) {
+      group.rows.push(row);
+    } else {
+      groups.set(key, { rows: [row], fingerprint });
+    }
+  }
+
+  const eligible: ReputationResearchReview[] = [];
+  for (const group of groups.values()) {
+    if (group.rows.length === 1) {
+      eligible.push(group.rows[0]);
       continue;
     }
-    seen.add(key);
-    eligible.push(row);
+    const conflicting = group.rows.some((row) => JSON.stringify([
+      row.companyKey.trim(),
+      row.rating,
+      Date.parse(row.createdAt),
+      row.sector?.trim() ?? null,
+      row.region?.trim() ?? null,
+      typeof row.hasResponse === 'boolean' ? row.hasResponse : null,
+    ]) !== group.fingerprint);
+    if (conflicting) {
+      conflictingRecords += group.rows.length;
+      excludedRecords += group.rows.length;
+      continue;
+    }
+    duplicateRecords += group.rows.length - 1;
+    eligible.push(group.rows[0]);
   }
 
   const bySector = new Map<string, ReputationResearchReview[]>();
@@ -210,6 +242,7 @@ export function aggregateReputationIndex(
       eligibleRecords: eligible.length,
       excludedRecords,
       duplicateRecords,
+      conflictingRecords,
     },
   };
 }

@@ -136,6 +136,28 @@ describe('prepareAuthorizedResearchBatch', () => {
     assert.equal(result.audit.reasons.source_approval_ambiguous, 1);
   });
 
+  it('fails closed for malformed optional timestamps and unsupported source types', () => {
+    const malformedExpiry = prepareAuthorizedResearchBatch(
+      [record], [{ ...approval, expiresAt: '' }], [consent], now,
+    );
+    assert.equal(malformedExpiry.eligible.length, 0);
+    assert.equal(malformedExpiry.audit.reasons.source_approval_expired, 1);
+
+    const malformedRevocation = prepareAuthorizedResearchBatch(
+      [record], [approval], [{ ...consent, revokedAt: '' }], now,
+    );
+    assert.equal(malformedRevocation.eligible.length, 0);
+    assert.equal(malformedRevocation.audit.reasons.company_consent_revoked, 1);
+
+    const unsupportedSource = prepareAuthorizedResearchBatch(
+      [record], [{ ...approval, sourceType: 'scraped-web' as ReputationSourceApproval['sourceType'] }], [consent], now,
+    );
+    assert.equal(unsupportedSource.eligible.length, 0);
+    assert.equal(unsupportedSource.audit.reasons.source_not_approved, 1);
+
+    assert.throws(() => prepareAuthorizedResearchBatch([record], [approval], [consent], new Date('invalid')), /data de referência/);
+  });
+
   it('does not expose raw company keys in audit output', () => {
     const result = prepareAuthorizedResearchBatch([record], [approval], [consent], now);
     assert.equal(JSON.stringify(result.audit).includes('pseudonymous-company-1'), false);

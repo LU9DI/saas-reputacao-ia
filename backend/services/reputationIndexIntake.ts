@@ -60,6 +60,10 @@ export function prepareAuthorizedResearchBatch(
   companyConsents: ReputationCompanyConsent[],
   now = new Date(),
 ): ReputationIntakeResult {
+  if (!Number.isFinite(now.getTime())) {
+    throw new Error('A data de referência da ingestão deve ser válida.');
+  }
+
   const approvals = new Map(sourceApprovals.map((item) => [item.sourceId.trim(), item]));
   const consents = new Map(companyConsents.map((item) => [item.companyKey.trim(), item]));
   const duplicateSourceIds = new Set<string>();
@@ -93,14 +97,15 @@ export function prepareAuthorizedResearchBatch(
       continue;
     }
     const approval = approvals.get(record.sourceId.trim());
-    if (!approval || !approval.approvedForPublicResearch ||
+    if (!approval || approval.approvedForPublicResearch !== true ||
+        !['customer-opt-in', 'official-api', 'licensed-dataset'].includes(approval.sourceType) ||
         !approval.authorizationId.trim() || !approval.reviewedBy.trim() ||
         !validTimestamp(approval.termsReviewedAt) ||
         Date.parse(approval.termsReviewedAt) > now.getTime()) {
       exclude('source_not_approved');
       continue;
     }
-    if (approval.expiresAt && (!validTimestamp(approval.expiresAt) ||
+    if (approval.expiresAt != null && (!validTimestamp(approval.expiresAt) ||
         Date.parse(approval.expiresAt) <= now.getTime())) {
       exclude('source_approval_expired');
       continue;
@@ -116,7 +121,7 @@ export function prepareAuthorizedResearchBatch(
       exclude('company_consent_missing_or_invalid');
       continue;
     }
-    if (consent.revokedAt && (!validTimestamp(consent.revokedAt) ||
+    if (consent.revokedAt != null && (!validTimestamp(consent.revokedAt) ||
         Date.parse(consent.revokedAt) <= now.getTime())) {
       exclude('company_consent_revoked');
       continue;
