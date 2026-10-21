@@ -34,6 +34,9 @@ As exclusões por redirecionamento e `noindex` podem ser intencionais e não dev
 2. O guia recebeu um plano de 30 dias, uma matriz de execução e indicadores concretos para aumentar sua utilidade, sem acrescentar estatísticas não verificadas.
 3. Atualizado `dateModified` do Article schema e `lastModified` das duas páginas no sitemap para a data real da alteração.
 4. Mantidos canonical URLs existentes; não foram criados redirecionamentos, removidas páginas ou alteradas regras de indexação sem evidência URL a URL.
+5. O guia de pacotes de SEO local recebeu dados estruturados `BlogPosting`, alinhados ao canonical e à data de atualização, além do `FAQPage` já compartilhado com as perguntas visíveis.
+6. A calculadora de nota do Google passou a receber links contextuais do hub do blog, do artigo de pacotes de SEO local e da navegação compartilhada dos artigos.
+7. O guardrail SEO foi ampliado para validar a presença do schema `BlogPosting`, o link interno da calculadora e os destinos estáticos usados pelo artigo de SEO local.
 
 ## Próximas ações prioritárias
 
