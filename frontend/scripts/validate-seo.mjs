@@ -15,6 +15,20 @@ const localizedHome = read('src/app/[lang]/page.tsx');
 const localizedBlogIndex = read('src/app/[lang]/blog/page.tsx');
 const errors = [];
 const check = (condition, message) => { if (!condition) errors.push(message); };
+function metadataObject(source, key) {
+  const start = source.indexOf(`${key}: {`);
+  if (start < 0) return '';
+  const open = source.indexOf('{', start);
+  let depth = 0;
+  for (let index = open; index < source.length; index += 1) {
+    if (source[index] === '{') depth += 1;
+    else if (source[index] === '}') {
+      depth -= 1;
+      if (depth === 0) return source.slice(open, index + 1);
+    }
+  }
+  return '';
+}
 
 check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
 check(rootLayout.includes('localized-document-language') && rootLayout.includes('document.documentElement.lang'), 'Root layout must set the document language for localized routes before hydration');
@@ -107,27 +121,36 @@ const localSeoArticle = read('src/app/blog/seo-local-avaliacoes-local-pack/page.
 const reputationGuide = read('src/app/blog/gestao-reputacao-online-guia/page.tsx');
 const blogIndex = read('src/app/blog/page.tsx');
 const ratingCalculator = read('src/app/calculadora-nota-google/page.tsx');
+const reputationLanding = read('src/app/gestao-de-reputacao-online/page.tsx');
 const blogArticleComponent = read('src/app/components/BlogArticle.tsx');
 const seoLandingComponent = read('src/app/components/SeoLanding.tsx');
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
-check(localSeoArticle.includes("'@type': 'BlogPosting'") && localSeoArticle.includes('JSON.stringify(articleSchema)'), 'Local SEO article must expose BlogPosting structured data');
-check(localSeoArticle.includes("dateModified: '2026-10-20'") && localSeoArticle.includes("'@id': canonical"), 'Local SEO BlogPosting schema must identify the canonical page and content update date');
-const hasSocialImage = (source, block) => {
-  const match = source.match(new RegExp(`${block}:\\s*\\{([\\s\\S]*?)\\n\\s{2,4}\\},`));
-  return Boolean(match?.[1].includes("images: ['/og-image.png']"));
-};
-check(hasSocialImage(blogIndex, 'openGraph'), 'Blog hub must define an Open Graph image');
-check(hasSocialImage(blogIndex, 'twitter'), 'Blog hub must define a Twitter image');
-check(hasSocialImage(ratingCalculator, 'openGraph'), 'Rating calculator must define an Open Graph image');
-check(hasSocialImage(reputationGuide, 'openGraph'), 'Reputation guide must define an Open Graph image');
-check(hasSocialImage(localSeoArticle, 'openGraph'), 'Local SEO article must define an Open Graph image');
-check(hasSocialImage(read('src/app/gestao-de-reputacao-online/page.tsx'), 'openGraph'), 'Commercial reputation landing page must define an Open Graph image');
-check(hasSocialImage(read('src/app/gestao-de-reputacao-online/page.tsx'), 'twitter'), 'Commercial reputation landing page must define a Twitter image');
-check(localSeoArticle.includes("datePublished: '2026-09-23'"), 'Local SEO BlogPosting schema must preserve the article publication date');
-check(localSeoArticle.includes("headline: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)'") && localSeoArticle.includes("image: 'https://filtraai.com/og-image.png'"), 'Local SEO BlogPosting headline and image must be explicit and consistent with page metadata');
-check(localSeoArticle.includes("title: 'Pacotes de SEO local: preço, escopo e o que incluir'") && localSeoArticle.includes("card: 'summary_large_image'") && localSeoArticle.includes("images: ['/og-image.png']"), 'Local SEO article must define article-specific Twitter metadata instead of inheriting generic site metadata');
-check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: processo e indicadores'") && reputationGuide.includes("card: 'summary_large_image'") && reputationGuide.includes("images: ['/og-image.png']"), 'Reputation guide must define article-specific Twitter metadata instead of inheriting generic site metadata');
+const blogSchemaLib = read('src/app/lib/blogSchema.ts');
+const blogSchemaComponent = read('src/app/components/BlogSchema.tsx');
+const pluginDemo = read('public/plugin-demo.html');
+
+check(blogSchemaLib.includes("'@type': 'BlogPosting'") && blogSchemaLib.includes("'@type': 'BreadcrumbList'") && blogSchemaLib.includes('image: OG_IMAGE_URL'), 'Shared blog schema must emit BlogPosting + BreadcrumbList with a real social image');
+check(blogSchemaComponent.includes('buildBlogPosting') && blogSchemaComponent.includes('buildBreadcrumbList'), 'BlogSchema component must render both BlogPosting and BreadcrumbList');
+check(localSeoArticle.includes('<BlogSchema') && localSeoArticle.includes('canonical={canonical}') && localSeoArticle.includes('datePublished="2026-09-23"') && localSeoArticle.includes('dateModified="2026-10-20"'), 'Local SEO article must expose BlogPosting + BreadcrumbList via BlogSchema with canonical and real dates');
+check(localSeoArticle.includes('headline="Pacotes de SEO local: o que incluir para gerar crescimento"'), 'Local SEO BlogPosting headline must match the visible H1');
+check(localSeoArticle.includes("title: 'Pacotes de SEO local: preço, escopo e o que incluir'") && localSeoArticle.includes("card: 'summary_large_image'") && localSeoArticle.includes('images: [OG_IMAGE_META.url]'), 'Local SEO article must define article-specific Twitter metadata instead of inheriting generic site metadata');
+check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: processo e indicadores'") && reputationGuide.includes("card: 'summary_large_image'") && reputationGuide.includes('images: [OG_IMAGE_META.url]'), 'Reputation guide must define article-specific Twitter metadata instead of inheriting generic site metadata');
+const socialMetadataPages = [
+  ['Blog hub', blogIndex],
+  ['Rating calculator', ratingCalculator],
+  ['Reputation guide', reputationGuide],
+  ['Local SEO article', localSeoArticle],
+  ['Reputation landing page', reputationLanding],
+];
+for (const [name, source] of socialMetadataPages) {
+  check(metadataObject(source, 'openGraph').includes('images: [OG_IMAGE_META]'), `${name} Open Graph metadata must keep the shared social image`);
+  const twitter = metadataObject(source, 'twitter');
+  if (twitter.includes("card: 'summary_large_image'")) {
+    check(twitter.includes('images: [OG_IMAGE_META.url]'), `${name} summary_large_image Twitter card must declare the shared social image`);
+  }
+}
+check(localSeoArticle.includes('datePublished="2026-09-23"'), 'Local SEO BlogPosting must declare the original publication date');
 check(blogArticleComponent.includes('href="/calculadora-nota-google"') && blogArticleComponent.includes('Calculadora de nota do Google'), 'Shared blog article navigation must link to the rating calculator');
 check(blogIndex.includes("href: '/calculadora-nota-google'"), 'Blog hub must link to the Google rating calculator');
 check(blogIndex.includes('Como fazer gestão de reputação online: guia prático'), 'Blog hub title must match the informational reputation guide intent');
@@ -136,7 +159,7 @@ check(localSeoArticle.includes('href="/calculadora-nota-google"'), 'Local SEO ar
 check(localSeoArticle.includes('const faqs = [') && localSeoArticle.includes('mainEntity: faqs.map'), 'Local SEO FAQ schema must be generated from the same FAQ data as the visible page');
 check(localSeoArticle.includes('Pacote básico, recorrente ou multiunidade?') && localSeoArticle.includes('Como precificar pacotes de SEO local'), 'Local SEO article must cover package scope and pricing decisions');
 check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: guia prático'"), 'Reputation guide must target the informational how-to intent');
-check(reputationGuide.includes("dateModified: '2026-10-20'"), 'Reputation guide Article schema must use the actual content update date');
+check(reputationGuide.includes('dateModified="2026-10-20"'), 'Reputation guide BlogPosting schema must use the actual content update date');
 check(sitemap.includes("'/blog/seo-local-avaliacoes-local-pack': '2026-10-20'"), 'Sitemap lastModified must reflect the local SEO article update');
 check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-20'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
 check(ratingCalculator.includes('const faq = [') && ratingCalculator.includes("const canonical = 'https://filtraai.com/calculadora-nota-google'"), 'Rating calculator must keep its canonical and visible FAQ source');
@@ -151,6 +174,85 @@ check(localSeoInternalLinks.includes('/calculadora-nota-google'), 'Local SEO art
 const localSeoHeadings = [...localSeoArticle.matchAll(/<H2>([^<]+)<\/H2>/g)].map((match) => match[1].trim().toLocaleLowerCase('pt-BR'));
 const repeatedLocalSeoHeadings = localSeoHeadings.filter((heading, index) => localSeoHeadings.indexOf(heading) !== index);
 check(repeatedLocalSeoHeadings.length === 0, `Local SEO article contains repeated headings: ${[...new Set(repeatedLocalSeoHeadings)].join(', ')}`);
+
+const blogDir = resolve(appRoot, 'blog');
+const blogPostDirs = readdirSync(blogDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
+check(blogPostDirs.length >= 16, `Expected at least 16 blog posts, found ${blogPostDirs.length}`);
+for (const dir of blogPostDirs) {
+  const source = read(`src/app/blog/${dir}/page.tsx`);
+  const schemaTag = source.match(/<BlogSchema[\s\S]*?\/>/)?.[0] ?? '';
+  check(source.includes('<BlogSchema'), `${dir} must render the shared BlogSchema`);
+  check(schemaTag.includes('canonical='), `${dir} BlogSchema must declare its canonical`);
+  check(schemaTag.includes('datePublished="'), `${dir} BlogSchema must declare datePublished`);
+  check(schemaTag.includes('dateModified="'), `${dir} BlogSchema must declare dateModified`);
+  check(source.includes('twitter:'), `${dir} must define article-specific Twitter metadata`);
+  check(metadataObject(source, 'openGraph').includes('images:'), `${dir} Open Graph metadata must include a social image`);
+  check(source.includes('BlogArticle') || source.includes('<BlogBreadcrumb'), `${dir} must render a visible breadcrumb`);
+}
+check(blogArticleComponent.includes('<BlogBreadcrumb'), 'Shared blog article layout must render the visible breadcrumb');
+check(pluginDemo.includes('name="robots" content="noindex, nofollow"'), 'Plugin demo page must be noindexed');
+check(!rootLayout.includes('robots: { index: true, follow: true'), 'Root layout must not emit index/follow on the framework 404');
+check(rootLayout.includes("other: { googlebot: 'max-image-preview:large, max-snippet:-1' }"), 'Root layout must preserve Googlebot image/snippet directives');
+
+const socialTemplates = [
+  ['Localized landing pages', read('src/app/[lang]/[slug]/page.tsx')],
+  ['Localized blog articles', read('src/app/[lang]/blog/[slug]/page.tsx')],
+  ['Localized home', read('src/app/[lang]/page.tsx')],
+  ['Localized blog index', read('src/app/[lang]/blog/page.tsx')],
+];
+for (const [name, source] of socialTemplates) {
+  check(source.includes('OG_IMAGE_META') && source.includes('buildTwitter'), `${name} must define og:image and Twitter images`);
+}
+
+const socialLandingFiles = [
+  'src/app/ia/page.tsx',
+  'src/app/filtra-ai/page.tsx',
+  'src/app/analise-de-avaliacoes-com-ia/page.tsx',
+  'src/app/avaliacoes-google/page.tsx',
+  'src/app/monitoramento-reputacao-online/page.tsx',
+  'src/app/auditoria-gratuita/page.tsx',
+  'src/app/auditoria-gratuita/layout.tsx',
+  'src/app/hoteis/page.tsx',
+  'src/app/turismo/page.tsx',
+  'src/app/agencias/page.tsx',
+  'src/app/clinicas/page.tsx',
+  'src/app/franquias/page.tsx',
+  'src/app/associacoes/page.tsx',
+  'src/app/como-funciona/page.tsx',
+  'src/app/parceiros/page.tsx',
+  'src/app/pedir-estrela-vs-filtrar/page.tsx',
+  'src/app/termos/layout.tsx',
+  'src/app/privacidade/layout.tsx',
+  'src/app/planos/layout.tsx',
+];
+for (const path of socialLandingFiles) {
+  const source = read(path);
+  check(metadataObject(source, 'openGraph').includes('images:'), `${path} Open Graph metadata must include og:image`);
+  const twitter = metadataObject(source, 'twitter');
+  check(!twitter || twitter.includes('images:'), `${path} Twitter metadata must include twitter:image`);
+}
+
+// Rotas dinâmicas: o shell `_` atende o export estático, mas dev/Vercel precisam
+// aceitar ids arbitrários. `dynamicParams = false` restringiria a rota ao placeholder.
+for (const route of ['painel', 'avaliacao', 'widget']) {
+  const source = read(`src/app/${route}/[id]/page.tsx`);
+  check(
+    !/^\s*export\s+const\s+dynamicParams\s*=\s*false\b/m.test(source),
+    `/${route}/[id] must not disable dynamicParams; runtime ids would return 404`,
+  );
+}
+const redirects = read('public/_redirects')
+  .split(/\r?\n/)
+  .map((line) => line.trim().replace(/\s+/g, ' '));
+for (const [route, shell] of [
+  ['/painel/*', '/painel/_.html'],
+  ['/avaliacao/*', '/avaliacao/_.html'],
+  ['/widget/*', '/widget/_.html'],
+]) {
+  check(redirects.includes(`${route} ${shell} 200`), `_redirects must map ${route} to ${shell} with status 200`);
+}
 
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
 console.log(`SEO source validation passed: ${paths.length} canonical paths, ${families.length} hreflang families and ${sitemapPaths.length} unique sitemap path literals checked.`);

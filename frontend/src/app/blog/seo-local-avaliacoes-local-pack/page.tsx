@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META } from '../../lib/socialMetadata';
 
 const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack';
 
@@ -23,14 +25,14 @@ export const metadata: Metadata = {
     description:
       'Um modelo prático para definir escopo, entregáveis e acompanhamento de pacotes de SEO local sem prometer posições garantidas.',
     url: canonical,
-    images: ['/og-image.png'],
+    images: [OG_IMAGE_META],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Pacotes de SEO local: preço, escopo e o que incluir',
     description:
       'Um modelo prático para definir escopo, entregáveis e acompanhamento de pacotes de SEO local sem prometer posições garantidas.',
-    images: ['/og-image.png'],
+    images: [OG_IMAGE_META.url],
   },
 };
 
@@ -62,29 +64,6 @@ const faqs = [
   },
 ];
 
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)',
-  description:
-    'Monte pacotes de SEO local com escopo claro: Perfil da Empresa no Google, site, avaliações, conteúdo, entregáveis, métricas e critérios de preço.',
-  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
-  image: 'https://filtraai.com/og-image.png',
-  datePublished: '2026-09-23',
-  dateModified: '2026-10-20',
-  author: {
-    '@type': 'Organization',
-    name: 'Filtra.AI',
-    url: 'https://filtraai.com',
-  },
-  publisher: {
-    '@type': 'Organization',
-    name: 'Filtra.AI',
-    url: 'https://filtraai.com',
-    logo: { '@type': 'ImageObject', url: 'https://filtraai.com/icons/icon-512.png' },
-  },
-};
-
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -98,9 +77,12 @@ const faqSchema = {
 export default function Page() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      <BlogSchema
+        headline="Pacotes de SEO local: o que incluir para gerar crescimento"
+        description="Monte pacotes de SEO local com escopo claro: Perfil da Empresa no Google, site, avaliações, conteúdo, entregáveis, métricas e critérios de preço."
+        canonical={canonical}
+        datePublished="2026-09-23"
+        dateModified="2026-10-20"
       />
       <script
         type="application/ld+json"

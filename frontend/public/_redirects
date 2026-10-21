@@ -1,4 +1,4 @@
 /painel/preview  /painel/preview.html  200
-/painel/*     /painel/_     200
-/avaliacao/*  /avaliacao/_  200
-/widget/*     /widget/_     200
+/painel/*        /painel/_.html        200
+/avaliacao/*     /avaliacao/_.html     200
+/widget/*        /widget/_.html        200

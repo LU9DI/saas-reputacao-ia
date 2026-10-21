@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '../../components/BrandMark';
+import { BlogBreadcrumb } from '../../components/BlogBreadcrumb';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META } from '../../lib/socialMetadata';
 
 const canonical = 'https://filtraai.com/blog/gestao-reputacao-online-guia';
-const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
   title: 'Como fazer gestão de reputação online: guia prático',
@@ -16,38 +18,14 @@ export const metadata: Metadata = {
       'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
     url: canonical,
     type: 'article',
-    images: ['/og-image.png'],
+    images: [OG_IMAGE_META],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Como fazer gestão de reputação online: processo e indicadores',
     description:
       'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
-    images: ['/og-image.png'],
-  },
-};
-
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Como fazer gestão de reputação online: guia prático',
-  description:
-    'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
-  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
-  datePublished: '2026-09-30',
-  dateModified: '2026-10-20',
-  author: {
-    '@type': 'Organization',
-    name: 'Filtra.AI',
-    url: 'https://filtraai.com',
-    logo: { '@type': 'ImageObject', url: logo },
-  },
-  image: logo,
-  publisher: {
-    '@type': 'Organization',
-    name: 'Filtra.AI',
-    url: 'https://filtraai.com',
-    logo: { '@type': 'ImageObject', url: logo },
+    images: [OG_IMAGE_META.url],
   },
 };
 
@@ -85,7 +63,13 @@ const faqSchema = {
 
 export default function BlogReputacaoOnlinePage() {
   return <>
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+    <BlogSchema
+      headline="Como fazer gestão de reputação online: guia prático"
+      description="Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria."
+      canonical={canonical}
+      datePublished="2026-09-30"
+      dateModified="2026-10-20"
+    />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
@@ -94,6 +78,7 @@ export default function BlogReputacaoOnlinePage() {
       </header>
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
+          <BlogBreadcrumb title="Como fazer gestão de reputação online: guia prático" />
           <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · Gestão de reputação online</p>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Como fazer gestão de reputação online: guia prático</h1>
           <p className="text-zinc-400">Este guia mostra como montar uma rotina de gestão de reputação online: o que acompanhar, quem deve agir, quais indicadores revisar e como verificar se as mudanças resolveram os problemas relatados.</p>

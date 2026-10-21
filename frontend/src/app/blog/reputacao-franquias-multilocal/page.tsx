@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const canonical = 'https://filtraai.com/blog/reputacao-franquias-multilocal';
 
@@ -9,25 +11,20 @@ export const metadata: Metadata = {
   description:
     'Como redes de franquias podem organizar avaliações por unidade, encontrar padrões e transformar diferenças locais em ação.',
   alternates: { canonical },
-  openGraph: { type: 'article', title: 'Reputação para franquias multilocal', description: 'Como comparar unidades e transformar avaliações em ação.', url: canonical },
-};
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Reputação para franquias multilocal: como comparar unidades',
-  description: 'Como redes de franquias podem organizar avaliações por unidade e encontrar padrões.',
-  datePublished: '2026-10-05',
-  dateModified: '2026-10-05',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  mainEntityOfPage: canonical,
+  openGraph: { type: 'article', title: 'Reputação para franquias multilocal', description: 'Como comparar unidades e transformar avaliações em ação.', url: canonical, images: [OG_IMAGE_META] },
+  twitter: buildTwitter('Reputação para franquias multilocal', 'Como comparar unidades e transformar avaliações em ação.'),
 };
 
 export default function Page() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BlogSchema
+        headline="Reputação para franquias multilocal: como comparar unidades"
+        description="Como redes de franquias podem organizar avaliações por unidade e encontrar padrões."
+        canonical={canonical}
+        datePublished="2026-10-05"
+        dateModified="2026-10-05"
+      />
       <BlogArticle
         kicker="Franquias · multilocal"
         title="Reputação para franquias multilocal: como comparar unidades"

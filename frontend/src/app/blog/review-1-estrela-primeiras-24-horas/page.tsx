@@ -1,17 +1,39 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 export const metadata: Metadata = {
   title: 'Review 1★: o que fazer nas primeiras 24 horas',
   description:
     'Checklist operacional quando chega uma avaliação negativa: investigar, responder com calma, corrigir processo e acompanhar a reputação.',
   alternates: { canonical: '/blog/review-1-estrela-primeiras-24-horas' },
+  openGraph: {
+    type: 'article',
+    url: 'https://filtraai.com/blog/review-1-estrela-primeiras-24-horas',
+    title: 'Review 1★: o que fazer nas primeiras 24 horas',
+    description:
+      'Checklist operacional quando chega uma avaliação negativa: investigar, responder com calma, corrigir processo e acompanhar a reputação.',
+    images: [OG_IMAGE_META],
+  },
+  twitter: buildTwitter(
+    'Review 1★: o que fazer nas primeiras 24 horas',
+    'Checklist operacional quando chega uma avaliação negativa: investigar, responder com calma, corrigir processo e acompanhar a reputação.',
+  ),
 };
 
 export default function Page() {
   return (
-    <BlogArticle
+    <>
+      <BlogSchema
+        headline="Review 1★: o que fazer nas primeiras 24 horas"
+        description="Checklist operacional quando chega uma avaliação negativa: investigar, responder com calma, corrigir processo e acompanhar a reputação."
+        canonical="https://filtraai.com/blog/review-1-estrela-primeiras-24-horas"
+        datePublished="2026-09-23"
+        dateModified="2026-10-07"
+      />
+      <BlogArticle
       kicker="Operação"
       title="Review 1★: o que fazer nas primeiras 24 horas"
       lead="Pânico não resolve. Processo sim. Use as primeiras horas para entender o fato e demonstrar cuidado — em público ou no privado."
@@ -57,6 +79,7 @@ export default function Page() {
         </Link>
         .
       </p>
-    </BlogArticle>
+      </BlogArticle>
+    </>
   );
 }

@@ -1,17 +1,39 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 export const metadata: Metadata = {
   title: 'Como manter avaliações recentes no Google Maps em 2026',
   description:
     'Entenda por que uma rotina consistente de pedidos honestos, respostas e acompanhamento ajuda na gestão de avaliações e no SEO local.',
   alternates: { canonical: '/blog/velocity-reviews-google-maps-2026' },
+  openGraph: {
+    type: 'article',
+    url: 'https://filtraai.com/blog/velocity-reviews-google-maps-2026',
+    title: 'Como manter avaliações recentes no Google Maps em 2026',
+    description:
+      'Entenda por que uma rotina consistente de pedidos honestos, respostas e acompanhamento ajuda na gestão de avaliações e no SEO local.',
+    images: [OG_IMAGE_META],
+  },
+  twitter: buildTwitter(
+    'Como manter avaliações recentes no Google Maps em 2026',
+    'Entenda por que uma rotina consistente de pedidos honestos, respostas e acompanhamento ajuda na gestão de avaliações e no SEO local.',
+  ),
 };
 
 export default function Page() {
   return (
-    <BlogArticle
+    <>
+      <BlogSchema
+        headline="Como manter avaliações recentes no Google Maps em 2026"
+        description="Entenda por que uma rotina consistente de pedidos honestos, respostas e acompanhamento ajuda na gestão de avaliações e no SEO local."
+        canonical="https://filtraai.com/blog/velocity-reviews-google-maps-2026"
+        datePublished="2026-09-23"
+        dateModified="2026-10-06"
+      />
+      <BlogArticle
       kicker="SEO local · 2026"
       title="Como manter avaliações recentes no Google Maps em 2026"
       lead="Ter avaliações antigas sem novas interações dificulta acompanhar a percepção atual dos clientes. O objetivo é criar uma rotina consistente e autêntica."
@@ -43,6 +65,7 @@ export default function Page() {
       <p>
         Para operações com vários clientes, veja também <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências de SEO local</Link> e o guia sobre <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local e Local Pack</Link>.
       </p>
-    </BlogArticle>
+      </BlogArticle>
+    </>
   );
 }

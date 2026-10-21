@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Programa de parceiros | Reputação e feedback',
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
     description:
       'Inclua gestão de reputação, avaliações e feedback na oferta da sua consultoria, agência ou serviço profissional.',
     siteName: 'Filtra.AI',
+    images: [OG_IMAGE_META],
   },
 };
 

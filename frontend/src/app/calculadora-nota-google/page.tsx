@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { RatingCalculator } from './RatingCalculator';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 const canonical = 'https://filtraai.com/calculadora-nota-google';
 
@@ -14,13 +15,13 @@ export const metadata: Metadata = {
     title: 'Calculadora de nota do Google | Filtra.AI',
     description: 'Simule quantas avaliações seriam necessárias para alcançar a nota desejada, com uma estimativa matemática transparente.',
     siteName: 'Filtra.AI',
-    images: ['/og-image.png'],
+    images: [OG_IMAGE_META],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Calculadora de nota do Google | Filtra.AI',
     description: 'Simule quantas avaliações seriam necessárias para alcançar a nota desejada.',
-    images: ['/og-image.png'],
+    images: [OG_IMAGE_META.url],
   },
 };
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Como funciona: feedback, avaliações e reputação',
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
     url: 'https://filtraai.com/como-funciona',
     title: 'Como funciona o Filtra.AI | Gestão de reputação e avaliações',
     description: 'Veja como o Filtra.AI organiza avaliações, feedback e reputação em um fluxo com IA e teste gratuito de 7 dias.',
+    images: [OG_IMAGE_META],
   },
 };
 

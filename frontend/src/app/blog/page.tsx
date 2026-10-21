@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '../components/BrandMark';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Blog: reputação, avaliações Google e SEO local',
@@ -13,13 +14,13 @@ export const metadata: Metadata = {
     url: 'https://filtraai.com/blog',
     title: 'Blog Filtra.AI: reputação, avaliações Google e SEO local',
     description: 'Guias práticos sobre gestão de reputação online, avaliações Google, feedback de clientes e SEO local.',
-    images: ['/og-image.png'],
+    images: [OG_IMAGE_META],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Blog Filtra.AI: reputação, avaliações Google e SEO local',
     description: 'Guias práticos sobre gestão de reputação online, avaliações Google, feedback de clientes e SEO local.',
-    images: ['/og-image.png'],
+    images: [OG_IMAGE_META.url],
   },
 };
 

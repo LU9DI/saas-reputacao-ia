@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const faq = [
   {
@@ -40,13 +42,23 @@ export async function generateMetadata(): Promise<Metadata> {
       url: 'https://filtraai.com/blog/clinica-checklist-avaliacoes-google',
       title: 'Clínicas: checklist de avaliações Google',
       description: 'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.',
+      images: [OG_IMAGE_META],
     },
+    twitter: buildTwitter('Clínicas: checklist de avaliações Google', 'Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local.'),
   };
 }
 
 export default function Page() {
   return (
-    <BlogArticle
+    <>
+      <BlogSchema
+        headline="Clínicas: checklist de avaliações Google"
+        description="Checklist prático para clínicas: feedback do paciente, avaliações Google, respostas, indicadores e ações para melhorar a reputação local."
+        canonical="https://filtraai.com/blog/clinica-checklist-avaliacoes-google"
+        datePublished="2026-09-23"
+        dateModified="2026-10-19"
+      />
+      <BlogArticle
       kicker="Segmento · Clínicas"
       title="Clínicas: checklist de avaliações Google"
       lead="Paciente pesquisa nota antes de agendar. Um fluxo estruturado de feedback ajuda a clínica a identificar problemas, responder avaliações e transformar experiência em melhoria operacional."
@@ -162,6 +174,7 @@ export default function Page() {
           }),
         }}
       />
-    </BlogArticle>
+      </BlogArticle>
+    </>
   );
 }

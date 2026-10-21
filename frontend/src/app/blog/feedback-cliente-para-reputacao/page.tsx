@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const canonical = 'https://filtraai.com/blog/feedback-cliente-para-reputacao';
 
@@ -9,25 +11,20 @@ export const metadata: Metadata = {
   description:
     'Como transformar feedback de clientes em um processo: coleta, análise, prioridade, ação e acompanhamento da reputação.',
   alternates: { canonical, languages: { 'pt-BR': canonical, en: 'https://filtraai.com/en/blog/customer-feedback-reputation', es: 'https://filtraai.com/es/blog/feedback-clientes-reputacion', 'x-default': canonical } },
-  openGraph: { type: 'article', title: 'Feedback do cliente para reputação', description: 'Como fechar o ciclo entre feedback, operação e reputação.', url: canonical },
-};
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Feedback do cliente para reputação: como fechar o ciclo',
-  description: 'Como transformar feedback de clientes em um processo contínuo de melhoria e reputação.',
-  datePublished: '2026-10-05',
-  dateModified: '2026-10-05',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  mainEntityOfPage: canonical,
+  openGraph: { type: 'article', title: 'Feedback do cliente para reputação', description: 'Como fechar o ciclo entre feedback, operação e reputação.', url: canonical, images: [OG_IMAGE_META] },
+  twitter: buildTwitter('Feedback do cliente para reputação', 'Como fechar o ciclo entre feedback, operação e reputação.'),
 };
 
 export default function Page() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BlogSchema
+        headline="Feedback do cliente para reputação: como fechar o ciclo"
+        description="Como transformar feedback de clientes em um processo contínuo de melhoria e reputação."
+        canonical={canonical}
+        datePublished="2026-10-05"
+        dateModified="2026-10-05"
+      />
       <BlogArticle
         kicker="Feedback · reputação"
         title="Feedback do cliente para reputação: como fechar o ciclo"

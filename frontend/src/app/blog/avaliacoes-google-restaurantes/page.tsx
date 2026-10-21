@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const canonical = 'https://filtraai.com/blog/avaliacoes-google-restaurantes';
 
@@ -9,25 +11,20 @@ export const metadata: Metadata = {
   description:
     'Como restaurantes podem organizar feedback, analisar avaliações Google e transformar reclamações recorrentes em melhorias de serviço.',
   alternates: { canonical },
-  openGraph: { type: 'article', title: 'Avaliações Google para restaurantes', description: 'Rotina prática de feedback e reputação para restaurantes.', url: canonical },
-};
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Avaliações Google para restaurantes: rotina prática de feedback',
-  description: 'Como restaurantes podem organizar feedback e analisar avaliações Google.',
-  datePublished: '2026-10-05',
-  dateModified: '2026-10-05',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  mainEntityOfPage: canonical,
+  openGraph: { type: 'article', title: 'Avaliações Google para restaurantes', description: 'Rotina prática de feedback e reputação para restaurantes.', url: canonical, images: [OG_IMAGE_META] },
+  twitter: buildTwitter('Avaliações Google para restaurantes', 'Rotina prática de feedback e reputação para restaurantes.'),
 };
 
 export default function Page() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BlogSchema
+        headline="Avaliações Google para restaurantes: rotina prática de feedback"
+        description="Como restaurantes podem organizar feedback e analisar avaliações Google."
+        canonical={canonical}
+        datePublished="2026-10-05"
+        dateModified="2026-10-17"
+      />
       <BlogArticle
         kicker="Restaurantes · Google Reviews"
         title="Avaliações Google para restaurantes: rotina prática de feedback"

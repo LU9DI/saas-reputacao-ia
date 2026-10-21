@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Análise de avaliações com IA: padrões e riscos',
     description: 'Use inteligência artificial para analisar avaliações de clientes, encontrar temas recorrentes, riscos e oportunidades sem depender de leitura manual.',
     alternates: { canonical:'https://filtraai.com/analise-de-avaliacoes-com-ia', languages:{ 'pt-BR':'https://filtraai.com/analise-de-avaliacoes-com-ia', en:'https://filtraai.com/en/ai-review-analysis', es:'https://filtraai.com/es/analisis-resenas-ia', 'x-default':'https://filtraai.com/analise-de-avaliacoes-com-ia' } },
-    openGraph: { title:'Análise de avaliações com IA: encontre padrões e riscos | Filtra.AI', description:'Use inteligência artificial para analisar avaliações de clientes, encontrar temas recorrentes, riscos e oportunidades sem depender de leitura manual.', url:'https://filtraai.com/analise-de-avaliacoes-com-ia', type:'website' },
+    openGraph: { title:'Análise de avaliações com IA: encontre padrões e riscos | Filtra.AI', description:'Use inteligência artificial para analisar avaliações de clientes, encontrar temas recorrentes, riscos e oportunidades sem depender de leitura manual.', url:'https://filtraai.com/analise-de-avaliacoes-com-ia', type:'website',
+      images: [OG_IMAGE_META],
+    },
   };
 }
 

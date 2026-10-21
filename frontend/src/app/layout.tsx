@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     description: 'Monitore avaliações, analise feedback com IA e transforme sinais de clientes em prioridades de ação.',
     images: [ogImage],
   },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
+  other: { googlebot: 'max-image-preview:large, max-snippet:-1' },
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Filtra.AI' },
   formatDetection: { telephone: false },
   icons: {

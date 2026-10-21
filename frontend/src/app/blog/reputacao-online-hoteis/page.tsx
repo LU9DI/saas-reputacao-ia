@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const canonical = 'https://filtraai.com/blog/reputacao-online-hoteis';
 
@@ -9,25 +11,20 @@ export const metadata: Metadata = {
   description:
     'Como hotéis podem analisar avaliações de hóspedes, identificar padrões de experiência e transformar feedback em prioridades operacionais.',
   alternates: { canonical },
-  openGraph: { type: 'article', title: 'Reputação online para hotéis', description: 'Como hotéis podem aprender com avaliações de hóspedes.', url: canonical },
-};
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Reputação online para hotéis: como aprender com avaliações de hóspedes',
-  description: 'Como hotéis podem analisar avaliações e transformar feedback em prioridades operacionais.',
-  datePublished: '2026-10-05',
-  dateModified: '2026-10-05',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  mainEntityOfPage: canonical,
+  openGraph: { type: 'article', title: 'Reputação online para hotéis', description: 'Como hotéis podem aprender com avaliações de hóspedes.', url: canonical, images: [OG_IMAGE_META] },
+  twitter: buildTwitter('Reputação online para hotéis', 'Como hotéis podem aprender com avaliações de hóspedes.'),
 };
 
 export default function Page() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BlogSchema
+        headline="Reputação online para hotéis: como aprender com avaliações de hóspedes"
+        description="Como hotéis podem analisar avaliações e transformar feedback em prioridades operacionais."
+        canonical={canonical}
+        datePublished="2026-10-05"
+        dateModified="2026-10-05"
+      />
       <BlogArticle
         kicker="Hotéis · experiência do hóspede"
         title="Reputação online para hotéis: como aprender com avaliações de hóspedes"

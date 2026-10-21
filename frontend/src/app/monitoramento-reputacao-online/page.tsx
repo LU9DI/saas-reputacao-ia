@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Monitoramento de reputação online para empresas',
     description: 'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.',
     alternates: { canonical:'https://filtraai.com/monitoramento-reputacao-online', languages:{ 'pt-BR':'https://filtraai.com/monitoramento-reputacao-online', en:'https://filtraai.com/en/online-reputation-monitoring', es:'https://filtraai.com/es/monitoreo-reputacion-online', 'x-default':'https://filtraai.com/monitoramento-reputacao-online' } },
-    openGraph: { title:'Monitoramento de reputação online para empresas', description:'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.', url:'https://filtraai.com/monitoramento-reputacao-online', type:'website' },
+    openGraph: { title:'Monitoramento de reputação online para empresas', description:'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.', url:'https://filtraai.com/monitoramento-reputacao-online', type:'website',
+      images: [OG_IMAGE_META],
+    },
   };
 }
 

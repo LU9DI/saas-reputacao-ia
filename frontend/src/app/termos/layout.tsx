@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Termos de Uso',
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
     description: 'Termos de Uso e contrato de assinatura SaaS da Filtra.AI.',
     url: '/termos',
     siteName: 'Filtra.AI',
+    images: [OG_IMAGE_META],
   },
 };
 

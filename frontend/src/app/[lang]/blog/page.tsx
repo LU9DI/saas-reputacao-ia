@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/socialMetadata';
 
 type Lang='en'|'es'|'zh';
 type Article={slug:string;title:string;description:string};
@@ -79,7 +80,8 @@ export async function generateMetadata({params}:{params:Promise<{lang:string}>})
         'x-default':base+'/blog'
       }
     },
-    openGraph:{type:'website',url:base+blog[lang],siteName:'Filtra.AI',title:t.title,description:t.description},
+    openGraph:{type:'website',url:base+blog[lang],siteName:'Filtra.AI',title:t.title,description:t.description,images:[OG_IMAGE_META]},
+    twitter:buildTwitter(t.title,t.description),
     robots:{index:lang!=='zh',follow:true}
   };
 }

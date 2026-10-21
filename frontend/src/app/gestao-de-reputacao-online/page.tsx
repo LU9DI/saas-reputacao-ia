@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -21,13 +22,13 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: 'pt_BR',
       title: 'Software de gestão de reputação online | Filtra.AI',
       description: 'Software para monitorar avaliações, analisar feedback e organizar a gestão da reputação online com IA.',
-      images: ['/og-image.png'],
+      images: [OG_IMAGE_META],
     },
     twitter: {
       card: 'summary_large_image',
       title: 'Gestão de reputação online para empresas | Avaliações Google e IA | Filtra.AI',
       description: 'Monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
-      images: ['/og-image.png'],
+      images: [OG_IMAGE_META.url],
     },
   };
 }

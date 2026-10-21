@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const canonical = 'https://filtraai.com/blog/google-business-profile-avaliacoes';
 
@@ -9,25 +11,20 @@ export const metadata: Metadata = {
   description:
     'Como organizar uma rotina de avaliações no Google Business Profile sem depender de pedidos aleatórios: momento, canal, feedback e acompanhamento.',
   alternates: { canonical },
-  openGraph: { type: 'article', title: 'Google Business Profile e avaliações', description: 'Como criar uma rotina consistente de avaliações no Google Business Profile.', url: canonical },
-};
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Google Business Profile e avaliações: como criar uma rotina que funciona',
-  description: 'Como organizar uma rotina de avaliações no Google Business Profile com feedback e acompanhamento.',
-  datePublished: '2026-10-05',
-  dateModified: '2026-10-05',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  mainEntityOfPage: canonical,
+  openGraph: { type: 'article', title: 'Google Business Profile e avaliações', description: 'Como criar uma rotina consistente de avaliações no Google Business Profile.', url: canonical, images: [OG_IMAGE_META] },
+  twitter: buildTwitter('Google Business Profile e avaliações', 'Como criar uma rotina consistente de avaliações no Google Business Profile.'),
 };
 
 export default function Page() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BlogSchema
+        headline="Google Business Profile e avaliações: como criar uma rotina que funciona"
+        description="Como organizar uma rotina de avaliações no Google Business Profile com feedback e acompanhamento."
+        canonical={canonical}
+        datePublished="2026-10-05"
+        dateModified="2026-10-05"
+      />
       <BlogArticle
         kicker="Google Business Profile · SEO local"
         title="Google Business Profile e avaliações: como criar uma rotina que funciona"

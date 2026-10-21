@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '../../components/BrandMark';
+import { BlogBreadcrumb } from '../../components/BlogBreadcrumb';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const canonical = 'https://filtraai.com/blog/como-responder-avaliacoes-negativas';
-const logo = 'https://filtraai.com/icons/icon-512.png';
 
 export const metadata: Metadata = {
   title: 'Como responder avaliações negativas no Google',
@@ -14,20 +16,12 @@ export const metadata: Metadata = {
     description: 'Um método prático para responder críticas públicas sem transformar o problema em disputa.',
     url: canonical,
     type: 'article',
+    images: [OG_IMAGE_META],
   },
-};
-
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Como responder avaliações negativas: guia para empresas',
-  description: 'Um método prático para responder críticas públicas sem transformar o problema em disputa.',
-  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
-  datePublished: '2026-09-30',
-  dateModified: '2026-10-19',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com', logo: { '@type': 'ImageObject', url: logo } },
-  image: logo,
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com', logo: { '@type': 'ImageObject', url: logo } },
+  twitter: buildTwitter(
+    'Como responder avaliações negativas',
+    'Um método prático para responder críticas públicas sem transformar o problema em disputa.',
+  ),
 };
 
 const faqSchema = {
@@ -43,7 +37,13 @@ const faqSchema = {
 export default function BlogComoResponderAvaliacaoNegativaPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <BlogSchema
+        headline="Como responder avaliações negativas: guia para empresas"
+        description="Um método prático para responder críticas públicas sem transformar o problema em disputa."
+        canonical={canonical}
+        datePublished="2026-09-30"
+        dateModified="2026-10-19"
+      />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <div className="min-h-screen bg-black text-zinc-100 font-sans">
         <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
@@ -52,6 +52,7 @@ export default function BlogComoResponderAvaliacaoNegativaPage() {
         </header>
         <article className="max-w-3xl mx-auto px-4 pb-16 space-y-7 text-sm text-zinc-300 leading-relaxed">
           <div className="space-y-2">
+            <BlogBreadcrumb title="Como responder avaliações negativas: guia para empresas" />
             <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · Avaliações</p>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">Como responder avaliações negativas: guia para empresas</h1>
             <p className="text-zinc-400">Uma crítica pública não precisa virar uma discussão pública. O objetivo da resposta é atender o caso, demonstrar responsabilidade e aprender com o padrão por trás da reclamação.</p>
