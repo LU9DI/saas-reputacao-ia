@@ -161,6 +161,11 @@ export default function Page() {
           responder com contexto e encaminhar causas recorrentes para quem pode corrigi-las.
         </p>
         <p>
+          Para explicar a relação entre nota atual, volume de avaliações e metas matemáticas, use a{' '}
+          <Link href="/calculadora-nota-google" className="text-indigo-400 underline">calculadora de nota do Google</Link>.
+          O resultado é uma simulação, não uma previsão da nota exibida nem uma garantia de ranking.
+        </p>
+        <p>
           Para aprofundar essa frente, consulte a <Link href="/avaliacoes-google" className="text-indigo-400 underline">gestão de avaliações Google</Link>,
           o <Link href="/blog/gestao-reputacao-online-guia" className="text-indigo-400 underline">guia prático de gestão de reputação online</Link> e a página de
           <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline"> software de gestão de reputação online</Link>.
