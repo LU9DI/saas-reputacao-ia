@@ -48,6 +48,9 @@ export function BlogArticle({
           <Link href="/avaliacoes-google" className="hover:text-zinc-300">
             Avaliações Google
           </Link>
+          <Link href="/calculadora-nota-google" className="hover:text-zinc-300">
+            Calculadora de nota do Google
+          </Link>
           <Link href="/feedback-de-clientes" className="hover:text-zinc-300">
             Feedback de clientes
           </Link>
