@@ -16,6 +16,7 @@ export const metadata: Metadata = {
       'Como gerir a reputação da empresa com avaliações, feedback, respostas e indicadores de melhoria.',
     url: canonical,
     type: 'article',
+    images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
