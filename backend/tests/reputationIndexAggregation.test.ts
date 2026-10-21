@@ -121,6 +121,20 @@ describe('aggregateReputationIndex', () => {
     }).quality.eligibleRecords, 0);
   });
 
+  it('does not collide when source identifiers contain separators', () => {
+    const result = aggregateReputationIndex([
+      review({ sourceId: 'provider:one', sourceReviewId: 'review' }),
+      review({ sourceId: 'provider', sourceReviewId: 'one:review' }),
+    ], {
+      windowStart: '2026-10-01',
+      windowEnd: '2026-10-31',
+      minCompanies: 1,
+      minReviews: 1,
+    });
+    assert.equal(result.quality.eligibleRecords, 2);
+    assert.equal(result.quality.duplicateRecords, 0);
+  });
+
   it('rejects invalid windows and invalid publication thresholds', () => {
     assert.throws(() => aggregateReputationIndex([], {
       windowStart: '2026-11-01',
