@@ -108,6 +108,7 @@ const reputationGuide = read('src/app/blog/gestao-reputacao-online-guia/page.tsx
 const blogIndex = read('src/app/blog/page.tsx');
 const ratingCalculator = read('src/app/calculadora-nota-google/page.tsx');
 const blogArticleComponent = read('src/app/components/BlogArticle.tsx');
+const seoLandingComponent = read('src/app/components/SeoLanding.tsx');
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
 check(localSeoArticle.includes("'@type': 'BlogPosting'") && localSeoArticle.includes('JSON.stringify(articleSchema)'), 'Local SEO article must expose BlogPosting structured data');
@@ -125,6 +126,8 @@ check(reputationGuide.includes("dateModified: '2026-10-20'"), 'Reputation guide 
 check(sitemap.includes("'/blog/seo-local-avaliacoes-local-pack': '2026-10-20'"), 'Sitemap lastModified must reflect the local SEO article update');
 check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-20'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
 check(ratingCalculator.includes('const faq = [') && ratingCalculator.includes("const canonical = 'https://filtraai.com/calculadora-nota-google'"), 'Rating calculator must keep its canonical and visible FAQ source');
+check(ratingCalculator.includes('href="/blog/seo-local-avaliacoes-local-pack"'), 'Rating calculator must link to the local SEO strategy guide');
+check(seoLandingComponent.includes("href: '/calculadora-nota-google'") && seoLandingComponent.includes('Calculadora de nota do Google'), 'Commercial reputation landing pages must cross-link to the rating calculator');
 
 const localSeoInternalLinks = [...localSeoArticle.matchAll(/<Link\s+href="(\/[^"]+)"/g)].map((match) => match[1]);
 for (const path of localSeoInternalLinks) {
