@@ -3,7 +3,7 @@ import { OG_IMAGE_URL } from './socialMetadata';
 export { OG_IMAGE_META, buildTwitter } from './socialMetadata';
 
 const SITE_URL = 'https://filtraai.com';
-const PUBLISHER_LOGO = `${SITE_URL}/icons/icon.svg`;
+const PUBLISHER_LOGO = `${SITE_URL}/icons/icon-512.png`;
 
 export type BlogPostingInput = {
   headline: string;
