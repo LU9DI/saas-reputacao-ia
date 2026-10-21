@@ -24,6 +24,13 @@ export const metadata: Metadata = {
       'Um modelo prático para definir escopo, entregáveis e acompanhamento de pacotes de SEO local sem prometer posições garantidas.',
     url: canonical,
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pacotes de SEO local: preço, escopo e o que incluir',
+    description:
+      'Um modelo prático para definir escopo, entregáveis e acompanhamento de pacotes de SEO local sem prometer posições garantidas.',
+    images: ['/og-image.png'],
+  },
 };
 
 const faqs = [
