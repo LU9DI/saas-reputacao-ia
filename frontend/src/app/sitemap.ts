@@ -9,7 +9,7 @@ const LAST_MODIFIED: Record<string, string> = {
   '/calculadora-nota-google': '2026-10-20',
   '/filtra-ai': '2026-10-19',
   '/gestao-de-reputacao-online': '2026-10-20',
-  '/blog': '2026-10-19',
+  '/blog': '2026-10-20',
   '/blog/gestao-reputacao-online-guia': '2026-10-20',
   '/blog/seo-local-avaliacoes-local-pack': '2026-10-20',
   '/blog/como-responder-avaliacoes-negativas': '2026-10-19',
