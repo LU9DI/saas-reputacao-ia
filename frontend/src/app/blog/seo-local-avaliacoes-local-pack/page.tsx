@@ -57,10 +57,11 @@ const faqs = [
 const articleSchema = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
-  headline: 'Pacotes de SEO local: o que incluir para gerar crescimento',
+  headline: 'Pacotes de SEO local: preço, escopo e o que incluir (2026)',
   description:
-    'Um modelo prático para definir escopo, entregáveis e acompanhamento de pacotes de SEO local sem prometer posições garantidas.',
+    'Monte pacotes de SEO local com escopo claro: Perfil da Empresa no Google, site, avaliações, conteúdo, entregáveis, métricas e critérios de preço.',
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  image: 'https://filtraai.com/og-image.png',
   dateModified: '2026-10-20',
   author: {
     '@type': 'Organization',
