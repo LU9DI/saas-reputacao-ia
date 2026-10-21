@@ -54,6 +54,27 @@ const faqs = [
   },
 ];
 
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: 'Pacotes de SEO local: o que incluir para gerar crescimento',
+  description:
+    'Um modelo prático para definir escopo, entregáveis e acompanhamento de pacotes de SEO local sem prometer posições garantidas.',
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  dateModified: '2026-10-20',
+  author: {
+    '@type': 'Organization',
+    name: 'Filtra.AI',
+    url: 'https://filtraai.com',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Filtra.AI',
+    url: 'https://filtraai.com',
+    logo: { '@type': 'ImageObject', url: 'https://filtraai.com/icons/icon-512.png' },
+  },
+};
+
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -67,6 +88,10 @@ const faqSchema = {
 export default function Page() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
