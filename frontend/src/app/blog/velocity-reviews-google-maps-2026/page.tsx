@@ -31,7 +31,7 @@ export default function Page() {
         description="Entenda por que uma rotina consistente de pedidos honestos, respostas e acompanhamento ajuda na gestão de avaliações e no SEO local."
         canonical="https://filtraai.com/blog/velocity-reviews-google-maps-2026"
         datePublished="2026-09-23"
-        dateModified="2026-10-06"
+        dateModified="2026-10-22"
       />
       <BlogArticle
       kicker="SEO local · 2026"
@@ -62,8 +62,22 @@ export default function Page() {
         cria contexto para corrigir atendimento, prazo ou produto, enquanto o cliente continua livre para
         decidir se publica uma avaliação no Google.
       </p>
+      <H2>Como acompanhar a cadência</H2>
       <p>
-        Para operações com vários clientes, veja também <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências de SEO local</Link> e o guia sobre <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local e Local Pack</Link>.
+        Estabeleça uma linha de base com o volume de avaliações novas por mês e a proporção de avaliações
+        respondidas. Acompanhe janelas de 30, 60 ou 90 dias e compare períodos equivalentes, considerando
+        sazonalidade e volume de clientes. O objetivo é perceber tendências, não perseguir um número fixo de
+        reviews por semana.
+      </p>
+      <H2>Sinais de alerta</H2>
+      <p>
+        Desconfie de picos súbitos sem aumento correspondente de clientes, comentários repetidos, perfis sem
+        histórico ou promessas de benefício em troca de nota. Avaliações artificiais prejudicam a confiança e
+        podem contrariar as políticas da plataforma. Se identificar esse tipo de movimento, investigue o
+        processo interno e priorize a conformidade.
+      </p>
+      <p>
+        Para operações com vários clientes, veja também <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências de SEO local</Link>, a rotina de <Link href="/blog/google-business-profile-avaliacoes" className="text-indigo-400 underline">Google Business Profile</Link> e o guia sobre <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local e Local Pack</Link>.
       </p>
       </BlogArticle>
     </>

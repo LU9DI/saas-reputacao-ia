@@ -124,6 +124,8 @@ const ratingCalculator = read('src/app/calculadora-nota-google/page.tsx');
 const reputationLanding = read('src/app/gestao-de-reputacao-online/page.tsx');
 const blogArticleComponent = read('src/app/components/BlogArticle.tsx');
 const seoLandingComponent = read('src/app/components/SeoLanding.tsx');
+const seoPageHeader = read('src/app/components/SeoPageHeader.tsx');
+const homePage = read('src/app/preview/page.tsx');
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
 const blogSchemaLib = read('src/app/lib/blogSchema.ts');
@@ -161,10 +163,34 @@ check(localSeoArticle.includes('Pacote básico, recorrente ou multiunidade?') &&
 check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: guia prático'"), 'Reputation guide must target the informational how-to intent');
 check(reputationGuide.includes('dateModified="2026-10-20"'), 'Reputation guide BlogPosting schema must use the actual content update date');
 check(sitemap.includes("'/blog/seo-local-avaliacoes-local-pack': '2026-10-20'"), 'Sitemap lastModified must reflect the local SEO article update');
-check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-20'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
+check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-22'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
+check(sitemap.includes("'/blog': '2026-10-22'"), 'Sitemap must reflect the blog hub metadata update');
+const sitemapLastModified = sitemap.match(/const LAST_MODIFIED[^=]*= \{([\s\S]*?)\n\};/)?.[1] ?? '';
+const sitemapLastModifiedKeys = [...sitemapLastModified.matchAll(/^  '([^']+)':/gm)].map((match) => match[1]);
+check(sitemapLastModifiedKeys.length === new Set(sitemapLastModifiedKeys).size, 'Sitemap lastModified map must not contain duplicate keys');
 check(ratingCalculator.includes('const faq = [') && ratingCalculator.includes("const canonical = 'https://filtraai.com/calculadora-nota-google'"), 'Rating calculator must keep its canonical and visible FAQ source');
 check(ratingCalculator.includes('href="/blog/seo-local-avaliacoes-local-pack"'), 'Rating calculator must link to the local SEO strategy guide');
 check(seoLandingComponent.includes("href: '/calculadora-nota-google'") && seoLandingComponent.includes('Calculadora de nota do Google'), 'Commercial reputation landing pages must cross-link to the rating calculator');
+check(reputationLanding.includes("title: 'Software de gestão de reputação online'") && !reputationLanding.includes("title: 'Software de gestão de reputação online | Filtra.AI'"), 'Reputation landing title must not repeat the Filtra.AI brand');
+check(reputationLanding.includes('faq={faq}') && !reputationLanding.includes('faqSchema'), 'Reputation landing FAQ must be visible and use the shared FAQ schema');
+check(blogIndex.includes("en: 'https://filtraai.com/en/blog'") && blogIndex.includes("es: 'https://filtraai.com/es/blog'") && blogIndex.includes("'x-default': 'https://filtraai.com/blog'"), 'Blog hub must declare PT, EN and ES hreflang alternates');
+check(seoPageHeader.includes('href="/blog"') && seoPageHeader.includes('href="/planos"'), 'Commercial SEO header must link to the blog hub and plans page');
+check(blogArticleComponent.includes('href="/planos"'), 'Shared blog article navigation must link to the plans page');
+check(homePage.includes('href="/blog"') && homePage.includes('href="/planos"') && homePage.includes("'/avaliacoes-google'"), 'Home page must link to the blog hub, plans and Google reviews priority page');
+
+const expandedLandingPages = [
+  ['Google reputation page', read('src/app/reputacao-google/page.tsx')],
+  ['Feedback management page', read('src/app/gestao-de-feedback/page.tsx')],
+  ['Improve Google reviews page', read('src/app/como-melhorar-avaliacoes-google/page.tsx')],
+  ['Hotels page', read('src/app/hoteis/page.tsx')],
+  ['Restaurants page', read('src/app/restaurantes/page.tsx')],
+  ['Tourism page', read('src/app/turismo/page.tsx')],
+  ['Associations page', read('src/app/associacoes/page.tsx')],
+  ['AI page', read('src/app/ia/page.tsx')],
+];
+for (const [name, source] of expandedLandingPages) {
+  check(source.includes('faq={['), `${name} must expose visible FAQ content and FAQPage schema`);
+}
 
 const localSeoInternalLinks = [...localSeoArticle.matchAll(/<Link\s+href="(\/[^"]+)"/g)].map((match) => match[1]);
 for (const path of localSeoInternalLinks) {

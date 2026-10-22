@@ -40,6 +40,8 @@ export default function Page() {
         { href: '/filtra-ai', title: 'Conheça a Filtra.AI', description: 'Plataforma para gestão de reputação, avaliações e feedback com IA.' },
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Estruture avaliações e reputação como serviço para clientes.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como avaliações e reputação entram em uma oferta de SEO local.' },
+        { href: '/blog/velocity-reviews-google-maps-2026', title: 'Avaliações recentes no Google Maps', description: 'Entenda por que a cadência de novas avaliações importa para a percepção atual.' },
+        { href: '/blog/como-responder-avaliacoes-negativas', title: 'Como responder avaliações negativas', description: 'Veja um processo para responder com contexto e corrigir a causa.' },
       ]}
       sections={[
         {

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 import { BlogSchema } from '../../components/BlogSchema';
 import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
@@ -30,7 +31,7 @@ export default function Page() {
         description="Compare WhatsApp e QR Code para convidar clientes a deixar avaliações honestas, organizar feedback e acompanhar a reputação sem pressão por nota."
         canonical="https://filtraai.com/blog/whatsapp-pedir-estrela-vs-filtrar-qr"
         datePublished="2026-09-23"
-        dateModified="2026-10-05"
+        dateModified="2026-10-22"
       />
       <BlogArticle
       kicker="Comparação"
@@ -56,6 +57,23 @@ export default function Page() {
       <p>
         Semana A: só link Google. Semana B: QR com feedback estruturado. Compare volume de feedback, taxa de
         resposta, temas recorrentes e avaliações públicas genuínas. O trial de 7 dias existe para isso.
+      </p>
+      <H2>O que medir no teste</H2>
+      <p>
+        Registre quantas pessoas receberam o convite, quantas iniciaram o feedback, quantas concluíram e
+        quantas publicaram uma avaliação. Leia os comentários para entender a experiência, não apenas a taxa
+        de conversão. Uma amostra pequena pode oscilar; evite concluir que um canal é melhor antes de observar
+        um volume mínimo e um período comparável.
+      </p>
+      <H2>Privacidade e consentimento</H2>
+      <p>
+        Envie mensagens apenas para clientes com quem a empresa já tem relação e ofereça uma forma simples de
+        não receber novos contatos. Não inclua detalhes do atendimento em mensagens públicas e restrinja o
+        acesso ao feedback que contenha dados pessoais. O convite deve ser um cuidado com a experiência, não
+        uma cobrança.
+      </p>
+      <p>
+        Veja também o guia de <Link href="/blog/qr-code-balcao-reviews" className="text-indigo-400 underline">QR Code no balcão</Link>, a página de <Link href="/restaurantes" className="text-indigo-400 underline">avaliações Google para restaurantes</Link> e as práticas para <Link href="/como-melhorar-avaliacoes-google" className="text-indigo-400 underline">melhorar avaliações Google</Link>.
       </p>
       </BlogArticle>
     </>

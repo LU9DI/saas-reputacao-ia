@@ -23,7 +23,7 @@ export default function Page() {
         description="Como hotéis podem analisar avaliações e transformar feedback em prioridades operacionais."
         canonical={canonical}
         datePublished="2026-10-05"
-        dateModified="2026-10-05"
+        dateModified="2026-10-22"
       />
       <BlogArticle
         kicker="Hotéis · experiência do hóspede"
@@ -49,8 +49,16 @@ export default function Page() {
         <p>
           Um bom processo termina com uma decisão: manter, corrigir, testar ou investigar. O relatório de reputação deve chegar a quem consegue mudar a experiência, não ficar apenas no marketing.
         </p>
+        <H2>O que registrar em cada avaliação</H2>
         <p>
-          Aprofunde em <Link href="/hoteis" className="text-indigo-300 underline">gestão de reputação para hotéis</Link>, <Link href="/avaliacoes-google" className="text-indigo-300 underline">avaliações Google</Link> e <Link href="/gestao-de-feedback" className="text-indigo-300 underline">gestão de feedback</Link>.
+          Para transformar comentários em gestão, registre a data, a unidade, a etapa da jornada, o tema principal, o impacto percebido e o responsável pela ação. Evite copiar dados pessoais para planilhas abertas. O objetivo é manter contexto suficiente para agir, com acesso restrito a quem realmente precisa.
+        </p>
+        <H2>Uma rotina semanal possível</H2>
+        <p>
+          Separe alguns minutos para triar as avaliações novas, marcar os temas críticos e verificar se as ações da semana anterior apareceram no feedback. Uma revisão mensal ajuda a comparar tendências e a apresentar resultados à operação. O processo não precisa ser complexo; precisa acontecer com regularidade.
+        </p>
+        <p>
+          Aprofunde em <Link href="/hoteis" className="text-indigo-300 underline">gestão de reputação para hotéis</Link>, <Link href="/turismo" className="text-indigo-300 underline">reputação para turismo</Link>, <Link href="/avaliacoes-google" className="text-indigo-300 underline">avaliações Google</Link> e <Link href="/gestao-de-feedback" className="text-indigo-300 underline">gestão de feedback</Link>.
         </p>
       </BlogArticle>
     </>

@@ -10,6 +10,14 @@ export function SeoPageHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 lg:px-8">
         <BrandMark size="sm" subtitle="Reputação" />
         <div className="flex items-center gap-3">
+          <nav aria-label="Navegação principal" className="hidden items-center gap-5 text-sm text-zinc-300 sm:flex">
+            <Link href="/blog" className="hover:text-white">
+              Blog
+            </Link>
+            <Link href="/planos" className="hover:text-white">
+              Planos
+            </Link>
+          </nav>
           <LanguageSwitcher compact variant="flags" />
           <Link
             href="/login"

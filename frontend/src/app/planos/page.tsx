@@ -7,8 +7,9 @@ export default function PlanosPage() {
       <header className="border-b border-zinc-800">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <Link href="/" className="font-semibold tracking-tight text-white">Filtra.AI</Link>
-          <nav aria-label="Navegação principal" className="flex items-center gap-5 text-sm text-zinc-300">
+          <nav aria-label="Navegação principal" className="hidden items-center gap-5 text-sm text-zinc-300 sm:flex">
             <Link href="/#como-funciona" className="hover:text-white">Como funciona</Link>
+            <Link href="/blog" className="hover:text-white">Blog</Link>
             <Link href="/#planos" className="hover:text-white">Planos na página inicial</Link>
           </nav>
         </div>

@@ -89,6 +89,9 @@ export function BlogArticle({
           <Link href="/como-funciona" className="hover:text-zinc-300">
             Como funciona
           </Link>
+          <Link href="/planos" className="hover:text-zinc-300">
+            Planos
+          </Link>
           <Link href="/restaurantes" className="hover:text-zinc-300">
             Restaurantes
           </Link>

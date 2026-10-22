@@ -51,6 +51,28 @@ export default function Page() {
           heading: 'Reputação conectada ao crescimento',
           body: 'Avaliações ajudam empresas a entender o que clientes valorizam, onde existem problemas recorrentes e quais pontos merecem ação.',
         },
+        {
+          heading: 'Perguntas que um agente pode apoiar',
+          body: 'Um agente conectado pode ajudar a resumir comentários, listar temas recorrentes, comparar períodos ou unidades e apontar pontos fortes e riscos. A qualidade da resposta depende da pergunta e do contexto disponível; por isso, peça recortes específicos em vez de uma conclusão genérica sobre a empresa.',
+        },
+        {
+          heading: 'Análise com revisão humana',
+          body: 'A IA acelera a leitura e a organização de grandes volumes, mas não substitui o contexto da operação. Antes de transformar uma conclusão em resposta pública ou mudança interna, revise os comentários que sustentam a análise e confirme com as áreas responsáveis.',
+        },
+      ]}
+      faq={[
+        {
+          question: 'Preciso saber programar para usar o MCP?',
+          answer: 'Não necessariamente. O uso depende do cliente de IA escolhido e da forma como ele configura conectores. O endpoint MCP é o endereço que conecta a análise de reputação ao cliente compatível; consulte as instruções do próprio cliente para concluir a configuração.',
+        },
+        {
+          question: 'O Filtra.AI funciona em qualquer cliente de IA?',
+          answer: 'A conexão é voltada a clientes que suportam MCP. A disponibilidade, o formato de autenticação e os recursos podem variar entre ChatGPT, Claude, Grok e outras ferramentas. Confirme o suporte na documentação do cliente antes de configurar.',
+        },
+        {
+          question: 'A IA publica respostas nas avaliações automaticamente?',
+          answer: 'A proposta é apoiar a análise e a preparação de respostas profissionais. A decisão final e a publicação devem passar pela equipe responsável, que conhece o contexto do atendimento e pode avaliar o que é adequado dizer publicamente.',
+        },
       ]}
     />
   );

@@ -31,7 +31,7 @@ export default function Page() {
         description="Checklist operacional quando chega uma avaliação negativa: investigar, responder com calma, corrigir processo e acompanhar a reputação."
         canonical="https://filtraai.com/blog/review-1-estrela-primeiras-24-horas"
         datePublished="2026-09-23"
-        dateModified="2026-10-07"
+        dateModified="2026-10-22"
       />
       <BlogArticle
       kicker="Operação"
@@ -68,12 +68,29 @@ export default function Page() {
         </Link>
         .
       </p>
+      <H2>O que não fazer nas primeiras 24 horas</H2>
+      <p>
+        Não responda no calor da emoção, não exponha dados do cliente e não ofereça brinde ou desconto para
+        retirar a avaliação. Evite também responder antes de ouvir a equipe envolvida: uma defesa apressada
+        pode aumentar o problema. Se a avaliação parecer falsa ou violar políticas, use o canal de denúncia da
+        plataforma em vez de iniciar uma discussão pública.
+      </p>
+      <H2>Registro para aprender</H2>
+      <p>
+        Anote a causa provável, a ação tomada, o responsável e o prazo de verificação. Na semana seguinte,
+        confira se o mesmo tema voltou a aparecer em outras avaliações ou feedbacks. Esse registro transforma
+        um episódio em aprendizado e ajuda a priorizar mudanças que reduzem a recorrência.
+      </p>
       <p>
         Se quiser transformar esse processo em rotina, veja também a{' '}
         <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline">
           gestão de reputação online
         </Link>{' '}
-        e o guia de{' '}
+        e os guias de{' '}
+        <Link href="/blog/como-responder-avaliacoes-negativas" className="text-indigo-400 underline">
+          como responder avaliações negativas
+        </Link>{' '}
+        e de{' '}
         <Link href="/gestao-de-feedback" className="text-indigo-400 underline">
           gestão de feedback de clientes
         </Link>
