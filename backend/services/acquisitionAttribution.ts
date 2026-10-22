@@ -57,7 +57,8 @@ export type AcquisitionEventRow = {
 };
 
 function normalizeEventTimestamp(value: unknown): string {
-  const raw = typeof value === 'string' ? value.trim() : '';
+  // node-postgres returns TIMESTAMPTZ columns as Date objects; SQLite returns strings.
+  const raw = value instanceof Date ? value.toISOString() : typeof value === 'string' ? value.trim() : '';
   if (!raw) return '';
   // SQLite CURRENT_TIMESTAMP uses "YYYY-MM-DD HH:mm:ss" without a zone.
   // Treat that storage format as UTC, then compare normalized ISO timestamps.
