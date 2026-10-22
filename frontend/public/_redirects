@@ -1,4 +1,14 @@
+/en/hoteis                 /en/hotels                         301
+/en/clinicas               /en/clinics                        301
+/en/auditoria-gratuita     /en/free-review-audit              301
+/en/turismo                /en/tourism                        301
+/es/parceiros              /es/socios                         301
+/es/feedback-de-clientes   /es/feedback-clientes              301
+/zh/gestao-de-reputacao-online /zh/online-reputation-management 301
+/zh/agencias               /zh/agencies                       301
+/zh/restaurantes           /zh/restaurants                    301
+/zh/avaliacoes-google      /zh/google-reviews                 301
 /painel/preview  /painel/preview.html  200
 /painel/*        /painel/_.html        200
 /avaliacao/*     /avaliacao/_.html     200
-/widget/*        /widget/_.html        200
+/widget/*        /widget/_.html       200
