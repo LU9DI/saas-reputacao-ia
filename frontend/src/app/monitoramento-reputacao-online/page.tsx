@@ -3,12 +3,36 @@ import { SeoLanding } from '../components/SeoLanding';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
+  const title = 'Monitoramento de reputação online para empresas';
+  const description = 'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.';
+  const url = 'https://filtraai.com/monitoramento-reputacao-online';
+
   return {
-    title: 'Monitoramento de reputação online para empresas',
-    description: 'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.',
-    alternates: { canonical:'https://filtraai.com/monitoramento-reputacao-online', languages:{ 'pt-BR':'https://filtraai.com/monitoramento-reputacao-online', en:'https://filtraai.com/en/online-reputation-monitoring', es:'https://filtraai.com/es/monitoreo-reputacion-online', 'x-default':'https://filtraai.com/monitoramento-reputacao-online' } },
-    openGraph: { title:'Monitoramento de reputação online para empresas', description:'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.', url:'https://filtraai.com/monitoramento-reputacao-online', type:'website',
+    title,
+    description,
+    alternates: {
+      canonical: url,
+      languages: {
+        'pt-BR': url,
+        en: 'https://filtraai.com/en/online-reputation-monitoring',
+        es: 'https://filtraai.com/es/monitoreo-reputacion-online',
+        'x-default': url,
+      },
+    },
+    openGraph: {
+      type: 'website',
+      url,
+      siteName: 'Filtra.AI',
+      locale: 'pt_BR',
+      title,
+      description,
       images: [OG_IMAGE_META],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [OG_IMAGE_META.url],
     },
   };
 }
@@ -30,8 +54,7 @@ export default function Page() {
         { heading: 'Como montar um monitoramento de reputação online', body: 'Defina primeiro quais fontes e sinais importam, depois estabeleça frequência, responsáveis e critérios de prioridade. Uma rotina útil registra mudanças, contexto e próxima ação em vez de apenas acumular alertas.' },
         { heading: 'Monitoramento de reputação para agências de SEO local', body: 'Para agências, o valor está em transformar monitoramento em uma entrega recorrente e comparável entre clientes. Padronize linha de base, temas, indicadores e relatório, mantendo espaço para exceções de cada negócio.' },
         { heading: 'O que fazer quando aparece um sinal crítico', body: 'Confirme se o sinal é isolado ou recorrente, identifique a unidade ou etapa da jornada envolvida, encaminhe para o responsável e acompanhe as avaliações seguintes. Evite tratar todo alerta como crise.' },
-        {
-         heading: 'O que monitorar', body: 'Acompanhe volume de avaliações, variações de nota, temas recorrentes, novos problemas e mudanças relevantes na percepção dos clientes.' },
+        { heading: 'O que monitorar', body: 'Acompanhe volume de avaliações, variações de nota, temas recorrentes, novos problemas e mudanças relevantes na percepção dos clientes.' },
         { heading: 'Separe ruído de mudança real', body: 'Um comentário isolado merece atenção, mas uma tendência persistente ou acelerada normalmente fornece um sinal mais forte para a gestão.' },
         { heading: 'Priorize o que pode virar ação', body: 'Classifique temas por frequência, impacto no negócio e capacidade da equipe responsável de agir sobre eles.' },
         { heading: 'Compare unidades com contexto', body: 'Empresas com várias unidades precisam enxergar diferenças locais sem transformar realidades distintas em uma comparação enganosa.' },
