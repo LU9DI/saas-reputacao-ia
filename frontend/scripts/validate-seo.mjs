@@ -232,6 +232,17 @@ for (const [name, source] of socialTemplates) {
   check(source.includes('OG_IMAGE_META') && source.includes('buildTwitter'), `${name} must define og:image and Twitter images`);
 }
 
+const monitoringSocial = read('src/app/monitoramento-reputacao-online/page.tsx');
+const aiReviewSocial = read('src/app/analise-de-avaliacoes-com-ia/page.tsx');
+for (const [name, source] of [
+  ['Reputation monitoring landing', monitoringSocial],
+  ['AI review analysis landing', aiReviewSocial],
+]) {
+  const twitter = metadataObject(source, 'twitter');
+  check(twitter.includes('title,') && twitter.includes('description,'), `${name} must define page-specific Twitter title and description instead of inheriting generic site copy`);
+  check(twitter.includes("card: 'summary_large_image'") && twitter.includes('images: [OG_IMAGE_META.url]'), `${name} must define a large Twitter card and social image`);
+}
+
 const socialLandingFiles = [
   'src/app/ia/page.tsx',
   'src/app/filtra-ai/page.tsx',
