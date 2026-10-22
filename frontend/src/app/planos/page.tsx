@@ -1,5 +1,39 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PlanCards } from '../components/PlanCards';
+
+export const metadata: Metadata = {
+  title: { absolute: 'Planos e preços | Filtra.AI' },
+  description:
+    'Compare os planos da Filtra.AI para analisar avaliações Google com IA, organizar feedback de clientes e acompanhar a reputação online.',
+  alternates: {
+    canonical: 'https://filtraai.com/planos',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/planos',
+    siteName: 'Filtra.AI',
+    locale: 'pt_BR',
+    title: 'Planos e preços | Filtra.AI',
+    description:
+      'Compare os planos da Filtra.AI para analisar avaliações Google com IA, organizar feedback de clientes e acompanhar a reputação online.',
+    images: [
+      {
+        url: 'https://filtraai.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Planos e preços da Filtra.AI',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Planos e preços | Filtra.AI',
+    description:
+      'Compare os planos da Filtra.AI para analisar avaliações Google com IA, organizar feedback de clientes e acompanhar a reputação online.',
+    images: ['https://filtraai.com/og-image.png'],
+  },
+};
 
 export default function PlanosPage() {
   return (
