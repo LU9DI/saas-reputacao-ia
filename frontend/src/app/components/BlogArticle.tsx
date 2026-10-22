@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BrandMark } from './BrandMark';
+import { BlogBreadcrumb } from './BlogBreadcrumb';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function BlogArticle({
@@ -26,6 +27,7 @@ export function BlogArticle({
       </header>
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
+          <BlogBreadcrumb title={title} />
           <p className="text-xs uppercase tracking-wider text-zinc-500">{kicker}</p>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">{title}</h1>
           <p className="text-zinc-400">{lead}</p>
@@ -47,6 +49,9 @@ export function BlogArticle({
           </Link>
           <Link href="/avaliacoes-google" className="hover:text-zinc-300">
             Avaliações Google
+          </Link>
+          <Link href="/calculadora-nota-google" className="hover:text-zinc-300">
+            Calculadora de nota do Google
           </Link>
           <Link href="/feedback-de-clientes" className="hover:text-zinc-300">
             Feedback de clientes

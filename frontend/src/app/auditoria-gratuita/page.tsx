@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AuditoriaGratuitaClient } from './AuditoriaGratuitaClient';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Auditoria gratuita de avaliações e reputação online',
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
       'Analise avaliações da sua empresa e descubra padrões, riscos e oportunidades de melhoria com a Filtra.AI.',
     url: 'https://filtraai.com/auditoria-gratuita',
     type: 'website',
+    images: [OG_IMAGE_META],
   },
 };
 

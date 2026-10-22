@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '../../components/BrandMark';
+import { BlogBreadcrumb } from '../../components/BlogBreadcrumb';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 export const metadata: Metadata = {
   title: 'Como conseguir mais avaliações no Google (sem parecer spam)',
@@ -8,15 +11,31 @@ export const metadata: Metadata = {
     'Guia prático para convidar avaliações honestas: momento, canal, boas práticas e como organizar feedback de clientes sem pressionar por uma nota específica.',
   alternates: { canonical: 'https://filtraai.com/blog/como-conseguir-avaliacoes-google', languages: { 'pt-BR': 'https://filtraai.com/blog/como-conseguir-avaliacoes-google', en: 'https://filtraai.com/en/blog/get-google-reviews', es: 'https://filtraai.com/es/blog/conseguir-resenas-google', 'x-default': 'https://filtraai.com/blog/como-conseguir-avaliacoes-google' } },
   openGraph: {
+    type: 'article',
+    url: 'https://filtraai.com/blog/como-conseguir-avaliacoes-google',
+    siteName: 'Filtra.AI',
     title: 'Como conseguir mais avaliações no Google sem parecer spam',
     description:
       'Pedidos no momento certo, tom honesto e um canal de feedback estruturado antes e depois do convite público.',
+    images: [OG_IMAGE_META],
   },
+  twitter: buildTwitter(
+    'Como conseguir mais avaliações no Google sem parecer spam',
+    'Pedidos no momento certo, tom honesto e um canal de feedback estruturado antes e depois do convite público.',
+  ),
 };
 
 export default function BlogAvaliacoesGooglePage() {
   return (
-    <div className="min-h-screen bg-black text-zinc-100 font-sans">
+    <>
+      <BlogSchema
+        headline="Como conseguir mais avaliações no Google (sem parecer spam)"
+        description="Guia prático para convidar avaliações honestas: momento, canal, boas práticas e como organizar feedback de clientes sem pressionar por uma nota específica."
+        canonical="https://filtraai.com/blog/como-conseguir-avaliacoes-google"
+        datePublished="2026-09-23"
+        dateModified="2026-10-19"
+      />
+      <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Blog" href="/" />
         <Link href="/" className="text-sm text-indigo-400 hover:text-indigo-300">
@@ -25,6 +44,7 @@ export default function BlogAvaliacoesGooglePage() {
       </header>
       <article className="max-w-3xl mx-auto px-4 pb-16 space-y-6 text-sm text-zinc-300 leading-relaxed">
         <div className="space-y-2">
+          <BlogBreadcrumb title="Como conseguir mais avaliações no Google (sem parecer spam)" />
           <p className="text-xs uppercase tracking-wider text-zinc-500">Guia · SEO local</p>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-50">
             Como conseguir mais avaliações no Google (sem parecer spam)
@@ -155,5 +175,6 @@ export default function BlogAvaliacoesGooglePage() {
         </nav>
       </article>
     </div>
+    </>
   );
 }

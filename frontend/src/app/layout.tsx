@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     description: 'Monitore avaliações, analise feedback com IA e transforme sinais de clientes em prioridades de ação.',
     images: [ogImage],
   },
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 } },
+  other: { googlebot: 'max-image-preview:large, max-snippet:-1' },
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Filtra.AI' },
   formatDetection: { telephone: false },
   icons: {
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: [{ url: '/icons/icon-192.png', sizes: '192x192' }],
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
 };
 

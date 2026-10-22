@@ -132,6 +132,13 @@ for (const raw of urls) {
   } catch {
     fail(`invalid canonical URL on ${raw}: ${canonicalMatch[1]}`);
   }
+
+  if (!/<meta[^>]+property=["']og:image["']/i.test(html)) {
+    fail(`missing og:image on sitemap URL: ${raw}`);
+  }
+  if (!/<meta[^>]+name=["']twitter:image["']/i.test(html)) {
+    fail(`missing twitter:image on sitemap URL: ${raw}`);
+  }
 }
 
 for (const required of REQUIRED_URLS) {
@@ -180,5 +187,46 @@ for (const route of ['/zh', '/zh/google-reviews', '/zh/blog']) {
   if (!hasNoindex) fail(`ZH route lacks a robots noindex directive: ${route}`);
 }
 
+const notFoundPath = join(OUT, '404.html');
+if (!existsSync(notFoundPath)) {
+  fail('out/404.html is missing');
+} else {
+  const notFound = readFileSync(notFoundPath, 'utf8');
+  const hasNoindex =
+    /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(notFound) ||
+    /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(notFound);
+  if (!hasNoindex) fail('404.html must be noindex');
+  if (/<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*index,\s*follow/i.test(notFound)) {
+    fail('404.html must not contain an index, follow robots directive');
+  }
+}
+
+const pluginDemoPath = join(OUT, 'plugin-demo.html');
+if (existsSync(pluginDemoPath)) {
+  const pluginDemo = readFileSync(pluginDemoPath, 'utf8');
+  const hasNoindex =
+    /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(pluginDemo) ||
+    /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(pluginDemo);
+  if (!hasNoindex) fail('plugin-demo.html must be noindex');
+}
+
+const redirectsPath = join(OUT, '_redirects');
+if (!existsSync(redirectsPath)) {
+  fail('out/_redirects is missing');
+} else {
+  const redirects = readFileSync(redirectsPath, 'utf8')
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/\s+/g, ' '));
+  for (const [route, shell] of [
+    ['/painel/*', '/painel/_.html'],
+    ['/avaliacao/*', '/avaliacao/_.html'],
+    ['/widget/*', '/widget/_.html'],
+  ]) {
+    if (!redirects.includes(`${route} ${shell} 200`)) {
+      fail(`_redirects must map ${route} to ${shell} with status 200`);
+    }
+  }
+}
+
 if (process.exitCode) process.exit(process.exitCode);
-console.log(`Indexing audit PASSED: ${urls.length} unique URLs, static files, canonicals and noindex routes verified.`);
+console.log(`Indexing audit PASSED: ${urls.length} unique URLs, static files, canonicals, social images, dynamic shells and noindex routes verified.`);

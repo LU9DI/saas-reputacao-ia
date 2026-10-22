@@ -31,6 +31,24 @@ const nextConfig = {
     ];
   },
 
+  // Fix legacy localized paths that Search Console has reported as 404.
+  // Next.js handles these on Vercel; Cloudflare Pages static export uses public/_redirects.
+  async redirects() {
+    if (process.env.CLOUDFLARE_PAGES === '1') return [];
+    return [
+      { source: '/en/hoteis', destination: '/en/hotels', permanent: true },
+      { source: '/en/clinicas', destination: '/en/clinics', permanent: true },
+      { source: '/en/auditoria-gratuita', destination: '/en/free-review-audit', permanent: true },
+      { source: '/en/turismo', destination: '/en/tourism', permanent: true },
+      { source: '/es/parceiros', destination: '/es/socios', permanent: true },
+      { source: '/es/feedback-de-clientes', destination: '/es/feedback-clientes', permanent: true },
+      { source: '/zh/gestao-de-reputacao-online', destination: '/zh/online-reputation-management', permanent: true },
+      { source: '/zh/agencias', destination: '/zh/agencies', permanent: true },
+      { source: '/zh/restaurantes', destination: '/zh/restaurants', permanent: true },
+      { source: '/zh/avaliacoes-google', destination: '/zh/google-reviews', permanent: true },
+    ];
+  },
+
   async headers() {
     return [
       {

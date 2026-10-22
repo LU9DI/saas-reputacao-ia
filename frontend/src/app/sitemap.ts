@@ -6,11 +6,12 @@ const base = 'https://filtraai.com';
 // 2026-10-19: páginas alteradas no lote de CTR/conteúdo (títulos, seções, FAQ e nav do blog).
 const LAST_MODIFIED: Record<string, string> = {
   '/': '2026-10-19',
+  '/calculadora-nota-google': '2026-10-20',
   '/filtra-ai': '2026-10-19',
-  '/gestao-de-reputacao-online': '2026-10-19',
-  '/blog': '2026-10-19',
-  '/blog/gestao-reputacao-online-guia': '2026-10-19',
-  '/blog/seo-local-avaliacoes-local-pack': '2026-10-19',
+  '/gestao-de-reputacao-online': '2026-10-20',
+  '/blog': '2026-10-20',
+  '/blog/gestao-reputacao-online-guia': '2026-10-20',
+  '/blog/seo-local-avaliacoes-local-pack': '2026-10-20',
   '/blog/como-responder-avaliacoes-negativas': '2026-10-19',
   '/blog/como-conseguir-avaliacoes-google': '2026-10-19',
   '/blog/agencia-vender-gestao-reputacao': '2026-10-19',
@@ -112,6 +113,7 @@ const TRANSLATED_BLOG_FAMILIES = [
 
 const canonicalPaths = [
   '',
+  '/calculadora-nota-google',
   ...Object.keys(SEO_FAMILIES).filter((p) => p !== '/'),
   '/blog/como-responder-avaliacoes-negativas',
   '/blog/velocity-reviews-google-maps-2026',
@@ -148,6 +150,7 @@ const authorityCore = new Set([
 
 const highPriority = new Set([
   '/auditoria-gratuita',
+  '/calculadora-nota-google',
   '/agencias',
   '/clinicas',
   '/restaurantes',

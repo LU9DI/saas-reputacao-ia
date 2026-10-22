@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Planos e preços',
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
       'Conheça os planos da Filtra.AI para gestão de reputação e análise de avaliações com IA.',
     url: 'https://filtraai.com/planos',
     siteName: 'Filtra.AI',
+    images: [OG_IMAGE_META],
   },
 };
 

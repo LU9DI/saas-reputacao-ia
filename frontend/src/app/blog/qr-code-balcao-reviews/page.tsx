@@ -1,17 +1,39 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 export const metadata: Metadata = {
   title: 'QR Code no balcão para avaliações Google: guia prático',
   description:
     'Onde colocar o QR Code, como pedir avaliações honestas sem pressão e como transformar feedback em melhoria para restaurantes, clínicas e varejo.',
   alternates: { canonical: '/blog/qr-code-balcao-reviews' },
+  openGraph: {
+    type: 'article',
+    url: 'https://filtraai.com/blog/qr-code-balcao-reviews',
+    title: 'QR Code no balcão para avaliações Google: guia prático',
+    description:
+      'Onde colocar o QR Code, como pedir avaliações honestas sem pressão e como transformar feedback em melhoria para restaurantes, clínicas e varejo.',
+    images: [OG_IMAGE_META],
+  },
+  twitter: buildTwitter(
+    'QR Code no balcão para avaliações Google: guia prático',
+    'Onde colocar o QR Code, como pedir avaliações honestas sem pressão e como transformar feedback em melhoria para restaurantes, clínicas e varejo.',
+  ),
 };
 
 export default function Page() {
   return (
-    <BlogArticle
+    <>
+      <BlogSchema
+        headline="QR Code no balcão para avaliações Google: guia prático"
+        description="Onde colocar o QR Code, como pedir avaliações honestas sem pressão e como transformar feedback em melhoria para restaurantes, clínicas e varejo."
+        canonical="https://filtraai.com/blog/qr-code-balcao-reviews"
+        datePublished="2026-09-23"
+        dateModified="2026-10-07"
+      />
+      <BlogArticle
       kicker="Implementação"
       title="QR Code no balcão para avaliações Google: guia prático"
       lead="O melhor convite para avaliação é fácil de encontrar, aparece perto da experiência e deixa o cliente decidir o que quer publicar."
@@ -57,6 +79,7 @@ export default function Page() {
         </Link>
         .
       </p>
-    </BlogArticle>
+      </BlogArticle>
+    </>
   );
 }

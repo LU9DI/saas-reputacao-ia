@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
 import { serpTitle } from '../../lib/seoTitle';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/socialMetadata';
 
 type Lang = 'en' | 'es' | 'zh';
 function isLang(value: string): value is Lang { return value === 'en' || value === 'es' || value === 'zh'; }
@@ -970,12 +971,12 @@ const UNIQUE_CONTENT: Partial<Record<string,{sections:Section[];faq:Faq[]}>> = {
     sections: [
       {
         heading: 'Qué cubre la auditoría gratuita',
-        body: 'La auditoría revisa tu ficha de Google Business Profile y las señales que forman la percepción: volumen y recencia de reseñas, evolución de la nota, tasa de respuesta, comentarios sin contestar, temas recurrentes y comparación con competidores directos. Termina con una lista corta de acciones prioritarias, no con un informe genérico.',
+        body: 'La auditoría revisa tu ficha de Google Business Profile y las señales que forman la percepción: volumen y recencia de reseñas, evolución de la nota, tasa de respuesta, comentarios sin contestar, temas recurrentes y referencias de negocios similares de la zona. Termina con una lista corta de acciones prioritarias, no con un informe genérico.',
         points: [
           'Ficha completa: categorías, horarios, servicios, fotos y ubicación.',
           'Volumen, recencia y evolución de la nota.',
           'Tasa de respuesta, tiempo de respuesta y reseñas sin contestar.',
-          'Temas recurrentes y comparación con competidores.',
+          'Temas recurrentes y referencias de negocios similares.',
         ],
       },
       {
@@ -2046,7 +2047,8 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
     title:serpTitle(found.item.title),
     description:found.item.description,
     alternates:{canonical:base+'/'+lang+'/'+slug},
-    openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},
+    openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description,images:[OG_IMAGE_META]},
+    twitter:buildTwitter(found.item.title,found.item.description),
     robots:{index:lang!=='zh',follow:true}
   };
   const languages:Record<string,string>={
@@ -2059,7 +2061,8 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
     title:serpTitle(found.item.title),
     description:found.item.description,
     alternates:{canonical:base+'/'+lang+'/'+slug,languages},
-    openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description},
+    openGraph:{type:'website',url:base+'/'+lang+'/'+slug,siteName:'Filtra.AI',title:found.item.title,description:found.item.description,images:[OG_IMAGE_META]},
+    twitter:buildTwitter(found.item.title,found.item.description),
     robots:{index:lang!=='zh',follow:true}
   };
 }

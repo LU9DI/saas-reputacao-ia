@@ -1,19 +1,30 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Vender gestão de reputação recorrente',
     description: 'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.',
     alternates: { canonical: 'https://filtraai.com/blog/agencia-vender-gestao-reputacao', languages: { 'pt-BR':'https://filtraai.com/blog/agencia-vender-gestao-reputacao', en:'https://filtraai.com/en/blog/agency-reputation-management', es:'https://filtraai.com/es/blog/agencia-gestion-reputacion', 'x-default':'https://filtraai.com/blog/agencia-vender-gestao-reputacao' } },
-    openGraph: { title:'Vender gestão de reputação recorrente', description:'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.', url:'https://filtraai.com/blog/agencia-vender-gestao-reputacao', type:'article' },
+    openGraph: { title:'Vender gestão de reputação recorrente', description:'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.', url:'https://filtraai.com/blog/agencia-vender-gestao-reputacao', type:'article', images: [OG_IMAGE_META] },
+    twitter: buildTwitter('Vender gestão de reputação recorrente', 'Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente.'),
   };
 }
 
 export default function Page() {
   return (
-    <BlogArticle
+    <>
+      <BlogSchema
+        headline="Agência: como vender gestão de reputação como serviço recorrente"
+        description="Como vender gestão de reputação para clientes de SEO local: avaliações Google, monitoramento, relatórios e melhoria contínua como serviço recorrente."
+        canonical="https://filtraai.com/blog/agencia-vender-gestao-reputacao"
+        datePublished="2026-09-23"
+        dateModified="2026-10-19"
+      />
+      <BlogArticle
       kicker="B2B · Agências"
       title="Agência: como vender gestão de reputação como serviço recorrente"
       lead="Cliente de SEO local já paga por presença no Google. Reputação operacional transforma avaliações e feedback em uma rotina que aparece todo mês na reunião."
@@ -158,6 +169,7 @@ export default function Page() {
         Compare essa estrutura com o guia de <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">pacotes de SEO local</Link> e com a página de <Link href="/agencias" className="text-indigo-400 underline">gestão de reputação para agências</Link>.
       </p>
 
-    </BlogArticle>
+      </BlogArticle>
+    </>
   );
 }

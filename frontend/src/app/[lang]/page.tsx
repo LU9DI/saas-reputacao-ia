@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { OG_IMAGE_META, buildTwitter } from '../lib/socialMetadata';
 
 type Lang='en'|'es'|'zh';
 
@@ -98,7 +99,8 @@ export async function generateMetadata({params}:{params:Promise<{lang:string}>})
     title:content[lang].title,
     description:content[lang].description,
     alternates:{canonical:urls[lang],languages:{'pt-BR':urls.pt,en:urls.en,es:urls.es,'x-default':urls.pt}},
-    openGraph:{type:'website',url:urls[lang],siteName:'Filtra.AI',title:content[lang].title,description:content[lang].description,locale:lang==='en'?'en_US':lang==='es'?'es_ES':'zh_CN'},
+    openGraph:{type:'website',url:urls[lang],siteName:'Filtra.AI',title:content[lang].title,description:content[lang].description,locale:lang==='en'?'en_US':lang==='es'?'es_ES':'zh_CN',images:[OG_IMAGE_META]},
+    twitter:buildTwitter(content[lang].title,content[lang].description),
     robots:{index:lang!=='zh',follow:true}
   };
 }

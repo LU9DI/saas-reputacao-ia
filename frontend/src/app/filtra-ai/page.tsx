@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SeoPageHeader } from '../components/SeoPageHeader';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Plataforma de gestão de reputação online com IA',
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
     title: 'Filtra.AI — Gestão de reputação online com IA',
     description:
       'Conheça a Filtra.AI, plataforma brasileira para gestão de reputação, avaliações e feedback de clientes com IA.',
+    images: [OG_IMAGE_META],
   },
 };
 

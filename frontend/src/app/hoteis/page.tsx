@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Gestão de avaliações e reputação para hotéis',
@@ -19,11 +20,13 @@ export const metadata: Metadata = {
     url: 'https://filtraai.com/hoteis',
     title: 'Gestão de avaliações e reputação para hotéis | Filtra.AI',
     description: 'Organize avaliações de hóspedes, identifique padrões de experiência e transforme feedback em ações para melhorar a reputação do hotel.',
+    images: [OG_IMAGE_META],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Gestão de avaliações e reputação para hotéis | Filtra.AI',
     description: 'Organize avaliações de hóspedes e transforme feedback em ações para melhorar a reputação do hotel.',
+    images: [OG_IMAGE_META.url],
   },
 };
 

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Gestão de reputação para associações e federações',
@@ -19,11 +20,13 @@ export const metadata: Metadata = {
     url: 'https://filtraai.com/associacoes',
     title: 'Gestão de reputação para associações e federações | Filtra.AI',
     description: 'Organize feedback, avaliações e sinais de reputação de associados, empresas e unidades em um fluxo centralizado com o Filtra.AI.',
+    images: [OG_IMAGE_META],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Gestão de reputação para associações e federações | Filtra.AI',
     description: 'Organize feedback, avaliações e sinais de reputação de associados, empresas e unidades com o Filtra.AI.',
+    images: [OG_IMAGE_META.url],
   },
 };
 

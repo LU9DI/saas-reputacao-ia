@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Política de Privacidade',
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
     description: 'Política de Privacidade da Filtra.AI.',
     url: '/privacidade',
     siteName: 'Filtra.AI',
+    images: [OG_IMAGE_META],
   },
 };
 

@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { BrandMark } from '../../../components/BrandMark';
 import { LanguageSwitcher } from '../../../components/LanguageSwitcher';
 import { serpTitle } from '../../../lib/seoTitle';
+import { OG_IMAGE_META, buildTwitter } from '../../../lib/socialMetadata';
 
 type Lang='en'|'es'|'zh';
 type Section={heading:string;body:string;bullets?:string[]};
@@ -179,8 +180,10 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
       url:base+'/'+lang+'/blog/'+slug,
       siteName:'Filtra.AI',
       title:serpTitle(found.item.title),
-      description:found.item.description
+      description:found.item.description,
+      images:[OG_IMAGE_META]
     },
+    twitter:buildTwitter(serpTitle(found.item.title),found.item.description),
     robots:{index:lang!=='zh',follow:true}
   };
   const languages:Record<string,string>={
@@ -202,8 +205,10 @@ export async function generateMetadata({params}:{params:Promise<{lang:string;slu
       url:base+'/'+lang+'/blog/'+slug,
       siteName:'Filtra.AI',
       title:serpTitle(found.item.title),
-      description:found.item.description
+      description:found.item.description,
+      images:[OG_IMAGE_META]
     },
+    twitter:buildTwitter(serpTitle(found.item.title),found.item.description),
     robots:{index:lang!=='zh',follow:true}
   };
 }

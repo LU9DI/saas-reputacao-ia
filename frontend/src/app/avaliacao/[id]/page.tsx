@@ -8,8 +8,7 @@ export const metadata: Metadata = {
 };
 
 // Export estático (Cloudflare Pages): uma única página-casca; o id real vem da URL no cliente
-// (ver utils/useRouteId e public/_redirects).
-export const dynamicParams = false;
+// (ver utils/useRouteId e public/_redirects). Em dev/Vercel a rota é renderizada sob demanda.
 export function generateStaticParams() {
   return [{ id: '_' }];
 }

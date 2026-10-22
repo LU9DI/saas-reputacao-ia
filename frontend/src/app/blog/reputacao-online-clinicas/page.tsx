@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { BlogSchema } from '../../components/BlogSchema';
+import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
 const canonical = 'https://filtraai.com/blog/reputacao-online-clinicas';
 
@@ -9,25 +11,20 @@ export const metadata: Metadata = {
   description:
     'Como clínicas podem transformar avaliações de pacientes e feedback privado em uma rotina de melhoria de experiência e reputação local.',
   alternates: { canonical },
-  openGraph: { type: 'article', title: 'Reputação online para clínicas', description: 'Guia prático de avaliações e feedback para clínicas.', url: canonical },
-};
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: 'Reputação online para clínicas: guia prático de avaliações e feedback',
-  description: 'Como clínicas podem transformar avaliações de pacientes e feedback privado em melhoria de experiência.',
-  datePublished: '2026-10-05',
-  dateModified: '2026-10-05',
-  author: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  publisher: { '@type': 'Organization', name: 'Filtra.AI', url: 'https://filtraai.com' },
-  mainEntityOfPage: canonical,
+  openGraph: { type: 'article', title: 'Reputação online para clínicas', description: 'Guia prático de avaliações e feedback para clínicas.', url: canonical, images: [OG_IMAGE_META] },
+  twitter: buildTwitter('Reputação online para clínicas', 'Guia prático de avaliações e feedback para clínicas.'),
 };
 
 export default function Page() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BlogSchema
+        headline="Reputação online para clínicas: guia prático de avaliações e feedback"
+        description="Como clínicas podem transformar avaliações de pacientes e feedback privado em melhoria de experiência."
+        canonical={canonical}
+        datePublished="2026-10-05"
+        dateModified="2026-10-05"
+      />
       <BlogArticle
         kicker="Clínicas · reputação local"
         title="Reputação online para clínicas: guia prático de avaliações e feedback"

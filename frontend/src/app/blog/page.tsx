@@ -2,16 +2,31 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '../components/BrandMark';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'Blog: reputação, avaliações Google e SEO local',
   description:
     'Guias da Filtra.AI sobre gestão de reputação online, avaliações Google, feedback de clientes, SEO local e crescimento para empresas e agências.',
   alternates: { canonical: 'https://filtraai.com/blog' },
+  openGraph: {
+    type: 'website',
+    url: 'https://filtraai.com/blog',
+    title: 'Blog Filtra.AI: reputação, avaliações Google e SEO local',
+    description: 'Guias práticos sobre gestão de reputação online, avaliações Google, feedback de clientes e SEO local.',
+    images: [OG_IMAGE_META],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog Filtra.AI: reputação, avaliações Google e SEO local',
+    description: 'Guias práticos sobre gestão de reputação online, avaliações Google, feedback de clientes e SEO local.',
+    images: [OG_IMAGE_META.url],
+  },
 };
 
 const posts = [
-  { href: '/blog/gestao-reputacao-online-guia', title: 'Gestão de reputação online: guia prático para empresas', intent: 'Guia · Reputação' },
+  { href: '/calculadora-nota-google', title: 'Calculadora de nota do Google: quantas avaliações faltam?', intent: 'Ferramenta gratuita' },
+  { href: '/blog/gestao-reputacao-online-guia', title: 'Como fazer gestão de reputação online: guia prático', intent: 'Guia · Reputação' },
   { href: '/blog/como-responder-avaliacoes-negativas', title: 'Como responder avaliações negativas: guia para empresas', intent: 'Guia · Avaliações' },
   { href: '/blog/como-conseguir-avaliacoes-google', title: 'Como conseguir mais avaliações no Google (sem parecer spam)', intent: 'Guia prático' },
   { href: '/blog/velocity-reviews-google-maps-2026', title: 'Como manter avaliações recentes no Google Maps em 2026', intent: 'Tendência / SEO local' },
@@ -56,7 +71,9 @@ export default function BlogIndexPage() {
             <Link href="/agencias" className="text-indigo-300 underline">
               gestão de reputação para agências de SEO local
             </Link>
-            . Para a estratégia de busca local, aprofunde o guia de{' '}
+            . Calcule também uma estimativa de quantas avaliações seriam necessárias para alcançar uma nota desejada usando a nossa{' '}
+            <Link href="/calculadora-nota-google" className="text-indigo-300 underline">calculadora de nota do Google</Link>.
+            {' '}Para a estratégia de busca local, aprofunde o guia de{' '}
             <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 underline">
               pacotes de SEO local e Local Pack
             </Link>
@@ -70,6 +87,7 @@ export default function BlogIndexPage() {
               ['/gestao-de-reputacao-online', 'Gestão de reputação online'],
               ['/avaliacoes-google', 'Avaliações Google'],
               ['/auditoria-gratuita', 'Auditoria gratuita'],
+              ['/calculadora-nota-google', 'Calculadora de nota Google'],
             ].map(([href, title]) => (
               <Link key={href} href={href} className="rounded-xl border border-zinc-800 px-4 py-3 text-sm text-indigo-300 hover:border-indigo-500/40 hover:text-indigo-200">
                 {title} →

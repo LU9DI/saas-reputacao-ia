@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -20,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: 'https://filtraai.com/agencias',
       title: 'SEO local para agências: reputação | Filtra.AI',
       description: 'Gestão de reputação e avaliações Google para agências de SEO local. Estruture uma oferta recorrente e acompanhe clientes com a Filtra.AI.',
+      images: [OG_IMAGE_META],
     },
   };
 }

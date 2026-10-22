@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Gestão de reputação online para empresas',
-  description: 'Gestão de reputação online para empresas: monitore avaliações Google, feedback e temas recorrentes, e transforme sinais de clientes em melhorias com IA.',
+    title: 'Software de gestão de reputação online | Filtra.AI',
+  description: 'Conheça um software de gestão de reputação online para monitorar avaliações Google, analisar feedback com IA e transformar temas recorrentes em ações para sua empresa.',
   alternates: {
     canonical: 'https://filtraai.com/gestao-de-reputacao-online',
     languages: {
@@ -19,13 +20,15 @@ export async function generateMetadata(): Promise<Metadata> {
       url: 'https://filtraai.com/gestao-de-reputacao-online',
       siteName: 'Filtra.AI',
       locale: 'pt_BR',
-      title: 'Gestão de reputação online para empresas | Avaliações Google e IA | Filtra.AI',
-      description: 'Gestão de reputação online para empresas: monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
+      title: 'Software de gestão de reputação online | Filtra.AI',
+      description: 'Software para monitorar avaliações, analisar feedback e organizar a gestão da reputação online com IA.',
+      images: [OG_IMAGE_META],
     },
     twitter: {
       card: 'summary_large_image',
       title: 'Gestão de reputação online para empresas | Avaliações Google e IA | Filtra.AI',
       description: 'Monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
+      images: [OG_IMAGE_META.url],
     },
   };
 }
@@ -62,8 +65,8 @@ export default function Page() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <SeoLanding
-      h1="Gestão de reputação online: transforme avaliações em crescimento"
-      lead="Gestão de reputação online é o processo contínuo de acompanhar avaliações, feedback e sinais da experiência, entender causas, agir sobre problemas e medir se a percepção melhora."
+      h1="Software de gestão de reputação online para empresas"
+      lead="Centralize avaliações e feedback, identifique padrões com IA e organize ações para melhorar a experiência do cliente. A Filtra.AI ajuda sua equipe a transformar sinais de reputação em prioridades verificáveis."
       breadcrumbHref="/gestao-de-reputacao-online"
       contextLinks={[
         { href: '/filtra-ai', title: 'Filtra.AI — plataforma de reputação', description: 'Centralize avaliações Google, feedback, análise por IA e rotina de reputação.' },
