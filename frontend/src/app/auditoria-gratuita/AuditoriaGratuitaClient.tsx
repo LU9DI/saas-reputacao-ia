@@ -174,7 +174,9 @@ export function AuditoriaGratuitaClient() {
           <div>
             <h2 className="text-3xl font-bold text-zinc-100">{c.s4}</h2>
             <ol className="mt-4 max-w-3xl space-y-3 leading-8">
-              {c.p4.split(/[;；]/).map((step) => step.replace(/^\s*\d+\.\s*/, '').trim()).filter(Boolean).map((step, index) => (\n                <li key={`${index}-${step}`}>{step}</li>\n              ))}
+              {c.p4.split(/[;；]/).map((step) => step.replace(/^\s*\d+\.\s*/, '').trim()).filter(Boolean).map((step, index) => (
+                <li key={`${index}-${step}`}>{step}</li>
+              ))}
             </ol>
           </div>
           <div>
