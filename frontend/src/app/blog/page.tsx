@@ -8,7 +8,15 @@ export const metadata: Metadata = {
   title: 'Blog: reputação, avaliações Google e SEO local',
   description:
     'Guias da Filtra.AI sobre gestão de reputação online, avaliações Google, feedback de clientes, SEO local e crescimento para empresas e agências.',
-  alternates: { canonical: 'https://filtraai.com/blog' },
+  alternates: {
+    canonical: 'https://filtraai.com/blog',
+    languages: {
+      'pt-BR': 'https://filtraai.com/blog',
+      en: 'https://filtraai.com/en/blog',
+      es: 'https://filtraai.com/es/blog',
+      'x-default': 'https://filtraai.com/blog',
+    },
+  },
   openGraph: {
     type: 'website',
     url: 'https://filtraai.com/blog',

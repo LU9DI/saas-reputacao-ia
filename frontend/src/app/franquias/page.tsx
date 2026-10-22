@@ -41,6 +41,7 @@ export default function FranquiasPage() {
         { href: '/feedback-de-clientes', title: 'Feedback de clientes', description: 'Transforme opiniões em informação operacional para a rede.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Encontre padrões recorrentes entre unidades e avaliações.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial de uma unidade ou da rede.' },
+        { href: '/blog/reputacao-franquias-multilocal', title: 'Reputação para franquias multilocal', description: 'Aprofunde a comparação de unidades e a governança entre central e franqueado.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Entenda como avaliações entram na operação de SEO local.' },
       ]}
       sections={[

@@ -38,6 +38,7 @@ export default function TurismoPage() {
       breadcrumbHref="/turismo"
       contextLinks={[
         { href: '/hoteis', title: 'Gestão de reputação para hotéis', description: 'Organize avaliações de hóspedes e padrões de experiência.' },
+        { href: '/blog/reputacao-online-hoteis', title: 'Aprender com avaliações de hóspedes', description: 'Veja como mapear a jornada e comparar unidades com contexto.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Identifique temas recorrentes em avaliações e feedbacks.' },
         { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Acompanhe sinais públicos e oportunidades de melhoria.' },
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Faça um diagnóstico inicial da reputação do negócio.' },
@@ -62,6 +63,32 @@ export default function TurismoPage() {
         {
           heading: 'Comece com um piloto',
           body: 'Use o trial de 7 dias em uma unidade ou operação, observe o volume e os padrões de feedback e decida como expandir.',
+        },
+        {
+          heading: 'Sazonalidade e comparação justa',
+          body: 'Alta e baixa temporada trazem volumes e perfis de visitantes diferentes. Compare períodos equivalentes e leve em conta ocupação, tipo de experiência e capacidade da operação. Uma média menor em um mês atípico pode não significar piora da experiência; sem contexto, o número engana.',
+        },
+        {
+          heading: 'Idioma e contexto do visitante',
+          body: 'Avaliações em outros idiomas podem trazer detalhes que passam despercebidos em uma leitura rápida. Ao responder, use uma linguagem clara e, quando possível, o idioma do visitante. Evite traduções automáticas sem revisão em casos sensíveis, pois tom e nuance podem mudar.',
+        },
+        {
+          heading: 'Indicadores para a operação turística',
+          body: 'Acompanhe recência, volume, temas recorrentes, avaliações sem resposta e evolução por período. Para atrações e operadores, também vale separar feedback sobre reserva, atendimento, guia, transporte e experiência no local. O objetivo é levar cada tema ao responsável certo.',
+        },
+      ]}
+      faq={[
+        {
+          question: 'Como avaliar a reputação na baixa temporada?',
+          answer: 'Estabeleça uma linha de base e compare o mesmo período de anos anteriores, considerando ocupação e perfil de visitantes. Evite comparar a baixa temporada com um mês de alta demanda sem ajustar o contexto.',
+        },
+        {
+          question: 'Preciso responder avaliações em outros idiomas?',
+          answer: 'Não é obrigatório, mas uma resposta clara no idioma do visitante ou em uma língua amplamente compreendida melhora a experiência. Em casos sensíveis, revise a tradução para não alterar o sentido ou o tom.',
+        },
+        {
+          question: 'Como usar o feedback para melhorar a operação?',
+          answer: 'Classifique o tema, defina um responsável, execute uma ação verificável e acompanhe as avaliações seguintes. Compartilhe os aprendizados com as equipes de reserva, recepção, guias e atendimento para que o feedback chegue a quem pode agir.',
         },
       ]}
     />
