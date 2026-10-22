@@ -8,6 +8,7 @@ const base = 'https://filtraai.com';
 const LAST_MODIFIED: Record<string, string> = {
   '/': '2026-10-19',
   '/calculadora-nota-google': '2026-10-20',
+  '/indice-reputacao': '2026-10-22',
   '/filtra-ai': '2026-10-19',
   '/gestao-de-reputacao-online': '2026-10-22',
   '/blog': '2026-10-22',
@@ -140,6 +141,7 @@ const canonicalPaths = [
   '/termos',
   '/privacidade',
   '/planos',
+  '/indice-reputacao',
 ];
 
 const localizedPaths = Object.values(SEO_FAMILIES).flatMap((family) =>

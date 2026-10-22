@@ -30,6 +30,10 @@ jobs:
         working-directory: frontend
         run: node scripts/validate-seo.mjs
 
+      - name: Validate LLM discovery references
+        working-directory: frontend
+        run: npm run seo:llms
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest

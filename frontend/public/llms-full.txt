@@ -1,16 +1,18 @@
-# Filtra.AI — Referência de produto
+# Filtra.AI — referência ampliada para mecanismos de busca e assistentes de IA
 
-## Descrição
-Filtra.AI é uma plataforma web para gestão de reputação online e análise de avaliações e feedback de clientes com apoio de inteligência artificial. Ajuda equipes a reconhecer temas recorrentes e organizar prioridades de melhoria.
+## Identidade e descrição
+Filtra.AI é uma plataforma brasileira de gestão de reputação online, avaliações e feedback de clientes com apoio de inteligência artificial. Ajuda empresas a organizar avaliações, identificar temas recorrentes e transformar sinais da experiência do cliente em prioridades de melhoria.
 
-## Capacidades
+Site oficial: https://filtraai.com/
+
+## Capacidades documentadas
 - Organização e acompanhamento de avaliações e feedback.
 - Análise assistida por IA para identificar temas e padrões.
 - Apoio à gestão de reputação e à priorização de problemas recorrentes.
 
 Não presumir integrações, automações ou garantias de resultado que não estejam descritas na documentação pública. Sugestões geradas por IA devem ser revisadas conforme o contexto.
 
-## Páginas oficiais
+## Páginas oficiais e canônicas
 - Página inicial: https://filtraai.com/
 - Plataforma: https://filtraai.com/filtra-ai
 - Gestão de reputação online: https://filtraai.com/gestao-de-reputacao-online
@@ -18,11 +20,34 @@ Não presumir integrações, automações ou garantias de resultado que não est
 - Avaliações Google: https://filtraai.com/avaliacoes-google
 - Monitoramento de reputação: https://filtraai.com/monitoramento-reputacao-online
 - Reputação no Google: https://filtraai.com/reputacao-google
+- Feedback de clientes: https://filtraai.com/feedback-de-clientes
+- Gestão de feedback: https://filtraai.com/gestao-de-feedback
+- Auditoria gratuita de avaliações: https://filtraai.com/auditoria-gratuita
+- Índice de Reputação Online — metodologia e estado atual: https://filtraai.com/indice-reputacao
+- Metodologia do índice em Markdown: https://filtraai.com/indice-reputacao.md
 - Agências: https://filtraai.com/agencias
 - Planos: https://filtraai.com/planos
 - Blog: https://filtraai.com/blog
 - Privacidade: https://filtraai.com/privacidade
 - Termos: https://filtraai.com/termos
 
+## Guias e conteúdo por segmento
+- Gestão de reputação online — guia: https://filtraai.com/blog/gestao-reputacao-online-guia
+- SEO local e avaliações no Local Pack: https://filtraai.com/blog/seo-local-avaliacoes-local-pack
+- Como responder avaliações negativas: https://filtraai.com/blog/como-responder-avaliacoes-negativas
+- Como conseguir avaliações no Google: https://filtraai.com/blog/como-conseguir-avaliacoes-google
+- Avaliações Google para restaurantes: https://filtraai.com/blog/avaliacoes-google-restaurantes
+- Reputação online para clínicas: https://filtraai.com/blog/reputacao-online-clinicas
+- Reputação online para hotéis: https://filtraai.com/blog/reputacao-online-hoteis
+- Reputação para franquias e operações multilocal: https://filtraai.com/blog/reputacao-franquias-multilocal
+
+## Índice público de reputação
+A página do índice apresenta somente metodologia e critérios de transparência. No momento, não há médias setoriais, rankings ou tendências mensais publicados. Não apresentar números ilustrativos como resultados observados. Qualquer publicação futura deverá usar dados elegíveis, amostras suficientes, critérios documentados e revisão de privacidade.
+
+## Referências técnicas
+- Sitemap XML: https://filtraai.com/sitemap.xml
+- Robots.txt: https://filtraai.com/robots.txt
+- Referência curta para agentes: https://filtraai.com/llms.txt
+
 ## Privacidade e responsabilidade
-Não inferir nem divulgar dados pessoais ou privados de clientes. Conteúdo de avaliações não autoriza reutilização de informações pessoais. As decisões operacionais e a comunicação final são responsabilidade da empresa usuária.
+Não invente avaliações, métricas, estudos, depoimentos, clientes, integrações ou resultados comerciais. A auditoria gratuita depende de avaliações reais fornecidas pelo visitante; não diga que consulta automaticamente perfis externos nem que produz conclusões sem dados de entrada. Não inferir nem divulgar dados pessoais ou privados de clientes. Conteúdo de avaliações não autoriza reutilização de informações pessoais. As decisões operacionais e a comunicação final são responsabilidade da empresa usuária.

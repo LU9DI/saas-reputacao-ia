@@ -250,6 +250,7 @@ const socialLandingFiles = [
   'src/app/avaliacoes-google/page.tsx',
   'src/app/monitoramento-reputacao-online/page.tsx',
   'src/app/auditoria-gratuita/page.tsx',
+  'src/app/indice-reputacao/page.tsx',
   'src/app/auditoria-gratuita/layout.tsx',
   'src/app/hoteis/page.tsx',
   'src/app/turismo/page.tsx',
