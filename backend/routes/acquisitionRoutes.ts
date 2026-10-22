@@ -14,7 +14,7 @@ function acquisitionDelayDays(stage: string): number {
   return 0;
 }
 
-function acquisitionMessage(stage: string, company: string, appUrl: string) {
+export function acquisitionMessage(stage: string, company: string, appUrl: string) {
   const nome = company || 'sua empresa';
   if (stage === 'followup_1') {
     return {
@@ -30,7 +30,7 @@ function acquisitionMessage(stage: string, company: string, appUrl: string) {
         'Se não fizer sentido para você, basta responder este e-mail e não enviaremos novas mensagens.',
         '',
         'Filtra.AI',
-      ].join('\\n'),
+      ].join('\n'),
     };
   }
   if (stage === 'followup_2') {
@@ -47,7 +47,7 @@ function acquisitionMessage(stage: string, company: string, appUrl: string) {
         'Depois deste contato, não enviaremos novas mensagens automáticas.',
         '',
         'Filtra.AI',
-      ].join('\\n'),
+      ].join('\n'),
     };
   }
   return {
@@ -63,7 +63,7 @@ function acquisitionMessage(stage: string, company: string, appUrl: string) {
       'Se não quiser receber novas mensagens, basta responder este e-mail.',
       '',
       'Filtra.AI',
-    ].join('\\n'),
+    ].join('\n'),
   };
 }
 
