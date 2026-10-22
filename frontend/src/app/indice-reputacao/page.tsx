@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 const siteUrl = 'https://filtraai.com';
 const pageUrl = `${siteUrl}/indice-reputacao`;
@@ -15,6 +16,13 @@ export const metadata: Metadata = {
     title: 'Índice de Reputação Online | Filtra.AI',
     description:
       'Metodologia, critérios de publicação e compromisso com dados agregados e verificáveis sobre reputação online.',
+    images: [OG_IMAGE_META],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Índice de Reputação Online | Filtra.AI',
+    description: 'Metodologia transparente para indicadores agregados, sem estatísticas simuladas ou exposição de empresas.',
+    images: [OG_IMAGE_META.url],
   },
   robots: { index: true, follow: true },
 };
