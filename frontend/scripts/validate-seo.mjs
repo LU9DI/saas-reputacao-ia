@@ -243,6 +243,11 @@ for (const [name, source] of [
   check(twitter.includes("card: 'summary_large_image'") && twitter.includes('images: [OG_IMAGE_META.url]'), `${name} must define a large Twitter card and social image`);
 }
 
+const reputationLandingTwitter = metadataObject(read('src/app/gestao-de-reputacao-online/page.tsx'), 'twitter');
+const freeAuditTwitter = metadataObject(read('src/app/auditoria-gratuita/page.tsx'), 'twitter');
+check(reputationLandingTwitter.includes("description: 'Software para monitorar avaliações, analisar feedback e organizar a gestão da reputação online com IA.'"), 'Reputation landing Twitter description must match its page-specific Open Graph description');
+check(freeAuditTwitter.includes('title:') && freeAuditTwitter.includes('description:') && freeAuditTwitter.includes("card: 'summary_large_image'") && freeAuditTwitter.includes('images: [OG_IMAGE_META.url]'), 'Free audit page must define page-specific Twitter metadata and a large social image');
+
 const socialLandingFiles = [
   'src/app/ia/page.tsx',
   'src/app/filtra-ai/page.tsx',
