@@ -36,6 +36,26 @@ type Diagnostic = {
 
 const API = getEnv('NEXT_PUBLIC_API_URL');
 
+function getAcquisitionAttribution() {
+  if (typeof window === 'undefined') return {};
+  const params = new URLSearchParams(window.location.search);
+  let referrerOrigin = '';
+  try {
+    referrerOrigin = document.referrer ? new URL(document.referrer).origin : '';
+  } catch {
+    // Referrer may be absent or malformed; keep campaign attribution bounded.
+  }
+  return {
+    utm_source: params.get('utm_source') || undefined,
+    utm_medium: params.get('utm_medium') || undefined,
+    utm_campaign: params.get('utm_campaign') || undefined,
+    utm_content: params.get('utm_content') || undefined,
+    utm_term: params.get('utm_term') || undefined,
+    landing_path: window.location.pathname,
+    referrer_origin: referrerOrigin || undefined,
+  };
+}
+
 export function AuditoriaGratuitaClient() {
   const { language } = useLanguage();
   const c = { ...COPY[language], ...cExtra(language) };
@@ -73,6 +93,7 @@ export function AuditoriaGratuitaClient() {
           company: company.trim(),
           consent: true,
           source: 'auditoria-gratuita',
+          attribution: getAcquisitionAttribution(),
         }),
       }
     );
@@ -109,6 +130,7 @@ export function AuditoriaGratuitaClient() {
             locale: language,
             reviews,
             lead_id: consentData?.lead_id || '',
+            attribution: getAcquisitionAttribution(),
           }),
         }
       );
