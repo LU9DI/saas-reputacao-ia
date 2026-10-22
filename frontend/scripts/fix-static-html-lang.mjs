@@ -12,9 +12,12 @@ import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 
 const OUT = resolve(process.cwd(), 'out');
-if (!statSyncSafe(OUT)) {
-  console.log('Static HTML language pass skipped: no out/ directory (non-export build).');
+if (process.env.CLOUDFLARE_PAGES !== '1') {
+  console.log('Static HTML language pass skipped: CLOUDFLARE_PAGES is not enabled.');
   process.exit(0);
+}
+if (!statSyncSafe(OUT)) {
+  throw new Error('CLOUDFLARE_PAGES=1 but the static export directory out/ is missing.');
 }
 
 function statSyncSafe(path) {
