@@ -254,5 +254,23 @@ for (const [route, shell] of [
   check(redirects.includes(`${route} ${shell} 200`), `_redirects must map ${route} to ${shell} with status 200`);
 }
 
+// Next returns 308 for `permanent: true`; these legacy SEO redirects must be 301.
+const nextConfigSource = read('next.config.mjs');
+for (const route of [
+  '/en/hoteis',
+  '/en/clinicas',
+  '/en/auditoria-gratuita',
+  '/en/turismo',
+  '/es/parceiros',
+  '/es/feedback-de-clientes',
+  '/zh/gestao-de-reputacao-online',
+  '/zh/agencias',
+  '/zh/restaurantes',
+  '/zh/avaliacoes-google',
+]) {
+  const line = nextConfigSource.split(/\r?\n/).find((entry) => entry.includes(`source: '${route}'`));
+  check(line?.includes('statusCode: 301'), `${route} must redirect with statusCode 301`);
+}
+
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
 console.log(`SEO source validation passed: ${paths.length} canonical paths, ${families.length} hreflang families and ${sitemapPaths.length} unique sitemap path literals checked.`);
