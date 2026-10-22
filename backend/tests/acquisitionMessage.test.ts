@@ -1,3 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
 import { acquisitionMessage } from '../routes/acquisitionRoutes.js';
 
 test('acquisition email templates use actual line breaks', () => {
@@ -7,6 +9,3 @@ test('acquisition email templates use actual line breaks', () => {
     assert.ok(!message.text.includes('\\n'), `${stage} message should not contain literal backslash-n sequences`);
   }
 });
-
-import test from 'node:test';
-import assert from 'node:assert/strict';
