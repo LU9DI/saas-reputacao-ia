@@ -23,6 +23,12 @@ export const metadata: Metadata = {
     type: 'website',
     images: [OG_IMAGE_META],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Auditoria gratuita de avaliações e reputação online | Filtra.AI',
+    description: 'Analise avaliações da sua empresa e descubra padrões, riscos e oportunidades de melhoria com a Filtra.AI.',
+    images: [OG_IMAGE_META.url],
+  },
 };
 
 export default function AuditoriaGratuitaPage() {
