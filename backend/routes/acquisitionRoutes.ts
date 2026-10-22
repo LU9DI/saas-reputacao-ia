@@ -3,6 +3,10 @@ import { enviarEmail } from '../lib/mailer.js';
 import { syncConsentedAcquisitionLead } from '../services/crmAcquisitionSync.js';
 import { sanitizeAcquisitionAttribution, summarizeAcquisitionEvents } from '../services/acquisitionAttribution.js';
 
+function outreachEnabled(): boolean {
+  return process.env.ACQUISITION_OUTREACH_ENABLED === 'true';
+}
+
 function acquisitionDailyLimit(): number {
   const configured = Number(process.env.ACQUISITION_DAILY_LIMIT || 80);
   return Math.min(80, Math.max(1, Number.isFinite(configured) ? Math.floor(configured) : 80));
@@ -67,7 +71,11 @@ export function acquisitionMessage(stage: string, company: string, appUrl: strin
   };
 }
 
-async function processAcquisitionBatch(options: { limit: number; source: string }) {
+export async function processAcquisitionBatch(options: { limit: number; source: string }) {
+  // Fail closed before loading the database or touching the queue/mailer.
+  if (!outreachEnabled()) {
+    return { enabled: false, reason: 'ACQUISITION_OUTREACH_ENABLED is not true', attempted: 0, sent: 0, failed: 0, skipped: 0, daily_limit: acquisitionDailyLimit(), sent_today: 0 };
+  }
   const db = (await import('../lib/db.js')).getDb();
   await ensureAcquisitionSchema(db);
 
@@ -177,6 +185,10 @@ async function processAcquisitionBatch(options: { limit: number; source: string 
 }
 
 export function startAcquisitionScheduler() {
+  if (!outreachEnabled()) {
+    console.log('📨 Acquisition scheduler: OFF (defina ACQUISITION_OUTREACH_ENABLED=true para habilitar envios)');
+    return;
+  }
   if (process.env.ACQUISITION_SCHEDULER !== '1') {
     console.log('📨 Acquisition scheduler: OFF (defina ACQUISITION_SCHEDULER=1 para ligar)');
     return;
@@ -446,6 +458,9 @@ export function mountAcquisitionRoutes(app: Express) {
 
   app.post('/api/n8n/acquisition/send', async (req: Request, res: Response) => {
     if (!secretOk(req)) return res.status(401).json({ error: 'Unauthorized' });
+    if (!outreachEnabled()) {
+      return res.status(200).json({ ok: true, enabled: false, reason: 'ACQUISITION_OUTREACH_ENABLED is not true', attempted: 0, sent: 0, failed: 0, skipped: 0 });
+    }
     try {
       const result = await processAcquisitionBatch({
         limit: Math.min(80, Math.max(1, Number(req.body?.limit || req.query.limit || 80))),
