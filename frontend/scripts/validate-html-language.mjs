@@ -8,6 +8,11 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+if (process.env.CLOUDFLARE_PAGES !== '1') {
+  console.log('HTML language guardrail skipped: static export mode is not enabled.');
+  process.exit(0);
+}
+
 const out = resolve(process.cwd(), 'out');
 
 function htmlForRoute(route) {
