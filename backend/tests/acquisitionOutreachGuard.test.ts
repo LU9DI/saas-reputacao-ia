@@ -4,9 +4,11 @@ import { processAcquisitionBatch } from '../routes/acquisitionRoutes.js';
 
 test('outreach stays disabled without explicit opt-in and never touches the queue or mailer', async () => {
   const previous = process.env.ACQUISITION_OUTREACH_ENABLED;
+  const previousDailyLimit = process.env.ACQUISITION_DAILY_LIMIT;
 
   try {
     delete process.env.ACQUISITION_OUTREACH_ENABLED;
+    process.env.ACQUISITION_DAILY_LIMIT = '80';
 
     const result = await processAcquisitionBatch({ limit: 80, source: 'test' });
 
@@ -23,5 +25,7 @@ test('outreach stays disabled without explicit opt-in and never touches the queu
   } finally {
     if (previous === undefined) delete process.env.ACQUISITION_OUTREACH_ENABLED;
     else process.env.ACQUISITION_OUTREACH_ENABLED = previous;
+    if (previousDailyLimit === undefined) delete process.env.ACQUISITION_DAILY_LIMIT;
+    else process.env.ACQUISITION_DAILY_LIMIT = previousDailyLimit;
   }
 });
