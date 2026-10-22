@@ -61,7 +61,7 @@ function normalizeEventTimestamp(value: unknown): string {
   if (!raw) return '';
   // SQLite CURRENT_TIMESTAMP uses "YYYY-MM-DD HH:mm:ss" without a zone.
   // Treat that storage format as UTC, then compare normalized ISO timestamps.
-  const sqliteUtc = /^(\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?)$/.exec(raw);
+  const sqliteUtc = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}(?:\.\d+)?)$/.exec(raw);
   const candidate = sqliteUtc ? `${sqliteUtc[1]}T${sqliteUtc[2]}Z` : raw;
   const millis = Date.parse(candidate);
   return Number.isFinite(millis) ? new Date(millis).toISOString() : '';
