@@ -62,10 +62,13 @@ jobs:
           test -f out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
           grep -q 'https://filtraai.com/en' out/sitemap.xml
           grep -q 'https://filtraai.com/es' out/sitemap.xml
-          grep -q 'https://filtraai.com/zh' out/sitemap.xml
+          # ZH routes remain accessible with noindex but must stay out of sitemap.
+          if grep -q 'https://filtraai.com/zh' out/sitemap.xml; then
+            echo "ZH URLs are noindex and must not appear in sitemap.xml" >&2
+            exit 1
+          fi
           grep -q 'https://filtraai.com/en/blog/ai-review-analysis-guide' out/sitemap.xml
           grep -q 'https://filtraai.com/es/blog/analisis-resenas-ia' out/sitemap.xml
-          grep -q 'https://filtraai.com/zh/blog/ai-review-analysis-guide' out/sitemap.xml
           # Apos o PR #55: paginas privadas sao crawlable com noindex no HTML;
           # no robots.txt apenas /api/ permanece bloqueado.
           grep -q 'Disallow: /api/' out/robots.txt
