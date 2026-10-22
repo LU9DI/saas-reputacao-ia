@@ -76,6 +76,18 @@ function findHtml(routePath) {
   return htmlCandidates(routePath).find((candidate) => existsSync(candidate));
 }
 
+function expectedLanguage(routePath) {
+  const firstSegment = routePath.split('/').filter(Boolean)[0] || '';
+  return ['en', 'es', 'zh'].includes(firstSegment) ? firstSegment : 'pt-BR';
+}
+
+function assertHtmlLanguage(html, routePath) {
+  const match = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i);
+  const expected = expectedLanguage(routePath);
+  if (!match) fail(`missing <html lang> on ${routePath}`);
+  else if (match[1] !== expected) fail(`wrong HTML language on ${routePath}: expected ${expected}, got ${match[1]}`);
+}
+
 if (!existsSync(SITEMAP)) fail('out/sitemap.xml is missing');
 if (!existsSync(ROBOTS)) fail('out/robots.txt is missing');
 if (process.exitCode) process.exit(process.exitCode);
@@ -117,6 +129,7 @@ for (const raw of urls) {
   }
 
   const html = readFileSync(htmlPath, 'utf8');
+  assertHtmlLanguage(html, parsed.pathname);
   const canonicalMatch =
     html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["'][^>]*>/i) ||
     html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["'][^>]*>/i);
@@ -167,6 +180,7 @@ for (const route of NOINDEX_ROUTES) {
     continue;
   }
   const html = readFileSync(htmlPath, 'utf8');
+  assertHtmlLanguage(html, route);
   const hasNoindex =
     /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html) ||
     /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
