@@ -1,6 +1,7 @@
 
 import { enviarEmail } from '../lib/mailer.js';
 import { syncConsentedAcquisitionLead } from '../services/crmAcquisitionSync.js';
+import { sanitizeAcquisitionAttribution, summarizeAcquisitionEvents } from '../services/acquisitionAttribution.js';
 
 function acquisitionDailyLimit(): number {
   const configured = Number(process.env.ACQUISITION_DAILY_LIMIT || 80);
@@ -209,7 +210,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
 function secretOk(req: Request) {
   const supplied = String(req.headers['x-filtra-secret'] || req.headers['x-n8n-secret'] || '').trim();
   const expected = String(process.env.N8N_INBOUND_SECRET || process.env.N8N_WEBHOOK_SECRET || '').trim();
-  return Boolean(expected && supplied && supplied === expected);
+  if (!expected || !supplied) return false;
+  const suppliedBytes = Buffer.from(supplied, 'utf8');
+  const expectedBytes = Buffer.from(expected, 'utf8');
+  if (suppliedBytes.length !== expectedBytes.length) return false;
+  return crypto.timingSafeEqual(suppliedBytes, expectedBytes);
 }
 
 async function safeAlter(db: Database, sql: string) {
@@ -297,6 +302,7 @@ export function mountAcquisitionRoutes(app: Express) {
       const email = String(body.email || '').trim().toLowerCase();
       const company = String(body.company || '').trim().slice(0, 200);
       const source = String(body.source || 'website').trim().slice(0, 120) || 'website';
+      const attribution = sanitizeAcquisitionAttribution(body.attribution);
       if (!EMAIL_RE.test(email)) return res.status(400).json({ error: 'Informe um e-mail válido.' });
       if (body.consent !== true) return res.status(400).json({ error: 'Consentimento explícito é necessário.' });
 
@@ -308,10 +314,19 @@ export function mountAcquisitionRoutes(app: Express) {
          VALUES (?,?,?,1,CURRENT_TIMESTAMP,?,'eligible','consented',0,CURRENT_TIMESTAMP)
          ON CONFLICT(email) DO UPDATE SET
            company=excluded.company,
-           consent=1,
-           consent_at=CURRENT_TIMESTAMP,
+           consent=CASE
+             WHEN acquisition_leads.acquisition_stage IN ('suppressed','unsubscribed') THEN acquisition_leads.consent
+             ELSE 1
+           END,
+           consent_at=CASE
+             WHEN acquisition_leads.acquisition_stage IN ('suppressed','unsubscribed') THEN acquisition_leads.consent_at
+             ELSE CURRENT_TIMESTAMP
+           END,
            source=excluded.source,
-           status='eligible',
+           status=CASE
+             WHEN acquisition_leads.acquisition_stage IN ('suppressed','unsubscribed') THEN acquisition_leads.status
+             ELSE 'eligible'
+           END,
            acquisition_stage=CASE
              WHEN acquisition_leads.acquisition_stage IN ('suppressed','unsubscribed') THEN acquisition_leads.acquisition_stage
              ELSE 'consented'
@@ -323,17 +338,36 @@ export function mountAcquisitionRoutes(app: Express) {
            updated_at=CURRENT_TIMESTAMP`,
         [leadId, email, company || null, source]
       );
+      const row = await db.get('SELECT id,email,company,consent,consent_at,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
+      const suppressed = Number(row?.acquisition_suppressed || 0) === 1
+        || ['suppressed', 'unsubscribed'].includes(String(row?.acquisition_stage || ''));
+
+      // A generic form submission must not silently reverse an unsubscribe or
+      // re-enroll a suppressed contact in a marketing provider.
+      if (suppressed) {
+        await db.run(
+          'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
+          [crypto.randomUUID(), leadId, 'consent.received_suppressed', source, JSON.stringify({ attribution, crm_sync_skipped: true }).slice(0, 20000)]
+        );
+        return res.status(200).json({
+          ok: true,
+          lead_id: row.id,
+          lead: row,
+          acquisition: { eligible_for_followup: false },
+          crm_sync: { ok: true, skipped: true, reason: 'suppressed_contact' },
+        });
+      }
+
       await db.run(
         'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
-        [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ company, email }).slice(0, 20000)]
+        [crypto.randomUUID(), leadId, 'consent.granted', source, JSON.stringify({ attribution }).slice(0, 20000)]
       );
-      const row = await db.get('SELECT id,email,company,consent,consent_at,source,acquisition_stage,acquisition_suppressed FROM acquisition_leads WHERE email = ?', [email]);
       const crmSync = await syncConsentedAcquisitionLead(row);
       await db.run(
         'INSERT INTO acquisition_events (id,lead_id,event_type,source,occurred_at,metadata_json) VALUES (?,?,?, ?,CURRENT_TIMESTAMP,?)',
         [crypto.randomUUID(), leadId, crmSync.ok ? 'crm.sync.completed' : 'crm.sync.partial', source, JSON.stringify(crmSync).slice(0, 20000)]
       );
-      return res.status(existing ? 200 : 201).json({ ok: true, lead_id: row.id, lead: row, crm_sync: crmSync });
+      return res.status(existing ? 200 : 201).json({ ok: true, lead_id: row.id, lead: row, acquisition: { eligible_for_followup: true }, crm_sync: crmSync });
     } catch (error: any) {
       console.error('[acquisition] consent:', error?.message || error);
       return res.status(503).json({ error: 'Não foi possível registrar o consentimento agora.' });
@@ -362,6 +396,52 @@ export function mountAcquisitionRoutes(app: Express) {
       [nowIso, nowIso]
     );
     return res.json({ ok: true, count: rows.length, leads: rows });
+  });
+
+  app.post('/api/n8n/acquisition/report', async (req: Request, res: Response) => {
+    if (!secretOk(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const { getDb, dbEngine } = await import('../lib/db.js');
+      const db = getDb();
+      await ensureAcquisitionSchema(db);
+      const requestedDays = Number(req.body?.days || req.query.days || 30);
+      const days = Math.min(90, Math.max(1, Number.isFinite(requestedDays) ? Math.floor(requestedDays) : 30));
+      const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+      // SQLite needs datetime() normalization for mixed timestamp formats.
+      // Production Postgres compares native TIMESTAMPTZ values directly.
+      const isPostgres = dbEngine() === 'postgres';
+      const rows = await db.all(
+        isPostgres
+          ? `SELECT lead_id,event_type,source,occurred_at,metadata_json
+             FROM acquisition_events
+             WHERE event_type IN ('consent.granted','diagnostic.completed')
+               AND occurred_at >= ?
+             ORDER BY occurred_at DESC
+             LIMIT 10001`
+          : `SELECT lead_id,event_type,source,occurred_at,metadata_json
+             FROM acquisition_events
+             WHERE event_type IN ('consent.granted','diagnostic.completed')
+               AND datetime(occurred_at) >= datetime(?)
+             ORDER BY datetime(occurred_at) DESC
+             LIMIT 10001`,
+        [cutoff]
+      );
+      if ((rows || []).length > 10000) {
+        return res.status(422).json({
+          error: 'O período contém mais de 10.000 eventos. Reduza o intervalo para obter um relatório completo.',
+          max_events: 10000,
+        });
+      }
+      return res.json({
+        ok: true,
+        period_days: days,
+        generated_at: new Date().toISOString(),
+        ...summarizeAcquisitionEvents(rows || []),
+      });
+    } catch (error: any) {
+      console.error('[acquisition] report:', error?.message || error);
+      return res.status(500).json({ error: 'Não foi possível gerar o relatório de aquisição.' });
+    }
   });
 
   app.post('/api/n8n/acquisition/send', async (req: Request, res: Response) => {
