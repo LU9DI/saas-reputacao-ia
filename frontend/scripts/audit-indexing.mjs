@@ -82,7 +82,7 @@ function expectedLanguage(routePath) {
 }
 
 function assertHtmlLanguage(html, routePath) {
-  const match = html.match(/<html\\b[^>]*\\blang=["']([^"']+)["']/i);
+  const match = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i);
   const expected = expectedLanguage(routePath);
   if (!match) fail(`missing <html lang> on ${routePath}`);
   else if (match[1] !== expected) fail(`wrong HTML language on ${routePath}: expected ${expected}, got ${match[1]}`);
