@@ -137,6 +137,18 @@ async function brevoUpsert(lead: Lead) {
 }
 
 export async function syncConsentedAcquisitionLead(lead: Lead) {
+  // External CRM/marketing writes remain opt-in even when API keys exist.
+  // This prevents a deployment from activating sync merely by inheriting secrets.
+  if (process.env.ACQUISITION_CRM_SYNC_ENABLED !== 'true') {
+    return {
+      ok: true,
+      sync_id: crypto.randomUUID(),
+      results: {
+        hubspot: { enabled: false, reason: 'ACQUISITION_CRM_SYNC_ENABLED is not true' },
+        brevo: { enabled: false, reason: 'ACQUISITION_CRM_SYNC_ENABLED is not true' },
+      },
+    };
+  }
   const results: Record<string, unknown> = {};
   if (hubspotKey()) {
     try { results.hubspot = await hubspotUpsert(lead); }
