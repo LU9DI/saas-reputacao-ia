@@ -5,16 +5,16 @@ import { OG_IMAGE_META } from '../lib/socialMetadata';
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Software de gestão de reputação online',
-  description: 'Software para monitorar avaliações Google, analisar feedback com IA e transformar temas recorrentes em ações de melhoria.',
-  alternates: {
-    canonical: 'https://filtraai.com/gestao-de-reputacao-online',
-    languages: {
-      'pt-BR': 'https://filtraai.com/gestao-de-reputacao-online',
-      en: 'https://filtraai.com/en/online-reputation-management',
-      es: 'https://filtraai.com/es/gestion-reputacion-online',
-      'x-default': 'https://filtraai.com/gestao-de-reputacao-online',
+    description: 'Software para monitorar avaliações Google, analisar feedback com IA e transformar temas recorrentes em ações de melhoria.',
+    alternates: {
+      canonical: 'https://filtraai.com/gestao-de-reputacao-online',
+      languages: {
+        'pt-BR': 'https://filtraai.com/gestao-de-reputacao-online',
+        en: 'https://filtraai.com/en/online-reputation-management',
+        es: 'https://filtraai.com/es/gestion-reputacion-online',
+        'x-default': 'https://filtraai.com/gestao-de-reputacao-online',
+      },
     },
-  },
     openGraph: {
       type: 'website',
       url: 'https://filtraai.com/gestao-de-reputacao-online',
@@ -93,10 +93,6 @@ export default function Page() {
         {
           heading: 'Gestão de reputação para empresas com várias unidades',
           body: 'Hotéis, restaurantes, clínicas, franquias e operações multilocais precisam de uma visão consolidada da marca e também de detalhe por unidade. A gestão correta mantém os dois níveis: visão executiva para priorização e evidência local para a equipe que pode agir.'
-        },
-        {
-          heading: 'Como gerir a reputação de uma empresa ou organização',
-          body: 'Gerir a reputação de uma empresa significa acompanhar o que clientes e mercado estão dizendo, identificar padrões e transformar esses sinais em decisões. Para uma organização com várias áreas ou unidades, a rotina precisa unir visão central da marca, contexto local, responsáveis por cada tema e acompanhamento das ações.',
         },
         {
           heading: 'Serviços de gestão de reputação online: o que avaliar',
