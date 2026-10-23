@@ -1,0 +1,221 @@
+# Estratégia de expansão orgânica programática — Filtra.AI
+
+## Objetivo
+
+Construir um sistema sustentável para ampliar a cobertura orgânica do Filtra.AI de dezenas/centenas para milhares de URLs quando houver demanda e valor suficientes, sem tratar volume de páginas como métrica de sucesso isolada.
+
+Esta é uma estratégia de execução, não um relatório de demanda validada. Os exemplos de segmentos, consultas e rotas são hipóteses para pesquisa; não afirmam volume de busca, dificuldade ou potencial de conversão sem dados do Search Console, pesquisa de palavras-chave e resultados comerciais.
+
+## Princípios
+
+1. **Escala sem teto artificial:** não limitar a estratégia ao número atual de URLs. O limite de publicação deve ser a qualidade, a demanda demonstrável, a capacidade de manter os dados e a utilidade para o visitante.
+2. **Uma URL, uma intenção principal:** só separar páginas quando a necessidade do usuário, a solução ou a evidência disponível forem materialmente diferentes.
+3. **Valor específico por página:** não publicar páginas que apenas substituam o nome de um setor ou cidade em um texto genérico. Incluir orientação operacional, exemplos, critérios, dados, perguntas frequentes úteis ou ferramenta pertinente ao caso.
+4. **Conteúdo verificável:** não inventar estatísticas, clientes, resultados, integrações, funcionalidades, depoimentos ou garantias de ranking/nota.
+5. **Conversão sem pressão enganosa:** cada página deve oferecer um próximo passo coerente (por exemplo, auditoria gratuita ou planos), sem prometer resultados que o produto não controla.
+6. **Expansão reversível:** lançar por lotes, observar indexação e comportamento, corrigir ou consolidar com critérios explícitos; não remover páginas apenas por opinião.
+7. **Métrica de negócio acima de contagem:** acompanhar leads qualificados, auditorias iniciadas/concluídas, cadastros, trials e clientes, além de impressões, cliques e CTR.
+
+## Universo de páginas: famílias a pesquisar
+
+Estas famílias são um mapa inicial de hipóteses, não uma autorização para gerar todas as combinações.
+
+| Família | Exemplos de intenção | Condição para uma URL independente |
+|---|---|---|
+| Setor × tarefa | gestão de avaliações para clínicas; responder avaliações de restaurantes | O setor altera de verdade os exemplos, riscos, fluxo ou orientação |
+| Problema × solução | muitas avaliações sem resposta; temas recorrentes nas avaliações | Há uma resposta prática específica e ligação clara com o produto |
+| Etapa do fluxo | monitorar avaliações; analisar feedback; responder em escala | A intenção é distinta e a página não compete com outra para a mesma consulta |
+| Ferramenta/diagnóstico | auditoria de reputação; análise de avaliações; checklist operacional | Existe ferramenta, método ou entrega real e explicável |
+| Comparação/alternativa | planilha versus plataforma; processo manual versus automatizado | Comparação justa, atualizada, fundamentada e sem alegações inventadas |
+| Localidade | gestão de reputação em uma cidade | Há valor local verificável; não basta trocar o nome da cidade |
+| Integração/canal | gestão de avaliações de uma plataforma específica | A integração/capacidade é real, suportada e documentada |
+| Educação/decisão | como criar processo de resposta; indicadores de reputação | O conteúdo resolve uma questão real e conduz naturalmente ao próximo passo |
+
+
+## Backlog inicial de expansão para o Filtra.AI
+
+Os clusters abaixo são **candidatos para pesquisa**, não páginas aprovadas nem oportunidades com volume comprovado. O inventário do sitemap em main já indica cobertura de temas centrais, idiomas e alguns segmentos (como clínicas, hotéis, restaurantes, turismo, franquias, associações e agências). A expansão deve partir desse estado real e conferir cada URL antes de propor outra.
+
+| Cluster candidato | Exemplos de intenção a pesquisar | Valor que a página precisaria acrescentar | Risco a controlar |
+|---|---|---|---|
+| Beleza e cuidados pessoais | avaliações Google para salão; reputação de clínica estética | exemplos de jornada de agendamento, retorno e resposta a feedback | páginas de salão, estética e clínica podem ficar quase idênticas |
+| Automotivo | avaliações para oficina; reputação de concessionária | exemplos de confiança, orçamento, pós-serviço e reclamações recorrentes | diferenças entre oficina, concessionária e centro automotivo precisam ser reais |
+| Imobiliário | avaliações para imobiliária; reputação de administradora de imóveis | contexto de atendimento, locação, venda e gestão de expectativas | não tratar todos os serviços imobiliários como o mesmo público |
+| Varejo local | avaliações para lojas; gestão de feedback de clientes de loja | situações específicas de atendimento, troca, estoque e experiência na loja | categoria ampla demais sem recorte operacional |
+| Educação | avaliações para escola; reputação de cursos e instituições | contexto de comunicação com famílias/alunos e experiência educacional | evitar conteúdo genérico e alegações sobre desempenho acadêmico |
+| Serviços profissionais | avaliações para escritórios e prestadores locais | exemplos adequados ao processo de contratação e relacionamento | não presumir requisitos regulatórios ou funcionalidades específicas |
+| Saúde por especialidade | avaliações para dentistas; avaliações para fisioterapia | exemplos realmente distintos e cautela com privacidade e linguagem de saúde | risco de criar páginas repetitivas ou aconselhamento inadequado |
+| Multiunidades | monitorar avaliações de várias unidades; reputação de franquias | processo operacional para comparar unidades e organizar prioridades | publicar somente capacidades de produto que existam de fato |
+| Tarefas operacionais | como responder avaliação negativa; como classificar temas recorrentes | modelos, critérios, fluxos ou checklists concretos | canibalização com posts existentes e promessa de resposta automática não comprovada |
+| Ferramentas e calculadoras | auditoria de reputação; checklist de respostas; análise de temas | ferramenta funcional ou método reproduzível, com resultado útil | páginas finas que apenas capturam e-mail sem entregar valor |
+| Agências e parceiros | vender gestão de reputação; operar múltiplos clientes | processo, proposta de valor e fluxo de trabalho específico para parceiros | diferenciar de páginas atuais de agências/parceiros antes de criar outra |
+| Idiomas e mercados | termos equivalentes em espanhol/inglês | tradução localizada, exemplos e intenção de busca adequados ao idioma | tradução literal, hreflang/canonical incorreto e manutenção desproporcional |
+
+### Ordem de pesquisa sugerida
+
+1. **Completar a cobertura setorial em português:** investigar beleza, automotivo, imobiliário, varejo e educação, comparando cada intenção com páginas já existentes.
+2. **Expandir tarefas de alta intenção:** identificar necessidades próximas da auditoria gratuita e do uso do produto, com conteúdo ou ferramenta real.
+3. **Aprofundar multiunidades e parceiros:** validar a capacidade atual do produto e a demanda antes de propor rotas adicionais.
+4. **Expandir idiomas com critério:** priorizar mercados/consultas sustentados por dados; não multiplicar automaticamente cada nova URL por todos os idiomas.
+5. **Só então escalar lotes:** quando uma família provar diferenciação editorial, cobertura técnica e sinal de demanda.
+
+Cada candidato deve registrar consulta/variação, fonte e data da evidência, URLs existentes que possam competir, necessidade do público, conteúdo exclusivo planejado, CTA e decisão (publicar, pesquisar mais, consolidar ou descartar). Sem esses campos, continua sendo apenas uma hipótese.
+
+### Não gerar combinações automaticamente
+
+Não cruzar indiscriminadamente todos os setores × cidades × problemas × plataformas. Uma combinação só entra no backlog publicável se passar por todos os critérios:
+
+- Intenção distinta apoiada por pesquisa ou evidência de usuários.
+- Demanda plausível documentada (Search Console, pesquisa de palavras-chave, pesquisa comercial ou feedback de clientes).
+- Conteúdo e exemplos específicos que não possam ser substituídos por uma página irmã sem perda.
+- Fatos, funcionalidades e afirmações verificáveis.
+- Próximo passo comercial coerente.
+- Canonical, links internos e inclusão no sitemap corretos.
+- Responsável e plano de manutenção quando a página depende de dados que mudam.
+
+Se não houver evidência suficiente, registrar como hipótese de pesquisa — não como URL a publicar.
+
+## Modelo de dados recomendado
+
+Manter os dados de cada página separados da lógica de renderização. Cada registro deve ter, no mínimo:
+
+- slug estável e único;
+- família e intenção principal;
+- title, description e H1;
+- público e problema;
+- valor único explicando o que torna a página diferente;
+- seções com conteúdo factual revisado;
+- fontes para afirmações específicas;
+- tipo de CTA e destino existente;
+- caminho canônico;
+- status (rascunho, revisão, publicado, precisa atualizar, retirado);
+- responsável e data da última revisão;
+- relações explícitas com páginas-pai, irmãs e conteúdo relacionado.
+
+Os nomes são uma proposta de esquema conceitual, não uma afirmação de que esses campos já existam no código. Adotar o padrão do projeto ao implementar. Evitar copiar conteúdo editorial inteiro entre registros ou criar páginas diretamente de uma lista de palavras-chave sem revisão.
+
+## Arquitetura de URLs e navegação
+
+- Preservar URLs existentes que tenham valor e backlinks; não mudar slugs por estética.
+- Usar rotas por família com taxonomia clara (por exemplo, a família atual /solucoes/ pode conter soluções por setor/tarefa quando isso fizer sentido).
+- Criar páginas-pai que ajudem o usuário a navegar por grupos úteis, não diretórios de links sem contexto.
+- Garantir links internos contextuais de páginas-pai para páginas-filhas e entre páginas realmente relacionadas.
+- Evitar que múltiplas páginas tenham o mesmo foco principal; quando duas URLs respondem à mesma intenção, avaliar melhorar uma, diferenciar claramente ou consolidar com redirecionamento planejado.
+- Sitemaps devem conter somente URLs canônicas, indexáveis, publicadas e com resposta válida. Não usar o sitemap como mecanismo para forçar indexação.
+- Páginas de busca interna, filtros combinatórios, parâmetros e estados utilitários não devem virar URLs indexáveis em massa sem justificativa.
+- Não usar conteúdo programático para criar páginas locais fictícias, perfis de clientes fictícios ou alegações não comprovadas.
+
+## Priorização
+
+Pontuar oportunidades de 0 a 3 em cada dimensão, com justificativa registrada:
+
+- Evidência de demanda;
+- Valor comercial / proximidade de compra;
+- Distinção da intenção;
+- Capacidade de oferecer conteúdo ou ferramenta própria;
+- Confiança e disponibilidade dos dados;
+- Facilidade de manutenção.
+
+Deduzir pontos por risco de duplicação, afirmações difíceis de provar, necessidade de dados indisponíveis ou custo de atualização alto. Não usar uma pontuação matemática para substituir julgamento: registrar a justificativa e a evidência. Começar pelas oportunidades com intenção clara, valor distinto e manutenção simples.
+
+## Publicação em lotes
+
+1. **Inventário:** exportar URLs existentes e agrupar por intenção/família; identificar páginas concorrentes e lacunas.
+2. **Pesquisa:** coletar consultas, impressões, cliques, CTR e posição quando Search Console estiver disponível; complementar com pesquisa de palavras-chave e evidência de clientes. Registrar período e fonte.
+3. **Protótipo:** selecionar um pequeno lote representativo de uma família e testar a qualidade editorial, os CTAs, a renderização, metadados, canonical, links e sitemap.
+4. **Validação automática:** slug único, title/description/H1, conteúdo específico mínimo, fonte de afirmações, destino de CTA válido, canonical consistente, links válidos e ausência de duplicação óbvia.
+5. **Revisão humana:** conferir se a página realmente ajuda o público, se os fatos estão corretos e se a diferença em relação às páginas irmãs é real.
+6. **Lançamento gradual:** publicar o lote; não criar milhares de URLs de uma só vez apenas porque o gerador permite.
+7. **Avaliação:** medir indexação, impressões, cliques, CTR, engajamento útil e conversões em janelas comparáveis. Distinguir ausência de demanda de problemas de rastreamento/indexação e de problemas de conversão.
+8. **Iteração:** expandir famílias com sinais positivos; corrigir páginas com problemas claros; consolidar somente com justificativa e plano de redirecionamento/canonical.
+
+## Medição mínima
+
+Relatar por URL e por família, quando as fontes estiverem disponíveis:
+
+- URL canônica e família/intenção;
+- status HTTP e indexabilidade;
+- inclusão no sitemap;
+- impressões, cliques, CTR e posição média do Search Console, com período explícito;
+- eventos de CTA, auditoria iniciada/concluída, cadastro, trial e cliente, se esses eventos estiverem realmente instrumentados;
+- taxa de conversão com denominador definido;
+- fonte de tráfego e limitações de atribuição.
+
+Não inventar números quando uma integração não estiver disponível. Separar métricas observadas, métricas ainda não instrumentadas e hipóteses. Não enviar dados pessoais aos eventos de analytics.
+
+## Guardrails técnicos e editoriais
+
+- Slugs únicos e determinísticos.
+- Metadata e canonical coerentes com a URL.
+- Conteúdo útil, específico e renderizado no HTML entregue ao crawler.
+- Links internos sem órfãos; sitemap sem duplicatas ou URLs não canônicas.
+- CTAs funcionais e destinos válidos.
+- Sem noindex, exclusão ou redirecionamento automático com base apenas em tráfego baixo de curto prazo.
+- Conteúdo sensível, afirmações de desempenho e comparações comerciais exigem revisão apropriada.
+- Toda página deve poder ser atualizada, retirada ou consolidada sem quebrar navegação ou perder redirecionamentos necessários.
+
+## Motor de crescimento: dados próprios, distribuição e conversão
+
+A arquitetura não deve ser apenas um gerador de páginas. Deve fechar o ciclo entre descobrir necessidades, produzir ativos úteis, distribuí-los, observar comportamento e priorizar a próxima oportunidade.
+
+### Inteligência própria do Filtra.AI
+
+Usar apenas dados e capacidades que o produto realmente possui e que podem ser tratados legitimamente. Candidatos a ativos diferenciadores, após validação técnica e de privacidade:
+
+- **Diagnósticos e checklists:** resultados explicáveis sobre completude de perfil, processos de resposta ou organização da reputação, deixando claro o que foi avaliado e o que não foi.
+- **Taxonomias de problemas e modelos operacionais:** categorias de feedback, fluxos de triagem e modelos de resposta com contexto; devem ser úteis sem exigir cadastro e não expor dados identificáveis de clientes.
+- **Benchmarks agregados:** só quando houver volume, representatividade, consentimento/base legal e controles suficientes para evitar reidentificação. Não publicar estatísticas até existir método documentado e amostra adequada.
+- **Ferramentas interativas:** calculadoras, auditorias e geradores que entreguem resultado real, com premissas e limitações explícitas, em vez de páginas cujo único propósito seja capturar contato.
+- **Evidência de produto:** documentar recursos e integrações confirmados; nunca deduzir que uma capacidade existe só porque seria atraente para SEO.
+
+Cada ativo deve registrar origem dos dados, data de atualização, método, limites de uso, responsável e caminho de manutenção. Se não houver dados próprios suficientes, entregar orientação prática e citar fontes confiáveis, sem simular inteligência proprietária.
+
+### Distribuição legítima
+
+A publicação não termina quando a URL entra no sitemap. Para cada família, definir como o conteúdo pode chegar ao público:
+
+- links contextuais a partir de páginas-pai, artigos relacionados, ferramentas e páginas de produto;
+- newsletter e canais próprios, quando existentes e com consentimento aplicável;
+- materiais para vendas, suporte e onboarding que ajudem clientes e prospects a resolver tarefas reais;
+- parcerias editoriais, associações e co-marketing com relevância para o público, sem compra ou troca artificial de links;
+- compartilhamento social e comunidades profissionais, participando com conteúdo útil e respeitando as regras de cada canal;
+- relações públicas e pesquisas originais apenas quando houver achados verificáveis que mereçam divulgação.
+
+Não usar spam, redes artificiais de links, comentários em massa, páginas intermediárias sem valor ou distribuição enganosa. Medir tráfego de referência e ações qualificadas por canal; não tratar publicação em canais como prova de demanda orgânica.
+
+### Funil de conversão e atribuição
+
+Instrumentar eventos que correspondam ao fluxo real do site e do produto, verificando antes quais já existem para evitar duplicação. Modelo de referência:
+
+1. **Descoberta:** impressão, clique orgânico e landing page de entrada.
+2. **Engajamento útil:** uso da ferramenta, leitura/expansão de orientação ou navegação para conteúdo relacionado, definidos por eventos concretos.
+3. **Intenção:** clique no CTA, início de auditoria ou visita à página de planos.
+4. **Ativação:** auditoria concluída, cadastro ou trial iniciado, conforme o fluxo real.
+5. **Resultado comercial:** lead qualificado, oportunidade e cliente, quando esses estados estiverem disponíveis.
+
+Relatar denominador, janela de atribuição e fonte para cada taxa. Segmentar por URL, família, idioma, dispositivo e canal quando houver dados suficientes. Evitar enviar dados pessoais ou conteúdo sensível de avaliações a ferramentas de analytics. Separar eventos já instrumentados de lacunas de medição; não afirmar conversões que não possam ser observadas.
+
+### Ciclo operacional de crescimento
+
+1. Capturar oportunidades de Search Console, pesquisa de SERP, feedback de clientes/suporte/vendas e uso agregado do produto.
+2. Mapear cada necessidade à cobertura existente e identificar lacunas, sobreposições e possibilidade de um ativo próprio.
+3. Priorizar com evidência, valor comercial, distinção da intenção, utilidade e custo de manutenção.
+4. Produzir e revisar um lote pequeno com conteúdo, navegação, indexação e eventos de conversão validados.
+5. Distribuir pelos canais relevantes e observar rastreamento, indexação, impressões, cliques, ações e qualidade dos leads.
+6. Decidir expandir, melhorar, consolidar ou interromper com base em evidências e em janelas comparáveis.
+7. Usar o que foi aprendido para refinar o mapa de mercado e alimentar o próximo lote.
+
+O sistema deve suportar milhares de URLs, mas a expansão é uma consequência da descoberta sistemática de necessidades distintas — não uma meta de publicar combinações em massa.
+
+## Próxima sequência de trabalho
+
+1. Fazer inventário do estado real da branch/base escolhida e das URLs existentes, sem presumir que uma PR aberta já está em produção.
+2. Extrair as páginas atuais por família e detectar duplicação de intenção e lacunas.
+3. Conectar a análise às fontes reais de demanda disponíveis; se Search Console não estiver acessível, registrar a limitação e continuar com fontes alternativas, sem fabricar dados.
+4. Escolher uma única família piloto a partir da evidência encontrada.
+5. Implementar os guardrails e o lote piloto em uma PR isolada.
+6. Medir antes de expandir a família para centenas ou milhares de URLs.
+
+## Definição de sucesso
+
+Sucesso significa aumentar a cobertura de intenções relevantes e gerar mais demanda qualificada, sem deteriorar a utilidade do conteúdo, a rastreabilidade técnica ou a conversão. O total de URLs é uma métrica de capacidade/cobertura, nunca o único KPI.
