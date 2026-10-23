@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SeoPageHeader } from '../components/SeoPageHeader';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 const BASE = 'https://filtraai.com';
 
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Soluções por setor e tarefa | Filtra.AI',
   description: 'Explore guias do Filtra.AI para organizar avaliações Google, monitorar reputação, responder feedback e transformar sinais recorrentes em ações operacionais por setor.',
   alternates: { canonical: `${BASE}/solucoes` },
-  openGraph: { type: 'website', url: `${BASE}/solucoes`, title: 'Soluções por setor e tarefa | Filtra.AI', description: 'Guias práticos para gestão de avaliações e reputação por setor e tarefa.', images: [{ url: 'https://filtraai.com/og-image.png' }] },
+  openGraph: { type: 'website', url: `${BASE}/solucoes`, title: 'Soluções por setor e tarefa | Filtra.AI', description: 'Guias práticos para gestão de avaliações e reputação por setor e tarefa.', images: [OG_IMAGE_META] },
 };
 
 export default function SolucoesIndexPage() {
