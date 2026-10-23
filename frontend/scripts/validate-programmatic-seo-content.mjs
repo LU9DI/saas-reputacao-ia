@@ -117,10 +117,12 @@ for (const page of pages) {
   }
 }
 
-// Repeated boilerplate is allowed in small shared UI elements, not as the whole
-// substantive body of multiple pages. Report section reuse for review without
-// failing on common advice that is genuinely relevant across sectors.
+// Repeated advice can be valid, but an identical substantive section should not
+// appear across four or more programmatic pages. This catches template drift.
 const reusedSections = [...repeatedSectionBodies.entries()].filter(([, owners]) => owners.length > 1);
+for (const [, owners] of reusedSections.filter(([, pageSlugs]) => pageSlugs.length >= 4)) {
+  check(false, `Section body reused across ${owners.length} pages: ${owners.slice(0, 5).join(', ')}.`);
+}
 if (failures.length) {
   console.error('Programmatic SEO content validation failed:');
   for (const failure of failures) console.error(`- ${failure}`);
