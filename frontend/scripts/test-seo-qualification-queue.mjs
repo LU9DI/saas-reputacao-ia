@@ -42,6 +42,7 @@ try {
   assert.equal(report.queue.find((item) => item.evidenceId === 'e5').action, 'blocked-target-property-mismatch');
   assert.ok(report.queue.find((item) => item.evidenceId === 'e5').reasons.includes('existing-page-target-origin-does-not-match-evidence-site-property'));
   assert.equal(report.counts.conflictingMappingsBlocked, 1);
+  assert.equal(report.counts.targetPropertyMismatchesBlocked, 1);
   assert.equal(report.counts.invalidMappings, 1);
   assert.equal(report.counts.publishAllowed, 0);
   assert.equal(report.policy.semanticMatchingEnabled, false);
