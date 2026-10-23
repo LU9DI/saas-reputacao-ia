@@ -94,8 +94,11 @@ for (const sector of taxonomy.sectors) {
   }
 }
 
-const duplicateQueries = [...seenQueries.entries()].filter(([, owners]) => owners.length > 1);
-for (const [query, owners] of duplicateQueries) {
+const duplicateQueries = [...seenQueries.entries()].filter(([, owners]) => {
+  const distinctIntents = new Set(owners.map((slug) => slug.split('-').slice(0, -2).join('-')));
+  return distinctIntents.size > 1;
+});
+for (const [, owners] of duplicateQueries) {
   for (const candidate of candidates) {
     if (owners.includes(candidate.slug)) candidate.flags.push('duplicate-query-hypothesis');
   }
