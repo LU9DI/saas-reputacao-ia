@@ -32,7 +32,7 @@ function metadataObject(source, key) {
 }
 
 check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
-check(rootLayout.includes('localized-document-language') && rootLayout.includes('document.documentElement.lang'), 'Root layout must set the document language for localized routes before hydration');
+// Runtime <html lang> is not validated here: a client-side script cannot prove the initial HTTP HTML. See issue #75; static-export HTML is checked by validate-html-language.mjs.
 check(languageSwitcher.includes('const languages = SUPPORTED_LANGUAGES;') && !languageSwitcher.includes("SUPPORTED_LANGUAGES.filter((item) => item.code !== 'zh')"), 'Language switcher must include Chinese on SEO pages, even when /zh remains noindex');
 check(languageSwitcher.includes('Todos os artigos do blog precisam de navegação funcional entre idiomas'), 'Blog article pages must have working language navigation');
 check(languageSwitcher.includes("return language === 'pt' ? '/blog' : `/${language}/blog`;"), 'Untranslated blog articles must route to the target-language blog index instead of a guessed URL');
