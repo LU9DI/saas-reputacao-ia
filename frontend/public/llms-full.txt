@@ -11,6 +11,7 @@ Filtra.AI é uma plataforma web para gestão de reputação online e análise de
 Não presumir integrações, automações ou garantias de resultado que não estejam descritas na documentação pública. Sugestões geradas por IA devem ser revisadas conforme o contexto.
 
 ## Páginas oficiais
+- Soluções por setor e tarefa: https://filtraai.com/solucoes
 - Página inicial: https://filtraai.com/
 - Plataforma: https://filtraai.com/filtra-ai
 - Gestão de reputação online: https://filtraai.com/gestao-de-reputacao-online
