@@ -16,7 +16,8 @@ try {
     evidence: [
       { evidenceId: 'e1', query: 'Gestão de reputação', normalizedQuery: 'gestao de reputacao', siteUrl: 'https://filtraai.com/', dateRange: { startDate: '2026-09-01', endDate: '2026-09-30' }, metrics: { clicks: 4, impressions: 100, ctrPercent: 4, averagePosition: 8 }, source: 'GSC CSV', exactCandidateMatchIds: ['candidate-1'], flags: [] },
       { evidenceId: 'e2', query: 'como responder avaliações', normalizedQuery: 'como responder avaliacoes', metrics: { clicks: 0, impressions: 0, ctrPercent: 0, averagePosition: null }, exactCandidateMatchIds: [], flags: ['no-impression-evidence'] },
-      { evidenceId: 'e3', query: 'marca com mapeamento conflitante', normalizedQuery: 'marca com mapeamento conflitante', metrics: { clicks: 1, impressions: 2, ctrPercent: 50, averagePosition: 1 }, exactCandidateMatchIds: [], flags: [] }
+      { evidenceId: 'e3', query: 'marca com mapeamento conflitante', normalizedQuery: 'marca com mapeamento conflitante', metrics: { clicks: 1, impressions: 2, ctrPercent: 50, averagePosition: 1 }, exactCandidateMatchIds: [], flags: [] },
+      { evidenceId: 'e4', query: 'consulta candidata revisada', normalizedQuery: 'consulta candidata revisada', metrics: { clicks: 5, impressions: 80, ctrPercent: 6.25, averagePosition: 5 }, exactCandidateMatchIds: [], flags: [] }
     ]
   }));
   await writeFile(candidatesPath, JSON.stringify({ candidates: [{ id: 'candidate-1' }] }));
@@ -24,6 +25,7 @@ try {
     { normalizedQuery: 'GESTAO DE REPUTACAO', targetType: 'existing-page', targetUrl: 'https://filtraai.com/reputacao/', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'A URL existente já atende à intenção.' },
     { normalizedQuery: 'marca com mapeamento conflitante', targetType: 'candidate', candidateId: 'candidate-1', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Avaliar aderência comercial.' },
     { normalizedQuery: 'marca com mapeamento conflitante', targetType: 'candidate', candidateId: 'candidate-1', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Mapeamento duplicado intencional para testar bloqueio.' },
+    { normalizedQuery: 'consulta candidata revisada', targetType: 'candidate', candidateId: 'candidate-1', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Avaliar candidato com evidência observada.' },
     { normalizedQuery: 'target desconhecido', targetType: 'candidate', candidateId: 'missing-id', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Must be rejected.' }
   ] }));
   execFileSync(process.execPath, [
@@ -31,9 +33,9 @@ try {
     '--evidence', evidencePath, '--candidates', candidatesPath, '--mappings', mappingsPath, '--out', outputPath,
   ], { cwd: frontend, stdio: 'pipe' });
   const report = JSON.parse(await readFile(path.join(outputPath, 'qualification-queue.json'), 'utf8'));
-  assert.equal(report.counts.evidenceItems, 3);
+  assert.equal(report.counts.evidenceItems, 4);
   assert.equal(report.counts.optimizeExistingPageReview, 1);
-  assert.equal(report.counts.evaluateNewCandidateReview, 0);
+  assert.equal(report.counts.evaluateNewCandidateReview, 1);
   assert.equal(report.counts.manualMappingRequired, 1);
   assert.equal(report.counts.conflictingMappingsBlocked, 1);
   assert.equal(report.counts.invalidMappings, 1);
@@ -43,6 +45,9 @@ try {
   const existing = report.queue.find((item) => item.evidenceId === 'e1');
   assert.equal(existing.action, 'optimize-existing-page-review');
   assert.equal(existing.target.url, 'https://filtraai.com/reputacao/');
+  const candidate = report.queue.find((item) => item.evidenceId === 'e4');
+  assert.equal(candidate.action, 'evaluate-new-candidate-review');
+  assert.equal(candidate.target.candidateId, 'candidate-1');
   const conflict = report.queue.find((item) => item.evidenceId === 'e3');
   assert.ok(conflict.reasons.includes('multiple-reviewed-mappings-match-evidence'));
   const unmapped = report.queue.find((item) => item.evidenceId === 'e2');
