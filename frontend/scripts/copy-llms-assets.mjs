@@ -19,7 +19,7 @@ const hasStaticExport = await access(outputDir)
 if (!hasStaticExport) {
   console.log('Skipping static-export asset copy: no "out" directory was generated.');
 } else {
-  for (const filename of ['llms.txt', 'llms-full.txt']) {
+  for (const filename of ['llms.txt', 'llms-full.txt', 'metodologia-auditoria.md', '_headers']) {
     const source = path.join(publicDir, filename);
     const destination = path.join(outputDir, filename);
     await access(source);

@@ -5,9 +5,13 @@ const base = 'https://filtraai.com';
 // Só declare datas reais de alteração de conteúdo: lastmod inconsistente perde confiança.
 // 2026-10-19: páginas alteradas no lote de CTR/conteúdo (títulos, seções, FAQ e nav do blog).
 // 2026-10-22: páginas prioritárias receberam conteúdo, links internos e correções de metadados.
+// 2026-10-23: página de metodologia da auditoria e links contextuais para ela.
 const LAST_MODIFIED: Record<string, string> = {
   '/': '2026-10-19',
-  '/calculadora-nota-google': '2026-10-20',
+  '/calculadora-nota-google': '2026-10-23',
+  '/metodologia-auditoria': '2026-10-23',
+  '/auditoria-gratuita': '2026-10-23',
+  '/como-funciona': '2026-10-23',
   '/filtra-ai': '2026-10-19',
   '/gestao-de-reputacao-online': '2026-10-22',
   '/blog': '2026-10-22',
@@ -125,6 +129,7 @@ const TRANSLATED_BLOG_FAMILIES = [
 const canonicalPaths = [
   '',
   '/calculadora-nota-google',
+  '/metodologia-auditoria',
   ...Object.keys(SEO_FAMILIES).filter((p) => p !== '/'),
   '/blog/como-responder-avaliacoes-negativas',
   '/blog/velocity-reviews-google-maps-2026',

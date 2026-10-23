@@ -220,6 +220,13 @@ export function AuditoriaGratuitaClient() {
               <span>{c.consentText}</span>
             </label>
             <p className="text-xs text-zinc-500">{c.emailHint}</p>
+            {language === 'pt' ? (
+              <p className="text-xs text-zinc-500">
+                <Link href="/metodologia-auditoria" className="text-indigo-400 underline hover:text-indigo-300">
+                  Entenda a metodologia e os limites da auditoria.
+                </Link>
+              </p>
+            ) : null}
             <label className="block text-sm font-medium">{c.reviews}</label>
             <p className="text-xs text-zinc-500">{c.format}</p>
             <textarea

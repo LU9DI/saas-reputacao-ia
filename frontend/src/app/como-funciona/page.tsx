@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { SeoLanding } from '../components/SeoLanding';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
 
@@ -51,7 +52,17 @@ export default function ComoFuncionaPage() {
           body: 'Em feedbacks sensíveis, a IA sugere resposta empática e tags. Planos com relatório inteligente resumem o ciclo para sócios e gestores.',
         },
         {
-          heading: '6. Trial de 7 dias',
+          heading: '6. Metodologia e limites',
+          body: (
+            <>
+              A auditoria gratuita é um diagnóstico inicial, não um ranking público. Leia a{' '}
+              <Link href="/metodologia-auditoria" className="text-indigo-300 underline">metodologia da auditoria de avaliações</Link>{' '}
+              para entender critérios, limites e privacidade.
+            </>
+          ),
+        },
+        {
+          heading: '7. Trial de 7 dias',
           body: 'Teste sem cartão de crédito. Depois escolha um plano (Inicial, Pro, Ultra, Corporativo ou Rei). Cancele quando quiser; o acesso vale até o fim do período pago.',
         },
       ]}

@@ -18,6 +18,9 @@ Não presumir integrações, automações ou garantias de resultado que não est
 - Avaliações Google: https://filtraai.com/avaliacoes-google
 - Monitoramento de reputação: https://filtraai.com/monitoramento-reputacao-online
 - Reputação no Google: https://filtraai.com/reputacao-google
+- Auditoria gratuita: https://filtraai.com/auditoria-gratuita
+- Metodologia da auditoria: https://filtraai.com/metodologia-auditoria
+- Metodologia em Markdown: https://filtraai.com/metodologia-auditoria.md
 - Agências: https://filtraai.com/agencias
 - Planos: https://filtraai.com/planos
 - Blog: https://filtraai.com/blog

@@ -1,0 +1,12 @@
+# Cloudflare Pages headers for machine-readable discovery assets.
+# The Markdown twin is a non-canonical representation of the HTML page.
+/metodologia-auditoria.md
+  Content-Type: text/markdown; charset=utf-8
+  Link: <https://filtraai.com/metodologia-auditoria>; rel="canonical"
+  X-Robots-Tag: noindex
+
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
+
+/llms-full.txt
+  Content-Type: text/plain; charset=utf-8
