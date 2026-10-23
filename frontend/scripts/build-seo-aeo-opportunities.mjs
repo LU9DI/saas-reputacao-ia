@@ -19,6 +19,8 @@ const args = process.argv.slice(2);
 const outFlag = args.indexOf('--out');
 const outputDir = outFlag >= 0 ? path.resolve(args[outFlag + 1]) : path.join(root, 'reports/seo-aeo-opportunities');
 const taxonomy = JSON.parse(await readFile(taxonomyPath, 'utf8'));
+// Compact taxonomy entries may be [id, label] tuples to keep source reviewable.
+taxonomy.sectors = taxonomy.sectors.map((row) => Array.isArray(row) ? { id: row[0], label: row[1] } : row);
 const normalize = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const slugify = (value) => normalize(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const csvCell = (value) => '"' + String(value ?? '').replace(/"/g, '""') + '"';
