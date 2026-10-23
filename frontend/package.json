@@ -41,8 +41,10 @@
     "seo:demand:import": "node scripts/import-seo-demand-evidence.mjs",
     "seo:demand:test": "node scripts/test-seo-demand-evidence.mjs",
     "seo:qualification": "node scripts/build-seo-qualification-queue.mjs",
-    "seo:qualification:test": "node scripts/test-seo-qualification-queue.mjs && node scripts/test-seo-editorial-briefs.mjs",
+    "seo:qualification:test": "node scripts/test-seo-qualification-queue.mjs && node scripts/test-seo-editorial-briefs.mjs && node scripts/test-seo-query-page-overlap.mjs",
     "seo:briefs": "node scripts/build-seo-editorial-briefs.mjs",
-    "seo:briefs:test": "node scripts/test-seo-editorial-briefs.mjs"
+    "seo:briefs:test": "node scripts/test-seo-editorial-briefs.mjs",
+    "seo:overlap": "node scripts/analyze-seo-query-page-overlap.mjs",
+    "seo:overlap:test": "node scripts/test-seo-query-page-overlap.mjs"
   }
 }
