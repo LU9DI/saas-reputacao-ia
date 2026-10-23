@@ -42,7 +42,7 @@ const markdownGenerator = read('scripts/generate-seo-markdown.mjs');
 const frontendPackage = JSON.parse(read('package.json'));
 const nextConfig = read('next.config.mjs');
 check(frontendPackage.scripts.build.includes('scripts/generate-seo-markdown.mjs'), 'Frontend build must generate Markdown companions before Next.js build');
-check(markdownGenerator.includes('pages.length !== 108') && markdownGenerator.includes('uniqueSlugs.size !== pages.length'), 'Markdown generator must fail on unexpected page count or duplicate slugs');
+check(markdownGenerator.includes('pages.length !== 308') && markdownGenerator.includes('uniqueSlugs.size !== pages.length'), 'Markdown generator must fail on unexpected page count or duplicate slugs');
 check(markdownGenerator.includes('canonical:') && markdownGenerator.includes('public/solucoes'), 'Markdown companions must declare their canonical HTML URL and stay in a separate public path');
 check(nextConfig.includes("source: '/solucoes/:slug.md'") && nextConfig.includes('text/markdown; charset=utf-8'), 'Vercel must serve Markdown companions with the correct content type');
 check(sitemap.includes("'/solucoes/") && !sitemap.includes('.md'), 'Markdown companion files must remain outside the XML sitemap');
