@@ -180,7 +180,7 @@ check(reputationLanding.includes('faq={faq}') && !reputationLanding.includes('fa
 check(blogIndex.includes("en: 'https://filtraai.com/en/blog'") && blogIndex.includes("es: 'https://filtraai.com/es/blog'") && blogIndex.includes("'x-default': 'https://filtraai.com/blog'"), 'Blog hub must declare PT, EN and ES hreflang alternates');
 check(seoPageHeader.includes('href="/blog"') && seoPageHeader.includes('href="/planos"'), 'Commercial SEO header must link to the blog hub and plans page');
 check(blogArticleComponent.includes('href="/planos"'), 'Shared blog article navigation must link to the plans page');
-check(homePage.includes('href="/blog"') && homePage.includes('href="/planos"') && homePage.includes("'/avaliacoes-google'"), 'Home page must link to the blog hub, plans and Google reviews priority page');
+check(homePage.includes('href="/blog"') && homePage.includes('id="planos"') && !homePage.includes('Ver página de planos e comparar recursos') && homePage.includes("'/avaliacoes-google'"), 'Home page must expose the plans section and link to the blog hub and Google reviews priority page without a redundant plans CTA');
 
 const expandedLandingPages = [
   ['Google reputation page', read('src/app/reputacao-google/page.tsx')],
