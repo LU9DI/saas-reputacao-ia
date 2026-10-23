@@ -116,6 +116,7 @@ const counts = {
   evaluateNewCandidateReview: queue.filter((x) => x.action === 'evaluate-new-candidate-review').length,
   manualMappingRequired: queue.filter((x) => x.action === 'manual-mapping-required').length,
   conflictingMappingsBlocked: queue.filter((x) => x.action === 'blocked-conflicting-mappings').length,
+  targetPropertyMismatchesBlocked: queue.filter((x) => x.action === 'blocked-target-property-mismatch').length,
   invalidMappings: mappingErrors.length,
   publishAllowed: 0,
 };
