@@ -94,8 +94,12 @@ for (const sector of taxonomy.sectors) {
   }
 }
 
+const candidateBySlug = new Map(candidates.map((candidate) => [candidate.slug, candidate]));
 const duplicateQueries = [...seenQueries.entries()].filter(([, owners]) => {
-  const distinctIntents = new Set(owners.map((slug) => slug.split('-').slice(0, -2).join('-')));
+  const distinctIntents = new Set(owners.map((slug) => {
+    const candidate = candidateBySlug.get(slug);
+    return candidate ? `${candidate.sectorId}:${candidate.intentId}` : slug;
+  }));
   return distinctIntents.size > 1;
 });
 for (const [, owners] of duplicateQueries) {
