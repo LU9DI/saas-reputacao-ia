@@ -3149,6 +3149,597 @@ const PAGES: SeoPage[] = [
       }
     ]
   },
+  // Expansão de intenção informacional e operacional; conteúdo específico, sem métricas inventadas.
+  {
+    "slug": "modelo-resposta-avaliacao-negativa",
+    "title": "Modelo de resposta a avaliação negativa | Filtra.AI",
+    "description": "Use um roteiro de resposta a avaliações negativas com empatia, verificação de fatos, proteção de dados e encaminhamento para resolver o problema.",
+    "h1": "Modelo de resposta a avaliação negativa",
+    "lead": "Uma boa resposta pública não é uma discussão nem uma promessa automática: reconhece a experiência relatada, demonstra disposição para apurar os fatos e oferece um canal adequado para continuar a conversa sem expor dados pessoais.",
+    "sections": [
+      {
+        "heading": "Estrutura de uma resposta responsável",
+        "body": "Comece agradecendo o relato e reconhecendo a insatisfação sem admitir fatos ainda não verificados. Indique que a equipe quer entender o ocorrido e convide a pessoa a procurar um canal privado oficial. Evite respostas defensivas, ironia, copiar e colar desculpas genéricas ou pedir informações sensíveis em público."
+      },
+      {
+        "heading": "Exemplo editável para adaptar",
+        "body": "“Olá, [nome]. Obrigado por compartilhar sua experiência. Sentimos que o atendimento não tenha correspondido ao esperado. Queremos entender o que aconteceu e verificar o caso com a equipe responsável. Se puder, entre em contato pelo [canal oficial] informando [referência não sensível], para que possamos analisar com cuidado.” Ajuste o texto ao caso real; não afirme que algo foi corrigido antes de confirmar."
+      },
+      {
+        "heading": "Como fechar o ciclo internamente",
+        "body": "Registre o tema, a unidade, a data e o responsável pela apuração em sistema interno com acesso controlado. Depois do contato, documente a causa confirmada, a ação corretiva e a data de revisão. A resposta pública é apenas uma parte do processo; o aprendizado depende de corrigir a origem do problema."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo responder a todas as avaliações negativas com o mesmo texto?",
+        "answer": "Use uma estrutura consistente, mas personalize a resposta conforme o conteúdo e os fatos verificados. Textos idênticos podem parecer automáticos e não ajudam a pessoa a perceber que seu relato foi compreendido."
+      },
+      {
+        "question": "Posso pedir que a pessoa retire a avaliação?",
+        "answer": "Priorize resolver o problema e seguir as políticas aplicáveis da plataforma. Não condicione atendimento a alteração de nota nem pressione o cliente a remover uma crítica legítima."
+      }
+    ]
+  },
+  {
+    "slug": "checklist-gestao-reputacao-mult-unidades",
+    "title": "Checklist de gestão de reputação para várias unidades | Filtra.AI",
+    "description": "Organize a gestão de reputação de redes com várias unidades usando responsáveis, indicadores operacionais, cadência de revisão e regras de escalonamento.",
+    "h1": "Checklist de gestão de reputação para várias unidades",
+    "lead": "Redes e franquias precisam combinar padrões comuns com contexto local. Um checklist claro ajuda a evitar que avaliações fiquem sem resposta, que problemas recorrentes se percam entre unidades ou que cada equipe use critérios incompatíveis.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades por nível",
+        "body": "Determine quem acompanha novas avaliações em cada unidade, quem pode responder, quem investiga incidentes e quem decide quando escalar para a equipe central. Registre substitutos para férias e ausências. A central deve orientar padrões e comparar tendências, sem apagar particularidades importantes de cada local."
+      },
+      {
+        "heading": "Padronize a rotina e a qualidade",
+        "body": "Combine uma frequência de leitura, prazo interno de triagem e critérios de urgência. Use categorias compartilhadas, como atendimento, disponibilidade, prazo e ambiente, com instruções de classificação. Faça amostragens periódicas para verificar se unidades diferentes interpretam as categorias da mesma forma."
+      },
+      {
+        "heading": "Compare unidades com contexto",
+        "body": "Não use apenas a nota média para classificar equipes. Considere quantidade e recência das avaliações, tipo de operação, sazonalidade e mudanças no volume de clientes. Compartilhe práticas que funcionaram, investigue diferenças e evite incentivos que levem a respostas artificiais ou pedidos inadequados de avaliações."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual indicador devo acompanhar primeiro?",
+        "answer": "Comece por cobertura de triagem, tempo até a primeira análise, temas recorrentes e ações corretivas concluídas. Escolha métricas que a equipe consiga definir e reproduzir de forma consistente."
+      },
+      {
+        "question": "Uma unidade com nota menor sempre presta um serviço pior?",
+        "answer": "Não necessariamente. O volume, o perfil dos clientes, a localização e eventos pontuais afetam os resultados. Use o dado como sinal para investigar, não como prova isolada de desempenho."
+      }
+    ]
+  },
+  {
+    "slug": "indicadores-gestao-avaliacoes",
+    "title": "Indicadores para gestão de avaliações de clientes | Filtra.AI",
+    "description": "Escolha indicadores úteis para gestão de avaliações: cobertura de resposta, tempo de triagem, temas recorrentes e ações corretivas verificáveis.",
+    "h1": "Indicadores para gestão de avaliações de clientes",
+    "lead": "Indicadores úteis conectam feedback a decisões. Mais importante do que acumular números é definir o que cada medida significa, de onde vem, com que frequência será revisada e qual decisão pode orientar.",
+    "sections": [
+      {
+        "heading": "Comece por definições reproduzíveis",
+        "body": "Defina a janela temporal, as fontes incluídas e como tratar avaliações duplicadas, editadas ou sem contexto. Para tempo de resposta, especifique se a medição começa na publicação ou na detecção pela equipe. Sem regras explícitas, comparações entre períodos podem parecer precisas sem serem consistentes."
+      },
+      {
+        "heading": "Combine volume, qualidade e ação",
+        "body": "Acompanhe quantidade de avaliações recebidas, proporção triada, tempo até análise, temas frequentes e percentual de ações corretivas concluídas no prazo. Use amostras de respostas para avaliar se elas são específicas, respeitosas e baseadas em fatos. Nenhum indicador isolado resume a experiência inteira."
+      },
+      {
+        "heading": "Transforme o painel em rotina de decisão",
+        "body": "Em cada revisão, escolha poucos desvios relevantes, atribua responsáveis e registre a hipótese que será testada. No ciclo seguinte, verifique se a ação foi executada e se o sinal mudou. Separe correlação de causalidade e anote mudanças operacionais que possam explicar o resultado."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual é o melhor indicador de reputação?",
+        "answer": "Não existe um único indicador universal. A combinação depende do objetivo, da fonte de dados e da operação; médias devem ser lidas junto com volume, temas e contexto."
+      },
+      {
+        "question": "Devo comparar meses diferentes diretamente?",
+        "answer": "Compare períodos equivalentes quando houver sazonalidade e registre alterações de coleta, operação ou classificação que possam afetar os resultados."
+      }
+    ]
+  },
+  {
+    "slug": "auditoria-perfil-google-negocio",
+    "title": "Como auditar um Perfil da Empresa no Google | Filtra.AI",
+    "description": "Audite um Perfil da Empresa no Google com um checklist de dados públicos, categorias, horários, fotos, avaliações e consistência das informações.",
+    "h1": "Como auditar um Perfil da Empresa no Google",
+    "lead": "Uma auditoria de perfil ajuda a encontrar informações incompletas ou desatualizadas e a organizar a rotina de avaliações. Ela não garante posições no mapa: serve para corrigir dados verificáveis e identificar próximos passos.",
+    "sections": [
+      {
+        "heading": "Confira os dados essenciais",
+        "body": "Verifique nome comercial real, endereço ou área de atendimento, telefone, site, categoria e horários, inclusive feriados. Confirme cada informação com a operação antes de alterar o perfil. Não inclua palavras-chave artificiais no nome nem crie perfis duplicados para tentar ampliar presença."
+      },
+      {
+        "heading": "Revise apresentação e experiência",
+        "body": "Confira se fotos representam o local atual, se os serviços listados existem e se os links funcionam em dispositivos móveis. Se a empresa mudou de endereço, telefone ou horário, alinhe também os canais próprios e diretórios prioritários para reduzir informações conflitantes."
+      },
+      {
+        "heading": "Analise avaliações e plano de correção",
+        "body": "Observe recência, volume, assuntos repetidos e dúvidas sem resposta. Separe questões que dependem de atendimento, operação ou informação pública. Registre correções com responsável e data; retorne ao perfil depois para confirmar que a atualização foi publicada e está correta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "A auditoria melhora automaticamente o ranking local?",
+        "answer": "Não. Corrigir dados pode melhorar a precisão e a experiência do usuário, mas a visibilidade depende de diversos fatores e não pode ser garantida."
+      },
+      {
+        "question": "Com que frequência devo revisar o perfil?",
+        "answer": "Revise quando houver mudanças operacionais e estabeleça uma checagem periódica, por exemplo mensal, ajustada ao ritmo de alterações do negócio."
+      }
+    ]
+  },
+  {
+    "slug": "politica-respostas-avaliacoes",
+    "title": "Como criar uma política de respostas a avaliações | Filtra.AI",
+    "description": "Crie uma política interna para responder avaliações com tom consistente, checagem de fatos, proteção de dados e escalonamento de incidentes.",
+    "h1": "Política de respostas a avaliações: como criar",
+    "lead": "Uma política de respostas reduz improviso e ajuda equipes a lidar com elogios, críticas e situações sensíveis com consistência. Ela deve orientar decisões, não obrigar a equipe a publicar textos automáticos sem contexto.",
+    "sections": [
+      {
+        "heading": "Defina princípios e limites",
+        "body": "Estabeleça tom respeitoso, linguagem simples, reconhecimento do relato e proibição de divulgar dados pessoais ou informações confidenciais. Oriente a equipe a não discutir detalhes de atendimento em público e a não prometer compensações, prazos ou resultados sem autorização."
+      },
+      {
+        "heading": "Crie níveis de resposta e escalonamento",
+        "body": "Separe elogios simples, reclamações operacionais, acusações graves e possíveis riscos à segurança ou privacidade. Para cada classe, defina quem pode responder, quando consultar a liderança e qual canal oficial deve ser usado para apuração. Inclua uma rota para casos urgentes."
+      },
+      {
+        "heading": "Treine, revise e atualize",
+        "body": "Use exemplos fictícios ou anonimizados para treinar a equipe. Revise uma amostra de respostas periodicamente, documente correções e atualize a política quando surgirem novos riscos ou mudanças de processo. Registre a versão vigente e quem aprovou as alterações."
+      }
+    ],
+    "faq": [
+      {
+        "question": "A política deve obrigar resposta em todos os casos?",
+        "answer": "Defina critérios claros para resposta, encaminhamento ou denúncia à plataforma, conforme o caso. Nem todo conteúdo exige a mesma ação, mas decisões devem ser justificáveis e registradas."
+      },
+      {
+        "question": "Quem deve aprovar respostas sensíveis?",
+        "answer": "Atribua essa decisão a pessoas com autoridade e treinamento adequados, envolvendo jurídico, privacidade ou segurança quando a situação exigir."
+      }
+    ]
+  },
+  {
+    "slug": "analise-temas-avaliacoes-clientes",
+    "title": "Como identificar temas recorrentes em avaliações | Filtra.AI",
+    "description": "Aprenda a classificar temas recorrentes em avaliações de clientes com categorias claras, revisão humana, exemplos e acompanhamento de mudanças.",
+    "h1": "Como identificar temas recorrentes em avaliações",
+    "lead": "Ler comentários isolados ajuda a resolver casos individuais; analisar temas em conjunto pode revelar padrões operacionais. A qualidade da análise depende de categorias úteis, contexto e revisão de classificações ambíguas.",
+    "sections": [
+      {
+        "heading": "Monte uma taxonomia simples",
+        "body": "Comece com categorias ligadas a decisões possíveis, como atendimento, prazo, qualidade, preço, disponibilidade e comunicação. Documente o que entra e o que não entra em cada categoria e permita marcar mais de um tema quando o comentário tratar de assuntos distintos."
+      },
+      {
+        "heading": "Valide a classificação",
+        "body": "Revise manualmente uma amostra de comentários e registre desacordos. Ironia, contexto local, linguagem informal e comentários curtos podem confundir classificações automáticas. Se usar IA, trate a saída como sugestão, verifique casos incertos e evite inferir atributos sensíveis sobre os autores."
+      },
+      {
+        "heading": "Converta padrões em hipóteses de melhoria",
+        "body": "Observe frequência, período e unidade, mas investigue antes de concluir que um tema causou queda de satisfação. Combine os comentários com informações operacionais disponíveis e formule ações testáveis, com responsável e data de revisão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "A IA consegue classificar todas as avaliações corretamente?",
+        "answer": "Não. Modelos podem errar ou perder contexto; validação humana e monitoramento de erros continuam importantes."
+      },
+      {
+        "question": "Qual deve ser o tamanho das categorias?",
+        "answer": "Use categorias suficientemente específicas para orientar ações, mas não tantas que a equipe não consiga aplicá-las de modo consistente. Revise a taxonomia quando houver confusão recorrente."
+      }
+    ]
+  },
+  {
+    "slug": "plano-acao-feedback-clientes",
+    "title": "Como transformar feedback de clientes em plano de ação | Filtra.AI",
+    "description": "Transforme feedback em plano de ação com priorização, responsáveis, prazos, evidências de conclusão e revisão dos resultados.",
+    "h1": "Como transformar feedback de clientes em plano de ação",
+    "lead": "Feedback só gera melhoria quando alguém investiga, decide e acompanha uma ação. Um plano simples dá visibilidade às prioridades sem confundir o volume de comentários com a importância de cada problema.",
+    "sections": [
+      {
+        "heading": "Priorize com critérios explícitos",
+        "body": "Considere gravidade, frequência, alcance, urgência e esforço para resolver. Um incidente raro com risco alto pode exigir resposta antes de um tema frequente de baixo impacto. Documente por que cada item foi priorizado e evite usar apenas a nota ou a quantidade de comentários."
+      },
+      {
+        "heading": "Defina dono, prazo e evidência",
+        "body": "Cada ação deve ter um responsável, uma data, um próximo passo e uma evidência verificável de conclusão. “Melhorar atendimento” é vago; revisar a escala de cobertura em horários críticos e validar o novo procedimento é mais concreto. Proteja dados pessoais nos registros compartilhados."
+      },
+      {
+        "heading": "Verifique se a mudança funcionou",
+        "body": "Após executar a ação, observe o indicador ou tema relacionado em uma janela adequada. Considere sazonalidade e outras mudanças ocorridas no mesmo período. Se o sinal não melhorar, reveja a hipótese em vez de marcar a tarefa como sucesso apenas porque foi concluída."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quantas ações devo manter abertas?",
+        "answer": "Mantenha um conjunto que a equipe consiga acompanhar de verdade. Uma lista menor com responsáveis e revisões consistentes costuma ser mais útil que muitas tarefas sem dono."
+      },
+      {
+        "question": "Toda reclamação exige mudança de processo?",
+        "answer": "Não. Alguns relatos são casos isolados ou dependem de esclarecimento. Investigue e decida com base nos fatos, registrando a justificativa."
+      }
+    ]
+  },
+  {
+    "slug": "como-responder-avaliacao-sem-comentario",
+    "title": "Como responder a avaliações sem comentário | Filtra.AI",
+    "description": "Saiba quando e como responder a avaliações sem texto, sem presumir motivos, usar mensagens invasivas ou publicar respostas repetitivas.",
+    "h1": "Como responder a avaliações sem comentário",
+    "lead": "Uma avaliação sem texto fornece menos contexto do que um relato detalhado. A resposta deve reconhecer a contribuição sem inventar uma experiência específica nem pressionar a pessoa a explicar sua nota.",
+    "sections": [
+      {
+        "heading": "Escolha quando responder",
+        "body": "Considere o volume de avaliações, a política da empresa e a possibilidade de uma resposta curta realmente acrescentar valor. Não é necessário criar um texto longo para cada nota. Evite mencionar detalhes de compras, consultas ou atendimentos que possam identificar a pessoa."
+      },
+      {
+        "heading": "Use linguagem neutra e verdadeira",
+        "body": "Um exemplo simples é: “Obrigado por avaliar nosso negócio. Sua opinião é importante e nos ajuda a acompanhar a experiência dos clientes.” Personalize apenas com informações que você pode confirmar. Não afirme que a pessoa gostou de um serviço específico quando ela não descreveu o que ocorreu."
+      },
+      {
+        "heading": "Procure padrões sem adivinhar motivos",
+        "body": "Observe mudanças no volume e na distribuição das notas ao longo do tempo, mas não atribua causas a avaliações sem comentário. Se a empresa solicitar feedback adicional, use canais apropriados e voluntários, sem insistência ou incentivo condicionado à nota."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo perguntar publicamente por que a nota foi baixa?",
+        "answer": "Prefira um convite respeitoso a um canal privado oficial, sem exigir resposta. Não publique dados que possam identificar a interação."
+      },
+      {
+        "question": "Posso automatizar essas respostas?",
+        "answer": "Automação pode apoiar rascunhos, mas revise o texto, evite repetição excessiva e confirme que a resposta não afirma fatos que não conhece."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-avaliacoes-franquias",
+    "title": "Gestão de avaliações para franquias: processo e governança | Filtra.AI",
+    "description": "Estruture a gestão de avaliações em franquias com padrões de marca, autonomia local, escalonamento e comparação responsável entre unidades.",
+    "h1": "Gestão de avaliações para franquias",
+    "lead": "Franquias precisam preservar a identidade da marca e, ao mesmo tempo, reconhecer que cada unidade opera em contexto diferente. Governança clara evita respostas contraditórias e ajuda a central a aprender com problemas recorrentes.",
+    "sections": [
+      {
+        "heading": "Defina o que é central e o que é local",
+        "body": "A franqueadora pode definir tom, padrões mínimos, proteção de dados e critérios de escalonamento. A unidade deve fornecer contexto real sobre horários, serviços e incidentes locais. Deixe claro quem aprova respostas sensíveis e como resolver divergências."
+      },
+      {
+        "heading": "Crie um fluxo para casos recorrentes",
+        "body": "Quando um tema aparece em várias unidades, consolide sinais sem expor dados pessoais e investigue se existe uma causa comum, como comunicação de política ou treinamento. Se o problema for local, encaminhe para a liderança da unidade com prazo de retorno."
+      },
+      {
+        "heading": "Compare sem criar incentivos ruins",
+        "body": "Compare tendências considerando volume, perfil da operação e sazonalidade. Evite premiar apenas nota alta ou volume de respostas, pois isso pode incentivar práticas artificiais. Compartilhe processos comprovados e registre limitações antes de recomendar replicação."
+      }
+    ],
+    "faq": [
+      {
+        "question": "A franqueadora deve responder todas as avaliações?",
+        "answer": "O modelo depende da operação. Defina quem responde por perfil e como a central apoia situações que envolvem marca, segurança, privacidade ou recorrência entre unidades."
+      },
+      {
+        "question": "Como identificar um problema sistêmico?",
+        "answer": "Procure temas semelhantes em unidades e períodos diferentes, valide exemplos e converse com responsáveis antes de atribuir uma causa comum."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-reputacao-clinicas-privacidade",
+    "title": "Gestão de avaliações em clínicas com foco em privacidade | Filtra.AI",
+    "description": "Organize avaliações de clínicas com cuidado à privacidade: evite confirmar relações de atendimento e mova detalhes sensíveis para canais apropriados.",
+    "h1": "Gestão de avaliações em clínicas com foco em privacidade",
+    "lead": "Em serviços de saúde, responder publicamente exige cuidado adicional. Uma resposta não deve confirmar que alguém é paciente, revelar dados de consulta nem discutir diagnóstico, tratamento ou histórico em um espaço público.",
+    "sections": [
+      {
+        "heading": "Responda sem confirmar dados de saúde",
+        "body": "Use linguagem neutra que não confirme nem negue uma relação assistencial. Agradeça o comentário de forma geral e ofereça um canal oficial para tratar a situação. Mesmo quando o próprio autor menciona detalhes clínicos, a organização não deve ampliá-los publicamente."
+      },
+      {
+        "heading": "Crie um fluxo de revisão para casos sensíveis",
+        "body": "Defina quando a equipe deve pausar a resposta e encaminhar para responsável de privacidade, jurídico ou gestão clínica. Treine a equipe para reconhecer informações pessoais e evite copiar comentários completos em planilhas abertas ou ferramentas sem controles adequados."
+      },
+      {
+        "heading": "Registre aprendizado de forma agregada",
+        "body": "Para identificar temas operacionais, use registros mínimos, acesso restrito e categorias que não exponham pessoas. Analise padrões como comunicação, agendamento e acessibilidade sem transformar relatos públicos em inferências sobre condições de saúde."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso responder dizendo que a pessoa foi atendida na clínica?",
+        "answer": "Evite confirmar publicamente uma relação com o serviço de saúde. Encaminhe a conversa para um canal oficial e siga as políticas de privacidade aplicáveis."
+      },
+      {
+        "question": "É seguro usar IA para analisar comentários de saúde?",
+        "answer": "Avalie base legal, finalidade, minimização, retenção, acesso e fornecedor antes de processar dados. Não envie informações sensíveis a ferramentas não aprovadas."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-avaliacoes-restaurantes",
+    "title": "Gestão de avaliações para restaurantes: rotina e melhoria | Filtra.AI",
+    "description": "Organize avaliações de restaurantes por temas como serviço, espera, cardápio e ambiente, conectando feedback a ações de operação.",
+    "h1": "Gestão de avaliações para restaurantes",
+    "lead": "Restaurantes recebem feedback sobre diferentes partes da experiência, muitas vezes em horários de pico. Uma rotina de análise ajuda a separar incidentes individuais de padrões que merecem investigação operacional.",
+    "sections": [
+      {
+        "heading": "Classifique por etapa da experiência",
+        "body": "Considere recepção, tempo de espera, precisão do pedido, qualidade dos pratos, ambiente e resolução de problemas. Defina categorias claras para evitar que comentários sobre demora sejam agrupados com falhas de qualidade sem contexto."
+      },
+      {
+        "heading": "Conecte relatos à operação",
+        "body": "Quando possível, verifique escala de equipe, mudanças no cardápio, horários e procedimentos relacionados ao relato. Não conclua que um turno causou uma reclamação apenas pela coincidência temporal; procure evidências e converse com os responsáveis."
+      },
+      {
+        "heading": "Responda e acompanhe a correção",
+        "body": "Agradeça o relato, reconheça a experiência e convide a pessoa a um canal privado se precisar de detalhes. Internamente, atribua ações para os temas recorrentes e revise se as mudanças reduziram os problemas sem prejudicar outras partes do serviço."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo oferecer desconto em toda resposta negativa?",
+        "answer": "Não. Compensações devem seguir política interna e os fatos apurados, não ser prometidas automaticamente em público."
+      },
+      {
+        "question": "Como lidar com críticas sobre segurança alimentar?",
+        "answer": "Encaminhe rapidamente aos responsáveis internos competentes, preserve registros necessários e siga os procedimentos legais e de segurança aplicáveis."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-avaliacoes-hoteis",
+    "title": "Gestão de avaliações para hotéis e pousadas | Filtra.AI",
+    "description": "Estruture avaliações de hotéis por etapa da hospedagem, tipo de problema, resposta ao hóspede e melhoria contínua entre equipes.",
+    "h1": "Gestão de avaliações para hotéis e pousadas",
+    "lead": "A experiência de hospedagem envolve reserva, chegada, quarto, limpeza, atendimento e saída. Organizar feedback por etapa facilita encaminhar cada relato para a equipe certa e detectar problemas que atravessam departamentos.",
+    "sections": [
+      {
+        "heading": "Mapeie a jornada do hóspede",
+        "body": "Crie categorias para reserva, check-in, limpeza, manutenção, ruído, café da manhã e check-out. Registre a unidade e o período quando isso for necessário e permitido. Não exponha número de quarto, datas pessoais ou detalhes de reserva em respostas públicas."
+      },
+      {
+        "heading": "Separe preferência de falha operacional",
+        "body": "Uma preferência individual não significa necessariamente um problema sistêmico. Verifique recorrência, condições da estadia e informações prometidas antes de decidir a ação. Comentários sobre acessibilidade, segurança ou higiene devem ser encaminhados conforme a gravidade."
+      },
+      {
+        "heading": "Coordene respostas e ações",
+        "body": "Combine quem responde a avaliações e como as áreas operacionais recebem temas recorrentes. Documente a ação corretiva e revise se ela foi implementada. Ao comparar períodos, considere feriados, ocupação e mudanças de serviço para não interpretar diferenças sem contexto."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como responder a uma reclamação sobre limpeza?",
+        "answer": "Reconheça o desconforto, evite discutir detalhes da estadia publicamente e encaminhe para o canal oficial para apurar os fatos."
+      },
+      {
+        "question": "É adequado comparar avaliações entre hotéis da rede?",
+        "answer": "Sim, se as definições e períodos forem comparáveis e as diferenças de operação e perfil forem consideradas. Use a comparação para aprender, não para concluir sem investigação."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-avaliacoes-imobiliarias",
+    "title": "Gestão de avaliações para imobiliárias | Filtra.AI",
+    "description": "Organize avaliações de imobiliárias com atenção a atendimento, comunicação, visitas e privacidade em negociações imobiliárias.",
+    "h1": "Gestão de avaliações para imobiliárias",
+    "lead": "A jornada imobiliária pode durar semanas e envolver dados pessoais, valores e negociações. Uma gestão responsável de avaliações organiza os temas sem expor informações de clientes ou transformar uma divergência comercial em debate público.",
+    "sections": [
+      {
+        "heading": "Separe as etapas da jornada",
+        "body": "Classifique comentários relacionados a primeiro contato, clareza de anúncios, agendamento de visitas, acompanhamento, documentação e pós-venda ou locação. Isso ajuda a encaminhar a questão para a pessoa ou processo correto sem publicar detalhes do negócio."
+      },
+      {
+        "heading": "Proteja dados e evite discussões públicas",
+        "body": "Não confirme endereço residencial, condição de locação, proposta, renda ou dados de contrato. Responda de modo neutro e ofereça canal oficial para verificar o caso. Oriente corretores e equipe administrativa sobre o que não deve ser compartilhado."
+      },
+      {
+        "heading": "Use feedback para ajustar processos",
+        "body": "Procure padrões de demora, falta de atualização e divergência entre anúncio e realidade. Valide os relatos com os responsáveis e corrija processos de comunicação. Registre a ação e verifique se a melhoria é percebida em períodos posteriores."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso responder com detalhes do contrato para me defender?",
+        "answer": "Evite divulgar informações contratuais ou pessoais publicamente. Encaminhe a apuração para canais apropriados e siga orientação jurídica quando necessário."
+      },
+      {
+        "question": "Como tratar avaliações de pessoas que não fecharam negócio?",
+        "answer": "Aplique os mesmos princípios de respeito e verificação. Avalie o conteúdo conforme as políticas da plataforma e não presuma que a ausência de contratação invalida a experiência relatada."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-avaliacoes-academias",
+    "title": "Gestão de avaliações para academias e estúdios | Filtra.AI",
+    "description": "Analise avaliações de academias por atendimento, lotação, equipamentos, limpeza e cancelamento, criando rotinas para corrigir problemas recorrentes.",
+    "h1": "Gestão de avaliações para academias e estúdios",
+    "lead": "Academias combinam infraestrutura, aulas, horários e relacionamento contínuo. A análise de avaliações pode revelar pontos de atrito, desde lotação até comunicação de planos, desde que as categorias sejam claras e os casos sejam verificados.",
+    "sections": [
+      {
+        "heading": "Organize os temas por experiência",
+        "body": "Separe limpeza, manutenção de equipamentos, lotação, disponibilidade de aulas, atendimento, cobrança e cancelamento. Registre quando um tema depende de uma unidade ou faixa horária. Não peça que clientes publiquem informações sobre saúde ou rotina de treino."
+      },
+      {
+        "heading": "Trate temas de cobrança e contrato com cuidado",
+        "body": "Respostas públicas devem evitar dados de contrato, pagamento ou identificação de aluno. Reconheça a reclamação e ofereça canal privado oficial para conferência. Internamente, mantenha acesso restrito aos registros e documente o encaminhamento."
+      },
+      {
+        "heading": "Acompanhe as melhorias na unidade",
+        "body": "Use relatos para priorizar manutenção, comunicação de horários ou ajustes de processo. Defina responsável e prazo e confira se a ação foi executada. Compare períodos equivalentes e considere mudanças de capacidade, aulas e sazonalidade."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como responder reclamações sobre lotação?",
+        "answer": "Reconheça a preocupação, informe apenas medidas confirmadas e convide para canal oficial se for necessário entender horário ou unidade. Não prometa capacidade futura sem confirmação."
+      },
+      {
+        "question": "Posso usar avaliações para avaliar instrutores individualmente?",
+        "answer": "Use critérios justos e contexto, evitando decisões automáticas baseadas em comentários isolados. Verifique os fatos e dê oportunidade de apuração interna adequada."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-avaliacoes-escolas",
+    "title": "Gestão de avaliações para escolas: comunicação e confiança | Filtra.AI",
+    "description": "Organize avaliações de escolas com processos de comunicação, privacidade de estudantes e responsáveis, encaminhamento e revisão de temas recorrentes.",
+    "h1": "Gestão de avaliações para escolas",
+    "lead": "Escolas recebem comentários de famílias, estudantes e comunidade sobre comunicação, estrutura e experiência educacional. A resposta pública precisa respeitar a privacidade e não discutir casos individuais de alunos ou funcionários.",
+    "sections": [
+      {
+        "heading": "Categorize os temas com a equipe",
+        "body": "Use categorias como comunicação com famílias, atendimento administrativo, infraestrutura, atividades e clareza de processos. Envolva responsáveis das áreas para validar as definições e evitar que todo comentário seja tratado como problema pedagógico."
+      },
+      {
+        "heading": "Proteja estudantes e famílias",
+        "body": "Não confirme publicamente matrícula, turma, condição de estudante ou detalhes de ocorrências. Evite mencionar nomes e informações que possam identificar menores. Encaminhe situações individuais a canais oficiais e aplique as políticas de proteção de dados e salvaguarda."
+      },
+      {
+        "heading": "Feche o ciclo de melhoria",
+        "body": "Registre os temas de forma minimizada, atribua responsáveis e acompanhe as medidas de comunicação ou operação. Quando compartilhar aprendizados, use informações agregadas e confirme que não é possível identificar uma família ou estudante."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como responder a uma reclamação sobre um aluno?",
+        "answer": "Não discuta o caso publicamente. Responda de forma neutra e direcione a família a um canal institucional apropriado."
+      },
+      {
+        "question": "É útil comparar avaliações de escolas diferentes?",
+        "answer": "A comparação exige cautela porque contexto, comunidade e volume variam. Use padrões para orientar perguntas e melhorias, não para criar rankings simplistas."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-avaliacoes-ecommerce-local",
+    "title": "Gestão de avaliações para e-commerce com lojas físicas | Filtra.AI",
+    "description": "Conecte avaliações de lojas físicas e canais digitais sem misturar dados, identificando problemas de entrega, retirada, atendimento e produto.",
+    "h1": "Gestão de avaliações para operações omnichannel",
+    "lead": "Quando uma empresa vende online e em lojas físicas, o cliente pode avaliar etapas diferentes da experiência. A gestão precisa preservar o contexto do canal e evitar que problemas de entrega sejam atribuídos automaticamente a uma loja ou equipe.",
+    "sections": [
+      {
+        "heading": "Identifique canal e etapa",
+        "body": "Separe compra online, retirada em loja, entrega, atendimento pós-venda e experiência presencial. Registre a fonte do comentário e os dados mínimos necessários para encaminhar o caso. Não publique números de pedido ou informações de contato em respostas públicas."
+      },
+      {
+        "heading": "Evite conclusões por atribuição incorreta",
+        "body": "Um relato sobre atraso pode envolver estoque, transportadora, sistema ou comunicação. Confirme a cadeia operacional antes de atribuir responsabilidade. Se a causa não estiver clara, registre a incerteza e encaminhe a investigação."
+      },
+      {
+        "heading": "Unifique padrões, não todos os detalhes",
+        "body": "Uma taxonomia comum ajuda a observar temas entre canais, mas cada operação pode precisar de categorias específicas. Revise definições com as equipes e acompanhe ações por canal antes de comparar resultados consolidados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo juntar todas as avaliações em uma única nota?",
+        "answer": "Uma métrica agregada pode ocultar diferenças entre canais. Mantenha recortes úteis e explique a composição de qualquer indicador compartilhado."
+      },
+      {
+        "question": "Como responder a uma avaliação com dados de pedido?",
+        "answer": "Não repita dados do pedido publicamente. Reconheça o relato e encaminhe para o canal oficial de suporte para verificação."
+      }
+    ]
+  },
+  {
+    "slug": "como-escolher-software-reputacao",
+    "title": "Como escolher um software de gestão de reputação | Filtra.AI",
+    "description": "Compare softwares de reputação por fontes suportadas, colaboração, análise de temas, privacidade, exportação, custo e adequação à operação.",
+    "h1": "Como escolher um software de gestão de reputação",
+    "lead": "A escolha de uma ferramenta deve partir do processo que a empresa precisa melhorar, e não de uma lista de funcionalidades. Um roteiro de avaliação ajuda a comparar soluções com critérios verificáveis e testar a adequação antes de contratar.",
+    "sections": [
+      {
+        "heading": "Mapeie fontes, volume e responsáveis",
+        "body": "Liste os canais que realmente precisam ser acompanhados, o número de unidades, o volume de comentários e quem atua em cada etapa. Confirme se a solução integra as fontes necessárias ou exige importação manual. Não presuma que todo fornecedor oferece a mesma cobertura."
+      },
+      {
+        "heading": "Avalie o fluxo completo",
+        "body": "Verifique triagem, colaboração, respostas, categorização, relatórios, exportação e histórico de ações. Peça demonstração com um caso representativo e teste como a equipe encontra um comentário, atribui responsável e acompanha a resolução."
+      },
+      {
+        "heading": "Revise segurança e custo total",
+        "body": "Pergunte sobre controle de acesso, retenção, exportação e exclusão de dados, suporte, limites de uso e custos por unidade ou usuário. Compare o custo total com o processo atual e registre quais benefícios precisam ser comprovados no piloto."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo escolher pela quantidade de recursos?",
+        "answer": "Não necessariamente. Priorize os fluxos que a equipe realmente usará e verifique a qualidade das funções essenciais em vez de contar recursos sem avaliar aderência."
+      },
+      {
+        "question": "Como medir o valor durante um piloto?",
+        "answer": "Defina uma linha de base, metas operacionais realistas e critérios de decisão antes do teste. Não atribua mudanças de nota automaticamente à ferramenta sem analisar outros fatores."
+      }
+    ]
+  },
+  {
+    "slug": "processo-resposta-avaliacoes-equipe",
+    "title": "Processo de resposta a avaliações para equipes | Filtra.AI",
+    "description": "Monte um processo de resposta a avaliações com triagem, responsáveis, modelos revisados, escalonamento e acompanhamento de casos.",
+    "h1": "Processo de resposta a avaliações para equipes",
+    "lead": "Uma rotina de resposta precisa funcionar mesmo quando o volume aumenta ou membros da equipe se ausentam. O processo deve deixar claro o que verificar, quem decide e como acompanhar casos que exigem investigação.",
+    "sections": [
+      {
+        "heading": "Faça triagem antes de redigir",
+        "body": "Classifique a avaliação por tema e urgência, identifique se há risco de privacidade ou segurança e verifique se a resposta exige consultar registros internos. Não copie dados pessoais para ferramentas abertas nem trate uma alegação não verificada como fato confirmado."
+      },
+      {
+        "heading": "Use modelos como ponto de partida",
+        "body": "Prepare estruturas para agradecimento, crítica operacional e encaminhamento, mas deixe espaço para reconhecer o conteúdo específico. Modelos devem evitar promessas automáticas e frases que soem como confirmação de informações privadas. Revise-os periodicamente."
+      },
+      {
+        "heading": "Monitore fila e qualidade",
+        "body": "Defina uma pessoa responsável por revisar casos pendentes, verificar respostas publicadas e escalar situações sensíveis. Acompanhe idade da fila, temas sem encaminhamento e amostras de qualidade, em vez de medir a equipe apenas pela quantidade de respostas."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual prazo de resposta devo prometer?",
+        "answer": "Defina um prazo interno compatível com recursos e gravidade, depois monitore se é cumprido. Não prometa publicamente um prazo que a operação não consegue garantir."
+      },
+      {
+        "question": "É melhor automatizar toda a resposta?",
+        "answer": "Automatize tarefas repetitivas com limites e revisão humana adequada. Casos complexos, sensíveis ou ambíguos precisam de avaliação contextual."
+      }
+    ]
+  },
+  {
+    "slug": "medir-impacto-feedback-operacional",
+    "title": "Como medir o impacto do feedback na operação | Filtra.AI",
+    "description": "Avalie o impacto do feedback com linha de base, indicadores consistentes, registro de ações e cautela para não confundir correlação com causa.",
+    "h1": "Como medir o impacto do feedback na operação",
+    "lead": "Para saber se uma mudança ajudou, registre o problema, a ação, o período e o indicador que deve reagir. Sem essa estrutura, é fácil atribuir ao feedback melhorias que vieram de outras mudanças ou interpretar oscilações normais como resultado.",
+    "sections": [
+      {
+        "heading": "Defina uma linha de base",
+        "body": "Escolha um período representativo e registre como os dados foram coletados, quais fontes entram e quais eventos podem distorcer a comparação. Se o volume de avaliações for pequeno, reconheça a incerteza e evite conclusões fortes com poucas observações."
+      },
+      {
+        "heading": "Relacione ação e sinal esperado",
+        "body": "Especifique qual mudança operacional foi feita e qual evidência indicaria progresso, como menos relatos de um problema ou menor tempo de resolução. Registre ações simultâneas e mudanças de contexto para evitar atribuição causal indevida."
+      },
+      {
+        "heading": "Revise e comunique limitações",
+        "body": "Compare períodos equivalentes, avalie a consistência da classificação e procure efeitos inesperados. Compartilhe o que foi observado, o que ainda não se sabe e qual será o próximo teste. Transparência sobre limites aumenta a utilidade da análise."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quanto tempo leva para ver resultado?",
+        "answer": "Depende do problema, da frequência dos eventos e do tempo necessário para a mudança chegar à operação. Defina a janela antes de analisar e revise-a quando houver justificativa."
+      },
+      {
+        "question": "Uma melhora na nota prova que a ação funcionou?",
+        "answer": "Não por si só. A nota pode mudar por vários fatores; use evidências adicionais e descreva a conclusão com o nível de confiança adequado."
+      }
+    ]
+  }
+
 ];
 
 const BASE = 'https://filtraai.com';
