@@ -30,6 +30,10 @@ jobs:
         working-directory: frontend
         run: node scripts/validate-seo.mjs
 
+      - name: Validate programmatic SEO content quality
+        working-directory: frontend
+        run: node scripts/validate-programmatic-seo-content.mjs
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest
