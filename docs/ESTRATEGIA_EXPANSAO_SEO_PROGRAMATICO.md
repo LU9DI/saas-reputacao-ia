@@ -31,6 +31,36 @@ Estas famílias são um mapa inicial de hipóteses, não uma autorização para 
 | Integração/canal | gestão de avaliações de uma plataforma específica | A integração/capacidade é real, suportada e documentada |
 | Educação/decisão | como criar processo de resposta; indicadores de reputação | O conteúdo resolve uma questão real e conduz naturalmente ao próximo passo |
 
+
+## Backlog inicial de expansão para o Filtra.AI
+
+Os clusters abaixo são **candidatos para pesquisa**, não páginas aprovadas nem oportunidades com volume comprovado. O inventário do sitemap em main já indica cobertura de temas centrais, idiomas e alguns segmentos (como clínicas, hotéis, restaurantes, turismo, franquias, associações e agências). A expansão deve partir desse estado real e conferir cada URL antes de propor outra.
+
+| Cluster candidato | Exemplos de intenção a pesquisar | Valor que a página precisaria acrescentar | Risco a controlar |
+|---|---|---|---|
+| Beleza e cuidados pessoais | avaliações Google para salão; reputação de clínica estética | exemplos de jornada de agendamento, retorno e resposta a feedback | páginas de salão, estética e clínica podem ficar quase idênticas |
+| Automotivo | avaliações para oficina; reputação de concessionária | exemplos de confiança, orçamento, pós-serviço e reclamações recorrentes | diferenças entre oficina, concessionária e centro automotivo precisam ser reais |
+| Imobiliário | avaliações para imobiliária; reputação de administradora de imóveis | contexto de atendimento, locação, venda e gestão de expectativas | não tratar todos os serviços imobiliários como o mesmo público |
+| Varejo local | avaliações para lojas; gestão de feedback de clientes de loja | situações específicas de atendimento, troca, estoque e experiência na loja | categoria ampla demais sem recorte operacional |
+| Educação | avaliações para escola; reputação de cursos e instituições | contexto de comunicação com famílias/alunos e experiência educacional | evitar conteúdo genérico e alegações sobre desempenho acadêmico |
+| Serviços profissionais | avaliações para escritórios e prestadores locais | exemplos adequados ao processo de contratação e relacionamento | não presumir requisitos regulatórios ou funcionalidades específicas |
+| Saúde por especialidade | avaliações para dentistas; avaliações para fisioterapia | exemplos realmente distintos e cautela com privacidade e linguagem de saúde | risco de criar páginas repetitivas ou aconselhamento inadequado |
+| Multiunidades | monitorar avaliações de várias unidades; reputação de franquias | processo operacional para comparar unidades e organizar prioridades | publicar somente capacidades de produto que existam de fato |
+| Tarefas operacionais | como responder avaliação negativa; como classificar temas recorrentes | modelos, critérios, fluxos ou checklists concretos | canibalização com posts existentes e promessa de resposta automática não comprovada |
+| Ferramentas e calculadoras | auditoria de reputação; checklist de respostas; análise de temas | ferramenta funcional ou método reproduzível, com resultado útil | páginas finas que apenas capturam e-mail sem entregar valor |
+| Agências e parceiros | vender gestão de reputação; operar múltiplos clientes | processo, proposta de valor e fluxo de trabalho específico para parceiros | diferenciar de páginas atuais de agências/parceiros antes de criar outra |
+| Idiomas e mercados | termos equivalentes em espanhol/inglês | tradução localizada, exemplos e intenção de busca adequados ao idioma | tradução literal, hreflang/canonical incorreto e manutenção desproporcional |
+
+### Ordem de pesquisa sugerida
+
+1. **Completar a cobertura setorial em português:** investigar beleza, automotivo, imobiliário, varejo e educação, comparando cada intenção com páginas já existentes.
+2. **Expandir tarefas de alta intenção:** identificar necessidades próximas da auditoria gratuita e do uso do produto, com conteúdo ou ferramenta real.
+3. **Aprofundar multiunidades e parceiros:** validar a capacidade atual do produto e a demanda antes de propor rotas adicionais.
+4. **Expandir idiomas com critério:** priorizar mercados/consultas sustentados por dados; não multiplicar automaticamente cada nova URL por todos os idiomas.
+5. **Só então escalar lotes:** quando uma família provar diferenciação editorial, cobertura técnica e sinal de demanda.
+
+Cada candidato deve registrar consulta/variação, fonte e data da evidência, URLs existentes que possam competir, necessidade do público, conteúdo exclusivo planejado, CTA e decisão (publicar, pesquisar mais, consolidar ou descartar). Sem esses campos, continua sendo apenas uma hipótese.
+
 ### Não gerar combinações automaticamente
 
 Não cruzar indiscriminadamente todos os setores × cidades × problemas × plataformas. Uma combinação só entra no backlog publicável se passar por todos os critérios:
