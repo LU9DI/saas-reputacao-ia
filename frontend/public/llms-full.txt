@@ -11,6 +11,7 @@ Filtra.AI é uma plataforma web para gestão de reputação online e análise de
 Não presumir integrações, automações ou garantias de resultado que não estejam descritas na documentação pública. Sugestões geradas por IA devem ser revisadas conforme o contexto.
 
 ## Páginas oficiais
+- Soluções por setor e tarefa: https://filtraai.com/solucoes
 - Página inicial: https://filtraai.com/
 - Plataforma: https://filtraai.com/filtra-ai
 - Gestão de reputação online: https://filtraai.com/gestao-de-reputacao-online
@@ -26,3 +27,7 @@ Não presumir integrações, automações ou garantias de resultado que não est
 
 ## Privacidade e responsabilidade
 Não inferir nem divulgar dados pessoais ou privados de clientes. Conteúdo de avaliações não autoriza reutilização de informações pessoais. As decisões operacionais e a comunicação final são responsabilidade da empresa usuária.
+
+## Versões Markdown para agentes
+- As páginas programáticas têm uma versão Markdown legível por máquina, fora do sitemap XML. Exemplo: https://filtraai.com/solucoes/software-gestao-avaliacoes-google.md
+- A URL HTML continua sendo a versão canônica para visitantes e mecanismos de busca. Arquivos Markdown são uma alternativa de leitura; não garantem indexação nem citações por IA.

@@ -38,6 +38,24 @@ check(!plansPage.includes('window.location.replace'), 'Plans page must render co
 check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pricing cards');
 check(robots.includes("const base = 'https://filtraai.com'") && robots.includes('sitemap: `${base}/sitemap.xml`'), 'Next robots metadata must reference the canonical sitemap URL');
 check(robots.includes("disallow: ['/api/']"), 'robots metadata must disallow API endpoints only');
+const markdownGenerator = read('scripts/generate-seo-markdown.mjs');
+const frontendPackage = JSON.parse(read('package.json'));
+const nextConfig = read('next.config.mjs');
+check(frontendPackage.scripts.build.includes('scripts/generate-seo-markdown.mjs'), 'Frontend build must generate Markdown companions before Next.js build');
+check(markdownGenerator.includes('pages.length !== 108') && markdownGenerator.includes('uniqueSlugs.size !== pages.length'), 'Markdown generator must fail on unexpected page count or duplicate slugs');
+check(markdownGenerator.includes('canonical:') && markdownGenerator.includes('public/solucoes'), 'Markdown companions must declare their canonical HTML URL and stay in a separate public path');
+check(nextConfig.includes("source: '/solucoes/:slug.md'") && nextConfig.includes('text/markdown; charset=utf-8'), 'Vercel must serve Markdown companions with the correct content type');
+check(sitemap.includes("'/solucoes/") && !sitemap.includes('.md'), 'Markdown companion files must remain outside the XML sitemap');
+
+const retrievalBotsBlock = robots.match(/const retrievalBots = \[([\s\S]*?)\];/)?.[1] || '';
+const trainingBotsBlock = robots.match(/const trainingBots = \[([\s\S]*?)\];/)?.[1] || '';
+for (const bot of ['OAI-SearchBot', 'ChatGPT-User', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Google-Extended', 'Googlebot', 'Bingbot', 'Applebot']) {
+  check(retrievalBotsBlock.includes(`'${bot}'`) && !trainingBotsBlock.includes(`'${bot}'`), `robots must classify ${bot} as a retrieval/search crawler`);
+}
+for (const bot of ['GPTBot', 'ClaudeBot', 'CCBot']) {
+  check(trainingBotsBlock.includes(`'${bot}'`) && !retrievalBotsBlock.includes(`'${bot}'`), `robots must explicitly classify ${bot} under the training-crawler policy`);
+}
+check(robots.includes('...retrievalBots.map') && robots.includes('...trainingBots.map'), 'robots must emit both explicit crawler policy groups');
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
 check(localizedBlogs.includes('const translatedFamilies') && localizedBlogs.includes("if ('pt' in family)"), 'Translated blog metadata must cross-link all available languages without inventing a Portuguese equivalent');
 
@@ -72,6 +90,9 @@ function collectPageRoutes(directory = appRoot) {
 }
 
 const staticRoutes = new Set(collectPageRoutes());
+const programmaticSeoPage = read('src/app/solucoes/[seoPage]/page.tsx');
+const programmaticSeoSlugs = new Set([...programmaticSeoPage.matchAll(/[\"']?slug[\"']?\s*:\s*[\"']([^\"']+)[\"']/g)].map((match) => match[1]));
+check(programmaticSeoPage.includes('generateStaticParams') && programmaticSeoPage.includes('SeoLanding'), 'Programmatic commercial pages must be statically generated and render the shared SEO landing template');
 function slugsForLanguage(source, language) {
   const startMatch = new RegExp('^\\s*' + language + ':\\[', 'm').exec(source);
   if (!startMatch) return new Set();
@@ -111,6 +132,8 @@ for (const path of sitemapPaths) {
     check(localizedSlugs[language]?.has(slug), `Sitemap localized route has no matching ${language} page slug: ${path}`);
   } else if (/^\/(en|es|zh)$/.test(path)) {
     check(localizedHome.includes('generateStaticParams'), 'Localized home must define static params');
+  } else if (path.startsWith('/solucoes/')) {
+    check(programmaticSeoSlugs.has(path.slice('/solucoes/'.length)), `Sitemap programmatic route has no matching SEO page: ${path}`);
   } else if (!staticRoutes.has(path)) {
     check(false, `Sitemap route has no matching static page: ${path}`);
   }
