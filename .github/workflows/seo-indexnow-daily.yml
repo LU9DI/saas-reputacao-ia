@@ -45,13 +45,13 @@ jobs:
       - name: Audit static sitemap and indexability
         run: npm run seo:audit
         working-directory: frontend
+      - name: Verify production delivery
+        if: github.event_name != 'pull_request'
+        run: npm run seo:smoke:production
+        working-directory: frontend
       - name: Submit only new or changed eligible URLs
         if: github.event_name != 'pull_request'
         run: npm run seo:indexnow
         working-directory: frontend
         env:
           INDEXNOW_STATE_FILE: .cache/indexnow-state.json
-      - name: Verify production delivery
-        if: github.event_name != 'pull_request'
-        run: npm run seo:smoke:production
-        working-directory: frontend
