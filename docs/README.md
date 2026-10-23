@@ -10,6 +10,12 @@
 | [../GO_LIVE.md](../GO_LIVE.md) | Checklist de produção |
 | [../DEPLOY.md](../DEPLOY.md) | Render + Vercel |
 
+## Crescimento orgânico
+
+| Doc | Conteúdo |
+|------|----------|
+| [ESTRATEGIA_EXPANSAO_SEO_PROGRAMATICO.md](ESTRATEGIA_EXPANSAO_SEO_PROGRAMATICO.md) | Estratégia para expandir cobertura orgânica em escala com critérios de qualidade, pesquisa, medição e publicação por lotes |
+
 ## Backend (guias em `backend/`)
 
 | Doc | Conteúdo |
