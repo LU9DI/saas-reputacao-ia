@@ -1,5 +1,13 @@
 name: SEO IndexNow Daily
 on:
+  pull_request:
+    paths:
+      - 'infra/cloudflare/worker.js'
+      - 'infra/cloudflare/worker.test.mjs'
+      - 'frontend/scripts/**'
+      - 'frontend/src/app/sitemap.ts'
+      - 'frontend/package.json'
+      - '.github/workflows/seo-indexnow-daily.yml'
   schedule:
     - cron: '17 8 * * *'
   workflow_dispatch:
@@ -34,11 +42,16 @@ jobs:
         working-directory: frontend
         env:
           CLOUDFLARE_PAGES: '1'
+      - name: Audit static sitemap and indexability
+        run: npm run seo:audit
+        working-directory: frontend
       - name: Submit only new or changed eligible URLs
+        if: github.event_name != 'pull_request'
         run: npm run seo:indexnow
         working-directory: frontend
         env:
           INDEXNOW_STATE_FILE: .cache/indexnow-state.json
       - name: Verify production delivery
+        if: github.event_name != 'pull_request'
         run: npm run seo:smoke:production
         working-directory: frontend
