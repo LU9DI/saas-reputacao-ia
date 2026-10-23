@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install frontend dependencies for SEO source validation
+        run: npm ci --prefix frontend
+
       - name: Audit public SEO/content rules
         run: node spec-kit/audit-seo-brand.mjs
 
