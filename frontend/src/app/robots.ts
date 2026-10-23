@@ -13,6 +13,7 @@ const retrievalBots = [
   'Claude-SearchBot',
   'Claude-User',
   'PerplexityBot',
+  'Google-Extended',
   'Googlebot',
   'Bingbot',
   'Applebot',
@@ -21,7 +22,6 @@ const retrievalBots = [
 const trainingBots = [
   'GPTBot',
   'ClaudeBot',
-  'Google-Extended',
   'CCBot',
 ];
 
