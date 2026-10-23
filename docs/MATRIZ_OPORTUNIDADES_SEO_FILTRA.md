@@ -107,3 +107,20 @@ Adicionar estes campos ao registro da seção 5 antes de selecionar um piloto:
 
 A disponibilidade de Search Console e ferramentas de pesquisa paga está limitada nesta execução. Portanto, a próxima etapa não deve fingir uma pontuação de demanda: deve inventariar as URLs e intenções existentes, verificar fontes alternativas legítimas, analisar as SERPs para os cinco candidatos P1 e confirmar quais ferramentas, dados e eventos de conversão do Filtra já existem. Só então selecionar a família piloto em uma PR de implementação separada da PR documental.
 
+## 8. Sinais preliminares de SERP (23/10/2026)
+
+Esta consulta exploratória identifica concorrência editorial existente, mas não mede volume, dificuldade nem potencial de conversão. Os resultados abaixo servem para orientar a pesquisa manual, não para pontuar demanda.
+
+- **Salões/beleza:** já há páginas públicas focadas em avaliações Google para salões, com orientação para pedir e responder avaliações. Um futuro ativo do Filtra precisaria ir além de uma versão genérica do mesmo guia — por exemplo, um checklist operacional ou diagnóstico real, se houver capacidade para entregá-lo.
+- **Oficinas mecânicas:** também aparecem conteúdos específicos de como solicitar avaliações e responder críticas. A diferenciação teria de tratar o fluxo próprio de orçamento, entrega do veículo e pós-serviço, sem copiar os guias existentes.
+- **Varejo físico:** há pesquisas e relatórios de mercado sobre a influência das avaliações na decisão de compra. São fontes potenciais para conteúdo fundamentado, desde que se citem os estudos originais e não se extrapolem os dados.
+- **Escolas:** não aprovar automaticamente uma página com a promessa “gestão de avaliações do Google para escolas”. Uma resposta da comunidade oficial do Perfil da Empresa no Google, datada de 24/09/2025, informa que escolas de educação geral deixaram de receber avaliações a partir de 30/04/2025. Antes de trabalhar esse segmento, verificar a política oficial atual e, se houver necessidade legítima, reposicionar o tema para feedback em outros canais ou gestão de reputação institucional sem alegar suporte do Google que não exista.
+- **Imobiliárias:** a pesquisa inicial não produziu evidência suficiente para avaliar a SERP específica. A oportunidade continua não validada; precisa de uma busca focada e comparação com as páginas atuais do Filtra.
+
+Fontes exploratórias para revisão editorial:
+- Google Business Profile Help, “Dicas para melhorar sua classificação local no Google”: https://support.google.com/business/answer/7091?hl=pt-BR
+- Beleza na Capital, exemplo de conteúdo específico para salões: https://www.belezanacapital.com.br/blog/avaliacoes-no-google-para-salao-de-beleza/
+- Agilizer, exemplo de conteúdo específico para oficinas: https://www.agilizer.com.br/blog/avaliacoes-google-oficina-mecanica/
+- Comunidade do Perfil da Empresa no Google, resposta sobre avaliações de escolas (24/09/2025): https://support.google.com/business/thread/375461262?hl=pt-BR&msgid=375473366
+
+Próxima pesquisa: confirmar a política atual para escolas na documentação oficial, pesquisar as SERPs específicas de imobiliárias e varejo, e comparar cada candidato com o conteúdo efetivo (não apenas slugs) do Filtra. Não atribuir métricas de volume, dificuldade ou retorno com base nessa amostra de resultados.
