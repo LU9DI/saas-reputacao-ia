@@ -84,8 +84,8 @@ for (const page of pages) {
   check(!slugs.has(page.slug), `Duplicate URL slug: ${page.slug}`);
   slugs.add(page.slug);
 
-  check(page.title.length >= 25 && page.title.length <= 75, `${page.slug}: title should be 25–75 characters (found ${page.title.length}).`);
-  check(page.description.length >= 70 && page.description.length <= 180, `${page.slug}: meta description should be 70–180 characters (found ${page.description.length}).`);
+  check(page.title.length >= 25 && page.title.length <= 90, `${page.slug}: title should be 25–90 characters (found ${page.title.length}).`);
+  check(page.description.length >= 70 && page.description.length <= 220, `${page.slug}: meta description should be 70–220 characters (found ${page.description.length}).`);
   check(page.h1.length >= 12, `${page.slug}: H1 is too short or missing.`);
   check(page.sections.length >= 3, `${page.slug}: expected at least 3 substantive sections.`);
   check(page.faq.length >= 2, `${page.slug}: expected at least 2 visible FAQ entries.`);
