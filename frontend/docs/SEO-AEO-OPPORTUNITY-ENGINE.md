@@ -60,13 +60,13 @@ npm run seo:demand:test
 A fila separa consultas para revisão de páginas existentes daquelas que podem justificar avaliar um candidato novo. Ela **não** tenta adivinhar URLs por similaridade semântica. O destino só é preenchido a partir de um mapeamento explícito revisado por uma pessoa.
 
 ```bash
-npm run seo:qualification
+npm run seo:qualification -- --inventory "C:/caminho/sitemap.xml"
 npm run seo:qualification:test
 ```
 
-Por padrão, o script lê `reports/seo-aeo-opportunities/demand-evidence.json`, o backlog `opportunities.json` e um arquivo local opcional `data/seo-aeo-manual-mappings.json`. O arquivo de exemplo versionado fica em `data/seo-aeo-manual-mappings.example.json`; copie-o e substitua os exemplos por mapeamentos realmente verificados, ou passe um caminho privado via `--mappings`. Não versione consultas sensíveis do Search Console.
+Por padrão, o script lê `reports/seo-aeo-opportunities/demand-evidence.json`, o backlog `opportunities.json` e um arquivo local opcional `data/seo-aeo-manual-mappings.json`. Para qualificar destinos `existing-page`, forneça obrigatoriamente `--inventory` apontando para o sitemap XML exportado do site ou para um arquivo UTF-8 com uma URL absoluta por linha. A validação exige correspondência exata da URL (normalizando apenas query, fragmento e barra final); domínio correto sem URL presente no inventário não basta. O arquivo de exemplo versionado fica em `data/seo-aeo-manual-mappings.example.json`; copie-o e substitua os exemplos por mapeamentos realmente verificados, ou passe um caminho privado via `--mappings`. Não versione consultas sensíveis do Search Console.
 
-Campos obrigatórios de cada mapeamento: `normalizedQuery` ou `evidenceId`, `targetType` (`existing-page` ou `candidate`), destino válido, `reviewedBy`, `reviewedAt` e `rationale`. Um destino `candidate` precisa referenciar um ID presente no backlog gerado. Conflitos de mapeamento são bloqueados e mapeamentos inválidos são reportados. Um match exato de hipótese é apenas uma sugestão, nunca um destino aprovado automaticamente.
+Campos obrigatórios de cada mapeamento: `normalizedQuery` ou `evidenceId`, `targetType` (`existing-page` ou `candidate`), destino válido, `reviewedBy`, `reviewedAt` e `rationale`. Um destino `candidate` precisa referenciar um ID presente no backlog gerado. Conflitos de mapeamento são bloqueados e mapeamentos inválidos são reportados. Destinos existentes ausentes do inventário e mapeamentos sem inventário são rejeitados e contabilizados como inválidos. Um match exato de hipótese é apenas uma sugestão, nunca um destino aprovado automaticamente.
 
 Saídas locais: `qualification-queue.json` e `qualification-queue.csv`. As ações significam apenas:
 - `optimize-existing-page-review`: revisar se a página existente precisa de otimização;
