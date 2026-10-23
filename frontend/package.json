@@ -41,6 +41,8 @@
     "seo:demand:import": "node scripts/import-seo-demand-evidence.mjs",
     "seo:demand:test": "node scripts/test-seo-demand-evidence.mjs",
     "seo:qualification": "node scripts/build-seo-qualification-queue.mjs",
-    "seo:qualification:test": "node scripts/test-seo-qualification-queue.mjs"
+    "seo:qualification:test": "node scripts/test-seo-qualification-queue.mjs",
+    "seo:briefs": "node scripts/build-seo-editorial-briefs.mjs",
+    "seo:briefs:test": "node scripts/test-seo-editorial-briefs.mjs"
   }
 }
