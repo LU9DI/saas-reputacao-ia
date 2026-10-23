@@ -11,6 +11,9 @@ export function SeoPageHeader() {
         <BrandMark size="sm" subtitle="Reputação" />
         <div className="flex items-center gap-3">
           <nav aria-label="Navegação principal" className="hidden items-center gap-5 text-sm text-zinc-300 sm:flex">
+            <Link href="/solucoes" className="hover:text-white">
+              Soluções
+            </Link>
             <Link href="/blog" className="hover:text-white">
               Blog
             </Link>
