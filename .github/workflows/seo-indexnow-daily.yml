@@ -26,7 +26,10 @@ jobs:
             indexnow-state-
       - run: npm ci
         working-directory: frontend
-      - name: Guard Worker against SEO rewrites\n        run: npm run test:seo:worker\n        working-directory: frontend\n      - name: Build canonical static sitemap and HTML
+      - name: Guard Worker against SEO rewrites
+        run: npm run test:seo:worker
+        working-directory: frontend
+      - name: Build canonical static sitemap and HTML
         run: npm run build
         working-directory: frontend
         env:
