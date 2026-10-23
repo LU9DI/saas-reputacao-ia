@@ -41,7 +41,7 @@ try {
   await writeFile(localizedInput, [
     'Principais consultas;Cliques;Impressões;CTR;Posição',
     '"reputação empresarial";2;40;5,00%;7,50',
-  ].join('\\n') + '\\n');
+  ].join('\n') + '\n');
   const localizedOut = path.join(temp, 'localized-output');
   execFileSync(process.execPath, [
     path.join(frontend, 'scripts/import-seo-demand-evidence.mjs'),
