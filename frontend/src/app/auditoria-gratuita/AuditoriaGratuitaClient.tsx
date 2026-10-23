@@ -27,14 +27,59 @@ const PRIVACY_LABEL: Record<Language, string> = {
   zh: '隐私政策',
 };
 
+const ATTRIBUTION_LIMITS = {
+  utm_source: 80,
+  utm_medium: 80,
+  utm_campaign: 120,
+  utm_content: 120,
+  utm_term: 120,
+  landing_path: 240,
+  referrer_origin: 160,
+} as const;
+
+type AcquisitionAttribution = Partial<Record<keyof typeof ATTRIBUTION_LIMITS, string>>;
+
+function cleanCampaignValue(value: string | null, limit: number): string {
+  return String(value || '')
+    .normalize('NFKC')
+    .replace(/[\u0000-\u001f\u007f]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\p{L}\p{N}._-]/gu, '')
+    .slice(0, limit);
+}
+
+function getAcquisitionAttribution(): AcquisitionAttribution {
+  if (typeof window === 'undefined') return {};
+  const params = new URLSearchParams(window.location.search);
+  const attribution: AcquisitionAttribution = {};
+
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const) {
+    const value = cleanCampaignValue(params.get(key), ATTRIBUTION_LIMITS[key]);
+    if (value) attribution[key] = value;
+  }
+
+  attribution.landing_path =
+    window.location.pathname.split(/[?#]/, 1)[0].slice(0, ATTRIBUTION_LIMITS.landing_path) || '/';
+
+  try {
+    if (document.referrer) {
+      const referrer = new URL(document.referrer);
+      if (referrer.protocol === 'https:' || referrer.protocol === 'http:') {
+        attribution.referrer_origin = referrer.origin.slice(0, ATTRIBUTION_LIMITS.referrer_origin);
+      }
+    }
+  } catch {
+    /* Referrer ausente ou inválido; a atribuição continua limitada aos UTMs. */
+  }
+
+  return attribution;
+}
+
 function acquisitionSource(): string {
   if (typeof window === 'undefined') return 'auditoria-gratuita';
   const params = new URLSearchParams(window.location.search);
-  const clean = (key: string) =>
-    String(params.get(key) || '')
-      .trim()
-      .replace(/[^a-zA-Z0-9._-]/g, '')
-      .slice(0, 40);
+  const clean = (key: string) => cleanCampaignValue(params.get(key), 40);
   return ['auditoria-gratuita', clean('utm_source'), clean('utm_medium'), clean('utm_campaign'), clean('utm_content')]
     .filter(Boolean)
     .join('|')
@@ -92,6 +137,8 @@ export function AuditoriaGratuitaClient() {
           company: company.trim(),
           consent: true,
           source: acquisitionSource(),
+          // Contrato da PR #83; o backend atual ignora o campo desconhecido.
+          attribution: getAcquisitionAttribution(),
         }),
       }
     );
@@ -128,6 +175,7 @@ export function AuditoriaGratuitaClient() {
             locale: language,
             reviews,
             lead_id: consentData?.lead_id || '',
+            attribution: getAcquisitionAttribution(),
           }),
         }
       );

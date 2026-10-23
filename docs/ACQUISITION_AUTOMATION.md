@@ -187,11 +187,15 @@ utm_campaign=organic-content-AAAA-MM
 utm_content=<slug-da-pagina>-<canal>
 ```
 
-O formulário de auditoria já propaga `utm_source`, `utm_medium`,
-`utm_campaign` e `utm_content` para o campo `source` do lead. A atribuição
-detalhada por evento e relatório Postgres está sendo reconciliada na PR #83; até
-a integração, use a combinação `source` + diagnósticos + fila de conteúdo como
-leitura operacional.
+O formulário de auditoria propaga `utm_source`, `utm_medium`,
+`utm_campaign` e `utm_content` para o campo `source` do lead. Ele também envia
+um objeto `attribution` sanitizado com `utm_term`, `landing_path` e
+`referrer_origin`, no contrato proposto pela PR #83 (ainda não integrada).
+
+O backend atual ignora esse objeto, portanto a mudança é retrocompatível. Após a
+revisão independente e a integração da PR #83, os mesmos dados poderão alimentar
+a atribuição por evento e o relatório Postgres. Até lá, use a combinação
+`source` + diagnósticos + fila de conteúdo como leitura operacional.
 
 Métricas de sucesso do MVP:
 
@@ -244,6 +248,7 @@ Não invente métricas. Se a origem não estiver registrada, trate como
 - `backend/routes/acquisitionContentRoutes.ts`: endpoints admin e n8n.
 - `frontend/src/app/admin/aquisicao/page.tsx`: fila de revisão.
 - `frontend/src/app/auditoria-gratuita/AuditoriaGratuitaClient.tsx`: captura
-  sem avaliações fictícias e com origem UTM.
+  sem avaliações fictícias, com `source` UTM e objeto `attribution` compatível
+  com a PR #83.
 - `n8n-content-acquisition.json`: workflow diário que só cria rascunhos.
 - `backend/.env.example`: flags de ativação.
