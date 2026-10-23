@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
+  // Multiple root layouts cannot compose a global 404 from a single layout.
+  // This emits a full HTML document with lang="pt-BR" for unmatched routes.
+  experimental: {
+    globalNotFound: true,
+  },
   ...(process.env.CLOUDFLARE_PAGES === '1'
     ? { output: 'export', images: { unoptimized: true } }
     : {}),
