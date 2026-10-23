@@ -62,6 +62,8 @@ A fila separa consultas para revisão de páginas existentes daquelas que podem 
 ```bash
 npm run seo:qualification -- --inventory "C:/caminho/sitemap.xml"
 npm run seo:qualification:test
+npm run seo:briefs
+npm run seo:briefs:test
 ```
 
 Por padrão, o script lê `reports/seo-aeo-opportunities/demand-evidence.json`, o backlog `opportunities.json` e um arquivo local opcional `data/seo-aeo-manual-mappings.json`. Para qualificar destinos `existing-page`, forneça obrigatoriamente `--inventory` apontando para o sitemap XML exportado do site ou para um arquivo UTF-8 com uma URL absoluta por linha. A validação exige correspondência exata da URL (normalizando apenas query, fragmento e barra final); domínio correto sem URL presente no inventário não basta. O arquivo de exemplo versionado fica em `data/seo-aeo-manual-mappings.example.json`; copie-o e substitua os exemplos por mapeamentos realmente verificados, ou passe um caminho privado via `--mappings`. Não versione consultas sensíveis do Search Console.
@@ -75,6 +77,12 @@ Saídas locais: `qualification-queue.json` e `qualification-queue.csv`. As açõ
 - `blocked-conflicting-mappings`: mais de um mapeamento revisado corresponde à evidência.
 
 Todas as linhas continuam com `publishAllowed=false`. O processo não cria conteúdo, URL, rota, canonical, sitemap ou solicitação de indexação.
+
+## Escala editorial por briefs revisáveis
+
+Depois de gerar a fila de qualificação, `npm run seo:briefs` converte apenas itens mapeados para candidatos existentes no backlog e com impressões positivas em briefs estruturados JSON + CSV. O brief preserva consulta, fonte, propriedade, período e métricas observadas; não inventa pesquisa de palavras-chave nem afirmações sobre o produto. Cada brief inclui oito gates fechados por padrão: capacidade comprovada do produto, dois elementos distintos de evidência original/autorizada, fontes primárias, revisão editorial, intenção/aderência, canibalização e revisão técnica.
+
+Use `npm run seo:briefs:test` para validar o fluxo. Candidatos desconhecidos são bloqueados; consultas sem destino explícito não geram brief. Os artefatos são planejamento interno e continuam com `publishAllowed=false`. Para ampliar o volume com segurança, execute o mesmo pipeline sobre lotes maiores de dados observados e mantenha a publicação como etapa separada, humana e baseada em evidências.
 
 ## Processo de qualificação
 
