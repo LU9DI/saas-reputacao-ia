@@ -24,3 +24,7 @@ O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrent
 - Usar análise automatizada como apoio, com revisão humana quando necessária.
 - Não inferir nem divulgar dados pessoais a partir de avaliações ou feedback.
 - Não incentivar manipulação de avaliações públicas.
+
+## Versões Markdown para agentes
+- As páginas programáticas têm uma versão Markdown legível por máquina, fora do sitemap XML. Exemplo: https://filtraai.com/solucoes/software-gestao-avaliacoes-google.md
+- A URL HTML continua sendo a versão canônica para visitantes e mecanismos de busca. Arquivos Markdown são uma alternativa de leitura; não garantem indexação nem citações por IA.
