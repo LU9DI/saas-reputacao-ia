@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 /**
  * Qualify imported search evidence using explicit human-reviewed mappings only.
+ * Existing-page targets must match an exact URL in a supplied sitemap/inventory.
  * No semantic URL matching, route creation, indexing, or publication occurs.
  *
- * Mapping file schema:
- * { "mappings": [{ "normalizedQuery": "example query", "targetType": "existing-page",
- *   "targetUrl": "https://filtraai.com/example", "reviewedBy": "reviewer",
- *   "reviewedAt": "2026-10-23", "rationale": "Existing page covers this intent" }] }
+ * Inventory: --inventory path to sitemap XML or UTF-8 text containing one absolute URL per line.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -21,9 +19,30 @@ const arg = (name, fallback = null) => {
 const evidencePath = path.resolve(arg('--evidence', path.join(root, 'reports/seo-aeo-opportunities/demand-evidence.json')));
 const candidatesPath = path.resolve(arg('--candidates', path.join(root, 'reports/seo-aeo-opportunities/opportunities.json')));
 const mappingsPath = path.resolve(arg('--mappings', path.join(root, 'data/seo-aeo-manual-mappings.json')));
+const inventoryArg = arg('--inventory');
+const inventoryPath = inventoryArg ? path.resolve(inventoryArg) : null;
 const outputDir = path.resolve(arg('--out', path.join(root, 'reports/seo-aeo-opportunities')));
 const normalize = (value) => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const readJson = async (file) => JSON.parse(await readFile(file, 'utf8'));
+function canonicalUrl(value) {
+  const url = new URL(value);
+  url.hash = '';
+  url.search = '';
+  if (url.pathname.length > 1) url.pathname = url.pathname.replace(/\/+$/, '');
+  return url.href;
+}
+function parseInventory(content) {
+  const xmlUrls = [...content.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((match) => match[1].trim());
+  const values = xmlUrls.length ? xmlUrls : content.split(/\r?\n/).map((line) => line.trim()).filter((line) => line && !line.startsWith('#'));
+  const urls = new Set();
+  for (const value of values) {
+    try {
+      const url = new URL(value);
+      if (['http:', 'https:'].includes(url.protocol)) urls.add(canonicalUrl(url.href));
+    } catch { /* Ignore non-URL lines in an inventory; the inventory source remains human-auditable. */ }
+  }
+  return urls;
+}
 const evidenceReport = await readJson(evidencePath);
 let candidateRows = [];
 try {
@@ -37,6 +56,8 @@ try {
 } catch (error) {
   if (error.code !== 'ENOENT') throw error;
 }
+let inventoryUrls = new Set();
+if (inventoryPath) inventoryUrls = parseInventory(await readFile(inventoryPath, 'utf8'));
 const candidateIds = new Set(candidateRows.map((candidate) => candidate.id));
 const keyed = new Map();
 const mappingErrors = [];
@@ -46,10 +67,14 @@ for (const [index, mapping] of mappings.entries()) {
   if (!key) issues.push('mapping-requires-evidenceId-or-normalizedQuery');
   if (!['existing-page', 'candidate'].includes(mapping.targetType)) issues.push('unsupported-targetType');
   if (mapping.targetType === 'existing-page') {
+    let targetUrl = null;
     try {
-      const url = new URL(mapping.targetUrl);
+      targetUrl = canonicalUrl(mapping.targetUrl);
+      const url = new URL(targetUrl);
       if (!['http:', 'https:'].includes(url.protocol)) issues.push('existing-page-target-must-be-http-url');
     } catch { issues.push('existing-page-targetUrl-must-be-absolute-url'); }
+    if (!inventoryPath) issues.push('existing-page-requires-explicit-url-inventory');
+    else if (targetUrl && !inventoryUrls.has(targetUrl)) issues.push('existing-page-target-not-found-in-url-inventory');
   }
   if (mapping.targetType === 'candidate' && (!mapping.candidateId || !candidateIds.has(mapping.candidateId))) issues.push('candidate-target-must-reference-known-candidate-id');
   if (!String(mapping.reviewedBy ?? '').trim()) issues.push('reviewedBy-required');
@@ -121,11 +146,11 @@ const counts = {
   publishAllowed: 0,
 };
 const report = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedAt: new Date().toISOString(),
   purpose: 'Human review queue only. These classifications do not authorize content creation, route changes, indexing, or publication.',
-  policy: { semanticMatchingEnabled: false, implicitUrlGenerationEnabled: false, publishAllowed: false },
-  provenance: { evidenceFile: path.basename(evidencePath), candidateFile: path.basename(candidatesPath), mappingsFile: path.basename(mappingsPath) },
+  policy: { semanticMatchingEnabled: false, implicitUrlGenerationEnabled: false, publishAllowed: false, existingPageTargetsRequireInventory: true },
+  provenance: { evidenceFile: path.basename(evidencePath), candidateFile: path.basename(candidatesPath), mappingsFile: path.basename(mappingsPath), inventoryFile: inventoryPath ? path.basename(inventoryPath) : null, inventoryUrlCount: inventoryUrls.size },
   counts,
   mappingErrors,
   queue,
@@ -142,4 +167,4 @@ const csv = [columns.join(','), ...queue.map((item) => {
   return columns.map((column) => csvCell(flat[column])).join(',');
 })].join('\n') + '\n';
 await writeFile(path.join(outputDir, 'qualification-queue.csv'), csv);
-console.log(JSON.stringify({ ...counts, outputDir }, null, 2));
+console.log(JSON.stringify({ ...counts, inventoryUrlCount: inventoryUrls.size, outputDir }, null, 2));
