@@ -16,6 +16,7 @@ import {
   Workflow,
   Download,
   Settings2,
+  Sparkles,
   Mail,
   Check,
   X,
@@ -303,6 +304,12 @@ export default function AdminDashboard() {
             <p className="text-sm text-zinc-500">Faturamento, clientes, tokens e integrações</p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/aquisicao"
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm py-2 px-4 rounded-xl border border-indigo-500"
+            >
+              <Sparkles size={16} /> Aquisição
+            </Link>
             <Link
               href="/admin/negocio"
               className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 text-white text-sm py-2 px-4 rounded-xl border border-emerald-600"

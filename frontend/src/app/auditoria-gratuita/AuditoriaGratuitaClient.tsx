@@ -20,6 +20,72 @@ es:{p3:'Es útil para empresas que reciben reseñas en Google y otros canales y 
 zh:{p3:'适用于在 Google 和其他渠道收到评价、需要快速了解客户认知的企业，也适合作为酒店、餐厅、诊所、代理机构、连锁企业和多门店业务的初步诊断。',reputationText:'关于企业整体认知、信任度和客户所描述体验的信号。',recurrenceText:'多条评价中反复出现的主题，例如服务、时效、产品质量和问题解决。',p4:'1. 找出重复主题；2. 与负责人确认重点；3. 为优先问题选择行动；4. 跟踪新评价以验证认知变化。',p5:'平均分只能概括整体，无法解释认知原因。即使平均分相同，不同企业的问题也可能完全不同。诊断会关注上下文和重复性。',p6:'只使用企业可以分享的内容，并避免不必要的个人数据。评价样本越有代表性，诊断通常越有价值。',placeholder:'企业名称',emailPlaceholder:'you@company.com（可选）',consentText:'我希望接收 Filtra.AI 关于诊断、7 天试用和服务的信息。授权是可选的，也可以随时取消。',emailHint:'只有选择接收 Filtra.AI 通讯时才需要电子邮件。',r1:'所提供评分的平均值和分布',r2:'评价中发现的优势',r3:'风险和重复主题',r4:'基于分析材料的实际行动',r5:'根据证据数量和清晰度给出的可信度',summary:'摘要',strengths:'优势',risks:'风险',themes:'重复主题',actions:'建议行动',result:'这是初步诊断。如需持续跟踪评价、趋势和行动，请了解 Filtra.AI 的 7 天试用。',reviewsLabel:'条评价',positive:'好评',negative:'差评'}};
 const cExtra = (language: Language) => EXTRA[language];
 
+const PRIVACY_LABEL: Record<Language, string> = {
+  pt: 'Política de Privacidade',
+  en: 'Privacy Policy',
+  es: 'Política de Privacidad',
+  zh: '隐私政策',
+};
+
+const ATTRIBUTION_LIMITS = {
+  utm_source: 80,
+  utm_medium: 80,
+  utm_campaign: 120,
+  utm_content: 120,
+  utm_term: 120,
+  landing_path: 240,
+  referrer_origin: 160,
+} as const;
+
+type AcquisitionAttribution = Partial<Record<keyof typeof ATTRIBUTION_LIMITS, string>>;
+
+function cleanCampaignValue(value: string | null, limit: number): string {
+  return String(value || '')
+    .normalize('NFKC')
+    .replace(/[\u0000-\u001f\u007f]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\p{L}\p{N}._-]/gu, '')
+    .slice(0, limit);
+}
+
+function getAcquisitionAttribution(): AcquisitionAttribution {
+  if (typeof window === 'undefined') return {};
+  const params = new URLSearchParams(window.location.search);
+  const attribution: AcquisitionAttribution = {};
+
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const) {
+    const value = cleanCampaignValue(params.get(key), ATTRIBUTION_LIMITS[key]);
+    if (value) attribution[key] = value;
+  }
+
+  attribution.landing_path =
+    window.location.pathname.split(/[?#]/, 1)[0].slice(0, ATTRIBUTION_LIMITS.landing_path) || '/';
+
+  try {
+    if (document.referrer) {
+      const referrer = new URL(document.referrer);
+      if (referrer.protocol === 'https:' || referrer.protocol === 'http:') {
+        attribution.referrer_origin = referrer.origin.slice(0, ATTRIBUTION_LIMITS.referrer_origin);
+      }
+    }
+  } catch {
+    /* Referrer ausente ou inválido; a atribuição continua limitada aos UTMs. */
+  }
+
+  return attribution;
+}
+
+function acquisitionSource(): string {
+  if (typeof window === 'undefined') return 'auditoria-gratuita';
+  const params = new URLSearchParams(window.location.search);
+  const clean = (key: string) => cleanCampaignValue(params.get(key), 40);
+  return ['auditoria-gratuita', clean('utm_source'), clean('utm_medium'), clean('utm_campaign'), clean('utm_content')]
+    .filter(Boolean)
+    .join('|')
+    .slice(0, 120);
+}
+
 type Diagnostic = {
   company: string;
   review_count: number;
@@ -42,9 +108,7 @@ export function AuditoriaGratuitaClient() {
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [consent, setConsent] = useState(false);
-  const [raw, setRaw] = useState(
-    '5 | Atendimento rápido e equipe muito atenciosa.\n4 | Quarto confortável, mas o check-in demorou.\n2 | Tive dificuldade para resolver um problema e esperei bastante.'
-  );
+  const [raw, setRaw] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
@@ -72,7 +136,9 @@ export function AuditoriaGratuitaClient() {
           email: email.trim(),
           company: company.trim(),
           consent: true,
-          source: 'auditoria-gratuita',
+          source: acquisitionSource(),
+          // Contrato da PR #83; o backend atual ignora o campo desconhecido.
+          attribution: getAcquisitionAttribution(),
         }),
       }
     );
@@ -109,14 +175,15 @@ export function AuditoriaGratuitaClient() {
             locale: language,
             reviews,
             lead_id: consentData?.lead_id || '',
+            attribution: getAcquisitionAttribution(),
           }),
         }
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Não foi possível gerar o diagnóstico.');
       setDiagnostic(data.diagnostic);
-    } catch (e: any) {
-      setError(e?.message || 'Diagnóstico indisponível no momento.');
+    } catch (e: unknown) {
+      setError(e instanceof Error && e.message ? e.message : 'Diagnóstico indisponível no momento.');
     } finally {
       setLoading(false);
     }
@@ -210,15 +277,26 @@ export function AuditoriaGratuitaClient() {
               placeholder={c.emailPlaceholder}
               className="w-full rounded-xl border border-zinc-700 bg-black px-4 py-3 outline-hidden focus:border-indigo-500"
             />
-            <label className="flex items-start gap-3 text-sm text-zinc-400">
-              <input
-                type="checkbox"
-                checked={consent}
-                onChange={(e) => setConsent(e.target.checked)}
-                className="mt-1"
-              />
-              <span>{c.consentText}</span>
-            </label>
+            <div className="space-y-2 text-sm text-zinc-400">
+              <div className="flex items-start gap-3">
+                <input
+                  id="audit-consent"
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  className="mt-1"
+                />
+                <label htmlFor="audit-consent" className="leading-relaxed">
+                  {c.consentText}
+                </label>
+              </div>
+              <Link
+                href="/privacidade"
+                className="ml-7 inline-block text-indigo-400 underline hover:text-indigo-300"
+              >
+                {PRIVACY_LABEL[language]}
+              </Link>
+            </div>
             <p className="text-xs text-zinc-500">{c.emailHint}</p>
             <label className="block text-sm font-medium">{c.reviews}</label>
             <p className="text-xs text-zinc-500">{c.format}</p>

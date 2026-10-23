@@ -9,6 +9,7 @@
 | [../STRUCTURE.md](../STRUCTURE.md) | Onde fica cada coisa |
 | [../GO_LIVE.md](../GO_LIVE.md) | Checklist de produção |
 | [../DEPLOY.md](../DEPLOY.md) | Render + Vercel |
+| [ACQUISITION_AUTOMATION.md](ACQUISITION_AUTOMATION.md) | Aquisição orgânica, revisão e publicação |
 
 ## Backend (guias em `backend/`)
 

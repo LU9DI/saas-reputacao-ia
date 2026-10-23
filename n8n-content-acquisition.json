@@ -1,9 +1,13 @@
 [
   {
     "id": "filtraContentAcquisition2026",
-    "name": "Filtra.AI - Content Acquisition",
-    "active": true,
+    "name": "Filtra.AI - Organic Content Drafts",
+    "active": false,
     "isArchived": false,
+    "settings": {
+      "executionOrder": "v1",
+      "timezone": "America/Sao_Paulo"
+    },
     "nodes": [
       {
         "parameters": {
@@ -11,232 +15,133 @@
             "interval": [
               {
                 "field": "cronExpression",
-                "expression": "15 9 * * *"
+                "expression": "15 9 * * 1-5"
               }
             ]
           }
         },
         "id": "ca1",
-        "name": "Daily Content Trigger",
+        "name": "Weekday Content Trigger",
         "type": "n8n-nodes-base.scheduleTrigger",
         "typeVersion": 1.2,
-        "position": [
-          -900,
-          0
-        ]
+        "position": [-720, 0]
       },
       {
         "parameters": {
           "method": "POST",
-          "url": "={{$env.FILTRA_API_URL+'/api/n8n/acquisition/campaigns/upsert'}}",
+          "url": "={{($env.FILTRA_API_URL || 'https://api.filtraai.com') + '/api/n8n/acquisition/content/generate'}}",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
               {
                 "name": "X-Filtra-Secret",
-                "value": "={{$env.N8N_INBOUND_SECRET || $env.N8N_WEBHOOK_SECRET}}"
+                "value": "={{$env.N8N_INBOUND_SECRET}}"
               }
             ]
           },
           "sendBody": true,
           "specifyBody": "json",
-          "jsonBody": "={{JSON.stringify({id:'daily-content-acquisition-2026',name:'Filtra.AI Daily Content Acquisition',platform:'dev.to+buffer',status:'active',utm_source:'content',utm_medium:'organic',utm_campaign:'daily-content'})}}",
-          "options": {}
+          "jsonBody": "={\"limit\":2}",
+          "options": {
+            "timeout": 120000,
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          }
         },
         "id": "ca2",
-        "name": "Upsert Campaign",
+        "name": "Generate Drafts",
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
-        "position": [
-          -650,
-          0
-        ]
+        "position": [-480, 0]
       },
       {
         "parameters": {
-          "jsCode": "const now=new Date().toISOString();\nreturn [{json:{\n  generated_at:now,\n  campaign_id:'daily-content-acquisition-2026',\n  prompt:'Create two original Filtra.AI acquisition drafts for today. Return ONLY valid JSON with keys devto_title, devto_body, buffer_post. The DEV.to draft should be a useful technical/business article about online reputation management, customer reviews, AI-assisted reputation workflows, or a closely related SaaS problem; 700-1100 words, practical, non-spammy, with a soft mention of Filtra.AI at the end. The Buffer draft should be a concise social post under 700 characters, useful and human, with no mass-outreach language. Do not invent customer results, prices, partnerships, or statistics. Write in English unless the topic naturally benefits from another language.'\n}}];"
-        },
-        "id": "ca3",
-        "name": "Build AI Prompt",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          -420,
-          0
-        ]
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "https://api.groq.com/openai/v1/chat/completions",
-          "sendHeaders": true,
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "Authorization",
-                "value": "={{'Bearer '+$env.GROQ_API_KEY}}"
-              },
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            ]
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{JSON.stringify({model:$env.GROQ_MODEL || 'openai/gpt-oss-20b',messages:[{role:'system',content:'You produce accurate, non-spammy marketing content for a SaaS product. Return strict JSON only.'},{role:'user',content:$json.prompt}],temperature:0.7,max_tokens:2200})}}",
-          "options": {},
-          "continueOnFail": true
-        },
-        "id": "ca4",
-        "name": "Groq - Generate Content",
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2,
-        "position": [
-          -160,
-          0
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "const source=$json||{};\nlet parsed=null;\ntry {\n  const raw=source.choices?.[0]?.message?.content;\n  if(raw) {\n    const cleaned=String(raw).replace(/^\\s*\\`\\`\\`json\\s*/i,'').replace(/\\s*\\`\\`\\`\\s*$/,'').trim();\n    parsed=JSON.parse(cleaned);\n  }\n} catch {}\nif(!parsed || !parsed.devto_title || !parsed.devto_body || !parsed.buffer_post) {\n  parsed={\n    devto_title:'How AI Can Turn Customer Reviews Into a Reputation Workflow',\n    devto_body:'Customer reviews are more than a score on a directory. They are a stream of operational feedback about expectations, service quality, communication and trust. A practical reputation workflow starts by collecting reviews, identifying recurring themes, prioritizing the issues that matter most, and making the response process consistent.\\n\\nAI can help summarize large volumes of feedback, group similar complaints, surface urgent patterns and prepare response drafts. The important part is keeping a human review step where accuracy, tone and context matter. Automation should reduce repetitive work, not manufacture feedback or send generic replies.\\n\\nFor SaaS teams, the same workflow can connect review monitoring with internal tasks: detect a recurring complaint, classify it, create a follow-up, and measure whether the issue keeps appearing. This makes reputation management an operational loop rather than a once-a-month report.\\n\\nFiltra.AI is designed around this kind of workflow: turning reputation signals into structured actions so teams can spend less time watching dashboards and more time improving the customer experience.',\n    buffer_post:'Customer reviews can be an operating signal, not just a score. AI can group recurring complaints, surface patterns and prepare response drafts while keeping humans in control. The goal is less dashboard watching and more time fixing the customer experience. #SaaS #CustomerExperience #ReputationManagement'\n  };\n}\nreturn [{json:{campaign_id:'daily-content-acquisition-2026',generated_at:new Date().toISOString(),...parsed}}];"
-        },
-        "id": "ca5",
-        "name": "Normalize Generated Content",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          100,
-          0
-        ]
-      },
-      {
-        "parameters": {
-          "jsCode": "const b=$json;\nreturn [\n {json:{platform:'dev.to',title:String(b.devto_title).slice(0,500),body:String(b.devto_body).slice(0,50000),status:'draft',campaign_id:b.campaign_id,utm_content:'devto-daily',metadata:{generated_at:b.generated_at,source:'groq_or_fallback'}}},\n {json:{platform:'buffer',title:'Filtra.AI daily social draft',body:String(b.buffer_post).slice(0,50000),status:'draft',campaign_id:b.campaign_id,utm_content:'buffer-daily',metadata:{generated_at:b.generated_at,source:'groq_or_fallback'}}}\n];"
-        },
-        "id": "ca6",
-        "name": "Split Channels",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          360,
-          0
-        ]
-      },
-      {
-        "parameters": {
-          "method": "POST",
-          "url": "={{$env.FILTRA_API_URL+'/api/n8n/acquisition/content/upsert'}}",
+          "url": "={{($env.FILTRA_API_URL || 'https://api.filtraai.com') + '/api/n8n/acquisition/content/pending?limit=20'}}",
           "sendHeaders": true,
           "headerParameters": {
             "parameters": [
               {
                 "name": "X-Filtra-Secret",
-                "value": "={{$env.N8N_INBOUND_SECRET || $env.N8N_WEBHOOK_SECRET}}"
+                "value": "={{$env.N8N_INBOUND_SECRET}}"
               }
             ]
           },
-          "sendBody": true,
-          "specifyBody": "json",
-          "jsonBody": "={{JSON.stringify($json)}}",
-          "options": {},
-          "continueOnFail": true
+          "options": {
+            "timeout": 30000,
+            "response": {
+              "response": {
+                "responseFormat": "json"
+              }
+            }
+          }
         },
-        "id": "ca7",
-        "name": "Persist Content",
+        "id": "ca3",
+        "name": "List Pending",
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.2,
-        "position": [
-          620,
-          0
-        ]
+        "position": [-240, 0]
       },
       {
         "parameters": {
-          "jsCode": "const items=$input.all().map(i=>i.json||{});\nconst failed=items.filter(x=>x.success!==true).length;\nreturn [{json:{success:failed===0,status:failed===0?'completed':'partial_failure',generated:items.length,persisted:items.filter(x=>x.persisted===true).length,duplicates:items.filter(x=>x.duplicate===true).length,results:items}}];"
+          "jsCode": "const generated = $('Generate Drafts').first().json || {};\nconst pending = $('List Pending').first().json || {};\nconst items = Array.isArray(pending.items) ? pending.items : [];\nreturn [{\n  json: {\n    ok: true,\n    generated: Number(generated.generated || 0),\n    skipped: Number(generated.skipped || 0),\n    campaign_id: generated.campaign_id || null,\n    pending_review: items.length,\n    sample: items.slice(0, 5).map((item) => ({\n      id: item.id,\n      channel: item.platform,\n      title: item.title,\n      source_url: item.source_url,\n      claim_flags: item.claim_flags || []\n    })),\n    review_url: 'https://filtraai.com/admin/aquisicao'\n  }\n}];"
         },
-        "id": "ca8",
-        "name": "Acquisition Result",
+        "id": "ca4",
+        "name": "Summarize Queue",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
-        "position": [
-          880,
-          0
-        ]
+        "position": [0, 0]
+      },
+      {
+        "parameters": {},
+        "id": "ca5",
+        "name": "Done",
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [240, 0]
       }
     ],
     "connections": {
-      "Daily Content Trigger": {
+      "Weekday Content Trigger": {
         "main": [
           [
             {
-              "node": "Upsert Campaign",
+              "node": "Generate Drafts",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Upsert Campaign": {
+      "Generate Drafts": {
         "main": [
           [
             {
-              "node": "Build AI Prompt",
+              "node": "List Pending",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Build AI Prompt": {
+      "List Pending": {
         "main": [
           [
             {
-              "node": "Groq - Generate Content",
+              "node": "Summarize Queue",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Groq - Generate Content": {
+      "Summarize Queue": {
         "main": [
           [
             {
-              "node": "Normalize Generated Content",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Normalize Generated Content": {
-        "main": [
-          [
-            {
-              "node": "Split Channels",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Split Channels": {
-        "main": [
-          [
-            {
-              "node": "Persist Content",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Persist Content": {
-        "main": [
-          [
-            {
-              "node": "Acquisition Result",
+              "node": "Done",
               "type": "main",
               "index": 0
             }
@@ -244,12 +149,9 @@
         ]
       }
     },
-    "settings": {
-      "executionOrder": "v1",
-      "timezone": "America/Sao_Paulo"
-    },
-    "staticData": null,
     "pinData": {},
-    "meta": {}
+    "meta": {
+      "templateCredsSetupCompleted": false
+    }
   }
 ]

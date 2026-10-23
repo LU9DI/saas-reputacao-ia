@@ -21,6 +21,7 @@ import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
 import { mountReviewRoutes } from './routes/reviewRoutes.js';
 import { mountDiagnosticRoutes } from './routes/diagnosticRoutes.js';
 import { mountAcquisitionRoutes, ensureAcquisitionSchema } from './routes/acquisitionRoutes.js';
+import { mountAcquisitionContentRoutes } from './routes/acquisitionContentRoutes.js';
 import { mountLeadRoutes } from './routes/leadRoutes.js';
 import { ensureLeadSchema } from './services/leadService.js';
 import { mountAdminDashboardRoutes } from './routes/adminDashboardRoutes.js';
@@ -118,7 +119,7 @@ async function main() {
   try { await ensureLeadSchema(getDb()); } catch (e) { console.warn('lead schema:', e); }
   await runSentimentBackfillOnBoot();
   await runLgpdSweepOnBoot();
-  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountMonthlyReportJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app);
+  mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountAcquisitionContentRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountMonthlyReportJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app);
   const dotEnabled = process.env.NODE_ENV !== 'production' || process.env.FILTRA_DOT_ENABLED === '1';
   if (dotEnabled) {
     try { await ensureDotSchema(); } catch (e) { console.error('DOT schema:', e); throw e; }

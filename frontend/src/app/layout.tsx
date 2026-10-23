@@ -3,6 +3,7 @@ import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 import { JsonLd } from './components/JsonLd';
+import { UtmAttribution } from './components/UtmAttribution';
 
 const siteUrl = 'https://filtraai.com';
 const ogImage = `${siteUrl}/og-image.png`;
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <JsonLd />
         <Providers>
+          <UtmAttribution />
           {children}
           <PwaRegister />
         </Providers>
