@@ -116,3 +116,21 @@ Depois de revisar e qualificar candidatos, integrar o registro aprovado à fonte
 - A taxonomia tem sobreposição entre alguns rótulos setoriais; os flags no relatório servem para triagem.
 - O gerador é um backlog de pesquisa e não está conectado ao Search Console, Analytics nem a fontes externas de demanda.
 - A geração automatizada não comprova E-E-A-T, utilidade, originalidade ou elegibilidade para indexação.
+
+
+## Análise consulta × página (possível canibalização)
+
+Use uma exportação do Google Search Console com dimensões **Consulta e Página** (ou Query e Page), além de cliques, impressões e posição. O relatório cruza cada consulta normalizada com as URLs que receberam impressões e sinaliza consultas com mais de uma URL elegível para revisão.
+
+```bash
+npm run seo:overlap -- --input "C:/caminho/consultas-paginas.csv" --site "https://filtraai.com/" --start-date 2026-09-01 --end-date 2026-09-30
+npm run seo:overlap:test
+```
+
+Saídas locais: `reports/seo-aeo-opportunities/query-page-overlap.json` e `.csv`. O relatório preserva as linhas de origem, métricas agregadas, janela, propriedade e URLs. URLs fora da origem informada são sinalizadas e não contam como alvo elegível. Linhas inválidas aparecem no array `rejected`; não são silenciosamente convertidas em evidência.
+
+**Importante:** duas URLs aparecerem para uma consulta é apenas um sinal de possível sobreposição, não prova de canibalização. Antes de consolidar, redirecionar ou alterar canonical, compare intenção de busca, conteúdo, datas, consultas e resultados de pesquisa. Nenhuma URL é criada ou publicada; `publishAllowed=false` permanece em todos os itens.
+
+### Critério de página útil e elegível para produção
+
+Uma oportunidade só deve avançar para produção depois de: (1) evidência de demanda ou necessidade de cliente documentada; (2) intenção de busca distinta das páginas existentes; (3) capacidade real do produto confirmada; (4) exemplos, método ou evidência original autorizada; (5) fontes primárias verificadas; (6) revisão editorial humana; (7) checagem de canibalização; (8) links internos, canonical, indexabilidade e sitemap revisados. Na ausência de evidência real do Search Console, os relatórios devem permanecer vazios ou incompletos — nunca preencher métricas estimadas como se fossem observadas.
