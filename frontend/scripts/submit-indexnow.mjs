@@ -12,15 +12,15 @@ const sitemapPath = join(out, 'sitemap.xml');
 assert.ok(existsSync(sitemapPath), `Static build sitemap is missing: ${sitemapPath}`);
 
 const xml = readFileSync(sitemapPath, 'utf8');
-const entries = [...xml.matchAll(/<url>([\\s\\S]*?)<\\/url>/gi)].map((match) => {
+const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/gi)].map((match) => {
   const block = match[1];
-  const loc = block.match(/<loc>\\s*([^<]+?)\\s*<\\/loc>/i)?.[1]?.replaceAll('&amp;', '&').trim();
-  const lastmod = block.match(/<lastmod>\\s*([^<]+?)\\s*<\\/lastmod>/i)?.[1]?.trim() || null;
+  const loc = block.match(/<loc>\s*([^<]+?)\s*<\/loc>/i)?.[1]?.replaceAll('&amp;', '&').trim();
+  const lastmod = block.match(/<lastmod>\s*([^<]+?)\s*<\/lastmod>/i)?.[1]?.trim() || null;
   return { loc, lastmod };
 }).filter(({ loc }) => Boolean(loc));
 
 function routeFile(pathname) {
-  const clean = pathname.replace(/^\\/+|\\/+$/g, '');
+  const clean = pathname.replace(/^\/+|\/+$/g, '');
   const candidates = pathname === '/'
     ? [join(out, 'index.html')]
     : [join(out, `${clean}.html`), join(out, clean, 'index.html')];
@@ -30,11 +30,11 @@ function routeFile(pathname) {
   });
 }
 function robotsMeta(html) {
-  const tags = [...html.matchAll(/<meta\\b[^>]*>/gi)].map((m) => m[0]);
+  const tags = [...html.matchAll(/<meta\b[^>]*>/gi)].map((m) => m[0]);
   for (const tag of tags) {
-    const name = tag.match(/\\bname=[\"']robots[\"']/i);
+    const name = tag.match(/\bname=[\"']robots[\"']/i);
     if (!name) continue;
-    return tag.match(/\\bcontent=[\"']([^\"']*)[\"']/i)?.[1] || '';
+    return tag.match(/\bcontent=[\"']([^\"']*)[\"']/i)?.[1] || '';
   }
   return '';
 }
@@ -45,7 +45,7 @@ function eligible(url) {
   const file = routeFile(parsed.pathname);
   if (!file) throw new Error(`Sitemap URL has no exported HTML: ${url}`);
   const html = readFileSync(file, 'utf8');
-  if (/\\bnoindex\\b/i.test(robotsMeta(html))) return false;
+  if (/\bnoindex\b/i.test(robotsMeta(html))) return false;
   return true;
 }
 
@@ -65,7 +65,7 @@ if (existsSync(statePath)) {
 }
 if (!previous || typeof previous !== 'object' || Array.isArray(previous)) {
   mkdirSync(dirname(statePath), { recursive: true });
-  writeFileSync(statePath, JSON.stringify(current, null, 2) + '\\n');
+  writeFileSync(statePath, JSON.stringify(current, null, 2) + '\n');
   console.log(`IndexNow baseline initialized with ${Object.keys(current).length} eligible URLs; nothing submitted on first run.`);
   process.exit(0);
 }
@@ -86,5 +86,5 @@ if (![200, 202].includes(response.status)) {
   throw new Error(`IndexNow rejected submission: HTTP ${response.status} ${await response.text()}`);
 }
 mkdirSync(dirname(statePath), { recursive: true });
-writeFileSync(statePath, JSON.stringify(current, null, 2) + '\\n');
+writeFileSync(statePath, JSON.stringify(current, null, 2) + '\n');
 console.log(`IndexNow accepted ${changed.length} new/changed URLs (HTTP ${response.status}); ${Object.keys(current).length} eligible URLs tracked.`);
