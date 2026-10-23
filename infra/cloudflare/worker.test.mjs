@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 const source = readFileSync(new URL('./worker.js', import.meta.url), 'utf8');
 
 test('Cloudflare Worker does not hardcode or intercept the sitemap', () => {
-  assert.doesNotMatch(source, /SEO_SITEMAP_XML|url\\.pathname\\s*===\\s*['"]\\/sitemap\\.xml['"]/);
+  assert.doesNotMatch(source, /SEO_SITEMAP_XML|url\.pathname\s*===\s*['"]\/sitemap\.xml['"]/);
 });
 
 test('Cloudflare Worker does not rewrite SEO metadata or rescue thin pages', () => {
@@ -15,6 +15,6 @@ test('Cloudflare Worker does not rewrite SEO metadata or rescue thin pages', () 
 });
 
 test('Worker preserves the primary and fallback response bodies', () => {
-  assert.match(source, /return decorate\\(primary\\.response, ['"]primary['"]\\)/);
-  assert.match(source, /return decorate\\(fallback\\.response, ['"]fallback['"]\\)/);
+  assert.match(source, /return decorate\(primary\.response, ['"]primary['"]\)/);
+  assert.match(source, /return decorate\(fallback\.response, ['"]fallback['"]\)/);
 });
