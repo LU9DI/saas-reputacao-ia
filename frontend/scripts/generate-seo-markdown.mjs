@@ -78,7 +78,12 @@ for (const page of pages) {
     ? `\n\n## Perguntas frequentes\n\n${page.faq.map(({ question, answer }) => `### ${question}\n\n${answer}`).join('\n\n')}\n`
     : '';
   const markdown = [
-    `<!-- Canonical HTML page: ${canonical} -->`,
+    '---',
+    `title: ${JSON.stringify(page.title)}`,
+    `description: ${JSON.stringify(page.description)}`,
+    `canonical: ${JSON.stringify(canonical)}`,
+    '---',
+    '',
     `# ${page.h1}`,
     '',
     page.lead,
