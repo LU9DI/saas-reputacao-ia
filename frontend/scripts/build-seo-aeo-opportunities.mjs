@@ -49,6 +49,11 @@ for (const sector of taxonomy.sectors) {
   const sectorOwners = sectorDuplicates.get(normalizedLabel) ?? [];
   sectorOwners.push(sector.id);
   sectorDuplicates.set(normalizedLabel, sectorOwners);
+}
+const sectorsWithDuplicateLabels = [...sectorDuplicates.entries()].filter(([, ids]) => ids.length > 1);
+const duplicateSectorIds = new Set(sectorsWithDuplicateLabels.flatMap(([, ids]) => ids));
+for (const sector of taxonomy.sectors) {
+  const normalizedLabel = normalize(sector.label).trim();
   for (const intent of taxonomy.intents) {
     for (const format of taxonomy.formats) {
       const query = intent.query.replaceAll('{sector}', sector.label);
@@ -61,7 +66,7 @@ for (const sector of taxonomy.sectors) {
       seenSlugs.add(slug);
       const flags = [];
       if (duplicateSlug) flags.push('duplicate-slug');
-      if (sectorOwners.length > 1) flags.push('duplicate-sector-label');
+      if (duplicateSectorIds.has(sector.id)) flags.push('duplicate-sector-label');
       if (intent.productFit === 'conditional') flags.push('verify-product-fit');
       if (intent.productFit === 'adjacent') flags.push('verify-commercial-relevance');
       if (format.id === 'benchmark') flags.push('dataset-required');
@@ -107,7 +112,6 @@ for (const [, owners] of duplicateQueries) {
     if (owners.includes(candidate.slug)) candidate.flags.push('duplicate-query-hypothesis');
   }
 }
-const sectorsWithDuplicateLabels = [...sectorDuplicates.entries()].filter(([, ids]) => ids.length > 1);
 const summary = {
   generatedAt: new Date().toISOString(),
   purpose: 'Research backlog only. No route, page, sitemap entry or indexing directive is created.',
