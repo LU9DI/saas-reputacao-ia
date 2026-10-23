@@ -63,14 +63,23 @@ for (const [index, mapping] of mappings.entries()) {
 const queue = (evidenceReport.evidence ?? []).map((evidence) => {
   const idKey = `id:${evidence.evidenceId}`;
   const queryKey = `query:${normalize(evidence.normalizedQuery || evidence.query)}`;
-  const matches = keyed.get(idKey) ?? keyed.get(queryKey) ?? [];
+  const matches = [...(keyed.get(idKey) ?? []), ...(keyed.get(queryKey) ?? [])];
   let action = 'manual-mapping-required';
   let target = null;
   const reasons = [...(evidence.flags ?? [])];
   if (matches.length > 1) {
     action = 'blocked-conflicting-mappings';
     reasons.push('multiple-reviewed-mappings-match-evidence');
-  } else if (matches.length === 1) {
+  } else if (matches.length === 1 && matches[0].targetType === 'existing-page' && evidence.siteUrl) {
+    const mappingUrl = new URL(matches[0].targetUrl);
+    let propertyUrl;
+    try { propertyUrl = new URL(evidence.siteUrl); } catch { propertyUrl = null; }
+    if (!propertyUrl || mappingUrl.origin !== propertyUrl.origin) {
+      action = 'blocked-target-property-mismatch';
+      reasons.push('existing-page-target-origin-does-not-match-evidence-site-property');
+    }
+  }
+  if (action === 'manual-mapping-required' && matches.length === 1) {
     const mapping = matches[0];
     target = {
       type: mapping.targetType,
@@ -81,7 +90,7 @@ const queue = (evidenceReport.evidence ?? []).map((evidence) => {
     };
     action = mapping.targetType === 'existing-page' ? 'optimize-existing-page-review' : 'evaluate-new-candidate-review';
     reasons.push('explicit-human-reviewed-mapping');
-  } else {
+  } else if (matches.length === 0) {
     reasons.push('no-explicit-human-reviewed-target');
     if ((evidence.exactCandidateMatchIds ?? []).length === 1) reasons.push('exact-candidate-match-is-suggestion-only');
   }
