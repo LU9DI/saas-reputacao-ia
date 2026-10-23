@@ -3740,6 +3740,6206 @@ const PAGES: SeoPage[] = [
     ]
   }
 
+  {
+    "slug": "avaliacoes-google-oticas",
+    "title": "Avaliações Google para óticas | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para óticas, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para óticas",
+    "lead": "Para óticas, as avaliações públicas refletem etapas diferentes da experiência: armações, lentes, ajustes e prazos de entrega. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a armações, lentes, ajustes e prazos de entrega e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de óticas."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em óticas, defina categorias relacionadas a armações, lentes, ajustes e prazos de entrega, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em óticas; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-oticas",
+    "title": "Gestão de avaliações para óticas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para óticas, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para óticas",
+    "lead": "A gestão de avaliações para óticas conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em armações, lentes, ajustes e prazos de entrega, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em óticas, alinhe os responsáveis aos pontos de contato de armações, lentes, ajustes e prazos de entrega para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em óticas. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-oticas",
+    "title": "Respostas a avaliações para óticas | Filtra.AI",
+    "description": "Organize respostas a avaliações de óticas com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para óticas",
+    "lead": "Uma resposta pública útil para óticas reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de armações, lentes, ajustes e prazos de entrega e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em óticas, temas como armações, lentes, ajustes e prazos de entrega podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em óticas e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de óticas."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-oticas",
+    "title": "Monitoramento de avaliações para óticas | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para óticas, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para óticas",
+    "lead": "O monitoramento de avaliações para óticas reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir armações, lentes, ajustes e prazos de entrega e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para óticas, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de armações, lentes, ajustes e prazos de entrega e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em óticas, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-oticas",
+    "title": "Relatórios de reputação para óticas | Filtra.AI",
+    "description": "Crie relatórios de reputação para óticas que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para óticas",
+    "lead": "Um relatório de reputação para óticas explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como armações, lentes, ajustes e prazos de entrega pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em óticas, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a armações, lentes, ajustes e prazos de entrega para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a óticas."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-moveis",
+    "title": "Avaliações Google para lojas de móveis | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de móveis, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de móveis",
+    "lead": "Para lojas de móveis, as avaliações públicas refletem etapas diferentes da experiência: medidas, montagem, entrega e assistência pós-venda. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a medidas, montagem, entrega e assistência pós-venda e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de móveis."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de móveis, defina categorias relacionadas a medidas, montagem, entrega e assistência pós-venda, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de móveis; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-moveis",
+    "title": "Gestão de avaliações para lojas de móveis | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de móveis, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de móveis",
+    "lead": "A gestão de avaliações para lojas de móveis conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em medidas, montagem, entrega e assistência pós-venda, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de móveis, alinhe os responsáveis aos pontos de contato de medidas, montagem, entrega e assistência pós-venda para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de móveis. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-moveis",
+    "title": "Respostas a avaliações para lojas de móveis | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de móveis com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de móveis",
+    "lead": "Uma resposta pública útil para lojas de móveis reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de medidas, montagem, entrega e assistência pós-venda e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de móveis, temas como medidas, montagem, entrega e assistência pós-venda podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de móveis e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de móveis."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-moveis",
+    "title": "Monitoramento de avaliações para lojas de móveis | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de móveis, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de móveis",
+    "lead": "O monitoramento de avaliações para lojas de móveis reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir medidas, montagem, entrega e assistência pós-venda e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de móveis, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de medidas, montagem, entrega e assistência pós-venda e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de móveis, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-moveis",
+    "title": "Relatórios de reputação para lojas de móveis | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de móveis que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de móveis",
+    "lead": "Um relatório de reputação para lojas de móveis explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como medidas, montagem, entrega e assistência pós-venda pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de móveis, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a medidas, montagem, entrega e assistência pós-venda para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de móveis."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-roupas",
+    "title": "Avaliações Google para lojas de roupas | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de roupas, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de roupas",
+    "lead": "Para lojas de roupas, as avaliações públicas refletem etapas diferentes da experiência: tamanhos, provadores, trocas e disponibilidade. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a tamanhos, provadores, trocas e disponibilidade e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de roupas."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de roupas, defina categorias relacionadas a tamanhos, provadores, trocas e disponibilidade, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de roupas; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-roupas",
+    "title": "Gestão de avaliações para lojas de roupas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de roupas, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de roupas",
+    "lead": "A gestão de avaliações para lojas de roupas conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em tamanhos, provadores, trocas e disponibilidade, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de roupas, alinhe os responsáveis aos pontos de contato de tamanhos, provadores, trocas e disponibilidade para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de roupas. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-roupas",
+    "title": "Respostas a avaliações para lojas de roupas | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de roupas com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de roupas",
+    "lead": "Uma resposta pública útil para lojas de roupas reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de tamanhos, provadores, trocas e disponibilidade e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de roupas, temas como tamanhos, provadores, trocas e disponibilidade podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de roupas e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de roupas."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-roupas",
+    "title": "Monitoramento de avaliações para lojas de roupas | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de roupas, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de roupas",
+    "lead": "O monitoramento de avaliações para lojas de roupas reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir tamanhos, provadores, trocas e disponibilidade e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de roupas, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de tamanhos, provadores, trocas e disponibilidade e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de roupas, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-roupas",
+    "title": "Relatórios de reputação para lojas de roupas | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de roupas que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de roupas",
+    "lead": "Um relatório de reputação para lojas de roupas explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como tamanhos, provadores, trocas e disponibilidade pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de roupas, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a tamanhos, provadores, trocas e disponibilidade para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de roupas."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-calcados",
+    "title": "Avaliações Google para lojas de calçados | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de calçados, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de calçados",
+    "lead": "Para lojas de calçados, as avaliações públicas refletem etapas diferentes da experiência: numeração, conforto, estoque e política de troca. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a numeração, conforto, estoque e política de troca e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de calçados."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de calçados, defina categorias relacionadas a numeração, conforto, estoque e política de troca, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de calçados; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-calcados",
+    "title": "Gestão de avaliações para lojas de calçados | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de calçados, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de calçados",
+    "lead": "A gestão de avaliações para lojas de calçados conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em numeração, conforto, estoque e política de troca, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de calçados, alinhe os responsáveis aos pontos de contato de numeração, conforto, estoque e política de troca para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de calçados. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-calcados",
+    "title": "Respostas a avaliações para lojas de calçados | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de calçados com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de calçados",
+    "lead": "Uma resposta pública útil para lojas de calçados reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de numeração, conforto, estoque e política de troca e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de calçados, temas como numeração, conforto, estoque e política de troca podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de calçados e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de calçados."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-calcados",
+    "title": "Monitoramento de avaliações para lojas de calçados | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de calçados, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de calçados",
+    "lead": "O monitoramento de avaliações para lojas de calçados reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir numeração, conforto, estoque e política de troca e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de calçados, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de numeração, conforto, estoque e política de troca e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de calçados, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-calcados",
+    "title": "Relatórios de reputação para lojas de calçados | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de calçados que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de calçados",
+    "lead": "Um relatório de reputação para lojas de calçados explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como numeração, conforto, estoque e política de troca pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de calçados, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a numeração, conforto, estoque e política de troca para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de calçados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-eletronicos",
+    "title": "Avaliações Google para lojas de eletrônicos | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de eletrônicos, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de eletrônicos",
+    "lead": "Para lojas de eletrônicos, as avaliações públicas refletem etapas diferentes da experiência: compatibilidade, garantia e suporte técnico. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a compatibilidade, garantia e suporte técnico e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de eletrônicos."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de eletrônicos, defina categorias relacionadas a compatibilidade, garantia e suporte técnico, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de eletrônicos; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-eletronicos",
+    "title": "Gestão de avaliações para lojas de eletrônicos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de eletrônicos, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de eletrônicos",
+    "lead": "A gestão de avaliações para lojas de eletrônicos conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em compatibilidade, garantia e suporte técnico, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de eletrônicos, alinhe os responsáveis aos pontos de contato de compatibilidade, garantia e suporte técnico para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de eletrônicos. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-eletronicos",
+    "title": "Respostas a avaliações para lojas de eletrônicos | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de eletrônicos com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de eletrônicos",
+    "lead": "Uma resposta pública útil para lojas de eletrônicos reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de compatibilidade, garantia e suporte técnico e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de eletrônicos, temas como compatibilidade, garantia e suporte técnico podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de eletrônicos e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de eletrônicos."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-eletronicos",
+    "title": "Monitoramento de avaliações para lojas de eletrônicos | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de eletrônicos, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de eletrônicos",
+    "lead": "O monitoramento de avaliações para lojas de eletrônicos reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir compatibilidade, garantia e suporte técnico e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de eletrônicos, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de compatibilidade, garantia e suporte técnico e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de eletrônicos, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-eletronicos",
+    "title": "Relatórios de reputação para lojas de eletrônicos | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de eletrônicos que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de eletrônicos",
+    "lead": "Um relatório de reputação para lojas de eletrônicos explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como compatibilidade, garantia e suporte técnico pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de eletrônicos, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a compatibilidade, garantia e suporte técnico para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de eletrônicos."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-material-de-construcao",
+    "title": "Avaliações Google para lojas de material de construção | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de material de construção, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de material de construção",
+    "lead": "Para lojas de material de construção, as avaliações públicas refletem etapas diferentes da experiência: estoque, especificação técnica e entrega. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a estoque, especificação técnica e entrega e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de material de construção."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de material de construção, defina categorias relacionadas a estoque, especificação técnica e entrega, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de material de construção; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-material-de-construcao",
+    "title": "Gestão de avaliações para lojas de material de construção | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de material de construção, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de material de construção",
+    "lead": "A gestão de avaliações para lojas de material de construção conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em estoque, especificação técnica e entrega, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de material de construção, alinhe os responsáveis aos pontos de contato de estoque, especificação técnica e entrega para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de material de construção. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-material-de-construcao",
+    "title": "Respostas a avaliações para lojas de material de construção | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de material de construção com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de material de construção",
+    "lead": "Uma resposta pública útil para lojas de material de construção reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de estoque, especificação técnica e entrega e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de material de construção, temas como estoque, especificação técnica e entrega podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de material de construção e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de material de construção."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-material-de-construcao",
+    "title": "Monitoramento de avaliações para lojas de material de construção | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de material de construção, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de material de construção",
+    "lead": "O monitoramento de avaliações para lojas de material de construção reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir estoque, especificação técnica e entrega e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de material de construção, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de estoque, especificação técnica e entrega e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de material de construção, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-material-de-construcao",
+    "title": "Relatórios de reputação para lojas de material de construção | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de material de construção que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de material de construção",
+    "lead": "Um relatório de reputação para lojas de material de construção explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como estoque, especificação técnica e entrega pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de material de construção, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a estoque, especificação técnica e entrega para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de material de construção."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-decoracao",
+    "title": "Avaliações Google para lojas de decoração | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de decoração, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de decoração",
+    "lead": "Para lojas de decoração, as avaliações públicas refletem etapas diferentes da experiência: combinação de produtos, medidas e entrega. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a combinação de produtos, medidas e entrega e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de decoração."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de decoração, defina categorias relacionadas a combinação de produtos, medidas e entrega, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de decoração; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-decoracao",
+    "title": "Gestão de avaliações para lojas de decoração | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de decoração, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de decoração",
+    "lead": "A gestão de avaliações para lojas de decoração conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em combinação de produtos, medidas e entrega, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de decoração, alinhe os responsáveis aos pontos de contato de combinação de produtos, medidas e entrega para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de decoração. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-decoracao",
+    "title": "Respostas a avaliações para lojas de decoração | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de decoração com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de decoração",
+    "lead": "Uma resposta pública útil para lojas de decoração reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de combinação de produtos, medidas e entrega e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de decoração, temas como combinação de produtos, medidas e entrega podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de decoração e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de decoração."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-decoracao",
+    "title": "Monitoramento de avaliações para lojas de decoração | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de decoração, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de decoração",
+    "lead": "O monitoramento de avaliações para lojas de decoração reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir combinação de produtos, medidas e entrega e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de decoração, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de combinação de produtos, medidas e entrega e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de decoração, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-decoracao",
+    "title": "Relatórios de reputação para lojas de decoração | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de decoração que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de decoração",
+    "lead": "Um relatório de reputação para lojas de decoração explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como combinação de produtos, medidas e entrega pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de decoração, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a combinação de produtos, medidas e entrega para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de decoração."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-floriculturas",
+    "title": "Avaliações Google para floriculturas | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para floriculturas, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para floriculturas",
+    "lead": "Para floriculturas, as avaliações públicas refletem etapas diferentes da experiência: frescor, arranjos personalizados e entregas por horário. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a frescor, arranjos personalizados e entregas por horário e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de floriculturas."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em floriculturas, defina categorias relacionadas a frescor, arranjos personalizados e entregas por horário, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em floriculturas; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-floriculturas",
+    "title": "Gestão de avaliações para floriculturas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para floriculturas, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para floriculturas",
+    "lead": "A gestão de avaliações para floriculturas conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em frescor, arranjos personalizados e entregas por horário, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em floriculturas, alinhe os responsáveis aos pontos de contato de frescor, arranjos personalizados e entregas por horário para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em floriculturas. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-floriculturas",
+    "title": "Respostas a avaliações para floriculturas | Filtra.AI",
+    "description": "Organize respostas a avaliações de floriculturas com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para floriculturas",
+    "lead": "Uma resposta pública útil para floriculturas reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de frescor, arranjos personalizados e entregas por horário e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em floriculturas, temas como frescor, arranjos personalizados e entregas por horário podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em floriculturas e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de floriculturas."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-floriculturas",
+    "title": "Monitoramento de avaliações para floriculturas | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para floriculturas, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para floriculturas",
+    "lead": "O monitoramento de avaliações para floriculturas reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir frescor, arranjos personalizados e entregas por horário e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para floriculturas, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de frescor, arranjos personalizados e entregas por horário e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em floriculturas, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-floriculturas",
+    "title": "Relatórios de reputação para floriculturas | Filtra.AI",
+    "description": "Crie relatórios de reputação para floriculturas que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para floriculturas",
+    "lead": "Um relatório de reputação para floriculturas explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como frescor, arranjos personalizados e entregas por horário pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em floriculturas, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a frescor, arranjos personalizados e entregas por horário para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a floriculturas."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-joalherias",
+    "title": "Avaliações Google para joalherias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para joalherias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para joalherias",
+    "lead": "Para joalherias, as avaliações públicas refletem etapas diferentes da experiência: autenticidade, ajustes, manutenção e garantias. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a autenticidade, ajustes, manutenção e garantias e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de joalherias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em joalherias, defina categorias relacionadas a autenticidade, ajustes, manutenção e garantias, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em joalherias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-joalherias",
+    "title": "Gestão de avaliações para joalherias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para joalherias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para joalherias",
+    "lead": "A gestão de avaliações para joalherias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em autenticidade, ajustes, manutenção e garantias, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em joalherias, alinhe os responsáveis aos pontos de contato de autenticidade, ajustes, manutenção e garantias para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em joalherias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-joalherias",
+    "title": "Respostas a avaliações para joalherias | Filtra.AI",
+    "description": "Organize respostas a avaliações de joalherias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para joalherias",
+    "lead": "Uma resposta pública útil para joalherias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de autenticidade, ajustes, manutenção e garantias e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em joalherias, temas como autenticidade, ajustes, manutenção e garantias podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em joalherias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de joalherias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-joalherias",
+    "title": "Monitoramento de avaliações para joalherias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para joalherias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para joalherias",
+    "lead": "O monitoramento de avaliações para joalherias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir autenticidade, ajustes, manutenção e garantias e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para joalherias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de autenticidade, ajustes, manutenção e garantias e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em joalherias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-joalherias",
+    "title": "Relatórios de reputação para joalherias | Filtra.AI",
+    "description": "Crie relatórios de reputação para joalherias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para joalherias",
+    "lead": "Um relatório de reputação para joalherias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como autenticidade, ajustes, manutenção e garantias pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em joalherias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a autenticidade, ajustes, manutenção e garantias para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a joalherias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-papelarias",
+    "title": "Avaliações Google para papelarias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para papelarias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para papelarias",
+    "lead": "Para papelarias, as avaliações públicas refletem etapas diferentes da experiência: sazonalidade, listas escolares, impressão e encomendas. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a sazonalidade, listas escolares, impressão e encomendas e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de papelarias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em papelarias, defina categorias relacionadas a sazonalidade, listas escolares, impressão e encomendas, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em papelarias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-papelarias",
+    "title": "Gestão de avaliações para papelarias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para papelarias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para papelarias",
+    "lead": "A gestão de avaliações para papelarias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em sazonalidade, listas escolares, impressão e encomendas, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em papelarias, alinhe os responsáveis aos pontos de contato de sazonalidade, listas escolares, impressão e encomendas para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em papelarias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-papelarias",
+    "title": "Respostas a avaliações para papelarias | Filtra.AI",
+    "description": "Organize respostas a avaliações de papelarias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para papelarias",
+    "lead": "Uma resposta pública útil para papelarias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de sazonalidade, listas escolares, impressão e encomendas e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em papelarias, temas como sazonalidade, listas escolares, impressão e encomendas podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em papelarias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de papelarias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-papelarias",
+    "title": "Monitoramento de avaliações para papelarias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para papelarias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para papelarias",
+    "lead": "O monitoramento de avaliações para papelarias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir sazonalidade, listas escolares, impressão e encomendas e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para papelarias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de sazonalidade, listas escolares, impressão e encomendas e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em papelarias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-papelarias",
+    "title": "Relatórios de reputação para papelarias | Filtra.AI",
+    "description": "Crie relatórios de reputação para papelarias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para papelarias",
+    "lead": "Um relatório de reputação para papelarias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como sazonalidade, listas escolares, impressão e encomendas pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em papelarias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a sazonalidade, listas escolares, impressão e encomendas para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a papelarias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-informatica",
+    "title": "Avaliações Google para lojas de informática | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de informática, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de informática",
+    "lead": "Para lojas de informática, as avaliações públicas refletem etapas diferentes da experiência: compatibilidade, montagem, garantia e suporte. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a compatibilidade, montagem, garantia e suporte e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de informática."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de informática, defina categorias relacionadas a compatibilidade, montagem, garantia e suporte, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de informática; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-informatica",
+    "title": "Gestão de avaliações para lojas de informática | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de informática, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de informática",
+    "lead": "A gestão de avaliações para lojas de informática conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em compatibilidade, montagem, garantia e suporte, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de informática, alinhe os responsáveis aos pontos de contato de compatibilidade, montagem, garantia e suporte para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de informática. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-informatica",
+    "title": "Respostas a avaliações para lojas de informática | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de informática com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de informática",
+    "lead": "Uma resposta pública útil para lojas de informática reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de compatibilidade, montagem, garantia e suporte e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de informática, temas como compatibilidade, montagem, garantia e suporte podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de informática e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de informática."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-informatica",
+    "title": "Monitoramento de avaliações para lojas de informática | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de informática, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de informática",
+    "lead": "O monitoramento de avaliações para lojas de informática reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir compatibilidade, montagem, garantia e suporte e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de informática, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de compatibilidade, montagem, garantia e suporte e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de informática, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-informatica",
+    "title": "Relatórios de reputação para lojas de informática | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de informática que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de informática",
+    "lead": "Um relatório de reputação para lojas de informática explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como compatibilidade, montagem, garantia e suporte pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de informática, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a compatibilidade, montagem, garantia e suporte para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de informática."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-assistencia-tecnica",
+    "title": "Avaliações Google para assistências técnicas | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para assistências técnicas, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para assistências técnicas",
+    "lead": "Para assistências técnicas, as avaliações públicas refletem etapas diferentes da experiência: diagnóstico, orçamento, prazo e peças. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a diagnóstico, orçamento, prazo e peças e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de assistências técnicas."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em assistências técnicas, defina categorias relacionadas a diagnóstico, orçamento, prazo e peças, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em assistências técnicas; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-assistencia-tecnica",
+    "title": "Gestão de avaliações para assistências técnicas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para assistências técnicas, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para assistências técnicas",
+    "lead": "A gestão de avaliações para assistências técnicas conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em diagnóstico, orçamento, prazo e peças, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em assistências técnicas, alinhe os responsáveis aos pontos de contato de diagnóstico, orçamento, prazo e peças para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em assistências técnicas. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-assistencia-tecnica",
+    "title": "Respostas a avaliações para assistências técnicas | Filtra.AI",
+    "description": "Organize respostas a avaliações de assistências técnicas com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para assistências técnicas",
+    "lead": "Uma resposta pública útil para assistências técnicas reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de diagnóstico, orçamento, prazo e peças e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em assistências técnicas, temas como diagnóstico, orçamento, prazo e peças podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em assistências técnicas e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de assistências técnicas."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-assistencia-tecnica",
+    "title": "Monitoramento de avaliações para assistências técnicas | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para assistências técnicas, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para assistências técnicas",
+    "lead": "O monitoramento de avaliações para assistências técnicas reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir diagnóstico, orçamento, prazo e peças e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para assistências técnicas, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de diagnóstico, orçamento, prazo e peças e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em assistências técnicas, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-assistencia-tecnica",
+    "title": "Relatórios de reputação para assistências técnicas | Filtra.AI",
+    "description": "Crie relatórios de reputação para assistências técnicas que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para assistências técnicas",
+    "lead": "Um relatório de reputação para assistências técnicas explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como diagnóstico, orçamento, prazo e peças pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em assistências técnicas, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a diagnóstico, orçamento, prazo e peças para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a assistências técnicas."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lavanderias",
+    "title": "Avaliações Google para lavanderias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lavanderias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lavanderias",
+    "lead": "Para lavanderias, as avaliações públicas refletem etapas diferentes da experiência: prazo, identificação de peças e tratamento de tecidos. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a prazo, identificação de peças e tratamento de tecidos e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lavanderias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lavanderias, defina categorias relacionadas a prazo, identificação de peças e tratamento de tecidos, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lavanderias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lavanderias",
+    "title": "Gestão de avaliações para lavanderias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lavanderias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lavanderias",
+    "lead": "A gestão de avaliações para lavanderias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em prazo, identificação de peças e tratamento de tecidos, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lavanderias, alinhe os responsáveis aos pontos de contato de prazo, identificação de peças e tratamento de tecidos para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lavanderias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lavanderias",
+    "title": "Respostas a avaliações para lavanderias | Filtra.AI",
+    "description": "Organize respostas a avaliações de lavanderias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lavanderias",
+    "lead": "Uma resposta pública útil para lavanderias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de prazo, identificação de peças e tratamento de tecidos e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lavanderias, temas como prazo, identificação de peças e tratamento de tecidos podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lavanderias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lavanderias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lavanderias",
+    "title": "Monitoramento de avaliações para lavanderias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lavanderias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lavanderias",
+    "lead": "O monitoramento de avaliações para lavanderias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir prazo, identificação de peças e tratamento de tecidos e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lavanderias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de prazo, identificação de peças e tratamento de tecidos e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lavanderias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lavanderias",
+    "title": "Relatórios de reputação para lavanderias | Filtra.AI",
+    "description": "Crie relatórios de reputação para lavanderias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lavanderias",
+    "lead": "Um relatório de reputação para lavanderias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como prazo, identificação de peças e tratamento de tecidos pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lavanderias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a prazo, identificação de peças e tratamento de tecidos para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lavanderias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-escolas-de-idiomas",
+    "title": "Avaliações Google para escolas de idiomas | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para escolas de idiomas, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para escolas de idiomas",
+    "lead": "Para escolas de idiomas, as avaliações públicas refletem etapas diferentes da experiência: níveis, metodologia, horários e comunicação com alunos. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a níveis, metodologia, horários e comunicação com alunos e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de escolas de idiomas."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em escolas de idiomas, defina categorias relacionadas a níveis, metodologia, horários e comunicação com alunos, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em escolas de idiomas; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-escolas-de-idiomas",
+    "title": "Gestão de avaliações para escolas de idiomas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para escolas de idiomas, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para escolas de idiomas",
+    "lead": "A gestão de avaliações para escolas de idiomas conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em níveis, metodologia, horários e comunicação com alunos, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em escolas de idiomas, alinhe os responsáveis aos pontos de contato de níveis, metodologia, horários e comunicação com alunos para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em escolas de idiomas. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-escolas-de-idiomas",
+    "title": "Respostas a avaliações para escolas de idiomas | Filtra.AI",
+    "description": "Organize respostas a avaliações de escolas de idiomas com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para escolas de idiomas",
+    "lead": "Uma resposta pública útil para escolas de idiomas reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de níveis, metodologia, horários e comunicação com alunos e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em escolas de idiomas, temas como níveis, metodologia, horários e comunicação com alunos podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em escolas de idiomas e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de escolas de idiomas."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-escolas-de-idiomas",
+    "title": "Monitoramento de avaliações para escolas de idiomas | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para escolas de idiomas, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para escolas de idiomas",
+    "lead": "O monitoramento de avaliações para escolas de idiomas reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir níveis, metodologia, horários e comunicação com alunos e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para escolas de idiomas, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de níveis, metodologia, horários e comunicação com alunos e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em escolas de idiomas, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-escolas-de-idiomas",
+    "title": "Relatórios de reputação para escolas de idiomas | Filtra.AI",
+    "description": "Crie relatórios de reputação para escolas de idiomas que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para escolas de idiomas",
+    "lead": "Um relatório de reputação para escolas de idiomas explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como níveis, metodologia, horários e comunicação com alunos pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em escolas de idiomas, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a níveis, metodologia, horários e comunicação com alunos para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a escolas de idiomas."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-cursos-profissionalizantes",
+    "title": "Avaliações Google para cursos profissionalizantes | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para cursos profissionalizantes, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para cursos profissionalizantes",
+    "lead": "Para cursos profissionalizantes, as avaliações públicas refletem etapas diferentes da experiência: conteúdo, calendário, suporte e certificação. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a conteúdo, calendário, suporte e certificação e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de cursos profissionalizantes."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em cursos profissionalizantes, defina categorias relacionadas a conteúdo, calendário, suporte e certificação, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em cursos profissionalizantes; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-cursos-profissionalizantes",
+    "title": "Gestão de avaliações para cursos profissionalizantes | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para cursos profissionalizantes, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para cursos profissionalizantes",
+    "lead": "A gestão de avaliações para cursos profissionalizantes conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em conteúdo, calendário, suporte e certificação, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em cursos profissionalizantes, alinhe os responsáveis aos pontos de contato de conteúdo, calendário, suporte e certificação para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em cursos profissionalizantes. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-cursos-profissionalizantes",
+    "title": "Respostas a avaliações para cursos profissionalizantes | Filtra.AI",
+    "description": "Organize respostas a avaliações de cursos profissionalizantes com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para cursos profissionalizantes",
+    "lead": "Uma resposta pública útil para cursos profissionalizantes reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de conteúdo, calendário, suporte e certificação e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em cursos profissionalizantes, temas como conteúdo, calendário, suporte e certificação podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em cursos profissionalizantes e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de cursos profissionalizantes."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-cursos-profissionalizantes",
+    "title": "Monitoramento de avaliações para cursos profissionalizantes | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para cursos profissionalizantes, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para cursos profissionalizantes",
+    "lead": "O monitoramento de avaliações para cursos profissionalizantes reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir conteúdo, calendário, suporte e certificação e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para cursos profissionalizantes, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de conteúdo, calendário, suporte e certificação e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em cursos profissionalizantes, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-cursos-profissionalizantes",
+    "title": "Relatórios de reputação para cursos profissionalizantes | Filtra.AI",
+    "description": "Crie relatórios de reputação para cursos profissionalizantes que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para cursos profissionalizantes",
+    "lead": "Um relatório de reputação para cursos profissionalizantes explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como conteúdo, calendário, suporte e certificação pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em cursos profissionalizantes, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a conteúdo, calendário, suporte e certificação para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a cursos profissionalizantes."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-creches",
+    "title": "Avaliações Google para creches | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para creches, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para creches",
+    "lead": "Para creches, as avaliações públicas refletem etapas diferentes da experiência: adaptação, comunicação com responsáveis e privacidade infantil. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a adaptação, comunicação com responsáveis e privacidade infantil e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de creches."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em creches, defina categorias relacionadas a adaptação, comunicação com responsáveis e privacidade infantil, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em creches; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-creches",
+    "title": "Gestão de avaliações para creches | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para creches, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para creches",
+    "lead": "A gestão de avaliações para creches conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em adaptação, comunicação com responsáveis e privacidade infantil, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em creches, alinhe os responsáveis aos pontos de contato de adaptação, comunicação com responsáveis e privacidade infantil para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em creches. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-creches",
+    "title": "Respostas a avaliações para creches | Filtra.AI",
+    "description": "Organize respostas a avaliações de creches com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para creches",
+    "lead": "Uma resposta pública útil para creches reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de adaptação, comunicação com responsáveis e privacidade infantil e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em creches, temas como adaptação, comunicação com responsáveis e privacidade infantil podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em creches e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de creches."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-creches",
+    "title": "Monitoramento de avaliações para creches | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para creches, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para creches",
+    "lead": "O monitoramento de avaliações para creches reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir adaptação, comunicação com responsáveis e privacidade infantil e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para creches, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de adaptação, comunicação com responsáveis e privacidade infantil e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em creches, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-creches",
+    "title": "Relatórios de reputação para creches | Filtra.AI",
+    "description": "Crie relatórios de reputação para creches que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para creches",
+    "lead": "Um relatório de reputação para creches explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como adaptação, comunicação com responsáveis e privacidade infantil pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em creches, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a adaptação, comunicação com responsáveis e privacidade infantil para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a creches."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-clinicas-de-fisioterapia",
+    "title": "Avaliações Google para clínicas de fisioterapia | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para clínicas de fisioterapia, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para clínicas de fisioterapia",
+    "lead": "Para clínicas de fisioterapia, as avaliações públicas refletem etapas diferentes da experiência: agendamento, acessibilidade, continuidade e privacidade. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agendamento, acessibilidade, continuidade e privacidade e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de clínicas de fisioterapia."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em clínicas de fisioterapia, defina categorias relacionadas a agendamento, acessibilidade, continuidade e privacidade, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em clínicas de fisioterapia; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-clinicas-de-fisioterapia",
+    "title": "Gestão de avaliações para clínicas de fisioterapia | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para clínicas de fisioterapia, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para clínicas de fisioterapia",
+    "lead": "A gestão de avaliações para clínicas de fisioterapia conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agendamento, acessibilidade, continuidade e privacidade, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em clínicas de fisioterapia, alinhe os responsáveis aos pontos de contato de agendamento, acessibilidade, continuidade e privacidade para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em clínicas de fisioterapia. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-clinicas-de-fisioterapia",
+    "title": "Respostas a avaliações para clínicas de fisioterapia | Filtra.AI",
+    "description": "Organize respostas a avaliações de clínicas de fisioterapia com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para clínicas de fisioterapia",
+    "lead": "Uma resposta pública útil para clínicas de fisioterapia reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agendamento, acessibilidade, continuidade e privacidade e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em clínicas de fisioterapia, temas como agendamento, acessibilidade, continuidade e privacidade podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em clínicas de fisioterapia e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de clínicas de fisioterapia."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-clinicas-de-fisioterapia",
+    "title": "Monitoramento de avaliações para clínicas de fisioterapia | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para clínicas de fisioterapia, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para clínicas de fisioterapia",
+    "lead": "O monitoramento de avaliações para clínicas de fisioterapia reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agendamento, acessibilidade, continuidade e privacidade e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para clínicas de fisioterapia, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agendamento, acessibilidade, continuidade e privacidade e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em clínicas de fisioterapia, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-clinicas-de-fisioterapia",
+    "title": "Relatórios de reputação para clínicas de fisioterapia | Filtra.AI",
+    "description": "Crie relatórios de reputação para clínicas de fisioterapia que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para clínicas de fisioterapia",
+    "lead": "Um relatório de reputação para clínicas de fisioterapia explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agendamento, acessibilidade, continuidade e privacidade pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em clínicas de fisioterapia, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agendamento, acessibilidade, continuidade e privacidade para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a clínicas de fisioterapia."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-clinicas-de-psicologia",
+    "title": "Avaliações Google para clínicas de psicologia | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para clínicas de psicologia, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para clínicas de psicologia",
+    "lead": "Para clínicas de psicologia, as avaliações públicas refletem etapas diferentes da experiência: acolhimento, agendamento, sigilo e dados sensíveis. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a acolhimento, agendamento, sigilo e dados sensíveis e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de clínicas de psicologia."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em clínicas de psicologia, defina categorias relacionadas a acolhimento, agendamento, sigilo e dados sensíveis, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em clínicas de psicologia; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-clinicas-de-psicologia",
+    "title": "Gestão de avaliações para clínicas de psicologia | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para clínicas de psicologia, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para clínicas de psicologia",
+    "lead": "A gestão de avaliações para clínicas de psicologia conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em acolhimento, agendamento, sigilo e dados sensíveis, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em clínicas de psicologia, alinhe os responsáveis aos pontos de contato de acolhimento, agendamento, sigilo e dados sensíveis para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em clínicas de psicologia. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-clinicas-de-psicologia",
+    "title": "Respostas a avaliações para clínicas de psicologia | Filtra.AI",
+    "description": "Organize respostas a avaliações de clínicas de psicologia com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para clínicas de psicologia",
+    "lead": "Uma resposta pública útil para clínicas de psicologia reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de acolhimento, agendamento, sigilo e dados sensíveis e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em clínicas de psicologia, temas como acolhimento, agendamento, sigilo e dados sensíveis podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em clínicas de psicologia e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de clínicas de psicologia."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-clinicas-de-psicologia",
+    "title": "Monitoramento de avaliações para clínicas de psicologia | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para clínicas de psicologia, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para clínicas de psicologia",
+    "lead": "O monitoramento de avaliações para clínicas de psicologia reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir acolhimento, agendamento, sigilo e dados sensíveis e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para clínicas de psicologia, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de acolhimento, agendamento, sigilo e dados sensíveis e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em clínicas de psicologia, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-clinicas-de-psicologia",
+    "title": "Relatórios de reputação para clínicas de psicologia | Filtra.AI",
+    "description": "Crie relatórios de reputação para clínicas de psicologia que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para clínicas de psicologia",
+    "lead": "Um relatório de reputação para clínicas de psicologia explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como acolhimento, agendamento, sigilo e dados sensíveis pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em clínicas de psicologia, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a acolhimento, agendamento, sigilo e dados sensíveis para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a clínicas de psicologia."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-clinicas-de-nutricao",
+    "title": "Avaliações Google para clínicas de nutrição | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para clínicas de nutrição, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para clínicas de nutrição",
+    "lead": "Para clínicas de nutrição, as avaliações públicas refletem etapas diferentes da experiência: agenda, acompanhamento e privacidade. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agenda, acompanhamento e privacidade e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de clínicas de nutrição."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em clínicas de nutrição, defina categorias relacionadas a agenda, acompanhamento e privacidade, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em clínicas de nutrição; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-clinicas-de-nutricao",
+    "title": "Gestão de avaliações para clínicas de nutrição | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para clínicas de nutrição, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para clínicas de nutrição",
+    "lead": "A gestão de avaliações para clínicas de nutrição conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agenda, acompanhamento e privacidade, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em clínicas de nutrição, alinhe os responsáveis aos pontos de contato de agenda, acompanhamento e privacidade para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em clínicas de nutrição. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-clinicas-de-nutricao",
+    "title": "Respostas a avaliações para clínicas de nutrição | Filtra.AI",
+    "description": "Organize respostas a avaliações de clínicas de nutrição com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para clínicas de nutrição",
+    "lead": "Uma resposta pública útil para clínicas de nutrição reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agenda, acompanhamento e privacidade e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em clínicas de nutrição, temas como agenda, acompanhamento e privacidade podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em clínicas de nutrição e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de clínicas de nutrição."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-clinicas-de-nutricao",
+    "title": "Monitoramento de avaliações para clínicas de nutrição | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para clínicas de nutrição, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para clínicas de nutrição",
+    "lead": "O monitoramento de avaliações para clínicas de nutrição reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agenda, acompanhamento e privacidade e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para clínicas de nutrição, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agenda, acompanhamento e privacidade e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em clínicas de nutrição, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-clinicas-de-nutricao",
+    "title": "Relatórios de reputação para clínicas de nutrição | Filtra.AI",
+    "description": "Crie relatórios de reputação para clínicas de nutrição que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para clínicas de nutrição",
+    "lead": "Um relatório de reputação para clínicas de nutrição explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agenda, acompanhamento e privacidade pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em clínicas de nutrição, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agenda, acompanhamento e privacidade para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a clínicas de nutrição."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-clinicas-de-dermatologia",
+    "title": "Avaliações Google para clínicas de dermatologia | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para clínicas de dermatologia, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para clínicas de dermatologia",
+    "lead": "Para clínicas de dermatologia, as avaliações públicas refletem etapas diferentes da experiência: agendamento, acessibilidade e privacidade. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agendamento, acessibilidade e privacidade e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de clínicas de dermatologia."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em clínicas de dermatologia, defina categorias relacionadas a agendamento, acessibilidade e privacidade, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em clínicas de dermatologia; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-clinicas-de-dermatologia",
+    "title": "Gestão de avaliações para clínicas de dermatologia | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para clínicas de dermatologia, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para clínicas de dermatologia",
+    "lead": "A gestão de avaliações para clínicas de dermatologia conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agendamento, acessibilidade e privacidade, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em clínicas de dermatologia, alinhe os responsáveis aos pontos de contato de agendamento, acessibilidade e privacidade para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em clínicas de dermatologia. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-clinicas-de-dermatologia",
+    "title": "Respostas a avaliações para clínicas de dermatologia | Filtra.AI",
+    "description": "Organize respostas a avaliações de clínicas de dermatologia com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para clínicas de dermatologia",
+    "lead": "Uma resposta pública útil para clínicas de dermatologia reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agendamento, acessibilidade e privacidade e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em clínicas de dermatologia, temas como agendamento, acessibilidade e privacidade podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em clínicas de dermatologia e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de clínicas de dermatologia."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-clinicas-de-dermatologia",
+    "title": "Monitoramento de avaliações para clínicas de dermatologia | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para clínicas de dermatologia, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para clínicas de dermatologia",
+    "lead": "O monitoramento de avaliações para clínicas de dermatologia reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agendamento, acessibilidade e privacidade e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para clínicas de dermatologia, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agendamento, acessibilidade e privacidade e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em clínicas de dermatologia, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-clinicas-de-dermatologia",
+    "title": "Relatórios de reputação para clínicas de dermatologia | Filtra.AI",
+    "description": "Crie relatórios de reputação para clínicas de dermatologia que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para clínicas de dermatologia",
+    "lead": "Um relatório de reputação para clínicas de dermatologia explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agendamento, acessibilidade e privacidade pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em clínicas de dermatologia, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agendamento, acessibilidade e privacidade para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a clínicas de dermatologia."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-oftalmologistas",
+    "title": "Avaliações Google para consultórios de oftalmologia | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para consultórios de oftalmologia, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para consultórios de oftalmologia",
+    "lead": "Para consultórios de oftalmologia, as avaliações públicas refletem etapas diferentes da experiência: agendamento, preparo administrativo e privacidade. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agendamento, preparo administrativo e privacidade e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de consultórios de oftalmologia."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em consultórios de oftalmologia, defina categorias relacionadas a agendamento, preparo administrativo e privacidade, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em consultórios de oftalmologia; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-oftalmologistas",
+    "title": "Gestão de avaliações para consultórios de oftalmologia | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para consultórios de oftalmologia, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para consultórios de oftalmologia",
+    "lead": "A gestão de avaliações para consultórios de oftalmologia conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agendamento, preparo administrativo e privacidade, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em consultórios de oftalmologia, alinhe os responsáveis aos pontos de contato de agendamento, preparo administrativo e privacidade para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em consultórios de oftalmologia. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-oftalmologistas",
+    "title": "Respostas a avaliações para consultórios de oftalmologia | Filtra.AI",
+    "description": "Organize respostas a avaliações de consultórios de oftalmologia com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para consultórios de oftalmologia",
+    "lead": "Uma resposta pública útil para consultórios de oftalmologia reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agendamento, preparo administrativo e privacidade e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em consultórios de oftalmologia, temas como agendamento, preparo administrativo e privacidade podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em consultórios de oftalmologia e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de consultórios de oftalmologia."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-oftalmologistas",
+    "title": "Monitoramento de avaliações para consultórios de oftalmologia | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para consultórios de oftalmologia, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para consultórios de oftalmologia",
+    "lead": "O monitoramento de avaliações para consultórios de oftalmologia reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agendamento, preparo administrativo e privacidade e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para consultórios de oftalmologia, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agendamento, preparo administrativo e privacidade e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em consultórios de oftalmologia, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-oftalmologistas",
+    "title": "Relatórios de reputação para consultórios de oftalmologia | Filtra.AI",
+    "description": "Crie relatórios de reputação para consultórios de oftalmologia que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para consultórios de oftalmologia",
+    "lead": "Um relatório de reputação para consultórios de oftalmologia explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agendamento, preparo administrativo e privacidade pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em consultórios de oftalmologia, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agendamento, preparo administrativo e privacidade para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a consultórios de oftalmologia."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-centros-de-diagnostico",
+    "title": "Avaliações Google para centros de diagnóstico | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para centros de diagnóstico, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para centros de diagnóstico",
+    "lead": "Para centros de diagnóstico, as avaliações públicas refletem etapas diferentes da experiência: agendamento, entrega de resultados e privacidade. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agendamento, entrega de resultados e privacidade e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de centros de diagnóstico."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em centros de diagnóstico, defina categorias relacionadas a agendamento, entrega de resultados e privacidade, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em centros de diagnóstico; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-centros-de-diagnostico",
+    "title": "Gestão de avaliações para centros de diagnóstico | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para centros de diagnóstico, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para centros de diagnóstico",
+    "lead": "A gestão de avaliações para centros de diagnóstico conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agendamento, entrega de resultados e privacidade, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em centros de diagnóstico, alinhe os responsáveis aos pontos de contato de agendamento, entrega de resultados e privacidade para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em centros de diagnóstico. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-centros-de-diagnostico",
+    "title": "Respostas a avaliações para centros de diagnóstico | Filtra.AI",
+    "description": "Organize respostas a avaliações de centros de diagnóstico com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para centros de diagnóstico",
+    "lead": "Uma resposta pública útil para centros de diagnóstico reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agendamento, entrega de resultados e privacidade e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em centros de diagnóstico, temas como agendamento, entrega de resultados e privacidade podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em centros de diagnóstico e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de centros de diagnóstico."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-centros-de-diagnostico",
+    "title": "Monitoramento de avaliações para centros de diagnóstico | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para centros de diagnóstico, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para centros de diagnóstico",
+    "lead": "O monitoramento de avaliações para centros de diagnóstico reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agendamento, entrega de resultados e privacidade e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para centros de diagnóstico, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agendamento, entrega de resultados e privacidade e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em centros de diagnóstico, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-centros-de-diagnostico",
+    "title": "Relatórios de reputação para centros de diagnóstico | Filtra.AI",
+    "description": "Crie relatórios de reputação para centros de diagnóstico que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para centros de diagnóstico",
+    "lead": "Um relatório de reputação para centros de diagnóstico explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agendamento, entrega de resultados e privacidade pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em centros de diagnóstico, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agendamento, entrega de resultados e privacidade para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a centros de diagnóstico."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-spas",
+    "title": "Avaliações Google para spas | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para spas, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para spas",
+    "lead": "Para spas, as avaliações públicas refletem etapas diferentes da experiência: agendamento, descrição de serviços, higiene e expectativas. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agendamento, descrição de serviços, higiene e expectativas e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de spas."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em spas, defina categorias relacionadas a agendamento, descrição de serviços, higiene e expectativas, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em spas; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-spas",
+    "title": "Gestão de avaliações para spas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para spas, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para spas",
+    "lead": "A gestão de avaliações para spas conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agendamento, descrição de serviços, higiene e expectativas, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em spas, alinhe os responsáveis aos pontos de contato de agendamento, descrição de serviços, higiene e expectativas para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em spas. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-spas",
+    "title": "Respostas a avaliações para spas | Filtra.AI",
+    "description": "Organize respostas a avaliações de spas com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para spas",
+    "lead": "Uma resposta pública útil para spas reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agendamento, descrição de serviços, higiene e expectativas e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em spas, temas como agendamento, descrição de serviços, higiene e expectativas podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em spas e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de spas."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-spas",
+    "title": "Monitoramento de avaliações para spas | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para spas, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para spas",
+    "lead": "O monitoramento de avaliações para spas reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agendamento, descrição de serviços, higiene e expectativas e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para spas, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agendamento, descrição de serviços, higiene e expectativas e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em spas, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-spas",
+    "title": "Relatórios de reputação para spas | Filtra.AI",
+    "description": "Crie relatórios de reputação para spas que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para spas",
+    "lead": "Um relatório de reputação para spas explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agendamento, descrição de serviços, higiene e expectativas pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em spas, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agendamento, descrição de serviços, higiene e expectativas para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a spas."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-saloes-de-tatuagem",
+    "title": "Avaliações Google para estúdios de tatuagem | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para estúdios de tatuagem, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para estúdios de tatuagem",
+    "lead": "Para estúdios de tatuagem, as avaliações públicas refletem etapas diferentes da experiência: agendamento, higiene e cuidados pós-procedimento. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agendamento, higiene e cuidados pós-procedimento e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de estúdios de tatuagem."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em estúdios de tatuagem, defina categorias relacionadas a agendamento, higiene e cuidados pós-procedimento, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em estúdios de tatuagem; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-saloes-de-tatuagem",
+    "title": "Gestão de avaliações para estúdios de tatuagem | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para estúdios de tatuagem, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para estúdios de tatuagem",
+    "lead": "A gestão de avaliações para estúdios de tatuagem conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agendamento, higiene e cuidados pós-procedimento, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em estúdios de tatuagem, alinhe os responsáveis aos pontos de contato de agendamento, higiene e cuidados pós-procedimento para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em estúdios de tatuagem. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-saloes-de-tatuagem",
+    "title": "Respostas a avaliações para estúdios de tatuagem | Filtra.AI",
+    "description": "Organize respostas a avaliações de estúdios de tatuagem com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para estúdios de tatuagem",
+    "lead": "Uma resposta pública útil para estúdios de tatuagem reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agendamento, higiene e cuidados pós-procedimento e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em estúdios de tatuagem, temas como agendamento, higiene e cuidados pós-procedimento podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em estúdios de tatuagem e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de estúdios de tatuagem."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-saloes-de-tatuagem",
+    "title": "Monitoramento de avaliações para estúdios de tatuagem | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para estúdios de tatuagem, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para estúdios de tatuagem",
+    "lead": "O monitoramento de avaliações para estúdios de tatuagem reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agendamento, higiene e cuidados pós-procedimento e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para estúdios de tatuagem, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agendamento, higiene e cuidados pós-procedimento e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em estúdios de tatuagem, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-saloes-de-tatuagem",
+    "title": "Relatórios de reputação para estúdios de tatuagem | Filtra.AI",
+    "description": "Crie relatórios de reputação para estúdios de tatuagem que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para estúdios de tatuagem",
+    "lead": "Um relatório de reputação para estúdios de tatuagem explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agendamento, higiene e cuidados pós-procedimento pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em estúdios de tatuagem, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agendamento, higiene e cuidados pós-procedimento para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a estúdios de tatuagem."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-pet-hoteis",
+    "title": "Avaliações Google para hotéis para pets | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para hotéis para pets, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para hotéis para pets",
+    "lead": "Para hotéis para pets, as avaliações públicas refletem etapas diferentes da experiência: check-in, rotina dos animais e comunicação com tutores. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a check-in, rotina dos animais e comunicação com tutores e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de hotéis para pets."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em hotéis para pets, defina categorias relacionadas a check-in, rotina dos animais e comunicação com tutores, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em hotéis para pets; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-pet-hoteis",
+    "title": "Gestão de avaliações para hotéis para pets | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para hotéis para pets, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para hotéis para pets",
+    "lead": "A gestão de avaliações para hotéis para pets conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em check-in, rotina dos animais e comunicação com tutores, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em hotéis para pets, alinhe os responsáveis aos pontos de contato de check-in, rotina dos animais e comunicação com tutores para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em hotéis para pets. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-pet-hoteis",
+    "title": "Respostas a avaliações para hotéis para pets | Filtra.AI",
+    "description": "Organize respostas a avaliações de hotéis para pets com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para hotéis para pets",
+    "lead": "Uma resposta pública útil para hotéis para pets reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de check-in, rotina dos animais e comunicação com tutores e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em hotéis para pets, temas como check-in, rotina dos animais e comunicação com tutores podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em hotéis para pets e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de hotéis para pets."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-pet-hoteis",
+    "title": "Monitoramento de avaliações para hotéis para pets | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para hotéis para pets, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para hotéis para pets",
+    "lead": "O monitoramento de avaliações para hotéis para pets reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir check-in, rotina dos animais e comunicação com tutores e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para hotéis para pets, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de check-in, rotina dos animais e comunicação com tutores e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em hotéis para pets, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-pet-hoteis",
+    "title": "Relatórios de reputação para hotéis para pets | Filtra.AI",
+    "description": "Crie relatórios de reputação para hotéis para pets que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para hotéis para pets",
+    "lead": "Um relatório de reputação para hotéis para pets explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como check-in, rotina dos animais e comunicação com tutores pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em hotéis para pets, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a check-in, rotina dos animais e comunicação com tutores para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a hotéis para pets."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-banho-e-tosa",
+    "title": "Avaliações Google para serviços de banho e tosa | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para serviços de banho e tosa, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de banho e tosa",
+    "lead": "Para serviços de banho e tosa, as avaliações públicas refletem etapas diferentes da experiência: agenda, manejo e comunicação com tutores. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a agenda, manejo e comunicação com tutores e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de serviços de banho e tosa."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em serviços de banho e tosa, defina categorias relacionadas a agenda, manejo e comunicação com tutores, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em serviços de banho e tosa; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-banho-e-tosa",
+    "title": "Gestão de avaliações para serviços de banho e tosa | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de banho e tosa, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para serviços de banho e tosa",
+    "lead": "A gestão de avaliações para serviços de banho e tosa conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em agenda, manejo e comunicação com tutores, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em serviços de banho e tosa, alinhe os responsáveis aos pontos de contato de agenda, manejo e comunicação com tutores para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em serviços de banho e tosa. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-banho-e-tosa",
+    "title": "Respostas a avaliações para serviços de banho e tosa | Filtra.AI",
+    "description": "Organize respostas a avaliações de serviços de banho e tosa com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para serviços de banho e tosa",
+    "lead": "Uma resposta pública útil para serviços de banho e tosa reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de agenda, manejo e comunicação com tutores e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em serviços de banho e tosa, temas como agenda, manejo e comunicação com tutores podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em serviços de banho e tosa e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de serviços de banho e tosa."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-banho-e-tosa",
+    "title": "Monitoramento de avaliações para serviços de banho e tosa | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para serviços de banho e tosa, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para serviços de banho e tosa",
+    "lead": "O monitoramento de avaliações para serviços de banho e tosa reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir agenda, manejo e comunicação com tutores e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para serviços de banho e tosa, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de agenda, manejo e comunicação com tutores e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em serviços de banho e tosa, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-banho-e-tosa",
+    "title": "Relatórios de reputação para serviços de banho e tosa | Filtra.AI",
+    "description": "Crie relatórios de reputação para serviços de banho e tosa que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de banho e tosa",
+    "lead": "Um relatório de reputação para serviços de banho e tosa explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como agenda, manejo e comunicação com tutores pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em serviços de banho e tosa, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a agenda, manejo e comunicação com tutores para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a serviços de banho e tosa."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-adestradores",
+    "title": "Avaliações Google para serviços de adestramento | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para serviços de adestramento, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de adestramento",
+    "lead": "Para serviços de adestramento, as avaliações públicas refletem etapas diferentes da experiência: objetivos, acompanhamento e expectativas. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a objetivos, acompanhamento e expectativas e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de serviços de adestramento."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em serviços de adestramento, defina categorias relacionadas a objetivos, acompanhamento e expectativas, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em serviços de adestramento; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-adestradores",
+    "title": "Gestão de avaliações para serviços de adestramento | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de adestramento, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para serviços de adestramento",
+    "lead": "A gestão de avaliações para serviços de adestramento conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em objetivos, acompanhamento e expectativas, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em serviços de adestramento, alinhe os responsáveis aos pontos de contato de objetivos, acompanhamento e expectativas para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em serviços de adestramento. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-adestradores",
+    "title": "Respostas a avaliações para serviços de adestramento | Filtra.AI",
+    "description": "Organize respostas a avaliações de serviços de adestramento com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para serviços de adestramento",
+    "lead": "Uma resposta pública útil para serviços de adestramento reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de objetivos, acompanhamento e expectativas e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em serviços de adestramento, temas como objetivos, acompanhamento e expectativas podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em serviços de adestramento e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de serviços de adestramento."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-adestradores",
+    "title": "Monitoramento de avaliações para serviços de adestramento | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para serviços de adestramento, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para serviços de adestramento",
+    "lead": "O monitoramento de avaliações para serviços de adestramento reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir objetivos, acompanhamento e expectativas e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para serviços de adestramento, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de objetivos, acompanhamento e expectativas e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em serviços de adestramento, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-adestradores",
+    "title": "Relatórios de reputação para serviços de adestramento | Filtra.AI",
+    "description": "Crie relatórios de reputação para serviços de adestramento que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de adestramento",
+    "lead": "Um relatório de reputação para serviços de adestramento explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como objetivos, acompanhamento e expectativas pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em serviços de adestramento, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a objetivos, acompanhamento e expectativas para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a serviços de adestramento."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-cafeterias",
+    "title": "Avaliações Google para cafeterias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para cafeterias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para cafeterias",
+    "lead": "Para cafeterias, as avaliações públicas refletem etapas diferentes da experiência: espera, consistência de bebidas e atendimento. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a espera, consistência de bebidas e atendimento e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de cafeterias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em cafeterias, defina categorias relacionadas a espera, consistência de bebidas e atendimento, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em cafeterias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-cafeterias",
+    "title": "Gestão de avaliações para cafeterias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para cafeterias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para cafeterias",
+    "lead": "A gestão de avaliações para cafeterias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em espera, consistência de bebidas e atendimento, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em cafeterias, alinhe os responsáveis aos pontos de contato de espera, consistência de bebidas e atendimento para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em cafeterias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-cafeterias",
+    "title": "Respostas a avaliações para cafeterias | Filtra.AI",
+    "description": "Organize respostas a avaliações de cafeterias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para cafeterias",
+    "lead": "Uma resposta pública útil para cafeterias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de espera, consistência de bebidas e atendimento e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em cafeterias, temas como espera, consistência de bebidas e atendimento podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em cafeterias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de cafeterias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-cafeterias",
+    "title": "Monitoramento de avaliações para cafeterias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para cafeterias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para cafeterias",
+    "lead": "O monitoramento de avaliações para cafeterias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir espera, consistência de bebidas e atendimento e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para cafeterias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de espera, consistência de bebidas e atendimento e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em cafeterias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-cafeterias",
+    "title": "Relatórios de reputação para cafeterias | Filtra.AI",
+    "description": "Crie relatórios de reputação para cafeterias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para cafeterias",
+    "lead": "Um relatório de reputação para cafeterias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como espera, consistência de bebidas e atendimento pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em cafeterias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a espera, consistência de bebidas e atendimento para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a cafeterias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-padarias",
+    "title": "Avaliações Google para padarias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para padarias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para padarias",
+    "lead": "Para padarias, as avaliações públicas refletem etapas diferentes da experiência: frescor, horários de pico e encomendas. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a frescor, horários de pico e encomendas e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de padarias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em padarias, defina categorias relacionadas a frescor, horários de pico e encomendas, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em padarias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-padarias",
+    "title": "Gestão de avaliações para padarias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para padarias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para padarias",
+    "lead": "A gestão de avaliações para padarias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em frescor, horários de pico e encomendas, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em padarias, alinhe os responsáveis aos pontos de contato de frescor, horários de pico e encomendas para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em padarias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-padarias",
+    "title": "Respostas a avaliações para padarias | Filtra.AI",
+    "description": "Organize respostas a avaliações de padarias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para padarias",
+    "lead": "Uma resposta pública útil para padarias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de frescor, horários de pico e encomendas e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em padarias, temas como frescor, horários de pico e encomendas podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em padarias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de padarias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-padarias",
+    "title": "Monitoramento de avaliações para padarias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para padarias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para padarias",
+    "lead": "O monitoramento de avaliações para padarias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir frescor, horários de pico e encomendas e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para padarias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de frescor, horários de pico e encomendas e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em padarias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-padarias",
+    "title": "Relatórios de reputação para padarias | Filtra.AI",
+    "description": "Crie relatórios de reputação para padarias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para padarias",
+    "lead": "Um relatório de reputação para padarias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como frescor, horários de pico e encomendas pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em padarias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a frescor, horários de pico e encomendas para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a padarias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-pizzarias",
+    "title": "Avaliações Google para pizzarias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para pizzarias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para pizzarias",
+    "lead": "Para pizzarias, as avaliações públicas refletem etapas diferentes da experiência: entrega, precisão dos pedidos e temperatura. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a entrega, precisão dos pedidos e temperatura e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de pizzarias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em pizzarias, defina categorias relacionadas a entrega, precisão dos pedidos e temperatura, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em pizzarias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-pizzarias",
+    "title": "Gestão de avaliações para pizzarias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para pizzarias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para pizzarias",
+    "lead": "A gestão de avaliações para pizzarias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em entrega, precisão dos pedidos e temperatura, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em pizzarias, alinhe os responsáveis aos pontos de contato de entrega, precisão dos pedidos e temperatura para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em pizzarias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-pizzarias",
+    "title": "Respostas a avaliações para pizzarias | Filtra.AI",
+    "description": "Organize respostas a avaliações de pizzarias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para pizzarias",
+    "lead": "Uma resposta pública útil para pizzarias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de entrega, precisão dos pedidos e temperatura e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em pizzarias, temas como entrega, precisão dos pedidos e temperatura podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em pizzarias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de pizzarias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-pizzarias",
+    "title": "Monitoramento de avaliações para pizzarias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para pizzarias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para pizzarias",
+    "lead": "O monitoramento de avaliações para pizzarias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir entrega, precisão dos pedidos e temperatura e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para pizzarias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de entrega, precisão dos pedidos e temperatura e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em pizzarias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-pizzarias",
+    "title": "Relatórios de reputação para pizzarias | Filtra.AI",
+    "description": "Crie relatórios de reputação para pizzarias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para pizzarias",
+    "lead": "Um relatório de reputação para pizzarias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como entrega, precisão dos pedidos e temperatura pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em pizzarias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a entrega, precisão dos pedidos e temperatura para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a pizzarias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-hamburguerias",
+    "title": "Avaliações Google para hamburguerias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para hamburguerias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para hamburguerias",
+    "lead": "Para hamburguerias, as avaliações públicas refletem etapas diferentes da experiência: personalização, embalagem e tempo de entrega. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a personalização, embalagem e tempo de entrega e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de hamburguerias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em hamburguerias, defina categorias relacionadas a personalização, embalagem e tempo de entrega, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em hamburguerias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-hamburguerias",
+    "title": "Gestão de avaliações para hamburguerias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para hamburguerias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para hamburguerias",
+    "lead": "A gestão de avaliações para hamburguerias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em personalização, embalagem e tempo de entrega, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em hamburguerias, alinhe os responsáveis aos pontos de contato de personalização, embalagem e tempo de entrega para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em hamburguerias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-hamburguerias",
+    "title": "Respostas a avaliações para hamburguerias | Filtra.AI",
+    "description": "Organize respostas a avaliações de hamburguerias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para hamburguerias",
+    "lead": "Uma resposta pública útil para hamburguerias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de personalização, embalagem e tempo de entrega e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em hamburguerias, temas como personalização, embalagem e tempo de entrega podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em hamburguerias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de hamburguerias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-hamburguerias",
+    "title": "Monitoramento de avaliações para hamburguerias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para hamburguerias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para hamburguerias",
+    "lead": "O monitoramento de avaliações para hamburguerias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir personalização, embalagem e tempo de entrega e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para hamburguerias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de personalização, embalagem e tempo de entrega e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em hamburguerias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-hamburguerias",
+    "title": "Relatórios de reputação para hamburguerias | Filtra.AI",
+    "description": "Crie relatórios de reputação para hamburguerias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para hamburguerias",
+    "lead": "Um relatório de reputação para hamburguerias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como personalização, embalagem e tempo de entrega pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em hamburguerias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a personalização, embalagem e tempo de entrega para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a hamburguerias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-sorveterias",
+    "title": "Avaliações Google para sorveterias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para sorveterias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para sorveterias",
+    "lead": "Para sorveterias, as avaliações públicas refletem etapas diferentes da experiência: variedade, disponibilidade de sabores e higiene. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a variedade, disponibilidade de sabores e higiene e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de sorveterias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em sorveterias, defina categorias relacionadas a variedade, disponibilidade de sabores e higiene, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em sorveterias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-sorveterias",
+    "title": "Gestão de avaliações para sorveterias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para sorveterias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para sorveterias",
+    "lead": "A gestão de avaliações para sorveterias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em variedade, disponibilidade de sabores e higiene, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em sorveterias, alinhe os responsáveis aos pontos de contato de variedade, disponibilidade de sabores e higiene para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em sorveterias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-sorveterias",
+    "title": "Respostas a avaliações para sorveterias | Filtra.AI",
+    "description": "Organize respostas a avaliações de sorveterias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para sorveterias",
+    "lead": "Uma resposta pública útil para sorveterias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de variedade, disponibilidade de sabores e higiene e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em sorveterias, temas como variedade, disponibilidade de sabores e higiene podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em sorveterias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de sorveterias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-sorveterias",
+    "title": "Monitoramento de avaliações para sorveterias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para sorveterias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para sorveterias",
+    "lead": "O monitoramento de avaliações para sorveterias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir variedade, disponibilidade de sabores e higiene e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para sorveterias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de variedade, disponibilidade de sabores e higiene e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em sorveterias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-sorveterias",
+    "title": "Relatórios de reputação para sorveterias | Filtra.AI",
+    "description": "Crie relatórios de reputação para sorveterias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para sorveterias",
+    "lead": "Um relatório de reputação para sorveterias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como variedade, disponibilidade de sabores e higiene pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em sorveterias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a variedade, disponibilidade de sabores e higiene para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a sorveterias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-docerias",
+    "title": "Avaliações Google para docerias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para docerias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para docerias",
+    "lead": "Para docerias, as avaliações públicas refletem etapas diferentes da experiência: personalização, encomendas e conservação. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a personalização, encomendas e conservação e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de docerias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em docerias, defina categorias relacionadas a personalização, encomendas e conservação, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em docerias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-docerias",
+    "title": "Gestão de avaliações para docerias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para docerias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para docerias",
+    "lead": "A gestão de avaliações para docerias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em personalização, encomendas e conservação, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em docerias, alinhe os responsáveis aos pontos de contato de personalização, encomendas e conservação para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em docerias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-docerias",
+    "title": "Respostas a avaliações para docerias | Filtra.AI",
+    "description": "Organize respostas a avaliações de docerias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para docerias",
+    "lead": "Uma resposta pública útil para docerias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de personalização, encomendas e conservação e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em docerias, temas como personalização, encomendas e conservação podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em docerias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de docerias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-docerias",
+    "title": "Monitoramento de avaliações para docerias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para docerias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para docerias",
+    "lead": "O monitoramento de avaliações para docerias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir personalização, encomendas e conservação e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para docerias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de personalização, encomendas e conservação e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em docerias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-docerias",
+    "title": "Relatórios de reputação para docerias | Filtra.AI",
+    "description": "Crie relatórios de reputação para docerias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para docerias",
+    "lead": "Um relatório de reputação para docerias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como personalização, encomendas e conservação pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em docerias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a personalização, encomendas e conservação para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a docerias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-marmitarias",
+    "title": "Avaliações Google para marmitarias | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para marmitarias, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para marmitarias",
+    "lead": "Para marmitarias, as avaliações públicas refletem etapas diferentes da experiência: precisão dos pedidos, embalagem e entrega. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a precisão dos pedidos, embalagem e entrega e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de marmitarias."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em marmitarias, defina categorias relacionadas a precisão dos pedidos, embalagem e entrega, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em marmitarias; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-marmitarias",
+    "title": "Gestão de avaliações para marmitarias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para marmitarias, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para marmitarias",
+    "lead": "A gestão de avaliações para marmitarias conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em precisão dos pedidos, embalagem e entrega, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em marmitarias, alinhe os responsáveis aos pontos de contato de precisão dos pedidos, embalagem e entrega para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em marmitarias. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-marmitarias",
+    "title": "Respostas a avaliações para marmitarias | Filtra.AI",
+    "description": "Organize respostas a avaliações de marmitarias com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para marmitarias",
+    "lead": "Uma resposta pública útil para marmitarias reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de precisão dos pedidos, embalagem e entrega e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em marmitarias, temas como precisão dos pedidos, embalagem e entrega podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em marmitarias e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de marmitarias."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-marmitarias",
+    "title": "Monitoramento de avaliações para marmitarias | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para marmitarias, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para marmitarias",
+    "lead": "O monitoramento de avaliações para marmitarias reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir precisão dos pedidos, embalagem e entrega e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para marmitarias, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de precisão dos pedidos, embalagem e entrega e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em marmitarias, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-marmitarias",
+    "title": "Relatórios de reputação para marmitarias | Filtra.AI",
+    "description": "Crie relatórios de reputação para marmitarias que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para marmitarias",
+    "lead": "Um relatório de reputação para marmitarias explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como precisão dos pedidos, embalagem e entrega pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em marmitarias, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a precisão dos pedidos, embalagem e entrega para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a marmitarias."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lojas-de-conveniencia",
+    "title": "Avaliações Google para lojas de conveniência | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de conveniência, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de conveniência",
+    "lead": "Para lojas de conveniência, as avaliações públicas refletem etapas diferentes da experiência: disponibilidade, rapidez e horários. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a disponibilidade, rapidez e horários e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de conveniência."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de conveniência, defina categorias relacionadas a disponibilidade, rapidez e horários, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de conveniência; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lojas-de-conveniencia",
+    "title": "Gestão de avaliações para lojas de conveniência | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de conveniência, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de conveniência",
+    "lead": "A gestão de avaliações para lojas de conveniência conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em disponibilidade, rapidez e horários, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de conveniência, alinhe os responsáveis aos pontos de contato de disponibilidade, rapidez e horários para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de conveniência. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lojas-de-conveniencia",
+    "title": "Respostas a avaliações para lojas de conveniência | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de conveniência com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de conveniência",
+    "lead": "Uma resposta pública útil para lojas de conveniência reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de disponibilidade, rapidez e horários e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de conveniência, temas como disponibilidade, rapidez e horários podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de conveniência e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de conveniência."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lojas-de-conveniencia",
+    "title": "Monitoramento de avaliações para lojas de conveniência | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de conveniência, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de conveniência",
+    "lead": "O monitoramento de avaliações para lojas de conveniência reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir disponibilidade, rapidez e horários e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de conveniência, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de disponibilidade, rapidez e horários e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de conveniência, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lojas-de-conveniencia",
+    "title": "Relatórios de reputação para lojas de conveniência | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de conveniência que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de conveniência",
+    "lead": "Um relatório de reputação para lojas de conveniência explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como disponibilidade, rapidez e horários pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de conveniência, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a disponibilidade, rapidez e horários para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de conveniência."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-postos-de-combustivel",
+    "title": "Avaliações Google para postos de combustível | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para postos de combustível, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para postos de combustível",
+    "lead": "Para postos de combustível, as avaliações públicas refletem etapas diferentes da experiência: clareza de preços, atendimento e limpeza. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a clareza de preços, atendimento e limpeza e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de postos de combustível."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em postos de combustível, defina categorias relacionadas a clareza de preços, atendimento e limpeza, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em postos de combustível; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-postos-de-combustivel",
+    "title": "Gestão de avaliações para postos de combustível | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para postos de combustível, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para postos de combustível",
+    "lead": "A gestão de avaliações para postos de combustível conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em clareza de preços, atendimento e limpeza, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em postos de combustível, alinhe os responsáveis aos pontos de contato de clareza de preços, atendimento e limpeza para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em postos de combustível. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-postos-de-combustivel",
+    "title": "Respostas a avaliações para postos de combustível | Filtra.AI",
+    "description": "Organize respostas a avaliações de postos de combustível com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para postos de combustível",
+    "lead": "Uma resposta pública útil para postos de combustível reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de clareza de preços, atendimento e limpeza e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em postos de combustível, temas como clareza de preços, atendimento e limpeza podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em postos de combustível e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de postos de combustível."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-postos-de-combustivel",
+    "title": "Monitoramento de avaliações para postos de combustível | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para postos de combustível, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para postos de combustível",
+    "lead": "O monitoramento de avaliações para postos de combustível reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir clareza de preços, atendimento e limpeza e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para postos de combustível, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de clareza de preços, atendimento e limpeza e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em postos de combustível, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-postos-de-combustivel",
+    "title": "Relatórios de reputação para postos de combustível | Filtra.AI",
+    "description": "Crie relatórios de reputação para postos de combustível que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para postos de combustível",
+    "lead": "Um relatório de reputação para postos de combustível explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como clareza de preços, atendimento e limpeza pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em postos de combustível, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a clareza de preços, atendimento e limpeza para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a postos de combustível."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-lava-rapidos",
+    "title": "Avaliações Google para lava-rápidos | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lava-rápidos, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lava-rápidos",
+    "lead": "Para lava-rápidos, as avaliações públicas refletem etapas diferentes da experiência: escopo do serviço, prazo e cuidado com veículos. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a escopo do serviço, prazo e cuidado com veículos e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lava-rápidos."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lava-rápidos, defina categorias relacionadas a escopo do serviço, prazo e cuidado com veículos, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lava-rápidos; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-lava-rapidos",
+    "title": "Gestão de avaliações para lava-rápidos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lava-rápidos, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lava-rápidos",
+    "lead": "A gestão de avaliações para lava-rápidos conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em escopo do serviço, prazo e cuidado com veículos, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lava-rápidos, alinhe os responsáveis aos pontos de contato de escopo do serviço, prazo e cuidado com veículos para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lava-rápidos. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-lava-rapidos",
+    "title": "Respostas a avaliações para lava-rápidos | Filtra.AI",
+    "description": "Organize respostas a avaliações de lava-rápidos com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lava-rápidos",
+    "lead": "Uma resposta pública útil para lava-rápidos reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de escopo do serviço, prazo e cuidado com veículos e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lava-rápidos, temas como escopo do serviço, prazo e cuidado com veículos podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lava-rápidos e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lava-rápidos."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-lava-rapidos",
+    "title": "Monitoramento de avaliações para lava-rápidos | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lava-rápidos, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lava-rápidos",
+    "lead": "O monitoramento de avaliações para lava-rápidos reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir escopo do serviço, prazo e cuidado com veículos e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lava-rápidos, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de escopo do serviço, prazo e cuidado com veículos e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lava-rápidos, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-lava-rapidos",
+    "title": "Relatórios de reputação para lava-rápidos | Filtra.AI",
+    "description": "Crie relatórios de reputação para lava-rápidos que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lava-rápidos",
+    "lead": "Um relatório de reputação para lava-rápidos explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como escopo do serviço, prazo e cuidado com veículos pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lava-rápidos, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a escopo do serviço, prazo e cuidado com veículos para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lava-rápidos."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-funilarias",
+    "title": "Avaliações Google para funilarias e oficinas de funilaria | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para funilarias e oficinas de funilaria, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para funilarias e oficinas de funilaria",
+    "lead": "Para funilarias e oficinas de funilaria, as avaliações públicas refletem etapas diferentes da experiência: orçamento, prazo e comunicação sobre etapas. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a orçamento, prazo e comunicação sobre etapas e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de funilarias e oficinas de funilaria."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em funilarias e oficinas de funilaria, defina categorias relacionadas a orçamento, prazo e comunicação sobre etapas, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em funilarias e oficinas de funilaria; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-funilarias",
+    "title": "Gestão de avaliações para funilarias e oficinas de funilaria | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para funilarias e oficinas de funilaria, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para funilarias e oficinas de funilaria",
+    "lead": "A gestão de avaliações para funilarias e oficinas de funilaria conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em orçamento, prazo e comunicação sobre etapas, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em funilarias e oficinas de funilaria, alinhe os responsáveis aos pontos de contato de orçamento, prazo e comunicação sobre etapas para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em funilarias e oficinas de funilaria. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-funilarias",
+    "title": "Respostas a avaliações para funilarias e oficinas de funilaria | Filtra.AI",
+    "description": "Organize respostas a avaliações de funilarias e oficinas de funilaria com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para funilarias e oficinas de funilaria",
+    "lead": "Uma resposta pública útil para funilarias e oficinas de funilaria reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de orçamento, prazo e comunicação sobre etapas e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em funilarias e oficinas de funilaria, temas como orçamento, prazo e comunicação sobre etapas podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em funilarias e oficinas de funilaria e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de funilarias e oficinas de funilaria."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-funilarias",
+    "title": "Monitoramento de avaliações para funilarias e oficinas de funilaria | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para funilarias e oficinas de funilaria, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para funilarias e oficinas de funilaria",
+    "lead": "O monitoramento de avaliações para funilarias e oficinas de funilaria reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir orçamento, prazo e comunicação sobre etapas e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para funilarias e oficinas de funilaria, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de orçamento, prazo e comunicação sobre etapas e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em funilarias e oficinas de funilaria, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-funilarias",
+    "title": "Relatórios de reputação para funilarias e oficinas de funilaria | Filtra.AI",
+    "description": "Crie relatórios de reputação para funilarias e oficinas de funilaria que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para funilarias e oficinas de funilaria",
+    "lead": "Um relatório de reputação para funilarias e oficinas de funilaria explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como orçamento, prazo e comunicação sobre etapas pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em funilarias e oficinas de funilaria, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a orçamento, prazo e comunicação sobre etapas para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a funilarias e oficinas de funilaria."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-oficinas-de-motos",
+    "title": "Avaliações Google para oficinas de motos | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para oficinas de motos, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para oficinas de motos",
+    "lead": "Para oficinas de motos, as avaliações públicas refletem etapas diferentes da experiência: diagnóstico, peças e prazo de serviço. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a diagnóstico, peças e prazo de serviço e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de oficinas de motos."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em oficinas de motos, defina categorias relacionadas a diagnóstico, peças e prazo de serviço, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em oficinas de motos; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-oficinas-de-motos",
+    "title": "Gestão de avaliações para oficinas de motos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para oficinas de motos, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para oficinas de motos",
+    "lead": "A gestão de avaliações para oficinas de motos conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em diagnóstico, peças e prazo de serviço, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em oficinas de motos, alinhe os responsáveis aos pontos de contato de diagnóstico, peças e prazo de serviço para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em oficinas de motos. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-oficinas-de-motos",
+    "title": "Respostas a avaliações para oficinas de motos | Filtra.AI",
+    "description": "Organize respostas a avaliações de oficinas de motos com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para oficinas de motos",
+    "lead": "Uma resposta pública útil para oficinas de motos reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de diagnóstico, peças e prazo de serviço e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em oficinas de motos, temas como diagnóstico, peças e prazo de serviço podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em oficinas de motos e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de oficinas de motos."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-oficinas-de-motos",
+    "title": "Monitoramento de avaliações para oficinas de motos | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para oficinas de motos, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para oficinas de motos",
+    "lead": "O monitoramento de avaliações para oficinas de motos reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir diagnóstico, peças e prazo de serviço e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para oficinas de motos, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de diagnóstico, peças e prazo de serviço e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em oficinas de motos, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-oficinas-de-motos",
+    "title": "Relatórios de reputação para oficinas de motos | Filtra.AI",
+    "description": "Crie relatórios de reputação para oficinas de motos que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para oficinas de motos",
+    "lead": "Um relatório de reputação para oficinas de motos explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como diagnóstico, peças e prazo de serviço pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em oficinas de motos, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a diagnóstico, peças e prazo de serviço para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a oficinas de motos."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-autopecas",
+    "title": "Avaliações Google para lojas de autopeças | Filtra.AI",
+    "description": "Organize o acompanhamento de avaliações Google para lojas de autopeças, com critérios de leitura, encaminhamento de problemas e melhoria da experiência sem prometer notas ou posições.",
+    "h1": "Avaliações Google para lojas de autopeças",
+    "lead": "Para lojas de autopeças, as avaliações públicas refletem etapas diferentes da experiência: compatibilidade, disponibilidade e devoluções. Separe relatos pontuais de padrões recorrentes e transforme sinais verificáveis em ações operacionais.",
+    "sections": [
+      {
+        "heading": "Mapeie os momentos da experiência",
+        "body": "Mapeie pontos de contato ligados a compatibilidade, disponibilidade e devoluções e registre exemplos concretos, período e unidade quando aplicável. Um comentário isolado não representa necessariamente todos os clientes de lojas de autopeças."
+      },
+      {
+        "heading": "Classifique temas e urgência",
+        "body": "Separe elogios, dúvidas, falhas de processo e situações que exigem apuração. Em lojas de autopeças, defina categorias relacionadas a compatibilidade, disponibilidade e devoluções, critérios de prioridade e responsáveis, evitando expor dados pessoais."
+      },
+      {
+        "heading": "Feche o ciclo com a operação",
+        "body": "Escolha um tema prioritário, atribua uma ação e marque uma data para revisar o resultado. Compare períodos equivalentes e registre limitações antes de concluir que uma mudança causou melhora."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Considere gravidade, recorrência, atualidade e possibilidade de corrigir o problema em lojas de autopeças; não use apenas a nota como critério."
+      },
+      {
+        "question": "Responder garante uma nota melhor?",
+        "answer": "Não. Respostas ajudam na comunicação, mas a percepção pública depende da experiência real e de fatores fora do controle da empresa."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-autopecas",
+    "title": "Gestão de avaliações para lojas de autopeças | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para lojas de autopeças, com responsabilidades, critérios de prioridade e rotinas de melhoria adequadas à operação.",
+    "h1": "Gestão de avaliações para lojas de autopeças",
+    "lead": "A gestão de avaliações para lojas de autopeças conecta feedback a responsáveis e decisões. Os sinais mais úteis costumam surgir em compatibilidade, disponibilidade e devoluções, onde falhas de processo podem se repetir entre equipes ou turnos.",
+    "sections": [
+      {
+        "heading": "Defina responsabilidades",
+        "body": "Determine quem acompanha comentários, quem investiga cada assunto e quem aprova respostas. Em lojas de autopeças, alinhe os responsáveis aos pontos de contato de compatibilidade, disponibilidade e devoluções para evitar que o feedback fique parado."
+      },
+      {
+        "heading": "Crie critérios de encaminhamento",
+        "body": "Defina o que pode ser resolvido na linha de frente e o que exige liderança, suporte técnico ou análise de privacidade. Registre prazo interno, responsável e próximo passo sem prometer o que a equipe não consegue cumprir."
+      },
+      {
+        "heading": "Revise padrões recorrentes",
+        "body": "Revise periodicamente causas recorrentes e verifique se as ações foram executadas. Compare unidades ou períodos apenas quando a coleta for consistente e documente mudanças de contexto que afetem os resultados."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Com que frequência revisar?",
+        "answer": "A frequência depende do volume e do risco operacional em lojas de autopeças. Comece com uma cadência que a equipe consiga cumprir e aumente-a em períodos de pico."
+      },
+      {
+        "question": "Uma planilha pode funcionar?",
+        "answer": "Sim, se houver campos claros, responsáveis, controle de acesso e revisão. O método deve acompanhar a complexidade real da operação."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-autopecas",
+    "title": "Respostas a avaliações para lojas de autopeças | Filtra.AI",
+    "description": "Organize respostas a avaliações de lojas de autopeças com contexto, tom profissional, apuração dos fatos e cuidado com dados pessoais.",
+    "h1": "Respostas a avaliações para lojas de autopeças",
+    "lead": "Uma resposta pública útil para lojas de autopeças reconhece o relato sem revelar informações privadas nem discutir detalhes não apurados. O texto depende do contexto de compatibilidade, disponibilidade e devoluções e do próximo passo que a equipe pode oferecer.",
+    "sections": [
+      {
+        "heading": "Confirme o contexto",
+        "body": "Identifique o ponto principal do relato e consulte registros disponíveis. Em lojas de autopeças, temas como compatibilidade, disponibilidade e devoluções podem envolver detalhes que não devem ser presumidos a partir de uma avaliação curta."
+      },
+      {
+        "heading": "Responda com clareza e discrição",
+        "body": "Agradeça o feedback, reconheça a experiência descrita e explique o encaminhamento possível sem expor nomes ou dados sensíveis. Se houver dúvida sobre os fatos, convide a pessoa para um canal privado adequado."
+      },
+      {
+        "heading": "Converta padrões em melhoria",
+        "body": "Agrupe avaliações semelhantes para verificar causas como falha de comunicação, prazo pouco claro ou expectativa desalinhada. Defina um responsável em lojas de autopeças e revise a ação antes de reutilizar modelos."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Posso copiar a mesma resposta?",
+        "answer": "Evite respostas idênticas em série. Use uma estrutura de apoio, mas adapte o texto ao relato real e ao contexto de lojas de autopeças."
+      },
+      {
+        "question": "Como responder a uma crítica com dados privados?",
+        "answer": "Não confirme nem publique detalhes pessoais. Reconheça a preocupação de forma geral e direcione a conversa para um canal privado."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-autopecas",
+    "title": "Monitoramento de avaliações para lojas de autopeças | Filtra.AI",
+    "description": "Monte uma rotina de monitoramento de avaliações para lojas de autopeças, definindo cobertura, responsáveis, sinais de alerta e limites de interpretação.",
+    "h1": "Monitoramento de avaliações para lojas de autopeças",
+    "lead": "O monitoramento de avaliações para lojas de autopeças reduz o tempo entre um sinal público e a investigação interna. A rotina deve refletir compatibilidade, disponibilidade e devoluções e deixar explícitas as fontes que a equipe consegue acompanhar.",
+    "sections": [
+      {
+        "heading": "Declare a cobertura",
+        "body": "Liste fontes acessíveis, permissões e frequência de verificação. Para lojas de autopeças, não trate uma fonte indisponível ou não integrada como coberta; registre lacunas e períodos sem dados."
+      },
+      {
+        "heading": "Defina alertas acionáveis",
+        "body": "Combine critérios para encaminhar aumento de reclamações, tema grave ou risco de privacidade. Relacione os alertas a situações de compatibilidade, disponibilidade e devoluções e indique quem decide o próximo passo."
+      },
+      {
+        "heading": "Separe tendência de ruído",
+        "body": "Uma avaliação isolada não prova tendência; mudanças de volume também podem refletir sazonalidade. Compare períodos equivalentes em lojas de autopeças, preserve o contexto e registre quando a amostra for pequena."
+      }
+    ],
+    "faq": [
+      {
+        "question": "O monitoramento cobre todas as plataformas?",
+        "answer": "Somente quando há acesso e processo comprovados para cada fonte. Documente o que é acompanhado e o que permanece fora do escopo."
+      },
+      {
+        "question": "O que deve ser escalado imediatamente?",
+        "answer": "Siga a política interna para riscos de segurança, privacidade, discriminação ou falhas graves; não espere o volume aumentar."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-autopecas",
+    "title": "Relatórios de reputação para lojas de autopeças | Filtra.AI",
+    "description": "Crie relatórios de reputação para lojas de autopeças que conectem temas de avaliações, indicadores operacionais e ações sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para lojas de autopeças",
+    "lead": "Um relatório de reputação para lojas de autopeças explica o que foi observado, qual ação foi tomada e o que ainda não pode ser concluído. Contextos como compatibilidade, disponibilidade e devoluções pedem indicadores definidos e limites claros.",
+    "sections": [
+      {
+        "heading": "Escolha indicadores interpretáveis",
+        "body": "Combine volume, recência, temas recorrentes e métricas operacionais disponíveis. Em lojas de autopeças, defina cada indicador e evite comparar unidades quando as fontes ou períodos não forem equivalentes."
+      },
+      {
+        "heading": "Conecte achados a decisões",
+        "body": "Cada achado prioritário deve indicar exemplos, responsável, ação e data de revisão. Use temas relacionados a compatibilidade, disponibilidade e devoluções para orientar decisões operacionais, não apenas para produzir um ranking."
+      },
+      {
+        "heading": "Explique limites e próximos passos",
+        "body": "Registre tamanho da amostra, mudanças na coleta e fatores externos. Separe correlação de causalidade e indique qual evidência adicional será necessária para avaliar se uma ação realmente ajudou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual a frequência ideal de relatório?",
+        "answer": "Escolha a frequência conforme volume de feedback e ciclo de decisão. Relatórios frequentes só ajudam quando os dados são confiáveis e há responsáveis para agir."
+      },
+      {
+        "question": "A média resume a reputação?",
+        "answer": "Não. A média omite contexto, distribuição e causas. Combine-a com leitura qualitativa e indicadores operacionais pertinentes a lojas de autopeças."
+      }
+    ]
+  },
 ];
 
 const BASE = 'https://filtraai.com';
