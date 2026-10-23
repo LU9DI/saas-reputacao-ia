@@ -114,7 +114,7 @@ for (const path of sitemapPaths) {
     check(localizedSlugs[language]?.has(slug), `Sitemap localized route has no matching ${language} page slug: ${path}`);
   } else if (/^\/(en|es|zh)$/.test(path)) {
     check(localizedHome.includes('generateStaticParams'), 'Localized home must define static params');
-  } else if (!staticRoutes.has(path) && !programmaticSeoSlugs.has(path.replace(/^\\//, ''))) {
+  } else if (!staticRoutes.has(path) && !programmaticSeoSlugs.has(path.slice(1))) {
     check(false, `Sitemap route has no matching static page: ${path}`);
   }
 }
