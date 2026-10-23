@@ -16,7 +16,8 @@
 |------|----------|
 | [ESTRATEGIA_EXPANSAO_SEO_PROGRAMATICO.md](ESTRATEGIA_EXPANSAO_SEO_PROGRAMATICO.md) | Estratégia para expandir cobertura orgânica em escala com critérios de qualidade, pesquisa, medição e publicação por lotes |
 | [MATRIZ_OPORTUNIDADES_SEO_FILTRA.md](MATRIZ_OPORTUNIDADES_SEO_FILTRA.md) | Hipóteses de expansão específicas do Filtra, comparação com cobertura atual e evidências necessárias antes de criar URLs |
-| [REGISTRO_INTENCOES_SEO_FILTRA.md](REGISTRO_INTENCOES_SEO_FILTRA.md) | Backlog inicial de 100+ intenções candidatas, com público, tarefa, valor exclusivo, riscos e estado de validação |
+| [REGISTRO_INTENCOES_SEO_FILTRA.md](REGISTRO_INTENCOES_SEO_FILTRA.md) | Backlog inicial de 95 intenções candidatas, com público, tarefa, valor exclusivo, riscos e estado de validação |
+| [ARQUITETURA_PORTFOLIO_SEO_MULTISITE.md](ARQUITETURA_PORTFOLIO_SEO_MULTISITE.md) | Modelo de portfólio: Filtra, conteúdo editorial, ferramentas, inteligência setorial e possíveis propriedades independentes |
 
 ## Backend (guias em `backend/`)
 
