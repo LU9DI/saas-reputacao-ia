@@ -53,6 +53,12 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/solucoes/:slug.md',
+        headers: [
+          { key: 'Content-Type', value: 'text/markdown; charset=utf-8' },
+        ],
+      },
+      {
         source: '/sw.js',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
