@@ -34,7 +34,20 @@ if ((startDate && !validDate(startDate)) || (endDate && !validDate(endDate)) || 
   process.exit(2);
 }
 const normalize = (value) => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const detectDelimiter = (text) => {
+  const firstLine = text.split(/\r?\n/, 1)[0] ?? '';
+  let quoted = false, commas = 0, semicolons = 0;
+  for (let i = 0; i < firstLine.length; i++) {
+    const ch = firstLine[i];
+    if (ch === '"' && quoted && firstLine[i + 1] === '"') { i++; continue; }
+    if (ch === '"') quoted = !quoted;
+    else if (!quoted && ch === ',') commas++;
+    else if (!quoted && ch === ';') semicolons++;
+  }
+  return semicolons > commas ? ';' : ',';
+};
 const parseCsv = (text) => {
+  const delimiter = detectDelimiter(text);
   const rows = [];
   let row = [], cell = '', quoted = false;
   for (let i = 0; i < text.length; i++) {
@@ -44,7 +57,7 @@ const parseCsv = (text) => {
       else if (ch === '"') quoted = false;
       else cell += ch;
     } else if (ch === '"' && cell === '') quoted = true;
-    else if (ch === ',') { row.push(cell); cell = ''; }
+    else if (ch === delimiter) { row.push(cell); cell = ''; }
     else if (ch === '\n' || ch === '\r') {
       if (ch === '\r' && text[i + 1] === '\n') i++;
       row.push(cell); cell = '';
@@ -78,7 +91,7 @@ const rows = parseCsv(raw.replace(/^\uFEFF/, ''));
 const aggregated = new Map();
 const rejected = [];
 for (const row of rows) {
-  const query = pick(row, ['query', 'topqueries', 'principaisconsultas', 'consultas', 'consulta', 'searchquery']);
+  const query = pick(row, ['query', 'topqueries', 'principaisconsultas', 'consultasprincipais', 'consultas', 'consulta', 'searchquery']);
   if (!query) { rejected.push({ row: row.__row, reason: 'missing-query' }); continue; }
   try {
     const clicks = number(pick(row, ['clicks', 'cliques']), 'clicks', row.__row);
