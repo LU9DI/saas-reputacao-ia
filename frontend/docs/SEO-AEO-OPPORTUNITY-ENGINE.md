@@ -27,6 +27,34 @@ Para escrever em outro diretório:
 node scripts/build-seo-aeo-opportunities.mjs --out /tmp/seo-opportunities
 ```
 
+## Importar evidências reais do Search Console
+
+O importador aceita CSV de consultas exportado do Search Console, com cabeçalhos em inglês ou português (consulta, cliques, impressões, CTR e posição). Detecta delimitadores por vírgula ou ponto e vírgula, preserva a origem e agrega linhas cuja consulta normalizada é idêntica.
+
+1. Exporte o relatório de consultas do Search Console e guarde o CSV original fora do repositório.
+2. Gere o backlog de hipóteses:
+   `npm run seo:opportunities`
+3. Importe a evidência informando propriedade e janela exatas:
+
+```bash
+npm run seo:demand:import -- --input "C:/caminho/search-console-queries.csv" --site "https://seu-dominio/" --start-date 2026-09-01 --end-date 2026-09-30
+```
+
+Saídas locais (não versionadas automaticamente):
+
+- `reports/seo-aeo-opportunities/demand-evidence.json`
+- `reports/seo-aeo-opportunities/demand-evidence.csv`
+
+Cada linha registra consulta, fonte, propriedade, janela, momento da importação, métricas, linhas de origem e estado de revisão. A correspondência com candidatos só é automática quando a consulta normalizada é **exatamente igual** à hipótese; consultas não correspondentes ficam explícitas para mapeamento manual, evitando associação semântica inventada. Linhas inválidas são reportadas, e consultas duplicadas são agregadas com CTR recalculado a partir de cliques/impressões e posição ponderada por impressões.
+
+O importador é deliberadamente conservador: todos os itens permanecem `publishAllowed=false`. Métricas observadas demonstram presença/desempenho na pesquisa, mas não provam sozinhas intenção comercial, aderência ao produto, diferenciação ou autorização editorial. Não commitar exportações brutas que possam conter consultas sensíveis.
+
+Teste local:
+
+```bash
+npm run seo:demand:test
+```
+
 ## Processo de qualificação
 
 Cada combinação nasce com `status=candidate-only` e `publishAllowed=false`. Antes de virar URL pública, a equipe precisa:
