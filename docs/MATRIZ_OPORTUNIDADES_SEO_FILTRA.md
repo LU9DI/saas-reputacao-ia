@@ -81,3 +81,29 @@ Começar pela família **setores ainda não visíveis no sitemap**, pois oferece
 Comparar primeiro cinco candidatos: salão/beleza, oficina automotiva, imobiliária, varejo local e escola/educação. Para cada um, pesquisar a intenção, verificar a SERP, procurar páginas concorrentes no próprio site e desenhar um conteúdo específico. Só então escolher um piloto e criar URLs em uma PR separada.
 
 Não fazer merge, deploy, indexação em massa ou publicação externa automaticamente.
+
+## 7. Critérios para o motor de crescimento
+
+Além de avaliar se uma nova URL merece existir, registrar como ela contribui para o sistema completo:
+
+- **Ativo diferenciador do Filtra:** diagnóstico, ferramenta, modelo operacional, conhecimento verificado ou dado próprio autorizado que a página entrega. Se não houver, explicar qual orientação específica resolve a necessidade.
+- **Fonte e confiabilidade:** origem, data, método, limitações e responsável por atualizar qualquer dado ou afirmação.
+- **Distribuição:** páginas internas que devem criar links contextuais; canais próprios disponíveis; parceiros/comunidades realmente relevantes; hipótese de tráfego de referência. Não planejar links artificiais nem spam.
+- **Conversão observável:** CTA e destino existentes, evento correspondente, etapa do funil, denominador e janela de atribuição. Marcar como lacuna se a instrumentação ainda não existir.
+- **Critério de decisão pós-lançamento:** janela de avaliação, sinal para expandir, correção necessária e condição para consolidar/retirar. Baixo tráfego em uma janela curta não basta, isoladamente, para remover uma página.
+
+### Registro adicional por candidato
+
+Adicionar estes campos ao registro da seção 5 antes de selecionar um piloto:
+
+- **Ativo próprio ou utilidade entregue:**
+- **Fonte, método e limitações dos dados:**
+- **Plano de distribuição e links internos:**
+- **Evento de conversão já instrumentado / lacuna:**
+- **Métrica de sucesso, denominador e janela:**
+- **Critério para expandir, revisar ou consolidar:**
+
+### Próximo passo de pesquisa
+
+A disponibilidade de Search Console e ferramentas de pesquisa paga está limitada nesta execução. Portanto, a próxima etapa não deve fingir uma pontuação de demanda: deve inventariar as URLs e intenções existentes, verificar fontes alternativas legítimas, analisar as SERPs para os cinco candidatos P1 e confirmar quais ferramentas, dados e eventos de conversão do Filtra já existem. Só então selecionar a família piloto em uma PR de implementação separada da PR documental.
+
