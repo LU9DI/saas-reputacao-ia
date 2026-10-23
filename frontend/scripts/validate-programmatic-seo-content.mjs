@@ -62,7 +62,7 @@ function duplicateValues(values) {
   const seen = new Set();
   const duplicates = new Set();
   for (const value of values) {
-    const normalized = value.toLocaleLowerCase('pt-BR').replace(/\\s+/g, ' ').trim();
+    const normalized = value.toLocaleLowerCase('pt-BR').replace(/\s+/g, ' ').trim();
     if (!normalized) continue;
     if (seen.has(normalized)) duplicates.add(normalized);
     seen.add(normalized);
@@ -92,9 +92,9 @@ for (const page of pages) {
 
   const body = [page.lead, ...page.sections.map((section) => section.body), ...page.faq.map((item) => item.answer)]
     .join(' ')
-    .replace(/[^\\p{L}\\p{N}]+/gu, ' ')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim();
-  const wordCount = body ? body.split(/\\s+/).length : 0;
+  const wordCount = body ? body.split(/\s+/).length : 0;
   check(wordCount >= 90, `${page.slug}: thin page content (${wordCount} words; minimum 90).`);
 
   const normalizedBody = body.toLocaleLowerCase('pt-BR');
@@ -105,7 +105,7 @@ for (const page of pages) {
   }
 
   for (const section of page.sections) {
-    const normalized = section.body.toLocaleLowerCase('pt-BR').replace(/\\s+/g, ' ').trim();
+    const normalized = section.body.toLocaleLowerCase('pt-BR').replace(/\s+/g, ' ').trim();
     if (normalized.length < 80) {
       check(false, `${page.slug}: section "${section.heading}" is too short to provide useful guidance.`);
     }
