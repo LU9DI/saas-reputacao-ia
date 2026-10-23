@@ -23,6 +23,7 @@ const REQUIRED_URLS = [
   'https://filtraai.com/como-melhorar-avaliacoes-google',
   'https://filtraai.com/monitoramento-reputacao-online',
   'https://filtraai.com/gestao-de-feedback',
+  'https://filtraai.com/metodologia-auditoria',
   'https://filtraai.com/en',
   'https://filtraai.com/es',
 ];
@@ -199,6 +200,30 @@ for (const route of ['/zh', '/zh/google-reviews', '/zh/blog']) {
     /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html) ||
     /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
   if (!hasNoindex) fail(`ZH route lacks a robots noindex directive: ${route}`);
+}
+
+const methodologyMarkdownPath = join(OUT, 'metodologia-auditoria.md');
+if (!existsSync(methodologyMarkdownPath)) {
+  fail('out/metodologia-auditoria.md is missing');
+} else {
+  const markdown = readFileSync(methodologyMarkdownPath, 'utf8');
+  if (!markdown.startsWith('# ')) fail('methodology Markdown twin must start with an H1');
+  if (!markdown.includes('https://filtraai.com/metodologia-auditoria')) {
+    fail('methodology Markdown twin must reference the canonical HTML URL');
+  }
+}
+
+const headersPath = join(OUT, '_headers');
+if (!existsSync(headersPath)) {
+  fail('out/_headers is missing');
+} else {
+  const headers = readFileSync(headersPath, 'utf8');
+  if (!headers.includes('/metodologia-auditoria.md')) fail('_headers must cover the methodology Markdown twin');
+  if (!headers.includes('Content-Type: text/markdown; charset=utf-8')) fail('_headers must serve Markdown as text/markdown');
+  if (!headers.includes('Link: <https://filtraai.com/metodologia-auditoria>; rel="canonical"')) {
+    fail('_headers must declare the methodology canonical URL');
+  }
+  if (!headers.includes('X-Robots-Tag: noindex')) fail('_headers must keep the Markdown twin out of search indexes');
 }
 
 const notFoundPath = join(OUT, '404.html');

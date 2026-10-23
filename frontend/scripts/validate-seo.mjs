@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve, relative, sep } from 'node:path';
 import assert from 'node:assert/strict';
 
@@ -13,6 +13,12 @@ const localizedPages = read('src/app/[lang]/[slug]/page.tsx');
 const localizedBlogs = read('src/app/[lang]/blog/[slug]/page.tsx');
 const localizedHome = read('src/app/[lang]/page.tsx');
 const localizedBlogIndex = read('src/app/[lang]/blog/page.tsx');
+const methodologyPage = read('src/app/metodologia-auditoria/page.tsx');
+const methodologyContent = JSON.parse(read('src/app/metodologia-auditoria/content.json'));
+const methodologyMarkdown = read('public/metodologia-auditoria.md');
+const publicHeaders = read('public/_headers');
+const llms = read('public/llms.txt');
+const llmsFull = read('public/llms-full.txt');
 const errors = [];
 const check = (condition, message) => { if (!condition) errors.push(message); };
 function metadataObject(source, key) {
@@ -40,6 +46,25 @@ check(robots.includes("const base = 'https://filtraai.com'") && robots.includes(
 check(robots.includes("disallow: ['/api/']"), 'robots metadata must disallow API endpoints only');
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
 check(localizedBlogs.includes('const translatedFamilies') && localizedBlogs.includes("if ('pt' in family)"), 'Translated blog metadata must cross-link all available languages without inventing a Portuguese equivalent');
+
+const methodologyCanonical = 'https://filtraai.com/metodologia-auditoria';
+check(methodologyContent.canonical === methodologyCanonical && methodologyPage.includes('data.canonical'), 'Methodology page must use its self-referencing canonical from the shared content file');
+check(methodologyPage.includes("types: {") && methodologyPage.includes("'text/markdown'"), 'Methodology page must advertise its Markdown twin as an alternate representation');
+check(metadataObject(methodologyPage, 'openGraph').includes('images: [OG_IMAGE_META]'), 'Methodology Open Graph metadata must include the shared social image');
+check(metadataObject(methodologyPage, 'twitter').includes('images: [OG_IMAGE_META.url]'), 'Methodology Twitter metadata must include the shared social image');
+check(methodologyPage.includes("'@type': 'WebPage'") && methodologyPage.includes("'@type': 'BreadcrumbList'") && methodologyPage.includes("'@type': 'FAQPage'"), 'Methodology page must emit WebPage, BreadcrumbList and FAQPage schema');
+check(methodologyPage.includes('mainEntity: data.faq.map') && methodologyPage.includes('dateModified: data.dateModified'), 'Methodology FAQ schema and dateModified must use the shared content source');
+check(!methodologyPage.includes("'@type': 'Dataset'"), 'Methodology page must not emit Dataset schema before a real public dataset exists');
+check(existsSync(resolve(process.cwd(), 'public/metodologia-auditoria.md')), 'Methodology Markdown twin must exist in public/');
+check(methodologyMarkdown.startsWith(`# ${methodologyContent.h1}`), 'Methodology Markdown twin must start with the visible H1');
+check(methodologyMarkdown.includes(`- **Canonical:** ${methodologyCanonical}`), 'Methodology Markdown twin must declare the canonical HTML URL');
+check(methodologyMarkdown.includes(`### ${methodologyContent.faq[0].question}`), 'Methodology Markdown twin must include the shared FAQ content');
+check(publicHeaders.includes('/metodologia-auditoria.md') && publicHeaders.includes('Content-Type: text/markdown; charset=utf-8') && publicHeaders.includes(`Link: <${methodologyCanonical}>; rel="canonical"`) && publicHeaders.includes('X-Robots-Tag: noindex'), 'Cloudflare headers must serve the Markdown twin with the correct type, canonical and noindex policy');
+for (const [name, source] of [['llms.txt', llms], ['llms-full.txt', llmsFull]]) {
+  check(source.includes(methodologyCanonical) && source.includes(`${methodologyCanonical}.md`), `${name} must reference the methodology page and its Markdown twin`);
+}
+check(sitemap.includes("  '/metodologia-auditoria',"), 'sitemap.ts must include /metodologia-auditoria');
+check(sitemap.includes("'/metodologia-auditoria': '2026-10-23'"), 'Sitemap lastModified must reflect the methodology publication date');
 
 const start = sitemap.indexOf('const canonicalPaths = [');
 const end = sitemap.indexOf('\n];', start);
@@ -126,6 +151,8 @@ const blogArticleComponent = read('src/app/components/BlogArticle.tsx');
 const seoLandingComponent = read('src/app/components/SeoLanding.tsx');
 const seoPageHeader = read('src/app/components/SeoPageHeader.tsx');
 const homePage = read('src/app/preview/page.tsx');
+const auditClient = read('src/app/auditoria-gratuita/AuditoriaGratuitaClient.tsx');
+const howItWorks = read('src/app/como-funciona/page.tsx');
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
 const blogSchemaLib = read('src/app/lib/blogSchema.ts');
@@ -170,6 +197,9 @@ const sitemapLastModifiedKeys = [...sitemapLastModified.matchAll(/^  '([^']+)':/
 check(sitemapLastModifiedKeys.length === new Set(sitemapLastModifiedKeys).size, 'Sitemap lastModified map must not contain duplicate keys');
 check(ratingCalculator.includes('const faq = [') && ratingCalculator.includes("const canonical = 'https://filtraai.com/calculadora-nota-google'"), 'Rating calculator must keep its canonical and visible FAQ source');
 check(ratingCalculator.includes('href="/blog/seo-local-avaliacoes-local-pack"'), 'Rating calculator must link to the local SEO strategy guide');
+check(ratingCalculator.includes('href="/metodologia-auditoria"'), 'Rating calculator must link contextually to the audit methodology');
+check(auditClient.includes('href="/metodologia-auditoria"'), 'Free audit form must link to the audit methodology');
+check(howItWorks.includes('href="/metodologia-auditoria"'), 'How-it-works page must link to the audit methodology');
 check(seoLandingComponent.includes("href: '/calculadora-nota-google'") && seoLandingComponent.includes('Calculadora de nota do Google'), 'Commercial reputation landing pages must cross-link to the rating calculator');
 check(reputationLanding.includes("title: 'Software de gestão de reputação online'") && !reputationLanding.includes("title: 'Software de gestão de reputação online | Filtra.AI'"), 'Reputation landing title must not repeat the Filtra.AI brand');
 check(reputationLanding.includes('faq={faq}') && !reputationLanding.includes('faqSchema'), 'Reputation landing FAQ must be visible and use the shared FAQ schema');
@@ -251,6 +281,7 @@ const socialLandingFiles = [
   'src/app/monitoramento-reputacao-online/page.tsx',
   'src/app/auditoria-gratuita/page.tsx',
   'src/app/auditoria-gratuita/layout.tsx',
+  'src/app/metodologia-auditoria/page.tsx',
   'src/app/hoteis/page.tsx',
   'src/app/turismo/page.tsx',
   'src/app/agencias/page.tsx',

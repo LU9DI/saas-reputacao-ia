@@ -99,6 +99,11 @@ export default function CalculadoraNotaGooglePage() {
           <p className="leading-7 text-zinc-300">
             O cálculo é uma estimativa, não uma promessa de resultado. A nota pública pode ser arredondada, os dados inseridos podem não refletir a média exata usada internamente e o Google informa que a atualização da pontuação após uma nova avaliação pode levar algum tempo.
           </p>
+          <p className="leading-7 text-zinc-300">
+            Para entender como uma leitura estruturada de avaliações é feita, consulte a{' '}
+            <Link href="/metodologia-auditoria" className="text-indigo-300 underline">metodologia da auditoria gratuita</Link>.
+            Ela explica o que é analisado, o que não é prometido e como os dados são tratados.
+          </p>
         </section>
 
         <section className="space-y-4">

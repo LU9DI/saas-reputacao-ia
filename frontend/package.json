@@ -30,10 +30,11 @@
   },
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_API_URL=http://127.0.0.1:5000 next dev -H 127.0.0.1 -p 3000",
-    "build": "next build && node scripts/copy-llms-assets.mjs && node scripts/fix-static-html-lang.mjs",
+    "build": "node scripts/generate-methodology-markdown.mjs && next build && node scripts/copy-llms-assets.mjs && node scripts/fix-static-html-lang.mjs",
     "start": "next start",
     "lint": "eslint .",
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
+    "seo:markdown": "node scripts/generate-methodology-markdown.mjs",
     "seo:validate": "node scripts/validate-seo.mjs",
     "seo:audit": "node scripts/audit-indexing.mjs"
   }
