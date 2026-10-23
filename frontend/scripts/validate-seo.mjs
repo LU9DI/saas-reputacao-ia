@@ -72,8 +72,8 @@ function collectPageRoutes(directory = appRoot) {
 }
 
 const staticRoutes = new Set(collectPageRoutes());
-const programmaticSeoPage = read('src/app/[seoPage]/page.tsx');
-const programmaticSeoSlugs = new Set([...programmaticSeoPage.matchAll(/slug:\s*['\"]([^'\"]+)['\"]/g)].map((match) => match[1]));
+const programmaticSeoPage = read('src/app/solucoes/[seoPage]/page.tsx');
+const programmaticSeoSlugs = new Set([...programmaticSeoPage.matchAll(/[\"']?slug[\"']?\s*:\s*[\"']([^\"']+)[\"']/g)].map((match) => match[1]));
 check(programmaticSeoPage.includes('generateStaticParams') && programmaticSeoPage.includes('SeoLanding'), 'Programmatic commercial pages must be statically generated and render the shared SEO landing template');
 function slugsForLanguage(source, language) {
   const startMatch = new RegExp('^\\s*' + language + ':\\[', 'm').exec(source);
@@ -114,7 +114,9 @@ for (const path of sitemapPaths) {
     check(localizedSlugs[language]?.has(slug), `Sitemap localized route has no matching ${language} page slug: ${path}`);
   } else if (/^\/(en|es|zh)$/.test(path)) {
     check(localizedHome.includes('generateStaticParams'), 'Localized home must define static params');
-  } else if (!staticRoutes.has(path) && !programmaticSeoSlugs.has(path.slice(1))) {
+  } else if (path.startsWith('/solucoes/')) {
+    check(programmaticSeoSlugs.has(path.slice('/solucoes/'.length)), `Sitemap programmatic route has no matching SEO page: ${path}`);
+  } else if (!staticRoutes.has(path)) {
     check(false, `Sitemap route has no matching static page: ${path}`);
   }
 }
