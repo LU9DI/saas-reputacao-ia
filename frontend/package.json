@@ -36,6 +36,7 @@
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "seo:validate": "node scripts/validate-seo.mjs",
     "seo:audit": "node scripts/audit-indexing.mjs",
-    "seo:opportunities": "node scripts/build-seo-aeo-opportunities.mjs"
+    "seo:opportunities": "node scripts/build-seo-aeo-opportunities.mjs",
+    "seo:opportunities:test": "node scripts/test-seo-aeo-opportunities.mjs"
   }
 }
