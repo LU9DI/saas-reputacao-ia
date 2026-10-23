@@ -62,8 +62,8 @@ const pages = pagesNode.elements.filter(ts.isObjectLiteralExpression).map((item)
 });
 
 const uniqueSlugs = new Set(pages.map(({ slug }) => slug));
-if (pages.length !== 89 || uniqueSlugs.size !== pages.length) {
-  throw new Error(`Expected 89 unique SEO pages; found ${pages.length} pages and ${uniqueSlugs.size} unique slugs.`);
+if (pages.length !== 108 || uniqueSlugs.size !== pages.length) {
+  throw new Error(`Expected 108 unique SEO pages; found ${pages.length} pages and ${uniqueSlugs.size} unique slugs.`);
 }
 
 await mkdir(outputDir, { recursive: true });
