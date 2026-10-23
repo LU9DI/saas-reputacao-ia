@@ -29,13 +29,20 @@ const now = new Date('2026-10-22T12:00:00.000Z');
 
 describe('acquisition content: UTM e identificadores', () => {
   it('gera URLs com os parâmetros esperados e sem dados pessoais', () => {
-    const url = new URL(buildUtmUrl(source, 'linkedin', 'organic-content-2026-10'));
-    assert.equal(url.origin + url.pathname, 'https://filtraai.com/blog/exemplo');
-    assert.equal(url.searchParams.get('utm_source'), 'linkedin');
-    assert.equal(url.searchParams.get('utm_medium'), 'social');
-    assert.equal(url.searchParams.get('utm_campaign'), 'organic-content-2026-10');
-    assert.equal(url.searchParams.get('utm_content'), 'blog-exemplo-linkedin');
-    assert.equal(url.searchParams.get('email'), null);
+    const previousPublic = process.env.PUBLIC_SITE_URL;
+    process.env.PUBLIC_SITE_URL = 'https://filtraai.com';
+    try {
+      const url = new URL(buildUtmUrl(source, 'linkedin', 'organic-content-2026-10'));
+      assert.equal(url.origin + url.pathname, 'https://filtraai.com/blog/exemplo');
+      assert.equal(url.searchParams.get('utm_source'), 'linkedin');
+      assert.equal(url.searchParams.get('utm_medium'), 'social');
+      assert.equal(url.searchParams.get('utm_campaign'), 'organic-content-2026-10');
+      assert.equal(url.searchParams.get('utm_content'), 'blog-exemplo-linkedin');
+      assert.equal(url.searchParams.get('email'), null);
+    } finally {
+      if (previousPublic === undefined) delete process.env.PUBLIC_SITE_URL;
+      else process.env.PUBLIC_SITE_URL = previousPublic;
+    }
   });
 
   it('usa campanha mensal determinística', () => {
