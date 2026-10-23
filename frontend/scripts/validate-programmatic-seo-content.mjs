@@ -70,7 +70,7 @@ function duplicateValues(values) {
   return [...duplicates];
 }
 
-check(pages.length === 308, `Expected 308 programmatic SEO pages, found ${pages.length}.`);
+check(pages.length === 508, `Expected 508 programmatic SEO pages, found ${pages.length}.`);
 for (const field of ['slug', 'title', 'description', 'h1']) {
   const duplicates = duplicateValues(pages.map((page) => page[field]));
   check(duplicates.length === 0, `Duplicate programmatic page ${field}: ${duplicates.slice(0, 3).join(' | ')}`);
