@@ -31,7 +31,7 @@ for (const path of required) {
   const canonicalPath = path === '/' ? '/' : path.replace(/\/$/, '');
   assert.ok(set.has(normalizeUrl(`https://filtraai.com${canonicalPath}`)), `Required URL missing from production sitemap: ${path}`);
 }
-const targets = [...new Set([...required, ...urls.map((url) => new URL(url).pathname)])];
+const targets = [...new Set([...required, '/zh', ...urls.map((url) => new URL(url).pathname)])];
 let cursor = 0;
 const errors = [];
 async function worker() {
