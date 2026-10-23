@@ -26,6 +26,30 @@ try {
   assert.ok(report.candidates.every((item) => item.publishAllowed === false), 'no candidate may be publishable by default');
   assert.ok(report.candidates.some((item) => item.formatId === 'benchmark' && item.flags.includes('dataset-required')));
   assert.ok(report.candidates.some((item) => item.formatId === 'tool' && item.flags.includes('working-tool-required')));
+
+  // Every member of a normalized duplicate-label group must be flagged, including
+  // the first occurrence (not just later entries encountered by the generator).
+  for (const group of report.duplicateSectorLabelGroups) {
+    for (const sectorId of group.ids) {
+      const sectorCandidates = report.candidates.filter((item) => item.sectorId === sectorId);
+      assert.ok(sectorCandidates.length > 0, `duplicate sector ${sectorId} must have candidates`);
+      assert.ok(
+        sectorCandidates.every((item) => item.flags.includes('duplicate-sector-label')),
+        `all candidates for duplicate sector ${sectorId} must be flagged`,
+      );
+    }
+  }
+
+  assert.ok(
+    report.candidates.filter((item) => item.productFit === 'adjacent')
+      .every((item) => item.flags.includes('verify-commercial-relevance')),
+    'adjacent intents must be flagged for commercial relevance review',
+  );
+  assert.ok(
+    report.candidates.filter((item) => item.productFit === 'conditional')
+      .every((item) => item.flags.includes('verify-product-fit')),
+    'conditional intents must be flagged for product-fit review',
+  );
   console.log(`SEO/AEO opportunity generator tests passed: ${expected} candidates; 0 authorized for publication.`);
 } finally {
   await rm(temp, { recursive: true, force: true });
