@@ -37,6 +37,10 @@ jobs:
         working-directory: frontend
         run: node scripts/validate-programmatic-seo-content.mjs
 
+      - name: Test SEO/AEO opportunity backlog generator
+        working-directory: frontend
+        run: npm run seo:opportunities:test
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest
