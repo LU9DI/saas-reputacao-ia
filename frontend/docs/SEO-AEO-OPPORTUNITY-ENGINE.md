@@ -55,6 +55,27 @@ Teste local:
 npm run seo:demand:test
 ```
 
+## Fila de qualificação por evidência
+
+A fila separa consultas para revisão de páginas existentes daquelas que podem justificar avaliar um candidato novo. Ela **não** tenta adivinhar URLs por similaridade semântica. O destino só é preenchido a partir de um mapeamento explícito revisado por uma pessoa.
+
+```bash
+npm run seo:qualification
+npm run seo:qualification:test
+```
+
+Por padrão, o script lê `reports/seo-aeo-opportunities/demand-evidence.json`, o backlog `opportunities.json` e um arquivo local opcional `data/seo-aeo-manual-mappings.json`. O arquivo de exemplo versionado fica em `data/seo-aeo-manual-mappings.example.json`; copie-o e substitua os exemplos por mapeamentos realmente verificados, ou passe um caminho privado via `--mappings`. Não versione consultas sensíveis do Search Console.
+
+Campos obrigatórios de cada mapeamento: `normalizedQuery` ou `evidenceId`, `targetType` (`existing-page` ou `candidate`), destino válido, `reviewedBy`, `reviewedAt` e `rationale`. Um destino `candidate` precisa referenciar um ID presente no backlog gerado. Conflitos de mapeamento são bloqueados e mapeamentos inválidos são reportados. Um match exato de hipótese é apenas uma sugestão, nunca um destino aprovado automaticamente.
+
+Saídas locais: `qualification-queue.json` e `qualification-queue.csv`. As ações significam apenas:
+- `optimize-existing-page-review`: revisar se a página existente precisa de otimização;
+- `evaluate-new-candidate-review`: avaliar editorial e comercialmente o candidato;
+- `manual-mapping-required`: falta destino explícito;
+- `blocked-conflicting-mappings`: mais de um mapeamento revisado corresponde à evidência.
+
+Todas as linhas continuam com `publishAllowed=false`. O processo não cria conteúdo, URL, rota, canonical, sitemap ou solicitação de indexação.
+
 ## Processo de qualificação
 
 Cada combinação nasce com `status=candidate-only` e `publishAllowed=false`. Antes de virar URL pública, a equipe precisa:
