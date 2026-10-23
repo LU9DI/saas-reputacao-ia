@@ -154,6 +154,59 @@ Não inventar números quando uma integração não estiver disponível. Separar
 - Conteúdo sensível, afirmações de desempenho e comparações comerciais exigem revisão apropriada.
 - Toda página deve poder ser atualizada, retirada ou consolidada sem quebrar navegação ou perder redirecionamentos necessários.
 
+## Motor de crescimento: dados próprios, distribuição e conversão
+
+A arquitetura não deve ser apenas um gerador de páginas. Deve fechar o ciclo entre descobrir necessidades, produzir ativos úteis, distribuí-los, observar comportamento e priorizar a próxima oportunidade.
+
+### Inteligência própria do Filtra.AI
+
+Usar apenas dados e capacidades que o produto realmente possui e que podem ser tratados legitimamente. Candidatos a ativos diferenciadores, após validação técnica e de privacidade:
+
+- **Diagnósticos e checklists:** resultados explicáveis sobre completude de perfil, processos de resposta ou organização da reputação, deixando claro o que foi avaliado e o que não foi.
+- **Taxonomias de problemas e modelos operacionais:** categorias de feedback, fluxos de triagem e modelos de resposta com contexto; devem ser úteis sem exigir cadastro e não expor dados identificáveis de clientes.
+- **Benchmarks agregados:** só quando houver volume, representatividade, consentimento/base legal e controles suficientes para evitar reidentificação. Não publicar estatísticas até existir método documentado e amostra adequada.
+- **Ferramentas interativas:** calculadoras, auditorias e geradores que entreguem resultado real, com premissas e limitações explícitas, em vez de páginas cujo único propósito seja capturar contato.
+- **Evidência de produto:** documentar recursos e integrações confirmados; nunca deduzir que uma capacidade existe só porque seria atraente para SEO.
+
+Cada ativo deve registrar origem dos dados, data de atualização, método, limites de uso, responsável e caminho de manutenção. Se não houver dados próprios suficientes, entregar orientação prática e citar fontes confiáveis, sem simular inteligência proprietária.
+
+### Distribuição legítima
+
+A publicação não termina quando a URL entra no sitemap. Para cada família, definir como o conteúdo pode chegar ao público:
+
+- links contextuais a partir de páginas-pai, artigos relacionados, ferramentas e páginas de produto;
+- newsletter e canais próprios, quando existentes e com consentimento aplicável;
+- materiais para vendas, suporte e onboarding que ajudem clientes e prospects a resolver tarefas reais;
+- parcerias editoriais, associações e co-marketing com relevância para o público, sem compra ou troca artificial de links;
+- compartilhamento social e comunidades profissionais, participando com conteúdo útil e respeitando as regras de cada canal;
+- relações públicas e pesquisas originais apenas quando houver achados verificáveis que mereçam divulgação.
+
+Não usar spam, redes artificiais de links, comentários em massa, páginas intermediárias sem valor ou distribuição enganosa. Medir tráfego de referência e ações qualificadas por canal; não tratar publicação em canais como prova de demanda orgânica.
+
+### Funil de conversão e atribuição
+
+Instrumentar eventos que correspondam ao fluxo real do site e do produto, verificando antes quais já existem para evitar duplicação. Modelo de referência:
+
+1. **Descoberta:** impressão, clique orgânico e landing page de entrada.
+2. **Engajamento útil:** uso da ferramenta, leitura/expansão de orientação ou navegação para conteúdo relacionado, definidos por eventos concretos.
+3. **Intenção:** clique no CTA, início de auditoria ou visita à página de planos.
+4. **Ativação:** auditoria concluída, cadastro ou trial iniciado, conforme o fluxo real.
+5. **Resultado comercial:** lead qualificado, oportunidade e cliente, quando esses estados estiverem disponíveis.
+
+Relatar denominador, janela de atribuição e fonte para cada taxa. Segmentar por URL, família, idioma, dispositivo e canal quando houver dados suficientes. Evitar enviar dados pessoais ou conteúdo sensível de avaliações a ferramentas de analytics. Separar eventos já instrumentados de lacunas de medição; não afirmar conversões que não possam ser observadas.
+
+### Ciclo operacional de crescimento
+
+1. Capturar oportunidades de Search Console, pesquisa de SERP, feedback de clientes/suporte/vendas e uso agregado do produto.
+2. Mapear cada necessidade à cobertura existente e identificar lacunas, sobreposições e possibilidade de um ativo próprio.
+3. Priorizar com evidência, valor comercial, distinção da intenção, utilidade e custo de manutenção.
+4. Produzir e revisar um lote pequeno com conteúdo, navegação, indexação e eventos de conversão validados.
+5. Distribuir pelos canais relevantes e observar rastreamento, indexação, impressões, cliques, ações e qualidade dos leads.
+6. Decidir expandir, melhorar, consolidar ou interromper com base em evidências e em janelas comparáveis.
+7. Usar o que foi aprendido para refinar o mapa de mercado e alimentar o próximo lote.
+
+O sistema deve suportar milhares de URLs, mas a expansão é uma consequência da descoberta sistemática de necessidades distintas — não uma meta de publicar combinações em massa.
+
 ## Próxima sequência de trabalho
 
 1. Fazer inventário do estado real da branch/base escolhida e das URLs existentes, sem presumir que uma PR aberta já está em produção.
