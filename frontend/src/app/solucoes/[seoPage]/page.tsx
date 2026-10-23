@@ -9939,6 +9939,6206 @@ const PAGES: SeoPage[] = [
       }
     ]
   },
+  {
+    "slug": "avaliacoes-google-restaurantes-japoneses",
+    "title": "Avaliações Google para restaurantes japoneses | Filtra.AI",
+    "description": "Organize avaliações Google para restaurantes japoneses, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para restaurantes japoneses",
+    "lead": "Para restaurantes japoneses, a avaliação pública costuma refletir pontos de contato como reservas, consistência dos pratos, serviço e atendimento em horários de pico. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como reservas, consistência dos pratos, serviço e atendimento em horários de pico aparece na jornada do cliente de restaurantes japoneses. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em restaurantes japoneses, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em restaurantes japoneses e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em restaurantes japoneses; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-restaurantes-japoneses",
+    "title": "Gestão de avaliações para restaurantes japoneses | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para restaurantes japoneses, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para restaurantes japoneses",
+    "lead": "A gestão de avaliações em restaurantes japoneses precisa ligar feedback a uma decisão operacional. Os temas de reservas, consistência dos pratos, serviço e atendimento em horários de pico ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para restaurantes japoneses, alinhe essa divisão aos pontos de contato de reservas, consistência dos pratos, serviço e atendimento em horários de pico e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em restaurantes japoneses, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de restaurantes japoneses; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-restaurantes-japoneses",
+    "title": "Respostas a avaliações para restaurantes japoneses | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de restaurantes japoneses com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para restaurantes japoneses",
+    "lead": "Em restaurantes japoneses, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de reservas, consistência dos pratos, serviço e atendimento em horários de pico exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em restaurantes japoneses, detalhes de reservas, consistência dos pratos, serviço e atendimento em horários de pico podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em restaurantes japoneses, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-restaurantes-japoneses",
+    "title": "Monitoramento de avaliações para restaurantes japoneses | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para restaurantes japoneses, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para restaurantes japoneses",
+    "lead": "O monitoramento em restaurantes japoneses busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de reservas, consistência dos pratos, serviço e atendimento em horários de pico, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em restaurantes japoneses, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a reservas, consistência dos pratos, serviço e atendimento em horários de pico. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em restaurantes japoneses, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-restaurantes-japoneses",
+    "title": "Relatórios de reputação para restaurantes japoneses | Filtra.AI",
+    "description": "Prepare relatórios de reputação para restaurantes japoneses com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para restaurantes japoneses",
+    "lead": "Um relatório útil para restaurantes japoneses precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de reservas, consistência dos pratos, serviço e atendimento em horários de pico ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em restaurantes japoneses, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de reservas, consistência dos pratos, serviço e atendimento em horários de pico para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em restaurantes japoneses, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de restaurantes japoneses e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-restaurantes-italianos",
+    "title": "Avaliações Google para restaurantes italianos | Filtra.AI",
+    "description": "Organize avaliações Google para restaurantes italianos, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para restaurantes italianos",
+    "lead": "Para restaurantes italianos, a avaliação pública costuma refletir pontos de contato como reservas, tempo entre etapas, consistência do cardápio e atendimento. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como reservas, tempo entre etapas, consistência do cardápio e atendimento aparece na jornada do cliente de restaurantes italianos. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em restaurantes italianos, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em restaurantes italianos e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em restaurantes italianos; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-restaurantes-italianos",
+    "title": "Gestão de avaliações para restaurantes italianos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para restaurantes italianos, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para restaurantes italianos",
+    "lead": "A gestão de avaliações em restaurantes italianos precisa ligar feedback a uma decisão operacional. Os temas de reservas, tempo entre etapas, consistência do cardápio e atendimento ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para restaurantes italianos, alinhe essa divisão aos pontos de contato de reservas, tempo entre etapas, consistência do cardápio e atendimento e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em restaurantes italianos, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de restaurantes italianos; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-restaurantes-italianos",
+    "title": "Respostas a avaliações para restaurantes italianos | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de restaurantes italianos com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para restaurantes italianos",
+    "lead": "Em restaurantes italianos, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de reservas, tempo entre etapas, consistência do cardápio e atendimento exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em restaurantes italianos, detalhes de reservas, tempo entre etapas, consistência do cardápio e atendimento podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em restaurantes italianos, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-restaurantes-italianos",
+    "title": "Monitoramento de avaliações para restaurantes italianos | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para restaurantes italianos, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para restaurantes italianos",
+    "lead": "O monitoramento em restaurantes italianos busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de reservas, tempo entre etapas, consistência do cardápio e atendimento, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em restaurantes italianos, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a reservas, tempo entre etapas, consistência do cardápio e atendimento. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em restaurantes italianos, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-restaurantes-italianos",
+    "title": "Relatórios de reputação para restaurantes italianos | Filtra.AI",
+    "description": "Prepare relatórios de reputação para restaurantes italianos com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para restaurantes italianos",
+    "lead": "Um relatório útil para restaurantes italianos precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de reservas, tempo entre etapas, consistência do cardápio e atendimento ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em restaurantes italianos, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de reservas, tempo entre etapas, consistência do cardápio e atendimento para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em restaurantes italianos, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de restaurantes italianos e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-restaurantes-veganos",
+    "title": "Avaliações Google para restaurantes veganos | Filtra.AI",
+    "description": "Organize avaliações Google para restaurantes veganos, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para restaurantes veganos",
+    "lead": "Para restaurantes veganos, a avaliação pública costuma refletir pontos de contato como clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais aparece na jornada do cliente de restaurantes veganos. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em restaurantes veganos, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em restaurantes veganos e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em restaurantes veganos; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-restaurantes-veganos",
+    "title": "Gestão de avaliações para restaurantes veganos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para restaurantes veganos, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para restaurantes veganos",
+    "lead": "A gestão de avaliações em restaurantes veganos precisa ligar feedback a uma decisão operacional. Os temas de clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para restaurantes veganos, alinhe essa divisão aos pontos de contato de clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em restaurantes veganos, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de restaurantes veganos; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-restaurantes-veganos",
+    "title": "Respostas a avaliações para restaurantes veganos | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de restaurantes veganos com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para restaurantes veganos",
+    "lead": "Em restaurantes veganos, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em restaurantes veganos, detalhes de clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em restaurantes veganos, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-restaurantes-veganos",
+    "title": "Monitoramento de avaliações para restaurantes veganos | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para restaurantes veganos, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para restaurantes veganos",
+    "lead": "O monitoramento em restaurantes veganos busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em restaurantes veganos, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em restaurantes veganos, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-restaurantes-veganos",
+    "title": "Relatórios de reputação para restaurantes veganos | Filtra.AI",
+    "description": "Prepare relatórios de reputação para restaurantes veganos com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para restaurantes veganos",
+    "lead": "Um relatório útil para restaurantes veganos precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em restaurantes veganos, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de clareza dos ingredientes, opções do cardápio, serviço e pedidos especiais para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em restaurantes veganos, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de restaurantes veganos e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-churrascarias",
+    "title": "Avaliações Google para churrascarias | Filtra.AI",
+    "description": "Organize avaliações Google para churrascarias, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para churrascarias",
+    "lead": "Para churrascarias, a avaliação pública costuma refletir pontos de contato como ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas aparece na jornada do cliente de churrascarias. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em churrascarias, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em churrascarias e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em churrascarias; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-churrascarias",
+    "title": "Gestão de avaliações para churrascarias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para churrascarias, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para churrascarias",
+    "lead": "A gestão de avaliações em churrascarias precisa ligar feedback a uma decisão operacional. Os temas de ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para churrascarias, alinhe essa divisão aos pontos de contato de ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em churrascarias, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de churrascarias; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-churrascarias",
+    "title": "Respostas a avaliações para churrascarias | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de churrascarias com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para churrascarias",
+    "lead": "Em churrascarias, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em churrascarias, detalhes de ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em churrascarias, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-churrascarias",
+    "title": "Monitoramento de avaliações para churrascarias | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para churrascarias, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para churrascarias",
+    "lead": "O monitoramento em churrascarias busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em churrascarias, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em churrascarias, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-churrascarias",
+    "title": "Relatórios de reputação para churrascarias | Filtra.AI",
+    "description": "Prepare relatórios de reputação para churrascarias com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para churrascarias",
+    "lead": "Um relatório útil para churrascarias precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em churrascarias, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de ponto das carnes, ritmo do serviço, acompanhamentos e gestão de filas para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em churrascarias, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de churrascarias e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-bares",
+    "title": "Avaliações Google para bares | Filtra.AI",
+    "description": "Organize avaliações Google para bares, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para bares",
+    "lead": "Para bares, a avaliação pública costuma refletir pontos de contato como atendimento no balcão, ambiente, segurança e horários de maior movimento. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como atendimento no balcão, ambiente, segurança e horários de maior movimento aparece na jornada do cliente de bares. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em bares, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em bares e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em bares; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-bares",
+    "title": "Gestão de avaliações para bares | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para bares, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para bares",
+    "lead": "A gestão de avaliações em bares precisa ligar feedback a uma decisão operacional. Os temas de atendimento no balcão, ambiente, segurança e horários de maior movimento ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para bares, alinhe essa divisão aos pontos de contato de atendimento no balcão, ambiente, segurança e horários de maior movimento e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em bares, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de bares; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-bares",
+    "title": "Respostas a avaliações para bares | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de bares com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para bares",
+    "lead": "Em bares, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de atendimento no balcão, ambiente, segurança e horários de maior movimento exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em bares, detalhes de atendimento no balcão, ambiente, segurança e horários de maior movimento podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em bares, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-bares",
+    "title": "Monitoramento de avaliações para bares | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para bares, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para bares",
+    "lead": "O monitoramento em bares busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de atendimento no balcão, ambiente, segurança e horários de maior movimento, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em bares, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a atendimento no balcão, ambiente, segurança e horários de maior movimento. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em bares, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-bares",
+    "title": "Relatórios de reputação para bares | Filtra.AI",
+    "description": "Prepare relatórios de reputação para bares com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para bares",
+    "lead": "Um relatório útil para bares precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de atendimento no balcão, ambiente, segurança e horários de maior movimento ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em bares, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de atendimento no balcão, ambiente, segurança e horários de maior movimento para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em bares, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de bares e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-food-trucks",
+    "title": "Avaliações Google para food trucks | Filtra.AI",
+    "description": "Organize avaliações Google para food trucks, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para food trucks",
+    "lead": "Para food trucks, a avaliação pública costuma refletir pontos de contato como localização, horários, disponibilidade do cardápio e tempo de espera. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como localização, horários, disponibilidade do cardápio e tempo de espera aparece na jornada do cliente de food trucks. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em food trucks, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em food trucks e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em food trucks; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-food-trucks",
+    "title": "Gestão de avaliações para food trucks | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para food trucks, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para food trucks",
+    "lead": "A gestão de avaliações em food trucks precisa ligar feedback a uma decisão operacional. Os temas de localização, horários, disponibilidade do cardápio e tempo de espera ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para food trucks, alinhe essa divisão aos pontos de contato de localização, horários, disponibilidade do cardápio e tempo de espera e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em food trucks, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de food trucks; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-food-trucks",
+    "title": "Respostas a avaliações para food trucks | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de food trucks com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para food trucks",
+    "lead": "Em food trucks, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de localização, horários, disponibilidade do cardápio e tempo de espera exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em food trucks, detalhes de localização, horários, disponibilidade do cardápio e tempo de espera podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em food trucks, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-food-trucks",
+    "title": "Monitoramento de avaliações para food trucks | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para food trucks, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para food trucks",
+    "lead": "O monitoramento em food trucks busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de localização, horários, disponibilidade do cardápio e tempo de espera, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em food trucks, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a localização, horários, disponibilidade do cardápio e tempo de espera. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em food trucks, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-food-trucks",
+    "title": "Relatórios de reputação para food trucks | Filtra.AI",
+    "description": "Prepare relatórios de reputação para food trucks com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para food trucks",
+    "lead": "Um relatório útil para food trucks precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de localização, horários, disponibilidade do cardápio e tempo de espera ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em food trucks, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de localização, horários, disponibilidade do cardápio e tempo de espera para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em food trucks, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de food trucks e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-casas-de-sucos",
+    "title": "Avaliações Google para casas de sucos | Filtra.AI",
+    "description": "Organize avaliações Google para casas de sucos, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para casas de sucos",
+    "lead": "Para casas de sucos, a avaliação pública costuma refletir pontos de contato como frescor, personalização, higiene e consistência dos pedidos. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como frescor, personalização, higiene e consistência dos pedidos aparece na jornada do cliente de casas de sucos. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em casas de sucos, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em casas de sucos e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em casas de sucos; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-casas-de-sucos",
+    "title": "Gestão de avaliações para casas de sucos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para casas de sucos, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para casas de sucos",
+    "lead": "A gestão de avaliações em casas de sucos precisa ligar feedback a uma decisão operacional. Os temas de frescor, personalização, higiene e consistência dos pedidos ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para casas de sucos, alinhe essa divisão aos pontos de contato de frescor, personalização, higiene e consistência dos pedidos e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em casas de sucos, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de casas de sucos; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-casas-de-sucos",
+    "title": "Respostas a avaliações para casas de sucos | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de casas de sucos com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para casas de sucos",
+    "lead": "Em casas de sucos, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de frescor, personalização, higiene e consistência dos pedidos exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em casas de sucos, detalhes de frescor, personalização, higiene e consistência dos pedidos podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em casas de sucos, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-casas-de-sucos",
+    "title": "Monitoramento de avaliações para casas de sucos | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para casas de sucos, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para casas de sucos",
+    "lead": "O monitoramento em casas de sucos busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de frescor, personalização, higiene e consistência dos pedidos, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em casas de sucos, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a frescor, personalização, higiene e consistência dos pedidos. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em casas de sucos, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-casas-de-sucos",
+    "title": "Relatórios de reputação para casas de sucos | Filtra.AI",
+    "description": "Prepare relatórios de reputação para casas de sucos com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para casas de sucos",
+    "lead": "Um relatório útil para casas de sucos precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de frescor, personalização, higiene e consistência dos pedidos ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em casas de sucos, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de frescor, personalização, higiene e consistência dos pedidos para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em casas de sucos, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de casas de sucos e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-restaurantes-self-service",
+    "title": "Avaliações Google para restaurantes self-service | Filtra.AI",
+    "description": "Organize avaliações Google para restaurantes self-service, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para restaurantes self-service",
+    "lead": "Para restaurantes self-service, a avaliação pública costuma refletir pontos de contato como reposição, variedade, temperatura dos alimentos e fluxo no almoço. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como reposição, variedade, temperatura dos alimentos e fluxo no almoço aparece na jornada do cliente de restaurantes self-service. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em restaurantes self-service, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em restaurantes self-service e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em restaurantes self-service; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-restaurantes-self-service",
+    "title": "Gestão de avaliações para restaurantes self-service | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para restaurantes self-service, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para restaurantes self-service",
+    "lead": "A gestão de avaliações em restaurantes self-service precisa ligar feedback a uma decisão operacional. Os temas de reposição, variedade, temperatura dos alimentos e fluxo no almoço ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para restaurantes self-service, alinhe essa divisão aos pontos de contato de reposição, variedade, temperatura dos alimentos e fluxo no almoço e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em restaurantes self-service, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de restaurantes self-service; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-restaurantes-self-service",
+    "title": "Respostas a avaliações para restaurantes self-service | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de restaurantes self-service com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para restaurantes self-service",
+    "lead": "Em restaurantes self-service, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de reposição, variedade, temperatura dos alimentos e fluxo no almoço exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em restaurantes self-service, detalhes de reposição, variedade, temperatura dos alimentos e fluxo no almoço podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em restaurantes self-service, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-restaurantes-self-service",
+    "title": "Monitoramento de avaliações para restaurantes self-service | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para restaurantes self-service, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para restaurantes self-service",
+    "lead": "O monitoramento em restaurantes self-service busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de reposição, variedade, temperatura dos alimentos e fluxo no almoço, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em restaurantes self-service, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a reposição, variedade, temperatura dos alimentos e fluxo no almoço. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em restaurantes self-service, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-restaurantes-self-service",
+    "title": "Relatórios de reputação para restaurantes self-service | Filtra.AI",
+    "description": "Prepare relatórios de reputação para restaurantes self-service com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para restaurantes self-service",
+    "lead": "Um relatório útil para restaurantes self-service precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de reposição, variedade, temperatura dos alimentos e fluxo no almoço ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em restaurantes self-service, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de reposição, variedade, temperatura dos alimentos e fluxo no almoço para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em restaurantes self-service, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de restaurantes self-service e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-hostels",
+    "title": "Avaliações Google para hostels | Filtra.AI",
+    "description": "Organize avaliações Google para hostels, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para hostels",
+    "lead": "Para hostels, a avaliação pública costuma refletir pontos de contato como check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes aparece na jornada do cliente de hostels. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em hostels, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em hostels e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em hostels; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-hostels",
+    "title": "Gestão de avaliações para hostels | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para hostels, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para hostels",
+    "lead": "A gestão de avaliações em hostels precisa ligar feedback a uma decisão operacional. Os temas de check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para hostels, alinhe essa divisão aos pontos de contato de check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em hostels, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de hostels; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-hostels",
+    "title": "Respostas a avaliações para hostels | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de hostels com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para hostels",
+    "lead": "Em hostels, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em hostels, detalhes de check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em hostels, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-hostels",
+    "title": "Monitoramento de avaliações para hostels | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para hostels, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para hostels",
+    "lead": "O monitoramento em hostels busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em hostels, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em hostels, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-hostels",
+    "title": "Relatórios de reputação para hostels | Filtra.AI",
+    "description": "Prepare relatórios de reputação para hostels com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para hostels",
+    "lead": "Um relatório útil para hostels precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em hostels, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de check-in, limpeza compartilhada, regras da casa e comunicação com hóspedes para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em hostels, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de hostels e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-resorts",
+    "title": "Avaliações Google para resorts | Filtra.AI",
+    "description": "Organize avaliações Google para resorts, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para resorts",
+    "lead": "Para resorts, a avaliação pública costuma refletir pontos de contato como reservas, atividades, manutenção, alimentação e comunicação entre equipes. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como reservas, atividades, manutenção, alimentação e comunicação entre equipes aparece na jornada do cliente de resorts. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em resorts, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em resorts e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em resorts; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-resorts",
+    "title": "Gestão de avaliações para resorts | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para resorts, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para resorts",
+    "lead": "A gestão de avaliações em resorts precisa ligar feedback a uma decisão operacional. Os temas de reservas, atividades, manutenção, alimentação e comunicação entre equipes ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para resorts, alinhe essa divisão aos pontos de contato de reservas, atividades, manutenção, alimentação e comunicação entre equipes e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em resorts, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de resorts; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-resorts",
+    "title": "Respostas a avaliações para resorts | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de resorts com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para resorts",
+    "lead": "Em resorts, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de reservas, atividades, manutenção, alimentação e comunicação entre equipes exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em resorts, detalhes de reservas, atividades, manutenção, alimentação e comunicação entre equipes podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em resorts, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-resorts",
+    "title": "Monitoramento de avaliações para resorts | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para resorts, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para resorts",
+    "lead": "O monitoramento em resorts busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de reservas, atividades, manutenção, alimentação e comunicação entre equipes, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em resorts, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a reservas, atividades, manutenção, alimentação e comunicação entre equipes. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em resorts, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-resorts",
+    "title": "Relatórios de reputação para resorts | Filtra.AI",
+    "description": "Prepare relatórios de reputação para resorts com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para resorts",
+    "lead": "Um relatório útil para resorts precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de reservas, atividades, manutenção, alimentação e comunicação entre equipes ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em resorts, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de reservas, atividades, manutenção, alimentação e comunicação entre equipes para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em resorts, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de resorts e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-agencias-de-viagem",
+    "title": "Avaliações Google para agências de viagem | Filtra.AI",
+    "description": "Organize avaliações Google para agências de viagem, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para agências de viagem",
+    "lead": "Para agências de viagem, a avaliação pública costuma refletir pontos de contato como clareza do roteiro, alterações, documentação e suporte durante a viagem. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como clareza do roteiro, alterações, documentação e suporte durante a viagem aparece na jornada do cliente de agências de viagem. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em agências de viagem, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em agências de viagem e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em agências de viagem; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-agencias-de-viagem",
+    "title": "Gestão de avaliações para agências de viagem | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para agências de viagem, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para agências de viagem",
+    "lead": "A gestão de avaliações em agências de viagem precisa ligar feedback a uma decisão operacional. Os temas de clareza do roteiro, alterações, documentação e suporte durante a viagem ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para agências de viagem, alinhe essa divisão aos pontos de contato de clareza do roteiro, alterações, documentação e suporte durante a viagem e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em agências de viagem, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de agências de viagem; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-agencias-de-viagem",
+    "title": "Respostas a avaliações para agências de viagem | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de agências de viagem com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para agências de viagem",
+    "lead": "Em agências de viagem, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de clareza do roteiro, alterações, documentação e suporte durante a viagem exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em agências de viagem, detalhes de clareza do roteiro, alterações, documentação e suporte durante a viagem podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em agências de viagem, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-agencias-de-viagem",
+    "title": "Monitoramento de avaliações para agências de viagem | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para agências de viagem, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para agências de viagem",
+    "lead": "O monitoramento em agências de viagem busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de clareza do roteiro, alterações, documentação e suporte durante a viagem, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em agências de viagem, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a clareza do roteiro, alterações, documentação e suporte durante a viagem. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em agências de viagem, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-agencias-de-viagem",
+    "title": "Relatórios de reputação para agências de viagem | Filtra.AI",
+    "description": "Prepare relatórios de reputação para agências de viagem com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para agências de viagem",
+    "lead": "Um relatório útil para agências de viagem precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de clareza do roteiro, alterações, documentação e suporte durante a viagem ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em agências de viagem, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de clareza do roteiro, alterações, documentação e suporte durante a viagem para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em agências de viagem, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de agências de viagem e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-guias-turisticos",
+    "title": "Avaliações Google para guias turísticos | Filtra.AI",
+    "description": "Organize avaliações Google para guias turísticos, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para guias turísticos",
+    "lead": "Para guias turísticos, a avaliação pública costuma refletir pontos de contato como pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio aparece na jornada do cliente de guias turísticos. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em guias turísticos, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em guias turísticos e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em guias turísticos; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-guias-turisticos",
+    "title": "Gestão de avaliações para guias turísticos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para guias turísticos, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para guias turísticos",
+    "lead": "A gestão de avaliações em guias turísticos precisa ligar feedback a uma decisão operacional. Os temas de pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para guias turísticos, alinhe essa divisão aos pontos de contato de pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em guias turísticos, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de guias turísticos; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-guias-turisticos",
+    "title": "Respostas a avaliações para guias turísticos | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de guias turísticos com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para guias turísticos",
+    "lead": "Em guias turísticos, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em guias turísticos, detalhes de pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em guias turísticos, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-guias-turisticos",
+    "title": "Monitoramento de avaliações para guias turísticos | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para guias turísticos, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para guias turísticos",
+    "lead": "O monitoramento em guias turísticos busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em guias turísticos, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em guias turísticos, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-guias-turisticos",
+    "title": "Relatórios de reputação para guias turísticos | Filtra.AI",
+    "description": "Prepare relatórios de reputação para guias turísticos com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para guias turísticos",
+    "lead": "Um relatório útil para guias turísticos precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em guias turísticos, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de pontualidade, clareza do roteiro, acessibilidade e expectativas do passeio para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em guias turísticos, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de guias turísticos e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-transportes-executivos",
+    "title": "Avaliações Google para serviços de transporte executivo | Filtra.AI",
+    "description": "Organize avaliações Google para serviços de transporte executivo, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de transporte executivo",
+    "lead": "Para serviços de transporte executivo, a avaliação pública costuma refletir pontos de contato como pontualidade, confirmação de viagens, comunicação e cuidado com bagagem. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como pontualidade, confirmação de viagens, comunicação e cuidado com bagagem aparece na jornada do cliente de serviços de transporte executivo. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serviços de transporte executivo, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serviços de transporte executivo e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serviços de transporte executivo; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-transportes-executivos",
+    "title": "Gestão de avaliações para serviços de transporte executivo | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de transporte executivo, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serviços de transporte executivo",
+    "lead": "A gestão de avaliações em serviços de transporte executivo precisa ligar feedback a uma decisão operacional. Os temas de pontualidade, confirmação de viagens, comunicação e cuidado com bagagem ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serviços de transporte executivo, alinhe essa divisão aos pontos de contato de pontualidade, confirmação de viagens, comunicação e cuidado com bagagem e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serviços de transporte executivo, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serviços de transporte executivo; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-transportes-executivos",
+    "title": "Respostas a avaliações para serviços de transporte executivo | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serviços de transporte executivo com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serviços de transporte executivo",
+    "lead": "Em serviços de transporte executivo, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de pontualidade, confirmação de viagens, comunicação e cuidado com bagagem exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serviços de transporte executivo, detalhes de pontualidade, confirmação de viagens, comunicação e cuidado com bagagem podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serviços de transporte executivo, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-transportes-executivos",
+    "title": "Monitoramento de avaliações para serviços de transporte executivo | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serviços de transporte executivo, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serviços de transporte executivo",
+    "lead": "O monitoramento em serviços de transporte executivo busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de pontualidade, confirmação de viagens, comunicação e cuidado com bagagem, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serviços de transporte executivo, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a pontualidade, confirmação de viagens, comunicação e cuidado com bagagem. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serviços de transporte executivo, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-transportes-executivos",
+    "title": "Relatórios de reputação para serviços de transporte executivo | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serviços de transporte executivo com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de transporte executivo",
+    "lead": "Um relatório útil para serviços de transporte executivo precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de pontualidade, confirmação de viagens, comunicação e cuidado com bagagem ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serviços de transporte executivo, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de pontualidade, confirmação de viagens, comunicação e cuidado com bagagem para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serviços de transporte executivo, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serviços de transporte executivo e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-empresas-de-onibus",
+    "title": "Avaliações Google para empresas de ônibus | Filtra.AI",
+    "description": "Organize avaliações Google para empresas de ônibus, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para empresas de ônibus",
+    "lead": "Para empresas de ônibus, a avaliação pública costuma refletir pontos de contato como pontualidade, informação sobre rotas, conforto e atendimento em interrupções. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como pontualidade, informação sobre rotas, conforto e atendimento em interrupções aparece na jornada do cliente de empresas de ônibus. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em empresas de ônibus, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em empresas de ônibus e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em empresas de ônibus; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-empresas-de-onibus",
+    "title": "Gestão de avaliações para empresas de ônibus | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para empresas de ônibus, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para empresas de ônibus",
+    "lead": "A gestão de avaliações em empresas de ônibus precisa ligar feedback a uma decisão operacional. Os temas de pontualidade, informação sobre rotas, conforto e atendimento em interrupções ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para empresas de ônibus, alinhe essa divisão aos pontos de contato de pontualidade, informação sobre rotas, conforto e atendimento em interrupções e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em empresas de ônibus, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de empresas de ônibus; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-empresas-de-onibus",
+    "title": "Respostas a avaliações para empresas de ônibus | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de empresas de ônibus com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para empresas de ônibus",
+    "lead": "Em empresas de ônibus, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de pontualidade, informação sobre rotas, conforto e atendimento em interrupções exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em empresas de ônibus, detalhes de pontualidade, informação sobre rotas, conforto e atendimento em interrupções podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em empresas de ônibus, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-empresas-de-onibus",
+    "title": "Monitoramento de avaliações para empresas de ônibus | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para empresas de ônibus, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para empresas de ônibus",
+    "lead": "O monitoramento em empresas de ônibus busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de pontualidade, informação sobre rotas, conforto e atendimento em interrupções, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em empresas de ônibus, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a pontualidade, informação sobre rotas, conforto e atendimento em interrupções. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em empresas de ônibus, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-empresas-de-onibus",
+    "title": "Relatórios de reputação para empresas de ônibus | Filtra.AI",
+    "description": "Prepare relatórios de reputação para empresas de ônibus com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para empresas de ônibus",
+    "lead": "Um relatório útil para empresas de ônibus precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de pontualidade, informação sobre rotas, conforto e atendimento em interrupções ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em empresas de ônibus, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de pontualidade, informação sobre rotas, conforto e atendimento em interrupções para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em empresas de ônibus, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de empresas de ônibus e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-transporte-escolar",
+    "title": "Avaliações Google para transporte escolar | Filtra.AI",
+    "description": "Organize avaliações Google para transporte escolar, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para transporte escolar",
+    "lead": "Para transporte escolar, a avaliação pública costuma refletir pontos de contato como pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências aparece na jornada do cliente de transporte escolar. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em transporte escolar, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em transporte escolar e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em transporte escolar; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-transporte-escolar",
+    "title": "Gestão de avaliações para transporte escolar | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para transporte escolar, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para transporte escolar",
+    "lead": "A gestão de avaliações em transporte escolar precisa ligar feedback a uma decisão operacional. Os temas de pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para transporte escolar, alinhe essa divisão aos pontos de contato de pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em transporte escolar, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de transporte escolar; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-transporte-escolar",
+    "title": "Respostas a avaliações para transporte escolar | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de transporte escolar com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para transporte escolar",
+    "lead": "Em transporte escolar, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em transporte escolar, detalhes de pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em transporte escolar, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-transporte-escolar",
+    "title": "Monitoramento de avaliações para transporte escolar | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para transporte escolar, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para transporte escolar",
+    "lead": "O monitoramento em transporte escolar busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em transporte escolar, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em transporte escolar, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-transporte-escolar",
+    "title": "Relatórios de reputação para transporte escolar | Filtra.AI",
+    "description": "Prepare relatórios de reputação para transporte escolar com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para transporte escolar",
+    "lead": "Um relatório útil para transporte escolar precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em transporte escolar, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de pontualidade, comunicação com responsáveis, segurança e gestão de ocorrências para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em transporte escolar, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de transporte escolar e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-oficinas-de-caminhoes",
+    "title": "Avaliações Google para oficinas de caminhões | Filtra.AI",
+    "description": "Organize avaliações Google para oficinas de caminhões, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para oficinas de caminhões",
+    "lead": "Para oficinas de caminhões, a avaliação pública costuma refletir pontos de contato como diagnóstico, disponibilidade de peças, prazo e comunicação de reparos. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como diagnóstico, disponibilidade de peças, prazo e comunicação de reparos aparece na jornada do cliente de oficinas de caminhões. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em oficinas de caminhões, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em oficinas de caminhões e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em oficinas de caminhões; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-oficinas-de-caminhoes",
+    "title": "Gestão de avaliações para oficinas de caminhões | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para oficinas de caminhões, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para oficinas de caminhões",
+    "lead": "A gestão de avaliações em oficinas de caminhões precisa ligar feedback a uma decisão operacional. Os temas de diagnóstico, disponibilidade de peças, prazo e comunicação de reparos ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para oficinas de caminhões, alinhe essa divisão aos pontos de contato de diagnóstico, disponibilidade de peças, prazo e comunicação de reparos e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em oficinas de caminhões, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de oficinas de caminhões; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-oficinas-de-caminhoes",
+    "title": "Respostas a avaliações para oficinas de caminhões | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de oficinas de caminhões com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para oficinas de caminhões",
+    "lead": "Em oficinas de caminhões, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de diagnóstico, disponibilidade de peças, prazo e comunicação de reparos exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em oficinas de caminhões, detalhes de diagnóstico, disponibilidade de peças, prazo e comunicação de reparos podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em oficinas de caminhões, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-oficinas-de-caminhoes",
+    "title": "Monitoramento de avaliações para oficinas de caminhões | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para oficinas de caminhões, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para oficinas de caminhões",
+    "lead": "O monitoramento em oficinas de caminhões busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de diagnóstico, disponibilidade de peças, prazo e comunicação de reparos, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em oficinas de caminhões, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a diagnóstico, disponibilidade de peças, prazo e comunicação de reparos. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em oficinas de caminhões, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-oficinas-de-caminhoes",
+    "title": "Relatórios de reputação para oficinas de caminhões | Filtra.AI",
+    "description": "Prepare relatórios de reputação para oficinas de caminhões com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para oficinas de caminhões",
+    "lead": "Um relatório útil para oficinas de caminhões precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de diagnóstico, disponibilidade de peças, prazo e comunicação de reparos ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em oficinas de caminhões, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de diagnóstico, disponibilidade de peças, prazo e comunicação de reparos para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em oficinas de caminhões, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de oficinas de caminhões e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-borracharias",
+    "title": "Avaliações Google para borracharias | Filtra.AI",
+    "description": "Organize avaliações Google para borracharias, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para borracharias",
+    "lead": "Para borracharias, a avaliação pública costuma refletir pontos de contato como tempo de atendimento, clareza do orçamento, segurança e disponibilidade. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como tempo de atendimento, clareza do orçamento, segurança e disponibilidade aparece na jornada do cliente de borracharias. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em borracharias, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em borracharias e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em borracharias; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-borracharias",
+    "title": "Gestão de avaliações para borracharias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para borracharias, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para borracharias",
+    "lead": "A gestão de avaliações em borracharias precisa ligar feedback a uma decisão operacional. Os temas de tempo de atendimento, clareza do orçamento, segurança e disponibilidade ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para borracharias, alinhe essa divisão aos pontos de contato de tempo de atendimento, clareza do orçamento, segurança e disponibilidade e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em borracharias, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de borracharias; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-borracharias",
+    "title": "Respostas a avaliações para borracharias | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de borracharias com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para borracharias",
+    "lead": "Em borracharias, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de tempo de atendimento, clareza do orçamento, segurança e disponibilidade exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em borracharias, detalhes de tempo de atendimento, clareza do orçamento, segurança e disponibilidade podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em borracharias, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-borracharias",
+    "title": "Monitoramento de avaliações para borracharias | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para borracharias, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para borracharias",
+    "lead": "O monitoramento em borracharias busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de tempo de atendimento, clareza do orçamento, segurança e disponibilidade, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em borracharias, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a tempo de atendimento, clareza do orçamento, segurança e disponibilidade. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em borracharias, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-borracharias",
+    "title": "Relatórios de reputação para borracharias | Filtra.AI",
+    "description": "Prepare relatórios de reputação para borracharias com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para borracharias",
+    "lead": "Um relatório útil para borracharias precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de tempo de atendimento, clareza do orçamento, segurança e disponibilidade ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em borracharias, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de tempo de atendimento, clareza do orçamento, segurança e disponibilidade para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em borracharias, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de borracharias e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-despachantes-veiculares",
+    "title": "Avaliações Google para despachantes veiculares | Filtra.AI",
+    "description": "Organize avaliações Google para despachantes veiculares, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para despachantes veiculares",
+    "lead": "Para despachantes veiculares, a avaliação pública costuma refletir pontos de contato como documentação, prazos, comunicação sobre pendências e acompanhamento. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como documentação, prazos, comunicação sobre pendências e acompanhamento aparece na jornada do cliente de despachantes veiculares. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em despachantes veiculares, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em despachantes veiculares e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em despachantes veiculares; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-despachantes-veiculares",
+    "title": "Gestão de avaliações para despachantes veiculares | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para despachantes veiculares, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para despachantes veiculares",
+    "lead": "A gestão de avaliações em despachantes veiculares precisa ligar feedback a uma decisão operacional. Os temas de documentação, prazos, comunicação sobre pendências e acompanhamento ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para despachantes veiculares, alinhe essa divisão aos pontos de contato de documentação, prazos, comunicação sobre pendências e acompanhamento e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em despachantes veiculares, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de despachantes veiculares; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-despachantes-veiculares",
+    "title": "Respostas a avaliações para despachantes veiculares | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de despachantes veiculares com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para despachantes veiculares",
+    "lead": "Em despachantes veiculares, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de documentação, prazos, comunicação sobre pendências e acompanhamento exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em despachantes veiculares, detalhes de documentação, prazos, comunicação sobre pendências e acompanhamento podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em despachantes veiculares, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-despachantes-veiculares",
+    "title": "Monitoramento de avaliações para despachantes veiculares | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para despachantes veiculares, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para despachantes veiculares",
+    "lead": "O monitoramento em despachantes veiculares busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de documentação, prazos, comunicação sobre pendências e acompanhamento, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em despachantes veiculares, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a documentação, prazos, comunicação sobre pendências e acompanhamento. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em despachantes veiculares, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-despachantes-veiculares",
+    "title": "Relatórios de reputação para despachantes veiculares | Filtra.AI",
+    "description": "Prepare relatórios de reputação para despachantes veiculares com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para despachantes veiculares",
+    "lead": "Um relatório útil para despachantes veiculares precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de documentação, prazos, comunicação sobre pendências e acompanhamento ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em despachantes veiculares, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de documentação, prazos, comunicação sobre pendências e acompanhamento para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em despachantes veiculares, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de despachantes veiculares e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-administradoras-de-condominios",
+    "title": "Avaliações Google para administradoras de condomínios | Filtra.AI",
+    "description": "Organize avaliações Google para administradoras de condomínios, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para administradoras de condomínios",
+    "lead": "Para administradoras de condomínios, a avaliação pública costuma refletir pontos de contato como registro de solicitações, comunicação com moradores, prazos e encaminhamentos. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como registro de solicitações, comunicação com moradores, prazos e encaminhamentos aparece na jornada do cliente de administradoras de condomínios. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em administradoras de condomínios, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em administradoras de condomínios e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em administradoras de condomínios; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-administradoras-de-condominios",
+    "title": "Gestão de avaliações para administradoras de condomínios | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para administradoras de condomínios, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para administradoras de condomínios",
+    "lead": "A gestão de avaliações em administradoras de condomínios precisa ligar feedback a uma decisão operacional. Os temas de registro de solicitações, comunicação com moradores, prazos e encaminhamentos ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para administradoras de condomínios, alinhe essa divisão aos pontos de contato de registro de solicitações, comunicação com moradores, prazos e encaminhamentos e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em administradoras de condomínios, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de administradoras de condomínios; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-administradoras-de-condominios",
+    "title": "Respostas a avaliações para administradoras de condomínios | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de administradoras de condomínios com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para administradoras de condomínios",
+    "lead": "Em administradoras de condomínios, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de registro de solicitações, comunicação com moradores, prazos e encaminhamentos exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em administradoras de condomínios, detalhes de registro de solicitações, comunicação com moradores, prazos e encaminhamentos podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em administradoras de condomínios, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-administradoras-de-condominios",
+    "title": "Monitoramento de avaliações para administradoras de condomínios | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para administradoras de condomínios, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para administradoras de condomínios",
+    "lead": "O monitoramento em administradoras de condomínios busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de registro de solicitações, comunicação com moradores, prazos e encaminhamentos, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em administradoras de condomínios, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a registro de solicitações, comunicação com moradores, prazos e encaminhamentos. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em administradoras de condomínios, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-administradoras-de-condominios",
+    "title": "Relatórios de reputação para administradoras de condomínios | Filtra.AI",
+    "description": "Prepare relatórios de reputação para administradoras de condomínios com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para administradoras de condomínios",
+    "lead": "Um relatório útil para administradoras de condomínios precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de registro de solicitações, comunicação com moradores, prazos e encaminhamentos ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em administradoras de condomínios, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de registro de solicitações, comunicação com moradores, prazos e encaminhamentos para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em administradoras de condomínios, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de administradoras de condomínios e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-paisagistas",
+    "title": "Avaliações Google para serviços de paisagismo | Filtra.AI",
+    "description": "Organize avaliações Google para serviços de paisagismo, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de paisagismo",
+    "lead": "Para serviços de paisagismo, a avaliação pública costuma refletir pontos de contato como escopo do projeto, manutenção, cronograma e comunicação sobre mudanças. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como escopo do projeto, manutenção, cronograma e comunicação sobre mudanças aparece na jornada do cliente de serviços de paisagismo. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serviços de paisagismo, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serviços de paisagismo e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serviços de paisagismo; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-paisagistas",
+    "title": "Gestão de avaliações para serviços de paisagismo | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de paisagismo, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serviços de paisagismo",
+    "lead": "A gestão de avaliações em serviços de paisagismo precisa ligar feedback a uma decisão operacional. Os temas de escopo do projeto, manutenção, cronograma e comunicação sobre mudanças ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serviços de paisagismo, alinhe essa divisão aos pontos de contato de escopo do projeto, manutenção, cronograma e comunicação sobre mudanças e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serviços de paisagismo, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serviços de paisagismo; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-paisagistas",
+    "title": "Respostas a avaliações para serviços de paisagismo | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serviços de paisagismo com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serviços de paisagismo",
+    "lead": "Em serviços de paisagismo, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de escopo do projeto, manutenção, cronograma e comunicação sobre mudanças exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serviços de paisagismo, detalhes de escopo do projeto, manutenção, cronograma e comunicação sobre mudanças podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serviços de paisagismo, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-paisagistas",
+    "title": "Monitoramento de avaliações para serviços de paisagismo | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serviços de paisagismo, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serviços de paisagismo",
+    "lead": "O monitoramento em serviços de paisagismo busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de escopo do projeto, manutenção, cronograma e comunicação sobre mudanças, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serviços de paisagismo, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a escopo do projeto, manutenção, cronograma e comunicação sobre mudanças. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serviços de paisagismo, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-paisagistas",
+    "title": "Relatórios de reputação para serviços de paisagismo | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serviços de paisagismo com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de paisagismo",
+    "lead": "Um relatório útil para serviços de paisagismo precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de escopo do projeto, manutenção, cronograma e comunicação sobre mudanças ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serviços de paisagismo, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de escopo do projeto, manutenção, cronograma e comunicação sobre mudanças para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serviços de paisagismo, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serviços de paisagismo e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-eletricistas",
+    "title": "Avaliações Google para serviços de eletricistas | Filtra.AI",
+    "description": "Organize avaliações Google para serviços de eletricistas, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de eletricistas",
+    "lead": "Para serviços de eletricistas, a avaliação pública costuma refletir pontos de contato como agendamento, segurança, orçamento e explicação do serviço realizado. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como agendamento, segurança, orçamento e explicação do serviço realizado aparece na jornada do cliente de serviços de eletricistas. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serviços de eletricistas, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serviços de eletricistas e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serviços de eletricistas; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-eletricistas",
+    "title": "Gestão de avaliações para serviços de eletricistas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de eletricistas, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serviços de eletricistas",
+    "lead": "A gestão de avaliações em serviços de eletricistas precisa ligar feedback a uma decisão operacional. Os temas de agendamento, segurança, orçamento e explicação do serviço realizado ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serviços de eletricistas, alinhe essa divisão aos pontos de contato de agendamento, segurança, orçamento e explicação do serviço realizado e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serviços de eletricistas, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serviços de eletricistas; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-eletricistas",
+    "title": "Respostas a avaliações para serviços de eletricistas | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serviços de eletricistas com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serviços de eletricistas",
+    "lead": "Em serviços de eletricistas, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de agendamento, segurança, orçamento e explicação do serviço realizado exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serviços de eletricistas, detalhes de agendamento, segurança, orçamento e explicação do serviço realizado podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serviços de eletricistas, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-eletricistas",
+    "title": "Monitoramento de avaliações para serviços de eletricistas | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serviços de eletricistas, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serviços de eletricistas",
+    "lead": "O monitoramento em serviços de eletricistas busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de agendamento, segurança, orçamento e explicação do serviço realizado, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serviços de eletricistas, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a agendamento, segurança, orçamento e explicação do serviço realizado. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serviços de eletricistas, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-eletricistas",
+    "title": "Relatórios de reputação para serviços de eletricistas | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serviços de eletricistas com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de eletricistas",
+    "lead": "Um relatório útil para serviços de eletricistas precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de agendamento, segurança, orçamento e explicação do serviço realizado ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serviços de eletricistas, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de agendamento, segurança, orçamento e explicação do serviço realizado para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serviços de eletricistas, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serviços de eletricistas e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-encanadores",
+    "title": "Avaliações Google para serviços de encanadores | Filtra.AI",
+    "description": "Organize avaliações Google para serviços de encanadores, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de encanadores",
+    "lead": "Para serviços de encanadores, a avaliação pública costuma refletir pontos de contato como urgência, diagnóstico, orçamento e clareza sobre reparos. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como urgência, diagnóstico, orçamento e clareza sobre reparos aparece na jornada do cliente de serviços de encanadores. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serviços de encanadores, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serviços de encanadores e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serviços de encanadores; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-encanadores",
+    "title": "Gestão de avaliações para serviços de encanadores | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de encanadores, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serviços de encanadores",
+    "lead": "A gestão de avaliações em serviços de encanadores precisa ligar feedback a uma decisão operacional. Os temas de urgência, diagnóstico, orçamento e clareza sobre reparos ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serviços de encanadores, alinhe essa divisão aos pontos de contato de urgência, diagnóstico, orçamento e clareza sobre reparos e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serviços de encanadores, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serviços de encanadores; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-encanadores",
+    "title": "Respostas a avaliações para serviços de encanadores | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serviços de encanadores com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serviços de encanadores",
+    "lead": "Em serviços de encanadores, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de urgência, diagnóstico, orçamento e clareza sobre reparos exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serviços de encanadores, detalhes de urgência, diagnóstico, orçamento e clareza sobre reparos podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serviços de encanadores, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-encanadores",
+    "title": "Monitoramento de avaliações para serviços de encanadores | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serviços de encanadores, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serviços de encanadores",
+    "lead": "O monitoramento em serviços de encanadores busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de urgência, diagnóstico, orçamento e clareza sobre reparos, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serviços de encanadores, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a urgência, diagnóstico, orçamento e clareza sobre reparos. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serviços de encanadores, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-encanadores",
+    "title": "Relatórios de reputação para serviços de encanadores | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serviços de encanadores com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de encanadores",
+    "lead": "Um relatório útil para serviços de encanadores precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de urgência, diagnóstico, orçamento e clareza sobre reparos ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serviços de encanadores, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de urgência, diagnóstico, orçamento e clareza sobre reparos para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serviços de encanadores, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serviços de encanadores e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-dedetizadoras",
+    "title": "Avaliações Google para empresas de dedetização | Filtra.AI",
+    "description": "Organize avaliações Google para empresas de dedetização, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para empresas de dedetização",
+    "lead": "Para empresas de dedetização, a avaliação pública costuma refletir pontos de contato como orientações prévias, segurança, cronograma e comunicação pós-serviço. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como orientações prévias, segurança, cronograma e comunicação pós-serviço aparece na jornada do cliente de empresas de dedetização. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em empresas de dedetização, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em empresas de dedetização e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em empresas de dedetização; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-dedetizadoras",
+    "title": "Gestão de avaliações para empresas de dedetização | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para empresas de dedetização, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para empresas de dedetização",
+    "lead": "A gestão de avaliações em empresas de dedetização precisa ligar feedback a uma decisão operacional. Os temas de orientações prévias, segurança, cronograma e comunicação pós-serviço ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para empresas de dedetização, alinhe essa divisão aos pontos de contato de orientações prévias, segurança, cronograma e comunicação pós-serviço e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em empresas de dedetização, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de empresas de dedetização; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-dedetizadoras",
+    "title": "Respostas a avaliações para empresas de dedetização | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de empresas de dedetização com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para empresas de dedetização",
+    "lead": "Em empresas de dedetização, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de orientações prévias, segurança, cronograma e comunicação pós-serviço exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em empresas de dedetização, detalhes de orientações prévias, segurança, cronograma e comunicação pós-serviço podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em empresas de dedetização, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-dedetizadoras",
+    "title": "Monitoramento de avaliações para empresas de dedetização | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para empresas de dedetização, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para empresas de dedetização",
+    "lead": "O monitoramento em empresas de dedetização busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de orientações prévias, segurança, cronograma e comunicação pós-serviço, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em empresas de dedetização, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a orientações prévias, segurança, cronograma e comunicação pós-serviço. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em empresas de dedetização, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-dedetizadoras",
+    "title": "Relatórios de reputação para empresas de dedetização | Filtra.AI",
+    "description": "Prepare relatórios de reputação para empresas de dedetização com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para empresas de dedetização",
+    "lead": "Um relatório útil para empresas de dedetização precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de orientações prévias, segurança, cronograma e comunicação pós-serviço ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em empresas de dedetização, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de orientações prévias, segurança, cronograma e comunicação pós-serviço para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em empresas de dedetização, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de empresas de dedetização e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-limpeza-profissional",
+    "title": "Avaliações Google para empresas de limpeza profissional | Filtra.AI",
+    "description": "Organize avaliações Google para empresas de limpeza profissional, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para empresas de limpeza profissional",
+    "lead": "Para empresas de limpeza profissional, a avaliação pública costuma refletir pontos de contato como escopo, frequência, controle de qualidade e comunicação com o cliente. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como escopo, frequência, controle de qualidade e comunicação com o cliente aparece na jornada do cliente de empresas de limpeza profissional. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em empresas de limpeza profissional, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em empresas de limpeza profissional e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em empresas de limpeza profissional; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-limpeza-profissional",
+    "title": "Gestão de avaliações para empresas de limpeza profissional | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para empresas de limpeza profissional, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para empresas de limpeza profissional",
+    "lead": "A gestão de avaliações em empresas de limpeza profissional precisa ligar feedback a uma decisão operacional. Os temas de escopo, frequência, controle de qualidade e comunicação com o cliente ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para empresas de limpeza profissional, alinhe essa divisão aos pontos de contato de escopo, frequência, controle de qualidade e comunicação com o cliente e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em empresas de limpeza profissional, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de empresas de limpeza profissional; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-limpeza-profissional",
+    "title": "Respostas a avaliações para empresas de limpeza profissional | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de empresas de limpeza profissional com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para empresas de limpeza profissional",
+    "lead": "Em empresas de limpeza profissional, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de escopo, frequência, controle de qualidade e comunicação com o cliente exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em empresas de limpeza profissional, detalhes de escopo, frequência, controle de qualidade e comunicação com o cliente podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em empresas de limpeza profissional, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-limpeza-profissional",
+    "title": "Monitoramento de avaliações para empresas de limpeza profissional | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para empresas de limpeza profissional, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para empresas de limpeza profissional",
+    "lead": "O monitoramento em empresas de limpeza profissional busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de escopo, frequência, controle de qualidade e comunicação com o cliente, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em empresas de limpeza profissional, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a escopo, frequência, controle de qualidade e comunicação com o cliente. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em empresas de limpeza profissional, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-limpeza-profissional",
+    "title": "Relatórios de reputação para empresas de limpeza profissional | Filtra.AI",
+    "description": "Prepare relatórios de reputação para empresas de limpeza profissional com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para empresas de limpeza profissional",
+    "lead": "Um relatório útil para empresas de limpeza profissional precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de escopo, frequência, controle de qualidade e comunicação com o cliente ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em empresas de limpeza profissional, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de escopo, frequência, controle de qualidade e comunicação com o cliente para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em empresas de limpeza profissional, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de empresas de limpeza profissional e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-jardinagem",
+    "title": "Avaliações Google para serviços de jardinagem | Filtra.AI",
+    "description": "Organize avaliações Google para serviços de jardinagem, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de jardinagem",
+    "lead": "Para serviços de jardinagem, a avaliação pública costuma refletir pontos de contato como frequência, cuidado com plantas, pontualidade e escopo contratado. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como frequência, cuidado com plantas, pontualidade e escopo contratado aparece na jornada do cliente de serviços de jardinagem. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serviços de jardinagem, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serviços de jardinagem e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serviços de jardinagem; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-jardinagem",
+    "title": "Gestão de avaliações para serviços de jardinagem | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de jardinagem, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serviços de jardinagem",
+    "lead": "A gestão de avaliações em serviços de jardinagem precisa ligar feedback a uma decisão operacional. Os temas de frequência, cuidado com plantas, pontualidade e escopo contratado ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serviços de jardinagem, alinhe essa divisão aos pontos de contato de frequência, cuidado com plantas, pontualidade e escopo contratado e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serviços de jardinagem, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serviços de jardinagem; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-jardinagem",
+    "title": "Respostas a avaliações para serviços de jardinagem | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serviços de jardinagem com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serviços de jardinagem",
+    "lead": "Em serviços de jardinagem, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de frequência, cuidado com plantas, pontualidade e escopo contratado exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serviços de jardinagem, detalhes de frequência, cuidado com plantas, pontualidade e escopo contratado podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serviços de jardinagem, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-jardinagem",
+    "title": "Monitoramento de avaliações para serviços de jardinagem | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serviços de jardinagem, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serviços de jardinagem",
+    "lead": "O monitoramento em serviços de jardinagem busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de frequência, cuidado com plantas, pontualidade e escopo contratado, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serviços de jardinagem, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a frequência, cuidado com plantas, pontualidade e escopo contratado. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serviços de jardinagem, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-jardinagem",
+    "title": "Relatórios de reputação para serviços de jardinagem | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serviços de jardinagem com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de jardinagem",
+    "lead": "Um relatório útil para serviços de jardinagem precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de frequência, cuidado com plantas, pontualidade e escopo contratado ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serviços de jardinagem, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de frequência, cuidado com plantas, pontualidade e escopo contratado para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serviços de jardinagem, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serviços de jardinagem e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-empresas-de-mudanca",
+    "title": "Avaliações Google para empresas de mudança | Filtra.AI",
+    "description": "Organize avaliações Google para empresas de mudança, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para empresas de mudança",
+    "lead": "Para empresas de mudança, a avaliação pública costuma refletir pontos de contato como inventário, proteção de itens, pontualidade e tratamento de imprevistos. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como inventário, proteção de itens, pontualidade e tratamento de imprevistos aparece na jornada do cliente de empresas de mudança. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em empresas de mudança, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em empresas de mudança e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em empresas de mudança; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-empresas-de-mudanca",
+    "title": "Gestão de avaliações para empresas de mudança | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para empresas de mudança, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para empresas de mudança",
+    "lead": "A gestão de avaliações em empresas de mudança precisa ligar feedback a uma decisão operacional. Os temas de inventário, proteção de itens, pontualidade e tratamento de imprevistos ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para empresas de mudança, alinhe essa divisão aos pontos de contato de inventário, proteção de itens, pontualidade e tratamento de imprevistos e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em empresas de mudança, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de empresas de mudança; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-empresas-de-mudanca",
+    "title": "Respostas a avaliações para empresas de mudança | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de empresas de mudança com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para empresas de mudança",
+    "lead": "Em empresas de mudança, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de inventário, proteção de itens, pontualidade e tratamento de imprevistos exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em empresas de mudança, detalhes de inventário, proteção de itens, pontualidade e tratamento de imprevistos podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em empresas de mudança, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-empresas-de-mudanca",
+    "title": "Monitoramento de avaliações para empresas de mudança | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para empresas de mudança, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para empresas de mudança",
+    "lead": "O monitoramento em empresas de mudança busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de inventário, proteção de itens, pontualidade e tratamento de imprevistos, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em empresas de mudança, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a inventário, proteção de itens, pontualidade e tratamento de imprevistos. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em empresas de mudança, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-empresas-de-mudanca",
+    "title": "Relatórios de reputação para empresas de mudança | Filtra.AI",
+    "description": "Prepare relatórios de reputação para empresas de mudança com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para empresas de mudança",
+    "lead": "Um relatório útil para empresas de mudança precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de inventário, proteção de itens, pontualidade e tratamento de imprevistos ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em empresas de mudança, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de inventário, proteção de itens, pontualidade e tratamento de imprevistos para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em empresas de mudança, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de empresas de mudança e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-montadores-de-moveis",
+    "title": "Avaliações Google para montadores de móveis | Filtra.AI",
+    "description": "Organize avaliações Google para montadores de móveis, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para montadores de móveis",
+    "lead": "Para montadores de móveis, a avaliação pública costuma refletir pontos de contato como agendamento, montagem, cuidado com o ambiente e revisão final. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como agendamento, montagem, cuidado com o ambiente e revisão final aparece na jornada do cliente de montadores de móveis. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em montadores de móveis, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em montadores de móveis e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em montadores de móveis; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-montadores-de-moveis",
+    "title": "Gestão de avaliações para montadores de móveis | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para montadores de móveis, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para montadores de móveis",
+    "lead": "A gestão de avaliações em montadores de móveis precisa ligar feedback a uma decisão operacional. Os temas de agendamento, montagem, cuidado com o ambiente e revisão final ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para montadores de móveis, alinhe essa divisão aos pontos de contato de agendamento, montagem, cuidado com o ambiente e revisão final e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em montadores de móveis, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de montadores de móveis; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-montadores-de-moveis",
+    "title": "Respostas a avaliações para montadores de móveis | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de montadores de móveis com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para montadores de móveis",
+    "lead": "Em montadores de móveis, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de agendamento, montagem, cuidado com o ambiente e revisão final exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em montadores de móveis, detalhes de agendamento, montagem, cuidado com o ambiente e revisão final podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em montadores de móveis, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-montadores-de-moveis",
+    "title": "Monitoramento de avaliações para montadores de móveis | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para montadores de móveis, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para montadores de móveis",
+    "lead": "O monitoramento em montadores de móveis busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de agendamento, montagem, cuidado com o ambiente e revisão final, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em montadores de móveis, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a agendamento, montagem, cuidado com o ambiente e revisão final. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em montadores de móveis, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-montadores-de-moveis",
+    "title": "Relatórios de reputação para montadores de móveis | Filtra.AI",
+    "description": "Prepare relatórios de reputação para montadores de móveis com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para montadores de móveis",
+    "lead": "Um relatório útil para montadores de móveis precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de agendamento, montagem, cuidado com o ambiente e revisão final ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em montadores de móveis, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de agendamento, montagem, cuidado com o ambiente e revisão final para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em montadores de móveis, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de montadores de móveis e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-chaveiros",
+    "title": "Avaliações Google para serviços de chaveiros | Filtra.AI",
+    "description": "Organize avaliações Google para serviços de chaveiros, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de chaveiros",
+    "lead": "Para serviços de chaveiros, a avaliação pública costuma refletir pontos de contato como tempo de resposta, identificação do serviço, orçamento e segurança. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como tempo de resposta, identificação do serviço, orçamento e segurança aparece na jornada do cliente de serviços de chaveiros. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serviços de chaveiros, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serviços de chaveiros e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serviços de chaveiros; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-chaveiros",
+    "title": "Gestão de avaliações para serviços de chaveiros | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de chaveiros, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serviços de chaveiros",
+    "lead": "A gestão de avaliações em serviços de chaveiros precisa ligar feedback a uma decisão operacional. Os temas de tempo de resposta, identificação do serviço, orçamento e segurança ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serviços de chaveiros, alinhe essa divisão aos pontos de contato de tempo de resposta, identificação do serviço, orçamento e segurança e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serviços de chaveiros, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serviços de chaveiros; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-chaveiros",
+    "title": "Respostas a avaliações para serviços de chaveiros | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serviços de chaveiros com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serviços de chaveiros",
+    "lead": "Em serviços de chaveiros, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de tempo de resposta, identificação do serviço, orçamento e segurança exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serviços de chaveiros, detalhes de tempo de resposta, identificação do serviço, orçamento e segurança podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serviços de chaveiros, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-chaveiros",
+    "title": "Monitoramento de avaliações para serviços de chaveiros | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serviços de chaveiros, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serviços de chaveiros",
+    "lead": "O monitoramento em serviços de chaveiros busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de tempo de resposta, identificação do serviço, orçamento e segurança, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serviços de chaveiros, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a tempo de resposta, identificação do serviço, orçamento e segurança. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serviços de chaveiros, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-chaveiros",
+    "title": "Relatórios de reputação para serviços de chaveiros | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serviços de chaveiros com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de chaveiros",
+    "lead": "Um relatório útil para serviços de chaveiros precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de tempo de resposta, identificação do serviço, orçamento e segurança ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serviços de chaveiros, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de tempo de resposta, identificação do serviço, orçamento e segurança para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serviços de chaveiros, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serviços de chaveiros e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-vidracarias",
+    "title": "Avaliações Google para vidraçarias | Filtra.AI",
+    "description": "Organize avaliações Google para vidraçarias, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para vidraçarias",
+    "lead": "Para vidraçarias, a avaliação pública costuma refletir pontos de contato como medidas, especificação, instalação, prazo e cuidado no local. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como medidas, especificação, instalação, prazo e cuidado no local aparece na jornada do cliente de vidraçarias. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em vidraçarias, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em vidraçarias e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em vidraçarias; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-vidracarias",
+    "title": "Gestão de avaliações para vidraçarias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para vidraçarias, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para vidraçarias",
+    "lead": "A gestão de avaliações em vidraçarias precisa ligar feedback a uma decisão operacional. Os temas de medidas, especificação, instalação, prazo e cuidado no local ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para vidraçarias, alinhe essa divisão aos pontos de contato de medidas, especificação, instalação, prazo e cuidado no local e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em vidraçarias, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de vidraçarias; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-vidracarias",
+    "title": "Respostas a avaliações para vidraçarias | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de vidraçarias com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para vidraçarias",
+    "lead": "Em vidraçarias, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de medidas, especificação, instalação, prazo e cuidado no local exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em vidraçarias, detalhes de medidas, especificação, instalação, prazo e cuidado no local podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em vidraçarias, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-vidracarias",
+    "title": "Monitoramento de avaliações para vidraçarias | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para vidraçarias, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para vidraçarias",
+    "lead": "O monitoramento em vidraçarias busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de medidas, especificação, instalação, prazo e cuidado no local, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em vidraçarias, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a medidas, especificação, instalação, prazo e cuidado no local. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em vidraçarias, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-vidracarias",
+    "title": "Relatórios de reputação para vidraçarias | Filtra.AI",
+    "description": "Prepare relatórios de reputação para vidraçarias com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para vidraçarias",
+    "lead": "Um relatório útil para vidraçarias precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de medidas, especificação, instalação, prazo e cuidado no local ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em vidraçarias, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de medidas, especificação, instalação, prazo e cuidado no local para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em vidraçarias, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de vidraçarias e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-serralherias",
+    "title": "Avaliações Google para serralherias | Filtra.AI",
+    "description": "Organize avaliações Google para serralherias, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serralherias",
+    "lead": "Para serralherias, a avaliação pública costuma refletir pontos de contato como especificação, acabamento, prazo de fabricação e instalação. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como especificação, acabamento, prazo de fabricação e instalação aparece na jornada do cliente de serralherias. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serralherias, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serralherias e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serralherias; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-serralherias",
+    "title": "Gestão de avaliações para serralherias | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serralherias, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serralherias",
+    "lead": "A gestão de avaliações em serralherias precisa ligar feedback a uma decisão operacional. Os temas de especificação, acabamento, prazo de fabricação e instalação ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serralherias, alinhe essa divisão aos pontos de contato de especificação, acabamento, prazo de fabricação e instalação e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serralherias, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serralherias; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-serralherias",
+    "title": "Respostas a avaliações para serralherias | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serralherias com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serralherias",
+    "lead": "Em serralherias, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de especificação, acabamento, prazo de fabricação e instalação exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serralherias, detalhes de especificação, acabamento, prazo de fabricação e instalação podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serralherias, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-serralherias",
+    "title": "Monitoramento de avaliações para serralherias | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serralherias, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serralherias",
+    "lead": "O monitoramento em serralherias busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de especificação, acabamento, prazo de fabricação e instalação, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serralherias, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a especificação, acabamento, prazo de fabricação e instalação. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serralherias, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-serralherias",
+    "title": "Relatórios de reputação para serralherias | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serralherias com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serralherias",
+    "lead": "Um relatório útil para serralherias precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de especificação, acabamento, prazo de fabricação e instalação ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serralherias, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de especificação, acabamento, prazo de fabricação e instalação para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serralherias, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serralherias e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-seguranca-eletronica",
+    "title": "Avaliações Google para empresas de segurança eletrônica | Filtra.AI",
+    "description": "Organize avaliações Google para empresas de segurança eletrônica, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para empresas de segurança eletrônica",
+    "lead": "Para empresas de segurança eletrônica, a avaliação pública costuma refletir pontos de contato como escopo da instalação, compatibilidade, suporte e privacidade. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como escopo da instalação, compatibilidade, suporte e privacidade aparece na jornada do cliente de empresas de segurança eletrônica. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em empresas de segurança eletrônica, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em empresas de segurança eletrônica e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em empresas de segurança eletrônica; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-seguranca-eletronica",
+    "title": "Gestão de avaliações para empresas de segurança eletrônica | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para empresas de segurança eletrônica, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para empresas de segurança eletrônica",
+    "lead": "A gestão de avaliações em empresas de segurança eletrônica precisa ligar feedback a uma decisão operacional. Os temas de escopo da instalação, compatibilidade, suporte e privacidade ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para empresas de segurança eletrônica, alinhe essa divisão aos pontos de contato de escopo da instalação, compatibilidade, suporte e privacidade e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em empresas de segurança eletrônica, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de empresas de segurança eletrônica; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-seguranca-eletronica",
+    "title": "Respostas a avaliações para empresas de segurança eletrônica | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de empresas de segurança eletrônica com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para empresas de segurança eletrônica",
+    "lead": "Em empresas de segurança eletrônica, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de escopo da instalação, compatibilidade, suporte e privacidade exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em empresas de segurança eletrônica, detalhes de escopo da instalação, compatibilidade, suporte e privacidade podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em empresas de segurança eletrônica, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-seguranca-eletronica",
+    "title": "Monitoramento de avaliações para empresas de segurança eletrônica | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para empresas de segurança eletrônica, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para empresas de segurança eletrônica",
+    "lead": "O monitoramento em empresas de segurança eletrônica busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de escopo da instalação, compatibilidade, suporte e privacidade, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em empresas de segurança eletrônica, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a escopo da instalação, compatibilidade, suporte e privacidade. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em empresas de segurança eletrônica, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-seguranca-eletronica",
+    "title": "Relatórios de reputação para empresas de segurança eletrônica | Filtra.AI",
+    "description": "Prepare relatórios de reputação para empresas de segurança eletrônica com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para empresas de segurança eletrônica",
+    "lead": "Um relatório útil para empresas de segurança eletrônica precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de escopo da instalação, compatibilidade, suporte e privacidade ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em empresas de segurança eletrônica, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de escopo da instalação, compatibilidade, suporte e privacidade para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em empresas de segurança eletrônica, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de empresas de segurança eletrônica e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-provedores-de-internet",
+    "title": "Avaliações Google para provedores de internet | Filtra.AI",
+    "description": "Organize avaliações Google para provedores de internet, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para provedores de internet",
+    "lead": "Para provedores de internet, a avaliação pública costuma refletir pontos de contato como estabilidade, instalação, suporte técnico e comunicação de incidentes. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como estabilidade, instalação, suporte técnico e comunicação de incidentes aparece na jornada do cliente de provedores de internet. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em provedores de internet, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em provedores de internet e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em provedores de internet; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-provedores-de-internet",
+    "title": "Gestão de avaliações para provedores de internet | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para provedores de internet, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para provedores de internet",
+    "lead": "A gestão de avaliações em provedores de internet precisa ligar feedback a uma decisão operacional. Os temas de estabilidade, instalação, suporte técnico e comunicação de incidentes ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para provedores de internet, alinhe essa divisão aos pontos de contato de estabilidade, instalação, suporte técnico e comunicação de incidentes e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em provedores de internet, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de provedores de internet; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-provedores-de-internet",
+    "title": "Respostas a avaliações para provedores de internet | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de provedores de internet com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para provedores de internet",
+    "lead": "Em provedores de internet, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de estabilidade, instalação, suporte técnico e comunicação de incidentes exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em provedores de internet, detalhes de estabilidade, instalação, suporte técnico e comunicação de incidentes podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em provedores de internet, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-provedores-de-internet",
+    "title": "Monitoramento de avaliações para provedores de internet | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para provedores de internet, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para provedores de internet",
+    "lead": "O monitoramento em provedores de internet busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de estabilidade, instalação, suporte técnico e comunicação de incidentes, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em provedores de internet, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a estabilidade, instalação, suporte técnico e comunicação de incidentes. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em provedores de internet, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-provedores-de-internet",
+    "title": "Relatórios de reputação para provedores de internet | Filtra.AI",
+    "description": "Prepare relatórios de reputação para provedores de internet com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para provedores de internet",
+    "lead": "Um relatório útil para provedores de internet precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de estabilidade, instalação, suporte técnico e comunicação de incidentes ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em provedores de internet, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de estabilidade, instalação, suporte técnico e comunicação de incidentes para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em provedores de internet, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de provedores de internet e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-assistencia-celular",
+    "title": "Avaliações Google para assistências de celulares | Filtra.AI",
+    "description": "Organize avaliações Google para assistências de celulares, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para assistências de celulares",
+    "lead": "Para assistências de celulares, a avaliação pública costuma refletir pontos de contato como diagnóstico, orçamento, proteção de dados e prazo de reparo. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como diagnóstico, orçamento, proteção de dados e prazo de reparo aparece na jornada do cliente de assistências de celulares. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em assistências de celulares, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em assistências de celulares e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em assistências de celulares; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-assistencia-celular",
+    "title": "Gestão de avaliações para assistências de celulares | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para assistências de celulares, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para assistências de celulares",
+    "lead": "A gestão de avaliações em assistências de celulares precisa ligar feedback a uma decisão operacional. Os temas de diagnóstico, orçamento, proteção de dados e prazo de reparo ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para assistências de celulares, alinhe essa divisão aos pontos de contato de diagnóstico, orçamento, proteção de dados e prazo de reparo e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em assistências de celulares, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de assistências de celulares; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-assistencia-celular",
+    "title": "Respostas a avaliações para assistências de celulares | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de assistências de celulares com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para assistências de celulares",
+    "lead": "Em assistências de celulares, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de diagnóstico, orçamento, proteção de dados e prazo de reparo exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em assistências de celulares, detalhes de diagnóstico, orçamento, proteção de dados e prazo de reparo podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em assistências de celulares, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-assistencia-celular",
+    "title": "Monitoramento de avaliações para assistências de celulares | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para assistências de celulares, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para assistências de celulares",
+    "lead": "O monitoramento em assistências de celulares busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de diagnóstico, orçamento, proteção de dados e prazo de reparo, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em assistências de celulares, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a diagnóstico, orçamento, proteção de dados e prazo de reparo. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em assistências de celulares, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-assistencia-celular",
+    "title": "Relatórios de reputação para assistências de celulares | Filtra.AI",
+    "description": "Prepare relatórios de reputação para assistências de celulares com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para assistências de celulares",
+    "lead": "Um relatório útil para assistências de celulares precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de diagnóstico, orçamento, proteção de dados e prazo de reparo ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em assistências de celulares, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de diagnóstico, orçamento, proteção de dados e prazo de reparo para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em assistências de celulares, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de assistências de celulares e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-conserto-eletrodomesticos",
+    "title": "Avaliações Google para serviços de conserto de eletrodomésticos | Filtra.AI",
+    "description": "Organize avaliações Google para serviços de conserto de eletrodomésticos, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para serviços de conserto de eletrodomésticos",
+    "lead": "Para serviços de conserto de eletrodomésticos, a avaliação pública costuma refletir pontos de contato como diagnóstico, peças, garantia do reparo e prazo. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como diagnóstico, peças, garantia do reparo e prazo aparece na jornada do cliente de serviços de conserto de eletrodomésticos. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em serviços de conserto de eletrodomésticos, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em serviços de conserto de eletrodomésticos e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em serviços de conserto de eletrodomésticos; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-conserto-eletrodomesticos",
+    "title": "Gestão de avaliações para serviços de conserto de eletrodomésticos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para serviços de conserto de eletrodomésticos, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para serviços de conserto de eletrodomésticos",
+    "lead": "A gestão de avaliações em serviços de conserto de eletrodomésticos precisa ligar feedback a uma decisão operacional. Os temas de diagnóstico, peças, garantia do reparo e prazo ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para serviços de conserto de eletrodomésticos, alinhe essa divisão aos pontos de contato de diagnóstico, peças, garantia do reparo e prazo e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em serviços de conserto de eletrodomésticos, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de serviços de conserto de eletrodomésticos; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-conserto-eletrodomesticos",
+    "title": "Respostas a avaliações para serviços de conserto de eletrodomésticos | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de serviços de conserto de eletrodomésticos com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para serviços de conserto de eletrodomésticos",
+    "lead": "Em serviços de conserto de eletrodomésticos, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de diagnóstico, peças, garantia do reparo e prazo exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em serviços de conserto de eletrodomésticos, detalhes de diagnóstico, peças, garantia do reparo e prazo podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em serviços de conserto de eletrodomésticos, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-conserto-eletrodomesticos",
+    "title": "Monitoramento de avaliações para serviços de conserto de eletrodomésticos | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para serviços de conserto de eletrodomésticos, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para serviços de conserto de eletrodomésticos",
+    "lead": "O monitoramento em serviços de conserto de eletrodomésticos busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de diagnóstico, peças, garantia do reparo e prazo, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em serviços de conserto de eletrodomésticos, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a diagnóstico, peças, garantia do reparo e prazo. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em serviços de conserto de eletrodomésticos, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-conserto-eletrodomesticos",
+    "title": "Relatórios de reputação para serviços de conserto de eletrodomésticos | Filtra.AI",
+    "description": "Prepare relatórios de reputação para serviços de conserto de eletrodomésticos com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para serviços de conserto de eletrodomésticos",
+    "lead": "Um relatório útil para serviços de conserto de eletrodomésticos precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de diagnóstico, peças, garantia do reparo e prazo ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em serviços de conserto de eletrodomésticos, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de diagnóstico, peças, garantia do reparo e prazo para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em serviços de conserto de eletrodomésticos, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de serviços de conserto de eletrodomésticos e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-graficas",
+    "title": "Avaliações Google para gráficas | Filtra.AI",
+    "description": "Organize avaliações Google para gráficas, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para gráficas",
+    "lead": "Para gráficas, a avaliação pública costuma refletir pontos de contato como prova de impressão, cores, acabamento, prazo e conferência de arquivos. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como prova de impressão, cores, acabamento, prazo e conferência de arquivos aparece na jornada do cliente de gráficas. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em gráficas, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em gráficas e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em gráficas; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-graficas",
+    "title": "Gestão de avaliações para gráficas | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para gráficas, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para gráficas",
+    "lead": "A gestão de avaliações em gráficas precisa ligar feedback a uma decisão operacional. Os temas de prova de impressão, cores, acabamento, prazo e conferência de arquivos ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para gráficas, alinhe essa divisão aos pontos de contato de prova de impressão, cores, acabamento, prazo e conferência de arquivos e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em gráficas, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de gráficas; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-graficas",
+    "title": "Respostas a avaliações para gráficas | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de gráficas com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para gráficas",
+    "lead": "Em gráficas, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de prova de impressão, cores, acabamento, prazo e conferência de arquivos exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em gráficas, detalhes de prova de impressão, cores, acabamento, prazo e conferência de arquivos podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em gráficas, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-graficas",
+    "title": "Monitoramento de avaliações para gráficas | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para gráficas, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para gráficas",
+    "lead": "O monitoramento em gráficas busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de prova de impressão, cores, acabamento, prazo e conferência de arquivos, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em gráficas, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a prova de impressão, cores, acabamento, prazo e conferência de arquivos. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em gráficas, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-graficas",
+    "title": "Relatórios de reputação para gráficas | Filtra.AI",
+    "description": "Prepare relatórios de reputação para gráficas com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para gráficas",
+    "lead": "Um relatório útil para gráficas precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de prova de impressão, cores, acabamento, prazo e conferência de arquivos ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em gráficas, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de prova de impressão, cores, acabamento, prazo e conferência de arquivos para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em gráficas, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de gráficas e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-empresas-de-impressao",
+    "title": "Avaliações Google para empresas de impressão | Filtra.AI",
+    "description": "Organize avaliações Google para empresas de impressão, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para empresas de impressão",
+    "lead": "Para empresas de impressão, a avaliação pública costuma refletir pontos de contato como especificação do material, prazo, acabamento e controle de qualidade. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como especificação do material, prazo, acabamento e controle de qualidade aparece na jornada do cliente de empresas de impressão. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em empresas de impressão, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em empresas de impressão e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em empresas de impressão; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-empresas-de-impressao",
+    "title": "Gestão de avaliações para empresas de impressão | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para empresas de impressão, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para empresas de impressão",
+    "lead": "A gestão de avaliações em empresas de impressão precisa ligar feedback a uma decisão operacional. Os temas de especificação do material, prazo, acabamento e controle de qualidade ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para empresas de impressão, alinhe essa divisão aos pontos de contato de especificação do material, prazo, acabamento e controle de qualidade e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em empresas de impressão, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de empresas de impressão; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-empresas-de-impressao",
+    "title": "Respostas a avaliações para empresas de impressão | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de empresas de impressão com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para empresas de impressão",
+    "lead": "Em empresas de impressão, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de especificação do material, prazo, acabamento e controle de qualidade exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em empresas de impressão, detalhes de especificação do material, prazo, acabamento e controle de qualidade podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em empresas de impressão, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-empresas-de-impressao",
+    "title": "Monitoramento de avaliações para empresas de impressão | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para empresas de impressão, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para empresas de impressão",
+    "lead": "O monitoramento em empresas de impressão busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de especificação do material, prazo, acabamento e controle de qualidade, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em empresas de impressão, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a especificação do material, prazo, acabamento e controle de qualidade. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em empresas de impressão, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-empresas-de-impressao",
+    "title": "Relatórios de reputação para empresas de impressão | Filtra.AI",
+    "description": "Prepare relatórios de reputação para empresas de impressão com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para empresas de impressão",
+    "lead": "Um relatório útil para empresas de impressão precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de especificação do material, prazo, acabamento e controle de qualidade ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em empresas de impressão, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de especificação do material, prazo, acabamento e controle de qualidade para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em empresas de impressão, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de empresas de impressão e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-agencias-de-marketing",
+    "title": "Avaliações Google para agências de marketing | Filtra.AI",
+    "description": "Organize avaliações Google para agências de marketing, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para agências de marketing",
+    "lead": "Para agências de marketing, a avaliação pública costuma refletir pontos de contato como escopo, comunicação de resultados, prazos e alinhamento de expectativas. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como escopo, comunicação de resultados, prazos e alinhamento de expectativas aparece na jornada do cliente de agências de marketing. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em agências de marketing, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em agências de marketing e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em agências de marketing; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-agencias-de-marketing",
+    "title": "Gestão de avaliações para agências de marketing | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para agências de marketing, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para agências de marketing",
+    "lead": "A gestão de avaliações em agências de marketing precisa ligar feedback a uma decisão operacional. Os temas de escopo, comunicação de resultados, prazos e alinhamento de expectativas ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para agências de marketing, alinhe essa divisão aos pontos de contato de escopo, comunicação de resultados, prazos e alinhamento de expectativas e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em agências de marketing, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de agências de marketing; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-agencias-de-marketing",
+    "title": "Respostas a avaliações para agências de marketing | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de agências de marketing com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para agências de marketing",
+    "lead": "Em agências de marketing, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de escopo, comunicação de resultados, prazos e alinhamento de expectativas exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em agências de marketing, detalhes de escopo, comunicação de resultados, prazos e alinhamento de expectativas podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em agências de marketing, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-agencias-de-marketing",
+    "title": "Monitoramento de avaliações para agências de marketing | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para agências de marketing, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para agências de marketing",
+    "lead": "O monitoramento em agências de marketing busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de escopo, comunicação de resultados, prazos e alinhamento de expectativas, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em agências de marketing, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a escopo, comunicação de resultados, prazos e alinhamento de expectativas. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em agências de marketing, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-agencias-de-marketing",
+    "title": "Relatórios de reputação para agências de marketing | Filtra.AI",
+    "description": "Prepare relatórios de reputação para agências de marketing com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para agências de marketing",
+    "lead": "Um relatório útil para agências de marketing precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de escopo, comunicação de resultados, prazos e alinhamento de expectativas ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em agências de marketing, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de escopo, comunicação de resultados, prazos e alinhamento de expectativas para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em agências de marketing, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de agências de marketing e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-consultorias-empresariais",
+    "title": "Avaliações Google para consultorias empresariais | Filtra.AI",
+    "description": "Organize avaliações Google para consultorias empresariais, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para consultorias empresariais",
+    "lead": "Para consultorias empresariais, a avaliação pública costuma refletir pontos de contato como definição de escopo, marcos, comunicação e evidências de entrega. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como definição de escopo, marcos, comunicação e evidências de entrega aparece na jornada do cliente de consultorias empresariais. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em consultorias empresariais, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em consultorias empresariais e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em consultorias empresariais; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-consultorias-empresariais",
+    "title": "Gestão de avaliações para consultorias empresariais | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para consultorias empresariais, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para consultorias empresariais",
+    "lead": "A gestão de avaliações em consultorias empresariais precisa ligar feedback a uma decisão operacional. Os temas de definição de escopo, marcos, comunicação e evidências de entrega ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para consultorias empresariais, alinhe essa divisão aos pontos de contato de definição de escopo, marcos, comunicação e evidências de entrega e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em consultorias empresariais, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de consultorias empresariais; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-consultorias-empresariais",
+    "title": "Respostas a avaliações para consultorias empresariais | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de consultorias empresariais com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para consultorias empresariais",
+    "lead": "Em consultorias empresariais, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de definição de escopo, marcos, comunicação e evidências de entrega exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em consultorias empresariais, detalhes de definição de escopo, marcos, comunicação e evidências de entrega podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em consultorias empresariais, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-consultorias-empresariais",
+    "title": "Monitoramento de avaliações para consultorias empresariais | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para consultorias empresariais, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para consultorias empresariais",
+    "lead": "O monitoramento em consultorias empresariais busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de definição de escopo, marcos, comunicação e evidências de entrega, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em consultorias empresariais, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a definição de escopo, marcos, comunicação e evidências de entrega. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em consultorias empresariais, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-consultorias-empresariais",
+    "title": "Relatórios de reputação para consultorias empresariais | Filtra.AI",
+    "description": "Prepare relatórios de reputação para consultorias empresariais com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para consultorias empresariais",
+    "lead": "Um relatório útil para consultorias empresariais precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de definição de escopo, marcos, comunicação e evidências de entrega ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em consultorias empresariais, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de definição de escopo, marcos, comunicação e evidências de entrega para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em consultorias empresariais, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de consultorias empresariais e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-agencias-de-emprego",
+    "title": "Avaliações Google para agências de emprego | Filtra.AI",
+    "description": "Organize avaliações Google para agências de emprego, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para agências de emprego",
+    "lead": "Para agências de emprego, a avaliação pública costuma refletir pontos de contato como clareza de etapas, comunicação com candidatos e proteção de dados. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como clareza de etapas, comunicação com candidatos e proteção de dados aparece na jornada do cliente de agências de emprego. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em agências de emprego, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em agências de emprego e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em agências de emprego; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-agencias-de-emprego",
+    "title": "Gestão de avaliações para agências de emprego | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para agências de emprego, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para agências de emprego",
+    "lead": "A gestão de avaliações em agências de emprego precisa ligar feedback a uma decisão operacional. Os temas de clareza de etapas, comunicação com candidatos e proteção de dados ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para agências de emprego, alinhe essa divisão aos pontos de contato de clareza de etapas, comunicação com candidatos e proteção de dados e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em agências de emprego, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de agências de emprego; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-agencias-de-emprego",
+    "title": "Respostas a avaliações para agências de emprego | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de agências de emprego com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para agências de emprego",
+    "lead": "Em agências de emprego, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de clareza de etapas, comunicação com candidatos e proteção de dados exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em agências de emprego, detalhes de clareza de etapas, comunicação com candidatos e proteção de dados podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em agências de emprego, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-agencias-de-emprego",
+    "title": "Monitoramento de avaliações para agências de emprego | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para agências de emprego, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para agências de emprego",
+    "lead": "O monitoramento em agências de emprego busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de clareza de etapas, comunicação com candidatos e proteção de dados, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em agências de emprego, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a clareza de etapas, comunicação com candidatos e proteção de dados. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em agências de emprego, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-agencias-de-emprego",
+    "title": "Relatórios de reputação para agências de emprego | Filtra.AI",
+    "description": "Prepare relatórios de reputação para agências de emprego com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para agências de emprego",
+    "lead": "Um relatório útil para agências de emprego precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de clareza de etapas, comunicação com candidatos e proteção de dados ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em agências de emprego, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de clareza de etapas, comunicação com candidatos e proteção de dados para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em agências de emprego, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de agências de emprego e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
+  {
+    "slug": "avaliacoes-google-empresas-de-eventos",
+    "title": "Avaliações Google para empresas de eventos | Filtra.AI",
+    "description": "Organize avaliações Google para empresas de eventos, com contexto setorial, critérios de leitura e encaminhamento de problemas sem prometer notas ou posições.",
+    "h1": "Avaliações Google para empresas de eventos",
+    "lead": "Para empresas de eventos, a avaliação pública costuma refletir pontos de contato como cronograma, fornecedores, mudanças de escopo e comunicação no dia. Registre o relato com contexto suficiente, diferencie ocorrências isoladas de padrões e evite concluir mais do que os dados permitem.",
+    "sections": [
+      {
+        "heading": "Identifique os pontos de contato",
+        "body": "Mapeie como cronograma, fornecedores, mudanças de escopo e comunicação no dia aparece na jornada do cliente de empresas de eventos. Registre período, unidade e etapa quando esses dados estiverem disponíveis, sem presumir que um comentário represente toda a clientela."
+      },
+      {
+        "heading": "Classifique o que exige ação",
+        "body": "Separe elogios, dúvidas, falhas de processo e casos que precisam de apuração. Em empresas de eventos, defina critérios de prioridade e encaminhe temas sensíveis para uma pessoa responsável, preservando dados pessoais."
+      },
+      {
+        "heading": "Revise se houve melhoria",
+        "body": "Escolha um tema recorrente, registre a ação e marque a data de revisão. Compare períodos equivalentes em empresas de eventos e descreva as limitações antes de atribuir uma mudança à iniciativa."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Como priorizar avaliações?",
+        "answer": "Use gravidade, recorrência, atualidade e capacidade de corrigir o problema em empresas de eventos; não priorize apenas pela nota."
+      },
+      {
+        "question": "Responder avaliações garante melhores resultados?",
+        "answer": "Não. Uma resposta respeitosa ajuda na comunicação, mas não garante mudança de nota nem de posicionamento."
+      }
+    ]
+  },
+  {
+    "slug": "gestao-empresas-de-eventos",
+    "title": "Gestão de avaliações para empresas de eventos | Filtra.AI",
+    "description": "Estruture a gestão de avaliações para empresas de eventos, com responsabilidades, prioridades e rotinas de melhoria alinhadas à operação.",
+    "h1": "Gestão de avaliações para empresas de eventos",
+    "lead": "A gestão de avaliações em empresas de eventos precisa ligar feedback a uma decisão operacional. Os temas de cronograma, fornecedores, mudanças de escopo e comunicação no dia ajudam a definir responsáveis e próximos passos sem transformar cada comentário em uma crise isolada.",
+    "sections": [
+      {
+        "heading": "Distribua responsabilidades",
+        "body": "Determine quem monitora os comentários, quem apura cada assunto e quem aprova respostas. Para empresas de eventos, alinhe essa divisão aos pontos de contato de cronograma, fornecedores, mudanças de escopo e comunicação no dia e registre quem assume a próxima etapa."
+      },
+      {
+        "heading": "Defina critérios de encaminhamento",
+        "body": "Separe situações que a linha de frente pode resolver daquelas que exigem liderança, equipe técnica ou revisão de privacidade. Registre prazo interno e próximo passo sem prometer publicamente o que não está sob controle."
+      },
+      {
+        "heading": "Transforme padrões em ações",
+        "body": "Revise causas recorrentes e acompanhe se as ações foram concluídas. Em empresas de eventos, compare unidades e períodos apenas quando a coleta for consistente e documente fatores que possam distorcer a leitura."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Quando revisar os temas?",
+        "answer": "Escolha uma cadência que combine volume, risco e capacidade de execução de empresas de eventos; aumente a frequência durante picos ou ocorrências graves."
+      },
+      {
+        "question": "Preciso de uma ferramenta desde o primeiro dia?",
+        "answer": "Não necessariamente. Um registro simples pode funcionar se tiver responsáveis, acesso adequado e rotina de revisão."
+      }
+    ]
+  },
+  {
+    "slug": "respostas-empresas-de-eventos",
+    "title": "Respostas a avaliações para empresas de eventos | Filtra.AI",
+    "description": "Melhore as respostas a avaliações de empresas de eventos com contexto, apuração, tom profissional e cuidado com informações privadas.",
+    "h1": "Respostas a avaliações para empresas de eventos",
+    "lead": "Em empresas de eventos, uma resposta útil reconhece a experiência relatada e esclarece o encaminhamento possível. O contexto de cronograma, fornecedores, mudanças de escopo e comunicação no dia exige cuidado para não presumir fatos nem expor informações que deveriam permanecer privadas.",
+    "sections": [
+      {
+        "heading": "Apure antes de publicar",
+        "body": "Identifique o ponto principal do relato e consulte os registros disponíveis antes de responder. Em empresas de eventos, detalhes de cronograma, fornecedores, mudanças de escopo e comunicação no dia podem não ser verificáveis apenas pelo texto público."
+      },
+      {
+        "heading": "Responda sem expor dados",
+        "body": "Reconheça a preocupação, explique o próximo passo realista e não publique nomes, documentos ou dados sensíveis. Quando for necessário investigar, convide a pessoa para um canal privado apropriado."
+      },
+      {
+        "heading": "Use recorrências para corrigir processos",
+        "body": "Agrupe relatos semelhantes para verificar falhas de comunicação, prazo ou execução. Em empresas de eventos, atribua um responsável à correção e revise o resultado antes de reutilizar qualquer modelo de resposta."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Devo copiar uma resposta padrão?",
+        "answer": "Use modelos como estrutura, não como resposta idêntica em série. Personalize cada texto com base no relato e nos fatos confirmados."
+      },
+      {
+        "question": "Como responder a reclamação sensível?",
+        "answer": "Não confirme detalhes pessoais em público. Reconheça a preocupação de forma geral e encaminhe para um canal privado seguro."
+      }
+    ]
+  },
+  {
+    "slug": "monitoramento-empresas-de-eventos",
+    "title": "Monitoramento de avaliações para empresas de eventos | Filtra.AI",
+    "description": "Planeje o monitoramento de avaliações para empresas de eventos, definindo fontes, responsáveis, sinais de alerta e limites da análise.",
+    "h1": "Monitoramento de avaliações para empresas de eventos",
+    "lead": "O monitoramento em empresas de eventos busca reduzir o intervalo entre um sinal público e uma investigação. A cobertura deve ser explícita e considerar a realidade de cronograma, fornecedores, mudanças de escopo e comunicação no dia, sem insinuar que fontes não integradas são monitoradas.",
+    "sections": [
+      {
+        "heading": "Declare fontes e limites",
+        "body": "Liste as fontes que a equipe consegue consultar, a frequência e quem tem acesso. Em empresas de eventos, documente lacunas, períodos sem dados e fontes que não fazem parte do processo."
+      },
+      {
+        "heading": "Defina alertas com responsáveis",
+        "body": "Defina o que exige encaminhamento rápido, como risco à segurança, privacidade ou repetição de falhas ligadas a cronograma, fornecedores, mudanças de escopo e comunicação no dia. Para cada alerta, indique quem avalia e qual próximo passo é esperado."
+      },
+      {
+        "heading": "Evite confundir ruído com tendência",
+        "body": "Volume e nota podem variar por sazonalidade, campanhas ou mudanças de operação. Compare períodos equivalentes em empresas de eventos, preserve o contexto e reconheça quando a amostra é pequena demais para sustentar uma conclusão."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Monitoramento cobre toda a internet?",
+        "answer": "Não. Descreva as fontes efetivamente acompanhadas e deixe claro o que está fora do escopo."
+      },
+      {
+        "question": "Quando escalar um caso?",
+        "answer": "Siga a política interna para riscos graves, privacidade e segurança; não espere que o mesmo relato se repita várias vezes."
+      }
+    ]
+  },
+  {
+    "slug": "relatorios-empresas-de-eventos",
+    "title": "Relatórios de reputação para empresas de eventos | Filtra.AI",
+    "description": "Prepare relatórios de reputação para empresas de eventos com temas, indicadores operacionais e próximos passos, sem exagerar conclusões.",
+    "h1": "Relatórios de reputação para empresas de eventos",
+    "lead": "Um relatório útil para empresas de eventos precisa explicar o que foi observado, quais ações foram tomadas e o que ainda não pode ser concluído. Os pontos de contato de cronograma, fornecedores, mudanças de escopo e comunicação no dia ajudam a escolher indicadores que orientem decisões reais.",
+    "sections": [
+      {
+        "heading": "Defina métricas e cobertura",
+        "body": "Combine volume, recência, temas e métricas operacionais disponíveis. Em empresas de eventos, defina os indicadores antes da análise e evite comparar períodos ou unidades com métodos de coleta diferentes."
+      },
+      {
+        "heading": "Ligue achados a decisões",
+        "body": "Para cada achado prioritário, registre exemplo, responsável, ação e data de revisão. Use os temas de cronograma, fornecedores, mudanças de escopo e comunicação no dia para orientar decisões, não apenas para ordenar unidades por uma nota."
+      },
+      {
+        "heading": "Documente incertezas",
+        "body": "Informe tamanho da amostra, limitações e mudanças na coleta. Em empresas de eventos, diferencie correlação de causalidade e indique que evidência adicional seria necessária para avaliar se a ação funcionou."
+      }
+    ],
+    "faq": [
+      {
+        "question": "Qual frequência é melhor?",
+        "answer": "Escolha uma frequência que corresponda ao ciclo de decisão de empresas de eventos e à confiabilidade dos dados; publicar relatórios frequentes sem ação não agrega valor."
+      },
+      {
+        "question": "A nota média basta?",
+        "answer": "Não. Combine-a com leitura qualitativa, contexto operacional e indicadores que possam ser verificados."
+      }
+    ]
+  },
 ];
 
 const BASE = 'https://filtraai.com';
