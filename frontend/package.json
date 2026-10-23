@@ -35,6 +35,7 @@
     "lint": "eslint .",
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "seo:validate": "node scripts/validate-seo.mjs",
-    "seo:audit": "node scripts/audit-indexing.mjs"
+    "seo:audit": "node scripts/audit-indexing.mjs",
+    "seo:opportunities": "node scripts/build-seo-aeo-opportunities.mjs"
   }
 }
