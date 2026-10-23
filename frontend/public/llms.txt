@@ -5,6 +5,7 @@
 O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrentes e priorizar melhorias na experiência do cliente. A análise automatizada é apoio à decisão; a equipe deve revisar os resultados conforme o contexto.
 
 ## Páginas oficiais
+- Soluções por setor e tarefa: https://filtraai.com/solucoes
 - Página inicial: https://filtraai.com/
 - Plataforma: https://filtraai.com/filtra-ai
 - Gestão de reputação online: https://filtraai.com/gestao-de-reputacao-online
