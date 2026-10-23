@@ -6,6 +6,7 @@ const appRoot = resolve(process.cwd(), 'src/app');
 const read = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 const sitemap = read('src/app/sitemap.ts');
 const rootLayout = read('src/app/layout.tsx');
+const languageSwitcher = read('src/app/components/LanguageSwitcher.tsx');
 const plansLayout = read('src/app/planos/layout.tsx');
 const plansPage = read('src/app/planos/page.tsx');
 const robots = read('src/app/robots.ts');
@@ -32,6 +33,9 @@ function metadataObject(source, key) {
 
 check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
 check(rootLayout.includes('localized-document-language') && rootLayout.includes('document.documentElement.lang'), 'Root layout must set the document language for localized routes before hydration');
+check(languageSwitcher.includes('const languages = SUPPORTED_LANGUAGES;') && !languageSwitcher.includes("SUPPORTED_LANGUAGES.filter((item) => item.code !== 'zh')"), 'Language switcher must include Chinese on SEO pages, even when /zh remains noindex');
+check(languageSwitcher.includes('Todos os artigos do blog precisam de navegação funcional entre idiomas'), 'Blog article pages must have working language navigation');
+check(languageSwitcher.includes("return language === 'pt' ? '/blog' : `/${language}/blog`;"), 'Untranslated blog articles must route to the target-language blog index instead of a guessed URL');
 check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans canonical must point to /planos');
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
 check(!plansPage.includes('window.location.replace'), 'Plans page must render content instead of redirecting client-side');
@@ -176,7 +180,7 @@ check(reputationLanding.includes('faq={faq}') && !reputationLanding.includes('fa
 check(blogIndex.includes("en: 'https://filtraai.com/en/blog'") && blogIndex.includes("es: 'https://filtraai.com/es/blog'") && blogIndex.includes("'x-default': 'https://filtraai.com/blog'"), 'Blog hub must declare PT, EN and ES hreflang alternates');
 check(seoPageHeader.includes('href="/blog"') && seoPageHeader.includes('href="/planos"'), 'Commercial SEO header must link to the blog hub and plans page');
 check(blogArticleComponent.includes('href="/planos"'), 'Shared blog article navigation must link to the plans page');
-check(homePage.includes('href="/blog"') && homePage.includes('href="/planos"') && homePage.includes("'/avaliacoes-google'"), 'Home page must link to the blog hub, plans and Google reviews priority page');
+check(homePage.includes('href="/blog"') && homePage.includes('id="planos"') && !homePage.includes('Ver página de planos e comparar recursos') && homePage.includes("'/avaliacoes-google'"), 'Home page must expose the plans section and link to the blog hub and Google reviews priority page without a redundant plans CTA');
 
 const expandedLandingPages = [
   ['Google reputation page', read('src/app/reputacao-google/page.tsx')],
