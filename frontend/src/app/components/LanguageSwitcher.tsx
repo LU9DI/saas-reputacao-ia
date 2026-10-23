@@ -47,6 +47,12 @@ export function targetFor(pathname: string, language: Language): string {
   );
   if (family?.[language]) return family[language];
 
+  // Se o artigo não tem tradução publicada, encaminha para o índice do blog
+  // no idioma escolhido em vez de criar uma URL de artigo que pode dar 404.
+  if (/^\/(?:en|es|zh)\/blog\/.+$/i.test(normalized) || /^\/blog\/.+$/i.test(normalized)) {
+    return language === 'pt' ? '/blog' : `/${language}/blog`;
+  }
+
   const prefixed = normalized.match(/^\/(en|es|zh)(\/.*)?$/);
   if (prefixed) {
     const rest = prefixed[2] || '';
@@ -59,6 +65,9 @@ export function targetFor(pathname: string, language: Language): string {
 
 function isSeoArticlePath(pathname: string): boolean {
   const normalized = normalizePath(pathname);
+  // Todos os artigos do blog precisam de navegação funcional entre idiomas,
+  // inclusive os que ainda não têm tradução publicada.
+  if (/^\/(?:en|es|zh)?\/blog(?:\/|$)/i.test(normalized)) return true;
   return SEO_FAMILIES.some((item) =>
     Object.values(item).some((path) => normalizePath(path) === normalized),
   );
@@ -78,10 +87,8 @@ export function LanguageSwitcher({
   const pathLang = pathname.match(/^\/(en|es|zh)(?:\/|$)/)?.[1] as Language | undefined;
   const current = pathLang || language;
   const seoArticle = isSeoArticlePath(pathname);
-  // ZH foi cortado do índice: não linkar para páginas noindex a partir das páginas SEO.
-  const languages = seoArticle
-    ? SUPPORTED_LANGUAGES.filter((item) => item.code !== 'zh')
-    : SUPPORTED_LANGUAGES;
+  // O seletor é consistente; páginas zh podem continuar noindex sem ocultar o idioma.
+  const languages = SUPPORTED_LANGUAGES;
 
   const goToLanguage = (next: Language) => {
     if (next === current && next === language) return;
