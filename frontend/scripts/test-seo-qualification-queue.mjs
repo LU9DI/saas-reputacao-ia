@@ -30,7 +30,8 @@ try {
     { normalizedQuery: 'marca com mapeamento conflitante', targetType: 'candidate', candidateId: 'candidate-1', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Mapeamento duplicado intencional para testar bloqueio.' },
     { normalizedQuery: 'consulta candidata revisada', targetType: 'candidate', candidateId: 'candidate-1', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Avaliar candidato com evidência observada.' },
     { normalizedQuery: 'consulta de outra propriedade', targetType: 'existing-page', targetUrl: 'https://filtraai.com/reputacao/', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Deliberately mismatched property for safety regression.' },
-    { normalizedQuery: 'target desconhecido', targetType: 'candidate', candidateId: 'missing-id', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Must be rejected.' }
+    { normalizedQuery: 'target desconhecido', targetType: 'candidate', candidateId: 'missing-id', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Must be rejected.' },
+    { normalizedQuery: 'url nao listada no inventario', targetType: 'existing-page', targetUrl: 'https://filtraai.com/rota-inexistente/', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Must be rejected because it is absent from the sitemap.' }
   ] }));
   execFileSync(process.execPath, [
     path.join(frontend, 'scripts/build-seo-qualification-queue.mjs'),
@@ -45,7 +46,8 @@ try {
   assert.ok(report.queue.find((item) => item.evidenceId === 'e5').reasons.includes('existing-page-target-origin-does-not-match-evidence-site-property'));
   assert.equal(report.counts.conflictingMappingsBlocked, 1);
   assert.equal(report.counts.targetPropertyMismatchesBlocked, 1);
-  assert.equal(report.counts.invalidMappings, 1);
+  assert.equal(report.counts.invalidMappings, 2);
+  assert.ok(report.mappingErrors.some((item) => item.issues.includes('existing-page-target-not-found-in-url-inventory')));
   assert.equal(report.provenance.inventoryUrlCount, 1);
   assert.equal(report.policy.existingPageTargetsRequireInventory, true);
   assert.equal(report.counts.publishAllowed, 0);
