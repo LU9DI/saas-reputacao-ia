@@ -86,6 +86,9 @@ function assertHtmlLanguage(html, routePath) {
   const expected = expectedLanguage(routePath);
   if (!match) fail(`missing <html lang> on ${routePath}`);
   else if (match[1] !== expected) fail(`wrong HTML language on ${routePath}: expected ${expected}, got ${match[1]}`);
+  if (/id=["']localized-document-language["']/i.test(html)) {
+    fail(`client-side document language override still present on ${routePath}`);
+  }
 }
 
 if (!existsSync(SITEMAP)) fail('out/sitemap.xml is missing');
@@ -195,6 +198,7 @@ for (const route of ['/zh', '/zh/google-reviews', '/zh/blog']) {
   const htmlPath = findHtml(route);
   if (!htmlPath) continue;
   const html = readFileSync(htmlPath, 'utf8');
+  assertHtmlLanguage(html, route);
   const hasNoindex =
     /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html) ||
     /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
@@ -210,7 +214,12 @@ if (!existsSync(notFoundPath)) {
     /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(notFound) ||
     /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(notFound);
   if (!hasNoindex) fail('404.html must be noindex');
-  if (/<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*index,\s*follow/i.test(notFound)) {
+  const notFoundRobots =
+    notFound.match(/<meta[^>]+name=["']robots["'][^>]+content=["']([^"']*)["']/i)?.[1] ??
+    notFound.match(/<meta[^>]+content=["']([^"']*)["'][^>]+name=["']robots["']/i)?.[1] ??
+    '';
+  const notFoundDirectives = notFoundRobots.toLowerCase().split(',').map((directive) => directive.trim());
+  if (notFoundDirectives.includes('all') || (notFoundDirectives.includes('index') && notFoundDirectives.includes('follow'))) {
     fail('404.html must not contain an index, follow robots directive');
   }
 }

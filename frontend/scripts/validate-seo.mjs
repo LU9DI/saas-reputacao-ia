@@ -5,10 +5,10 @@ import assert from 'node:assert/strict';
 const appRoot = resolve(process.cwd(), 'src/app');
 const read = (path) => readFileSync(resolve(process.cwd(), path), 'utf8');
 const sitemap = read('src/app/sitemap.ts');
-const rootLayout = read('src/app/layout.tsx');
+const rootMetadataSource = read('src/app/lib/rootMetadata.ts');
 const languageSwitcher = read('src/app/components/LanguageSwitcher.tsx');
-const plansLayout = read('src/app/planos/layout.tsx');
-const plansPage = read('src/app/planos/page.tsx');
+const plansLayout = read('src/app/(default)/planos/layout.tsx');
+const plansPage = read('src/app/(default)/planos/page.tsx');
 const robots = read('src/app/robots.ts');
 const localizedPages = read('src/app/[lang]/[slug]/page.tsx');
 const localizedBlogs = read('src/app/[lang]/blog/[slug]/page.tsx');
@@ -32,7 +32,7 @@ function metadataObject(source, key) {
 }
 
 check(sitemap.includes("  '/planos',"), 'sitemap.ts must include /planos');
-// Runtime <html lang> is not validated here: a client-side script cannot prove the initial HTTP HTML. See issue #75; static-export HTML is checked by validate-html-language.mjs.
+// The initial <html lang> is validated against generated/exported HTML by validate-html-language.mjs and audit-indexing.mjs. Source-string checks cannot prove the served document.
 check(languageSwitcher.includes('const languages = SUPPORTED_LANGUAGES;') && !languageSwitcher.includes("SUPPORTED_LANGUAGES.filter((item) => item.code !== 'zh')"), 'Language switcher must include Chinese on SEO pages, even when /zh remains noindex');
 check(languageSwitcher.includes('Todos os artigos do blog precisam de navegação funcional entre idiomas'), 'Blog article pages must have working language navigation');
 check(languageSwitcher.includes("return language === 'pt' ? '/blog' : `/${language}/blog`;"), 'Untranslated blog articles must route to the target-language blog index instead of a guessed URL');
@@ -68,8 +68,12 @@ function collectPageRoutes(directory = appRoot) {
     if (entry.isDirectory()) found.push(...collectPageRoutes(fullPath));
     else if (entry.isFile() && entry.name === 'page.tsx') {
       const appPath = relative(appRoot, fullPath).split(sep).join('/');
-      const route = appPath === 'page.tsx' ? '/' : `/${appPath.replace(/\/page\.tsx$/, '')}`;
-      if (!route.includes('[') && !route.includes('(')) found.push(route.replace(/\/+/g, '/'));
+      const segments = appPath.split('/').filter((segment) => !/^\([^)]+\)$/.test(segment));
+      const pageIndex = segments.lastIndexOf('page.tsx');
+      if (pageIndex < 0) continue;
+      const routeSegments = segments.slice(0, pageIndex);
+      const route = routeSegments.length ? `/${routeSegments.join('/')}` : '/';
+      if (!route.includes('[')) found.push(route.replace(/\/+/g, '/'));
     }
   }
   return found;
@@ -121,15 +125,15 @@ for (const path of sitemapPaths) {
 }
 
 
-const localSeoArticle = read('src/app/blog/seo-local-avaliacoes-local-pack/page.tsx');
-const reputationGuide = read('src/app/blog/gestao-reputacao-online-guia/page.tsx');
-const blogIndex = read('src/app/blog/page.tsx');
-const ratingCalculator = read('src/app/calculadora-nota-google/page.tsx');
-const reputationLanding = read('src/app/gestao-de-reputacao-online/page.tsx');
+const localSeoArticle = read('src/app/(default)/blog/seo-local-avaliacoes-local-pack/page.tsx');
+const reputationGuide = read('src/app/(default)/blog/gestao-reputacao-online-guia/page.tsx');
+const blogIndex = read('src/app/(default)/blog/page.tsx');
+const ratingCalculator = read('src/app/(default)/calculadora-nota-google/page.tsx');
+const reputationLanding = read('src/app/(default)/gestao-de-reputacao-online/page.tsx');
 const blogArticleComponent = read('src/app/components/BlogArticle.tsx');
 const seoLandingComponent = read('src/app/components/SeoLanding.tsx');
 const seoPageHeader = read('src/app/components/SeoPageHeader.tsx');
-const homePage = read('src/app/preview/page.tsx');
+const homePage = read('src/app/(default)/preview/page.tsx');
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
 const blogSchemaLib = read('src/app/lib/blogSchema.ts');
@@ -183,14 +187,14 @@ check(blogArticleComponent.includes('href="/planos"'), 'Shared blog article navi
 check(homePage.includes('href="/blog"') && homePage.includes('id="planos"') && !homePage.includes('Ver página de planos e comparar recursos') && homePage.includes("'/avaliacoes-google'"), 'Home page must expose the plans section and link to the blog hub and Google reviews priority page without a redundant plans CTA');
 
 const expandedLandingPages = [
-  ['Google reputation page', read('src/app/reputacao-google/page.tsx')],
-  ['Feedback management page', read('src/app/gestao-de-feedback/page.tsx')],
-  ['Improve Google reviews page', read('src/app/como-melhorar-avaliacoes-google/page.tsx')],
-  ['Hotels page', read('src/app/hoteis/page.tsx')],
-  ['Restaurants page', read('src/app/restaurantes/page.tsx')],
-  ['Tourism page', read('src/app/turismo/page.tsx')],
-  ['Associations page', read('src/app/associacoes/page.tsx')],
-  ['AI page', read('src/app/ia/page.tsx')],
+  ['Google reputation page', read('src/app/(default)/reputacao-google/page.tsx')],
+  ['Feedback management page', read('src/app/(default)/gestao-de-feedback/page.tsx')],
+  ['Improve Google reviews page', read('src/app/(default)/como-melhorar-avaliacoes-google/page.tsx')],
+  ['Hotels page', read('src/app/(default)/hoteis/page.tsx')],
+  ['Restaurants page', read('src/app/(default)/restaurantes/page.tsx')],
+  ['Tourism page', read('src/app/(default)/turismo/page.tsx')],
+  ['Associations page', read('src/app/(default)/associacoes/page.tsx')],
+  ['AI page', read('src/app/(default)/ia/page.tsx')],
 ];
 for (const [name, source] of expandedLandingPages) {
   check(source.includes('faq={['), `${name} must expose visible FAQ content and FAQPage schema`);
@@ -205,13 +209,13 @@ const localSeoHeadings = [...localSeoArticle.matchAll(/<H2>([^<]+)<\/H2>/g)].map
 const repeatedLocalSeoHeadings = localSeoHeadings.filter((heading, index) => localSeoHeadings.indexOf(heading) !== index);
 check(repeatedLocalSeoHeadings.length === 0, `Local SEO article contains repeated headings: ${[...new Set(repeatedLocalSeoHeadings)].join(', ')}`);
 
-const blogDir = resolve(appRoot, 'blog');
+const blogDir = resolve(appRoot, '(default)/blog');
 const blogPostDirs = readdirSync(blogDir, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
 check(blogPostDirs.length >= 16, `Expected at least 16 blog posts, found ${blogPostDirs.length}`);
 for (const dir of blogPostDirs) {
-  const source = read(`src/app/blog/${dir}/page.tsx`);
+  const source = read(`src/app/(default)/blog/${dir}/page.tsx`);
   const schemaTag = source.match(/<BlogSchema[\s\S]*?\/>/)?.[0] ?? '';
   check(source.includes('<BlogSchema'), `${dir} must render the shared BlogSchema`);
   check(schemaTag.includes('canonical='), `${dir} BlogSchema must declare its canonical`);
@@ -223,8 +227,8 @@ for (const dir of blogPostDirs) {
 }
 check(blogArticleComponent.includes('<BlogBreadcrumb'), 'Shared blog article layout must render the visible breadcrumb');
 check(pluginDemo.includes('name="robots" content="noindex, nofollow"'), 'Plugin demo page must be noindexed');
-check(!rootLayout.includes('robots: { index: true, follow: true'), 'Root layout must not emit index/follow on the framework 404');
-check(rootLayout.includes("other: { googlebot: 'max-image-preview:large, max-snippet:-1' }"), 'Root layout must preserve Googlebot image/snippet directives');
+check(!rootMetadataSource.includes('robots: { index: true, follow: true'), 'Root metadata must not emit index/follow on the framework 404');
+check(rootMetadataSource.includes("other: { googlebot: 'max-image-preview:large, max-snippet:-1' }"), 'Root metadata must preserve Googlebot image/snippet directives');
 
 const socialTemplates = [
   ['Localized landing pages', read('src/app/[lang]/[slug]/page.tsx')],
@@ -236,8 +240,8 @@ for (const [name, source] of socialTemplates) {
   check(source.includes('OG_IMAGE_META') && source.includes('buildTwitter'), `${name} must define og:image and Twitter images`);
 }
 
-const monitoringSocial = read('src/app/monitoramento-reputacao-online/page.tsx');
-const aiReviewSocial = read('src/app/analise-de-avaliacoes-com-ia/page.tsx');
+const monitoringSocial = read('src/app/(default)/monitoramento-reputacao-online/page.tsx');
+const aiReviewSocial = read('src/app/(default)/analise-de-avaliacoes-com-ia/page.tsx');
 for (const [name, source] of [
   ['Reputation monitoring landing', monitoringSocial],
   ['AI review analysis landing', aiReviewSocial],
@@ -248,25 +252,25 @@ for (const [name, source] of [
 }
 
 const socialLandingFiles = [
-  'src/app/ia/page.tsx',
-  'src/app/filtra-ai/page.tsx',
-  'src/app/analise-de-avaliacoes-com-ia/page.tsx',
-  'src/app/avaliacoes-google/page.tsx',
-  'src/app/monitoramento-reputacao-online/page.tsx',
-  'src/app/auditoria-gratuita/page.tsx',
-  'src/app/auditoria-gratuita/layout.tsx',
-  'src/app/hoteis/page.tsx',
-  'src/app/turismo/page.tsx',
-  'src/app/agencias/page.tsx',
-  'src/app/clinicas/page.tsx',
-  'src/app/franquias/page.tsx',
-  'src/app/associacoes/page.tsx',
-  'src/app/como-funciona/page.tsx',
-  'src/app/parceiros/page.tsx',
-  'src/app/pedir-estrela-vs-filtrar/page.tsx',
-  'src/app/termos/layout.tsx',
-  'src/app/privacidade/layout.tsx',
-  'src/app/planos/layout.tsx',
+  'src/app/(default)/ia/page.tsx',
+  'src/app/(default)/filtra-ai/page.tsx',
+  'src/app/(default)/analise-de-avaliacoes-com-ia/page.tsx',
+  'src/app/(default)/avaliacoes-google/page.tsx',
+  'src/app/(default)/monitoramento-reputacao-online/page.tsx',
+  'src/app/(default)/auditoria-gratuita/page.tsx',
+  'src/app/(default)/auditoria-gratuita/layout.tsx',
+  'src/app/(default)/hoteis/page.tsx',
+  'src/app/(default)/turismo/page.tsx',
+  'src/app/(default)/agencias/page.tsx',
+  'src/app/(default)/clinicas/page.tsx',
+  'src/app/(default)/franquias/page.tsx',
+  'src/app/(default)/associacoes/page.tsx',
+  'src/app/(default)/como-funciona/page.tsx',
+  'src/app/(default)/parceiros/page.tsx',
+  'src/app/(default)/pedir-estrela-vs-filtrar/page.tsx',
+  'src/app/(default)/termos/layout.tsx',
+  'src/app/(default)/privacidade/layout.tsx',
+  'src/app/(default)/planos/layout.tsx',
 ];
 for (const path of socialLandingFiles) {
   const source = read(path);
@@ -278,7 +282,7 @@ for (const path of socialLandingFiles) {
 // Rotas dinâmicas: o shell `_` atende o export estático, mas dev/Vercel precisam
 // aceitar ids arbitrários. `dynamicParams = false` restringiria a rota ao placeholder.
 for (const route of ['painel', 'avaliacao', 'widget']) {
-  const source = read(`src/app/${route}/[id]/page.tsx`);
+  const source = read(`src/app/(default)/${route}/[id]/page.tsx`);
   check(
     !/^\s*export\s+const\s+dynamicParams\s*=\s*false\b/m.test(source),
     `/${route}/[id] must not disable dynamicParams; runtime ids would return 404`,
