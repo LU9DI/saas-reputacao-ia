@@ -47,10 +47,10 @@ check(markdownGenerator.includes('Canonical HTML page:') && markdownGenerator.in
 check(nextConfig.includes("source: '/solucoes/:slug.md'") && nextConfig.includes('text/markdown; charset=utf-8'), 'Vercel must serve Markdown companions with the correct content type');
 check(sitemap.includes("'/solucoes/") && !sitemap.includes('.md'), 'Markdown companion files must remain outside the XML sitemap');
 
-for (const bot of ['OAI-SearchBot', 'ChatGPT-User', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Googlebot', 'Bingbot']) {
+for (const bot of ['OAI-SearchBot', 'ChatGPT-User', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Google-Extended', 'Googlebot', 'Bingbot']) {
   check(robots.includes(`'${bot}'`) && robots.includes('allow: \'/\''), `robots metadata must explicitly allow retrieval crawler ${bot}`);
 }
-for (const bot of ['GPTBot', 'ClaudeBot', 'Google-Extended', 'CCBot']) {
+for (const bot of ['GPTBot', 'ClaudeBot', 'CCBot']) {
   check(robots.includes(`'${bot}'`) && robots.includes("disallow: '/'") || robots.includes("disallow: ['/']"), `robots metadata must explicitly set the training-crawler policy for ${bot}`);
 }
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
