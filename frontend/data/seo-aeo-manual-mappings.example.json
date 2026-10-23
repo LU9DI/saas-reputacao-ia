@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Example only. Add reviewed mappings here or pass a private/local mapping file with --mappings. Do not invent mappings or put sensitive Search Console queries in Git.",
+  "mappings": [
+    {
+      "normalizedQuery": "replace with normalized query copied from demand-evidence.json",
+      "targetType": "existing-page",
+      "targetUrl": "https://filtraai.com/replace-with-verified-existing-path/",
+      "reviewedBy": "replace-with-reviewer",
+      "reviewedAt": "YYYY-MM-DD",
+      "rationale": "Explain why this already-existing page is the correct destination."
+    }
+  ]
+}
