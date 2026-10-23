@@ -46,7 +46,6 @@ jobs:
         run: npm run seo:audit
         working-directory: frontend
       - name: Verify production delivery
-        if: github.event_name != 'pull_request'
         run: npm run seo:smoke:production
         working-directory: frontend
       - name: Submit only new or changed eligible URLs
