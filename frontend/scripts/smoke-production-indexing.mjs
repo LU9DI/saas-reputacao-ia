@@ -7,7 +7,11 @@ const required = [
   '/hoteis', '/restaurantes', '/franquias', '/agencias', '/turismo',
   '/associacoes', '/reputacao-google',
 ];
-const normalizeUrl = (value) => {\n  const parsed = new URL(value);\n  return parsed.origin + (parsed.pathname === '/' ? '/' : parsed.pathname.replace(/\\/$/, ''));\n};\nconst expectedLang = (pathname) => {
+const normalizeUrl = (value) => {
+  const parsed = new URL(value);
+  return parsed.origin + (parsed.pathname === '/' ? '/' : parsed.pathname.replace(/\/$/, ''));
+};
+const expectedLang = (pathname) => {
   const first = pathname.split('/').filter(Boolean)[0] || '';
   return ['en', 'es', 'zh'].includes(first) ? first : 'pt-BR';
 };
@@ -17,7 +21,7 @@ assert.match(response.headers.get('content-type') || '', /xml/i, 'Sitemap respon
 const xml = await response.text();
 const urls = [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((m) => m[1].replaceAll('&amp;', '&').trim());
 assert.ok(urls.length > 0, 'Production sitemap has no URLs');
-const set = new Set(urls.map((url) => new URL(url).origin + new URL(url).pathname.replace(/\/$/, '')));
+const set = new Set(urls.map(normalizeUrl));
 for (const url of urls) {
   const parsed = new URL(url);
   assert.equal(parsed.hostname, 'filtraai.com', `Unexpected sitemap host: ${url}`);
@@ -47,7 +51,7 @@ async function worker() {
       assert.ok(canonicalTag, `${path}: missing canonical`);
       const canonical = canonicalTag.match(/\bhref=[\"']([^\"']+)[\"']/i)?.[1];
       assert.ok(canonical, `${path}: canonical missing href`);
-      assert.equal(new URL(canonical, url).origin + new URL(canonical, url).pathname.replace(/\/$/, ''), `https://filtraai.com${path === '/' ? '/' : path.replace(/\/$/, '')}`, `${path}: canonical is not self-referencing`);
+      assert.equal(normalizeUrl(new URL(canonical, url).toString()), normalizeUrl(`https://filtraai.com${path}`), `${path}: canonical is not self-referencing`);
       if (/^\/zh(?:\/|$)/.test(path)) {
         assert.match(html, /<meta\b[^>]*name=[\"']robots[\"'][^>]*content=[\"'][^\"']*noindex/i, `${path}: ZH page must be noindex`);
       }
