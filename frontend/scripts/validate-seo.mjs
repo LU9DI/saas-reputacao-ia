@@ -73,7 +73,7 @@ function collectPageRoutes(directory = appRoot) {
 
 const staticRoutes = new Set(collectPageRoutes());
 const programmaticSeoPage = read('src/app/[seoPage]/page.tsx');
-const programmaticSeoSlugs = new Set([...programmaticSeoPage.matchAll(/slug:\s*'([^']+)'/g)].map((match) => match[1]));
+const programmaticSeoSlugs = new Set([...programmaticSeoPage.matchAll(/slug:\s*['\"]([^'\"]+)['\"]/g)].map((match) => match[1]));
 check(programmaticSeoPage.includes('generateStaticParams') && programmaticSeoPage.includes('SeoLanding'), 'Programmatic commercial pages must be statically generated and render the shared SEO landing template');
 function slugsForLanguage(source, language) {
   const startMatch = new RegExp('^\\s*' + language + ':\\[', 'm').exec(source);
