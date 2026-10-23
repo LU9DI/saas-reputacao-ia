@@ -35,7 +35,25 @@ try {
   assert.equal(merged.metrics.averagePosition, 4.6);
   assert.ok(report.evidence.some((item) => item.query === 'consulta, com vírgula'));
   assert.ok(report.evidence.some((item) => item.flags.includes('no-impression-evidence')));
-  console.log('SEO demand evidence import tests passed: provenance retained, duplicates aggregated, publication always blocked.');
+
+  // Portuguese locale export: semicolon delimiter and decimal comma metrics.
+  const localizedInput = path.join(temp, 'gsc-pt.csv');
+  await writeFile(localizedInput, [
+    'Principais consultas;Cliques;Impressões;CTR;Posição',
+    '"reputação empresarial";2;40;5,00%;7,50',
+  ].join('\\n') + '\\n');
+  const localizedOut = path.join(temp, 'localized-output');
+  execFileSync(process.execPath, [
+    path.join(frontend, 'scripts/import-seo-demand-evidence.mjs'),
+    '--input', localizedInput, '--site', 'https://example.test/',
+    '--start-date', '2026-09-01', '--end-date', '2026-09-30', '--out', localizedOut,
+  ], { cwd: frontend, stdio: 'pipe' });
+  const localized = JSON.parse(await readFile(path.join(localizedOut, 'demand-evidence.json'), 'utf8'));
+  assert.equal(localized.counts.validUniqueQueries, 1);
+  assert.equal(localized.evidence[0].metrics.ctrPercent, 5);
+  assert.equal(localized.evidence[0].metrics.averagePosition, 7.5);
+  assert.equal(localized.evidence[0].metrics.clicks, 2);
+  console.log('SEO demand evidence import tests passed: provenance retained, duplicates aggregated, localized CSV parsed, publication always blocked.');
 } finally {
   await rm(temp, { recursive: true, force: true });
 }
