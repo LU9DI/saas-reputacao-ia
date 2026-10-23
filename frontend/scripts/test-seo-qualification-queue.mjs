@@ -11,6 +11,7 @@ try {
   const evidencePath = path.join(temp, 'evidence.json');
   const candidatesPath = path.join(temp, 'opportunities.json');
   const mappingsPath = path.join(temp, 'mappings.json');
+  const inventoryPath = path.join(temp, 'sitemap.xml');
   const outputPath = path.join(temp, 'out');
   await writeFile(evidencePath, JSON.stringify({
     evidence: [
@@ -22,6 +23,7 @@ try {
     ]
   }));
   await writeFile(candidatesPath, JSON.stringify({ candidates: [{ id: 'candidate-1' }] }));
+  await writeFile(inventoryPath, '<urlset><url><loc>https://filtraai.com/reputacao/</loc></url></urlset>');
   await writeFile(mappingsPath, JSON.stringify({ mappings: [
     { normalizedQuery: 'GESTAO DE REPUTACAO', targetType: 'existing-page', targetUrl: 'https://filtraai.com/reputacao/', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'A URL existente já atende à intenção.' },
     { normalizedQuery: 'marca com mapeamento conflitante', targetType: 'candidate', candidateId: 'candidate-1', reviewedBy: 'reviewer', reviewedAt: '2026-10-23', rationale: 'Avaliar aderência comercial.' },
@@ -32,7 +34,7 @@ try {
   ] }));
   execFileSync(process.execPath, [
     path.join(frontend, 'scripts/build-seo-qualification-queue.mjs'),
-    '--evidence', evidencePath, '--candidates', candidatesPath, '--mappings', mappingsPath, '--out', outputPath,
+    '--evidence', evidencePath, '--candidates', candidatesPath, '--mappings', mappingsPath, '--inventory', inventoryPath, '--out', outputPath,
   ], { cwd: frontend, stdio: 'pipe' });
   const report = JSON.parse(await readFile(path.join(outputPath, 'qualification-queue.json'), 'utf8'));
   assert.equal(report.counts.evidenceItems, 5);
@@ -44,6 +46,8 @@ try {
   assert.equal(report.counts.conflictingMappingsBlocked, 1);
   assert.equal(report.counts.targetPropertyMismatchesBlocked, 1);
   assert.equal(report.counts.invalidMappings, 1);
+  assert.equal(report.provenance.inventoryUrlCount, 1);
+  assert.equal(report.policy.existingPageTargetsRequireInventory, true);
   assert.equal(report.counts.publishAllowed, 0);
   assert.equal(report.policy.semanticMatchingEnabled, false);
   assert.ok(report.queue.every((item) => item.publishAllowed === false));
@@ -58,7 +62,7 @@ try {
   const unmapped = report.queue.find((item) => item.evidenceId === 'e2');
   assert.equal(unmapped.action, 'manual-mapping-required');
   assert.ok(unmapped.reasons.includes('insufficient-impression-evidence'));
-  console.log('SEO qualification queue tests passed: explicit mappings only, conflicts blocked, publication disabled.');
+  console.log('SEO qualification queue tests passed: explicit mappings, exact inventory validation, conflicts blocked, publication disabled.');
 } finally {
   await rm(temp, { recursive: true, force: true });
 }
