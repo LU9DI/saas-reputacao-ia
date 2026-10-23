@@ -455,11 +455,6 @@ export default function LandingPreview() {
       <section id="planos" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
         <div className="mb-10 max-w-2xl"><span className="text-xs font-semibold uppercase tracking-[.22em] text-indigo-400">{c.plansEyebrow}</span><h2 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">{c.plansTitle}</h2><p className="mt-5 text-zinc-400">{c.plansText}</p></div>
         <PlanCards />
-        <div className="mt-7">
-          <Link href="/planos" className="text-sm font-medium text-indigo-300 hover:text-indigo-200">
-            {language==='pt'?'Ver página de planos e comparar recursos':language==='en'?'Compare plans and features':language==='es'?'Ver planes y comparar funciones':'查看套餐与功能'}
-          </Link>
-        </div>
       </section>
 
       <section className="px-6 pb-24 lg:px-8">
