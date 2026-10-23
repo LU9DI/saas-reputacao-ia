@@ -15,6 +15,7 @@
 | Doc | Conteúdo |
 |------|----------|
 | [ESTRATEGIA_EXPANSAO_SEO_PROGRAMATICO.md](ESTRATEGIA_EXPANSAO_SEO_PROGRAMATICO.md) | Estratégia para expandir cobertura orgânica em escala com critérios de qualidade, pesquisa, medição e publicação por lotes |
+| [MATRIZ_OPORTUNIDADES_SEO_FILTRA.md](MATRIZ_OPORTUNIDADES_SEO_FILTRA.md) | Hipóteses de expansão específicas do Filtra, comparação com cobertura atual e evidências necessárias antes de criar URLs |
 
 ## Backend (guias em `backend/`)
 
