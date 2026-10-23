@@ -100,7 +100,7 @@ for (const row of rows) {
     const positionText = pick(row, ['position', 'averageposition', 'posicao', 'posicaomedia', 'avgposition']);
     const position = positionText ? number(positionText, 'position', row.__row) : null;
     // GSC UI CSVs usually render CTR as percent. A bare value is interpreted as percent.
-    const ctrPercent = ctrText ? number(ctrText, 'ctr', row.__row) : (impressions ? clicks / impressions * 100 : 0);
+    if (ctrText) number(ctrText, 'ctr', row.__row);
     const key = normalize(query);
     const existing = aggregated.get(key) ?? { query, normalizedQuery: key, clicks: 0, impressions: 0, weightedPosition: 0, positionWeight: 0, sourceRows: [] };
     existing.clicks += clicks;
