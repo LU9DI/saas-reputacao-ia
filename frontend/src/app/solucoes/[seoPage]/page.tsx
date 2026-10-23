@@ -3738,8 +3738,7 @@ const PAGES: SeoPage[] = [
         "answer": "Não por si só. A nota pode mudar por vários fatores; use evidências adicionais e descreva a conclusão com o nível de confiança adequado."
       }
     ]
-  }
-
+  },
   {
     "slug": "avaliacoes-google-oticas",
     "title": "Avaliações Google para óticas | Filtra.AI",
