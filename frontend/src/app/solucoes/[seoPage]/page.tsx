@@ -323,7 +323,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre saloes de beleza, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -362,7 +362,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre barbearias, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -401,7 +401,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre pet shops, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -440,7 +440,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre veterinarias, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -479,7 +479,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre escolas particulares, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -518,7 +518,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre faculdades, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -557,7 +557,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre oficinas mecanicas, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -596,7 +596,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre concessionarias, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -635,7 +635,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre autoescolas, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -674,7 +674,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre supermercados, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -713,7 +713,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre farmacias, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -752,7 +752,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre laboratorios, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -791,7 +791,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre hospitais, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -830,7 +830,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre coworkings, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -869,7 +869,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre contabilidades, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -908,7 +908,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre advocacia, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -947,7 +947,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre arquitetura, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -986,7 +986,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre construtoras, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1025,7 +1025,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre transportadoras, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1064,7 +1064,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre logistica, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1103,7 +1103,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre buffets, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1142,7 +1142,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre fornecedores casamento, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1181,7 +1181,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre turismo receptivo, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1220,7 +1220,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre locadoras, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1259,7 +1259,7 @@ const PAGES: SeoPage[] = [
       },
       {
         "heading": "Como medir evolução",
-        "body": "Compare períodos equivalentes, volume de avaliações, temas recorrentes, recência e ações concluídas. Considere sazonalidade e mudanças operacionais; a nota média sozinha não explica a causa nem garante melhoria de visibilidade local."
+        "body": "Para interpretar avaliações sobre estetica, compare períodos equivalentes e observe se os relatos recentes confirmam o mesmo padrão. Considere mudanças de equipe, demanda e operação; a nota média é apenas um sinal e não prova a causa nem garante visibilidade local."
       }
     ],
     "faq": [
@@ -1286,19 +1286,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em salões de beleza",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para salões de beleza, inclua sinais sobre agendamento, atendimento, pontualidade e resultado do serviço. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para agendamento, atendimento, pontualidade e resultado do serviço: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir profissionais, recepção e gestão da unidade. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a agendamento, atendimento, pontualidade e resultado do serviço, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite discutir detalhes pessoais do atendimento em público. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre agendamento, atendimento, pontualidade e resultado do serviço, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre agendamento, atendimento, pontualidade e resultado do serviço surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1325,19 +1325,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em barbearias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para barbearias, inclua sinais sobre agenda, espera, atendimento e consistência entre profissionais. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para agenda, espera, atendimento e consistência entre profissionais: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir barbeiros, recepção e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a agenda, espera, atendimento e consistência entre profissionais, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha dados de agendamento ou informações pessoais nas respostas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre agenda, espera, atendimento e consistência entre profissionais, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre agenda, espera, atendimento e consistência entre profissionais surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1364,19 +1364,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em pet shops",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para pet shops, inclua sinais sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para atendimento, disponibilidade, banho e tosa e comunicação com tutores: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir equipe de atendimento e responsáveis pela operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a atendimento, disponibilidade, banho e tosa e comunicação com tutores, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar informações que identifiquem clientes ou animais em situações sensíveis. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1403,19 +1403,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em clínicas veterinárias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para clínicas veterinárias, inclua sinais sobre agendamento, espera, comunicação e experiência dos tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para agendamento, espera, comunicação e experiência dos tutores: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, equipe clínica e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a agendamento, espera, comunicação e experiência dos tutores, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não discuta dados de saúde animal ou detalhes de atendimento em comentários públicos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre agendamento, espera, comunicação e experiência dos tutores, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre agendamento, espera, comunicação e experiência dos tutores surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1442,19 +1442,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em escolas particulares",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para escolas particulares, inclua sinais sobre comunicação com famílias, atendimento administrativo e rotina escolar. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para comunicação com famílias, atendimento administrativo e rotina escolar: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e direção. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a comunicação com famílias, atendimento administrativo e rotina escolar, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não confirme publicamente vínculo de estudantes nem compartilhe informações de menores. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre comunicação com famílias, atendimento administrativo e rotina escolar, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre comunicação com famílias, atendimento administrativo e rotina escolar surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1481,19 +1481,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em faculdades e centros universitários",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para faculdades e centros universitários, inclua sinais sobre atendimento, matrícula, comunicação e serviços aos estudantes. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para atendimento, matrícula, comunicação e serviços aos estudantes: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a atendimento, matrícula, comunicação e serviços aos estudantes, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue dados acadêmicos ou pessoais em respostas públicas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre atendimento, matrícula, comunicação e serviços aos estudantes, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre atendimento, matrícula, comunicação e serviços aos estudantes surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1520,19 +1520,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em oficinas mecânicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para oficinas mecânicas, inclua sinais sobre prazo, orçamento, explicação do serviço e pós-atendimento. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para prazo, orçamento, explicação do serviço e pós-atendimento: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, consultores e responsáveis técnicos. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a prazo, orçamento, explicação do serviço e pós-atendimento, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não publique placas, dados de veículos ou detalhes de orçamento. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre prazo, orçamento, explicação do serviço e pós-atendimento, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre prazo, orçamento, explicação do serviço e pós-atendimento surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1559,19 +1559,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em concessionárias de veículos",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para concessionárias de veículos, inclua sinais sobre atendimento comercial, test-drive, entrega e pós-venda. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para atendimento comercial, test-drive, entrega e pós-venda: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir vendas, entrega técnica e pós-venda. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a atendimento comercial, test-drive, entrega e pós-venda, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue informações de financiamento, contrato ou dados pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre atendimento comercial, test-drive, entrega e pós-venda, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre atendimento comercial, test-drive, entrega e pós-venda surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1598,19 +1598,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em autoescolas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para autoescolas, inclua sinais sobre matrícula, agenda de aulas, comunicação e suporte ao aluno. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para matrícula, agenda de aulas, comunicação e suporte ao aluno: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, instrutores e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a matrícula, agenda de aulas, comunicação e suporte ao aluno, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha informações pessoais ou dados de aprendizagem dos alunos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre matrícula, agenda de aulas, comunicação e suporte ao aluno, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre matrícula, agenda de aulas, comunicação e suporte ao aluno surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1637,19 +1637,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em supermercados",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para supermercados, inclua sinais sobre fila, disponibilidade, atendimento, limpeza e experiência por loja. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para fila, disponibilidade, atendimento, limpeza e experiência por loja: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência de loja, operação e atendimento. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a fila, disponibilidade, atendimento, limpeza e experiência por loja, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar dados de compra ou informações pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre fila, disponibilidade, atendimento, limpeza e experiência por loja, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre fila, disponibilidade, atendimento, limpeza e experiência por loja surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1676,19 +1676,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em farmácias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para farmácias, inclua sinais sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para atendimento, disponibilidade, tempo de espera e clareza da comunicação: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência, atendimento e operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a atendimento, disponibilidade, tempo de espera e clareza da comunicação, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não revele informações sobre compras, medicamentos ou saúde de clientes. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1715,19 +1715,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar gestão de avaliações em laboratórios de análises clínicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para laboratórios de análises clínicas, inclua sinais sobre agendamento, recepção, coleta, prazo e comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Monte uma taxonomia inicial para agendamento, recepção, coleta, prazo e comunicação: escolha poucas categorias que a equipe consiga aplicar de forma consistente e registre exemplos concretos para cada uma. Revise uma amostra manualmente antes de usar os rótulos para comparar pessoas, turnos ou unidades."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, atendimento e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Defina quem recebe cada ocorrência ligada a agendamento, recepção, coleta, prazo e comunicação, quem verifica o contexto e quem pode autorizar mudanças no processo. Registre responsável, prazo e resultado esperado; faça uma revisão curta em cadência fixa para evitar que a classificação termine sem uma decisão operacional."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Nunca confirme publicamente que alguém é paciente nem revele informações de saúde. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Ao analisar relatos sobre agendamento, recepção, coleta, prazo e comunicação, separe o que o cliente descreveu do que a equipe conseguiu confirmar. Restrinja dados pessoais, evite publicar detalhes de atendimento e use classificações automatizadas apenas como apoio, com revisão humana nos casos ambíguos ou sensíveis."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Acompanhe quantos relatos sobre agendamento, recepção, coleta, prazo e comunicação surgem em períodos comparáveis, quais ações foram concluídas e se o mesmo problema volta a aparecer. Registre mudanças de equipe, sazonalidade e volume da amostra para não atribuir uma melhora ou piora a uma única causa sem evidência."
       }
     ],
     "faq": [
@@ -1754,19 +1754,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em salões de beleza",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para salões de beleza, inclua sinais sobre agendamento, atendimento, pontualidade e resultado do serviço. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre agendamento, atendimento, pontualidade e resultado do serviço, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir profissionais, recepção e gestão da unidade. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre agendamento, atendimento, pontualidade e resultado do serviço: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite discutir detalhes pessoais do atendimento em público. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre agendamento, atendimento, pontualidade e resultado do serviço incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre agendamento, atendimento, pontualidade e resultado do serviço por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -1793,19 +1793,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em barbearias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para barbearias, inclua sinais sobre agenda, espera, atendimento e consistência entre profissionais. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre agenda, espera, atendimento e consistência entre profissionais, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir barbeiros, recepção e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre agenda, espera, atendimento e consistência entre profissionais: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha dados de agendamento ou informações pessoais nas respostas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre agenda, espera, atendimento e consistência entre profissionais incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre agenda, espera, atendimento e consistência entre profissionais por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -1832,19 +1832,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em pet shops",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para pet shops, inclua sinais sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir equipe de atendimento e responsáveis pela operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar informações que identifiquem clientes ou animais em situações sensíveis. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -1871,19 +1871,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em clínicas veterinárias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para clínicas veterinárias, inclua sinais sobre agendamento, espera, comunicação e experiência dos tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre agendamento, espera, comunicação e experiência dos tutores, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, equipe clínica e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre agendamento, espera, comunicação e experiência dos tutores: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não discuta dados de saúde animal ou detalhes de atendimento em comentários públicos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre agendamento, espera, comunicação e experiência dos tutores incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre agendamento, espera, comunicação e experiência dos tutores por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -1910,19 +1910,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em escolas particulares",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para escolas particulares, inclua sinais sobre comunicação com famílias, atendimento administrativo e rotina escolar. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre comunicação com famílias, atendimento administrativo e rotina escolar, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e direção. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre comunicação com famílias, atendimento administrativo e rotina escolar: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não confirme publicamente vínculo de estudantes nem compartilhe informações de menores. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre comunicação com famílias, atendimento administrativo e rotina escolar incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre comunicação com famílias, atendimento administrativo e rotina escolar por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -1949,19 +1949,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em faculdades e centros universitários",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para faculdades e centros universitários, inclua sinais sobre atendimento, matrícula, comunicação e serviços aos estudantes. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre atendimento, matrícula, comunicação e serviços aos estudantes, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre atendimento, matrícula, comunicação e serviços aos estudantes: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue dados acadêmicos ou pessoais em respostas públicas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre atendimento, matrícula, comunicação e serviços aos estudantes incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre atendimento, matrícula, comunicação e serviços aos estudantes por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -1988,19 +1988,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em oficinas mecânicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para oficinas mecânicas, inclua sinais sobre prazo, orçamento, explicação do serviço e pós-atendimento. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre prazo, orçamento, explicação do serviço e pós-atendimento, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, consultores e responsáveis técnicos. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre prazo, orçamento, explicação do serviço e pós-atendimento: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não publique placas, dados de veículos ou detalhes de orçamento. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre prazo, orçamento, explicação do serviço e pós-atendimento incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre prazo, orçamento, explicação do serviço e pós-atendimento por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -2027,19 +2027,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em concessionárias de veículos",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para concessionárias de veículos, inclua sinais sobre atendimento comercial, test-drive, entrega e pós-venda. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre atendimento comercial, test-drive, entrega e pós-venda, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir vendas, entrega técnica e pós-venda. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre atendimento comercial, test-drive, entrega e pós-venda: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue informações de financiamento, contrato ou dados pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre atendimento comercial, test-drive, entrega e pós-venda incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre atendimento comercial, test-drive, entrega e pós-venda por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -2066,19 +2066,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em autoescolas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para autoescolas, inclua sinais sobre matrícula, agenda de aulas, comunicação e suporte ao aluno. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre matrícula, agenda de aulas, comunicação e suporte ao aluno, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, instrutores e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre matrícula, agenda de aulas, comunicação e suporte ao aluno: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha informações pessoais ou dados de aprendizagem dos alunos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre matrícula, agenda de aulas, comunicação e suporte ao aluno incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre matrícula, agenda de aulas, comunicação e suporte ao aluno por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -2105,19 +2105,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em supermercados",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para supermercados, inclua sinais sobre fila, disponibilidade, atendimento, limpeza e experiência por loja. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre fila, disponibilidade, atendimento, limpeza e experiência por loja, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência de loja, operação e atendimento. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre fila, disponibilidade, atendimento, limpeza e experiência por loja: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar dados de compra ou informações pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre fila, disponibilidade, atendimento, limpeza e experiência por loja incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre fila, disponibilidade, atendimento, limpeza e experiência por loja por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -2144,19 +2144,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em farmácias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para farmácias, inclua sinais sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência, atendimento e operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não revele informações sobre compras, medicamentos ou saúde de clientes. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -2183,19 +2183,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar respostas às avaliações Google em laboratórios de análises clínicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para laboratórios de análises clínicas, inclua sinais sobre agendamento, recepção, coleta, prazo e comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Antes de responder a uma avaliação sobre agendamento, recepção, coleta, prazo e comunicação, identifique a preocupação específica e confira o que é possível verificar internamente. Evite usar uma resposta padrão que ignore o relato; reconheça o ponto mencionado e não admita nem negue fatos que ainda não foram apurados."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, atendimento e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Use um roteiro simples para comentários sobre agendamento, recepção, coleta, prazo e comunicação: agradeça o retorno, reconheça a questão concreta, explique qual verificação ou providência é possível e indique um canal privado quando forem necessários detalhes. A redação final deve refletir o caso real, não apenas preencher um modelo."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Nunca confirme publicamente que alguém é paciente nem revele informações de saúde. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Se o comentário sobre agendamento, recepção, coleta, prazo e comunicação incluir dados pessoais, informações de saúde, agenda ou detalhes de uma transação, não os repita publicamente. Não discuta nem culpe o cliente. Encaminhe a apuração por um canal apropriado e só prometa uma providência que a equipe realmente possa cumprir."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Revise a qualidade das respostas sobre agendamento, recepção, coleta, prazo e comunicação por especificidade, tom respeitoso, proteção de dados e clareza do próximo passo. Conte também os casos que exigiram correção ou escalonamento; o simples número de respostas publicadas não demonstra que o problema foi resolvido."
       }
     ],
     "faq": [
@@ -2222,19 +2222,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em salões de beleza",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para salões de beleza, inclua sinais sobre agendamento, atendimento, pontualidade e resultado do serviço. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de agendamento, atendimento, pontualidade e resultado do serviço conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir profissionais, recepção e gestão da unidade. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a agendamento, atendimento, pontualidade e resultado do serviço: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite discutir detalhes pessoais do atendimento em público. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em agendamento, atendimento, pontualidade e resultado do serviço como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para agendamento, atendimento, pontualidade e resultado do serviço a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2261,19 +2261,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em barbearias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para barbearias, inclua sinais sobre agenda, espera, atendimento e consistência entre profissionais. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de agenda, espera, atendimento e consistência entre profissionais conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir barbeiros, recepção e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a agenda, espera, atendimento e consistência entre profissionais: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha dados de agendamento ou informações pessoais nas respostas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em agenda, espera, atendimento e consistência entre profissionais como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para agenda, espera, atendimento e consistência entre profissionais a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2300,19 +2300,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em pet shops",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para pet shops, inclua sinais sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de atendimento, disponibilidade, banho e tosa e comunicação com tutores conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir equipe de atendimento e responsáveis pela operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a atendimento, disponibilidade, banho e tosa e comunicação com tutores: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar informações que identifiquem clientes ou animais em situações sensíveis. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em atendimento, disponibilidade, banho e tosa e comunicação com tutores como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para atendimento, disponibilidade, banho e tosa e comunicação com tutores a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2339,19 +2339,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em clínicas veterinárias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para clínicas veterinárias, inclua sinais sobre agendamento, espera, comunicação e experiência dos tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de agendamento, espera, comunicação e experiência dos tutores conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, equipe clínica e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a agendamento, espera, comunicação e experiência dos tutores: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não discuta dados de saúde animal ou detalhes de atendimento em comentários públicos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em agendamento, espera, comunicação e experiência dos tutores como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para agendamento, espera, comunicação e experiência dos tutores a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2378,19 +2378,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em escolas particulares",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para escolas particulares, inclua sinais sobre comunicação com famílias, atendimento administrativo e rotina escolar. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de comunicação com famílias, atendimento administrativo e rotina escolar conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e direção. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a comunicação com famílias, atendimento administrativo e rotina escolar: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não confirme publicamente vínculo de estudantes nem compartilhe informações de menores. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em comunicação com famílias, atendimento administrativo e rotina escolar como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para comunicação com famílias, atendimento administrativo e rotina escolar a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2417,19 +2417,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em faculdades e centros universitários",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para faculdades e centros universitários, inclua sinais sobre atendimento, matrícula, comunicação e serviços aos estudantes. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de atendimento, matrícula, comunicação e serviços aos estudantes conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a atendimento, matrícula, comunicação e serviços aos estudantes: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue dados acadêmicos ou pessoais em respostas públicas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em atendimento, matrícula, comunicação e serviços aos estudantes como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para atendimento, matrícula, comunicação e serviços aos estudantes a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2456,19 +2456,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em oficinas mecânicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para oficinas mecânicas, inclua sinais sobre prazo, orçamento, explicação do serviço e pós-atendimento. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de prazo, orçamento, explicação do serviço e pós-atendimento conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, consultores e responsáveis técnicos. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a prazo, orçamento, explicação do serviço e pós-atendimento: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não publique placas, dados de veículos ou detalhes de orçamento. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em prazo, orçamento, explicação do serviço e pós-atendimento como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para prazo, orçamento, explicação do serviço e pós-atendimento a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2495,19 +2495,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em concessionárias de veículos",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para concessionárias de veículos, inclua sinais sobre atendimento comercial, test-drive, entrega e pós-venda. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de atendimento comercial, test-drive, entrega e pós-venda conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir vendas, entrega técnica e pós-venda. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a atendimento comercial, test-drive, entrega e pós-venda: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue informações de financiamento, contrato ou dados pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em atendimento comercial, test-drive, entrega e pós-venda como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para atendimento comercial, test-drive, entrega e pós-venda a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2534,19 +2534,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em autoescolas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para autoescolas, inclua sinais sobre matrícula, agenda de aulas, comunicação e suporte ao aluno. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de matrícula, agenda de aulas, comunicação e suporte ao aluno conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, instrutores e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a matrícula, agenda de aulas, comunicação e suporte ao aluno: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha informações pessoais ou dados de aprendizagem dos alunos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em matrícula, agenda de aulas, comunicação e suporte ao aluno como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para matrícula, agenda de aulas, comunicação e suporte ao aluno a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2573,19 +2573,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em supermercados",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para supermercados, inclua sinais sobre fila, disponibilidade, atendimento, limpeza e experiência por loja. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de fila, disponibilidade, atendimento, limpeza e experiência por loja conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência de loja, operação e atendimento. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a fila, disponibilidade, atendimento, limpeza e experiência por loja: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar dados de compra ou informações pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em fila, disponibilidade, atendimento, limpeza e experiência por loja como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para fila, disponibilidade, atendimento, limpeza e experiência por loja a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2612,19 +2612,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em farmácias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para farmácias, inclua sinais sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de atendimento, disponibilidade, tempo de espera e clareza da comunicação conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência, atendimento e operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a atendimento, disponibilidade, tempo de espera e clareza da comunicação: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não revele informações sobre compras, medicamentos ou saúde de clientes. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em atendimento, disponibilidade, tempo de espera e clareza da comunicação como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para atendimento, disponibilidade, tempo de espera e clareza da comunicação a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2651,19 +2651,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar monitoramento de avaliações em laboratórios de análises clínicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para laboratórios de análises clínicas, inclua sinais sobre agendamento, recepção, coleta, prazo e comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Escolha a frequência de acompanhamento de agendamento, recepção, coleta, prazo e comunicação conforme o volume de comentários e o risco operacional. Uma rotina diária pode servir para ocorrências urgentes; tendências menos críticas podem ser revistas semanalmente. Documente o critério para que a equipe não dependa de verificações improvisadas."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, atendimento e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Crie níveis de triagem para sinais relacionados a agendamento, recepção, coleta, prazo e comunicação: ocorrência isolada, tema recorrente e situação que exige resposta imediata. Defina quem recebe cada alerta, em quanto tempo deve avaliar o contexto e quando escalar. Um alerta sem responsável e prazo tende a virar apenas mais uma notificação."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Nunca confirme publicamente que alguém é paciente nem revele informações de saúde. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Antes de tratar uma mudança em agendamento, recepção, coleta, prazo e comunicação como tendência, verifique a quantidade de relatos, a recência e possíveis eventos que expliquem o pico. Compare unidades ou períodos equivalentes e confirme a leitura com a equipe que conhece a operação; não transforme uma única avaliação em diagnóstico geral."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Registre para agendamento, recepção, coleta, prazo e comunicação a data do sinal, o tema, a prioridade, o responsável e o desfecho. Acompanhe tempo até triagem e recorrência após a ação, quando esses dados estiverem disponíveis. Assim, o monitoramento mede se a informação chegou a quem podia agir, não apenas quantos comentários foram encontrados."
       }
     ],
     "faq": [
@@ -2690,19 +2690,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em salões de beleza",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para salões de beleza, inclua sinais sobre agendamento, atendimento, pontualidade e resultado do serviço. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de agendamento, atendimento, pontualidade e resultado do serviço com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir profissionais, recepção e gestão da unidade. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare agendamento, atendimento, pontualidade e resultado do serviço em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite discutir detalhes pessoais do atendimento em público. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre agendamento, atendimento, pontualidade e resultado do serviço, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de agendamento, atendimento, pontualidade e resultado do serviço com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -2729,19 +2729,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em barbearias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para barbearias, inclua sinais sobre agenda, espera, atendimento e consistência entre profissionais. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de agenda, espera, atendimento e consistência entre profissionais com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir barbeiros, recepção e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare agenda, espera, atendimento e consistência entre profissionais em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha dados de agendamento ou informações pessoais nas respostas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre agenda, espera, atendimento e consistência entre profissionais, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de agenda, espera, atendimento e consistência entre profissionais com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -2768,19 +2768,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em pet shops",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para pet shops, inclua sinais sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de atendimento, disponibilidade, banho e tosa e comunicação com tutores com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir equipe de atendimento e responsáveis pela operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare atendimento, disponibilidade, banho e tosa e comunicação com tutores em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar informações que identifiquem clientes ou animais em situações sensíveis. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre atendimento, disponibilidade, banho e tosa e comunicação com tutores, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de atendimento, disponibilidade, banho e tosa e comunicação com tutores com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -2807,19 +2807,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em clínicas veterinárias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para clínicas veterinárias, inclua sinais sobre agendamento, espera, comunicação e experiência dos tutores. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de agendamento, espera, comunicação e experiência dos tutores com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, equipe clínica e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare agendamento, espera, comunicação e experiência dos tutores em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não discuta dados de saúde animal ou detalhes de atendimento em comentários públicos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre agendamento, espera, comunicação e experiência dos tutores, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de agendamento, espera, comunicação e experiência dos tutores com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -2846,19 +2846,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em escolas particulares",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para escolas particulares, inclua sinais sobre comunicação com famílias, atendimento administrativo e rotina escolar. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de comunicação com famílias, atendimento administrativo e rotina escolar com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e direção. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare comunicação com famílias, atendimento administrativo e rotina escolar em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não confirme publicamente vínculo de estudantes nem compartilhe informações de menores. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre comunicação com famílias, atendimento administrativo e rotina escolar, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de comunicação com famílias, atendimento administrativo e rotina escolar com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -2885,19 +2885,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em faculdades e centros universitários",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para faculdades e centros universitários, inclua sinais sobre atendimento, matrícula, comunicação e serviços aos estudantes. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de atendimento, matrícula, comunicação e serviços aos estudantes com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, coordenação e gestão. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare atendimento, matrícula, comunicação e serviços aos estudantes em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue dados acadêmicos ou pessoais em respostas públicas. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre atendimento, matrícula, comunicação e serviços aos estudantes, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de atendimento, matrícula, comunicação e serviços aos estudantes com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -2924,19 +2924,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em oficinas mecânicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para oficinas mecânicas, inclua sinais sobre prazo, orçamento, explicação do serviço e pós-atendimento. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de prazo, orçamento, explicação do serviço e pós-atendimento com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, consultores e responsáveis técnicos. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare prazo, orçamento, explicação do serviço e pós-atendimento em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não publique placas, dados de veículos ou detalhes de orçamento. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre prazo, orçamento, explicação do serviço e pós-atendimento, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de prazo, orçamento, explicação do serviço e pós-atendimento com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -2963,19 +2963,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em concessionárias de veículos",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para concessionárias de veículos, inclua sinais sobre atendimento comercial, test-drive, entrega e pós-venda. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de atendimento comercial, test-drive, entrega e pós-venda com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir vendas, entrega técnica e pós-venda. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare atendimento comercial, test-drive, entrega e pós-venda em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não divulgue informações de financiamento, contrato ou dados pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre atendimento comercial, test-drive, entrega e pós-venda, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de atendimento comercial, test-drive, entrega e pós-venda com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -3002,19 +3002,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em autoescolas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para autoescolas, inclua sinais sobre matrícula, agenda de aulas, comunicação e suporte ao aluno. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de matrícula, agenda de aulas, comunicação e suporte ao aluno com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir secretaria, instrutores e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare matrícula, agenda de aulas, comunicação e suporte ao aluno em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não exponha informações pessoais ou dados de aprendizagem dos alunos. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre matrícula, agenda de aulas, comunicação e suporte ao aluno, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de matrícula, agenda de aulas, comunicação e suporte ao aluno com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -3041,19 +3041,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em supermercados",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para supermercados, inclua sinais sobre fila, disponibilidade, atendimento, limpeza e experiência por loja. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de fila, disponibilidade, atendimento, limpeza e experiência por loja com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência de loja, operação e atendimento. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare fila, disponibilidade, atendimento, limpeza e experiência por loja em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Evite publicar dados de compra ou informações pessoais. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre fila, disponibilidade, atendimento, limpeza e experiência por loja, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de fila, disponibilidade, atendimento, limpeza e experiência por loja com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -3080,19 +3080,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em farmácias",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para farmácias, inclua sinais sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de atendimento, disponibilidade, tempo de espera e clareza da comunicação com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir gerência, atendimento e operação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare atendimento, disponibilidade, tempo de espera e clareza da comunicação em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Não revele informações sobre compras, medicamentos ou saúde de clientes. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre atendimento, disponibilidade, tempo de espera e clareza da comunicação, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de atendimento, disponibilidade, tempo de espera e clareza da comunicação com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
@@ -3119,19 +3119,19 @@ const PAGES: SeoPage[] = [
     "sections": [
       {
         "heading": "Como estruturar relatórios de reputação em laboratórios de análises clínicas",
-        "body": "Defina a fonte de informação, o período de análise e as categorias que ajudam a equipe a agir. Para laboratórios de análises clínicas, inclua sinais sobre agendamento, recepção, coleta, prazo e comunicação. Registre também limitações de volume e contexto para não transformar casos isolados em regras gerais."
+        "body": "Abra o relatório de agendamento, recepção, coleta, prazo e comunicação com o período analisado, as fontes consultadas e um resumo das mudanças que merecem atenção. Diferencie observações verificadas de hipóteses e indique limitações quando o volume de comentários for pequeno ou a amostra não representar toda a clientela."
       },
       {
         "heading": "Responsáveis e rotina de acompanhamento",
-        "body": "Determine quem acompanha novos comentários, quem investiga ocorrências e como os resultados são revistos. As áreas envolvidas podem incluir recepção, atendimento e coordenação. Comece com um piloto e ajuste a cadência conforme volume, risco e capacidade de execução."
+        "body": "Compare agendamento, recepção, coleta, prazo e comunicação em períodos de duração equivalente e sinalize mudanças de volume, sazonalidade, campanhas ou alterações operacionais. Se houver unidades diferentes, apresente o contexto local junto do consolidado para que uma média geral não esconda situações específicas nem produza rankings injustos."
       },
       {
         "heading": "Privacidade, contexto e qualidade",
-        "body": "Evite respostas automáticas sem revisão e não trate classificações de IA como prova definitiva. Nunca confirme publicamente que alguém é paciente nem revele informações de saúde. Preserve o contexto necessário para investigar e limite o acesso a dados pessoais."
+        "body": "Inclua exemplos representativos de relatos sobre agendamento, recepção, coleta, prazo e comunicação, removendo nomes, dados de contato e outros detalhes identificáveis. Explique por que cada exemplo ilustra o tema e evite selecionar apenas os comentários mais extremos; o objetivo é demonstrar a evidência sem expor clientes ou distorcer a frequência do problema."
       },
       {
         "heading": "Indicadores para verificar progresso",
-        "body": "Acompanhe temas recorrentes, tempo até encaminhamento quando mensurável, ações concluídas e evolução em períodos comparáveis. Não atribua causalidade a uma única mudança sem verificar outras explicações possíveis."
+        "body": "Finalize o relatório de agendamento, recepção, coleta, prazo e comunicação com poucas prioridades, cada uma ligada a evidência, responsável, prazo e critério de revisão. No ciclo seguinte, informe o que foi executado e se o sinal mudou. Não atribua causalidade a uma ação sem considerar outras mudanças ocorridas no mesmo período."
       }
     ],
     "faq": [
