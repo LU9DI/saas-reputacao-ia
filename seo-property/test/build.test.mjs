@@ -77,6 +77,7 @@ test('publishes only qualified data, requires a real origin, and escapes content
       assert.equal(invalidDateInventory.eligiblePageCount, 0);
     }
 
+    await writeFile(benchmarksPath, JSON.stringify(fixture, null, 2) + '\n');
     const envWithOrigin = { ...envWithoutOrigin, SEO_PROPERTY_ORIGIN: 'https://index.example.test' };
     execFileSync(process.execPath, [builder], { cwd: root, env: envWithOrigin, stdio: 'pipe' });
     const page = await readFile(resolve(root, 'dist/indice/academias/go/index.html'), 'utf8');
