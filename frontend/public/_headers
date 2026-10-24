@@ -1,0 +1,12 @@
+# Cloudflare Pages custom headers (copiado para out/ no export estático).
+# Limites: 100 regras e 2.000 caracteres por linha.
+
+# Versões em Markdown geradas por scripts/generate-markdown-twins.mjs.
+# O HTML continua sendo a URL canônica: o Link abaixo aponta para ele
+# (`:splat` é o caminho sem a extensão .md). Os .md ficam fora do sitemap e são
+# descobertos via /llms.txt. A home não tem .md (descrita por /llms.txt).
+/*.md
+  Content-Type: text/markdown; charset=utf-8
+  Link: <https://filtraai.com/:splat>; rel="canonical"
+  X-Content-Type-Options: nosniff
+  Cache-Control: public, max-age=3600
