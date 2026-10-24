@@ -56,7 +56,7 @@ O comando falha explicitamente em resposta HTTP inválida, conteúdo que não se
 
 ## Próximos passos técnicos obrigatórios
 
-1. Tentar a URL de download do catálogo oficial; se falhar, verificar a interface oficial de Dados Abertos e registrar a falha com data/hora e status. Não substituir silenciosamente a fonte por scraper ou dataset de terceiros.
+1. Para indicadores empresa-a-empresa, continuar tentando obter e validar o CSV oficial. Como trilha paralela separada, o projeto agora inclui agregados por setor publicados por um pesquisador independente, com atribuição, licença e limites documentados; isso não substitui nem desbloqueia a ingestão oficial.
 2. Baixar um CSV mensal e registrar URL exata, mês de referência, data de obtenção, tamanho e SHA-256.
 3. Ler apenas o cabeçalho e perfilar localmente a estrutura; não imprimir, registrar em logs ou manter cópias desnecessárias de textos de reclamação e identificadores de consumidores.
 4. Implementar parser CSV que respeite o delimitador e a codificação observados; não presumir separador, aspas ou nomes de colunas.
@@ -68,3 +68,19 @@ O comando falha explicitamente em resposta HTTP inválida, conteúdo que não se
 ## Decisão
 
 Fonte promissora para um produto de dados independente, condicionado à inspeção do CSV, validação dos cálculos e revisão de privacidade. **Não** preencher `data/benchmarks.json` do índice geral com esses indicadores. Criar um contrato de dados separado para o índice Consumidor.gov.br, com rótulos que não confundam desempenho de atendimento com reputação geral.
+
+
+## Fonte secundária agregada disponível para começar sem o CSV oficial
+
+Para evitar bloquear todo o trabalho enquanto o CSV oficial não é acessível pelo ambiente de execução, foi acrescentado `data/consumidor-gov-sector-trends.json`. Ele contém 18 agregados publicados por setor em três janelas temporais, transcritos da tabela do dataset público **DNACX; Kammers, Diogo**, com licença CC BY 4.0:
+
+- Dataset secundário: https://huggingface.co/datasets/dnacx/tres-numeros-de-resolucao-consumidor-gov
+- Versão arquivada / referência: https://doi.org/10.5281/zenodo.22982134
+- SHA-256 publicado pelo autor: `5ea2eeac8461d673ee481a79c40e9da585c12694d63a0ceca11b8fa693a33d0e`
+- Fonte primária declarada pelo autor: https://www.consumidor.gov.br/pages/dadosabertos/externo/
+
+Este arquivo é explicitamente uma **reprodução secundária pré-agregada**, não uma extração direta do CSV oficial por este projeto. A janela mais recente declarada é setembro de 2025 a agosto de 2026. Os números são agregados de setores, não resultados por empresa; por isso não entram em `data/benchmarks.json`, não ativam páginas de reputação por empresa e não podem ser misturados com avaliações privadas do Filtra.
+
+As três taxas no arquivo usam denominadores diferentes. O índice oficial de solução considera não avaliadas como resolvidas; a taxa de resolvidas sobre avaliadas exclui não avaliadas. Nunca apresentar essas métricas como intercambiáveis. A mudança na publicação em 2024 também limita comparações históricas; os rótulos de janela devem acompanhar qualquer análise.
+
+Essa trilha permite preparar conteúdo metodológico agregado, com atribuição clara, enquanto o caminho oficial continua em validação. Não libera as métricas por empresa de satisfação, resposta ou prazo médio até validar o CSV e reconciliar os cálculos com o portal oficial.
