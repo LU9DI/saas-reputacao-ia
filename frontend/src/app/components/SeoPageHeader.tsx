@@ -10,7 +10,19 @@ export function SeoPageHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 lg:px-8">
         <BrandMark size="sm" subtitle="Reputação" />
         <div className="flex items-center gap-3">
-          <nav aria-label="Navegação principal" className="hidden items-center gap-5 text-sm text-zinc-300 sm:flex">
+          <nav aria-label="Navegação principal" className="hidden items-center gap-4 text-sm text-zinc-300 lg:flex">
+            <Link href="/gestao-de-reputacao-online" className="hover:text-white">
+              Gestão de reputação
+            </Link>
+            <Link href="/avaliacoes-google" className="hover:text-white">
+              Avaliações Google
+            </Link>
+            <Link href="/analise-de-avaliacoes-com-ia" className="hover:text-white">
+              Análise com IA
+            </Link>
+            <Link href="/auditoria-gratuita" className="hover:text-white">
+              Auditoria gratuita
+            </Link>
             <Link href="/blog" className="hover:text-white">
               Blog
             </Link>

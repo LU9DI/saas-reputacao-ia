@@ -1,0 +1,50 @@
+name: AEO content audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/src/app/**"
+      - "frontend/scripts/audit-aeo-content.mjs"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - ".github/workflows/aeo-audit.yml"
+  push:
+    branches: ["feat/seo-aeo-content-audit"]
+    paths:
+      - "frontend/src/app/**"
+      - "frontend/scripts/audit-aeo-content.mjs"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - ".github/workflows/aeo-audit.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aeo-audit-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: AEO source signals
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run AEO source audit
+        run: npm run seo:aeo:audit

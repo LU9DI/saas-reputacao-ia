@@ -172,6 +172,12 @@ check(sitemap.includes("'/blog': '2026-10-22'"), 'Sitemap must reflect the blog 
 const sitemapLastModified = sitemap.match(/const LAST_MODIFIED[^=]*= \{([\s\S]*?)\n\};/)?.[1] ?? '';
 const sitemapLastModifiedKeys = [...sitemapLastModified.matchAll(/^  '([^']+)':/gm)].map((match) => match[1]);
 check(sitemapLastModifiedKeys.length === new Set(sitemapLastModifiedKeys).size, 'Sitemap lastModified map must not contain duplicate keys');
+check(sitemap.includes("'/avaliacoes-google': '2026-10-24'"), 'Sitemap lastModified must reflect the Google reviews FAQ update');
+check(sitemap.includes("'/analise-de-avaliacoes-com-ia': '2026-10-24'"), 'Sitemap lastModified must reflect the AI review analysis FAQ update');
+check(sitemap.includes("'/monitoramento-reputacao-online': '2026-10-24'"), 'Sitemap lastModified must reflect the reputation monitoring FAQ update');
+check(sitemap.includes("'/feedback-de-clientes': '2026-10-24'"), 'Sitemap lastModified must reflect the customer feedback FAQ update');
+check(sitemap.includes("'/como-funciona': '2026-10-24'"), 'Sitemap lastModified must reflect the how-it-works FAQ update');
+check(sitemap.includes("'/auditoria-gratuita': '2026-10-24'"), 'Sitemap lastModified must reflect the free audit FAQ update');
 check(ratingCalculator.includes('const faq = [') && ratingCalculator.includes("const canonical = 'https://filtraai.com/calculadora-nota-google'"), 'Rating calculator must keep its canonical and visible FAQ source');
 check(ratingCalculator.includes('href="/blog/seo-local-avaliacoes-local-pack"'), 'Rating calculator must link to the local SEO strategy guide');
 check(seoLandingComponent.includes("href: '/calculadora-nota-google'") && seoLandingComponent.includes('Calculadora de nota do Google'), 'Commercial reputation landing pages must cross-link to the rating calculator');

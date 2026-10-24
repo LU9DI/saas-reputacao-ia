@@ -68,6 +68,20 @@ export default function Page() {
           body: 'Volume de feedback, distribuição por nota, temas recorrentes, evolução por período e diferenças entre unidades formam uma visão mais útil do que uma única nota média.'
         },
       ]}
+      faq={[
+        {
+          question: 'O que é gestão de feedback de clientes?',
+          answer: 'É o processo de reunir opiniões em canais públicos e privados, identificar padrões, encaminhar problemas para responsáveis e verificar se as ações tomadas melhoraram a experiência. O valor está em fechar o ciclo entre escuta e melhoria.',
+        },
+        {
+          question: 'Como transformar feedback em melhorias concretas?',
+          answer: 'Agrupe comentários por tema, priorize frequência e impacto, defina um responsável e uma ação verificável e acompanhe os comentários seguintes. Registre uma linha de base para comparar se o problema diminuiu.',
+        },
+        {
+          question: 'A IA substitui a leitura humana do feedback?',
+          answer: 'Não completamente. A IA ajuda a classificar, resumir e encontrar recorrências, mas pode perder ironia, contexto e particularidades. Revise casos críticos e use os resultados como apoio à decisão, não como verdade automática.',
+        },
+      ]}
     />
   );
 }

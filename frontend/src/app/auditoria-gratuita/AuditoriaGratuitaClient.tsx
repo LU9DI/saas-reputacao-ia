@@ -20,6 +20,30 @@ es:{p3:'Es útil para empresas que reciben reseñas en Google y otros canales y 
 zh:{p3:'适用于在 Google 和其他渠道收到评价、需要快速了解客户认知的企业，也适合作为酒店、餐厅、诊所、代理机构、连锁企业和多门店业务的初步诊断。',reputationText:'关于企业整体认知、信任度和客户所描述体验的信号。',recurrenceText:'多条评价中反复出现的主题，例如服务、时效、产品质量和问题解决。',p4:'1. 找出重复主题；2. 与负责人确认重点；3. 为优先问题选择行动；4. 跟踪新评价以验证认知变化。',p5:'平均分只能概括整体，无法解释认知原因。即使平均分相同，不同企业的问题也可能完全不同。诊断会关注上下文和重复性。',p6:'只使用企业可以分享的内容，并避免不必要的个人数据。评价样本越有代表性，诊断通常越有价值。',placeholder:'企业名称',emailPlaceholder:'you@company.com（可选）',consentText:'我希望接收 Filtra.AI 关于诊断、7 天试用和服务的信息。授权是可选的，也可以随时取消。',emailHint:'只有选择接收 Filtra.AI 通讯时才需要电子邮件。',r1:'所提供评分的平均值和分布',r2:'评价中发现的优势',r3:'风险和重复主题',r4:'基于分析材料的实际行动',r5:'根据证据数量和清晰度给出的可信度',summary:'摘要',strengths:'优势',risks:'风险',themes:'重复主题',actions:'建议行动',result:'这是初步诊断。如需持续跟踪评价、趋势和行动，请了解 Filtra.AI 的 7 天试用。',reviewsLabel:'条评价',positive:'好评',negative:'差评'}};
 const cExtra = (language: Language) => EXTRA[language];
 
+const AUDIT_FAQ: Record<Language, { question: string; answer: string }[]> = {
+  pt: [
+    { question: 'Como funciona a auditoria gratuita?', answer: 'Informe a empresa e cole pelo menos três avaliações reais no formato nota | texto. O diagnóstico resume notas, pontos fortes, riscos e temas recorrentes do material enviado.' },
+    { question: 'A auditoria consulta automaticamente todas as avaliações do Google?', answer: 'Não. Este diagnóstico inicial analisa as avaliações que você fornece no formulário. Ele não representa uma coleta automática nem garante que a amostra seja completa.' },
+    { question: 'O diagnóstico garante melhora na nota ou no ranking do Google?', answer: 'Não. O resultado aponta oportunidades a investigar. A nota pública e a posição no Google dependem de vários fatores e não podem ser garantidas pela ferramenta.' },
+  ],
+  en: [
+    { question: 'How does the free audit work?', answer: 'Enter a company name and paste at least three real reviews in rating | text format. The diagnostic summarizes ratings, strengths, risks and recurring themes in the supplied material.' },
+    { question: 'Does the audit automatically retrieve every Google review?', answer: 'No. This initial diagnostic analyzes the reviews you provide in the form. It is not an automatic collection and does not guarantee a complete sample.' },
+    { question: 'Does the diagnostic guarantee a higher Google rating or ranking?', answer: 'No. It identifies opportunities to investigate. Public ratings and Google positions depend on multiple factors and cannot be guaranteed by the tool.' },
+  ],
+  es: [
+    { question: '¿Cómo funciona la auditoría gratuita?', answer: 'Indica la empresa y pega al menos tres reseñas reales en formato nota | texto. El diagnóstico resume puntuaciones, fortalezas, riesgos y temas recurrentes del material proporcionado.' },
+    { question: '¿La auditoría recopila automáticamente todas las reseñas de Google?', answer: 'No. Este diagnóstico inicial analiza las reseñas que introduces en el formulario. No es una recopilación automática ni garantiza una muestra completa.' },
+    { question: '¿El diagnóstico garantiza una mejor nota o posición en Google?', answer: 'No. Identifica oportunidades para investigar. Las puntuaciones públicas y la posición en Google dependen de varios factores y la herramienta no puede garantizarlas.' },
+  ],
+  zh: [
+    { question: '免费审计如何运作？', answer: '填写企业名称，并按“评分 | 文本”格式粘贴至少三条真实评价。诊断会总结所提供材料中的评分、优势、风险和重复主题。' },
+    { question: '审计会自动获取所有 Google 评价吗？', answer: '不会。此初步诊断只分析您在表单中提供的评价，不会自动收集全部评价，也不保证样本完整。' },
+    { question: '诊断能保证提高 Google 评分或排名吗？', answer: '不能。它用于发现值得调查的机会。公开评分和 Google 排名受多种因素影响，工具无法保证结果。' },
+  ],
+};
+
+
 type Diagnostic = {
   company: string;
   review_count: number;
@@ -190,6 +214,34 @@ export function AuditoriaGratuitaClient() {
             <p className="mt-4 max-w-3xl leading-8">
               {c.p6}
             </p>
+          </div>
+        </section>
+
+        <section className="space-y-3" aria-labelledby="audit-faq-title">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: AUDIT_FAQ[language].map((item) => ({
+                  '@type': 'Question',
+                  name: item.question,
+                  acceptedAnswer: { '@type': 'Answer', text: item.answer },
+                })),
+              }),
+            }}
+          />
+          <h2 id="audit-faq-title" className="text-2xl font-bold text-zinc-100">
+            {language === 'pt' ? 'Perguntas frequentes' : language === 'en' ? 'Frequently asked questions' : language === 'es' ? 'Preguntas frecuentes' : '常见问题'}
+          </h2>
+          <div className="space-y-3">
+            {AUDIT_FAQ[language].map((item) => (
+              <details key={item.question} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+                <summary className="cursor-pointer text-sm font-medium text-zinc-100">{item.question}</summary>
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{item.answer}</p>
+              </details>
+            ))}
           </div>
         </section>
 

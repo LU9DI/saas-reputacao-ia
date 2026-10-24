@@ -60,6 +60,20 @@ export default function Page() {
         { heading: 'Compare unidades com contexto', body: 'Empresas com várias unidades precisam enxergar diferenças locais sem transformar realidades distintas em uma comparação enganosa.' },
         { heading: 'Crie uma rotina semanal', body: 'Uma revisão recorrente transforma avaliações dispersas em inteligência operacional, facilita decisões e mostra se os problemas estão diminuindo.' },
       ]}
+      faq={[
+        {
+          question: 'O que deve entrar no monitoramento da reputação online?',
+          answer: 'Comece por novas avaliações, mudanças na distribuição das notas, temas recorrentes, reclamações críticas, respostas pendentes e diferenças entre unidades. Inclua apenas fontes que a equipe consegue acompanhar e transformar em ações.',
+        },
+        {
+          question: 'Com que frequência devo monitorar a reputação da empresa?',
+          answer: 'Operações com volume alto devem acompanhar alertas críticos com frequência e revisar tendências pelo menos semanalmente. Compare períodos mensais para entender a evolução, considerando sazonalidade e mudanças na operação.',
+        },
+        {
+          question: 'Qual é a diferença entre monitoramento e gestão de reputação?',
+          answer: 'Monitoramento identifica mudanças, comentários e sinais relevantes. Gestão de reputação usa esses sinais para responder, investigar causas, corrigir problemas e medir se as ações melhoraram a experiência dos clientes.',
+        },
+      ]}
     />
   );
 }

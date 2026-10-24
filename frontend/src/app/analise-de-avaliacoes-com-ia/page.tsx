@@ -65,6 +65,24 @@ export default function Page() {
         { heading: 'Como transformar insights em ação', body: 'Escolha os temas prioritários, associe cada um a uma equipe responsável, defina uma ação verificável e acompanhe as avaliações seguintes. O valor do insight aparece quando ele produz melhoria mensurável.' },
         { heading: 'Indicadores para acompanhar', body: 'Observe volume de avaliações, distribuição por nota, temas recorrentes, frequência das reclamações, evolução por período e diferenças entre unidades. A combinação mostra onde a empresa está avançando e onde precisa intervir.' },
       ]}
+      faq={[
+        {
+          question: 'O que é análise de avaliações com inteligência artificial?',
+          answer: 'É o uso de IA para organizar comentários de clientes, identificar assuntos recorrentes, classificar sinais e resumir padrões. Os resultados ajudam a priorizar investigações, mas devem ser interpretados com o contexto do negócio.',
+        },
+        {
+          question: 'Como analisar muitas avaliações sem ler uma por uma?',
+          answer: 'Comece reunindo as avaliações em uma base consistente, agrupe os comentários por tema, compare frequência e evolução por período e revise manualmente os casos ambíguos ou críticos antes de decidir uma ação.',
+        },
+        {
+          question: 'A IA consegue interpretar corretamente todas as avaliações?',
+          answer: 'Não. Ironia, contexto incompleto e expressões específicas podem levar a classificações incorretas. Use a IA para acelerar a triagem e mantenha revisão humana quando a interpretação puder afetar clientes ou decisões importantes.',
+        },
+        {
+          question: 'Quais indicadores acompanhar depois de analisar as avaliações?',
+          answer: 'Acompanhe volume de avaliações, distribuição das notas, frequência dos temas, evolução por período, diferenças entre unidades e andamento das ações definidas. Compare os indicadores com uma linha de base para verificar mudanças.',
+        },
+      ]}
     />
   );
 }

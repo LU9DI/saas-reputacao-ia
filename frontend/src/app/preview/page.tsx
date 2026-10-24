@@ -59,6 +59,43 @@ type Copy = {
   terms: string;
 };
 
+const LOCALIZED_SEO_PATHS: Record<string, Partial<Record<Language, string>>> = {
+  '/': { en: '/en', es: '/es', zh: '/zh' },
+  '/ia': { en: '/en/ai', es: '/es/ia', zh: '/zh/ai' },
+  '/filtra-ai': { en: '/en/filtra-ai', es: '/es/filtra-ai', zh: '/zh/filtra-ai' },
+  '/gestao-de-reputacao-online': { en: '/en/online-reputation-management', es: '/es/gestion-reputacion-online', zh: '/zh/online-reputation-management' },
+  '/avaliacoes-google': { en: '/en/google-reviews', es: '/es/resenas-google', zh: '/zh/google-reviews' },
+  '/analise-de-avaliacoes-com-ia': { en: '/en/ai-review-analysis', es: '/es/analisis-resenas-ia', zh: '/zh/ai-review-analysis' },
+  '/auditoria-gratuita': { en: '/en/free-review-audit', es: '/es/auditoria-gratuita', zh: '/zh/free-review-audit' },
+  '/feedback-de-clientes': { en: '/en/customer-feedback', es: '/es/feedback-clientes', zh: '/zh/customer-feedback' },
+  '/monitoramento-reputacao-online': { en: '/en/online-reputation-monitoring', es: '/es/monitoreo-reputacion-online', zh: '/zh/online-reputation-monitoring' },
+  '/reputacao-google': { en: '/en/google-reputation', es: '/es/reputacion-google', zh: '/zh/google-reputation' },
+  '/como-melhorar-avaliacoes-google': { en: '/en/improve-google-reviews', es: '/es/mejorar-resenas-google', zh: '/zh/improve-google-reviews' },
+  '/gestao-de-feedback': { en: '/en/customer-feedback-management', es: '/es/gestion-feedback-clientes', zh: '/zh/customer-feedback-management' },
+  '/hoteis': { en: '/en/hotels', es: '/es/hoteles', zh: '/zh/hotels' },
+  '/turismo': { en: '/en/tourism', es: '/es/turismo', zh: '/zh/tourism' },
+  '/agencias': { en: '/en/agencies', es: '/es/agencias', zh: '/zh/agencies' },
+  '/clinicas': { en: '/en/clinics', es: '/es/clinicas', zh: '/zh/clinics' },
+  '/franquias': { en: '/en/franchises', es: '/es/franquicias', zh: '/zh/franchises' },
+  '/associacoes': { en: '/en/associations', es: '/es/asociaciones', zh: '/zh/associations' },
+  '/restaurantes': { en: '/en/restaurants', es: '/es/restaurantes', zh: '/zh/restaurants' },
+  '/como-funciona': { en: '/en/how-it-works', es: '/es/como-funciona', zh: '/zh/how-it-works' },
+  '/parceiros': { en: '/en/partners', es: '/es/socios', zh: '/zh/partners' },
+  '/pedir-estrela-vs-filtrar': { en: '/en/ask-for-stars-vs-filtering', es: '/es/pedir-estrellas-vs-filtrar', zh: '/zh/request-stars-vs-filter' },
+  '/blog': { en: '/en/blog', es: '/es/blog', zh: '/zh/blog' },
+  '/blog/gestao-reputacao-online-guia': { en: '/en/blog/online-reputation-management-guide', es: '/es/blog/guia-gestion-reputacion-online', zh: '/zh/blog/online-reputation-management-guide' },
+  '/blog/como-conseguir-avaliacoes-google': { en: '/en/blog/get-google-reviews', es: '/es/blog/conseguir-resenas-google', zh: '/zh/blog/google-reviews-guide' },
+  '/blog/feedback-cliente-para-reputacao': { en: '/en/blog/customer-feedback-reputation', es: '/es/blog/feedback-clientes-reputacion', zh: '/zh/blog/customer-feedback-reputation' },
+  '/blog/seo-local-avaliacoes-local-pack': { en: '/en/blog/local-seo-google-reviews', es: '/es/blog/seo-local-resenas-google', zh: '/zh/blog/local-seo-google-reviews' },
+  '/blog/agencia-vender-gestao-reputacao': { en: '/en/blog/agency-reputation-management', es: '/es/blog/agencia-gestion-reputacion', zh: '/zh/blog/agency-reputation-management' },
+};
+function localizedHref(href: string, language: Language): string {
+  if (language === 'pt') return href;
+  const translated = LOCALIZED_SEO_PATHS[href]?.[language];
+  // Do not send visitors to an unrelated translated slug; fall back only when the route has no translation.
+  return translated ?? href;
+}
+
 const copy: Record<Language, Copy> = {
   pt: {
     badge: 'Inteligência de reputação para empresas',
@@ -339,6 +376,9 @@ export default function LandingPreview() {
             <a href="#como-funciona" className="hover:text-white">{c.howEyebrow}</a>
             <a href="#recursos" className="hover:text-white">{c.featuresEyebrow}</a>
             <a href="#filtra-dot" className="hover:text-white">Filtra Dot</a>
+            <Link href={localizedHref("/gestao-de-reputacao-online", language)} className="hover:text-white">{language==='pt'?'Reputação':language==='en'?'Reputation':language==='es'?'Reputación':'声誉'}</Link>
+            <Link href={localizedHref("/avaliacoes-google", language)} className="hover:text-white">{language==='pt'?'Avaliações Google':language==='en'?'Google reviews':language==='es'?'Reseñas Google':'Google 评价'}</Link>
+            <Link href={localizedHref("/auditoria-gratuita", language)} className="hover:text-white">{language==='pt'?'Auditoria grátis':language==='en'?'Free audit':language==='es'?'Auditoría gratis':'免费审计'}</Link>
             <Link href="/blog" className="hover:text-white">Blog</Link>
             <a href="#planos" className="hover:text-white">{c.plansEyebrow}</a>
           </div>
@@ -430,23 +470,23 @@ export default function LandingPreview() {
             <p className="mt-4 text-base leading-7 text-zinc-400">{seo.text}</p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {seo.links.map(([href,title,description]) => <Link key={href} href={href} className="group rounded-2xl border border-white/10 bg-white/2.5 p-5 transition hover:border-indigo-400/30 hover:bg-white/4"><h3 className="font-semibold text-zinc-100 group-hover:text-indigo-200">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p><span className="mt-4 inline-block text-xs font-medium text-indigo-300">{seo.more}</span></Link>)}
+            {seo.links.map(([href,title,description]) => <Link key={href} href={localizedHref(href, language)} className="group rounded-2xl border border-white/10 bg-white/2.5 p-5 transition hover:border-indigo-400/30 hover:bg-white/4"><h3 className="font-semibold text-zinc-100 group-hover:text-indigo-200">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-500">{description}</p><span className="mt-4 inline-block text-xs font-medium text-indigo-300">{seo.more}</span></Link>)}
           </div>
           <div className="mt-8">
             <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">{seo.segment}</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {seo.segments.map(([href,title,description]) => <Link key={href} href={href} className="rounded-xl border border-white/10 bg-white/2 p-4 transition hover:border-indigo-400/30"><h3 className="font-medium text-zinc-100">{title}</h3><p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p></Link>)}
+              {seo.segments.map(([href,title,description]) => <Link key={href} href={localizedHref(href, language)} className="rounded-xl border border-white/10 bg-white/2 p-4 transition hover:border-indigo-400/30"><h3 className="font-medium text-zinc-100">{title}</h3><p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p></Link>)}
             </div>
           </div>
           <div className="mt-8 border-t border-white/10 pt-6">
             <p className="text-xs font-semibold uppercase tracking-[.18em] text-zinc-500">{seo.guides}</p>
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-              <Link href="/blog/gestao-reputacao-online-guia" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Guia de gestão de reputação':language==='en'?'Reputation management guide':language==='es'?'Guía de gestión de reputación':'声誉管理指南'}</Link>
-              <Link href="/blog/como-conseguir-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como conseguir avaliações no Google':language==='en'?'How to get Google reviews':language==='es'?'Cómo conseguir reseñas en Google':'如何获得 Google 评价'}</Link>
-              <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'SEO local e avaliações':language==='en'?'Local SEO and reviews':language==='es'?'SEO local y reseñas':'本地 SEO 与评价'}</Link>
+              <Link href={localizedHref("/blog/gestao-reputacao-online-guia", language)} className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Guia de gestão de reputação':language==='en'?'Reputation management guide':language==='es'?'Guía de gestión de reputación':'声誉管理指南'}</Link>
+              <Link href={localizedHref("/blog/como-conseguir-avaliacoes-google", language)} className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como conseguir avaliações no Google':language==='en'?'How to get Google reviews':language==='es'?'Cómo conseguir reseñas en Google':'如何获得 Google 评价'}</Link>
+              <Link href={localizedHref("/blog/seo-local-avaliacoes-local-pack", language)} className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'SEO local e avaliações':language==='en'?'Local SEO and reviews':language==='es'?'SEO local y reseñas':'本地 SEO 与评价'}</Link>
               <Link href="/blog/review-1-estrela-primeiras-24-horas" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como agir diante de uma avaliação de 1 estrela':language==='en'?'What to do after a 1-star review':language==='es'?'Qué hacer ante una reseña de 1 estrella':'收到一星评价后怎么办'}</Link>
               <Link href="/blog/clinica-checklist-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Checklist de avaliações para clínicas':language==='en'?'Review checklist for clinics':language==='es'?'Checklist de reseñas para clínicas':'诊所 Google 评价清单'}</Link>
-              <Link href="/blog" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Todos os artigos':language==='en'?'All articles':language==='es'?'Todos los artículos':'所有文章'}</Link>
+              <Link href={localizedHref("/blog", language)} className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Todos os artigos':language==='en'?'All articles':language==='es'?'Todos los artículos':'所有文章'}</Link>
             </div>
           </div>
         </div>
