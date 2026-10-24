@@ -50,7 +50,7 @@ for (const current of latestSectors) {
   const html = `<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(description)}">
-<link rel="canonical" href="${esc(origin+path)}"><meta name="robots" content="index,follow"></head>
+${origin ? `<link rel="canonical" href="${esc(origin+path)}"><meta name="robots" content="index,follow">` : '<meta name="robots" content="noindex,nofollow">'}</head>
 <body><header><a href="/">Índice público de dados</a></header><main>
 <h1>${esc(title)}</h1>
 <p>Esta página descreve resultados agregados da plataforma Consumidor.gov.br, não a reputação geral de empresas nem a experiência de todos os consumidores brasileiros.</p>
@@ -79,9 +79,9 @@ await writeFile(resolve(output,"sitemap-sector-trends.xml"), `<?xml version="1.0
 const indexPath = resolve(output,"sitemap.xml");
 let index = "";
 try { index = await (await import("node:fs/promises")).readFile(indexPath,"utf8"); } catch {}
-if (index && !index.includes("sitemap-sector-trends.xml")) {
+if (origin && index && !index.includes("sitemap-sector-trends.xml")) {
   index = index.replace("</sitemapindex>", `<sitemap><loc>${esc(origin+"/sitemap-sector-trends.xml")}</loc></sitemap>\n</sitemapindex>`);
   await writeFile(indexPath,index);
 }
-await writeFile(resolve(output,"sector-trends-manifest.json"), JSON.stringify({sourceStatus:data.status,scope:data.scope,generatedPages:pages.map(page=>({...page,canonical:origin+page.path})),sitemap:"sitemap-sector-trends.xml"},null,2)+"\n");
+await writeFile(resolve(output,"sector-trends-manifest.json"), JSON.stringify({sourceStatus:data.status,scope:data.scope,generatedPages:pages.map(page=>({...page,canonical:origin+page.path})),sitemap:origin ? "sitemap-sector-trends.xml" : null},null,2)+"\n");
 console.log(`Generated ${pages.length} sector-level Consumidor.gov.br pages.`);
