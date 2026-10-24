@@ -42,6 +42,19 @@ Os denominadores devem ser apresentados junto aos resultados. Não calcular uma 
 - O dicionário publicado é versão 3.0, datado de 23/09/2020. Deve ser comparado com os cabeçalhos reais de uma amostra recente antes de ser considerado suficiente.
 - Nenhum benchmark real foi produzido; `data/benchmarks.json` permanece vazio deliberadamente.
 
+## Confirmação do estado da CI e do portal — 24/10/2026
+
+A execução do commit anterior `8abf94546ddb39974b89052eb29563e041698eeb` terminou com os checks de CI geral e de contrato de dados aprovados. Isso valida o código e os testes automatizados, não o esquema do arquivo oficial.
+
+Nova inspeção da página pública oficial https://www.consumidor.gov.br/pages/dadosabertos/externo/ confirmou que a página abre, mas a tabela HTML extraída nesta sessão apresenta somente o cabeçalho (Título, Data Publicação, Ver publicação), sem registros nem links de arquivos. Portanto, ainda não é possível capturar um URL mensal oficial verificável por esta interface de leitura. A página de indicadores também abre e exibe as definições oficiais, mas suas tabelas de ranking aparecem vazias nesta extração.
+
+Decisão de engenharia:
+1. Não tentar adivinhar endpoints internos ou IDs de arquivos a partir do JavaScript não observado.
+2. Manter o importador de CSV em modo de inspeção de metadados/cabeçalho, sem ler valores de linhas no log.
+3. Manter a série agregada secundária como conteúdo setorial separado e citar a fonte/versão licenciada.
+4. Não desbloquear indicadores por empresa, satisfação ou prazo médio até obter o arquivo primário e reconciliar resultados com os indicadores oficiais.
+5. A próxima via prática é baixar manualmente um arquivo mensal na página oficial com um navegador normal e fornecer ao comando local apenas o caminho do arquivo; o inspector local já evita imprimir os registros. Não é necessário compartilhar o CSV completo na conversa.
+
 ## Atualização da investigação — 24/10/2026
 
 A investigação encontrou uma diferença operacional importante entre as duas publicações:
