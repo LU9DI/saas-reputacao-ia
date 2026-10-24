@@ -30,6 +30,19 @@ jobs:
         working-directory: frontend
         run: node scripts/validate-seo.mjs
 
+      - name: Test SEO/AEO opportunity backlog generator
+        working-directory: frontend
+        run: npm run seo:opportunities:test
+
+      - name: Test Search Console demand evidence importer
+        working-directory: frontend
+        run: npm run seo:demand:test
+
+      - name: Test SEO evidence qualification queue
+        working-directory: frontend
+        run: npm run seo:qualification:test
+
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest
