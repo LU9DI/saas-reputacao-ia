@@ -1,23 +1,62 @@
 import { readFile, mkdir, rm, writeFile } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
+
 const root = resolve(import.meta.dirname, '..');
 const output = resolve(root, 'dist');
-const sectors = [["academias","Academias","aulas, equipamentos, limpeza, lotação e retenção de alunos"],["clinicas","Clínicas","agendamento, acolhimento, espera e comunicação com pacientes"],["dentistas","Consultórios odontológicos","procedimentos, conforto, orçamento e acompanhamento"],["veterinarias","Clínicas veterinárias","urgências, cuidado, comunicação e acompanhamento"],["petshops","Pet shops","banho e tosa, pontualidade, cuidado e comunicação"],["restaurantes","Restaurantes","qualidade, espera, atendimento, ambiente e entrega"],["cafeterias","Cafeterias","consistência, atendimento, ambiente e cardápio"],["hoteis","Hotéis e pousadas","reservas, limpeza, check-in, conforto e resolução de problemas"],["turismo","Agências de turismo","roteiros, suporte, pontualidade e expectativas"],["imobiliarias","Imobiliárias","comunicação, visitas, documentação e manutenção"],["construtoras","Construtoras","prazos, transparência, acabamento e pós-venda"],["saloes-de-beleza","Salões de beleza","agendamento, pontualidade, higiene e consistência"],["barbearias","Barbearias","agenda, atendimento, ambiente e consistência do serviço"],["estetica","Clínicas de estética","expectativas, segurança, explicação e acompanhamento"],["spas","Spas e bem-estar","agendamento, ambiente, higiene e qualidade da experiência"],["escolas","Escolas","comunicação, acolhimento, organização e suporte"],["cursos-livres","Cursos livres","inscrição, conteúdo, suporte e clareza das informações"],["faculdades","Instituições de ensino superior","atendimento, serviços e experiência acadêmica"],["oficinas-mecanicas","Oficinas mecânicas","diagnóstico, orçamento, prazo e transparência"],["concessionarias","Concessionárias","venda, entrega, pós-venda e manutenção"],["autopecas","Lojas de autopeças","disponibilidade, compatibilidade, orientação e entrega"],["ecommerce","Lojas virtuais","descrição, pagamento, entrega, troca e suporte"],["varejo","Lojas físicas","atendimento, disponibilidade, preço e pós-venda"],["supermercados","Supermercados","fila, disponibilidade, limpeza e atendimento"],["farmacias","Farmácias","disponibilidade, atendimento e tempo de espera"],["oticas","Óticas","atendimento, ajuste, prazo e clareza de orçamento"],["artes-marciais","Escolas de artes marciais","acolhimento, horários, instrutores e segurança"],["coworkings","Espaços de coworking","infraestrutura, internet, acesso e suporte"],["contabilidade","Escritórios de contabilidade","prazo, clareza, organização e disponibilidade"],["advocacia","Escritórios de advocacia","comunicação, previsibilidade, atendimento e transparência"],["consultorias","Consultorias empresariais","escopo, comunicação, entregáveis e acompanhamento"],["agencias-marketing","Agências de marketing","alinhamento, relatórios, prazos e resultados explicados"],["software-b2b","Empresas de software B2B","onboarding, suporte, estabilidade e documentação"],["provedores-internet","Provedores de internet","instalação, estabilidade, suporte e cobrança"],["telefonia","Operadoras e lojas de telefonia","cobertura, contratação, cobrança e suporte"],["energia-solar","Empresas de energia solar","proposta, instalação, prazo e suporte técnico"],["mudancas","Empresas de mudança","orçamento, pontualidade, cuidado e comunicação"],["limpeza","Empresas de limpeza","escopo, pontualidade, qualidade e confiança"],["dedetizacao","Empresas de controle de pragas","orientação, segurança, execução e retorno"],["reformas","Empresas de reforma","orçamento, cronograma, acabamento e comunicação"],["arquitetura","Escritórios de arquitetura","briefing, projeto, revisões e acompanhamento"],["fotografia","Estúdios de fotografia","agenda, entrega, direção e expectativas"],["eventos","Espaços e organizadores de eventos","planejamento, comunicação, fornecedores e execução"],["buffets","Buffets","cardápio, pontualidade, equipe e execução"],["pilates","Estúdios de pilates","agenda, instrutores, ambiente e acompanhamento"],["fisioterapia","Clínicas de fisioterapia","agendamento, comunicação e continuidade do cuidado"],["laboratorios","Laboratórios de análises","agendamento, coleta, prazo e comunicação"],["transportadoras","Transportadoras","prazo, rastreamento, integridade e suporte"],["logistica","Operadores logísticos","visibilidade, prazo, avarias e resolução"],["associacoes","Associações e entidades","comunicação, serviços, eventos e prestação de contas"]];
-const intents = [["como-escolher","Como escolher","critérios verificáveis, perguntas antes da contratação, sinais de alerta e checklist"],["precos","Preços e orçamento","componentes do preço, variáveis que alteram o custo, itens incluídos e comparação de propostas"],["avaliacoes","Avaliações e reputação","recência, volume, temas recorrentes, respostas e limites das avaliações"],["problemas-comuns","Problemas comuns","diagnóstico, prevenção, escalonamento e quando buscar ajuda especializada"],["checklist","Checklist","passos por etapa, evidências a guardar, responsabilidades e critérios de conclusão"],["comparativo","Comparativo","matriz de decisão, custo total, escopo, garantias, limitações e adequação"],["perguntas-frequentes","Perguntas frequentes","respostas diretas, exceções importantes, documentos e limites do serviço"],["melhores-praticas","Boas práticas","processo recomendado, indicadores, rotina de revisão e exemplos setoriais"],["modelos-e-exemplos","Modelos e exemplos","modelo adaptável, exemplo ilustrativo, campos necessários e erros a evitar"],["sinais-de-alerta","Sinais de alerta","sinais verificáveis, perguntas de validação e diferença entre alerta e prova"]];
-const approved = new Set(JSON.parse(await readFile(resolve(root, 'data/approved-urls.json'), 'utf8')));
+const sectors = JSON.parse(await readFile(resolve(root, 'data/sectors.json'), 'utf8'));
+const intents = JSON.parse(await readFile(resolve(root, 'data/intents.json'), 'utf8'));
+const records = JSON.parse(await readFile(resolve(root, 'data/benchmarks.json'), 'utf8'));
 const origin = (process.env.SEO_PROPERTY_ORIGIN || 'https://seo-property-not-configured.invalid').replace(/\/$/, '');
+const MIN_BUSINESSES = 20;
+const MIN_REVIEWS = 100;
+const SHARD_SIZE = 40000;
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-await rm(output, {recursive:true,force:true}); await mkdir(output,{recursive:true});
-const pages=[], sitemap=[];
-for (const [ss, name, topics] of sectors) for (const [is, intent, angle] of intents) {
-  const path = `/${ss}/${is}/`, ok = approved.has(path);
-  const title = `${intent}: guia para ${name.toLowerCase()}`;
-  const description = `Guia de ${intent.toLowerCase()} para ${name.toLowerCase()}: ${angle}.`;
-  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><link rel="canonical" href="${esc(origin+path)}"><meta name="robots" content="${ok?'index,follow':'noindex,follow'}"></head><body><header><a href="/">Guias práticos por setor</a></header><main><nav><a href="/">Início</a> / ${esc(name)} / ${esc(intent)}</nav><h1>${esc(intent)} para ${esc(name.toLowerCase())}</h1><p><strong>Resposta direta:</strong> avalie ${esc(name.toLowerCase())} por critérios verificáveis, levando em conta o contexto, o escopo contratado e a recorrência dos problemas. Não decida apenas por uma nota, preço ou comentário isolado.</p><section><h2>O que importa neste setor</h2><p>Considere ${esc(topics)}. Esses fatores ajudam a formular perguntas específicas e separar uma ocorrência isolada de um padrão que merece atenção.</p></section><section><h2>Roteiro: ${esc(intent.toLowerCase())}</h2><p>Use como ponto de partida: ${esc(angle)}. Solicite exemplos concretos, verifique o que está incluído e registre condições que podem mudar a decisão.</p><ol><li>Defina o resultado esperado e as condições indispensáveis.</li><li>Compare alternativas usando os mesmos critérios e escopo.</li><li>Peça evidências para afirmações importantes e identifique incertezas.</li><li>Registre responsáveis, prazos, custos adicionais e como divergências serão resolvidas.</li></ol></section><section><h2>Perguntas antes de decidir</h2><ul><li>Quais entregas, limites e condições estão documentados?</li><li>Que evidência sustenta a recomendação apresentada?</li><li>Como são tratados atrasos, reclamações ou exceções?</li><li>Como o resultado será medido e revisado?</li></ul></section><section><h2>Limites deste guia</h2><p>Este material é uma estrutura inicial, não uma classificação de empresas nem uma garantia de resultado. Confirme preços, requisitos e condições com fontes qualificadas.</p></section><footer>Publicar somente após revisão editorial e inclusão de conteúdo realmente específico e útil.</footer></main></body></html>`;
-  const file = resolve(output, `.${path}index.html`); await mkdir(dirname(file),{recursive:true}); await writeFile(file,html);
-  pages.push({path,title,sector:ss,intent:is,status:ok?'approved':'draft',indexable:ok});
-  if(ok) sitemap.push(`<url><loc>${esc(origin+path)}</loc></url>`);
+const states = new Set(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']);
+const sectorBySlug = new Map(sectors.map(s => [s.slug, s]));
+const validDate = value => typeof value === 'string' && !Number.isNaN(Date.parse(value));
+const qualified = record => {
+  if (!sectorBySlug.has(record.sector) || !states.has(record.state)) return false;
+  if (!Number.isInteger(record.sampleBusinesses) || record.sampleBusinesses < MIN_BUSINESSES) return false;
+  if (!Number.isInteger(record.reviewCount) || record.reviewCount < MIN_REVIEWS) return false;
+  if (!Number.isFinite(record.averageRating) || record.averageRating < 1 || record.averageRating > 5) return false;
+  if (!Number.isFinite(record.responseRate) || record.responseRate < 0 || record.responseRate > 100) return false;
+  if (!validDate(record.periodStart) || !validDate(record.periodEnd) || Date.parse(record.periodStart) > Date.parse(record.periodEnd)) return false;
+  if (!validDate(record.updatedAt) || !record.sourceDescription?.trim() || !record.methodologyUrl?.startsWith('https://')) return false;
+  if (!Array.isArray(record.topThemes) || record.topThemes.length === 0 || record.topThemes.some(t => typeof t !== 'string' || !t.trim())) return false;
+  return true;
+};
+const pathFor = record => `/indice/${record.sector}/${record.state.toLowerCase()}/`;
+const unique = new Map();
+for (const record of records) {
+  if (!qualified(record)) continue;
+  const path = pathFor(record);
+  if (unique.has(path)) throw new Error(`Duplicate benchmark URL: ${path}`);
+  unique.set(path, record);
 }
-await writeFile(resolve(output,'sitemap.xml'),`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemap.join('\n')}\n</urlset>\n`);
-await writeFile(resolve(output,'inventory.json'),JSON.stringify({origin,sectorCount:sectors.length,intentCount:intents.length,candidateCount:pages.length,approvedCount:sitemap.length,draftCount:pages.length-sitemap.length,pages},null,2)+'\n');
-console.log(`Generated ${pages.length} candidate pages; ${sitemap.length} approved URLs in sitemap.`);
+await rm(output, { recursive: true, force: true });
+await mkdir(output, { recursive: true });
+const eligiblePages = [];
+for (const [path, record] of unique) {
+  const sector = sectorBySlug.get(record.sector);
+  const title = `Índice de reputação: ${sector.name} em ${record.state}`;
+  const description = `Indicadores agregados de reputação para ${sector.name.toLowerCase()} em ${record.state}, período de ${record.periodStart} a ${record.periodEnd}. Consulte a amostra e a metodologia.`;
+  const themes = record.topThemes.map(t => `<li>${esc(t)}</li>`).join('');
+  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><meta name="description" content="${esc(description)}"><link rel="canonical" href="${esc(origin+path)}"><meta name="robots" content="index,follow"></head><body><header><a href="/">Índice público de reputação</a></header><main><h1>${esc(title)}</h1><p>Indicadores agregados; não representam todas as empresas do setor nem garantem a experiência de um negócio individual.</p><dl><dt>Nota média agregada</dt><dd>${record.averageRating.toFixed(2)} / 5</dd><dt>Taxa agregada de resposta</dt><dd>${record.responseRate.toFixed(1)}%</dd><dt>Empresas na amostra</dt><dd>${record.sampleBusinesses}</dd><dt>Avaliações analisadas</dt><dd>${record.reviewCount}</dd><dt>Período coberto</dt><dd>${esc(record.periodStart)} a ${esc(record.periodEnd)}</dd></dl><h2>Temas agregados observados</h2><ul>${themes}</ul><h2>Fonte e metodologia</h2><p>${esc(record.sourceDescription)}</p><p><a href="${esc(record.methodologyUrl)}">Consultar metodologia e limitações</a></p><p>Última atualização dos dados: <time datetime="${esc(record.updatedAt)}">${esc(record.updatedAt)}</time>.</p></main></body></html>`;
+  const file = resolve(output, `.${path}index.html`);
+  await mkdir(dirname(file), { recursive: true });
+  await writeFile(file, html);
+  eligiblePages.push({ path, title, sector: record.sector, state: record.state, lastmod: new Date(record.updatedAt).toISOString() });
+}
+const shards = [];
+for (let i=0; i<eligiblePages.length; i+=SHARD_SIZE) {
+  const name = `sitemap-${String(shards.length).padStart(3,'0')}.xml`;
+  const entries = eligiblePages.slice(i,i+SHARD_SIZE).map(p => `<url><loc>${esc(origin+p.path)}</loc><lastmod>${p.lastmod}</lastmod></url>`);
+  await writeFile(resolve(output,name), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries.join('\n')}\n</urlset>\n`);
+  shards.push(name);
+}
+const index = shards.map(name => `<sitemap><loc>${esc(origin+'/'+name)}</loc></sitemap>`).join('\n');
+await writeFile(resolve(output,'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${index}\n</sitemapindex>\n`);
+const candidates = [];
+for (const sector of sectors) for (const intent of intents) candidates.push({path:`/${sector.slug}/${intent.slug}/`,sector:sector.slug,intent:intent.slug,status:'opportunity-not-published'});
+await writeFile(resolve(output,'inventory.json'), JSON.stringify({origin,candidateCount:candidates.length,eligiblePageCount:eligiblePages.length,minBusinesses:MIN_BUSINESSES,minReviews:MIN_REVIEWS,shardSize:SHARD_SIZE,candidates,eligiblePages},null,2)+'\n');
+console.log(`Inventory: ${candidates.length} opportunities. Generated ${eligiblePages.length} data-backed pages in ${shards.length} sitemap shard(s).`);
