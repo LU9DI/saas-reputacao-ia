@@ -2,11 +2,7 @@
 
 /**
  * Heuristic AEO (Answer Engine Optimization) source audit.
- *
- * This tool reports implementation signals; it does not claim that a page
- * will be cited by an AI system or that its content is factually correct.
- * It intentionally produces warnings instead of blocking builds until the
- * route inventory has been reviewed by a human.
+ * This measures source-code signals only, not semantic quality or citation likelihood.
  */
 
 import { existsSync, readFileSync } from 'node:fs';
@@ -14,8 +10,7 @@ import { resolve } from 'node:path';
 
 const appRoot = resolve(process.cwd(), 'src/app');
 
-// Keep this list restricted to routes confirmed to exist in the current main
-// branch. Add new routes only after confirming their route file and public URL.
+// Confirmed route files only; expand this inventory after validating new URLs.
 const routes = [
   { path: '/', file: 'page.tsx', label: 'Homepage' },
   { path: '/gestao-de-reputacao-online', file: 'gestao-de-reputacao-online/page.tsx', label: 'Gestão de reputação' },
@@ -34,56 +29,57 @@ const checks = [
     id: 'title',
     weight: 15,
     description: 'metadados de título específicos da página',
-    test: (source) => /export\\s+const\\s+metadata\\b|generateMetadata\\s*\\(/.test(source)
-      && /title\\s*:/.test(source),
+    test: (source) => /export\s+const\s+metadata\b|generateMetadata\s*\(/.test(source) && /title\s*:/.test(source),
   },
   {
     id: 'description',
     weight: 15,
     description: 'metadados de descrição',
-    test: (source) => /description\\s*:/.test(source),
+    test: (source) => /description\s*:/.test(source),
   },
   {
     id: 'h1',
     weight: 15,
     description: 'título principal visível (H1)',
-    test: (source) => /<h1\\b/.test(source),
+    test: (source) => /<h1\b/.test(source),
   },
   {
     id: 'direct-answer',
     weight: 20,
     description: 'sinal de resposta direta ou resumo inicial',
-    test: (source) => /resposta curta|em resumo|\\b[a-zà-ú]+ é |\\bserve para\\b|\\bpermite\\b|\\bconsiste em\\b/i.test(source),
+    test: (source) => /resposta curta|em resumo|\b[a-zà-ú]+ é |\bserve para\b|\bpermite\b|\bconsiste em\b/i.test(source),
   },
   {
     id: 'faq',
     weight: 10,
     description: 'perguntas frequentes ou headings interrogativos',
-    test: (source) => /perguntas frequentes|\\bFAQ\\b|FAQPage|\\?/.test(source),
+    test: (source) => /perguntas frequentes|\bFAQ\b|FAQPage|\?/.test(source),
   },
   {
     id: 'structured-data',
     weight: 10,
     description: 'dados estruturados ou componente de schema',
-    test: (source) => /JsonLd|Schema|application\\/ld\\+json|FAQPage|BreadcrumbList|WebPage/.test(source),
+    test: (source) => /JsonLd|Schema|application\/ld\+json|FAQPage|BreadcrumbList|WebPage/.test(source),
   },
   {
     id: 'canonical',
     weight: 10,
     description: 'canonical explícito ou metadata alternates',
-    test: (source) => /canonical\\s*:|alternates\\s*:/.test(source),
+    test: (source) => /canonical\s*:|alternates\s*:/.test(source),
   },
   {
     id: 'evidence',
     weight: 5,
     description: 'sinais de método, fonte, evidência ou limites',
-    test: (source) => /metodologia|fontes?\\b|evidências?\\b|limitações?\\b|dados observados/i.test(source),
+    test: (source) => /metodologia|fontes?\b|evidências?\b|limitações?\b|dados observados/i.test(source),
   },
 ];
 
 function audit(route) {
   const filePath = resolve(appRoot, route.file);
-  if (!existsSync(filePath)) return { ...route, status: 'not-found', score: 0, checks: [], missing: ['arquivo de rota não encontrado'] };
+  if (!existsSync(filePath)) {
+    return { ...route, status: 'not-found', score: 0, checks: [], missing: ['arquivo de rota não encontrado'] };
+  }
 
   const source = readFileSync(filePath, 'utf8');
   const results = checks.map((check) => ({
@@ -111,7 +107,6 @@ if (!existsSync(appRoot)) {
 const results = routes.map(audit);
 const audited = results.filter((result) => result.status === 'audited');
 const missingRoutes = results.filter((result) => result.status === 'not-found');
-
 const averageScore = audited.length
   ? Math.round(audited.reduce((sum, result) => sum + result.score, 0) / audited.length)
   : 0;
