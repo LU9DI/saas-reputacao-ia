@@ -14,7 +14,7 @@ const isLocal = sourceArg === '--local-file';
 function isOfficialMonthlyCsv(url, referenceMonth) {
   if (url.protocol !== 'https:' || url.hostname !== 'dados.mj.gov.br' ||
       url.username || url.password || url.search || url.hash) return false;
-  const pathPattern = new RegExp('^/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/[0-9a-f-]{36}/download/basecompleta' + referenceMonth + '\\.csv$');
+  const pathPattern = new RegExp('^/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/download/basecompleta' + referenceMonth + '\\.csv$');
   return pathPattern.test(url.pathname);
 }
 const localPath = isLocal ? process.argv[3] : null;
