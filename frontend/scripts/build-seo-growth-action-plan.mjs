@@ -78,23 +78,28 @@ for (const evidence of evidenceReport.evidence ?? []) {
       { target: qualified.target, signals: commonSignals });
     continue;
   }
-  if (impressions >= minImpressions && position !== null && position >= 4 && position <= 20 && ctr < lowCtrPercent) {
-    add(evidence, 'snippet-and-page-fit-review', 'P1', 90 + Math.min(impressions, 1000) / 100,
-      'The query has observed impressions, a potentially reachable position, and CTR below the configured threshold; this is a review signal, not proof of a title problem.',
-      ['Verify the query/page relationship in the Search Console Pages report before choosing a URL.', 'Compare title and description with actual search intent and competing snippets.', 'Make the result promise specific and truthful; do not add unsupported claims.', 'Annotate the change and compare CTR/clicks after a comparable measurement window.'],
+  if (impressions < minImpressions) {
+    add(evidence, 'map-and-validate-query', impressions > 0 ? 'P2' : 'P3', 30 + Math.min(impressions, 1000) / 100,
+      'The query is below the configured impression threshold; collect a comparable period and validate its destination before investing in page changes.',
+      ['Export query-by-page data from Search Console for a fully specified date range.', 'Review language, intent, and the exact page currently receiving impressions.', 'Record a reviewed mapping with rationale, or keep the query unmapped.', 'Do not create or publish a page from this evidence alone.'],
       { signals: commonSignals });
-  } else if (impressions > 0 && position !== null && position > 20) {
-    add(evidence, 'relevance-and-authority-review', impressions >= minImpressions ? 'P1' : 'P2', 60 + Math.min(impressions, 1000) / 100,
-      'The query is observed but average position is beyond 20; investigate relevance, page coverage, technical indexing, and internal links before creating another URL.',
-      ['Find the actual ranking URL using a query-by-page Search Console export.', 'Inspect indexability, canonical, rendered content, and internal links.', 'Compare the page against search intent and add original examples or methodology.', 'Create a new page only if a distinct intent and non-overlapping purpose are established.'],
-      { signals: commonSignals });
-  } else if (impressions >= minImpressions && position !== null && position <= 10 && ctr < lowCtrPercent) {
+  } else if (position !== null && position <= 10 && ctr < lowCtrPercent) {
     add(evidence, 'high-visibility-low-ctr-review', 'P1', 85 + Math.min(impressions, 1000) / 100,
       'A top-ten average position with low CTR warrants a query/page and SERP review; averages can hide device, country, and URL differences.',
       ['Break down the query by page, device, country, and date in Search Console.', 'Review the actual snippet and intent match.', 'Test one accurate title/description improvement at a time.', 'Track the same query/page dimensions before and after.'],
       { signals: commonSignals });
+  } else if (position !== null && position >= 4 && position <= 20 && ctr < lowCtrPercent) {
+    add(evidence, 'snippet-and-page-fit-review', 'P1', 90 + Math.min(impressions, 1000) / 100,
+      'The query has observed impressions, a potentially reachable position, and CTR below the configured threshold; this is a review signal, not proof of a title problem.',
+      ['Verify the query/page relationship in the Search Console Pages report before choosing a URL.', 'Compare title and description with actual search intent and competing snippets.', 'Make the result promise specific and truthful; do not add unsupported claims.', 'Annotate the change and compare CTR/clicks after a comparable measurement window.'],
+      { signals: commonSignals });
+  } else if (position !== null && position > 20) {
+    add(evidence, 'relevance-and-authority-review', 'P1', 60 + Math.min(impressions, 1000) / 100,
+      'The query is observed but average position is beyond 20; investigate relevance, page coverage, technical indexing, and internal links before creating another URL.',
+      ['Find the actual ranking URL using a query-by-page Search Console export.', 'Inspect indexability, canonical, rendered content, and internal links.', 'Compare the page against search intent and add original examples or methodology.', 'Create a new page only if a distinct intent and non-overlapping purpose are established.'],
+      { signals: commonSignals });
   } else {
-    add(evidence, 'map-and-validate-query', impressions > 0 ? 'P2' : 'P3', 30 + Math.min(impressions, 1000) / 100,
+    add(evidence, 'map-and-validate-query', 'P2', 30 + Math.min(impressions, 1000) / 100,
       'No explicit human-reviewed destination is available, so the query must not be assigned to a URL by lexical similarity alone.',
       ['Export query-by-page data from Search Console for a fully specified date range.', 'Review language, intent, and the exact page currently receiving impressions.', 'Record a reviewed mapping with rationale, or keep the query unmapped.', 'Do not create or publish a page from this evidence alone.'],
       { signals: commonSignals });
