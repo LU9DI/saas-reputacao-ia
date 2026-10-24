@@ -5,20 +5,20 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-test('source inspection is explicitly scoped to official HTTPS resource URLs', () => {
-  const valid = new URL('https://dados.mj.gov.br/dataset/abc/resource/def/download/base.csv');
-  assert.equal(valid.protocol, 'https:');
-  assert.equal(valid.hostname, 'dados.mj.gov.br');
-  assert.match(valid.pathname, /^\/dataset\/.+\/download\//);
+test('source inspection is scoped to the exact official monthly CSV path', () => {
+  const valid = new URL('https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv');
+  const isAllowed = (u, month) => u.protocol === 'https:' && u.hostname === 'dados.mj.gov.br' &&
+    !u.username && !u.password && !u.search && !u.hash &&
+    new RegExp('^/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/[0-9a-f-]{36}/download/basecompleta' + month + '\\.csv$').test(u.pathname);
+  assert.equal(isAllowed(valid, '2026-01'), true);
   for (const raw of [
-    'http://dados.mj.gov.br/dataset/abc/resource/def/download/base.csv',
-    'https://example.com/dataset/abc/resource/def/download/base.csv',
-    'https://dados.mj.gov.br/other/base.csv'
-  ]) {
-    const u = new URL(raw);
-    assert.ok(!(u.protocol === 'https:' && u.hostname === 'dados.mj.gov.br' &&
-      u.pathname.startsWith('/dataset/') && u.pathname.includes('/download/')));
-  }
+    'http://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv',
+    'https://example.com/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv',
+    'https://dados.mj.gov.br/dataset/other/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv',
+    'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-02.csv',
+    'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv?mirror=1',
+    'https://dados.mj.gov.br.evil.example/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv'
+  ]) assert.equal(isAllowed(new URL(raw), '2026-01'), false, raw);
 });
 
 test('month argument uses a strict YYYY-MM format', () => {
