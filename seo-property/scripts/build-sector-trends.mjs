@@ -104,5 +104,5 @@ if (origin && index && !index.includes("sitemap-sector-trends.xml")) {
   index = index.replace("</sitemapindex>", `<sitemap><loc>${esc(origin+"/sitemap-sector-trends.xml")}</loc></sitemap>\n</sitemapindex>`);
   await writeFile(indexPath,index);
 }
-await writeFile(resolve(output,"sector-trends-manifest.json"), JSON.stringify({sourceStatus:data.status,scope:data.scope,generatedPages:pages.map(page=>({...page,canonical:origin+page.path})),sitemap:origin ? "sitemap-sector-trends.xml" : null},null,2)+"\n");
+await writeFile(resolve(output,"sector-trends-manifest.json"), JSON.stringify({sourceStatus:data.status,scope:data.scope,generatedPages:pages.map(page=>({...page,canonical:origin ? origin+page.path : null})),sitemap:origin ? "sitemap-sector-trends.xml" : null},null,2)+"\n");
 console.log(`Generated ${pages.length} sector-level Consumidor.gov.br pages.`);
