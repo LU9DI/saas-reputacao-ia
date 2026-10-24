@@ -6,7 +6,16 @@ const output = resolve(root, 'dist');
 const sectors = JSON.parse(await readFile(resolve(root, 'data/sectors.json'), 'utf8'));
 const intents = JSON.parse(await readFile(resolve(root, 'data/intents.json'), 'utf8'));
 const records = JSON.parse(await readFile(resolve(root, 'data/benchmarks.json'), 'utf8'));
-const origin = (process.env.SEO_PROPERTY_ORIGIN || 'https://seo-property-not-configured.invalid').replace(/\/$/, '');
+const configuredOrigin = process.env.SEO_PROPERTY_ORIGIN?.trim() || '';
+let origin = '';
+if (configuredOrigin) {
+  let parsedOrigin;
+  try { parsedOrigin = new URL(configuredOrigin); } catch { throw new Error('SEO_PROPERTY_ORIGIN must be a valid HTTPS origin, e.g. https://example.com'); }
+  if (parsedOrigin.protocol !== 'https:' || parsedOrigin.username || parsedOrigin.password || parsedOrigin.pathname !== '/' || parsedOrigin.search || parsedOrigin.hash) {
+    throw new Error('SEO_PROPERTY_ORIGIN must be an HTTPS origin without credentials, path, query or fragment');
+  }
+  origin = parsedOrigin.origin;
+}
 const MIN_BUSINESSES = 20;
 const MIN_REVIEWS = 100;
 const SHARD_SIZE = 40000;
@@ -14,6 +23,10 @@ const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','
 const states = new Set(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']);
 const sectorBySlug = new Map(sectors.map(s => [s.slug, s]));
 const validDate = value => typeof value === 'string' && !Number.isNaN(Date.parse(value));
+const validHttpsUrl = value => {
+  if (typeof value !== 'string') return false;
+  try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; } catch { return false; }
+};
 const qualified = record => {
   if (!sectorBySlug.has(record.sector) || !states.has(record.state)) return false;
   if (!Number.isInteger(record.sampleBusinesses) || record.sampleBusinesses < MIN_BUSINESSES) return false;
@@ -21,8 +34,8 @@ const qualified = record => {
   if (!Number.isFinite(record.averageRating) || record.averageRating < 1 || record.averageRating > 5) return false;
   if (!Number.isFinite(record.responseRate) || record.responseRate < 0 || record.responseRate > 100) return false;
   if (!validDate(record.periodStart) || !validDate(record.periodEnd) || Date.parse(record.periodStart) > Date.parse(record.periodEnd)) return false;
-  if (!validDate(record.updatedAt) || !record.sourceDescription?.trim() || !record.methodologyUrl?.startsWith('https://')) return false;
-  if (!Array.isArray(record.topThemes) || record.topThemes.length === 0 || record.topThemes.some(t => typeof t !== 'string' || !t.trim())) return false;
+  if (!validDate(record.updatedAt) || typeof record.sourceDescription !== 'string' || !record.sourceDescription.trim() || record.sourceDescription.length > 500 || !validHttpsUrl(record.methodologyUrl)) return false;
+  if (!Array.isArray(record.topThemes) || record.topThemes.length === 0 || record.topThemes.length > 8 || record.topThemes.some(t => typeof t !== 'string' || !t.trim() || t.length > 80)) return false;
   return true;
 };
 const pathFor = record => `/indice/${record.sector}/${record.state.toLowerCase()}/`;
@@ -32,6 +45,9 @@ for (const record of records) {
   const path = pathFor(record);
   if (unique.has(path)) throw new Error(`Duplicate benchmark URL: ${path}`);
   unique.set(path, record);
+}
+if (unique.size > 0 && !origin) {
+  throw new Error('SEO_PROPERTY_ORIGIN is required when publishing data-backed pages; refusing placeholder canonical URLs');
 }
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
