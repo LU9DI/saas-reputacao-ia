@@ -74,6 +74,25 @@ ${origin ? `<link rel="canonical" href="${esc(origin+path)}"><meta name="robots"
   await writeFile(file, html);
   pages.push({path,title});
 }
+const landingTitle = "Dados públicos do Consumidor.gov.br por setor";
+const landingDescription = "Indicadores agregados por setor do Consumidor.gov.br, com períodos, denominadores, fontes e metodologia explícitos.";
+const landingCards = pages.map(page => `<li><a href="${esc(page.path)}">${esc(labels[page.path.split("/")[2]])}</a> — indicadores agregados, histórico e metodologia</li>`).join("\n");
+const landingHtml = `<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(landingTitle)}</title><meta name="description" content="${esc(landingDescription)}">
+${origin ? `<link rel="canonical" href="${esc(origin+"/dados-consumidor-gov/")}"><meta name="robots" content="index,follow">` : '<meta name="robots" content="noindex,nofollow">'}</head>
+<body><main><h1>${esc(landingTitle)}</h1>
+<p>Explore dados agregados de reclamações finalizadas na plataforma Consumidor.gov.br. Estes indicadores descrevem o tratamento de reclamações na plataforma; não são notas gerais de reputação, não cobrem todas as empresas e não representam todas as experiências de consumo.</p>
+<h2>Indicadores por setor</h2><ul>${landingCards}</ul>
+<h2>Como usar os números</h2><p>Cada página apresenta o período de referência, o volume de reclamações finalizadas, os denominadores das taxas e o índice oficial de solução. As janelas históricas podem ter comprimentos e contextos diferentes; compare com cautela.</p>
+<h2>Fontes, licença e limitações</h2><p>Os valores exibidos são uma reprodução secundária pré-agregada, não uma ingestão direta dos CSVs oficiais por este projeto. A participação no Consumidor.gov.br é voluntária. Consulte a fonte e a metodologia oficial antes de reutilizar os números.</p>
+<p><a href="${esc(data.secondarySource.url)}" rel="noopener">Dataset secundário e licença</a> · <a href="${esc(data.secondarySource.versionDoi)}" rel="noopener">Versão arquivada</a> · <a href="${esc(data.primarySource.url)}" rel="noopener">Portal oficial de dados abertos</a> · <a href="https://www.consumidor.gov.br/pages/indicador/geral/abrir" rel="noopener">Metodologia oficial dos indicadores</a></p>
+</main></body></html>`;
+const landingFile = resolve(output, ".dados-consumidor-gov/index.html");
+await mkdir(dirname(landingFile), {recursive:true});
+await writeFile(landingFile, landingHtml);
+pages.unshift({path:"/dados-consumidor-gov/",title:landingTitle});
+
 const entries = pages.map(page => `<url><loc>${esc(origin+page.path)}</loc></url>`).join("\n");
 if (origin) {
   await writeFile(resolve(output,"sitemap-sector-trends.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`);
