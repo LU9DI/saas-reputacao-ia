@@ -18,6 +18,7 @@ test("generates six useful sector pages and adds a valid sitemap only with a con
     const manifest = JSON.parse(await readFile(resolve(output, "sector-trends-manifest.json"), "utf8"));
     assert.equal(manifest.generatedPages.length, 7);
     assert.equal(manifest.scope, "sector_level_only");
+    assert.equal(manifest.generatedPages.find(page => page.path === "/dados-consumidor-gov/").canonical, "https://dados.example.com/dados-consumidor-gov/");
     const landing = await readFile(resolve(output, "dados-consumidor-gov/index.html"), "utf8");
     assert.match(landing, /Dados públicos do Consumidor.gov.br por setor/);
     assert.match(landing, /href="\/dados-consumidor-gov\/telecom\//);
@@ -53,6 +54,7 @@ test("pages remain noindex and no sitemap is emitted without a verified public o
     await assert.rejects(readFile(resolve(output, "sitemap-sector-trends.xml"), "utf8"));
     const manifest = JSON.parse(await readFile(resolve(output, "sector-trends-manifest.json"), "utf8"));
     assert.equal(manifest.sitemap, null);
+    assert.ok(manifest.generatedPages.every(page => page.canonical === null));
   } finally {
     await rm(output, { recursive: true, force: true });
   }
