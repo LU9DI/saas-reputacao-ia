@@ -55,6 +55,24 @@ export default function ComoFuncionaPage() {
           body: 'Teste sem cartão de crédito. Depois escolha um plano (Inicial, Pro, Ultra, Corporativo ou Rei). Cancele quando quiser; o acesso vale até o fim do período pago.',
         },
       ]}
+      faq={[
+        {
+          question: 'O que acontece depois que o cliente envia feedback?',
+          answer: 'O feedback pode ser analisado e encaminhado para a equipe responsável. O próximo passo deve considerar o contexto, a urgência e os dados disponíveis; a empresa acompanha se a ação resolveu o problema.',
+        },
+        {
+          question: 'O Filtra.AI pode garantir avaliações positivas no Google?',
+          answer: 'Não. A plataforma pode facilitar convites neutros para avaliações genuínas e organizar feedback, mas cada cliente decide se avalia e qual nota atribui. Não há garantia de estrelas ou de posição no Google.',
+        },
+        {
+          question: 'O fluxo de feedback substitui o Google Reviews?',
+          answer: 'Não. O fluxo permite recolher feedback para acompanhamento e também pode convidar o cliente a publicar uma avaliação honesta no Google. O cliente decide livremente se compartilha a opinião publicamente.',
+        },
+        {
+          question: 'A inteligência artificial toma decisões sozinha?',
+          answer: 'A IA pode ajudar a organizar comentários, sugerir classificações e preparar respostas, mas a equipe deve revisar os casos que exigem contexto e aprovar comunicações públicas.',
+        },
+      ]}
     />
   );
 }

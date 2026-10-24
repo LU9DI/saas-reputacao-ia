@@ -23,6 +23,7 @@ const LAST_MODIFIED: Record<string, string> = {
   '/turismo': '2026-10-22',
   '/associacoes': '2026-10-22',
   '/ia': '2026-10-22',
+  '/como-funciona': '2026-10-24',
   '/clinicas': '2026-10-22',
   '/franquias': '2026-10-22',
   '/blog/gestao-reputacao-online-guia': '2026-10-20',

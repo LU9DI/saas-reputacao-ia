@@ -19,7 +19,7 @@ const routes = [
   { path: '/analise-de-avaliacoes-com-ia', file: 'analise-de-avaliacoes-com-ia/page.tsx', label: 'Análise com IA' },
   { path: '/como-funciona', file: 'como-funciona/page.tsx', label: 'Como funciona' },
   { path: '/filtra-ai', file: 'filtra-ai/page.tsx', label: 'Produto Filtra.AI' },
-  { path: '/auditoria-gratuita', file: 'auditoria-gratuita/page.tsx', label: 'Auditoria gratuita' },
+  { path: '/auditoria-gratuita', file: 'auditoria-gratuita/page.tsx', contentFiles: ['auditoria-gratuita/AuditoriaGratuitaClient.tsx'], label: 'Auditoria gratuita' },
   { path: '/monitoramento-reputacao-online', file: 'monitoramento-reputacao-online/page.tsx', label: 'Monitoramento' },
   { path: '/feedback-de-clientes', file: 'feedback-de-clientes/page.tsx', label: 'Feedback de clientes' },
   { path: '/gestao-de-feedback', file: 'gestao-de-feedback/page.tsx', label: 'Gestão de feedback' },
