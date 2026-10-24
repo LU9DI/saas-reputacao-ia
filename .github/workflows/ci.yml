@@ -74,15 +74,7 @@ jobs:
       # O teste de integração usa um SQLite temporário; os adaptadores são dependências exclusivas de CI.
       # Não alterar o package-lock nem adicionar dependências de teste ao runtime.
       - name: Install SQLite test dependencies
-        run: npm install --no-save --package-lock=false sqlite@5.1.1 sqlite3@5.1.7
-
-      - name: Report temporary SQLite test dependency findings
-        run: |
-          set +e
-          npm audit --package-lock=false --json > /tmp/backend-npm-audit.json
-          audit_status=$?
-          set -e
-          node -e 'const a=require("/tmp/backend-npm-audit.json"); console.log(JSON.stringify({auditExitCode:Number(process.argv[1]),metadata:a.metadata?.vulnerabilities, vulnerabilities:Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,range:v.range,via:(v.via||[]).map(x=>typeof x==="string"?x:{name:x.name,title:x.title,url:x.url,range:x.range}),fixAvailable:v.fixAvailable,nodes:v.nodes}))},null,2))' "$audit_status"
+        run: npm install --no-save --package-lock=false sqlite@5.1.1 sqlite3@6.0.1
 
       # Este teste usa banco temporário e não depende de DNS ou serviços externos.
       # Mantê-lo sempre ativo protege os contratos de consentimento e aceite legal.
