@@ -88,7 +88,7 @@ ${origin ? `<link rel="canonical" href="${esc(origin+"/dados-consumidor-gov/")}"
 <h2>Fontes, licença e limitações</h2><p>Os valores exibidos são uma reprodução secundária pré-agregada, não uma ingestão direta dos CSVs oficiais por este projeto. A participação no Consumidor.gov.br é voluntária. Consulte a fonte e a metodologia oficial antes de reutilizar os números.</p>
 <p><a href="${esc(data.secondarySource.url)}" rel="noopener">Dataset secundário e licença</a> · <a href="${esc(data.secondarySource.versionDoi)}" rel="noopener">Versão arquivada</a> · <a href="${esc(data.primarySource.url)}" rel="noopener">Portal oficial de dados abertos</a> · <a href="https://www.consumidor.gov.br/pages/indicador/geral/abrir" rel="noopener">Metodologia oficial dos indicadores</a></p>
 </main></body></html>`;
-const landingFile = resolve(output, ".dados-consumidor-gov/index.html");
+const landingFile = resolve(output, "./dados-consumidor-gov/index.html");
 await mkdir(dirname(landingFile), {recursive:true});
 await writeFile(landingFile, landingHtml);
 pages.unshift({path:"/dados-consumidor-gov/",title:landingTitle});
