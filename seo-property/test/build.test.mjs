@@ -63,14 +63,15 @@ test('publishes only qualified data, requires a real origin, and escapes content
       );
     }
 
-    const envWithOriginForInvalidDates = { ...envWithoutOrigin, SEO_PROPERTY_ORIGIN: 'https://index.example.test' };\n    for (const invalidDateRecord of [
+    const envWithOriginForInvalidDates = { ...envWithoutOrigin, SEO_PROPERTY_ORIGIN: 'https://index.example.test' };
+    for (const invalidDateRecord of [
       { ...fixture[0], periodStart: '2026-02-30' },
       { ...fixture[0], periodEnd: '2026-13-01' },
       { ...fixture[0], periodStart: '2026-1-01' },
       { ...fixture[0], updatedAt: '2026-10-01' },
       { ...fixture[0], updatedAt: '2026-02-30T00:00:00.000Z' }
     ]) {
-      await writeFile(benchmarksPath, JSON.stringify([invalidDateRecord], null, 2) + '\\n');
+      await writeFile(benchmarksPath, JSON.stringify([invalidDateRecord], null, 2) + '\n');
       execFileSync(process.execPath, [builder], { cwd: root, env: envWithOriginForInvalidDates, stdio: 'pipe' });
       const invalidDateInventory = JSON.parse(await readFile(resolve(root, 'dist/inventory.json'), 'utf8'));
       assert.equal(invalidDateInventory.eligiblePageCount, 0);
