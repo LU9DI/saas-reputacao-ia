@@ -146,9 +146,6 @@ await mkdir(outDir, { recursive: true });
 const outPath = resolve(outDir, `consumidor-gov-${effectiveMonth}-header.json`);
 await writeFile(outPath, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
 console.log(JSON.stringify({ reportPath: outPath, referenceMonth: effectiveMonth, downloadedBytes: bytes, sha256: report.sha256, delimiter: report.delimiter, headerCount: headers.length, headers, schemaStatus: report.schemaStatus }, null, 2));
-);
-  return pathPattern.test(url.pathname);
-}
 const localPath = isLocal ? process.argv[3] : null;
 const referenceMonth = isLocal ? process.argv[4] : month;
 if (isLocal && !/^20\d{2}-(0[1-9]|1[0-2])$/.test(referenceMonth || '')) {
