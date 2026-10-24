@@ -18,6 +18,9 @@ const fixture = [{
   periodEnd: '2026-09-30',
   updatedAt: '2026-10-01T00:00:00.000Z',
   sourceDescription: 'Fonte <teste>',
+  sourceUrl: 'https://example.test/dataset',
+  sourceLicense: 'CC BY 4.0',
+  sourceAttribution: 'Fonte pública de teste',
   methodologyUrl: 'https://example.test/metodologia',
   topThemes: ['Atendimento & clareza']
 }];
@@ -54,6 +57,9 @@ test('publishes only qualified data, requires a real origin, and escapes content
 
     assert.equal(inventory.eligiblePageCount, 1);
     assert.ok(page.includes('https://index.example.test/indice/academias/go/'));
+    assert.ok(page.includes('https://example.test/dataset'));
+    assert.ok(page.includes('CC BY 4.0'));
+    assert.ok(page.includes('Fonte pública de teste'));
     assert.ok(page.includes('Fonte &lt;teste&gt;'));
     assert.ok(page.includes('Atendimento &amp; clareza'));
     assert.ok(sitemap.includes('<lastmod>2026-10-01T00:00:00.000Z</lastmod>'));
