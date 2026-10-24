@@ -81,7 +81,13 @@ function audit(route) {
     return { ...route, status: 'not-found', score: 0, checks: [], missing: ['arquivo de rota não encontrado'] };
   }
 
-  // Some routes delegate visible content to a shared/child component; include known content files explicitly.\n  const sourceFiles = [route.file, ...(route.contentFiles || [])];\n  const source = sourceFiles\n    .map((file) => resolve(appRoot, file))\n    .filter((file) => existsSync(file))\n    .map((file) => readFileSync(file, 'utf8'))\n    .join('\\n');
+  // Some routes delegate visible content to a shared/child component; include known content files explicitly.
+  const sourceFiles = [route.file, ...(route.contentFiles || [])];
+  const source = sourceFiles
+    .map((file) => resolve(appRoot, file))
+    .filter((file) => existsSync(file))
+    .map((file) => readFileSync(file, 'utf8'))
+    .join('\n');
   const results = checks.map((check) => ({
     id: check.id,
     passed: check.test(source),
