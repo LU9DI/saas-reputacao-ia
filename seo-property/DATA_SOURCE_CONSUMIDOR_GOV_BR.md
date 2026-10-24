@@ -1,31 +1,53 @@
 # Avaliação de fonte pública: Consumidor.gov.br
 
-## Resultado da pesquisa
+## Fonte e versão de referência
 
-O conjunto oficial **Dados Consumidor.gov.br**, mantido pela Secretaria Nacional do Consumidor (Senacon/MJ), disponibiliza arquivos CSV mensais e informa licença Creative Commons Atribuição (CC BY). Catálogo: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br
+O conjunto oficial **Dados Consumidor.gov.br**, mantido pela Secretaria Nacional do Consumidor (Senacon/MJ), publica arquivos CSV mensais sob licença Creative Commons Atribuição (CC BY).
 
-Referências públicas:
-- Descrição oficial e acesso aos dados: https://www.gov.br/mj/pt-br/assuntos/seus-direitos/consumidor/consumidor-gov.br
+- Catálogo oficial: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br
+- Base mensal de janeiro de 2026 (CSV): https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv
+- Base mensal de junho de 2026 (CSV): consultar o recurso mais recente no catálogo, pois os identificadores dos recursos são específicos por mês.
+- Dicionário de dados disponível no catálogo: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br/resource/90aedbfe-3c91-4c18-86a5-f408d07e7210
 - Indicadores e metodologia oficial: https://www.consumidor.gov.br/pages/indicador/geral/abrir
-- Dicionário de dados publicado pela Senacon: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br/resource/90aedbfe-3c91-4c18-86a5-f408d07e7210
+- Definições oficiais dos indicadores: https://www.consumidor.gov.br/pages/conteudo/publico/1
 
-## Adequação
+O catálogo lista recursos mensais até junho de 2026. O recurso de janeiro de 2026 identifica o formato como CSV e a licença como Creative Commons Atribuição. A existência do recurso no catálogo não significa que o conteúdo já tenha sido baixado, inspecionado ou validado pelo projeto.
 
-A fonte é uma candidata para um **índice de desempenho no Consumidor.gov.br**: índice de solução, satisfação com atendimento, percentual de reclamações respondidas e prazo médio de resposta. Esses indicadores são definidos pelo próprio portal e descrevem somente as reclamações registradas nele.
+## Adequação e limites
 
-Ela **não é automaticamente uma fonte para o atual índice de reputação geral**. Não devemos renomear satisfação com o atendimento como nota geral de reputação, nem inferir o estado de localização da empresa a partir do estado do consumidor. Também não devemos inferir que as empresas participantes representam todo o mercado.
+A fonte serve para um produto claramente rotulado como **desempenho no Consumidor.gov.br**, não como índice geral de reputação. A participação é formal e voluntária; os dados representam reclamações registradas na plataforma, não todas as empresas nem toda a experiência de consumidores brasileiros.
 
-## Próximo passo técnico obrigatório
+Não renomear satisfação com o atendimento como nota geral de reputação. Não inferir UF da empresa pela localização do consumidor, nem presumir que as empresas participantes representam o mercado inteiro. Não combinar esses indicadores com avaliações privadas do Filtra sem autorização e uma metodologia distinta, documentada.
 
-Antes de gerar páginas, baixar uma versão mensal recente, conferir cabeçalhos contra o dicionário oficial e construir um perfil local da estrutura sem imprimir ou guardar textos de reclamação. O pipeline deve:
-1. fixar o URL, mês, licença e data de obtenção do arquivo;
-2. reconhecer a versão do esquema explicitamente e falhar em cabeçalhos desconhecidos;
-3. agregar apenas os campos necessários, descartando textos livres e identificadores de consumidores;
-4. calcular os indicadores segundo a metodologia oficial, com período e denominadores explícitos;
-5. aplicar limites mínimos de amostra e proteção contra reidentificação;
-6. validar totais agregados contra os indicadores oficiais para uma amostra de períodos/segmentos;
-7. guardar atribuição e trilha de auditoria e publicar só agregados revisados.
+## Definições oficiais a implementar
+
+Considerando apenas reclamações finalizadas segundo a metodologia oficial:
+
+1. **Índice de solução** = (finalizadas avaliadas como resolvidas + finalizadas não avaliadas) / total de finalizadas. A regra oficial contabiliza as finalizadas não avaliadas como resolvidas.
+2. **Satisfação com o atendimento** = soma das notas de satisfação / número de reclamações avaliadas. Usar apenas avaliações com nota válida na escala de 1 a 5.
+3. **Reclamações respondidas** = reclamações finalizadas respondidas / total de reclamações finalizadas.
+4. **Prazo médio de resposta** = soma dos dias entre abertura e resposta nas reclamações finalizadas respondidas / número dessas reclamações respondidas.
+
+Os denominadores devem ser apresentados junto aos resultados. Não calcular uma métrica quando os campos necessários estiverem ausentes ou quando o denominador for zero. Não presumir que as colunas e seus valores têm esses significados sem confirmar o esquema do CSV e o dicionário.
+
+## Estado de validação em 2026-10-24
+
+- Catálogo oficial e recurso de janeiro de 2026 localizados.
+- Metodologia oficial dos quatro indicadores consultada.
+- A tentativa de baixar o CSV diretamente nesta sessão falhou; portanto, **o esquema real do arquivo ainda não foi inspecionado**.
+- O dicionário publicado é versão 3.0, datado de 23/09/2020. Deve ser comparado com os cabeçalhos reais de uma amostra recente antes de ser considerado suficiente.
+- Nenhum benchmark real foi produzido; `data/benchmarks.json` permanece vazio deliberadamente.
+
+## Próximos passos técnicos obrigatórios
+
+1. Baixar um CSV mensal e registrar URL exata, mês de referência, data de obtenção, tamanho e SHA-256.
+2. Ler apenas o cabeçalho e perfilar localmente a estrutura; não imprimir, registrar em logs ou manter cópias desnecessárias de textos de reclamação e identificadores de consumidores.
+3. Implementar parser CSV que respeite o delimitador e a codificação observados; não presumir separador, aspas ou nomes de colunas.
+4. Definir um contrato de esquema explícito e falhar em colunas desconhecidas/ausentes, em vez de adivinhar mapeamentos.
+5. Mapear campos para os quatro indicadores e validar os cálculos em amostra contra os indicadores oficiais por empresa e período.
+6. Aplicar limites mínimos de amostra e revisar risco de reidentificação antes da publicação.
+7. Manter atribuição, licença, período, denominadores, metodologia e trilha de auditoria; publicar apenas agregados revisados.
 
 ## Decisão
 
-Fonte **promissora para um produto de dados separado e claramente rotulado**, condicionada à validação do esquema CSV e à revisão de privacidade. Não preencher `data/benchmarks.json` do índice geral com esses indicadores sem uma mudança explícita de modelo e rótulos.
+Fonte promissora para um produto de dados independente, condicionado à inspeção do CSV, validação dos cálculos e revisão de privacidade. **Não** preencher `data/benchmarks.json` do índice geral com esses indicadores. Criar um contrato de dados separado para o índice Consumidor.gov.br, com rótulos que não confundam desempenho de atendimento com reputação geral.
