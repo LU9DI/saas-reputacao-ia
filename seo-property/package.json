@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test",
-    "inspect:source": "node scripts/inspect-source.mjs"
+    "inspect:source": "node scripts/inspect-source.mjs",
+    "discover:source": "node scripts/discover-source.mjs"
   }
 }
