@@ -19,7 +19,7 @@ This project is a **separate public data/content property**, not a set of extra 
 ## Data contract
 
 Populate `data/benchmarks.json` with reviewed records. Each record has:
-`sector`, `state`, `sampleBusinesses`, `reviewCount`, `periodStart`, `periodEnd`, `averageRating`, `responseRate`, `topThemes`, `sourceDescription`, `methodologyUrl`, `updatedAt`.
+`sector`, `state`, `sampleBusinesses`, `reviewCount`, `periodStart`, `periodEnd`, `averageRating`, `responseRate`, `topThemes`, `sourceDescription`, `sourceUrl`, `sourceLicense`, `sourceAttribution`, `methodologyUrl`, `updatedAt`. Every public page must display a clickable source, license and attribution; records missing any of these are rejected.
 
 A page is generated only for records with valid state/sector identifiers, non-sensitive aggregated metrics, cohort thresholds, valid dates, and a methodology/source reference. Empty sample data is intentional: the builder should generate zero indexable pages until the source data exists.
 
