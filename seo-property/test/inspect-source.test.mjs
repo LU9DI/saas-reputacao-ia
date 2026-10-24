@@ -53,3 +53,36 @@ test('local CSV inspection records only metadata and header, never row values', 
     await rm(temp, { recursive: true, force: true });
   }
 });
+
+
+test('local inspector rejects invalid month arguments before touching source files', () => {
+  const script = resolve(import.meta.dirname, '../scripts/inspect-source.mjs');
+  const run = spawnSync(process.execPath, [script, '--local-file', 'does-not-exist.csv', '2026-13'], {
+    encoding: 'utf8'
+  });
+  assert.equal(run.status, 2);
+  assert.match(run.stderr, /YYYY-MM/);
+});
+
+test('local inspector fails closed on an ambiguous delimiter and writes no report', async () => {
+  const temp = await mkdtemp(join(tmpdir(), 'seo-source-ambiguous-'));
+  const source = join(temp, 'ambiguous.csv');
+  const output = join(temp, 'reports');
+  await writeFile(source, 'Empresa;Status,Texto\nAcme;Finalizada,privado\n', 'utf8');
+  try {
+    const script = resolve(import.meta.dirname, '../scripts/inspect-source.mjs');
+    const run = spawnSync(process.execPath, [script, '--local-file', source, '2026-01'], {
+      encoding: 'utf8',
+      env: { ...process.env, SEO_SOURCE_INSPECTION_OUTPUT_DIR: output }
+    });
+    assert.notEqual(run.status, 0);
+    assert.match(run.stderr, /delimiter is ambiguous/i);
+    await assert.rejects(readFile(join(output, 'consumidor-gov-2026-01-header.json'), 'utf8'), {
+      code: 'ENOENT'
+    });
+    assert.ok(!run.stdout.includes('privado'));
+    assert.ok(!run.stderr.includes('privado'));
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
