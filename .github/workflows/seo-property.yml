@@ -38,6 +38,7 @@ jobs:
           node -e "JSON.parse(require('node:fs').readFileSync('data/sectors.json', 'utf8'))"
           node -e "JSON.parse(require('node:fs').readFileSync('data/intents.json', 'utf8'))"
           node -e "JSON.parse(require('node:fs').readFileSync('data/consumidor-gov-contract.json', 'utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('data/consumidor-gov-sector-trends.json', 'utf8'))"
 
       - name: Run tests
         run: npm test
