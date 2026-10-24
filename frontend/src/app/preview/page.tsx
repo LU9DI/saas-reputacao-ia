@@ -60,6 +60,9 @@ type Copy = {
 };
 
 const LOCALIZED_SEO_PATHS: Record<string, Partial<Record<Language, string>>> = {
+  '/': { en: '/en', es: '/es', zh: '/zh' },
+  '/ia': { en: '/en/ai', es: '/es/ia', zh: '/zh/ai' },
+  '/filtra-ai': { en: '/en/filtra-ai', es: '/es/filtra-ai', zh: '/zh/filtra-ai' },
   '/gestao-de-reputacao-online': { en: '/en/online-reputation-management', es: '/es/gestion-reputacion-online', zh: '/zh/online-reputation-management' },
   '/avaliacoes-google': { en: '/en/google-reviews', es: '/es/resenas-google', zh: '/zh/google-reviews' },
   '/analise-de-avaliacoes-com-ia': { en: '/en/ai-review-analysis', es: '/es/analisis-resenas-ia', zh: '/zh/ai-review-analysis' },
@@ -70,23 +73,27 @@ const LOCALIZED_SEO_PATHS: Record<string, Partial<Record<Language, string>>> = {
   '/como-melhorar-avaliacoes-google': { en: '/en/improve-google-reviews', es: '/es/mejorar-resenas-google', zh: '/zh/improve-google-reviews' },
   '/gestao-de-feedback': { en: '/en/customer-feedback-management', es: '/es/gestion-feedback-clientes', zh: '/zh/customer-feedback-management' },
   '/hoteis': { en: '/en/hotels', es: '/es/hoteles', zh: '/zh/hotels' },
-  '/restaurantes': { en: '/en/restaurants', es: '/es/restaurantes', zh: '/zh/restaurants' },
-  '/clinicas': { en: '/en/clinics', es: '/es/clinicas', zh: '/zh/clinics' },
-  '/franquias': { en: '/en/franchises', es: '/es/franquicias', zh: '/zh/franchises' },
   '/turismo': { en: '/en/tourism', es: '/es/turismo', zh: '/zh/tourism' },
   '/agencias': { en: '/en/agencies', es: '/es/agencias', zh: '/zh/agencies' },
+  '/clinicas': { en: '/en/clinics', es: '/es/clinicas', zh: '/zh/clinics' },
+  '/franquias': { en: '/en/franchises', es: '/es/franquicias', zh: '/zh/franchises' },
   '/associacoes': { en: '/en/associations', es: '/es/asociaciones', zh: '/zh/associations' },
-  '/parceiros': { en: '/en/partners', es: '/es/socios', zh: '/zh/partners' },
+  '/restaurantes': { en: '/en/restaurants', es: '/es/restaurantes', zh: '/zh/restaurants' },
   '/como-funciona': { en: '/en/how-it-works', es: '/es/como-funciona', zh: '/zh/how-it-works' },
+  '/parceiros': { en: '/en/partners', es: '/es/socios', zh: '/zh/partners' },
+  '/pedir-estrela-vs-filtrar': { en: '/en/ask-for-stars-vs-filtering', es: '/es/pedir-estrellas-vs-filtrar', zh: '/zh/request-stars-vs-filter' },
   '/blog': { en: '/en/blog', es: '/es/blog', zh: '/zh/blog' },
   '/blog/gestao-reputacao-online-guia': { en: '/en/blog/online-reputation-management-guide', es: '/es/blog/guia-gestion-reputacion-online', zh: '/zh/blog/online-reputation-management-guide' },
   '/blog/como-conseguir-avaliacoes-google': { en: '/en/blog/get-google-reviews', es: '/es/blog/conseguir-resenas-google', zh: '/zh/blog/google-reviews-guide' },
+  '/blog/feedback-cliente-para-reputacao': { en: '/en/blog/customer-feedback-reputation', es: '/es/blog/feedback-clientes-reputacion', zh: '/zh/blog/customer-feedback-reputation' },
   '/blog/seo-local-avaliacoes-local-pack': { en: '/en/blog/local-seo-google-reviews', es: '/es/blog/seo-local-resenas-google', zh: '/zh/blog/local-seo-google-reviews' },
+  '/blog/agencia-vender-gestao-reputacao': { en: '/en/blog/agency-reputation-management', es: '/es/blog/agencia-gestion-reputacion', zh: '/zh/blog/agency-reputation-management' },
 };
-
 function localizedHref(href: string, language: Language): string {
   if (language === 'pt') return href;
-  return LOCALIZED_SEO_PATHS[href]?.[language] ?? href;
+  const translated = LOCALIZED_SEO_PATHS[href]?.[language];
+  // Do not send visitors to an unrelated translated slug; fall back only when the route has no translation.
+  return translated ?? href;
 }
 
 const copy: Record<Language, Copy> = {
