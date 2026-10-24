@@ -90,6 +90,20 @@ export default function Page() {
           body: 'IA acelera classificação, agrupamento, resumo e busca de padrões. Ela funciona melhor como camada de triagem e inteligência sobre a operação, preservando revisão humana quando o contexto do cliente exige interpretação.'
         },
       ]}
+      faq={[
+        {
+          question: 'Como conseguir mais avaliações no Google de forma correta?',
+          answer: 'Convide clientes reais após uma experiência legítima, facilite o acesso ao perfil e mantenha o convite neutro. Não ofereça descontos ou brindes em troca de avaliações e não peça apenas a clientes que provavelmente darão notas altas.',
+        },
+        {
+          question: 'Como responder a uma avaliação negativa no Google?',
+          answer: 'Responda com educação, reconheça o problema relatado sem expor dados pessoais, explique o próximo passo possível e leve detalhes sensíveis para um canal privado. Use críticas recorrentes para investigar causas operacionais.',
+        },
+        {
+          question: 'A Filtra.AI pode garantir mais estrelas ou melhor posição no Google?',
+          answer: 'Não. Uma ferramenta pode ajudar a organizar avaliações, acompanhar temas e melhorar processos de resposta, mas não pode garantir notas, avaliações positivas nem posições específicas nos resultados do Google.',
+        },
+      ]}
     />
   );
 }
