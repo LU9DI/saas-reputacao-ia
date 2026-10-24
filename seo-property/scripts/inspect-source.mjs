@@ -66,7 +66,7 @@ if (isLocal) {
 }
 
 const hash = createHash('sha256');
-const decoder = new TextDecoder('utf-8', { fatal: false });
+const decoder = new TextDecoder('utf-8', { fatal: true });
 let bytes = 0;
 let firstLine = '';
 let headerComplete = false;
