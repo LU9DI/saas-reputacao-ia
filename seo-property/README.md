@@ -49,3 +49,13 @@ node scripts/inspect-source.mjs --local-file "C:\\caminho\\para\\basecompleta202
 The inspector reads the full file to calculate a reproducible hash, but only stores header metadata. It does not approve the schema, calculate indicators, or publish pages. Network availability and local Node.js version may affect remote inspection.
 
 **Important:** Consumidor.gov.br complaint outcomes are not Filtra review data. Do not put these indicators into `data/benchmarks.json` or apply its review-count threshold. Implement a separate source-specific contract and quality gate only after the actual CSV schema and metric calculations have been verified.
+
+
+## Sector-level Consumidor.gov.br pages
+
+The separate `data/consumidor-gov-sector-trends.json` dataset can generate six sector-level explainer pages under `/dados-consumidor-gov/<sector>/`. They show the most recent published aggregate window, the three published rates with distinct denominators, counts, historical windows, source attribution, and comparability limitations. They never assign metrics to individual companies or feed the Filtra review benchmark.
+
+- `npm run build:sector-trends`: generate these pages and a dedicated sitemap.
+- Without `SEO_PROPERTY_ORIGIN`, pages are marked `noindex,nofollow`, omit canonical URLs, and do not emit a sitemap. This keeps preview/CI output from being indexed with placeholder URLs.
+- For a real deployment, configure `SEO_PROPERTY_ORIGIN` to the actual HTTPS origin of the independent data property. This command does not deploy anything.
+- The dataset is secondary and pre-aggregated; it is not a direct ingestion of the official monthly CSV. Recheck source freshness before presenting its values as current.
