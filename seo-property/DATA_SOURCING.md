@@ -34,3 +34,8 @@ Cada lote deve ter, fora do conteúdo público, um registro de auditoria com ide
 ## Contrato atual
 
 O arquivo `data/benchmarks.json` é a interface de ingestão aprovada para o gerador. Ele não deve ser preenchido por consulta automática à base transacional. Uma futura integração deverá gerar esse JSON em um pipeline separado, com agregação, validação, revisão de privacidade e trilha de auditoria antes do build público.
+
+
+## Campos de origem obrigatórios no contrato
+
+Além da descrição da fonte e do URL de metodologia, cada registro público precisa declarar `sourceUrl`, `sourceLicense` e `sourceAttribution`. O gerador rejeita registros sem esses campos e os exibe na página. A presença desses campos não prova por si só que a licença permite republicação: a revisão da licença e dos termos de uso continua sendo uma etapa de aprovação antes da ingestão.
