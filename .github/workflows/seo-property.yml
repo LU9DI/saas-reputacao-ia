@@ -45,3 +45,6 @@ jobs:
 
       - name: Build with empty authorized dataset
         run: npm run build
+
+      - name: Build sector-level public data pages without indexing until origin is configured
+        run: npm run build:sector-trends
