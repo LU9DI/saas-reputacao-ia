@@ -40,4 +40,4 @@ Example (PowerShell; run from this directory):
 npm run inspect:source -- "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv" "2026-01"
 ```
 
-The inspector reads the full response to calculate a reproducible hash, but only stores header metadata. It does not approve the schema, calculate indicators, or publish pages. Network availability and local Node.js version may affect the run.
+If the official host cannot resolve, download the CSV manually from the official Consumidor.gov.br site (Painel Estatístico → Indicadores → Dados Abertos) and inspect the local file without uploading it anywhere:\n\n```powershell\nnode scripts/inspect-source.mjs --local-file "C:\\caminho\\para\\basecompleta2026-01.csv" "2026-01"\n```\n\nThe inspector reads the full file to calculate a reproducible hash, but only stores header metadata. It does not approve the schema, calculate indicators, or publish pages. Network availability and local Node.js version may affect remote inspection.
