@@ -339,6 +339,9 @@ export default function LandingPreview() {
             <a href="#como-funciona" className="hover:text-white">{c.howEyebrow}</a>
             <a href="#recursos" className="hover:text-white">{c.featuresEyebrow}</a>
             <a href="#filtra-dot" className="hover:text-white">Filtra Dot</a>
+            <Link href="/gestao-de-reputacao-online" className="hover:text-white">{language==='pt'?'Reputação':language==='en'?'Reputation':language==='es'?'Reputación':'声誉'}</Link>
+            <Link href="/avaliacoes-google" className="hover:text-white">{language==='pt'?'Avaliações Google':language==='en'?'Google reviews':language==='es'?'Reseñas Google':'Google 评价'}</Link>
+            <Link href="/auditoria-gratuita" className="hover:text-white">{language==='pt'?'Auditoria grátis':language==='en'?'Free audit':language==='es'?'Auditoría gratis':'免费审计'}</Link>
             <Link href="/blog" className="hover:text-white">Blog</Link>
             <a href="#planos" className="hover:text-white">{c.plansEyebrow}</a>
           </div>
