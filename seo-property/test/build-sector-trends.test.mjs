@@ -16,8 +16,12 @@ test("generates six useful sector pages and adds a valid sitemap only with a con
       stdio: "pipe",
     });
     const manifest = JSON.parse(await readFile(resolve(output, "sector-trends-manifest.json"), "utf8"));
-    assert.equal(manifest.generatedPages.length, 6);
+    assert.equal(manifest.generatedPages.length, 7);
     assert.equal(manifest.scope, "sector_level_only");
+    const landing = await readFile(resolve(output, "dados-consumidor-gov/index.html"), "utf8");
+    assert.match(landing, /Dados públicos do Consumidor.gov.br por setor/);
+    assert.match(landing, /href="\/dados-consumidor-gov\/telecom\//);
+    assert.match(landing, /name="robots" content="index,follow"/);
     const page = await readFile(resolve(output, "dados-consumidor-gov/telecom/index.html"), "utf8");
     assert.match(page, /canonical" href="https:\/\/dados\.example\.com\/dados-consumidor-gov\/telecom\//);
     assert.match(page, /name="robots" content="index,follow"/);
@@ -25,7 +29,7 @@ test("generates six useful sector pages and adds a valid sitemap only with a con
     assert.match(page, /Resolvidas entre as avaliadas/);
     assert.match(page, /não a reputação geral de empresas/);
     const sitemap = await readFile(resolve(output, "sitemap-sector-trends.xml"), "utf8");
-    assert.equal((sitemap.match(/<url>/g) || []).length, 6);
+    assert.equal((sitemap.match(/<url>/g) || []).length, 7);
     const index = await readFile(resolve(output, "sitemap.xml"), "utf8");
     assert.match(index, /sitemap-sector-trends\.xml/);
   } finally {
@@ -40,6 +44,9 @@ test("pages remain noindex and no sitemap is emitted without a verified public o
       env: { ...process.env, SEO_PROPERTY_OUTPUT_DIR: output, SEO_PROPERTY_ORIGIN: "" },
       stdio: "pipe",
     });
+    const landing = await readFile(resolve(output, "dados-consumidor-gov/index.html"), "utf8");
+    assert.match(landing, /name="robots" content="noindex,nofollow"/);
+    assert.doesNotMatch(landing, /rel="canonical"/);
     const page = await readFile(resolve(output, "dados-consumidor-gov/airlines/index.html"), "utf8");
     assert.match(page, /name="robots" content="noindex,nofollow"/);
     assert.doesNotMatch(page, /rel="canonical"/);
