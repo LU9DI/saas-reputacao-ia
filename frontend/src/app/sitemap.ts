@@ -25,6 +25,14 @@ const LAST_MODIFIED: Record<string, string> = {
   '/ia': '2026-10-22',
   '/como-funciona': '2026-10-24',
   '/auditoria-gratuita': '2026-10-24',
+  '/academias': '2026-10-24',
+  '/dentistas': '2026-10-24',
+  '/imobiliarias': '2026-10-24',
+  '/saloes-de-beleza': '2026-10-24',
+  '/petshops': '2026-10-24',
+  '/escolas': '2026-10-24',
+  '/oficinas-mecanicas': '2026-10-24',
+  '/ecommerce': '2026-10-24',
   '/clinicas': '2026-10-22',
   '/franquias': '2026-10-22',
   '/blog/gestao-reputacao-online-guia': '2026-10-20',
@@ -145,6 +153,14 @@ const canonicalPaths = [
   '/termos',
   '/privacidade',
   '/planos',
+  '/academias',
+  '/dentistas',
+  '/imobiliarias',
+  '/saloes-de-beleza',
+  '/petshops',
+  '/escolas',
+  '/oficinas-mecanicas',
+  '/ecommerce',
 ];
 
 const localizedPaths = Object.values(SEO_FAMILIES).flatMap((family) =>
@@ -178,6 +194,14 @@ const highPriority = new Set([
   '/pedir-estrela-vs-filtrar',
   '/como-funciona',
   '/ia',
+  '/academias',
+  '/dentistas',
+  '/imobiliarias',
+  '/saloes-de-beleza',
+  '/petshops',
+  '/escolas',
+  '/oficinas-mecanicas',
+  '/ecommerce',
 ]);
 
 function localizedAlternates(path: string) {

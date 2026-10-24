@@ -68,6 +68,14 @@ export default function Page() {
         { href: '/blog/gestao-reputacao-online-guia', title: 'Guia de reputação online', description: 'Aprofunde conceitos, indicadores e rotinas para gerir a reputação.' },
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Leve a operação de reputação para uma carteira de clientes.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Conecte reputação, avaliações e descoberta local.' },
+        { href: '/academias', title: "Gestão de reputação online para academias", description: "Organize avaliações de academias, identifique padrões sobre aulas, equipe, limpeza e horários e transforme feedback em melhorias." },
+        { href: '/dentistas', title: "Gestão de reputação para dentistas e clínicas odontológicas", description: "Entenda avaliações de consultórios odontológicos, encontre padrões de atendimento e melhore processos sem expor informações de pacientes." },
+        { href: '/imobiliarias', title: "Gestão de reputação online para imobiliárias", description: "Organize avaliações sobre atendimento imobiliário, comunicação, visitas e pós-venda para priorizar melhorias na jornada do cliente." },
+        { href: '/saloes-de-beleza', title: "Gestão de reputação online para salões de beleza", description: "Analise feedback sobre agendamento, pontualidade, atendimento e serviços em salões de beleza e priorize melhorias na experiência." },
+        { href: '/petshops', title: "Gestão de reputação online para pet shops", description: "Organize avaliações sobre atendimento, agendamento, produtos e cuidado com animais para identificar prioridades de experiência." },
+        { href: '/escolas', title: "Gestão de reputação online para escolas", description: "Entenda padrões de feedback sobre comunicação, atendimento, infraestrutura e experiência das famílias sem expor dados de estudantes." },
+        { href: '/oficinas-mecanicas', title: "Gestão de reputação online para oficinas mecânicas", description: "Identifique padrões em avaliações sobre orçamento, prazo, comunicação e qualidade percebida em oficinas mecânicas." },
+        { href: '/ecommerce', title: "Gestão de reputação online para e-commerce", description: "Organize feedback sobre entrega, produto, devolução e suporte no comércio eletrônico para identificar problemas recorrentes." },
       ]}
       sections={[
         {
