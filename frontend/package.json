@@ -45,6 +45,8 @@
     "seo:briefs": "node scripts/build-seo-editorial-briefs.mjs",
     "seo:briefs:test": "node scripts/test-seo-editorial-briefs.mjs",
     "seo:overlap": "node scripts/analyze-seo-query-page-overlap.mjs",
-    "seo:overlap:test": "node scripts/test-seo-query-page-overlap.mjs"
+    "seo:overlap:test": "node scripts/test-seo-query-page-overlap.mjs",
+    "seo:growth-plan": "node scripts/build-seo-growth-action-plan.mjs",
+    "seo:growth-plan:test": "node scripts/test-seo-growth-action-plan.mjs"
   }
 }
