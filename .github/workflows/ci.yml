@@ -62,6 +62,14 @@ jobs:
             npm install
           fi
 
+      - name: Report backend npm audit findings (diagnostic)
+        run: |
+          set +e
+          npm audit --json > /tmp/backend-npm-audit.json
+          audit_status=$?
+          set -e
+          node -e 'const a=require("/tmp/backend-npm-audit.json"); console.log(JSON.stringify({auditExitCode:Number(process.argv[1]),metadata:a.metadata?.vulnerabilities, vulnerabilities:Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,range:v.range,via:(v.via||[]).map(x=>typeof x==="string"?x:{name:x.name,title:x.title,url:x.url,range:x.range}),fixAvailable:v.fixAvailable,nodes:v.nodes}))},null,2))' "$audit_status"
+
       - name: Unit tests
         run: |
           # Use npm exec so CI remains resilient if the lockfile is temporarily
