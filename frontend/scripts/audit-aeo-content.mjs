@@ -14,6 +14,8 @@ import { resolve } from 'node:path';
 
 const appRoot = resolve(process.cwd(), 'src/app');
 
+// Keep this list restricted to routes confirmed to exist in the current main
+// branch. Add new routes only after confirming their route file and public URL.
 const routes = [
   { path: '/', file: 'page.tsx', label: 'Homepage' },
   { path: '/gestao-de-reputacao-online', file: 'gestao-de-reputacao-online/page.tsx', label: 'Gestão de reputação' },
@@ -21,8 +23,10 @@ const routes = [
   { path: '/reputacao-google', file: 'reputacao-google/page.tsx', label: 'Reputação Google' },
   { path: '/analise-de-avaliacoes-com-ia', file: 'analise-de-avaliacoes-com-ia/page.tsx', label: 'Análise com IA' },
   { path: '/como-funciona', file: 'como-funciona/page.tsx', label: 'Como funciona' },
-  { path: '/metodologia-auditoria', file: 'metodologia-auditoria/page.tsx', label: 'Metodologia de auditoria' },
-  { path: '/indice-reputacao', file: 'indice-reputacao/page.tsx', label: 'Índice de reputação' },
+  { path: '/filtra-ai', file: 'filtra-ai/page.tsx', label: 'Produto Filtra.AI' },
+  { path: '/auditoria-gratuita', file: 'auditoria-gratuita/page.tsx', label: 'Auditoria gratuita' },
+  { path: '/monitoramento-reputacao-online', file: 'monitoramento-reputacao-online/page.tsx', label: 'Monitoramento' },
+  { path: '/feedback-de-clientes', file: 'feedback-de-clientes/page.tsx', label: 'Feedback de clientes' },
 ];
 
 const checks = [
@@ -30,50 +34,50 @@ const checks = [
     id: 'title',
     weight: 15,
     description: 'metadados de título específicos da página',
-    test: (source) => /export\s+const\s+metadata\b|generateMetadata\s*\(/.test(source)
-      && /title\s*:/.test(source),
+    test: (source) => /export\\s+const\\s+metadata\\b|generateMetadata\\s*\\(/.test(source)
+      && /title\\s*:/.test(source),
   },
   {
     id: 'description',
     weight: 15,
     description: 'metadados de descrição',
-    test: (source) => /description\s*:/.test(source),
+    test: (source) => /description\\s*:/.test(source),
   },
   {
     id: 'h1',
     weight: 15,
     description: 'título principal visível (H1)',
-    test: (source) => /<h1\b/.test(source),
+    test: (source) => /<h1\\b/.test(source),
   },
   {
     id: 'direct-answer',
     weight: 20,
     description: 'sinal de resposta direta ou resumo inicial',
-    test: (source) => /resposta curta|em resumo|\b[a-zà-ú]+ é |\bserve para\b|\bpermite\b|\bconsiste em\b/i.test(source),
+    test: (source) => /resposta curta|em resumo|\\b[a-zà-ú]+ é |\\bserve para\\b|\\bpermite\\b|\\bconsiste em\\b/i.test(source),
   },
   {
     id: 'faq',
     weight: 10,
     description: 'perguntas frequentes ou headings interrogativos',
-    test: (source) => /perguntas frequentes|\bFAQ\b|FAQPage|\?/.test(source),
+    test: (source) => /perguntas frequentes|\\bFAQ\\b|FAQPage|\\?/.test(source),
   },
   {
     id: 'structured-data',
     weight: 10,
     description: 'dados estruturados ou componente de schema',
-    test: (source) => /JsonLd|Schema|application\/ld\+json|FAQPage|BreadcrumbList|WebPage/.test(source),
+    test: (source) => /JsonLd|Schema|application\\/ld\\+json|FAQPage|BreadcrumbList|WebPage/.test(source),
   },
   {
     id: 'canonical',
     weight: 10,
     description: 'canonical explícito ou metadata alternates',
-    test: (source) => /canonical\s*:|alternates\s*:/.test(source),
+    test: (source) => /canonical\\s*:|alternates\\s*:/.test(source),
   },
   {
     id: 'evidence',
     weight: 5,
     description: 'sinais de método, fonte, evidência ou limites',
-    test: (source) => /metodologia|fontes?\b|evidências?\b|limitações?\b|dados observados/i.test(source),
+    test: (source) => /metodologia|fontes?\\b|evidências?\\b|limitações?\\b|dados observados/i.test(source),
   },
 ];
 
@@ -106,6 +110,8 @@ if (!existsSync(appRoot)) {
 
 const results = routes.map(audit);
 const audited = results.filter((result) => result.status === 'audited');
+const missingRoutes = results.filter((result) => result.status === 'not-found');
+
 const averageScore = audited.length
   ? Math.round(audited.reduce((sum, result) => sum + result.score, 0) / audited.length)
   : 0;
@@ -114,7 +120,7 @@ console.log(JSON.stringify({
   audit: 'Filtra.AI AEO source heuristic',
   generatedAt: new Date().toISOString(),
   auditedRoutes: audited.length,
-  missingRoutes: results.filter((result) => result.status === 'not-found').map(({ path, file }) => ({ path, file })),
+  missingRoutes: missingRoutes.map(({ path, file }) => ({ path, file })),
   averageScore,
   interpretation: 'Pontuação heurística de sinais presentes no código-fonte; não mede qualidade semântica, precisão factual nem probabilidade de citação por mecanismos de IA.',
   routes: results,
