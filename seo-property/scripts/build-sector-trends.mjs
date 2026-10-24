@@ -75,7 +75,9 @@ ${origin ? `<link rel="canonical" href="${esc(origin+path)}"><meta name="robots"
   pages.push({path,title});
 }
 const entries = pages.map(page => `<url><loc>${esc(origin+page.path)}</loc></url>`).join("\n");
-await writeFile(resolve(output,"sitemap-sector-trends.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`);
+if (origin) {
+  await writeFile(resolve(output,"sitemap-sector-trends.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`);
+}
 const indexPath = resolve(output,"sitemap.xml");
 let index = "";
 try { index = await (await import("node:fs/promises")).readFile(indexPath,"utf8"); } catch {}
