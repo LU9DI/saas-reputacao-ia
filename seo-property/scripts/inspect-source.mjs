@@ -5,7 +5,7 @@ import { resolve, basename } from 'node:path';
 
 const sourceArg = process.argv[2];
 const month = process.argv[3];
-if (!sourceArg || !/^20\d{2}-(0[1-9]|1[0-2])$/.test(month || '')) {
+if (!sourceArg || (sourceArg !== '--local-file' && !/^20\\d{2}-(0[1-9]|1[0-2])$/.test(month || ''))) {
   console.error('Usage: node scripts/inspect-source.mjs <official-download-url|--local-file PATH> YYYY-MM');
   process.exit(2);
 }
