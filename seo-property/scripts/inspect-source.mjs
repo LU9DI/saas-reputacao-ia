@@ -136,7 +136,7 @@ const report = {
   schemaStatus: 'DISCOVERED_NOT_APPROVED',
   privacy: 'Only header metadata retained. Record values, consumer text, and personal identifiers were not written to disk or logged.'
 };
-const outDir = resolve(import.meta.dirname, '../artifacts/source-inspection');
+const outDir = resolve(process.env.SEO_SOURCE_INSPECTION_OUTPUT_DIR || resolve(import.meta.dirname, '../artifacts/source-inspection'));
 await mkdir(outDir, { recursive: true });
 const outPath = resolve(outDir, `consumidor-gov-${effectiveMonth}-header.json`);
 await writeFile(outPath, JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
