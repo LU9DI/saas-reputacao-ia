@@ -22,6 +22,19 @@ const routes = [
   { path: '/auditoria-gratuita', file: 'auditoria-gratuita/page.tsx', label: 'Auditoria gratuita' },
   { path: '/monitoramento-reputacao-online', file: 'monitoramento-reputacao-online/page.tsx', label: 'Monitoramento' },
   { path: '/feedback-de-clientes', file: 'feedback-de-clientes/page.tsx', label: 'Feedback de clientes' },
+  { path: '/gestao-de-feedback', file: 'gestao-de-feedback/page.tsx', label: 'Gestão de feedback' },
+  { path: '/como-melhorar-avaliacoes-google', file: 'como-melhorar-avaliacoes-google/page.tsx', label: 'Melhorar avaliações Google' },
+  { path: '/ia', file: 'ia/page.tsx', label: 'Integração com IA' },
+  { path: '/agencias', file: 'agencias/page.tsx', label: 'Agências' },
+  { path: '/clinicas', file: 'clinicas/page.tsx', label: 'Clínicas' },
+  { path: '/restaurantes', file: 'restaurantes/page.tsx', label: 'Restaurantes' },
+  { path: '/hoteis', file: 'hoteis/page.tsx', label: 'Hotéis' },
+  { path: '/franquias', file: 'franquias/page.tsx', label: 'Franquias' },
+  { path: '/turismo', file: 'turismo/page.tsx', label: 'Turismo' },
+  { path: '/associacoes', file: 'associacoes/page.tsx', label: 'Associações' },
+  { path: '/parceiros', file: 'parceiros/page.tsx', label: 'Parceiros' },
+  { path: '/pedir-estrela-vs-filtrar', file: 'pedir-estrela-vs-filtrar/page.tsx', label: 'Política de avaliações' },
+  { path: '/calculadora-nota-google', file: 'calculadora-nota-google/page.tsx', label: 'Calculadora de nota Google' },
 ];
 
 const checks = [
