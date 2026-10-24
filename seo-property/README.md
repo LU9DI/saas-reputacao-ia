@@ -40,4 +40,12 @@ Example (PowerShell; run from this directory):
 npm run inspect:source -- "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv" "2026-01"
 ```
 
-If the official host cannot resolve, download the CSV manually from the official Consumidor.gov.br site (Painel Estatístico → Indicadores → Dados Abertos) and inspect the local file without uploading it anywhere:\n\n```powershell\nnode scripts/inspect-source.mjs --local-file "C:\\caminho\\para\\basecompleta2026-01.csv" "2026-01"\n```\n\nThe inspector reads the full file to calculate a reproducible hash, but only stores header metadata. It does not approve the schema, calculate indicators, or publish pages. Network availability and local Node.js version may affect remote inspection.
+If the official host cannot resolve, first check the official Consumidor.gov.br site (Painel Estatístico → Indicadores → Dados Abertos). Availability of that interface is not guaranteed; do not substitute a third-party dataset without a documented source decision. If you already have the official CSV locally, inspect it without uploading it anywhere:
+
+```powershell
+node scripts/inspect-source.mjs --local-file "C:\\caminho\\para\\basecompleta2026-01.csv" "2026-01"
+```
+
+The inspector reads the full file to calculate a reproducible hash, but only stores header metadata. It does not approve the schema, calculate indicators, or publish pages. Network availability and local Node.js version may affect remote inspection.
+
+**Important:** Consumidor.gov.br complaint outcomes are not Filtra review data. Do not put these indicators into `data/benchmarks.json` or apply its review-count threshold. Implement a separate source-specific contract and quality gate only after the actual CSV schema and metric calculations have been verified.
