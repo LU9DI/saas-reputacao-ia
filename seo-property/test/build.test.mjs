@@ -49,6 +49,20 @@ test('publishes only qualified data, requires a real origin, and escapes content
       error => String(error.stderr || '').includes('SEO_PROPERTY_ORIGIN is required')
     );
 
+    for (const invalidOrigin of [
+      'http://index.example.test',
+      'https://index.example.test/path',
+      'https://user:pass@index.example.test',
+      'https://index.example.test/?preview=1',
+      'https://index.example.test/#fragment'
+    ]) {
+      const invalidEnv = { ...envWithoutOrigin, SEO_PROPERTY_ORIGIN: invalidOrigin };
+      assert.throws(
+        () => execFileSync(process.execPath, [builder], { cwd: root, env: invalidEnv, stdio: 'pipe' }),
+        error => String(error.stderr || '').includes('SEO_PROPERTY_ORIGIN')
+      );
+    }
+
     const envWithOrigin = { ...envWithoutOrigin, SEO_PROPERTY_ORIGIN: 'https://index.example.test' };
     execFileSync(process.execPath, [builder], { cwd: root, env: envWithOrigin, stdio: 'pipe' });
     const page = await readFile(resolve(root, 'dist/indice/academias/go/index.html'), 'utf8');
