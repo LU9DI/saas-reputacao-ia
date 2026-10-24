@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
+import { BreadcrumbJsonLd } from '../components/BreadcrumbJsonLd';
 
 export const metadata: Metadata = {
   title: 'Auditoria gratuita de avaliações e reputação',
@@ -19,5 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default function AuditoriaGratuitaLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <BreadcrumbJsonLd crumbs={[{ name: 'Auditoria gratuita', path: '/auditoria-gratuita' }]} />
+      {children}
+    </>
+  );
 }

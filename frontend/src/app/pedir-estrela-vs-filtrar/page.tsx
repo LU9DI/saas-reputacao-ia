@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function PedirVsFiltrarPage() {
   return (
     <SeoLanding
+      breadcrumbHref="/pedir-estrela-vs-filtrar"
       h1="Pedir avaliação ≠ controlar reputação"
       lead="Muitos negócios só mandam o link do Google. Um fluxo de feedback anterior à avaliação pode revelar problemas e facilitar que clientes compartilhem experiências reais, sem selecionar quem merece ou não um convite."
       contextLinks={[
