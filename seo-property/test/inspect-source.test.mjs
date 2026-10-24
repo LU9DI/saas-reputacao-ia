@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -32,7 +32,7 @@ test('local CSV inspection records only metadata and header, never row values', 
   const source = join(temp, 'sample.csv');
   const output = join(temp, 'reports');
   const privateFixtureValue = 'PRIVATE_COMPLAINT_TEXT_DO_NOT_STORE';
-  await writeFile(source, 'Empresa;Situação;Texto\\r\\nAcme;Finalizada;' + privateFixtureValue + '\\r\\n', 'utf8');
+  await writeFile(source, 'Empresa;Situação;Texto\r\nAcme;Finalizada;' + privateFixtureValue + '\r\n', 'utf8');
   try {
     const script = resolve(import.meta.dirname, '../scripts/inspect-source.mjs');
     const run = spawnSync(process.execPath, [script, '--local-file', source, '2026-01'], {
@@ -46,7 +46,7 @@ test('local CSV inspection records only metadata and header, never row values', 
     assert.deepEqual(report.headers, ['Empresa', 'Situação', 'Texto']);
     assert.equal(report.delimiter, ';');
     assert.equal(report.schemaStatus, 'DISCOVERED_NOT_APPROVED');
-    assert.equal(report.downloadedBytes, Buffer.byteLength('Empresa;Situação;Texto\\r\\nAcme;Finalizada;' + privateFixtureValue + '\\r\\n'));
+    assert.equal(report.downloadedBytes, Buffer.byteLength('Empresa;Situação;Texto\r\nAcme;Finalizada;' + privateFixtureValue + '\r\n'));
     assert.ok(!reportText.includes(privateFixtureValue));
     assert.ok(!run.stdout.includes(privateFixtureValue));
   } finally {
