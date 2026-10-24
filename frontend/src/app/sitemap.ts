@@ -14,6 +14,7 @@ const LAST_MODIFIED: Record<string, string> = {
   '/avaliacoes-google': '2026-10-24',
   '/reputacao-google': '2026-10-22',
   '/analise-de-avaliacoes-com-ia': '2026-10-24',
+  '/monitoramento-reputacao-online': '2026-10-24',
   '/como-melhorar-avaliacoes-google': '2026-10-22',
   '/gestao-de-feedback': '2026-10-22',
   '/feedback-de-clientes': '2026-10-24',
