@@ -62,6 +62,9 @@ jobs:
             npm install
           fi
 
+      - name: Audit backend dependencies
+        run: npm audit
+
       - name: Unit tests
         run: |
           # Use npm exec so CI remains resilient if the lockfile is temporarily
@@ -71,7 +74,7 @@ jobs:
       # O teste de integração usa um SQLite temporário; os adaptadores são dependências exclusivas de CI.
       # Não alterar o package-lock nem adicionar dependências de teste ao runtime.
       - name: Install SQLite test dependencies
-        run: npm install --no-save --package-lock=false sqlite@5.1.1 sqlite3@5.1.7
+        run: npm install --no-save --package-lock=false sqlite@5.1.1 sqlite3@6.0.1
 
       # Este teste usa banco temporário e não depende de DNS ou serviços externos.
       # Mantê-lo sempre ativo protege os contratos de consentimento e aceite legal.
