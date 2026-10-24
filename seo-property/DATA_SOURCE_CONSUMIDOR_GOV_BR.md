@@ -42,6 +42,17 @@ Os denominadores devem ser apresentados junto aos resultados. Não calcular uma 
 - O dicionário publicado é versão 3.0, datado de 23/09/2020. Deve ser comparado com os cabeçalhos reais de uma amostra recente antes de ser considerado suficiente.
 - Nenhum benchmark real foi produzido; `data/benchmarks.json` permanece vazio deliberadamente.
 
+## Atualização da investigação — 24/10/2026
+
+A investigação encontrou uma diferença operacional importante entre as duas publicações:
+
+- O catálogo legado em `dados.mj.gov.br` continua indexado e ainda aparece em resultados de busca com recursos CSV e licença CC BY; contudo, uma fonte secundária que refez a análise em 25/09/2026 informa que o domínio legado deixou de resolver em DNS em setembro de 2026 e que usou cópias preservadas no Internet Archive para a série antiga. A tentativa de leitura nesta sessão também não conseguiu abrir os recursos diretamente. Isso não prova que toda infraestrutura do Ministério esteja indisponível, mas significa que o caminho legado não pode ser tratado como fonte operacional verificada.
+- A mesma pesquisa secundária documenta uma publicação diferente no portal oficial do Consumidor.gov.br: arquivos mensais de reclamações **finalizadas**, publicados desde 2021, usados para calcular taxas agregadas por setor de setembro de 2025 a agosto de 2026. O portal oficial é https://www.consumidor.gov.br/pages/dadosabertos/externo/. O extrator de páginas desta sessão não revelou os links de arquivo da tabela dinâmica, que apareceu vazia/erro; portanto, os URLs concretos, o cabeçalho e a codificação dessa publicação ainda precisam ser capturados por um caminho verificável.
+- A publicação de reclamações finalizadas pode ser mais apropriada para os três indicadores de resolução do que a base completa antiga, mas não se deve presumir que inclua os campos necessários para satisfação com nota ou prazo médio de resposta. Cada métrica precisa passar pelo seu próprio teste de disponibilidade de campos e reconciliação.
+- O dataset secundário publicado por DNACX/Kammers declara que a janela recente usa esses arquivos mensais oficiais e informa contagens agregadas; isso é evidência secundária útil para investigar, não substituto para a inspeção do arquivo primário.
+
+Fontes consultadas nesta etapa: página de recurso legado do catálogo MJ (recurso de março de 2026), portal oficial de Dados Abertos do Consumidor.gov.br e nota metodológica secundária publicada em 25/09/2026. As URLs e definições já listadas acima continuam sendo referências, mas o contrato de ingestão permanece bloqueado.
+
 ## Descoberta automatizada do catálogo
 
 Foi adicionado um comando que consulta apenas o endpoint oficial CKAN `package_show`, valida a identidade do conjunto de dados e lista metadados de recursos mensais cujo nome, domínio, caminho, UUID e mês correspondem ao padrão esperado. Ele não baixa nem imprime linhas de reclamações.
