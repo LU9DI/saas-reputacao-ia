@@ -22,7 +22,15 @@ const SHARD_SIZE = 40000;
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const states = new Set(['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']);
 const sectorBySlug = new Map(sectors.map(s => [s.slug, s]));
-const validDate = value => typeof value === 'string' && !Number.isNaN(Date.parse(value));
+const validDateOnly = value => {
+  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+};
+const validTimestamp = value => {
+  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$/.test(value)) return false;
+  return !Number.isNaN(Date.parse(value));
+};
 const validHttpsUrl = value => {
   if (typeof value !== 'string') return false;
   try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; } catch { return false; }
@@ -33,8 +41,8 @@ const qualified = record => {
   if (!Number.isInteger(record.reviewCount) || record.reviewCount < MIN_REVIEWS) return false;
   if (!Number.isFinite(record.averageRating) || record.averageRating < 1 || record.averageRating > 5) return false;
   if (!Number.isFinite(record.responseRate) || record.responseRate < 0 || record.responseRate > 100) return false;
-  if (!validDate(record.periodStart) || !validDate(record.periodEnd) || Date.parse(record.periodStart) > Date.parse(record.periodEnd)) return false;
-  if (!validDate(record.updatedAt) || typeof record.sourceDescription !== 'string' || !record.sourceDescription.trim() || record.sourceDescription.length > 500 || !validHttpsUrl(record.sourceUrl) || typeof record.sourceLicense !== 'string' || !record.sourceLicense.trim() || record.sourceLicense.length > 100 || typeof record.sourceAttribution !== 'string' || !record.sourceAttribution.trim() || record.sourceAttribution.length > 200 || !validHttpsUrl(record.methodologyUrl)) return false;
+  if (!validDateOnly(record.periodStart) || !validDateOnly(record.periodEnd) || Date.parse(record.periodStart) > Date.parse(record.periodEnd)) return false;
+  if (!validTimestamp(record.updatedAt) || typeof record.sourceDescription !== 'string' || !record.sourceDescription.trim() || record.sourceDescription.length > 500 || !validHttpsUrl(record.sourceUrl) || typeof record.sourceLicense !== 'string' || !record.sourceLicense.trim() || record.sourceLicense.length > 100 || typeof record.sourceAttribution !== 'string' || !record.sourceAttribution.trim() || record.sourceAttribution.length > 200 || !validHttpsUrl(record.methodologyUrl)) return false;
   if (!Array.isArray(record.topThemes) || record.topThemes.length === 0 || record.topThemes.length > 8 || record.topThemes.some(t => typeof t !== 'string' || !t.trim() || t.length > 80)) return false;
   return true;
 };
