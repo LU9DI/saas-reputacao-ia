@@ -42,6 +42,18 @@ Os denominadores devem ser apresentados junto aos resultados. Não calcular uma 
 - O dicionário publicado é versão 3.0, datado de 23/09/2020. Deve ser comparado com os cabeçalhos reais de uma amostra recente antes de ser considerado suficiente.
 - Nenhum benchmark real foi produzido; `data/benchmarks.json` permanece vazio deliberadamente.
 
+## Descoberta automatizada do catálogo
+
+Foi adicionado um comando que consulta apenas o endpoint oficial CKAN `package_show`, valida a identidade do conjunto de dados e lista metadados de recursos mensais cujo nome, domínio, caminho, UUID e mês correspondem ao padrão esperado. Ele não baixa nem imprime linhas de reclamações.
+
+Na pasta `seo-property`, execute:
+
+```sh
+npm run discover:source
+```
+
+O comando falha explicitamente em resposta HTTP inválida, conteúdo que não seja JSON, conjunto de dados inesperado ou ausência de recursos mensais que passem a validação. Os metadados encontrados são pistas para selecionar a URL oficial; **não** aprovam o esquema CSV nem liberam publicação. Acesso ao catálogo pelo ambiente desta sessão continuou bloqueado pela ferramenta de leitura, então ainda não há resultado real confirmado deste comando.
+
 ## Próximos passos técnicos obrigatórios
 
 1. Tentar a URL de download do catálogo oficial; se falhar, verificar a interface oficial de Dados Abertos e registrar a falha com data/hora e status. Não substituir silenciosamente a fonte por scraper ou dataset de terceiros.
