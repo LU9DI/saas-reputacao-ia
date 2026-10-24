@@ -10,6 +10,8 @@ O conjunto oficial **Dados Consumidor.gov.br**, mantido pela Secretaria Nacional
 - Dicionário de dados disponível no catálogo: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br/resource/90aedbfe-3c91-4c18-86a5-f408d07e7210
 - Indicadores e metodologia oficial: https://www.consumidor.gov.br/pages/indicador/geral/abrir
 - Definições oficiais dos indicadores: https://www.consumidor.gov.br/pages/conteudo/publico/1
+- Página oficial de painel estatístico e dados abertos: https://consumidor.gov.br/pages/conteudo/publico/62
+- Interface oficial de publicações de dados abertos: https://www.consumidor.gov.br/pages/dadosabertos/externo/
 
 O catálogo lista recursos mensais até junho de 2026. O recurso de janeiro de 2026 identifica o formato como CSV e a licença como Creative Commons Atribuição. A existência do recurso no catálogo não significa que o conteúdo já tenha sido baixado, inspecionado ou validado pelo projeto.
 
@@ -35,18 +37,21 @@ Os denominadores devem ser apresentados junto aos resultados. Não calcular uma 
 - Catálogo oficial e recurso de janeiro de 2026 localizados.
 - Metodologia oficial dos quatro indicadores consultada.
 - A tentativa de baixar o CSV diretamente nesta sessão falhou; portanto, **o esquema real do arquivo ainda não foi inspecionado**.
+- Foi identificada a interface oficial alternativa do Consumidor.gov.br para Dados Abertos. Na consulta mais recente, a página de publicações carregou, mas a tabela de dados abertos exibiu erro de conexão e nenhum registro; isso não comprova indisponibilidade global nem disponibiliza um arquivo substituto.
+- A página oficial de indicadores exibe a metodologia e as categorias dos indicadores, mas a tabela de ranking veio sem linhas nesta consulta. Não usar capturas incompletas como fonte de números.
 - O dicionário publicado é versão 3.0, datado de 23/09/2020. Deve ser comparado com os cabeçalhos reais de uma amostra recente antes de ser considerado suficiente.
 - Nenhum benchmark real foi produzido; `data/benchmarks.json` permanece vazio deliberadamente.
 
 ## Próximos passos técnicos obrigatórios
 
-1. Baixar um CSV mensal e registrar URL exata, mês de referência, data de obtenção, tamanho e SHA-256.
-2. Ler apenas o cabeçalho e perfilar localmente a estrutura; não imprimir, registrar em logs ou manter cópias desnecessárias de textos de reclamação e identificadores de consumidores.
-3. Implementar parser CSV que respeite o delimitador e a codificação observados; não presumir separador, aspas ou nomes de colunas.
-4. Definir um contrato de esquema explícito e falhar em colunas desconhecidas/ausentes, em vez de adivinhar mapeamentos.
-5. Mapear campos para os quatro indicadores e validar os cálculos em amostra contra os indicadores oficiais por empresa e período.
-6. Aplicar limites mínimos de amostra e revisar risco de reidentificação antes da publicação.
-7. Manter atribuição, licença, período, denominadores, metodologia e trilha de auditoria; publicar apenas agregados revisados.
+1. Tentar a URL de download do catálogo oficial; se falhar, verificar a interface oficial de Dados Abertos e registrar a falha com data/hora e status. Não substituir silenciosamente a fonte por scraper ou dataset de terceiros.
+2. Baixar um CSV mensal e registrar URL exata, mês de referência, data de obtenção, tamanho e SHA-256.
+3. Ler apenas o cabeçalho e perfilar localmente a estrutura; não imprimir, registrar em logs ou manter cópias desnecessárias de textos de reclamação e identificadores de consumidores.
+4. Implementar parser CSV que respeite o delimitador e a codificação observados; não presumir separador, aspas ou nomes de colunas.
+5. Definir um contrato de esquema explícito e falhar em colunas desconhecidas/ausentes, em vez de adivinhar mapeamentos.
+6. Mapear campos para os quatro indicadores e validar os cálculos em amostra contra os indicadores oficiais por empresa e período.
+7. Aplicar limites mínimos de amostra e revisar risco de reidentificação antes da publicação.
+8. Manter atribuição, licença, período, denominadores, metodologia e trilha de auditoria; publicar apenas agregados revisados.
 
 ## Decisão
 
