@@ -53,7 +53,7 @@ The inspector reads the full file to calculate a reproducible hash, but only sto
 
 ## Sector-level Consumidor.gov.br pages
 
-The separate `data/consumidor-gov-sector-trends.json` dataset can generate six sector-level explainer pages under `/dados-consumidor-gov/<sector>/`. They show the most recent published aggregate window, the three published rates with distinct denominators, counts, historical windows, source attribution, and comparability limitations. They never assign metrics to individual companies or feed the Filtra review benchmark.
+The separate `data/consumidor-gov-sector-trends.json` dataset generates a landing page at `/dados-consumidor-gov/` plus six sector-level explainer pages under `/dados-consumidor-gov/<sector>/`. The landing page links the sector pages and summarizes scope, sources, methodology and limitations, improving crawlable internal navigation. They show the most recent published aggregate window, the three published rates with distinct denominators, counts, historical windows, source attribution, and comparability limitations. They never assign metrics to individual companies or feed the Filtra review benchmark.
 
 - `npm run build:sector-trends`: generate these pages and a dedicated sitemap.
 - Without `SEO_PROPERTY_ORIGIN`, pages are marked `noindex,nofollow`, omit canonical URLs, and do not emit a sitemap. This keeps preview/CI output from being indexed with placeholder URLs.
