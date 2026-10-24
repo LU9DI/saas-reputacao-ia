@@ -9,12 +9,13 @@ test('source inspection is scoped to the exact official monthly CSV path', () =>
   const valid = new URL('https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv');
   const isAllowed = (u, month) => u.protocol === 'https:' && u.hostname === 'dados.mj.gov.br' &&
     !u.username && !u.password && !u.search && !u.hash &&
-    new RegExp('^/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/[0-9a-f-]{36}/download/basecompleta' + month + '\\.csv$').test(u.pathname);
+    new RegExp('^/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/download/basecompleta' + month + '\\.csv$').test(u.pathname);
   assert.equal(isAllowed(valid, '2026-01'), true);
   for (const raw of [
     'http://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv',
     'https://example.com/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv',
     'https://dados.mj.gov.br/dataset/other/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv',
+    'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/------------------------------------/download/basecompleta2026-01.csv',
     'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-02.csv',
     'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv?mirror=1',
     'https://dados.mj.gov.br.evil.example/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv'
