@@ -12,7 +12,7 @@ const appRoot = resolve(process.cwd(), 'src/app');
 
 // Confirmed route files only; expand this inventory after validating new URLs.
 const routes = [
-  { path: '/', file: 'page.tsx', label: 'Homepage' },
+  { path: '/', file: 'page.tsx', contentFiles: ['preview/page.tsx'], label: 'Homepage' },
   { path: '/gestao-de-reputacao-online', file: 'gestao-de-reputacao-online/page.tsx', label: 'Gestão de reputação' },
   { path: '/avaliacoes-google', file: 'avaliacoes-google/page.tsx', label: 'Avaliações Google' },
   { path: '/reputacao-google', file: 'reputacao-google/page.tsx', label: 'Reputação Google' },
@@ -81,7 +81,7 @@ function audit(route) {
     return { ...route, status: 'not-found', score: 0, checks: [], missing: ['arquivo de rota não encontrado'] };
   }
 
-  const source = readFileSync(filePath, 'utf8');
+  // Some routes delegate visible content to a shared/child component; include known content files explicitly.\n  const sourceFiles = [route.file, ...(route.contentFiles || [])];\n  const source = sourceFiles\n    .map((file) => resolve(appRoot, file))\n    .filter((file) => existsSync(file))\n    .map((file) => readFileSync(file, 'utf8'))\n    .join('\\n');
   const results = checks.map((check) => ({
     id: check.id,
     passed: check.test(source),
