@@ -43,7 +43,7 @@ test('publishes only qualified data, requires a real origin, and escapes content
     await writeFile(benchmarksPath, JSON.stringify(fixture, null, 2) + '\n');
     assert.throws(
       () => execFileSync(process.execPath, [builder], { cwd: root, env: envWithoutOrigin, stdio: 'pipe' }),
-      /SEO_PROPERTY_ORIGIN is required/
+      error => String(error.stderr || '').includes('SEO_PROPERTY_ORIGIN is required')
     );
 
     const envWithOrigin = { ...envWithoutOrigin, SEO_PROPERTY_ORIGIN: 'https://index.example.test' };
