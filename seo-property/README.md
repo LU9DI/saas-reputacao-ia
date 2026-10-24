@@ -29,3 +29,15 @@ A page is generated only for records with valid state/sector identifiers, non-se
 - `npm test`: tests the candidate count, uniqueness, quality gates, sitemap sharding and truthful lastmod.
 
 Set `SEO_PROPERTY_ORIGIN` to the actual public property's origin when deploying. This repository folder is isolated from `frontend/`; it does not alter Filtra routes or deploy anything.
+
+## Official source inspection (metadata only)
+
+A privacy-conscious inspector is available at `scripts/inspect-source.mjs`. It downloads an official resource as a stream, computes SHA-256 and retains only the CSV header plus source metadata; it does not write row values, complaint narratives, or consumer identifiers to disk. It refuses non-HTTPS URLs, non-official hosts, unexpected redirects, HTML responses, ambiguous delimiters, and duplicate/empty header names. A downloaded schema is marked `DISCOVERED_NOT_APPROVED` until manually mapped against the official dictionary and validated.
+
+Example (PowerShell; run from this directory):
+
+```powershell
+npm run inspect:source -- "https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv" "2026-01"
+```
+
+The inspector reads the full response to calculate a reproducible hash, but only stores header metadata. It does not approve the schema, calculate indicators, or publish pages. Network availability and local Node.js version may affect the run.
