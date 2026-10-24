@@ -19,17 +19,6 @@ const graph = {
       knowsAbout: ['gestão de reputação online', 'avaliações Google', 'feedback de clientes', 'SEO local', 'inteligência artificial'],
     },
     {
-      '@type': 'WebPage',
-      '@id': `${siteUrl}/#webpage`,
-      url: siteUrl,
-      name: 'Filtra.AI | Gestão de reputação online com IA',
-      description: 'Plataforma brasileira de gestão de reputação online, avaliações Google e feedback de clientes com IA.',
-      isPartOf: { '@id': `${siteUrl}/#website` },
-      about: { '@id': `${siteUrl}/#organization` },
-      mainEntity: { '@id': `${siteUrl}/#software` },
-      inLanguage: 'pt-BR',
-    },
-    {
       '@type': 'WebSite',
       '@id': `${siteUrl}/#website`,
       url: siteUrl,
