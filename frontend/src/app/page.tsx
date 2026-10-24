@@ -33,5 +33,27 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <PreviewLanding />;
+  const homepageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': 'https://filtraai.com/#webpage',
+    url: 'https://filtraai.com/',
+    name: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
+    description:
+      'Monitore avaliações Google, feedback e reputação da sua empresa com IA. Identifique padrões, melhore respostas e transforme a voz do cliente em crescimento.',
+    isPartOf: { '@id': 'https://filtraai.com/#website' },
+    about: { '@id': 'https://filtraai.com/#organization' },
+    mainEntity: { '@id': 'https://filtraai.com/#software' },
+    inLanguage: 'pt-BR',
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }}
+      />
+      <PreviewLanding />
+    </>
+  );
 }
