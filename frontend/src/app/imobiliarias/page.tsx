@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: "Gestão de reputação para imobiliárias | Filtra.AI",
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
     url: "https://filtraai.com/imobiliarias",
     siteName: 'Filtra.AI',
     type: 'website',
+    images: [OG_IMAGE_META],
   },
 };
 
