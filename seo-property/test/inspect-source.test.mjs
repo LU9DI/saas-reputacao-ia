@@ -86,3 +86,24 @@ test('local inspector fails closed on an ambiguous delimiter and writes no repor
     await rm(temp, { recursive: true, force: true });
   }
 });
+
+test('local inspector rejects invalid UTF-8 in the header instead of silently replacing bytes', async () => {
+  const temp = await mkdtemp(join(tmpdir(), 'seo-source-encoding-'));
+  const source = join(temp, 'invalid-utf8.csv');
+  const output = join(temp, 'reports');
+  await writeFile(source, Buffer.from([0x45, 0x6d, 0x70, 0xff, 0x3b, 0x58, 0x0a, 0x41, 0x3b, 0x42, 0x0a]));
+  try {
+    const script = resolve(import.meta.dirname, '../scripts/inspect-source.mjs');
+    const run = spawnSync(process.execPath, [script, '--local-file', source, '2026-01'], {
+      encoding: 'utf8',
+      env: { ...process.env, SEO_SOURCE_INSPECTION_OUTPUT_DIR: output }
+    });
+    assert.notEqual(run.status, 0);
+    await assert.rejects(readFile(join(output, 'consumidor-gov-2026-01-header.json'), 'utf8'), {
+      code: 'ENOENT'
+    });
+  } finally {
+    await rm(temp, { recursive: true, force: true });
+  }
+});
+
