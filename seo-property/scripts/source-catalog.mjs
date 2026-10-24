@@ -3,7 +3,7 @@ const PACKAGE_ID = '0182f1bf-e73d-42b1-ae8c-fa94d9ce9451';
 const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 
 export function isOfficialMonthlyCsvUrl(rawUrl, month) {
-  if (!/^20\\d{2}-(0[1-9]|1[0-2])$/.test(month || '')) return false;
+  if (!/^20\d{2}-(0[1-9]|1[0-2])$/.test(month || '')) return false;
   let url;
   try { url = new URL(rawUrl); } catch { return false; }
   return url.protocol === 'https:' && url.hostname === 'dados.mj.gov.br' &&
@@ -20,7 +20,7 @@ export function extractOfficialMonthlyResources(payload) {
   for (const item of payload.result.resources) {
     const name = typeof item?.name === 'string' ? item.name : '';
     const url = typeof item?.url === 'string' ? item.url : '';
-    const match = name.match(/^basecompleta(20\\d{2}-(?:0[1-9]|1[0-2]))\\.csv$/);
+    const match = name.match(/^basecompleta(20\d{2}-(?:0[1-9]|1[0-2]))\.csv$/);
     if (!match || !isOfficialMonthlyCsvUrl(url, match[1])) continue;
     resources.push({
       referenceMonth: match[1],
