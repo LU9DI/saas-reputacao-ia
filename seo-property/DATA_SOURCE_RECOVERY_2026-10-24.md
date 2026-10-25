@@ -58,3 +58,17 @@ Uma execução adicional no runner buscou a página oficial e inspecionou 22 arq
 Execução: https://github.com/LU9DI/saas-reputacao-ia/actions/runs/40145249920
 
 Decisão: não criar endpoint adivinhado nem desbloquear ingestão. A alternativa prática imediata continua sendo usar o agregado setorial já documentado como produto separado, enquanto se procura uma cópia arquivada verificável ou se obtém do portal oficial o link real do recurso.
+
+
+## Atualização da pesquisa pública (25/10/2026)
+
+A indexação pública do catálogo oficial ainda lista recursos CSV `basecompletaAAAA-MM.csv` até junho de 2026. A página de recurso de janeiro de 2026 confirma formato CSV, licença Creative Commons Atribuição e URL de download; a de abril de 2026 confirma a mesma estrutura de catálogo/licença. Isso demonstra que os recursos existem no catálogo indexado, mas não resolve a falha DNS/conexão observada pelo runner e não equivale a baixar/validar os bytes.
+
+- Catálogo oficial, com a lista mensal: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br
+- Recurso janeiro de 2026: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba
+- Recurso abril de 2026: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br/resource/a0ca4dfd-5a15-4577-a981-c60fe503c6fe
+- Metodologia oficial dos indicadores: https://www.consumidor.gov.br/pages/conteudo/publico/1
+
+A metodologia oficial define o Índice de Solução como (resolvidas + não avaliadas) / finalizadas; já a série mensal secundária de taxa de resolução divide resolvidas por avaliadas (resolvidas + não resolvidas), excluindo as não avaliadas. O site precisa nomear esses indicadores separadamente, nunca trocar seus rótulos ou compará-los como se fossem a mesma taxa.
+
+Execuções de validação no commit anterior: CI completo passou em https://github.com/LU9DI/saas-reputacao-ia/actions/runs/40145291410; a verificação específica do contrato passou em https://github.com/LU9DI/saas-reputacao-ia/actions/runs/40145291321. Isso valida o código/contrato e as páginas geradas, não a recuperação dos CSVs oficiais.
