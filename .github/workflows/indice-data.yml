@@ -29,11 +29,15 @@ jobs:
         run: npm ci && npm test
       - name: Sondagem do portal (diagnóstico)
         run: |
-          T=gn672Ad4CF8N6TK; H=https://arquivos.receitafederal.gov.br/public.php/webdav
-          lista() { curl -s -m 60 -X PROPFIND -H 'Depth: 1' -u "$T:" "$1" | grep -oE '<d:href>[^<]*</d:href>|<d:getcontentlength>[^<]*' | sed -E 's#</?d:href>##g; s#<d:getcontentlength>#size=#' | tr '\n' ' ' | cut -c1-1800; }
-          echo "::notice title=probe-raiz::$(lista $H/)"
-          M=$(curl -s -m 60 -X PROPFIND -H 'Depth: 1' -u "$T:" "$H/" | grep -oE '[0-9]{4}-[0-9]{2}/' | sort -u | tail -1)
-          echo "::notice title=probe-mes::$M $(lista "$H/$M")"
+          T=gn672Ad4CF8N6TK; H=https://arquivos.receitafederal.gov.br
+          ls1() { curl -s -m 60 -X PROPFIND -H 'Depth: 1' -u "$T:" "$H$1" | grep -oE '<d:href>[^<]*</d:href>' | sed -E 's#</?d:href>##g' | grep -vxF "$1"; }
+          P=/public.php/webdav/Dados/
+          for nivel in 1 2 3; do
+            L=$(ls1 "$P")
+            echo "::notice title=probe-n$nivel::$P => $(echo $L | cut -c1-1500)"
+            P=$(echo "$L" | grep '/$' | sort | tail -1)
+            [ -z "$P" ] && break
+          done
       - name: Ingestão
         working-directory: indice
         run: |
