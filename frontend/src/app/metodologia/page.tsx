@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 // Cada afirmação desta página corresponde a um comportamento real do produto
 // (backend/services/reviewService.ts, backend/lib/sentiment.ts e groqService.ts).
-// Ao mudar o produto, revise o texto: metodologia imprecisa é pior que nenhuma.
+// Ao mudar o produto, revise o texto: uma metodologia desatualizada induz ao erro.
 const faq = [
   {
     question: 'De onde vêm os dados que o Filtra.AI analisa?',
