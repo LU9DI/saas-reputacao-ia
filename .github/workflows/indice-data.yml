@@ -8,6 +8,12 @@ on:
       competencia:
         description: 'AAAA-MM (vazio = mais recente disponível)'
         required: false
+      so_ibge:
+        description: 'Só testa a consulta ao IBGE e sai (true/false)'
+        required: false
+      retomar_run_id:
+        description: 'ID de uma execução anterior com o artefato agregado (evita rebaixar a base)'
+        required: false
       max_linhas:
         description: 'Só teste rápido do fluxo (ex.: 2000000). Não abre PR.'
         required: false
@@ -30,15 +36,33 @@ jobs:
       - name: Testes do agregador
         working-directory: indice
         run: npm ci && npm test
+      - name: Baixar agregado da execução anterior
+        if: ${{ inputs.retomar_run_id != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: agregado
+          path: indice/.tmp
+          run-id: ${{ inputs.retomar_run_id }}
+          github-token: ${{ github.token }}
       - name: Ingestão
         working-directory: indice
         run: |
           ARGS=""
           if [ -n "${{ inputs.competencia }}" ]; then ARGS="--competencia=${{ inputs.competencia }}"; fi
+          if [ "${{ inputs.so_ibge }}" = "true" ]; then ARGS="$ARGS --so-ibge"; fi
+          if [ -n "${{ inputs.retomar_run_id }}" ]; then ARGS="$ARGS --retomar=.tmp/agregado.json"; fi
           if [ -n "${{ inputs.max_linhas }}" ]; then ARGS="$ARGS --max-linhas=${{ inputs.max_linhas }}"; fi
           node scripts/ingest.mjs $ARGS
+      - name: Guardar agregado (checkpoint)
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: agregado
+          path: indice/.tmp/agregado.json
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Abrir PR
-        if: ${{ inputs.max_linhas == '' }}
+        if: ${{ inputs.max_linhas == '' && inputs.so_ibge != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

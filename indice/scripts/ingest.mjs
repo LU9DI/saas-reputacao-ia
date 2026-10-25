@@ -81,6 +81,13 @@ async function statusHttp(url) {
   }
 }
 
+async function buscarIbge() {
+  const url = 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome';
+  const destino = path.join(TMP, 'ibge.json');
+  await executar('curl', ['-fL', '--retry', '6', '--retry-delay', '10', '--retry-all-errors', '-m', '180', '-sS', '-H', 'Accept: application/json', '-o', destino, url]);
+  return JSON.parse(await readFile(destino, 'utf8'));
+}
+
 async function baixar(url, destino) {
   log('baixando', url);
   await executar('curl', ['-fL', '-u', AUTH, '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
@@ -126,6 +133,11 @@ async function main() {
   if (args['max-linhas']) MAX_LINHAS = Number(args['max-linhas']);
   const parcial = Number.isFinite(MAX_LINHAS);
   await mkdir(TMP, { recursive: true });
+  if (args['so-ibge']) {
+    const lista = ibgeParaLista(await buscarIbge());
+    log(`IBGE ok: ${lista.length} municípios`);
+    return;
+  }
 
   // 1) Competência
   let competencia = args.competencia;
@@ -182,65 +194,79 @@ async function main() {
   const agregador = criarAgregador(segmentos, competencia);
   let arquivos = 0;
   let layoutOk = false;
-  // Lista os arquivos disponíveis (Estabelecimentos0..N)
-  const lista = [];
-  for (let i = 0; i < 40; i += 1) {
-    const arq = `Estabelecimentos${i}.zip`;
-    if (parcial && i >= 1) break; // teste rápido: só o primeiro arquivo
-    const existe = local ? existsSync(path.join(local, arq)) : (await statusHttp(urlDe(arq))) === 200;
-    if (!existe) {
-      if (i === 0) falha(`${arq} não encontrado para a competência ${competencia}.`);
-      break;
-    }
-    lista.push(arq);
-  }
-  log(`${lista.length} arquivos de estabelecimentos`);
-  // O portal entrega ~1 MB/s por conexão: baixa vários em paralelo enquanto processa em ordem.
-  const CONC = Number(args.concorrencia || 5);
-  const baixando = new Map();
-  let proximo = 0;
-  let ativos = 0;
-  const disparar = () => {
-    while (!local && ativos < CONC && proximo < lista.length) {
-      const arq = lista[proximo++];
-      ativos += 1;
-      const p = baixar(urlDe(arq), path.join(TMP, arq)).finally(() => {
-        ativos -= 1; // libera a vaga e puxa o próximo
-        disparar();
-      });
-      p.catch(() => {}); // o erro é tratado quando o arquivo for consumido
-      baixando.set(arq, p);
-    }
-  };
-  for (const arq of lista) {
-    let caminho;
-    if (local) caminho = path.join(local, arq);
-    else {
-      disparar();
-      await baixando.get(arq);
-      caminho = path.join(TMP, arq);
-      disparar();
-    }
-    let amostras = 0;
-    await lerCsvZip(caminho, (l) => {
-      const campos = parseLinha(l);
-      if (!campos) return;
-      if (!layoutOk && amostras < 200) {
-        amostras += 1;
-        const problemas = validarLayout(campos);
-        if (problemas.length) {
-          falha(`layout do arquivo Estabelecimentos não confere com o esperado (${problemas.join('; ')}). Confira o PDF de metadados da Receita antes de continuar.`);
-        }
-        if (amostras === 200) layoutOk = true;
+  let contagemFinal;
+  if (args.retomar) {
+    // Retoma de um agregado salvo (evita baixar de novo ~6 GB quando só uma etapa final falhou)
+    const salvo = JSON.parse(await readFile(path.resolve(args.retomar), 'utf8'));
+    if (salvo.competencia !== competencia) falha(`agregado salvo é de ${salvo.competencia}, não de ${competencia}`);
+    for (const [k, v] of salvo.dados) agregador.dados.set(k, v);
+    arquivos = salvo.arquivos;
+    contagemFinal = salvo.contagem;
+    log(`agregado retomado: ${salvo.dados.length} chaves, ${arquivos} arquivos`);
+  } else {
+    // Lista os arquivos disponíveis (Estabelecimentos0..N)
+    const lista = [];
+    for (let i = 0; i < 40; i += 1) {
+      const arq = `Estabelecimentos${i}.zip`;
+      if (parcial && i >= 1) break; // teste rápido: só o primeiro arquivo
+      const existe = local ? existsSync(path.join(local, arq)) : (await statusHttp(urlDe(arq))) === 200;
+      if (!existe) {
+        if (i === 0) falha(`${arq} não encontrado para a competência ${competencia}.`);
+        break;
       }
-      agregador.ingerir(campos);
-    }, MAX_LINHAS);
-    if (!local) await rm(caminho, { force: true });
-    arquivos += 1;
-    const c = agregador.contagem();
-    log(`${arq} ok | lidas: ${c.lidas.toLocaleString('pt-BR')} | no escopo: ${c.usadas.toLocaleString('pt-BR')} | descartadas: ${c.descartadas}`);
+      lista.push(arq);
+    }
+    log(`${lista.length} arquivos de estabelecimentos`);
+    // O portal entrega ~1 MB/s por conexão: baixa vários em paralelo enquanto processa em ordem.
+    const CONC = Number(args.concorrencia || 5);
+    const baixando = new Map();
+    let proximo = 0;
+    let ativos = 0;
+    const disparar = () => {
+      while (!local && ativos < CONC && proximo < lista.length) {
+        const arq = lista[proximo++];
+        ativos += 1;
+        const p = baixar(urlDe(arq), path.join(TMP, arq)).finally(() => {
+          ativos -= 1; // libera a vaga e puxa o próximo
+          disparar();
+        });
+        p.catch(() => {}); // o erro é tratado quando o arquivo for consumido
+        baixando.set(arq, p);
+      }
+    };
+    for (const arq of lista) {
+      let caminho;
+      if (local) caminho = path.join(local, arq);
+      else {
+        disparar();
+        await baixando.get(arq);
+        caminho = path.join(TMP, arq);
+        disparar();
+      }
+      let amostras = 0;
+      await lerCsvZip(caminho, (l) => {
+        const campos = parseLinha(l);
+        if (!campos) return;
+        if (!layoutOk && amostras < 200) {
+          amostras += 1;
+          const problemas = validarLayout(campos);
+          if (problemas.length) {
+            falha(`layout do arquivo Estabelecimentos não confere com o esperado (${problemas.join('; ')}). Confira o PDF de metadados da Receita antes de continuar.`);
+          }
+          if (amostras === 200) layoutOk = true;
+        }
+        agregador.ingerir(campos);
+      }, MAX_LINHAS);
+      if (!local) await rm(caminho, { force: true });
+      arquivos += 1;
+      const c = agregador.contagem();
+      log(`${arq} ok | lidas: ${c.lidas.toLocaleString('pt-BR')} | no escopo: ${c.usadas.toLocaleString('pt-BR')} | descartadas: ${c.descartadas}`);
+    }
+    contagemFinal = agregador.contagem();
   }
-  const { lidas, usadas, descartadas } = agregador.contagem();
+  const { lidas, usadas, descartadas } = contagemFinal;
+  await writeFile(path.join(TMP, 'agregado.json'), JSON.stringify({ competencia, arquivos, contagem: contagemFinal, dados: [...agregador.dados] }));
+  log('agregado salvo em .tmp/agregado.json');
   if (lidas < LINHAS_MINIMAS && !args.sintetico && !parcial) {
     falha(`apenas ${lidas} linhas lidas (mínimo esperado ${LINHAS_MINIMAS}). A base parece incompleta.`);
   }
@@ -253,9 +279,7 @@ async function main() {
     jsonIbge = JSON.parse(await readFile(path.resolve(args['ibge-arquivo']), 'utf8'));
   } else {
     log('consultando municípios no IBGE');
-    const resp = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome');
-    if (!resp.ok) falha(`IBGE respondeu HTTP ${resp.status}`);
-    jsonIbge = await resp.json();
+    jsonIbge = await buscarIbge();
   }
   const ibge = ibgeParaLista(jsonIbge);
   if (ibge.length < 5000 && !args.sintetico) falha(`IBGE trouxe só ${ibge.length} municípios (esperado ~5.570).`);
