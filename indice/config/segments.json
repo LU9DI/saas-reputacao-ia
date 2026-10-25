@@ -1,0 +1,11 @@
+[
+  { "slug": "restaurantes", "nome": "Restaurantes, lanchonetes e bares", "curto": "restaurantes, lanchonetes e bares", "classes": ["5611"] },
+  { "slug": "hoteis", "nome": "Hotéis e similares", "curto": "hotéis e similares", "classes": ["5510"] },
+  { "slug": "clinicas", "nome": "Clínicas médicas e odontológicas", "curto": "clínicas médicas e odontológicas", "classes": ["8630"] },
+  { "slug": "profissionais-de-saude", "nome": "Profissionais de saúde (exceto médicos e dentistas)", "curto": "profissionais de saúde, exceto médicos e dentistas", "classes": ["8650"] },
+  { "slug": "saloes-de-beleza", "nome": "Salões de beleza", "curto": "salões de beleza, cabeleireiros, manicures e pedicures", "classes": ["9602"] },
+  { "slug": "academias", "nome": "Academias e condicionamento físico", "curto": "academias e atividades de condicionamento físico", "classes": ["9313"] },
+  { "slug": "farmacias", "nome": "Farmácias e produtos farmacêuticos", "curto": "farmácias e comércio de produtos farmacêuticos, perfumaria e artigos médicos", "classes": ["4771"] },
+  { "slug": "oficinas", "nome": "Oficinas e manutenção de veículos", "curto": "oficinas e manutenção de veículos automotores", "classes": ["4520"] },
+  { "slug": "supermercados", "nome": "Supermercados, mercados e mercearias", "curto": "supermercados, mercados e mercearias", "classes": ["4711"] }
+]
