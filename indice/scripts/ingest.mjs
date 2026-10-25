@@ -199,10 +199,15 @@ async function main() {
   const CONC = Number(args.concorrencia || 5);
   const baixando = new Map();
   let proximo = 0;
+  let ativos = 0;
   const disparar = () => {
-    while (!local && baixando.size < CONC && proximo < lista.length) {
+    while (!local && ativos < CONC && proximo < lista.length) {
       const arq = lista[proximo++];
-      const p = baixar(urlDe(arq), path.join(TMP, arq));
+      ativos += 1;
+      const p = baixar(urlDe(arq), path.join(TMP, arq)).finally(() => {
+        ativos -= 1; // libera a vaga e puxa o próximo
+        disparar();
+      });
       p.catch(() => {}); // o erro é tratado quando o arquivo for consumido
       baixando.set(arq, p);
     }
