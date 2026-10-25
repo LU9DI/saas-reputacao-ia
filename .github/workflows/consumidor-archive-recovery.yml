@@ -19,12 +19,10 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import { createHash } from 'node:crypto';
-
           const files = [
             { month: '2025-12', url: 'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/a5e4db97-f2f4-4c96-aff0-209e18d3c8ff/download/basecompleta2025-12.csv' },
             { month: '2026-01', url: 'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv' }
           ];
-
           for (const file of files) {
             const report = { month: file.month, source: 'Internet Archive snapshot of official catalog CSV' };
             try {
@@ -36,18 +34,11 @@ jobs:
               cdx.searchParams.set('collapse', 'digest');
               const response = await fetch(cdx, { signal: AbortSignal.timeout(45000), headers: { accept: 'application/json' } });
               report.cdxStatus = response.status;
-              if (!response.ok) {
-                await response.body?.cancel();
-                console.log(JSON.stringify(report));
-                continue;
-              }
+              if (!response.ok) { await response.body?.cancel(); console.log(JSON.stringify(report)); continue; }
               const rows = await response.json();
-              const snapshots = Array.isArray(rows) ? rows.slice(1).filter(row => Array.isArray(row) && /^\\d{14}$/.test(row[0]) && row[1] === file.url && row[2] === '200') : [];
+              const snapshots = Array.isArray(rows) ? rows.slice(1).filter(row => Array.isArray(row) && /^\d{14}$/.test(row[0]) && row[1] === file.url && row[2] === '200') : [];
               report.snapshotCount = snapshots.length;
-              if (!snapshots.length) {
-                console.log(JSON.stringify(report));
-                continue;
-              }
+              if (!snapshots.length) { console.log(JSON.stringify(report)); continue; }
               const snapshot = snapshots.at(-1);
               report.timestamp = snapshot[0];
               report.archiveDigest = snapshot[3] || null;
@@ -57,46 +48,31 @@ jobs:
               report.snapshotStatus = csv.status;
               report.snapshotHost = new URL(csv.url).hostname;
               report.contentType = csv.headers.get('content-type') || null;
-              if (!csv.ok) {
-                await csv.body?.cancel();
-                console.log(JSON.stringify(report));
-                continue;
-              }
+              if (!csv.ok) { await csv.body?.cancel(); console.log(JSON.stringify(report)); continue; }
               const hash = createHash('sha256');
               const decoder = new TextDecoder('utf-8', { fatal: true });
-              let bytes = 0;
-              let firstLine = '';
-              let gotHeader = false;
+              let bytes = 0, firstLine = '', gotHeader = false;
               for await (const chunk of csv.body) {
                 const buffer = Buffer.from(chunk);
                 bytes += buffer.length;
                 hash.update(buffer);
                 if (!gotHeader) {
                   const part = decoder.decode(buffer, { stream: true });
-                  const newline = part.indexOf('\\n');
-                  if (newline >= 0) {
-                    firstLine += part.slice(0, newline);
-                    gotHeader = true;
-                  } else {
-                    firstLine += part;
-                    if (firstLine.length > 200000) throw new Error('header_line_too_large');
-                  }
+                  const newline = part.indexOf('\n');
+                  if (newline >= 0) { firstLine += part.slice(0, newline); gotHeader = true; }
+                  else { firstLine += part; if (firstLine.length > 200000) throw new Error('header_line_too_large'); }
                 }
                 if (bytes > 2000000000) throw new Error('source_over_2GB_limit');
               }
               report.downloadedBytes = bytes;
               report.sha256 = hash.digest('hex');
               report.headerComplete = gotHeader;
-              const header = firstLine.replace(/^\\uFEFF/, '').replace(/\\r$/, '');
-              report.looksLikeHtml = /^\\s*</.test(header);
-              if (gotHeader && !report.looksLikeHtml) {
-                report.header = header;
-                report.schemaStatus = 'DISCOVERED_NOT_APPROVED';
-              } else {
-                report.schemaStatus = 'UNAVAILABLE_OR_UNRECOGNIZED';
-              }
+              const header = firstLine.replace(/^\uFEFF/, '').replace(/\r$/, '');
+              report.looksLikeHtml = /^\s*</.test(header);
+              if (gotHeader && !report.looksLikeHtml) { report.header = header; report.schemaStatus = 'DISCOVERED_NOT_APPROVED'; }
+              else report.schemaStatus = 'UNAVAILABLE_OR_UNRECOGNIZED';
             } catch (error) {
-              report.error = error?.name === 'TimeoutError' ? 'timeout' : String(error?.message || error).replace(/https?:\\/\\/[^\\s]+/g, '[url-redacted]').slice(0, 240);
+              report.error = error?.name === 'TimeoutError' ? 'timeout' : 'request_failed';
             }
             console.log(JSON.stringify(report));
           }
