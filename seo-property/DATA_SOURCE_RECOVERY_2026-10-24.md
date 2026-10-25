@@ -34,3 +34,18 @@ A extração textual automatizada do portal oficial não expôs links mensais co
 - Recurso oficial dezembro de 2025: https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br/resource/a5e4db97-f2f4-4c96-aff0-209e18d3c8ff
 - Dataset agregado secundário, CC BY 4.0: https://huggingface.co/datasets/dnacx/tres-numeros-de-resolucao-consumidor-gov
 - Versão arquivada do agregado: https://doi.org/10.5281/zenodo.22982134
+
+
+## Resultado de recuperação automatizada (GitHub Actions, 25/10/2026)
+
+A verificação foi executada também em um runner externo ao ambiente desta conversa:
+
+- Catálogo antigo e CSV legado em dados.mj.gov.br: falha de conexão (fetch failed) no runner.
+- Página oficial atual https://www.consumidor.gov.br/pages/dadosabertos/externo/: HTTP 200, mas a resposta HTML não expôs um arquivo CSV diretamente; o próprio índice pesquisável do portal reportou erro de conexão e tabela sem dados.
+- Internet Archive CDX: resposta HTTP 200 para as consultas de dezembro de 2025 e janeiro de 2026, mas zero capturas exatas para as quatro combinações testadas (HTTPS/HTTP para cada CSV).
+
+Execuções:
+- Diagnóstico das fontes oficiais: https://github.com/LU9DI/saas-reputacao-ia/actions/runs/40145201945
+- Recuperação por arquivo histórico: https://github.com/LU9DI/saas-reputacao-ia/actions/runs/40145201980
+
+As duas verificações terminaram com sucesso como diagnósticos; isso significa que executaram e reportaram o estado, não que o CSV foi recuperado. Próxima tentativa deve descobrir os links/API usados pela interface atual ou localizar um espelho histórico confiável, sem adivinhar esquema nem promover dados secundários a dados primários.
