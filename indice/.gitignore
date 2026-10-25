@@ -1,0 +1,12 @@
+/node_modules
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+.DS_Store
+npm-debug.log*
+
+# Dados de amostra para desenvolvimento local (NUNCA publicar: são sintéticos).
+/data.sample/
+# Downloads temporários da ingestão.
+/.tmp/

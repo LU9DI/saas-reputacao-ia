@@ -1,0 +1,48 @@
+name: Índice - atualizar dados
+
+# Baixa o CNPJ aberto da Receita, agrega por município e segmento e abre um PR com indice/data/.
+# Não faz merge sozinho: um humano confere o resumo antes de publicar.
+on:
+  workflow_dispatch:
+    inputs:
+      competencia:
+        description: 'AAAA-MM (vazio = mais recente disponível)'
+        required: false
+  schedule:
+    - cron: '0 6 15 * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Testes do agregador
+        working-directory: indice
+        run: npm ci && npm test
+      - name: Ingestão
+        working-directory: indice
+        run: |
+          ARGS=""
+          if [ -n "${{ inputs.competencia }}" ]; then ARGS="--competencia=${{ inputs.competencia }}"; fi
+          node scripts/ingest.mjs $ARGS
+      - name: Abrir PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COMP=$(node -p "require('./indice/data/meta.json').competencia")
+          BR="indice/dados-$COMP"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BR"
+          git add -f indice/data
+          git commit -m "chore(indice): dados do CNPJ aberto, competência $COMP"
+          git push -u origin "$BR"
+          gh pr create --title "Índice: dados $COMP" --body "Dados regenerados por indice/scripts/ingest.mjs. Conferir indice/data/meta.json (linhasLidas, UFs) antes do merge." --base main

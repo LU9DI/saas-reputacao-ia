@@ -1,0 +1,26 @@
+{
+  "name": "filtra-indice",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Índice Filtra.AI: páginas programáticas (município x segmento) com dados abertos do CNPJ. Servido em filtraai.com/indice.",
+  "engines": { "node": "22.x" },
+  "scripts": {
+    "dev": "next dev -H 127.0.0.1 -p 3100",
+    "build": "node scripts/check-data.mjs && next build",
+    "start": "next start -p ${PORT:-3100}",
+    "ingest": "node scripts/ingest.mjs",
+    "test": "node --test \"scripts/lib/*.test.mjs\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.4.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^5.4.5"
+  }
+}

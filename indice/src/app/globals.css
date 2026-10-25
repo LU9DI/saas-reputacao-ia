@@ -1,0 +1,65 @@
+:root {
+  --bg: #000;
+  --panel: #09090b;
+  --borda: #27272a;
+  --texto: #e4e4e7;
+  --suave: #a1a1aa;
+  --acento: #818cf8;
+  --acento-forte: #4f46e5;
+  --aviso: #f59e0b;
+}
+* { box-sizing: border-box; }
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--texto);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--acento); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.wrap { max-width: 56rem; margin: 0 auto; padding: 0 1rem; }
+.topo { border-bottom: 1px solid var(--borda); }
+.topo .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: .9rem; padding-bottom: .9rem; }
+.marca { color: var(--texto); font-weight: 700; letter-spacing: -.01em; }
+.marca span { color: var(--suave); font-weight: 500; }
+.topo nav { display: flex; gap: 1rem; font-size: .875rem; }
+.amostra { background: #451a03; color: #fde68a; border-bottom: 1px solid var(--aviso); padding: .5rem 1rem; text-align: center; font-size: .85rem; font-weight: 600; }
+main { padding: 1.25rem 0 3rem; }
+.migalhas { font-size: .78rem; color: var(--suave); margin: .25rem 0 1rem; }
+.migalhas a { color: var(--suave); }
+.migalhas span { margin: 0 .4rem; }
+h1 { font-size: 1.75rem; line-height: 1.2; letter-spacing: -.02em; margin: 0 0 .75rem; }
+h2 { font-size: 1.15rem; margin: 2rem 0 .6rem; }
+.lead { color: #d4d4d8; font-size: 1.05rem; margin: 0 0 1.25rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .75rem; margin: 1.25rem 0; }
+.card { background: var(--panel); border: 1px solid var(--borda); border-radius: .75rem; padding: .9rem 1rem; }
+.card strong { display: block; font-size: 1.6rem; line-height: 1.1; letter-spacing: -.02em; }
+.card small { color: var(--suave); font-size: .78rem; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid var(--borda); }
+th { color: var(--suave); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.lista { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.lista li { display: flex; justify-content: space-between; gap: 1rem; background: var(--panel); border: 1px solid var(--borda); border-radius: .6rem; padding: .55rem .8rem; }
+.lista li span { color: var(--suave); font-variant-numeric: tabular-nums; }
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: .5rem; list-style: none; margin: 0; padding: 0; }
+.grade a { display: block; background: var(--panel); border: 1px solid var(--borda); border-radius: .6rem; padding: .55rem .8rem; }
+.grade small { display: block; color: var(--suave); }
+details { background: var(--panel); border: 1px solid var(--borda); border-radius: .75rem; padding: .8rem 1rem; margin-bottom: .6rem; }
+summary { cursor: pointer; font-weight: 600; }
+details p { margin: .6rem 0 0; color: #d4d4d8; }
+.cta { background: linear-gradient(135deg, #1e1b4b, #09090b); border: 1px solid #3730a3; border-radius: .9rem; padding: 1.1rem 1.2rem; margin: 2rem 0; }
+.cta p { margin: 0 0 .8rem; }
+.botao { display: inline-block; background: var(--acento-forte); color: #fff; border-radius: .6rem; padding: .6rem 1rem; font-weight: 600; }
+.botao:hover { text-decoration: none; background: #4338ca; }
+.nota { font-size: .82rem; color: var(--suave); border-left: 3px solid var(--borda); padding-left: .8rem; margin: 1.5rem 0; }
+.grafico { width: 100%; height: auto; }
+.grafico text { fill: var(--suave); font-size: 11px; }
+.grafico rect { fill: var(--acento-forte); }
+.grafico rect.parcial { fill: #4f46e580; }
+.rodape { border-top: 1px solid var(--borda); color: var(--suave); font-size: .82rem; padding: 1.5rem 0 2.5rem; }
+.rodape a { color: var(--suave); text-decoration: underline; }
+@media (max-width: 40rem) { h1 { font-size: 1.45rem; } .topo nav { font-size: .8rem; } }
