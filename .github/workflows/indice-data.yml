@@ -27,6 +27,17 @@ jobs:
       - name: Testes do agregador
         working-directory: indice
         run: npm ci && npm test
+      - name: Sondagem do portal (diagnóstico)
+        run: |
+          for u in \
+            https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj/ \
+            https://arquivos.receitafederal.gov.br/ \
+            https://dadosabertos.rfb.gov.br/CNPJ/dados_abertos_cnpj/ \
+            https://dadosabertos.rfb.gov.br/CNPJ/ ; do
+            code=$(curl -sL -m 30 -o /tmp/p.html -w '%{http_code} %{url_effective}' "$u" || echo erro)
+            links=$(grep -oE 'href="[^"]{1,120}"' /tmp/p.html 2>/dev/null | head -25 | tr '\n' ' ')
+            echo "::notice title=probe::$u -> $code | $links"
+          done
       - name: Ingestão
         working-directory: indice
         run: |
