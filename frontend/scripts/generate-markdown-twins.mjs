@@ -166,6 +166,7 @@ const CORE = [
   '/como-melhorar-avaliacoes-google',
   '/monitoramento-reputacao-online',
   '/gestao-de-feedback',
+  '/metodologia',
   '/planos',
 ];
 const core = CORE.map((p) => twins.find((t) => t.pathname === p)).filter(Boolean);

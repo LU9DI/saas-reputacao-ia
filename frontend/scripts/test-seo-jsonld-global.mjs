@@ -16,6 +16,6 @@ assert.doesNotMatch(
 );
 assert.match(homepage, /'@type': 'WebPage'/, 'Homepage must retain its own WebPage schema');
 assert.match(homepage, /'@id': 'https:\/\/filtraai\.com\/#webpage'/, 'Homepage schema must use the homepage entity ID');
-assert.match(homepage, /'inLanguage': 'pt-BR'/, 'Homepage schema must declare its language');
+assert.match(homepage, /['"]?inLanguage['"]?:\s*'pt-BR'/, 'Homepage schema must declare its language');
 
 console.log('SEO global and homepage JSON-LD scope tests passed.');
