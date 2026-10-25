@@ -21,7 +21,7 @@ if (data.scope !== "sector_level_only" || !Array.isArray(data.windows) || data.w
 // Runtime publication gate: fail closed if a reviewed data file is edited or replaced
 // with inconsistent counts, dates, denominators, source metadata, or sector coverage.
 const expectedSectors = ["airlines", "all", "banks", "energy", "health_plans", "telecom"];
-const validMonth = value => typeof value === "string" && /^\\d{4}-(0[1-9]|1[0-2])$/.test(value);
+const validMonth = value => typeof value === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
 const closePct = (actual, expected) => Number.isFinite(actual) && actual >= 0 && actual <= 100 && Math.abs(actual - expected) <= 0.16;
 const requiredHttps = value => {
   try { const url = new URL(value); return url.protocol === "https:" && !url.username && !url.password; }
