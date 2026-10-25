@@ -95,4 +95,41 @@ jobs:
             }
             console.log(JSON.stringify(safe));
           }
+
+          // Inspect only public frontend asset references for the current data-open page.
+          // Never print HTML or arbitrary source text; emit only allowlisted URL/path candidates.
+          const pageUrl = 'https://www.consumidor.gov.br/pages/dadosabertos/externo/';
+          try {
+            const pageResponse = await fetch(pageUrl, { signal: AbortSignal.timeout(30000) });
+            const pageHtml = pageResponse.ok ? await pageResponse.text() : '';
+            const scriptRefs = [...pageHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)]
+              .map(match => match[1]).slice(0, 30);
+            const candidates = new Set();
+            for (const ref of scriptRefs) {
+              let asset;
+              try { asset = new URL(ref, pageUrl); } catch { continue; }
+              if (asset.protocol !== 'https:' || !['www.consumidor.gov.br', 'consumidor.gov.br'].includes(asset.hostname)) continue;
+              try {
+                const assetResponse = await fetch(asset, { signal: AbortSignal.timeout(20000) });
+                if (!assetResponse.ok) { await assetResponse.body?.cancel(); continue; }
+                const source = await assetResponse.text();
+                const literals = [...source.matchAll(/["']([^"']{1,300})["']/g)].map(match => match[1]);
+                for (const value of literals) {
+                  if (!/(finalizadas|dados.?abertos|\.csv|\.zip|download|\/api\/)/i.test(value)) continue;
+                  if (/^https?:\/\//i.test(value)) {
+                    try {
+                      const u = new URL(value);
+                      if (u.protocol === 'https:' && ['www.consumidor.gov.br', 'consumidor.gov.br'].includes(u.hostname)) candidates.add(u.toString());
+                    } catch {}
+                  } else if (value.startsWith('/')) {
+                    const u = new URL(value, pageUrl);
+                    if (/(finalizadas|dados.?abertos|\.csv|\.zip|download|\/api\/)/i.test(u.pathname)) candidates.add(u.toString());
+                  }
+                }
+              } catch {}
+            }
+            console.log(JSON.stringify({ label: 'current_portal_frontend_probe', pageStatus: pageResponse.status, scriptCount: scriptRefs.length, candidateCount: candidates.size, candidates: [...candidates].slice(0, 60) }));
+          } catch (error) {
+            console.log(JSON.stringify({ label: 'current_portal_frontend_probe', error: error?.name === 'TimeoutError' ? 'timeout' : 'request_failed' }));
+          }
           NODE
