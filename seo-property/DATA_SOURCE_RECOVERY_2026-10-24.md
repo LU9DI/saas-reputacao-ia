@@ -49,3 +49,12 @@ Execuções:
 - Recuperação por arquivo histórico: https://github.com/LU9DI/saas-reputacao-ia/actions/runs/40145201980
 
 As duas verificações terminaram com sucesso como diagnósticos; isso significa que executaram e reportaram o estado, não que o CSV foi recuperado. Próxima tentativa deve descobrir os links/API usados pela interface atual ou localizar um espelho histórico confiável, sem adivinhar esquema nem promover dados secundários a dados primários.
+
+
+## Inspeção da interface atual (25/10/2026)
+
+Uma execução adicional no runner buscou a página oficial e inspecionou 22 arquivos JavaScript públicos referenciados nela, sem registrar HTML bruto nem código-fonte. A página respondeu HTTP 200, mas a inspeção encontrou zero candidatos explícitos a CSV/ZIP/download/API ligados aos dados abertos. Isso é consistente com a página indexada mostrar erro de conexão na tabela; não fornece um endpoint de download seguro para usar.
+
+Execução: https://github.com/LU9DI/saas-reputacao-ia/actions/runs/40145249920
+
+Decisão: não criar endpoint adivinhado nem desbloquear ingestão. A alternativa prática imediata continua sendo usar o agregado setorial já documentado como produto separado, enquanto se procura uma cópia arquivada verificável ou se obtém do portal oficial o link real do recurso.
