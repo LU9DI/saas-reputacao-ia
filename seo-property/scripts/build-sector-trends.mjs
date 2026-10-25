@@ -17,6 +17,49 @@ if (originInput) {
 if (data.scope !== "sector_level_only" || !Array.isArray(data.windows) || data.windows.length < 1) {
   throw new Error("Sector trends data contract is not eligible for publication");
 }
+
+// Runtime publication gate: fail closed if a reviewed data file is edited or replaced
+// with inconsistent counts, dates, denominators, source metadata, or sector coverage.
+const expectedSectors = ["airlines", "all", "banks", "energy", "health_plans", "telecom"];
+const validMonth = value => typeof value === "string" && /^\\d{4}-(0[1-9]|1[0-2])$/.test(value);
+const closePct = (actual, expected) => Number.isFinite(actual) && actual >= 0 && actual <= 100 && Math.abs(actual - expected) <= 0.16;
+const requiredHttps = value => {
+  try { const url = new URL(value); return url.protocol === "https:" && !url.username && !url.password; }
+  catch { return false; }
+};
+if (!data.status?.startsWith("secondary_aggregate_dataset_verified") ||
+    !data.secondarySource?.publisher || !data.secondarySource?.title ||
+    !requiredHttps(data.secondarySource?.url) || !requiredHttps(data.secondarySource?.versionDoi) ||
+    !String(data.secondarySource?.license || "").trim() ||
+    !requiredHttps(data.primarySource?.url) || !String(data.primarySource?.license || "").trim()) {
+  throw new Error("Sector trends source metadata is incomplete or invalid");
+}
+for (const window of data.windows) {
+  if (!validMonth(window.startMonth) || !validMonth(window.endMonth) || window.startMonth > window.endMonth ||
+      !Array.isArray(window.sectors) || window.sectors.length !== expectedSectors.length ||
+      [...window.sectors.map(row => row.sector)].sort().join(",") !== expectedSectors.join(",")) {
+    throw new Error(`Invalid period bounds or sector coverage in window: ${window.window}`);
+  }
+  for (const row of window.sectors) {
+    const counts = [row.finalized, row.resolved, row.notResolved, row.notEvaluated];
+    if (counts.some(value => !Number.isSafeInteger(value) || value < 0) ||
+        row.finalized <= 0 || row.resolved + row.notResolved + row.notEvaluated !== row.finalized) {
+      throw new Error(`Invalid/reconciling counts in ${window.window}/${row.sector}`);
+    }
+    const evaluated = row.resolved + row.notResolved;
+    if (evaluated <= 0 ||
+        !closePct(row.resolvedOverFinalizedPct, row.resolved / row.finalized * 100) ||
+        !closePct(row.resolvedOverEvaluatedPct, row.resolved / evaluated * 100) ||
+        !closePct(row.officialSolutionIndexPct, (row.resolved + row.notEvaluated) / row.finalized * 100)) {
+      throw new Error(`Metric denominator mismatch in ${window.window}/${row.sector}`);
+    }
+    for (const field of ["soughtCompanyBeforePct", "resolvedAmongEvaluatedSoughtCompanyPct", "resolvedAmongEvaluatedDidNotSeekPct"]) {
+      if (!Number.isFinite(row[field]) || row[field] < 0 || row[field] > 100) {
+        throw new Error(`Invalid ${field} in ${window.window}/${row.sector}`);
+      }
+    }
+  }
+}
 const esc = value => String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 const labels = {
   all: "Todos os setores",
