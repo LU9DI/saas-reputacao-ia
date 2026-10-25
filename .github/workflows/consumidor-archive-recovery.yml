@@ -21,10 +21,12 @@ jobs:
           import { createHash } from 'node:crypto';
           const files = [
             { month: '2025-12', url: 'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/a5e4db97-f2f4-4c96-aff0-209e18d3c8ff/download/basecompleta2025-12.csv' },
-            { month: '2026-01', url: 'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv' }
+            { month: '2025-12', url: 'http://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/a5e4db97-f2f4-4c96-aff0-209e18d3c8ff/download/basecompleta2025-12.csv' },
+            { month: '2026-01', url: 'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv' },
+            { month: '2026-01', url: 'http://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/786a616a-b4fc-4cc0-a09b-098aa06883ba/download/basecompleta2026-01.csv' }
           ];
           for (const file of files) {
-            const report = { month: file.month, source: 'Internet Archive snapshot of official catalog CSV' };
+            const report = { month: file.month, scheme: new URL(file.url).protocol, source: 'Internet Archive snapshot of official catalog CSV' };
             try {
               const cdx = new URL('https://web.archive.org/cdx/search/cdx');
               cdx.searchParams.set('url', file.url);
