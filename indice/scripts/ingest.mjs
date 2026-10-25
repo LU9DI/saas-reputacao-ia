@@ -46,6 +46,8 @@ const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos 
 const log = (...m) => console.log('[ingest]', ...m);
 const falha = (msg) => {
   console.error(`[ingest] ERRO: ${msg}`);
+  // Anotação do GitHub Actions (legível pela API mesmo quando o log não é).
+  console.error(`::error title=ingest::${String(msg).split('\n')[0].slice(0, 500)}`);
   process.exit(1);
 };
 
@@ -112,6 +114,7 @@ async function main() {
       const c = mesAnterior(atual, n);
       const s = await statusHttp(`${baseUrl}/${c}/Estabelecimentos0.zip`);
       log(`competência ${c}: HTTP ${s}`);
+      console.log(`::notice title=sondagem::${baseUrl}/${c}/Estabelecimentos0.zip -> HTTP ${s}`);
       if (s === 200) {
         competencia = c;
         break;
