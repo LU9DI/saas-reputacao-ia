@@ -8,6 +8,9 @@ on:
       competencia:
         description: 'AAAA-MM (vazio = mais recente disponível)'
         required: false
+      max_linhas:
+        description: 'Só teste rápido do fluxo (ex.: 2000000). Não abre PR.'
+        required: false
   schedule:
     - cron: '0 6 15 * *'
 
@@ -32,8 +35,10 @@ jobs:
         run: |
           ARGS=""
           if [ -n "${{ inputs.competencia }}" ]; then ARGS="--competencia=${{ inputs.competencia }}"; fi
+          if [ -n "${{ inputs.max_linhas }}" ]; then ARGS="$ARGS --max-linhas=${{ inputs.max_linhas }}"; fi
           node scripts/ingest.mjs $ARGS
       - name: Abrir PR
+        if: ${{ inputs.max_linhas == '' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

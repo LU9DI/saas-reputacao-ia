@@ -108,9 +108,15 @@ export function criarAgregador(segmentos, competencia) {
   const dados = new Map(); // "UF|codigo" -> { [slugSegmento]: registro }
   let lidas = 0;
   let usadas = 0;
+  let descartadas = 0;
 
   function ingerir(campos) {
     lidas += 1;
+    // Registro truncado (ex.: quebra de linha dentro de um campo de texto): não dá para confiar nas colunas.
+    if (campos.length < TOTAL_COLUNAS) {
+      descartadas += 1;
+      return;
+    }
     const cnae = campos[COL.CNAE_PRINCIPAL];
     const seg = classePara.get(cnae.slice(0, 4));
     if (!seg) return;
@@ -143,7 +149,7 @@ export function criarAgregador(segmentos, competencia) {
     }
   }
 
-  return { ingerir, dados, janela: j, contagem: () => ({ lidas, usadas }) };
+  return { ingerir, dados, janela: j, contagem: () => ({ lidas, usadas, descartadas }) };
 }
 
 const MINUSCULAS = new Set(['DE', 'DA', 'DO', 'DAS', 'DOS', 'E', 'D']);

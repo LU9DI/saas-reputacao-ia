@@ -18,6 +18,7 @@ if (!/^\d{4}-\d{2}$/.test(meta.competencia || '')) erro('meta.json sem competên
 if (meta.sintetico && process.env.INDICE_ALLOW_SAMPLE !== '1') {
   erro('Os dados são SINTÉTICOS (amostra de desenvolvimento) e não podem ser publicados. Use INDICE_ALLOW_SAMPLE=1 apenas em ambiente local.');
 }
+if (meta.parcial) erro('Os dados são PARCIAIS (teste com --max-linhas) e não podem ser publicados.');
 for (const arq of ['municipios.json', 'subclasses.json']) {
   if (!existsSync(path.join(dir, arq))) erro(`Arquivo ausente: ${arq}`);
 }

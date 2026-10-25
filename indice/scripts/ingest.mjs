@@ -45,10 +45,14 @@ const MINIMO = Number(args.min || 10);
 // O portal da Receita é um Nextcloud: os arquivos ficam num compartilhamento público acessível por WebDAV
 // (usuário = token do compartilhamento, senha vazia). Estrutura confirmada por listagem em 2026-10-25.
 const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/public.php/webdav/Dados/Cadastros/CNPJ';
+let MAX_LINHAS = Infinity; // --max-linhas=N: teste rápido do fluxo, saída marcada como parcial
 const TOKEN_PADRAO = 'gn672Ad4CF8N6TK';
 let AUTH = `${TOKEN_PADRAO}:`;
 const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos que isso é suspeito
-const log = (...m) => console.log('[ingest]', ...m);
+const log = (...m) => {
+  console.log('[ingest]', ...m);
+  if (process.env.GITHUB_ACTIONS) console.log(`::notice title=ingest-log::${m.join(' ').slice(0, 400)}`);
+};
 const falha = (msg) => {
   console.error(`[ingest] ERRO: ${msg}`);
   // Anotação do GitHub Actions (legível pela API mesmo quando o log não é).
@@ -83,7 +87,7 @@ async function baixar(url, destino) {
 }
 
 /** Lê um zip com um CSV (latin1) linha a linha, sem descompactar em disco. */
-async function lerCsvZip(zip, aoLer) {
+async function lerCsvZip(zip, aoLer, maxLinhas = Infinity) {
   const filho = spawn('unzip', ['-p', zip], { stdio: ['ignore', 'pipe', 'pipe'] });
   let erro = '';
   filho.stderr.on('data', (d) => (erro += d));
@@ -93,7 +97,16 @@ async function lerCsvZip(zip, aoLer) {
     filho.on('error', reject);
     filho.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`unzip ${zip}: código ${code} ${erro.slice(0, 300)}`))));
   });
-  for await (const linha of rl) aoLer(linha);
+  let n = 0;
+  for await (const linha of rl) {
+    aoLer(linha);
+    n += 1;
+    if (n >= maxLinhas) {
+      filho.kill('SIGKILL'); // modo de teste: corta a leitura
+      rl.close();
+      return;
+    }
+  }
   await fim;
 }
 
@@ -108,6 +121,8 @@ async function main() {
   const local = args.local ? path.resolve(args.local) : null;
   const baseUrl = (args['base-url'] || BASE_PADRAO).replace(/\/+$/, '');
   if (args.token) AUTH = `${args.token}:`;
+  if (args['max-linhas']) MAX_LINHAS = Number(args['max-linhas']);
+  const parcial = Number.isFinite(MAX_LINHAS);
   await mkdir(TMP, { recursive: true });
 
   // 1) Competência
@@ -167,6 +182,7 @@ async function main() {
   let layoutOk = false;
   for (let i = 0; i < 40; i += 1) {
     const arq = `Estabelecimentos${i}.zip`;
+    if (parcial && i >= 1) break; // teste rápido: só o primeiro arquivo
     if (local ? !existsSync(path.join(local, arq)) : (await statusHttp(urlDe(arq))) !== 200) {
       if (i === 0) falha(`${arq} não encontrado para a competência ${competencia}.`);
       break;
@@ -185,14 +201,14 @@ async function main() {
         if (amostras === 200) layoutOk = true;
       }
       agregador.ingerir(campos);
-    });
+    }, MAX_LINHAS);
     await limpar(z);
     arquivos += 1;
     const c = agregador.contagem();
-    log(`${arq} ok | lidas: ${c.lidas.toLocaleString('pt-BR')} | no escopo: ${c.usadas.toLocaleString('pt-BR')}`);
+    log(`${arq} ok | lidas: ${c.lidas.toLocaleString('pt-BR')} | no escopo: ${c.usadas.toLocaleString('pt-BR')} | descartadas: ${c.descartadas}`);
   }
-  const { lidas, usadas } = agregador.contagem();
-  if (lidas < LINHAS_MINIMAS && !args.sintetico) {
+  const { lidas, usadas, descartadas } = agregador.contagem();
+  if (lidas < LINHAS_MINIMAS && !args.sintetico && !parcial) {
     falha(`apenas ${lidas} linhas lidas (mínimo esperado ${LINHAS_MINIMAS}). A base parece incompleta.`);
   }
   if (!usadas) falha('nenhum estabelecimento caiu nos segmentos configurados.');
@@ -259,6 +275,8 @@ async function main() {
     linhasLidas: lidas,
     linhasNoEscopo: usadas,
     municipiosSemNomeIbge: semMatch.length,
+    linhasDescartadas: descartadas,
+    parcial,
     sintetico: Boolean(args.sintetico),
   };
   await writeFile(path.join(OUT, 'meta.json'), JSON.stringify(meta, null, 2));

@@ -141,3 +141,12 @@ test('resolverMunicipios usa nome do IBGE, faz fallback e garante slug único na
   assert.equal(r[3].casouIbge, false);
   assert.equal(r[3].nome, 'Lugar Sem Match');
 });
+
+test('agregador descarta registro truncado em vez de falhar', () => {
+  const ag = criarAgregador(SEGMENTOS, '2026-10');
+  const curta = ['1', '2', '3', '1', 'NOME', '02']; // poucos campos
+  ag.ingerir(curta);
+  ag.ingerir(parseLinha(linha()));
+  assert.equal(ag.contagem().descartadas, 1);
+  assert.equal(ag.contagem().usadas, 1);
+});
