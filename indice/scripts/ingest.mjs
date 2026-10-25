@@ -9,6 +9,7 @@
 //   --out          pasta de saída (padrão: ./data)
 //   --min          mínimo de estabelecimentos ativos para uma página ser indexável (padrão: 10)
 //   --base-url     sobrescreve a URL base dos arquivos (ex.: espelho próprio)
+//   --token        token do compartilhamento público (padrão: o oficial da Receita)
 //   --ibge-arquivo JSON do IBGE já baixado (padrão: consulta a API)
 //   --sintetico    marca a saída como amostra sintética e relaxa as travas de volume (só para testes)
 //
@@ -41,7 +42,11 @@ const args = Object.fromEntries(
 const OUT = path.resolve(args.out || path.join(raiz, 'data'));
 const TMP = path.join(raiz, '.tmp');
 const MINIMO = Number(args.min || 10);
-const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj';
+// O portal da Receita é um Nextcloud: os arquivos ficam num compartilhamento público acessível por WebDAV
+// (usuário = token do compartilhamento, senha vazia). Estrutura confirmada por listagem em 2026-10-25.
+const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/public.php/webdav/Dados/Cadastros/CNPJ';
+const TOKEN_PADRAO = 'gn672Ad4CF8N6TK';
+let AUTH = `${TOKEN_PADRAO}:`;
 const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos que isso é suspeito
 const log = (...m) => console.log('[ingest]', ...m);
 const falha = (msg) => {
@@ -65,7 +70,7 @@ function executar(cmd, cmdArgs) {
 
 async function statusHttp(url) {
   try {
-    const out = await executar('curl', ['-sS', '-I', '-L', '-m', '30', '-o', '/dev/null', '-w', '%{http_code}', url]);
+    const out = await executar('curl', ['-sS', '-I', '-L', '-m', '30', '-u', AUTH, '-o', '/dev/null', '-w', '%{http_code}', url]);
     return Number(out.trim());
   } catch {
     return 0;
@@ -74,7 +79,7 @@ async function statusHttp(url) {
 
 async function baixar(url, destino) {
   log('baixando', url);
-  await executar('curl', ['-fL', '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
+  await executar('curl', ['-fL', '-u', AUTH, '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
 }
 
 /** Lê um zip com um CSV (latin1) linha a linha, sem descompactar em disco. */
@@ -102,6 +107,7 @@ async function main() {
   const segmentos = JSON.parse(await readFile(path.join(raiz, 'config', 'segments.json'), 'utf8'));
   const local = args.local ? path.resolve(args.local) : null;
   const baseUrl = (args['base-url'] || BASE_PADRAO).replace(/\/+$/, '');
+  if (args.token) AUTH = `${args.token}:`;
   await mkdir(TMP, { recursive: true });
 
   // 1) Competência
