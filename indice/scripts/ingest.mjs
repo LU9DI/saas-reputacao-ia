@@ -93,15 +93,17 @@ async function lerCsvZip(zip, aoLer, maxLinhas = Infinity) {
   filho.stderr.on('data', (d) => (erro += d));
   filho.stdout.setEncoding('latin1');
   const rl = createInterface({ input: filho.stdout, crlfDelay: Infinity });
+  let cortado = false;
   const fim = new Promise((resolve, reject) => {
     filho.on('error', reject);
-    filho.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`unzip ${zip}: código ${code} ${erro.slice(0, 300)}`))));
+    filho.on('close', (code) => (code === 0 || cortado ? resolve() : reject(new Error(`unzip ${zip}: código ${code} ${erro.slice(0, 300)}`))));
   });
   let n = 0;
   for await (const linha of rl) {
     aoLer(linha);
     n += 1;
     if (n >= maxLinhas) {
+      cortado = true;
       filho.kill('SIGKILL'); // modo de teste: corta a leitura
       rl.close();
       return;
@@ -180,16 +182,42 @@ async function main() {
   const agregador = criarAgregador(segmentos, competencia);
   let arquivos = 0;
   let layoutOk = false;
+  // Lista os arquivos disponíveis (Estabelecimentos0..N)
+  const lista = [];
   for (let i = 0; i < 40; i += 1) {
     const arq = `Estabelecimentos${i}.zip`;
     if (parcial && i >= 1) break; // teste rápido: só o primeiro arquivo
-    if (local ? !existsSync(path.join(local, arq)) : (await statusHttp(urlDe(arq))) !== 200) {
+    const existe = local ? existsSync(path.join(local, arq)) : (await statusHttp(urlDe(arq))) === 200;
+    if (!existe) {
       if (i === 0) falha(`${arq} não encontrado para a competência ${competencia}.`);
       break;
     }
-    const z = await zipDe(arq);
+    lista.push(arq);
+  }
+  log(`${lista.length} arquivos de estabelecimentos`);
+  // O portal entrega ~1 MB/s por conexão: baixa vários em paralelo enquanto processa em ordem.
+  const CONC = Number(args.concorrencia || 5);
+  const baixando = new Map();
+  let proximo = 0;
+  const disparar = () => {
+    while (!local && baixando.size < CONC && proximo < lista.length) {
+      const arq = lista[proximo++];
+      const p = baixar(urlDe(arq), path.join(TMP, arq));
+      p.catch(() => {}); // o erro é tratado quando o arquivo for consumido
+      baixando.set(arq, p);
+    }
+  };
+  for (const arq of lista) {
+    let caminho;
+    if (local) caminho = path.join(local, arq);
+    else {
+      disparar();
+      await baixando.get(arq);
+      caminho = path.join(TMP, arq);
+      disparar();
+    }
     let amostras = 0;
-    await lerCsvZip(z.caminho, (l) => {
+    await lerCsvZip(caminho, (l) => {
       const campos = parseLinha(l);
       if (!campos) return;
       if (!layoutOk && amostras < 200) {
@@ -202,7 +230,7 @@ async function main() {
       }
       agregador.ingerir(campos);
     }, MAX_LINHAS);
-    await limpar(z);
+    if (!local) await rm(caminho, { force: true });
     arquivos += 1;
     const c = agregador.contagem();
     log(`${arq} ok | lidas: ${c.lidas.toLocaleString('pt-BR')} | no escopo: ${c.usadas.toLocaleString('pt-BR')} | descartadas: ${c.descartadas}`);
