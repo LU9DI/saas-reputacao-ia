@@ -23,7 +23,7 @@ test('rejeita hash inválido, arquivo obrigatório ausente e URL com credencial'
   invalid.proveniencia.arquivosFonte = invalid.proveniencia.arquivosFonte.slice(0, 2);
   const errors = validarProveniencia(invalid).join(' ');
   assert.match(errors, /sha256 inválido/);
-  assert.match(errors, /URL não pode conter credenciais/);
+  assert.match(errors, /url não pode conter credenciais/i);
   assert.match(errors, /EstabelecimentosN.zip/);
 });
 test('exige declaração histórica sem hashes inventados e rejeita proveniência ausente', () => {
