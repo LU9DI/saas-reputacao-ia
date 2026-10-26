@@ -5,6 +5,8 @@ const nextConfig = {
   // O app é servido em filtraai.com/indice (rota do Cloudflare para este projeto).
   // basePath também prefixa /_next, então os assets não colidem com os do site principal.
   basePath: '/indice',
+  // Convenção pública: sem barra final. /indice/ responde 308 para /indice.
+  trailingSlash: false,
   turbopack: { root: import.meta.dirname },
 };
 
