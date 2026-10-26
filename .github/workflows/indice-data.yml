@@ -32,10 +32,12 @@ jobs:
         run: npm ci && npm test
       - name: Sondar endereços (opcional)
         if: ${{ inputs.sondar == 'true' }}
+        env:
+          INDICE_RFB_SHARE_TOKEN: ${{ secrets.INDICE_RFB_SHARE_TOKEN }}
         run: |
           OUT=""
           add() { OUT="${OUT}$1%0A"; }
-          T=YggdBLfdninEJX9
+          T="$INDICE_RFB_SHARE_TOKEN"
           for m in 2026-09 2026-10 2026-08; do
             for u in "https://dadosabertos.rfb.gov.br/CNPJ/dados_abertos_cnpj/$m/Cnaes.zip" \
                      "https://arquivos.receitafederal.gov.br/index.php/s/$T/download?path=%2F$m&files=Cnaes.zip"; do
@@ -48,6 +50,8 @@ jobs:
           echo "::error title=Sondagem::${OUT}"
           exit 1
       - name: Ingestão
+        env:
+          INDICE_RFB_SHARE_TOKEN: ${{ secrets.INDICE_RFB_SHARE_TOKEN }}
         working-directory: indice
         run: |
           ARGS=""
