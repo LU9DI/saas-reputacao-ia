@@ -186,7 +186,9 @@ async function main() {
     const c = agregador.contagem();
     log(`${arq} ok | lidas: ${c.lidas.toLocaleString('pt-BR')} | no escopo: ${c.usadas.toLocaleString('pt-BR')}`);
   }
-  const { lidas, usadas } = agregador.contagem();
+  const { lidas, usadas, malformadas } = agregador.contagem();
+  log(`linhas malformadas descartadas: ${malformadas.toLocaleString('pt-BR')} de ${lidas.toLocaleString('pt-BR')}`);
+  if (malformadas > lidas * 0.001) falha(`linhas malformadas demais (${malformadas} de ${lidas}, limite 0,1%). O layout do arquivo pode ter mudado.`);
   if (lidas < LINHAS_MINIMAS && !args.sintetico) {
     falha(`apenas ${lidas} linhas lidas (mínimo esperado ${LINHAS_MINIMAS}). A base parece incompleta.`);
   }
