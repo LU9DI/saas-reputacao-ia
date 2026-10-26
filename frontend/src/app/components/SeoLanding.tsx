@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { SeoPageHeader } from './SeoPageHeader';
@@ -140,7 +141,7 @@ export function SeoLanding({
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
+              __html: serializeJsonLd({
                 '@context': 'https://schema.org',
                 '@type': 'WebPage',
                 name: h1,
@@ -157,7 +158,7 @@ export function SeoLanding({
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
+              __html: serializeJsonLd({
                 '@context': 'https://schema.org',
                 '@type': 'BreadcrumbList',
                 itemListElement: [
@@ -194,7 +195,7 @@ export function SeoLanding({
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
+                __html: serializeJsonLd({
                   '@context': 'https://schema.org',
                   '@type': 'FAQPage',
                   mainEntity: faq.map((item) => ({
