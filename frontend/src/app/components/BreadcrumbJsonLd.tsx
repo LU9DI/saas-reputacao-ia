@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 const SITE_URL = 'https://filtraai.com';
 
 type Crumb = { name: string; path: string };
@@ -27,5 +28,5 @@ export function BreadcrumbJsonLd({
     })),
   };
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />;
 }
