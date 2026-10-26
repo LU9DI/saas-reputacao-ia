@@ -22,6 +22,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { descreverArquivoFonte } from './lib/source-manifest.mjs';
 import {
   parseLinha,
   validarLayout,
@@ -45,8 +46,8 @@ const MINIMO = Number(args.min || 10);
 // Compartilhamento público (Nextcloud) da Receita; o acesso por WebDAV usa o token do link público como usuário
 // e senha vazia. Confirmado por listagem do diretório em 2026-10-25; o endereço antigo (dadosabertos.rfb.gov.br) expira.
 const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/public.php/webdav';
-const TOKEN_COMPARTILHAMENTO = 'YggdBLfdninEJX9';
-const authCurl = (url) => (url.includes('/public.php/webdav') ? ['-u', `${TOKEN_COMPARTILHAMENTO}:`] : []);
+const TOKEN_COMPARTILHAMENTO = process.env.INDICE_RFB_SHARE_TOKEN || '';
+const authCurl = (url) => (url.includes('/public.php/webdav') && TOKEN_COMPARTILHAMENTO ? ['-u', `${TOKEN_COMPARTILHAMENTO}:`] : []);
 const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos que isso é suspeito
 const log = (...m) => console.log('[ingest]', ...m);
 const falha = (msg) => {
@@ -126,14 +127,24 @@ async function main() {
   }
   log('competência', competencia);
   const urlDe = (arq) => `${baseUrl}/${competencia}/${arq}`;
+  const arquivosFonte = [];
+  const tipoFonte = (nome) => nome.startsWith('Estabelecimentos') ? 'estabelecimentos' : nome === 'Cnaes.zip' ? 'cnaes' : nome === 'Municipios.zip' ? 'municipios' : 'outro';
   const zipDe = async (arq) => {
+    let registro;
     if (local) {
       const p = path.join(local, arq);
       if (!existsSync(p)) falha(`arquivo ausente em --local: ${p}`);
+      registro = await descreverArquivoFonte({ caminho: p, nome: arq, tipo: tipoFonte(arq) });
+      arquivosFonte.push(registro);
+      log(`fonte ${arq}: ${registro.bytes.toLocaleString('pt-BR')} bytes | sha256 ${registro.sha256}`);
       return { caminho: p, temporario: false };
     }
     const destino = path.join(TMP, arq);
-    await baixar(urlDe(arq), destino);
+    const url = urlDe(arq);
+    await baixar(url, destino);
+    registro = await descreverArquivoFonte({ caminho: destino, nome: arq, tipo: tipoFonte(arq), url });
+    arquivosFonte.push(registro);
+    log(`fonte ${arq}: ${registro.bytes.toLocaleString('pt-BR')} bytes | sha256 ${registro.sha256}`);
     return { caminho: destino, temporario: true };
   };
   const limpar = async (z) => z.temporario && rm(z.caminho, { force: true });
@@ -265,6 +276,7 @@ async function main() {
     minimoParaIndexar: MINIMO,
     segmentos: segmentos.map((s) => ({ slug: s.slug, nome: s.nome, curto: s.curto, classes: s.classes })),
     arquivosEstabelecimentos: arquivos,
+    arquivosFonte,
     linhasLidas: lidas,
     linhasNoEscopo: usadas,
     municipiosSemNomeIbge: semMatch.length,
