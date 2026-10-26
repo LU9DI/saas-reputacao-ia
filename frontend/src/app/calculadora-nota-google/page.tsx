@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { RatingCalculator } from './RatingCalculator';
@@ -67,8 +68,8 @@ const faqSchema = {
 export default function CalculadoraNotaGooglePage() {
   return (
     <main className="min-h-screen bg-black text-zinc-100">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }} />
       <div className="mx-auto max-w-4xl space-y-10 px-4 py-8 sm:py-14">
         <nav aria-label="Breadcrumb" className="text-sm text-zinc-500">
           <Link href="/" className="hover:text-indigo-300">Início</Link>
