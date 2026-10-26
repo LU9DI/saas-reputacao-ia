@@ -88,5 +88,9 @@
   "linhasLidas": 73809386,
   "linhasNoEscopo": 10342277,
   "municipiosSemNomeIbge": 17,
-  "sintetico": false
+  "sintetico": false,
+  "proveniencia": {
+    "status": "nao_capturada_na_geracao",
+    "motivo": "Esta base foi gerada antes da implementação do manifesto SHA-256; os hashes dos ZIPs históricos não foram capturados e não podem ser reconstruídos a partir dos agregados."
+  }
 }
