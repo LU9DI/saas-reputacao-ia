@@ -48,7 +48,7 @@ jobs:
             if [ -n "$T" ]; then
               # O token é credencial e faz parte da URL do link público: nunca ecoe a URL.
               u="https://arquivos.receitafederal.gov.br/index.php/s/$T/download?path=%2F$m&files=Cnaes.zip"
-              c=$(curl -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' "$u" 2>&1 | tr -d '\n' | cut -c1-120)
+              c=$(curl -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' "$u" 2>/dev/null | tr -d '\n' | cut -c1-120)
               add "$c <- link público (token omitido), competência $m"
             fi
           done
