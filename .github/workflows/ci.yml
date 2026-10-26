@@ -127,6 +127,9 @@ jobs:
       - name: Audit static export indexability
         run: npm run seo:audit
 
+      - name: Validate Markdown twins and llms files
+        run: npm run seo:markdown:validate
+
   # Build normal da Vercel: não define CLOUDFLARE_PAGES. O build não pode
   # depender de out/ nem do pós-processamento usado no export estático.
   frontend-vercel:

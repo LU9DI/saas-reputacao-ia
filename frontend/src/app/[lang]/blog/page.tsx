@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
 import { OG_IMAGE_META, buildTwitter } from '../../lib/socialMetadata';
+import { BreadcrumbJsonLd } from '../../components/BreadcrumbJsonLd';
 
 type Lang='en'|'es'|'zh';
 type Article={slug:string;title:string;description:string};
@@ -92,7 +93,10 @@ export default async function LocalizedBlogIndex({params}:{params:Promise<{lang:
   if(!(lang in content))notFound();
   const t=content[lang];
 
+  const homeLabel: Record<string,string> = { en: 'Home', es: 'Inicio', zh: '首页' };
+
   return <main lang={lang} className="min-h-screen bg-black text-zinc-100">
+    <BreadcrumbJsonLd homeName={homeLabel[lang] ?? 'Home'} homePath={home[lang]} crumbs={[{ name: 'Blog', path: blog[lang] }]} />
     <header className="border-b border-zinc-800">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <BrandMark href={home[lang]} />

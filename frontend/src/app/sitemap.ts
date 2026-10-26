@@ -11,6 +11,8 @@ const LAST_MODIFIED: Record<string, string> = {
   '/filtra-ai': '2026-10-19',
   '/gestao-de-reputacao-online': '2026-10-22',
   '/blog': '2026-10-22',
+  '/metodologia': '2026-10-24',
+  '/glossario': '2026-10-24',
   '/avaliacoes-google': '2026-10-22',
   '/reputacao-google': '2026-10-22',
   '/como-melhorar-avaliacoes-google': '2026-10-22',
@@ -125,6 +127,8 @@ const TRANSLATED_BLOG_FAMILIES = [
 const canonicalPaths = [
   '',
   '/calculadora-nota-google',
+  '/metodologia',
+  '/glossario',
   ...Object.keys(SEO_FAMILIES).filter((p) => p !== '/'),
   '/blog/como-responder-avaliacoes-negativas',
   '/blog/velocity-reviews-google-maps-2026',

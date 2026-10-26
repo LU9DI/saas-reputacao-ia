@@ -52,6 +52,8 @@ export default function Page() {
         { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece com um diagnóstico.' },
         { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Use análise de avaliações como parte de uma oferta recorrente.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Entenda como análise e reputação complementam SEO local.' },
+        { href: '/metodologia', title: 'Metodologia do Filtra.AI', description: 'Como a classificação funciona e quais são os limites.' },
+        { href: '/glossario', title: 'Glossário de reputação online', description: 'Definições curtas dos termos da análise.' },
       ]}
       sections={[
         { heading: 'Como analisar avaliações com IA passo a passo', body: 'Primeiro reúna avaliações e feedback em uma base consistente. Depois classifique temas, compare frequência e evolução, revise casos ambíguos e transforme os achados em prioridades. A IA acelera a triagem, mas a equipe deve validar interpretações que dependem de contexto.' },

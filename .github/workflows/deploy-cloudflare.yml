@@ -48,6 +48,9 @@ jobs:
       - name: Audit static export indexability
         run: npm run seo:audit
 
+      - name: Validate Markdown twins and llms files
+        run: npm run seo:markdown:validate
+
       - name: Verify static artifact
         run: |
           set -euo pipefail

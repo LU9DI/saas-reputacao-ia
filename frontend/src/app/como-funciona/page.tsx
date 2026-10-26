@@ -27,6 +27,7 @@ export const metadata: Metadata = {
 export default function ComoFuncionaPage() {
   return (
     <SeoLanding
+      breadcrumbHref="/como-funciona"
       h1="Como o Filtra.AI protege sua reputação no Google"
       lead="O Filtra.AI não substitui o Google Reviews. Ele cria um fluxo de feedback próximo à experiência, facilita convites não seletivos para avaliações genuínas e ajuda a equipe a tratar insatisfações com discrição."
       sections={[

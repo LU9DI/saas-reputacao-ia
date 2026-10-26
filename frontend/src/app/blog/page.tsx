@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { BrandMark } from '../components/BrandMark';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
+import { BreadcrumbJsonLd } from '../components/BreadcrumbJsonLd';
 
 export const metadata: Metadata = {
   title: 'Blog: reputação, avaliações Google e SEO local',
@@ -55,6 +56,7 @@ const posts = [
 export default function BlogIndexPage() {
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
+      <BreadcrumbJsonLd crumbs={[{ name: 'Blog', path: '/blog' }]} />
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Blog" href="/" />
         <div className="flex items-center gap-3">
