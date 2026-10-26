@@ -22,6 +22,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { bloqueioTokenWebdav } from './lib/ingest-config.mjs';
 import {
   parseLinha,
   validarLayout,
@@ -45,8 +46,8 @@ const MINIMO = Number(args.min || 10);
 // Compartilhamento público (Nextcloud) da Receita; o acesso por WebDAV usa o token do link público como usuário
 // e senha vazia. Confirmado por listagem do diretório em 2026-10-25; o endereço antigo (dadosabertos.rfb.gov.br) expira.
 const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/public.php/webdav';
-const TOKEN_COMPARTILHAMENTO = 'YggdBLfdninEJX9';
-const authCurl = (url) => (url.includes('/public.php/webdav') ? ['-u', `${TOKEN_COMPARTILHAMENTO}:`] : []);
+const TOKEN_COMPARTILHAMENTO = process.env.INDICE_RFB_SHARE_TOKEN || '';
+const authCurl = (url) => (url.includes('/public.php/webdav') && TOKEN_COMPARTILHAMENTO ? ['-u', `${TOKEN_COMPARTILHAMENTO}:`] : []);
 const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos que isso é suspeito
 const log = (...m) => console.log('[ingest]', ...m);
 const falha = (msg) => {
@@ -105,6 +106,8 @@ async function main() {
   const segmentos = JSON.parse(await readFile(path.join(raiz, 'config', 'segments.json'), 'utf8'));
   const local = args.local ? path.resolve(args.local) : null;
   const baseUrl = (args['base-url'] || BASE_PADRAO).replace(/\/+$/, '');
+  const bloqueio = bloqueioTokenWebdav({ baseUrl, token: TOKEN_COMPARTILHAMENTO, local: Boolean(local) });
+  if (bloqueio) falha(bloqueio);
   await mkdir(TMP, { recursive: true });
 
   // 1) Competência

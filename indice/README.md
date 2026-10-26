@@ -13,6 +13,8 @@ Com dados sintéticos o app marca todas as páginas como `noindex` e o build de 
     npm run ingest            # baixa ~ dezenas de GB da Receita; use o workflow "Índice: atualizar dados"
 O ingest valida o layout nas primeiras linhas e aborta se algo não bater. **Nunca foi executado contra a base real
 pelo autor** (o ambiente de desenvolvimento não acessa o portal): a primeira execução deve ser revisada.
+O acesso remoto exige o segredo `INDICE_RFB_SHARE_TOKEN`; sem ele a ingestão aborta antes de qualquer download.
+Nunca grave o token no repositório.
 
 ## Páginas
 `/` · `/[uf]` · `/[uf]/[municipio]` · `/[uf]/[municipio]/[segmento]` · `/metodologia` · `/sitemap-index.xml`
