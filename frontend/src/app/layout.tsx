@@ -1,4 +1,3 @@
-import { serializeJsonLd } from './lib/safeJsonLd';
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
