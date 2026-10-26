@@ -13,6 +13,6 @@ export default function robots(): MetadataRoute.Robots {
       // Private pages carry noindex in HTML; keep them crawlable so crawlers can observe it.
       disallow: ['/api/'],
     },
-    sitemap: `${base}/sitemap.xml`,
+    sitemap: [`${base}/sitemap.xml`, `${base}/indice/sitemap-index.xml`],
   };
 }
