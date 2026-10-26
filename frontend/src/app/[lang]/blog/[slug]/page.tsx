@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../../../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -247,8 +248,8 @@ export default async function LocalizedBlogPage({params}:{params:Promise<{lang:s
       </div>
     </header>
     <article className="mx-auto max-w-4xl px-6 py-16">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(blogPosting)}} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify({
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:serializeJsonLd(blogPosting)}} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:serializeJsonLd({
         '@context':'https://schema.org',
         '@type':'BreadcrumbList',
         itemListElement:[
