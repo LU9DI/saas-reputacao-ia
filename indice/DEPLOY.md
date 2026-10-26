@@ -9,3 +9,11 @@ O site principal é estático (Cloudflare Pages). O Índice precisa de servidor 
    - em `frontend/src/app/robots.ts` trocar `sitemap` por `[base/sitemap.xml, base/indice/sitemap-index.xml]` e ajustar `frontend/scripts/validate-seo.mjs`;
    - enviar o sitemap no Google Search Console e no Bing.
 4. Acompanhar no Search Console: páginas "Rastreada, não indexada" indicam conteúdo considerado raso; subir `minimoParaIndexar` se necessário.
+
+
+## Situação em 2026-10-26
+- Serviço criado no Render: `filtra-indice` (plano free, branch main, deploy manual). URL de origem: https://filtra-indice.onrender.com/indice/
+- Rota do Cloudflare: criar o Worker com `cloudflare-worker.js` e a rota `filtraai.com/indice*`.
+- Plano free dorme sem acesso: o Worker guarda as respostas em cache por 1 h, o que reduz o problema, mas a primeira visita após o sono pode demorar.
+- Depois que `https://filtraai.com/indice/sitemap-index.xml` responder 200, acrescentar o sitemap ao `robots.ts`.
+- Escopo: dados do CNPJ cobrem só o Brasil (pt-BR). Não há versão para outros países.
