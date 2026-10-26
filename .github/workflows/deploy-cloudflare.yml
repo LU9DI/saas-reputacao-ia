@@ -60,6 +60,11 @@ jobs:
           test -f out/sitemap.xml
           test -f out/robots.txt
           test -f out/planos.html
+          # Regression guardrails: keep the Filtra Dot homepage section and blog hub in production.
+          grep -q 'Filtra Dot' out/index.html
+          grep -q 'id="filtra-dot"' out/index.html
+          test -f out/blog.html
+          grep -q 'Blog Filtra.AI' out/blog.html
           grep -q 'https://filtraai.com/planos' out/sitemap.xml
           grep -q 'https://filtraai.com/planos' out/planos.html
           test -f out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
