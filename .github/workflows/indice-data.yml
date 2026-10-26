@@ -44,7 +44,19 @@ jobs:
           path: indice/.tmp
           run-id: ${{ inputs.retomar_run_id }}
           github-token: ${{ github.token }}
+      - name: Sondar fontes de nomes de municípios
+        if: ${{ inputs.so_ibge == 'true' }}
+        run: |
+          for u in \
+            "https://brasilapi.com.br/api/ibge/municipios/v1/GO?providers=dados-abertos-br,gov,wikipedia" \
+            "https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/csv/municipios.csv" \
+            "https://servicodados.ibge.gov.br/api/v1/localidades/estados/52/municipios" \
+            "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/divisao_territorial/2024/" ; do
+            r=$(curl -sL -m 25 -w ' HTTP=%{http_code} bytes=%{size_download}' -o /tmp/r.txt "$u" 2>&1 | tail -1)
+            echo "::notice title=fonte::$u -> $r | $(head -c 300 /tmp/r.txt | tr '\n\r' '  ')"
+          done
       - name: Ingestão
+        if: ${{ inputs.so_ibge != 'true' }}
         working-directory: indice
         run: |
           ARGS=""
