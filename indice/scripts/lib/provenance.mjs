@@ -33,7 +33,8 @@ export function validarProveniencia(meta) {
   if (proveniencia.status === 'nao_capturada_na_geracao') {
     exigir(typeof proveniencia.motivo === 'string' && proveniencia.motivo.trim().length > 0,
       'proveniencia histórica precisa explicar por que os hashes não foram capturados.');
-    exigir(!Array.isArray(proveniencia.arquivosFonte) || proveniencia.arquivosFonte.length === 0,
+    exigir(proveniencia.arquivosFonte === undefined ||
+      (Array.isArray(proveniencia.arquivosFonte) && proveniencia.arquivosFonte.length === 0),
       'proveniência histórica não pode declarar arquivosFonte como se fossem hashes verificados.');
     return problemas;
   }
@@ -61,7 +62,7 @@ export function validarProveniencia(meta) {
     exigir(['estabelecimentos', 'cnaes', 'municipios'].includes(item.tipo), `${prefixo}.tipo inválido.`);
     exigir(Number.isSafeInteger(item.bytes) && item.bytes > 0, `${prefixo}.bytes deve ser inteiro positivo.`);
     exigir(typeof item.sha256 === 'string' && SHA256.test(item.sha256), `${prefixo}.sha256 deve conter 64 caracteres hexadecimais minúsculos.`);
-    exigir(isSafeSourceUrl(item.url ?? null), `${prefixo}.url deve ser HTTPS sem credenciais, query ou fragmento, ou null para arquivo local.`);
+    exigir(Object.hasOwn(item, 'url') && isSafeSourceUrl(item.url), `${prefixo}.url deve ser HTTPS sem credenciais, query ou fragmento, ou null explícito para arquivo local.`);
 
     if (item.arquivo === 'Cnaes.zip' && item.tipo === 'cnaes') temCnaes = true;
     if (item.arquivo === 'Municipios.zip' && item.tipo === 'municipios') temMunicipios = true;
