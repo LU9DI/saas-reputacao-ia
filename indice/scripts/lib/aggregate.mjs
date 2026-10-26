@@ -1,7 +1,8 @@
 // Agregação do cadastro aberto de CNPJ (arquivo "Estabelecimentos") por UF x município x segmento.
 //
-// Só contagens agregadas saem daqui. Nome fantasia, endereço, telefone e e-mail
-// (colunas 4, 13–18, 21–27) nunca são lidos, guardados ou publicados.
+// Só contagens agregadas saem daqui. A linha CSV é dividida em campos para localizar
+// as colunas necessárias; nome fantasia, endereço, telefone e e-mail não são usados
+// nos cálculos nem retidos nos agregados ou publicados.
 //
 // LAYOUT: as posições abaixo seguem o layout publicado pela Receita Federal para
 // o arquivo Estabelecimentos (CSV sem cabeçalho, ";" como separador, campos entre
