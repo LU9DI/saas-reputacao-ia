@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 const siteUrl = 'https://filtraai.com';
 
 const graph = {
@@ -47,7 +48,7 @@ export function JsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(graph) }}
     />
   );
 };
