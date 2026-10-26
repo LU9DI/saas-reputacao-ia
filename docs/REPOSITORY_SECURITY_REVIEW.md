@@ -6,7 +6,7 @@ Scope: static review of repository manifests, CI workflow configuration, ignore 
 ## Verified findings
 
 ### High priority — CI can silently bypass locked dependency installation
-The backend and frontend jobs in `.github/workflows/ci.yml` try `npm ci`, then fall back to `npm install` if it fails. That can hide a stale or inconsistent lockfile and resolve a different dependency tree in CI. Prefer a hard failure from `npm ci`, then repair and commit the relevant lockfile in a separate change.
+The backend and frontend jobs previously fell back from `npm ci` to `npm install`, hiding lockfile drift and allowing non-reproducible dependency resolution. This PR removes those fallbacks so lockfile problems fail visibly. The Cloudflare static-export job is also aligned to Node 22 to match `frontend/package.json`.
 
 ### Medium priority — frontend Node versions are inconsistent
 `frontend/package.json` declares Node `22.x`, but the Cloudflare static-export CI job uses Node 20 while the Vercel build job uses Node 22. Align both frontend jobs with the declared runtime and verify the static export.
@@ -19,11 +19,10 @@ The root `test` and `typecheck` scripts currently delegate only to backend comma
 
 ## Safe remediation plan
 
-1. Remove CI fallback from `npm ci`; make lockfile inconsistency fail visibly.
-2. Align the Cloudflare frontend job to Node 22, matching `frontend/package.json`.
-3. Add a documented root-level validation command that runs package-specific checks without hiding failures.
-4. Run `npm audit` in each package with its lockfile, then update dependencies in small, tested batches.
-5. Check Git history and GitHub secret-scanning alerts separately; this review did not establish that no secret was ever committed.
+1. **Applied in this PR:** remove CI fallback from `npm ci` and align Cloudflare frontend CI to Node 22.
+2. Add a documented root-level validation command that runs package-specific checks without hiding failures.
+3. The new dependency-audit workflow passed for root, backend, frontend, and indice: `npm audit` reported zero vulnerabilities in each package on this run. Re-run it on future dependency changes.
+4. Check Git history and GitHub secret-scanning alerts separately; this review did not establish that no secret was ever committed.
 
 ## Not claimed
 
