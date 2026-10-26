@@ -1,0 +1,104 @@
+{
+ "year": 2023,
+ "generatedAt": "2026-10-26T19:02:12.598Z",
+ "source": {
+  "name": "County Business Patterns (CBP), U.S. Census Bureau",
+  "url": "https://www.census.gov/programs-surveys/cbp.html",
+  "license": "CC0 1.0 (segundo o catálogo data.gov)"
+ },
+ "minimumToIndex": 10,
+ "segments": [
+  {
+   "slug": "restaurants",
+   "name": "Restaurants and eating places",
+   "short": "restaurants and other eating places",
+   "naics": [
+    "7225"
+   ]
+  },
+  {
+   "slug": "hotels",
+   "name": "Hotels and traveler accommodation",
+   "short": "hotels, motels and other traveler accommodation",
+   "naics": [
+    "7211"
+   ]
+  },
+  {
+   "slug": "doctors-and-dentists",
+   "name": "Doctors' and dentists' offices",
+   "short": "offices of physicians and dentists",
+   "naics": [
+    "6211",
+    "6212"
+   ]
+  },
+  {
+   "slug": "other-health-practitioners",
+   "name": "Other health practitioners",
+   "short": "offices of other health practitioners (chiropractors, optometrists, therapists)",
+   "naics": [
+    "6213"
+   ]
+  },
+  {
+   "slug": "personal-care",
+   "name": "Salons and personal care services",
+   "short": "hair, nail, skin care and other personal care services",
+   "naics": [
+    "8121"
+   ]
+  },
+  {
+   "slug": "gyms",
+   "name": "Gyms and fitness centers",
+   "short": "fitness and recreational sports centers",
+   "naics": [
+    "713940"
+   ]
+  },
+  {
+   "slug": "pharmacies",
+   "name": "Pharmacies and drug retailers",
+   "short": "pharmacies and drug retailers",
+   "naics": [
+    "4461",
+    "4561"
+   ]
+  },
+  {
+   "slug": "auto-repair",
+   "name": "Auto repair and maintenance",
+   "short": "automotive repair and maintenance shops",
+   "naics": [
+    "8111"
+   ]
+  },
+  {
+   "slug": "grocery",
+   "name": "Grocery stores",
+   "short": "grocery stores and supermarkets",
+   "naics": [
+    "4451"
+   ]
+  }
+ ],
+ "sizeBins": [
+  "n<5",
+  "n5_9",
+  "n10_19",
+  "n20_49",
+  "n50_99",
+  "n100_249",
+  "n250_499",
+  "n500_999",
+  "n1000",
+  "n1000_1",
+  "n1000_2",
+  "n1000_3",
+  "n1000_4"
+ ],
+ "linesRead": 1100961,
+ "linesInScope": 22572,
+ "synthetic": false
+}
