@@ -6,7 +6,9 @@ export const ORG_ID = `${SITE}/#organization`;
 export const OG_IMAGE = `${SITE}/og-image.png`;
 export const FONTE_URL = 'https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos';
 
-export const urlAbsoluta = (caminho: string) => (caminho === '/' ? `${BASE}/` : `${BASE}${caminho}`);
+// O Next usa trailingSlash: false. /indice/ responde 308 para /indice; por isso
+// canonical, sitemap, Open Graph e breadcrumbs usam sempre a forma sem barra final.
+export const urlAbsoluta = (caminho: string) => `${BASE}${caminho === '/' ? '' : caminho}`;
 
 export function JsonLd({ data }: { data: object }): ReactNode {
   // "<" escapado para que nenhum texto de dado feche a tag <script>.
