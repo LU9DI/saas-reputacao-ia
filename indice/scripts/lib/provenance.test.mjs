@@ -22,8 +22,8 @@ test('rejeita hash inválido, arquivo obrigatório ausente e URL com credencial'
   invalid.proveniencia.arquivosFonte[1].url = 'https://user:token@example.org/Municipios.zip?token=x';
   invalid.proveniencia.arquivosFonte = invalid.proveniencia.arquivosFonte.slice(0, 2);
   const errors = validarProveniencia(invalid).join(' ');
-  assert.match(errors, /sha256 inválido/);
-  assert.match(errors, /url não pode conter credenciais/i);
+  assert.match(errors, /sha256.*64 caracteres/i);
+  assert.match(errors, /\.url deve ser HTTPS sem credenciais/i);
   assert.match(errors, /EstabelecimentosN.zip/);
 });
 test('exige declaração histórica sem hashes inventados e rejeita proveniência ausente', () => {
