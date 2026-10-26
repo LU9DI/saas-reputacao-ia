@@ -100,9 +100,16 @@ export default function Page() {
           <tr><th scope="row">Data de geração</th><td><time dateTime={meta.geradoEm}>{dataCurta(meta.geradoEm)}</time></td><td>Quando a base foi processada, não a data de acesso à página.</td></tr>
           <tr><th scope="row">Janela de eventos</th><td>{janela}</td><td>12 meses fechados antes da competência, usados em aberturas e baixas.</td></tr>
           <tr><th scope="row">Frequência</th><td>Mensal</td><td>Rotina programada para o dia 15; atrasos e falhas são possíveis.</td></tr>
+          <tr><th scope="row">Rastreabilidade da fonte</th><td>{meta.proveniencia?.status === 'verificada' ? 'Manifesto SHA-256 registrado' : 'Hashes não capturados na geração desta base'}</td><td>Identifica os ZIPs processados nas ingestões com manifesto; não substitui a preservação dos arquivos nem prova a correção do conteúdo.</td></tr>
           <tr><th scope="row">Página oficial</th><td><a href={FONTE_DADOS_ABERTOS_URL} rel="noopener">Dados Abertos — Receita Federal</a></td><td>Origem dos arquivos e do layout publicado.</td></tr>
         </tbody>
       </table>
+
+      <p className="nota">
+        {meta.proveniencia?.status === 'verificada'
+          ? 'Esta competência possui manifesto de proveniência com SHA-256, tamanho e tipo dos arquivos de origem processados. Os hashes permitem conferir a identidade dos arquivos, mas não garantem, por si sós, a exatidão dos dados agregados.'
+          : 'A base atualmente publicada foi gerada antes da captura de hashes dos arquivos de origem. Por isso, não há SHA-256 histórico verificável para esta competência. As próximas ingestões só serão consideradas com proveniência verificada quando o manifesto estiver completo.'}
+      </p>
 
       {(meta.linhasLidas || meta.linhasNoEscopo || meta.arquivosEstabelecimentos || meta.municipiosSemNomeIbge) ? (
         <table>

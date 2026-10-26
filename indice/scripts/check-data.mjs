@@ -3,6 +3,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validarProveniencia } from './lib/provenance.mjs';
 
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dir = path.resolve(process.env.INDICE_DATA_DIR || path.join(raiz, 'data'));
@@ -30,6 +31,9 @@ const exigir = (condicao, mensagem) => {
 };
 const mesValido = (valor) => /^\d{4}-(0[1-9]|1[0-2])$/.test(valor || '');
 const texto = (valor) => typeof valor === 'string' && valor.trim().length > 0;
+
+// A base histórica pode ser publicada com ressalva explícita; novas ingestões exigem manifesto íntegro.
+for (const problema of validarProveniencia(meta)) problemas.push(problema);
 
 // ---- Metadados que alimentam títulos, datas, fonte e JSON-LD ----
 exigir(mesValido(meta.competencia), 'meta.competencia deve estar no formato AAAA-MM.');

@@ -320,6 +320,11 @@ async function main() {
     segmentos: segmentos.map((s) => ({ slug: s.slug, nome: s.nome, curto: s.curto, classes: s.classes })),
     arquivosEstabelecimentos: arquivos,
     arquivosFonte,
+    proveniencia: {
+      status: 'verificada',
+      algoritmo: 'SHA-256',
+      arquivosFonte,
+    },
     linhasLidas: lidas,
     linhasNoEscopo: usadas,
     municipiosSemNomeIbge: semMatch.length,

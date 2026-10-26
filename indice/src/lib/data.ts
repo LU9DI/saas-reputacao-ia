@@ -11,7 +11,21 @@ export type Registro = {
   sub: Record<string, number>; // ativos por subclasse CNAE (7 dígitos)
 };
 export type Segmento = { slug: string; nome: string; curto: string; classes: string[] };
+export type ArquivoFonte = {
+  arquivo: string;
+  tipo: 'estabelecimentos' | 'cnaes' | 'municipios';
+  url: string | null;
+  bytes: number;
+  sha256: string;
+};
+export type Proveniencia = {
+  status: 'verificada' | 'nao_capturada_na_geracao';
+  algoritmo?: 'SHA-256';
+  arquivosFonte?: ArquivoFonte[];
+  motivo?: string;
+};
 export type Meta = {
+  proveniencia?: Proveniencia;
   competencia: string;
   geradoEm: string;
   fonte: { nome: string; url: string };
