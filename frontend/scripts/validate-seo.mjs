@@ -40,7 +40,14 @@ check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans c
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
 check(!plansPage.includes('window.location.replace'), 'Plans page must render content instead of redirecting client-side');
 check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pricing cards');
-check(robots.includes("const base = 'https://filtraai.com'") && robots.includes('sitemap: `${base}/sitemap.xml`'), 'Next robots metadata must reference the canonical sitemap URL');
+check(
+  robots.includes("const base = 'https://filtraai.com'") &&
+    robots.includes('sitemap: [') &&
+    robots.includes('`${base}/sitemap.xml`') &&
+    robots.includes('`${base}/indice/sitemap-index.xml`'),
+  'Next robots metadata must reference both the main sitemap and the separately hosted Índice sitemap',
+);
+check(!sitemap.includes("'/indice'") && !sitemap.includes('"/indice"'), 'Main sitemap must not list URLs hosted by the separate Índice app');
 check(robots.includes("disallow: ['/api/']"), 'robots metadata must disallow API endpoints only');
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
 check(localizedBlogs.includes('const translatedFamilies') && localizedBlogs.includes("if ('pt' in family)"), 'Translated blog metadata must cross-link all available languages without inventing a Portuguese equivalent');
@@ -130,6 +137,28 @@ const blogArticleComponent = read('src/app/components/BlogArticle.tsx');
 const seoLandingComponent = read('src/app/components/SeoLanding.tsx');
 const seoPageHeader = read('src/app/components/SeoPageHeader.tsx');
 const homePage = read('src/app/preview/page.tsx');
+const llms = read('public/llms.txt');
+const llmsFull = read('public/llms-full.txt');
+
+check(homePage.includes('<a href="/indice"'), 'Home footer must link to the separately hosted Índice');
+check(
+  llms.includes('https://filtraai.com/indice') && llms.includes('https://filtraai.com/indice/metodologia'),
+  'llms.txt must list the Índice and its methodology',
+);
+check(
+  llmsFull.includes('https://filtraai.com/indice') &&
+    llmsFull.includes('https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj') &&
+    llmsFull.includes('https://filtraai.com/indice/metodologia'),
+  'llms-full.txt must describe the Índice with its official source and methodology',
+);
+check(
+  /não mede reputação/i.test(llms) && /não é o total de empresas brasileiras/i.test(llms),
+  'llms.txt must delimit the Índice universe and state that it does not measure reputation',
+);
+check(
+  /não promete indexação/i.test(llmsFull),
+  'llms-full.txt must not promise indexing or citation',
+);
 
 check(localSeoArticle.includes("const canonical = 'https://filtraai.com/blog/seo-local-avaliacoes-local-pack'"), 'Local SEO article must declare its self-referencing canonical');
 const blogSchemaLib = read('src/app/lib/blogSchema.ts');

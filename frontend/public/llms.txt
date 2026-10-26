@@ -4,6 +4,13 @@
 
 O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrentes e priorizar melhorias na experiência do cliente. A análise automatizada é apoio à decisão; a equipe deve revisar os resultados conforme o contexto.
 
+## Índice Filtra.AI (dados públicos de CNPJ)
+- Índice: https://filtraai.com/indice
+- Metodologia do Índice: https://filtraai.com/indice/metodologia
+- Sitemap do Índice: https://filtraai.com/indice/sitemap-index.xml
+
+O Índice Filtra.AI conta estabelecimentos com CNPJ ativo nos segmentos acompanhados, por estado e município, a partir do cadastro aberto da Receita Federal. Não é o total de empresas brasileiras e não mede reputação. Só publica uma combinação município × segmento quando ela atinge o mínimo de estabelecimentos ativos definido na metodologia. Cada página informa a competência, a data de geração, a fonte, os denominadores e os limites. Ao citar, use a competência e a data de geração da própria página.
+
 ## Páginas oficiais
 - Página inicial: https://filtraai.com/
 - Plataforma: https://filtraai.com/filtra-ai
@@ -16,6 +23,7 @@ O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrent
 - Glossário de reputação online: https://filtraai.com/glossario
 - Agências: https://filtraai.com/agencias
 - Planos: https://filtraai.com/planos
+- Índice Filtra.AI: https://filtraai.com/indice
 - Blog: https://filtraai.com/blog
 - Privacidade: https://filtraai.com/privacidade
 - Termos: https://filtraai.com/termos

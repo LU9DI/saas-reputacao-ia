@@ -13,6 +13,8 @@ export default function robots(): MetadataRoute.Robots {
       // Private pages carry noindex in HTML; keep them crawlable so crawlers can observe it.
       disallow: ['/api/'],
     },
-    sitemap: `${base}/sitemap.xml`,
+    // O Índice Filtra.AI é um app separado em /indice e mantém o próprio sitemap.
+    // O sitemap principal não deve listar essas URLs.
+    sitemap: [`${base}/sitemap.xml`, `${base}/indice/sitemap-index.xml`],
   };
 }
