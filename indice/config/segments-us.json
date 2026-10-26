@@ -1,0 +1,11 @@
+[
+  { "slug": "restaurants", "name": "Restaurants and eating places", "short": "restaurants and other eating places", "naics": ["7225"] },
+  { "slug": "hotels", "name": "Hotels and traveler accommodation", "short": "hotels, motels and other traveler accommodation", "naics": ["7211"] },
+  { "slug": "doctors-and-dentists", "name": "Doctors' and dentists' offices", "short": "offices of physicians and dentists", "naics": ["6211", "6212"] },
+  { "slug": "other-health-practitioners", "name": "Other health practitioners", "short": "offices of other health practitioners (chiropractors, optometrists, therapists)", "naics": ["6213"] },
+  { "slug": "personal-care", "name": "Salons and personal care services", "short": "hair, nail, skin care and other personal care services", "naics": ["8121"] },
+  { "slug": "gyms", "name": "Gyms and fitness centers", "short": "fitness and recreational sports centers", "naics": ["713940"] },
+  { "slug": "pharmacies", "name": "Pharmacies and drug retailers", "short": "pharmacies and drug retailers", "naics": ["4461", "4561"] },
+  { "slug": "auto-repair", "name": "Auto repair and maintenance", "short": "automotive repair and maintenance shops", "naics": ["8111"] },
+  { "slug": "grocery", "name": "Grocery stores", "short": "grocery stores and supermarkets", "naics": ["4451"] }
+]

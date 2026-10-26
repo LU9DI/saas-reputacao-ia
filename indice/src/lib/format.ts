@@ -22,3 +22,6 @@ export function corta(texto: string, max: number): string {
   const corte = texto.slice(0, max - 1);
   return `${corte.slice(0, corte.lastIndexOf(' ')).replace(/[,;:.\s]+$/, '')}…`;
 }
+
+/** Número no padrão americano (1,234). */
+export const nEn = (x: number) => x.toLocaleString('en-US');

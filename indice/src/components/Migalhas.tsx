@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-export function Migalhas({ itens }: { itens: { nome: string; href?: string }[] }) {
+export function Migalhas({ itens, rotulo = 'Você está em' }: { itens: { nome: string; href?: string }[]; rotulo?: string }) {
   return (
-    <nav className="migalhas" aria-label="Você está em">
+    <nav className="migalhas" aria-label={rotulo}>
       <a href="https://filtraai.com/">Filtra.AI</a>
       {itens.map((i) => (
         <span key={i.nome}>
