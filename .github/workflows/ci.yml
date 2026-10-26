@@ -57,10 +57,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if ! npm ci; then
-            echo "npm ci falhou — regenerando lock e instalando..."
-            npm install
-          fi
+          npm ci
 
       - name: Audit backend dependencies
         run: npm audit
@@ -107,16 +104,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
         run: |
-          if ! npm ci; then
-            echo "npm ci falhou — regenerando lock e instalando..."
-            npm install
-          fi
+          npm ci
 
       - name: Typecheck
         run: npx tsc --noEmit
@@ -153,10 +147,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if ! npm ci; then
-            echo "npm ci falhou — regenerando lock e instalando..."
-            npm install
-          fi
+          npm ci
 
       - name: Audit dependencies
         run: npm audit
