@@ -13,6 +13,7 @@ import {
   tituloCase,
   ibgeParaLista,
   resolverMunicipios,
+  municipiosDeCsv,
 } from './aggregate.mjs';
 
 function linha({ matriz = '1', sit = '02', dsit = '20200101', ini = '20200101', cnae = '5611201', uf = 'GO', mun = '9373' } = {}) {
@@ -151,4 +152,13 @@ test('agregador descarta e conta linhas com número de colunas errado', () => {
   assert.equal(c.lidas, 3);
   assert.equal(c.malformadas, 2);
   assert.equal(c.usadas, 1);
+});
+
+test('municipiosDeCsv lê código, nome e UF (com BOM e aspas)', () => {
+  const uf = '\uFEFFcodigo_uf,uf,nome\n52,GO,Goiás\n31,MG,Minas Gerais\n';
+  const mun = 'codigo_ibge,nome,latitude,codigo_uf\n5208707,Goiânia,-16.6,52\n3106200,"Belo Horizonte",-19.9,31\n';
+  assert.deepEqual(municipiosDeCsv(mun, uf), [
+    { id: 5208707, nome: 'Goiânia', uf: 'GO' },
+    { id: 3106200, nome: 'Belo Horizonte', uf: 'MG' },
+  ]);
 });

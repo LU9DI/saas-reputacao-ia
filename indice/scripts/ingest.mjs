@@ -27,6 +27,7 @@ import {
   validarLayout,
   criarAgregador,
   ibgeParaLista,
+  municipiosDeCsv,
   resolverMunicipios,
 } from './lib/aggregate.mjs';
 
@@ -140,15 +141,25 @@ async function main() {
   // IBGE primeiro: se a API falhar, o erro aparece em segundos e não depois de horas de processamento.
   // Nomes com acento vêm do IBGE (obrigatório: sem isso os títulos saem sem acento).
   let jsonIbge;
+  let listaAlternativa = null;
   if (args['ibge-arquivo']) {
     log('lendo municípios do IBGE de', args['ibge-arquivo']);
     jsonIbge = JSON.parse(await readFile(path.resolve(args['ibge-arquivo']), 'utf8'));
   } else {
     log('consultando municípios no IBGE');
-    const bruto = await executar('curl', ['-fsSL', '--retry', '6', '--retry-delay', '10', '--retry-all-errors', '-m', '120', 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome']);
-    jsonIbge = JSON.parse(bruto);
+    try {
+      const bruto = await executar('curl', ['-fsSL', '--retry', '2', '--retry-delay', '5', '--retry-all-errors', '-m', '25', 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome']);
+      jsonIbge = JSON.parse(bruto);
+    } catch (e) {
+      log('IBGE indisponível (', String(e.message).split('\n')[0], ') -> usando conjunto público kelvins/municipios-brasileiros (códigos e nomes do IBGE)');
+      const raiz = 'https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/csv';
+      const [csvMun, csvUf] = await Promise.all(
+        ['municipios.csv', 'estados.csv'].map((f) => executar('curl', ['-fsSL', '--retry', '4', '--retry-delay', '5', '-m', '60', `${raiz}/${f}`])),
+      );
+      listaAlternativa = municipiosDeCsv(csvMun, csvUf);
+    }
   }
-  const ibge = ibgeParaLista(jsonIbge);
+  const ibge = listaAlternativa || ibgeParaLista(jsonIbge);
   if (ibge.length < 5000 && !args.sintetico) falha(`IBGE trouxe só ${ibge.length} municípios (esperado ~5.570).`);
   log('municípios no IBGE:', ibge.length);
 

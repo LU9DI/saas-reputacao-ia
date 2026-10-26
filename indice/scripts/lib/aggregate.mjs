@@ -197,3 +197,41 @@ export function resolverMunicipios(pares, nomesReceita, ibge) {
   }
   return saida;
 }
+
+/** Divide uma linha CSV simples (vírgula, aspas opcionais). */
+function linhaCsv(l) {
+  const out = [];
+  let atual = '';
+  let aspas = false;
+  for (const ch of l) {
+    if (ch === '"') aspas = !aspas;
+    else if (ch === ',' && !aspas) { out.push(atual); atual = ''; }
+    else atual += ch;
+  }
+  out.push(atual);
+  return out;
+}
+
+/**
+ * Alternativa ao IBGE: conjunto público (kelvins/municipios-brasileiros) com código IBGE, nome e UF.
+ * Retorna o mesmo formato de `ibgeParaLista`: [{ id, nome, uf }].
+ */
+export function municipiosDeCsv(csvMunicipios, csvEstados) {
+  const limpa = (t) => t.replace(/^\uFEFF/, '').split(/\r?\n/).filter(Boolean);
+  const est = limpa(csvEstados);
+  const he = linhaCsv(est[0]);
+  const ufPorCodigo = new Map(est.slice(1).map((l) => {
+    const c = linhaCsv(l);
+    return [c[he.indexOf('codigo_uf')], c[he.indexOf('uf')]];
+  }));
+  const mun = limpa(csvMunicipios);
+  const hm = linhaCsv(mun[0]);
+  const iId = hm.indexOf('codigo_ibge');
+  const iNome = hm.indexOf('nome');
+  const iUf = hm.indexOf('codigo_uf');
+  if (iId < 0 || iNome < 0 || iUf < 0) throw new Error('CSV de municípios sem as colunas esperadas');
+  return mun.slice(1).map((l) => {
+    const c = linhaCsv(l);
+    return { id: Number(c[iId]), nome: c[iNome], uf: ufPorCodigo.get(c[iUf]) };
+  }).filter((m) => m.id && m.nome && m.uf);
+}
