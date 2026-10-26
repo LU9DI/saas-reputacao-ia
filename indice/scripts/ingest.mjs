@@ -22,7 +22,13 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { bloqueioTokenWebdav } from './lib/ingest-config.mjs';
+import {
+  bloqueioTokenWebdav,
+  configuracaoAuthCurl,
+  mascararUrl,
+  precisaAuthWebdav,
+  redigirSegredo,
+} from './lib/ingest-config.mjs';
 import {
   parseLinha,
   validarLayout,
@@ -45,31 +51,52 @@ const TMP = path.join(raiz, '.tmp');
 const MINIMO = Number(args.min || 10);
 // Compartilhamento público (Nextcloud) da Receita; o acesso por WebDAV usa o token do link público como usuário
 // e senha vazia. Confirmado por listagem do diretório em 2026-10-25; o endereço antigo (dadosabertos.rfb.gov.br) expira.
+// O token vem exclusivamente do ambiente (segredo do Actions) e nunca é escrito em URL, argv ou log.
 const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/public.php/webdav';
-const TOKEN_COMPARTILHAMENTO = process.env.INDICE_RFB_SHARE_TOKEN || '';
-const authCurl = (url) => (url.includes('/public.php/webdav') && TOKEN_COMPARTILHAMENTO ? ['-u', `${TOKEN_COMPARTILHAMENTO}:`] : []);
+const TOKEN_COMPARTILHAMENTO = (process.env.INDICE_RFB_SHARE_TOKEN || '').trim();
+// Filhos (curl/unzip) não precisam do segredo no ambiente: a autenticação vai por stdin.
+const AMBIENTE_FILHO = { ...process.env };
+delete AMBIENTE_FILHO.INDICE_RFB_SHARE_TOKEN;
+const authCurl = (url) => {
+  if (!precisaAuthWebdav(url) || !TOKEN_COMPARTILHAMENTO) return { args: [], stdin: null };
+  // curl lê `user = "TOKEN:"` do stdin (-K -), mantendo o segredo fora de argv.
+  return { args: ['-K', '-'], stdin: configuracaoAuthCurl(TOKEN_COMPARTILHAMENTO) };
+};
 const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos que isso é suspeito
-const log = (...m) => console.log('[ingest]', ...m);
+const log = (...m) => console.log('[ingest]', ...m.map((v) => redigirSegredo(v, TOKEN_COMPARTILHAMENTO)));
 const falha = (msg) => {
-  console.error(`[ingest] ERRO: ${msg}`);
+  console.error(`[ingest] ERRO: ${redigirSegredo(msg, TOKEN_COMPARTILHAMENTO)}`);
   process.exit(1);
 };
 
-function executar(cmd, cmdArgs) {
+function executar(cmd, cmdArgs, { stdin = null } = {}) {
   return new Promise((resolve, reject) => {
-    const p = spawn(cmd, cmdArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
+    const p = spawn(cmd, cmdArgs, { stdio: [stdin === null ? 'ignore' : 'pipe', 'pipe', 'pipe'], env: AMBIENTE_FILHO });
     let saida = '';
     let erro = '';
     p.stdout.on('data', (d) => (saida += d));
     p.stderr.on('data', (d) => (erro += d));
     p.on('error', reject);
-    p.on('close', (code) => (code === 0 ? resolve(saida) : reject(new Error(`${cmd} saiu com ${code}: ${erro.slice(0, 400)}`))));
+    if (stdin !== null) {
+      p.stdin.on('error', () => {}); // curl pode encerrar antes de consumir toda a configuração
+      p.stdin.end(stdin);
+    }
+    p.on('close', (code) =>
+      code === 0
+        ? resolve(saida)
+        : reject(new Error(redigirSegredo(`${cmd} saiu com ${code}: ${erro.slice(0, 400)}`, TOKEN_COMPARTILHAMENTO))),
+    );
   });
 }
 
 async function statusHttp(url) {
+  const auth = authCurl(url);
   try {
-    const out = await executar('curl', [...authCurl(url), '-sS', '-I', '-L', '-m', '30', '-o', '/dev/null', '-w', '%{http_code}', url]);
+    const out = await executar(
+      'curl',
+      [...auth.args, '-sS', '-I', '-L', '-m', '30', '-o', '/dev/null', '-w', '%{http_code}', url],
+      { stdin: auth.stdin },
+    );
     return Number(out.trim());
   } catch {
     return 0;
@@ -77,13 +104,18 @@ async function statusHttp(url) {
 }
 
 async function baixar(url, destino) {
-  log('baixando', url);
-  await executar('curl', [...authCurl(url), '-fL', '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
+  log('baixando', mascararUrl(url, TOKEN_COMPARTILHAMENTO));
+  const auth = authCurl(url);
+  await executar(
+    'curl',
+    [...auth.args, '-fL', '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url],
+    { stdin: auth.stdin },
+  );
 }
 
 /** Lê um zip com um CSV (latin1) linha a linha, sem descompactar em disco. */
 async function lerCsvZip(zip, aoLer) {
-  const filho = spawn('unzip', ['-p', zip], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const filho = spawn('unzip', ['-p', zip], { stdio: ['ignore', 'pipe', 'pipe'], env: AMBIENTE_FILHO });
   let erro = '';
   filho.stderr.on('data', (d) => (erro += d));
   filho.stdout.setEncoding('latin1');
@@ -106,6 +138,7 @@ async function main() {
   const segmentos = JSON.parse(await readFile(path.join(raiz, 'config', 'segments.json'), 'utf8'));
   const local = args.local ? path.resolve(args.local) : null;
   const baseUrl = (args['base-url'] || BASE_PADRAO).replace(/\/+$/, '');
+  // Falha antes de criar diretórios e antes de qualquer chamada de rede.
   const bloqueio = bloqueioTokenWebdav({ baseUrl, token: TOKEN_COMPARTILHAMENTO, local: Boolean(local) });
   if (bloqueio) falha(bloqueio);
   await mkdir(TMP, { recursive: true });
