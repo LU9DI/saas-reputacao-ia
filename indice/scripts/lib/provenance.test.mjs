@@ -29,4 +29,10 @@ test('rejeita hash inválido, arquivo obrigatório ausente e URL com credencial'
 test('exige declaração histórica sem hashes inventados e rejeita proveniência ausente', () => {
   assert.ok(validarProveniencia({}).length);
   assert.ok(validarProveniencia({ proveniencia: { status: 'nao_capturada_na_geracao', motivo: 'legado', arquivosFonte } }).length);
+  assert.ok(validarProveniencia({ proveniencia: { status: 'nao_capturada_na_geracao', motivo: 'legado', arquivosFonte: 'hashes ausentes' } }).length);
+});
+test('exige url explícita: null para fonte local ou URL HTTPS segura', () => {
+  const invalid = structuredClone(base);
+  delete invalid.proveniencia.arquivosFonte[1].url;
+  assert.match(validarProveniencia(invalid).join(' '), /\.url deve ser HTTPS.*null explícito/i);
 });
