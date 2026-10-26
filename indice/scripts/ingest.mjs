@@ -27,6 +27,7 @@ import {
   validarLayout,
   criarAgregador,
   ibgeParaLista,
+  municipiosDeCsv,
   resolverMunicipios,
 } from './lib/aggregate.mjs';
 
@@ -41,7 +42,11 @@ const args = Object.fromEntries(
 const OUT = path.resolve(args.out || path.join(raiz, 'data'));
 const TMP = path.join(raiz, '.tmp');
 const MINIMO = Number(args.min || 10);
-const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj';
+// Compartilhamento público (Nextcloud) da Receita; o acesso por WebDAV usa o token do link público como usuário
+// e senha vazia. Confirmado por listagem do diretório em 2026-10-25; o endereço antigo (dadosabertos.rfb.gov.br) expira.
+const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/public.php/webdav';
+const TOKEN_COMPARTILHAMENTO = 'YggdBLfdninEJX9';
+const authCurl = (url) => (url.includes('/public.php/webdav') ? ['-u', `${TOKEN_COMPARTILHAMENTO}:`] : []);
 const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos que isso é suspeito
 const log = (...m) => console.log('[ingest]', ...m);
 const falha = (msg) => {
@@ -63,7 +68,7 @@ function executar(cmd, cmdArgs) {
 
 async function statusHttp(url) {
   try {
-    const out = await executar('curl', ['-sS', '-I', '-L', '-m', '30', '-o', '/dev/null', '-w', '%{http_code}', url]);
+    const out = await executar('curl', [...authCurl(url), '-sS', '-I', '-L', '-m', '30', '-o', '/dev/null', '-w', '%{http_code}', url]);
     return Number(out.trim());
   } catch {
     return 0;
@@ -72,7 +77,7 @@ async function statusHttp(url) {
 
 async function baixar(url, destino) {
   log('baixando', url);
-  await executar('curl', ['-fL', '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
+  await executar('curl', [...authCurl(url), '-fL', '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
 }
 
 /** Lê um zip com um CSV (latin1) linha a linha, sem descompactar em disco. */
@@ -133,6 +138,31 @@ async function main() {
   };
   const limpar = async (z) => z.temporario && rm(z.caminho, { force: true });
 
+  // IBGE primeiro: se a API falhar, o erro aparece em segundos e não depois de horas de processamento.
+  // Nomes com acento vêm do IBGE (obrigatório: sem isso os títulos saem sem acento).
+  let jsonIbge;
+  let listaAlternativa = null;
+  if (args['ibge-arquivo']) {
+    log('lendo municípios do IBGE de', args['ibge-arquivo']);
+    jsonIbge = JSON.parse(await readFile(path.resolve(args['ibge-arquivo']), 'utf8'));
+  } else {
+    log('consultando municípios no IBGE');
+    try {
+      const bruto = await executar('curl', ['-fsSL', '--retry', '2', '--retry-delay', '5', '--retry-all-errors', '-m', '25', 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome']);
+      jsonIbge = JSON.parse(bruto);
+    } catch (e) {
+      log('IBGE indisponível (', String(e.message).split('\n')[0], ') -> usando conjunto público kelvins/municipios-brasileiros (códigos e nomes do IBGE)');
+      const raiz = 'https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/csv';
+      const [csvMun, csvUf] = await Promise.all(
+        ['municipios.csv', 'estados.csv'].map((f) => executar('curl', ['-fsSL', '--retry', '4', '--retry-delay', '5', '-m', '60', `${raiz}/${f}`])),
+      );
+      listaAlternativa = municipiosDeCsv(csvMun, csvUf);
+    }
+  }
+  const ibge = listaAlternativa || ibgeParaLista(jsonIbge);
+  if (ibge.length < 5000 && !args.sintetico) falha(`IBGE trouxe só ${ibge.length} municípios (esperado ~5.570).`);
+  log('municípios no IBGE:', ibge.length);
+
   // 2) Descrições oficiais dos CNAEs (7 dígitos) e nomes dos municípios (código da Receita)
   const descricoes = new Map();
   const cn = await zipDe('Cnaes.zip');
@@ -182,25 +212,13 @@ async function main() {
     const c = agregador.contagem();
     log(`${arq} ok | lidas: ${c.lidas.toLocaleString('pt-BR')} | no escopo: ${c.usadas.toLocaleString('pt-BR')}`);
   }
-  const { lidas, usadas } = agregador.contagem();
+  const { lidas, usadas, malformadas } = agregador.contagem();
+  log(`linhas malformadas descartadas: ${malformadas.toLocaleString('pt-BR')} de ${lidas.toLocaleString('pt-BR')}`);
+  if (malformadas > lidas * 0.001) falha(`linhas malformadas demais (${malformadas} de ${lidas}, limite 0,1%). O layout do arquivo pode ter mudado.`);
   if (lidas < LINHAS_MINIMAS && !args.sintetico) {
     falha(`apenas ${lidas} linhas lidas (mínimo esperado ${LINHAS_MINIMAS}). A base parece incompleta.`);
   }
   if (!usadas) falha('nenhum estabelecimento caiu nos segmentos configurados.');
-
-  // 4) Nomes com acento via IBGE (obrigatório: sem isso os títulos saem sem acento)
-  let jsonIbge;
-  if (args['ibge-arquivo']) {
-    log('lendo municípios do IBGE de', args['ibge-arquivo']);
-    jsonIbge = JSON.parse(await readFile(path.resolve(args['ibge-arquivo']), 'utf8'));
-  } else {
-    log('consultando municípios no IBGE');
-    const resp = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome');
-    if (!resp.ok) falha(`IBGE respondeu HTTP ${resp.status}`);
-    jsonIbge = await resp.json();
-  }
-  const ibge = ibgeParaLista(jsonIbge);
-  if (ibge.length < 5000 && !args.sintetico) falha(`IBGE trouxe só ${ibge.length} municípios (esperado ~5.570).`);
 
   // 5) Monta saída
   const pares = [...agregador.dados.keys()].map((k) => {
