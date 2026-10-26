@@ -32,7 +32,15 @@ jobs:
         run: |
           ARGS=""
           if [ -n "${{ inputs.competencia }}" ]; then ARGS="--competencia=${{ inputs.competencia }}"; fi
-          node scripts/ingest.mjs $ARGS
+          set +e
+          node scripts/ingest.mjs $ARGS 2>&1 | tee /tmp/ingest.log
+          CODE=${PIPESTATUS[0]}
+          if [ "$CODE" -ne 0 ]; then
+            # Anotação legível pela API (o download do log completo pode ser bloqueado).
+            MSG=$(tail -n 25 /tmp/ingest.log | cut -c1-300 | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=Falha na ingestão::${MSG}"
+            exit "$CODE"
+          fi
       - name: Abrir PR
         env:
           GH_TOKEN: ${{ github.token }}
