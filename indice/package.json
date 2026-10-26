@@ -11,6 +11,7 @@
     "ingest": "node scripts/ingest.mjs",
     "test": "node --test \"scripts/lib/*.test.mjs\"",
     "test:seo": "node scripts/test-seo.mjs",
+    "audit:indexability": "node scripts/audit-indexability.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -22,6 +22,7 @@ export type Meta = {
   linhasLidas?: number;
   linhasNoEscopo?: number;
   arquivosEstabelecimentos?: number;
+  municipiosSemNomeIbge?: number;
 };
 export type Municipio = { uf: string; slug: string; nome: string; ibge: number | null };
 type StatsUF = Record<string, Record<string, Registro>>; // município -> segmento -> registro
@@ -161,6 +162,71 @@ export function ufsComDados(): { sigla: string; nome: string; municipios: number
       return { sigla: uf, nome: UFS[uf], municipios: lista.length, estabelecimentos: lista.reduce((t, x) => t + x.total, 0) };
     })
     .filter((u) => u.municipios > 0);
+}
+
+export type CoberturaSegmento = {
+  /** Ativos no segmento em todos os municípios da base. */
+  total: number;
+  /** Municípios com ao menos um ativo do segmento (inclui os que não têm página). */
+  municipiosNoSegmento: number;
+  /** Municípios com página publicada (ativos >= mínimo). */
+  municipiosComPagina: number;
+  /** Ativos apenas nos municípios com página publicada. */
+  totalNasPaginas: number;
+};
+
+/** Cobertura de um segmento: universo completo da base vs. células efetivamente publicadas. */
+export function coberturaDoSegmento(seg: string, uf?: string): CoberturaSegmento {
+  const s = carregar();
+  const r = s.ranking.get(seg);
+  if (!r) return { total: 0, municipiosNoSegmento: 0, municipiosComPagina: 0, totalNasPaginas: 0 };
+  let total = 0;
+  let municipiosNoSegmento = 0;
+  let municipiosComPagina = 0;
+  let totalNasPaginas = 0;
+  for (const p of r.ordenado) {
+    if (uf && p.uf !== uf) continue;
+    total += p.a;
+    municipiosNoSegmento += 1;
+    if (p.a >= s.meta.minimoParaIndexar) {
+      municipiosComPagina += 1;
+      totalNasPaginas += p.a;
+    }
+  }
+  return { total, municipiosNoSegmento, municipiosComPagina, totalNasPaginas };
+}
+
+export type ResumoIndice = {
+  ufs: number;
+  municipiosComPagina: number;
+  segmentos: number;
+  /** Soma dos nove segmentos em todos os municípios da base. */
+  ativosNosSegmentos: number;
+  /** Soma apenas das células publicadas (município x segmento com página). */
+  ativosNasPaginas: number;
+};
+
+/** Números da home; distingue o universo completo do que está publicado. */
+export function resumoDoIndice(): ResumoIndice {
+  const s = carregar();
+  const ufs = ufsComDados();
+  const municipios = new Set<string>();
+  let ativosNasPaginas = 0;
+  for (const u of ufs) {
+    for (const m of municipiosDaUF(u.sigla)) {
+      municipios.add(`${u.sigla}/${m.mun.slug}`);
+      ativosNasPaginas += m.total;
+    }
+  }
+  let ativosNosSegmentos = 0;
+  for (const seg of s.meta.segmentos) ativosNosSegmentos += totalDoSegmento(seg.slug);
+  return {
+    ufs: ufs.length,
+    municipiosComPagina: municipios.size,
+    segmentos: s.meta.segmentos.length,
+    ativosNosSegmentos,
+    ativosNasPaginas,
+  };
 }
 
 export type Pagina = {

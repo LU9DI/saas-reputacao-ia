@@ -17,3 +17,41 @@ pelo autor** (o ambiente de desenvolvimento não acessa o portal): a primeira ex
 ## Páginas
 `/` · `/[uf]` · `/[uf]/[municipio]` · `/[uf]/[municipio]/[segmento]` · `/metodologia` · `/sitemap-index.xml`
 Só existem combinações com >= `minimoParaIndexar` ativos (padrão 10). As demais devolvem 404.
+
+## Conteúdo e citabilidade (AEO)
+- Cada página tem H1 factual, definição curta, tabelas HTML com `caption`, unidade, período e denominador,
+  fonte primária linkada, data real de geração, FAQ visível, bloco de citação e JSON-LD
+  (`Dataset`, `BreadcrumbList` e `FAQPage`).
+- Competência, janela e data de geração vêm de `data/meta.json`; nenhuma data é inventada no código.
+- O Índice delimita o universo e diz o que não mede: não é o total de empresas brasileiras, não mede
+  reputação, faturamento ou qualidade, e não soma bases como Consumidor.gov.br ou avaliações do Google.
+- Combinações abaixo do mínimo devolvem 404 e ficam fora do sitemap. Não há `noindex` em massa nem
+  consolidação de URLs sem evidência.
+- A home revalida a cada 24 horas; as páginas de estado, município e célula são pré-geradas no build e só
+  mudam em um novo deploy. A data de geração exibida é a da ingestão, não a do acesso.
+
+## Auditoria de indexabilidade
+    npm run audit:indexability
+    npm run audit:indexability -- --json
+Lê os mesmos dados do app, sem rede, e mostra os estratos (home, metodologia, UF, município e célula),
+a cobertura por segmento e por UF, a distribuição de páginas por município, as células finas e as
+listagens profundas. A saída é diagnóstico: nenhuma URL é removida ou marcada como `noindex`
+automaticamente.
+
+## Testes
+    npm test
+    npm run typecheck
+    npm run build
+    npm run test:seo
+    npm run audit:indexability
+`npm run build` roda `check-data.mjs` antes do Next e recusa base sintética, metadados incoerentes ou
+estatísticas inconsistentes. `test:seo` sobe o build de produção em `127.0.0.1:3101` e valida canonical,
+redirects, JSON-LD, datas, tabelas semânticas, 404 abaixo do mínimo e completude do sitemap. Não toca
+produção.
+
+## Medição
+Publicar, enviar `https://filtraai.com/indice/sitemap-index.xml` e acompanhar o Search Console por
+estrato (home, metodologia, UF, município e célula), usando a data de geração como referência. O
+baseline de 26/10/2026 tinha 28.607 URLs no sitemap do Índice e três URLs prioritárias com solicitação
+de indexação aceita, ainda sem indexação confirmada. O Índice não mede citações em IA nem tráfego
+orgânico por conta própria; não trate ausência de medição como resultado.

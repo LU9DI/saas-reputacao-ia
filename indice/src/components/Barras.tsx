@@ -1,7 +1,7 @@
 import { n } from '@/lib/format';
 
 /** Gráfico de barras em SVG puro, com tabela equivalente para leitores de tela e rastreadores. */
-export function Barras({ serie, anoParcial, descricao }: { serie: Record<string, number>; anoParcial: number; descricao: string }) {
+export function Barras({ serie, anoParcial, descricao }: { serie: Record<string, number>; anoParcial?: number; descricao: string }) {
   const anos = Object.keys(serie).map(Number).sort((a, b) => a - b);
   if (!anos.length) return null;
   const max = Math.max(...anos.map((a) => serie[a]), 1);
@@ -30,14 +30,18 @@ export function Barras({ serie, anoParcial, descricao }: { serie: Record<string,
       <details>
         <summary>Ver os valores em tabela</summary>
         <table>
+          <caption>{descricao} A série mostra aberturas por ano e não representa o estoque ativo.</caption>
           <thead>
-            <tr><th>Ano de início</th><th className="num">Estabelecimentos abertos</th></tr>
+            <tr><th scope="col">Ano de início</th><th scope="col" className="num">Estabelecimentos abertos<small>unidades</small></th></tr>
           </thead>
           <tbody>
             {anos.map((ano) => (
-              <tr key={ano}><td>{ano}{ano === anoParcial ? ' (parcial)' : ''}</td><td className="num">{n(serie[ano])}</td></tr>
+              <tr key={ano}><th scope="row">{ano}{ano === anoParcial ? ' (parcial)' : ''}</th><td className="num">{n(serie[ano])}</td></tr>
             ))}
           </tbody>
+          <tfoot>
+            <tr><th scope="row">Total na série</th><td className="num">{n(anos.reduce((total, ano) => total + serie[ano], 0))}</td></tr>
+          </tfoot>
         </table>
       </details>
     </div>
