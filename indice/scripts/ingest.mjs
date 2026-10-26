@@ -22,6 +22,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { descreverArquivoFonte } from './lib/source-manifest.mjs';
 import {
   bloqueioTokenWebdav,
   configuracaoAuthCurl,
@@ -138,6 +139,7 @@ async function main() {
   const segmentos = JSON.parse(await readFile(path.join(raiz, 'config', 'segments.json'), 'utf8'));
   const local = args.local ? path.resolve(args.local) : null;
   const baseUrl = (args['base-url'] || BASE_PADRAO).replace(/\/+$/, '');
+  // Sem o token, `main` aborta antes de qualquer download (ver lib/ingest-config.mjs).
   // Falha antes de criar diretórios e antes de qualquer chamada de rede.
   const bloqueio = bloqueioTokenWebdav({ baseUrl, token: TOKEN_COMPARTILHAMENTO, local: Boolean(local) });
   if (bloqueio) falha(bloqueio);
@@ -162,14 +164,30 @@ async function main() {
   }
   log('competência', competencia);
   const urlDe = (arq) => `${baseUrl}/${competencia}/${arq}`;
+  const arquivosFonte = [];
+  const tipoFonte = (nome) => nome.startsWith('Estabelecimentos') ? 'estabelecimentos' : nome === 'Cnaes.zip' ? 'cnaes' : nome === 'Municipios.zip' ? 'municipios' : 'outro';
   const zipDe = async (arq) => {
+    let registro;
     if (local) {
       const p = path.join(local, arq);
       if (!existsSync(p)) falha(`arquivo ausente em --local: ${p}`);
+      registro = await descreverArquivoFonte({ caminho: p, nome: arq, tipo: tipoFonte(arq) });
+      arquivosFonte.push(registro);
+      log(`fonte ${arq}: ${registro.bytes.toLocaleString('pt-BR')} bytes | sha256 ${registro.sha256}`);
       return { caminho: p, temporario: false };
     }
     const destino = path.join(TMP, arq);
-    await baixar(urlDe(arq), destino);
+    const url = urlDe(arq);
+    await baixar(url, destino);
+    // A proveniência registra a URL sem credenciais/parâmetros sensíveis.
+    registro = await descreverArquivoFonte({
+      caminho: destino,
+      nome: arq,
+      tipo: tipoFonte(arq),
+      url: mascararUrl(url, TOKEN_COMPARTILHAMENTO),
+    });
+    arquivosFonte.push(registro);
+    log(`fonte ${arq}: ${registro.bytes.toLocaleString('pt-BR')} bytes | sha256 ${registro.sha256}`);
     return { caminho: destino, temporario: true };
   };
   const limpar = async (z) => z.temporario && rm(z.caminho, { force: true });
@@ -301,6 +319,7 @@ async function main() {
     minimoParaIndexar: MINIMO,
     segmentos: segmentos.map((s) => ({ slug: s.slug, nome: s.nome, curto: s.curto, classes: s.classes })),
     arquivosEstabelecimentos: arquivos,
+    arquivosFonte,
     linhasLidas: lidas,
     linhasNoEscopo: usadas,
     municipiosSemNomeIbge: semMatch.length,
