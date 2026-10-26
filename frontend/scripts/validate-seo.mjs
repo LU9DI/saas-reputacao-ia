@@ -40,7 +40,7 @@ check(plansLayout.includes("canonical: 'https://filtraai.com/planos'"), 'Plans c
 check(plansLayout.includes("url: 'https://filtraai.com/planos'"), 'Plans Open Graph URL must point to /planos');
 check(!plansPage.includes('window.location.replace'), 'Plans page must render content instead of redirecting client-side');
 check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pricing cards');
-check(robots.includes("const base = 'https://filtraai.com'") && robots.includes('sitemap: `${base}/sitemap.xml`'), 'Next robots metadata must reference the canonical sitemap URL');
+check(robots.includes("const base = 'https://filtraai.com'") && robots.includes('sitemap: [`${base}/sitemap.xml`, `${base}/indice/sitemap-index.xml`]'), 'Next robots metadata must reference both the canonical site sitemap and the public index sitemap');
 check(robots.includes("disallow: ['/api/']"), 'robots metadata must disallow API endpoints only');
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
 check(localizedBlogs.includes('const translatedFamilies') && localizedBlogs.includes("if ('pt' in family)"), 'Translated blog metadata must cross-link all available languages without inventing a Portuguese equivalent');
