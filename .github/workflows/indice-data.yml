@@ -37,7 +37,9 @@ jobs:
         run: |
           OUT=""
           add() { OUT="${OUT}$1%0A"; }
+          esc() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
           T="$INDICE_RFB_SHARE_TOKEN"
+          if [ -n "$T" ]; then echo "::add-mask::$T"; fi
           if [ -z "$T" ]; then
             add "BLOQUEADO: INDICE_RFB_SHARE_TOKEN não configurado; testes do link público/WebDAV foram pulados."
           fi
@@ -46,14 +48,16 @@ jobs:
             c=$(curl -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' "$u" 2>/dev/null | tr -d '\n' | cut -c1-120)
             add "$c <- $u"
             if [ -n "$T" ]; then
-              # O token é credencial e faz parte da URL do link público: nunca ecoe a URL.
+              # O token é credencial e faz parte da URL do link público: leve a URL
+              # pelo stdin do curl (-K -) e nunca ecoe o endereço autenticado.
               u="https://arquivos.receitafederal.gov.br/index.php/s/$T/download?path=%2F$m&files=Cnaes.zip"
-              c=$(curl -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' "$u" 2>/dev/null | tr -d '\n' | cut -c1-120)
+              c=$(printf 'url = "%s"\n' "$(esc "$u")" | curl -K - -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' 2>/dev/null | tr -d '\n' | cut -c1-120)
               add "$c <- link público (token omitido), competência $m"
             fi
           done
           if [ -n "$T" ]; then
-            L=$(curl -sS -m 30 -u "$T:" -X PROPFIND -H 'Depth: 1' https://arquivos.receitafederal.gov.br/public.php/webdav/ 2>&1 | grep -o '<d:href>[^<]*' | sed 's/<d:href>//' | head -12 | tr '\n' ' ')
+            # Credencial via stdin (-K -), stderr descartado: nada do token vai para o log.
+            L=$(printf 'user = "%s:"\n' "$(esc "$T")" | curl -sS -m 30 -K - -X PROPFIND -H 'Depth: 1' https://arquivos.receitafederal.gov.br/public.php/webdav/ 2>/dev/null | grep -o '<d:href>[^<]*' | sed 's/<d:href>//' | head -12 | tr '\n' ' ')
             add "webdav raiz: ${L:-vazio}"
           fi
           echo "::error title=Sondagem::${OUT}"
@@ -63,6 +67,11 @@ jobs:
           INDICE_RFB_SHARE_TOKEN: ${{ secrets.INDICE_RFB_SHARE_TOKEN }}
         working-directory: indice
         run: |
+          if [ -n "$INDICE_RFB_SHARE_TOKEN" ]; then echo "::add-mask::$INDICE_RFB_SHARE_TOKEN"; fi
+          if [ -z "$INDICE_RFB_SHARE_TOKEN" ]; then
+            echo "::error title=Ingestão::INDICE_RFB_SHARE_TOKEN não configurado; nenhum download foi iniciado."
+            exit 1
+          fi
           ARGS=""
           if [ -n "${{ inputs.competencia }}" ]; then ARGS="--competencia=${{ inputs.competencia }}"; fi
           set +e
