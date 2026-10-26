@@ -11,7 +11,7 @@
  */
 
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 
@@ -23,6 +23,7 @@ const BASE_PATH = '/indice';
 const CANONICAL_BASE = 'https://filtraai.com/indice';
 const NEXT_BIN = resolve(ROOT, 'node_modules/next/dist/bin/next');
 const BUILD_ID = resolve(ROOT, '.next/BUILD_ID');
+const DATA_DIR = resolve(process.env.INDICE_DATA_DIR || resolve(ROOT, 'data'));
 
 const failures = [];
 const serverLog = [];
@@ -67,6 +68,7 @@ async function request(path, { method = 'GET', follow = false } = {}) {
       status: response.status,
       location,
       contentType: response.headers.get('content-type') || '',
+      robotsHeader: response.headers.get('x-robots-tag') || '',
       body,
     });
 
@@ -77,6 +79,32 @@ async function request(path, { method = 'GET', follow = false } = {}) {
   return { chain, final: chain.at(-1) };
 }
 
+function decodeEntities(text) {
+  return text
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&');
+}
+
+function parseJsonLd(html) {
+  const jsonLd = [];
+  const invalid = [];
+  const matches = [...html.matchAll(/<script\b[^>]*\btype\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+  for (const [i, match] of matches.entries()) {
+    try {
+      jsonLd.push(JSON.parse(match[1]));
+    } catch (error) {
+      invalid.push(`bloco ${i + 1}: ${error.message}`);
+    }
+  }
+  return { jsonLd, invalid, count: matches.length };
+}
+
 function parseHtml(html) {
   const tags = [...html.matchAll(/<link\b[^>]*>/gi)].map((match) => match[0]);
   const canonicalTag = tags.find((tag) => /\brel\s*=\s*["']canonical["']/i.test(tag));
@@ -85,8 +113,49 @@ function parseHtml(html) {
   const metas = [...html.matchAll(/<meta\b[^>]*>/gi)].map((match) => match[0]);
   const robotsTag = metas.find((tag) => /\bname\s*=\s*["']robots["']/i.test(tag));
   const robots = robotsTag?.match(/\bcontent\s*=\s*["']([^"']+)["']/i)?.[1] ?? null;
+  const descriptionTag = metas.find((tag) => /\bname\s*=\s*["']description["']/i.test(tag));
+  const description = descriptionTag?.match(/\bcontent\s*=\s*["']([^"']*)["']/i)?.[1] ?? null;
 
-  return { canonical, robots };
+  const title = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? null;
+  const h1s = [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)].map((match) => match[1]);
+  const lang = html.match(/<html\b[^>]*\blang\s*=\s*["']([^"']+)["']/i)?.[1] ?? null;
+
+  const tables = [...html.matchAll(/<table\b[^>]*>[\s\S]*?<\/table>/gi)].map((match) => {
+    const table = match[0];
+    const caption = table.match(/<caption\b[^>]*>([\s\S]*?)<\/caption>/i)?.[1] ?? '';
+    return {
+      caption: decodeEntities(caption.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim(),
+      hasThead: /<thead\b/i.test(table),
+      hasTbody: /<tbody\b/i.test(table),
+      hasTfoot: /<tfoot\b/i.test(table),
+      colHeaders: [...table.matchAll(/<th\b[^>]*\bscope\s*=\s*["']col["']/gi)].length,
+      rowHeaders: [...table.matchAll(/<th\b[^>]*\bscope\s*=\s*["']row["']/gi)].length,
+    };
+  });
+
+  const text = decodeEntities(
+    html
+      .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<[^>]+>/g, ' '),
+  )
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const jsonLd = parseJsonLd(html);
+  return {
+    canonical,
+    robots,
+    description,
+    title: title ? decodeEntities(title).replace(/\s+/g, ' ').trim() : null,
+    h1s: h1s.map((h1) => decodeEntities(h1.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim()),
+    lang,
+    tables,
+    text,
+    jsonLd: jsonLd.jsonLd,
+    jsonLdInvalid: jsonLd.invalid,
+    jsonLdCount: jsonLd.count,
+  };
 }
 
 function localPath(location, fromUrl) {
@@ -101,6 +170,314 @@ function localPath(location, fromUrl) {
 
 function sitemapLocs(xml) {
   return [...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((match) => match[1].trim());
+}
+
+function canonicalPath(path) {
+  return path === '/' ? CANONICAL_BASE : `${CANONICAL_BASE}${path}`;
+}
+
+function dataCurta(iso) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : iso;
+}
+
+function dataTime(html) {
+  // React 19 emite o atributo como dateTime no HTML estático; em HTML o nome é
+  // case-insensitive, então o teste aceita qualquer caixa.
+  return html.match(/<time\b[^>]*\bdatetime\s*=\s*["']([^"']+)["']/i)?.[1] ?? null;
+}
+
+function competenceLong(ym) {
+  const [year, month] = ym.split('-').map(Number);
+  return new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+    new Date(Date.UTC(year, month - 1, 1)),
+  );
+}
+
+function lerJson(relative) {
+  return JSON.parse(readFileSync(resolve(DATA_DIR, relative), 'utf8'));
+}
+
+function carregarDados() {
+  if (!existsSync(resolve(DATA_DIR, 'meta.json'))) {
+    console.error(`Dados não encontrados em ${DATA_DIR}. Execute npm run build antes de npm run test:seo.`);
+    process.exit(1);
+  }
+  const meta = lerJson('meta.json');
+  const municipios = lerJson('municipios.json');
+  const stats = {};
+  const statsDir = resolve(DATA_DIR, 'stats');
+  for (const file of readdirSync(statsDir).filter((name) => /^[A-Z]{2}\.json$/.test(name)).sort()) {
+    stats[file.slice(0, 2)] = lerJson(`stats/${file}`);
+  }
+  return { meta, municipios, stats };
+}
+
+function caminhosEsperados({ meta, municipios, stats }) {
+  const porChave = new Map(municipios.map((municipio) => [`${municipio.uf}/${municipio.slug}`, municipio]));
+  const minimo = meta.minimoParaIndexar;
+  const paths = ['/', '/metodologia'];
+  for (const uf of Object.keys(stats).sort()) {
+    let ufTemPagina = false;
+    const municipiosPublicados = [];
+    for (const [slug, porSegmento] of Object.entries(stats[uf])) {
+      if (!porChave.has(`${uf}/${slug}`)) continue;
+      const segmentosPublicados = meta.segmentos
+        .map((segmento) => segmento.slug)
+        .filter((slugSegmento) => {
+          const registro = porSegmento[slugSegmento];
+          return registro && Number.isInteger(registro.a) && registro.a >= minimo;
+        });
+      if (!segmentosPublicados.length) continue;
+      ufTemPagina = true;
+      municipiosPublicados.push({ slug, segmentosPublicados });
+    }
+    if (!ufTemPagina) continue;
+    const ufMinuscula = uf.toLowerCase();
+    paths.push(`/${ufMinuscula}`);
+    for (const { slug, segmentosPublicados } of municipiosPublicados) {
+      paths.push(`/${ufMinuscula}/${slug}`);
+      for (const segmento of segmentosPublicados) paths.push(`/${ufMinuscula}/${slug}/${segmento}`);
+    }
+  }
+  return paths;
+}
+
+function escolherAmostras({ meta, municipios, stats }) {
+  const porChave = new Map(municipios.map((municipio) => [`${municipio.uf}/${municipio.slug}`, municipio]));
+  const minimo = meta.minimoParaIndexar;
+  const cellsByUF = new Map();
+  let abaixoDoMinimo = null;
+
+  for (const uf of Object.keys(stats).sort()) {
+    const celulas = [];
+    for (const [slug, porSegmento] of Object.entries(stats[uf])) {
+      const municipio = porChave.get(`${uf}/${slug}`);
+      if (!municipio) continue;
+      for (const segmento of meta.segmentos) {
+        const registro = porSegmento[segmento.slug];
+        if (!registro || !Number.isInteger(registro.a) || registro.a <= 0) continue;
+        if (registro.a >= minimo) {
+          celulas.push({
+            uf,
+            municipio: slug,
+            municipioNome: municipio.nome,
+            segmento: segmento.slug,
+            segmentoNome: segmento.nome,
+            ativos: registro.a,
+            abertos: registro.ab,
+            baixas: registro.ba,
+            anos: Object.keys(registro.ano || {}).length,
+          });
+        } else if (!abaixoDoMinimo) {
+          abaixoDoMinimo = {
+            uf,
+            municipio: slug,
+            municipioNome: municipio.nome,
+            segmento: segmento.slug,
+            segmentoNome: segmento.nome,
+            ativos: registro.a,
+          };
+        }
+      }
+    }
+    if (celulas.length) cellsByUF.set(uf, celulas);
+  }
+
+  const [ufCampeao, celulasCampeao] = [...cellsByUF.entries()].sort(
+    (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]),
+  )[0];
+  const porMunicipio = new Map();
+  for (const celula of celulasCampeao) {
+    const grupo = porMunicipio.get(celula.municipio) || [];
+    grupo.push(celula);
+    porMunicipio.set(celula.municipio, grupo);
+  }
+  const [municipioCampeao, celulasDoMunicipio] = [...porMunicipio.entries()].sort(
+    (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]),
+  )[0];
+
+  return {
+    uf: ufCampeao,
+    celulas: celulasCampeao,
+    municipio: municipioCampeao,
+    municipioNome: celulasDoMunicipio[0].municipioNome,
+    celulasDoMunicipio,
+    celula: celulasDoMunicipio[0],
+    outraCelula: celulasDoMunicipio.find((celula) => celula.segmento !== celulasDoMunicipio[0].segmento) || null,
+    abaixoDoMinimo,
+  };
+}
+
+function todosOsBlocos(meta) {
+  return meta.jsonLd.flatMap((bloco) => (Array.isArray(bloco) ? bloco : [bloco]));
+}
+
+function conferirJsonLd(nome, meta) {
+  check(`${nome}: todos os JSON-LD são JSON válido`, meta.jsonLdInvalid.length === 0, meta.jsonLdInvalid.join('; '));
+  check(`${nome}: página tem JSON-LD`, meta.jsonLdCount > 0, String(meta.jsonLdCount));
+
+  const blocos = todosOsBlocos(meta);
+  check(
+    `${nome}: todos os blocos usam schema.org`,
+    blocos.length > 0 && blocos.every((bloco) => bloco['@context'] === 'https://schema.org'),
+  );
+  check(
+    `${nome}: não há autor Pessoa inventado`,
+    !JSON.stringify(blocos).includes('"@type":"Person"'),
+  );
+
+  const datasets = blocos.filter((bloco) => bloco['@type'] === 'Dataset');
+  const breadcrumbs = blocos.filter((bloco) => bloco['@type'] === 'BreadcrumbList');
+  const faqs = blocos.filter((bloco) => bloco['@type'] === 'FAQPage');
+
+  check(`${nome}: Dataset presente`, datasets.length === 1, String(datasets.length));
+  check(`${nome}: BreadcrumbList presente`, breadcrumbs.length === 1, String(breadcrumbs.length));
+  check(`${nome}: FAQPage presente`, faqs.length === 1, String(faqs.length));
+
+  for (const dataset of datasets) {
+    check(`${nome}: Dataset tem nome`, typeof dataset.name === 'string' && dataset.name.length > 10);
+    check(
+      `${nome}: Dataset usa a data real de geração`,
+      dataset.dateModified === META.geradoEm,
+      `${dataset.dateModified} != ${META.geradoEm}`,
+    );
+    check(
+      `${nome}: Dataset cobre a janela publicada`,
+      dataset.temporalCoverage === `${META.janela.inicio}/${META.competencia}`,
+      dataset.temporalCoverage,
+    );
+    check(
+      `${nome}: Dataset é derivado da fonte oficial`,
+      typeof dataset.isBasedOn?.url === 'string' && dataset.isBasedOn.url.startsWith('https://www.gov.br/receitafederal/'),
+      dataset.isBasedOn?.url,
+    );
+    check(`${nome}: Dataset tem variável medida`, Array.isArray(dataset.variableMeasured) && dataset.variableMeasured.length > 0);
+    check(`${nome}: Dataset está ligado à organização`, dataset.creator?.['@id'] === 'https://filtraai.com/#organization');
+    check(`${nome}: Dataset não aponta para onrender.com`, !JSON.stringify(dataset).includes('onrender.com'));
+    check(
+      `${nome}: Dataset tem cobertura espacial`,
+      typeof dataset.spatialCoverage === 'object' && typeof dataset.spatialCoverage.name === 'string' && dataset.spatialCoverage.name.length > 0,
+    );
+    check(
+      `${nome}: Dataset tem técnica de medição`,
+      typeof dataset.measurementTechnique === 'string' && /contagem/i.test(dataset.measurementTechnique),
+    );
+  }
+
+  const breadcrumb = breadcrumbs[0];
+  if (breadcrumb) {
+    const itens = breadcrumb.itemListElement;
+    check(`${nome}: breadcrumb tem itens`, Array.isArray(itens) && itens.length >= 1);
+    check(
+      `${nome}: breadcrumb numera posições em ordem`,
+      Array.isArray(itens) && itens.every((item, index) => item.position === index + 1),
+    );
+    check(
+      `${nome}: breadcrumb usa URLs canônicas`,
+      Array.isArray(itens) &&
+        itens.every(
+          (item) =>
+            item.item === 'https://filtraai.com/' ||
+            item.item === CANONICAL_BASE ||
+            (typeof item.item === 'string' && item.item.startsWith(`${CANONICAL_BASE}/`)),
+        ),
+    );
+    check(
+      `${nome}: último breadcrumb é a própria página`,
+      Array.isArray(itens) && itens.at(-1)?.item === meta.canonical,
+      `${itens?.at(-1)?.item} != ${meta.canonical}`,
+    );
+  }
+
+  const faq = faqs[0];
+  if (faq) {
+    const perguntas = faq.mainEntity;
+    check(`${nome}: FAQ tem ao menos 3 perguntas`, Array.isArray(perguntas) && perguntas.length >= 3, String(perguntas?.length));
+    check(
+      `${nome}: FAQ tem perguntas e respostas completas`,
+      Array.isArray(perguntas) &&
+        perguntas.every(
+          (item) =>
+            typeof item.name === 'string' &&
+            item.name.length > 10 &&
+            typeof item.acceptedAnswer?.text === 'string' &&
+            item.acceptedAnswer.text.length > 20,
+        ),
+    );
+    for (const pergunta of perguntas || []) {
+      check(`${nome}: pergunta do FAQ está visível no HTML`, meta.text.includes(pergunta.name), pergunta.name);
+    }
+  }
+}
+
+function conferirTabelas(nome, meta, { minimo = 1, tfoot = true, denominador = true } = {}) {
+  check(`${nome}: tem tabela HTML semântica`, meta.tables.length >= minimo, String(meta.tables.length));
+  for (const [indice, tabela] of meta.tables.entries()) {
+    check(`${nome}: tabela ${indice + 1} tem caption`, tabela.caption.length > 20, tabela.caption);
+    check(`${nome}: tabela ${indice + 1} tem thead`, tabela.hasThead);
+    check(`${nome}: tabela ${indice + 1} tem tbody`, tabela.hasTbody);
+    check(`${nome}: tabela ${indice + 1} tem cabeçalho de coluna`, tabela.colHeaders >= 2, String(tabela.colHeaders));
+    check(`${nome}: tabela ${indice + 1} tem cabeçalho de linha`, tabela.rowHeaders >= 1, String(tabela.rowHeaders));
+  }
+  if (tfoot) {
+    check(`${nome}: tabela principal tem tfoot`, meta.tables.some((tabela) => tabela.hasTfoot));
+  }
+  if (denominador) {
+    check(
+      `${nome}: tabela explicita o denominador`,
+      meta.tables.some((tabela) => /denominador/i.test(tabela.caption)),
+      meta.tables.map((tabela) => tabela.caption).join(' | '),
+    );
+  }
+}
+
+async function conferirPagina(nome, caminho, { minTabelas = 1, tfoot = true, denominador = true } = {}) {
+  const url = caminho === '/' ? BASE_PATH : `${BASE_PATH}${caminho}`;
+  const page = await request(url);
+  const meta = parseHtml(page.final.body);
+  const canonical = canonicalPath(caminho);
+
+  checkEqual(`${nome}: status`, page.final.status, 200);
+  checkEqual(`${nome}: canonical`, meta.canonical, canonical);
+  check(`${nome}: não usa noindex`, !/noindex/i.test(meta.robots || ''), meta.robots);
+  check(`${nome}: não expõe onrender.com`, !/onrender\.com/i.test(page.final.body));
+  checkEqual(`${nome}: idioma do documento`, meta.lang, 'pt-BR');
+  checkEqual(`${nome}: exatamente um h1`, meta.h1s.length, 1);
+  check(`${nome}: h1 não está vazio`, (meta.h1s[0] || '').length > 15, meta.h1s[0]);
+  check(`${nome}: title presente`, Boolean(meta.title) && meta.title.length >= 20, meta.title);
+  check(
+    `${nome}: meta description presente e não truncada no HTML`,
+    Boolean(meta.description) && meta.description.length >= 50 && meta.description.length <= 170,
+    `${meta.description?.length}: ${meta.description}`,
+  );
+
+  check(
+    `${nome}: exibe fonte e período junto aos dados`,
+    /Fonte e período dos dados/.test(meta.text) && meta.text.includes('Receita Federal'),
+  );
+  check(
+    `${nome}: exibe a competência publicada`,
+    meta.text.includes(competenceLong(META.competencia)),
+    META.competencia,
+  );
+  check(
+    `${nome}: exibe a data de geração real`,
+    meta.text.includes(dataCurta(META.geradoEm)) && dataTime(page.final.body) === META.geradoEm,
+    `texto=${meta.text.includes(dataCurta(META.geradoEm))}; time=${dataTime(page.final.body)}`,
+  );
+  check(
+    `${nome}: linka a fonte primária oficial`,
+    page.final.body.includes('https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj'),
+  );
+  check(`${nome}: linka a metodologia do Índice`, page.final.body.includes(`href="${BASE_PATH}/metodologia"`));
+  check(`${nome}: tem bloco de citação`, meta.text.includes('Como citar esta página') && meta.text.includes(canonical));
+  check(`${nome}: não declara medir reputação`, /não mede reputação|não mede a reputação/i.test(meta.text));
+
+  conferirJsonLd(nome, meta);
+  conferirTabelas(nome, meta, { minimo: minTabelas, tfoot, denominador });
+
+  return { page, meta };
 }
 
 async function waitForServer() {
@@ -149,6 +526,12 @@ if (!existsSync(BUILD_ID)) {
   process.exit(1);
 }
 
+const DADOS = carregarDados();
+const META = DADOS.meta;
+const ESPERADOS = caminhosEsperados(DADOS);
+const AMOSTRAS = escolherAmostras(DADOS);
+const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
+
 const server = spawn(process.execPath, [NEXT_BIN, 'start', '-H', HOST, '-p', String(PORT)], {
   cwd: ROOT,
   env: { ...process.env, NODE_ENV: 'production' },
@@ -161,14 +544,9 @@ server.stderr.on('data', (chunk) => serverLog.push(chunk.toString()));
 try {
   await waitForServer();
 
-  const root = await request(BASE_PATH);
-  const rootHtml = root.final.body;
-  const rootMeta = parseHtml(rootHtml);
-
-  checkEqual('GET /indice status', root.final.status, 200);
-  checkEqual('canonical da raiz', rootMeta.canonical, CANONICAL_BASE);
-  check('raiz não usa noindex', !/noindex/i.test(rootMeta.robots || ''), rootMeta.robots);
-  check('raiz não expõe onrender.com', !/onrender\.com/i.test(rootHtml));
+  const root = await conferirPagina('raiz', '/', { minTabelas: 1 });
+  const rootHtml = root.page.final.body;
+  const rootMeta = root.meta;
 
   const rootHead = await request(BASE_PATH, { method: 'HEAD' });
   checkEqual('HEAD /indice status', rootHead.final.status, 200);
@@ -186,29 +564,88 @@ try {
   checkEqual('HEAD /indice/ status', slashHead.final.status, 308);
   checkEqual('Location de HEAD /indice/', localPath(slashHead.final.location, slashHead.final.url), BASE_PATH);
 
-  const metodologia = await request(`${BASE_PATH}/metodologia`);
-  const metodologiaMeta = parseHtml(metodologia.final.body);
-  checkEqual('GET /indice/metodologia status', metodologia.final.status, 200);
-  checkEqual('canonical de /indice/metodologia', metodologiaMeta.canonical, `${CANONICAL_BASE}/metodologia`);
-  check('metodologia não usa noindex', !/noindex/i.test(metodologiaMeta.robots || ''), metodologiaMeta.robots);
+  check('raiz não usa noindex', !/noindex/i.test(rootMeta.robots || ''), rootMeta.robots);
+  check('raiz não expõe onrender.com', !/onrender\.com/i.test(rootHtml));
+  check(
+    'raiz distingue universo e cobertura',
+    rootMeta.text.includes('Ativos no Brasil') &&
+      rootMeta.text.includes('Ativos nas páginas') &&
+      rootMeta.text.includes('Cobertura'),
+  );
+  check('raiz linka todos os estados com dados', rootMeta.text.includes('Escolha um estado'));
+  check(
+    'raiz tem definição independente e como ler',
+    rootMeta.text.includes('O que é o Índice Filtra.AI?') && rootMeta.text.includes('Como ler os números'),
+  );
+
+  const metodologia = await conferirPagina('metodologia', '/metodologia', { minTabelas: 4, tfoot: false, denominador: false });
+  check('metodologia cobre fonte, universo, fórmulas e limites', [
+    'Fonte e período dos dados',
+    'Universo: segmentos, unidade e geografia',
+    'Critérios e fórmulas',
+    'Observado, estimado e indisponível',
+    'Atualização e revisões',
+    'Limitações',
+    'Como contestar',
+  ].every((secao) => metodologia.meta.text.includes(secao)));
+  check('metodologia não promete cobertura de todas as empresas', /não mede[\s\S]*total de empresas|não é o total de empresas/i.test(metodologia.meta.text));
+  check('metodologia separa Consumidor.gov.br do Índice', /Consumidor\.gov\.br/.test(metodologia.meta.text) && /universo separado/i.test(metodologia.meta.text));
+  check('metodologia informa a frequência de atualização', /mensal/i.test(metodologia.meta.text) && /dia 15/i.test(metodologia.meta.text));
 
   const metodologiaSlash = await request(`${BASE_PATH}/metodologia/`, { follow: true });
   checkEqual('GET /indice/metodologia/ após redirect', metodologiaSlash.final.status, 200);
   checkEqual('URL final de /indice/metodologia/', new URL(metodologiaSlash.final.url).pathname, `${BASE_PATH}/metodologia`);
 
-  const geographicPaths = [
-    `${BASE_PATH}/go/itaberai/clinicas`,
-    `${BASE_PATH}/pr/alto-parana/restaurantes`,
-    `${BASE_PATH}/sp/presidente-prudente/oficinas`,
-  ];
+  check('amostra tem estado', Boolean(AMOSTRAS.uf), JSON.stringify(AMOSTRAS));
+  check('amostra tem município', Boolean(AMOSTRAS.municipio), JSON.stringify(AMOSTRAS));
+  check('amostra tem célula', Boolean(AMOSTRAS.celula), JSON.stringify(AMOSTRAS));
+  check('amostra tem célula abaixo do mínimo', Boolean(AMOSTRAS.abaixoDoMinimo), JSON.stringify(AMOSTRAS.abaixoDoMinimo));
 
-  for (const path of geographicPaths) {
-    const page = await request(path);
+  const estado = await conferirPagina(`estado ${AMOSTRAS.uf}`, `/${AMOSTRAS.uf.toLowerCase()}`, { minTabelas: 2 });
+  check('estado lista todos os municípios com página', /Todos os municípios/.test(estado.meta.text));
+  check('estado explica que o total não é o total de empresas', /não é o total de empresas|Não\. O Índice cobre apenas/i.test(estado.meta.text));
+
+  const municipio = await conferirPagina(
+    `município ${AMOSTRAS.municipioNome}`,
+    `/${AMOSTRAS.uf.toLowerCase()}/${AMOSTRAS.municipio}`,
+    { minTabelas: 1 },
+  );
+  check('município detalha matrizes, aberturas e baixas', ['Matrizes', 'Abertos em 12 meses', 'Baixas em 12 meses'].every((rotulo) => municipio.meta.text.includes(rotulo)));
+  check('município explica denominador e não-saldo', /denominador/i.test(municipio.meta.text) && /não é um saldo|não formam um saldo/i.test(municipio.meta.text));
+
+  const caminhoCelula = `/${AMOSTRAS.uf.toLowerCase()}/${AMOSTRAS.celula.municipio}/${AMOSTRAS.celula.segmento}`;
+  const celula = await conferirPagina(`célula ${AMOSTRAS.celula.segmento}`, caminhoCelula, { minTabelas: 2 });
+  check('célula informa a contagem no h1', celula.meta.h1s[0].includes(String(AMOSTRAS.celula.ativos.toLocaleString('pt-BR'))), celula.meta.h1s[0]);
+  check('célula explicita estoque versus aberturas', /não é o estoque ativo|Não é o estoque ativo/i.test(celula.meta.text));
+  check('célula separa matrizes e filiais', /matrizes e .* filiais/i.test(celula.meta.text));
+  check('célula não trata correlação como causalidade', /não mede|não significa|não formam um saldo/i.test(celula.meta.text));
+
+  if (AMOSTRAS.outraCelula) {
+    const outra = await conferirPagina(
+      `segunda célula ${AMOSTRAS.outraCelula.segmento}`,
+      `/${AMOSTRAS.uf.toLowerCase()}/${AMOSTRAS.outraCelula.municipio}/${AMOSTRAS.outraCelula.segmento}`,
+      { minTabelas: 1 },
+    );
+    check('segunda célula amostrada é coerente', outra.meta.h1s[0].includes('estabelecimentos ativos'));
+  }
+
+  const abaixo = AMOSTRAS.abaixoDoMinimo;
+  if (abaixo) {
+    const caminhoAbaixo = `/${abaixo.uf.toLowerCase()}/${abaixo.municipio}/${abaixo.segmento}`;
+    const page = await request(`${BASE_PATH}${caminhoAbaixo}`);
     const meta = parseHtml(page.final.body);
-    checkEqual(`GET ${path} status`, page.final.status, 200);
-    checkEqual(`canonical de ${path}`, meta.canonical, `https://filtraai.com${path}`);
-    check(`${path} não usa noindex`, !/noindex/i.test(meta.robots || ''), meta.robots);
-    check(`${path} não expõe onrender.com`, !/onrender\.com/i.test(page.final.body));
+    checkEqual('célula abaixo do mínimo responde 404', page.final.status, 404);
+    check(
+      'célula abaixo do mínimo não é indexável',
+      (!meta.robots || /noindex/i.test(meta.robots)) && (!page.final.robotsHeader || /noindex/i.test(page.final.robotsHeader)),
+      `robots=${meta.robots}; header=${page.final.robotsHeader}`,
+    );
+    check('404 abaixo do mínimo explica a ausência', /não encontrada|não existe/i.test(meta.text));
+    check(
+      'célula abaixo do mínimo não está no sitemap',
+      !CONJUNTO_ESPERADO.has(canonicalPath(caminhoAbaixo)),
+      caminhoAbaixo,
+    );
   }
 
   const sitemapIndex = await request(`${BASE_PATH}/sitemap-index.xml`);
@@ -220,22 +657,61 @@ try {
   check('sitemap index contém o filho 0', sitemapIndexXml.includes(`<loc>${CANONICAL_BASE}/sitemap/0.xml</loc>`));
   check('sitemap index não expõe onrender.com', !/onrender\.com/i.test(sitemapIndexXml));
 
-  const sitemapChild = await request(`${BASE_PATH}/sitemap/0.xml`);
-  const sitemapChildXml = sitemapChild.final.body;
-  const locs = sitemapLocs(sitemapChildXml);
-  checkEqual('GET /indice/sitemap/0.xml status', sitemapChild.final.status, 200);
-  check('sitemap filho é XML', sitemapChild.final.contentType.includes('xml'), sitemapChild.final.contentType);
-  check('sitemap filho usa o namespace do protocolo', sitemapChildXml.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'));
-  check('sitemap filho fecha corretamente', sitemapChildXml.trim().endsWith('</urlset>'));
-  check('sitemap filho tem URLs', locs.length > 0, String(locs.length));
-  check('sitemap filho não tem raiz com barra final', !locs.includes(`${CANONICAL_BASE}/`));
-  check('sitemap filho tem raiz canônica sem barra final', locs.includes(CANONICAL_BASE));
-  check('sitemap filho não tem duplicatas', new Set(locs).size === locs.length);
+  const filhos = sitemapLocs(sitemapIndexXml);
+  check('sitemap index tem filhos', filhos.length > 0, String(filhos.length));
+  check('sitemap index não repete filhos', new Set(filhos).size === filhos.length);
+  check('todos os filhos do sitemap estão sob /indice', filhos.every((url) => url.startsWith(`${CANONICAL_BASE}/sitemap/`)));
+
+  const todasAsLocs = [];
+  for (const filho of filhos) {
+    const caminhoFilho = new URL(filho).pathname;
+    const child = await request(caminhoFilho);
+    const childXml = child.final.body;
+    checkEqual(`GET ${caminhoFilho} status`, child.final.status, 200);
+    check(`${caminhoFilho} é XML`, child.final.contentType.includes('xml'), child.final.contentType);
+    check(`${caminhoFilho} usa o namespace do protocolo`, childXml.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'));
+    check(`${caminhoFilho} fecha corretamente`, childXml.trim().endsWith('</urlset>'));
+    check(`${caminhoFilho} não expõe onrender.com`, !/onrender\.com/i.test(childXml));
+    const locsFilho = sitemapLocs(childXml);
+    const lastmodsFilho = [...childXml.matchAll(/<lastmod>([^<]+)<\/lastmod>/gi)].map((match) => match[1]);
+    check(`${caminhoFilho} tem URLs`, locsFilho.length > 0);
+    check(`${caminhoFilho} tem lastmod em todas as URLs`, lastmodsFilho.length === locsFilho.length, `${lastmodsFilho.length}/${locsFilho.length}`);
+    check(
+      `${caminhoFilho} usa a data real de geração`,
+      lastmodsFilho.every((lastmod) => Date.parse(lastmod) === Date.parse(META.geradoEm)),
+    );
+    todasAsLocs.push(...locsFilho);
+  }
+
+  const conjuntoLocs = new Set(todasAsLocs);
+  check('sitemap não tem duplicatas', conjuntoLocs.size === todasAsLocs.length, `${todasAsLocs.length} URLs`);
+  check(
+    'sitemap não tem raiz com barra final',
+    !conjuntoLocs.has(`${CANONICAL_BASE}/`),
+  );
+  check('sitemap tem raiz canônica sem barra final', conjuntoLocs.has(CANONICAL_BASE));
+  check('sitemap tem a metodologia', conjuntoLocs.has(`${CANONICAL_BASE}/metodologia`));
   check(
     'todas as URLs do sitemap estão sob /indice',
-    locs.every((url) => url === CANONICAL_BASE || url.startsWith(`${CANONICAL_BASE}/`)),
+    todasAsLocs.every((url) => url === CANONICAL_BASE || url.startsWith(`${CANONICAL_BASE}/`)),
   );
-  check('sitemap filho não expõe onrender.com', !/onrender\.com/i.test(sitemapChildXml));
+  check(
+    'sitemap cobre exatamente as URLs indexáveis',
+    conjuntoLocs.size === CONJUNTO_ESPERADO.size && [...CONJUNTO_ESPERADO].every((url) => conjuntoLocs.has(url)),
+    `${conjuntoLocs.size} no sitemap, ${CONJUNTO_ESPERADO.size} esperadas`,
+  );
+  check(
+    'sitemap inclui a célula amostrada',
+    conjuntoLocs.has(canonicalPath(caminhoCelula)),
+    caminhoCelula,
+  );
+  check(
+    'sitemap inclui o estado e o município amostrados',
+    conjuntoLocs.has(canonicalPath(`/${AMOSTRAS.uf.toLowerCase()}`)) &&
+      conjuntoLocs.has(canonicalPath(`/${AMOSTRAS.uf.toLowerCase()}/${AMOSTRAS.municipio}`)),
+  );
+
+  console.log(`\nDados: competência ${META.competencia}, ${ESPERADOS.length} URLs indexáveis, ${conjuntoLocs.size} no sitemap.`);
 } catch (error) {
   fail('execução do teste', error instanceof Error ? error.message : String(error));
 } finally {
@@ -246,5 +722,5 @@ if (failures.length) {
   console.error(`\n${failures.length} verificação(ões) falharam.`);
   process.exitCode = 1;
 } else {
-  console.log('\nTodas as verificações de canonical, redirect e sitemap passaram.');
+  console.log('\nTodas as verificações de canonical, conteúdo, JSON-LD, tabelas, 404 e sitemap passaram.');
 }
