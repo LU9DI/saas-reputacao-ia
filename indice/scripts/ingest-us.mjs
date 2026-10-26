@@ -82,9 +82,11 @@ async function main() {
   const condados = resolverCondados([...agreg.dados.keys()], nomes);
   const porChave = new Map(condados.map((c) => [`${c.fips.slice(0, 2)}|${c.fips.slice(2)}`, c]));
   const stats = {};
+  const semNome = [];
   const porSegmento = Object.fromEntries(segmentos.map((s) => [s.slug, 0]));
   for (const [chave, porSeg] of agreg.dados) {
     const c = porChave.get(chave);
+    if (!c.nameOk) { semNome.push(c.fips); continue; } // sem nome oficial: não publicamos página com nome inventado
     for (const [seg, reg] of Object.entries(porSeg)) {
       if (reg.e < 1) continue;
       ((stats[c.state] ||= {})[c.slug] ||= {})[seg] = reg;
@@ -94,7 +96,7 @@ async function main() {
   const estados = Object.keys(stats).length;
   if (!args.sintetico && (estados < 50 || condados.length < 2500)) falha(`cobertura baixa: ${estados} estados, ${condados.length} condados.`);
   log('estabelecimentos por segmento:', JSON.stringify(porSegmento));
-  log(`condados sem nome oficial: ${condados.filter((c) => !c.nameOk).length}`);
+  log(`condados sem nome oficial, fora do Índice: ${semNome.length} (${semNome.slice(0, 12).join(' ')})`);
 
   await rm(OUT, { recursive: true, force: true });
   await mkdir(path.join(OUT, 'stats'), { recursive: true });

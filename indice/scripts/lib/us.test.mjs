@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { linhaCsv, naicsLimpo, mapearCabecalho, criarAgregadorUS, nomesDeCondados, resolverCondados, slugify } from './us.mjs';
 
-const CAB = 'fipstate,fipscty,naics,empflag,emp_nf,emp,qp1_nf,qp1,ap_nf,ap,est,n<5,n5_9,n10_19,n1000'.split(',');
+const CAB = 'fipstate,fipscty,naics,empflag,emp_nf,emp,qp1_nf,qp1,ap_nf,ap,est,n<5,n5_9,n10_19,n1000,n1000_1,n1000_2'.split(',');
 const SEG = [
   { slug: 'restaurants', naics: ['7225'] },
   { slug: 'doctors-and-dentists', naics: ['6211', '6212'] },
@@ -20,7 +20,7 @@ test('naicsLimpo remove / e -', () => {
 test('mapearCabecalho acha colunas e faixas, e falha sem as obrigatórias', () => {
   const c = mapearCabecalho(CAB);
   assert.equal(c.est, 10);
-  assert.deepEqual(c.faixas.map((f) => f.n), ['n<5', 'n5_9', 'n10_19', 'n1000']);
+  assert.deepEqual(c.faixas.map((f) => f.n), ['n<5', 'n5_9', 'n10_19', 'n1000']); // sem n1000_1, n1000_2
   assert.throws(() => mapearCabecalho(['a', 'b']), /sem as colunas/);
 });
 

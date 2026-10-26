@@ -30,7 +30,8 @@ export function mapearCabecalho(cabecalho) {
   const col = { estado: idx('fipstate'), condado: idx('fipscty'), naics: idx('naics'), est: idx('est') };
   const faltando = Object.entries(col).filter(([, v]) => v < 0).map(([k]) => k);
   if (faltando.length) throw new Error(`cabeçalho do CBP sem as colunas: ${faltando.join(', ')} (encontrado: ${nomes.slice(0, 20).join(',')})`);
-  const faixas = nomes.map((n, i) => ({ n, i })).filter(({ n }) => /^n(<5|\d+_\d+|\d+)$/.test(n));
+  // n1000_1..n1000_4 são subdivisões de n1000: ficam de fora para não duplicar a contagem.
+  const faixas = nomes.map((n, i) => ({ n, i })).filter(({ n }) => /^n(<5|\d+_\d+|\d+)$/.test(n) && !/^n1000_\d+$/.test(n));
   return { ...col, faixas };
 }
 
