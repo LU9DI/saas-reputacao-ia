@@ -41,7 +41,11 @@ const args = Object.fromEntries(
 const OUT = path.resolve(args.out || path.join(raiz, 'data'));
 const TMP = path.join(raiz, '.tmp');
 const MINIMO = Number(args.min || 10);
-const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/dados/cnpj/dados_abertos_cnpj';
+// Compartilhamento público (Nextcloud) da Receita; o acesso por WebDAV usa o token do link público como usuário
+// e senha vazia. Confirmado por listagem do diretório em 2026-10-25; o endereço antigo (dadosabertos.rfb.gov.br) expira.
+const BASE_PADRAO = 'https://arquivos.receitafederal.gov.br/public.php/webdav';
+const TOKEN_COMPARTILHAMENTO = 'YggdBLfdninEJX9';
+const authCurl = (url) => (url.includes('/public.php/webdav') ? ['-u', `${TOKEN_COMPARTILHAMENTO}:`] : []);
 const LINHAS_MINIMAS = 1_000_000; // a base real tem dezenas de milhões; menos que isso é suspeito
 const log = (...m) => console.log('[ingest]', ...m);
 const falha = (msg) => {
@@ -63,7 +67,7 @@ function executar(cmd, cmdArgs) {
 
 async function statusHttp(url) {
   try {
-    const out = await executar('curl', ['-sS', '-I', '-L', '-m', '30', '-o', '/dev/null', '-w', '%{http_code}', url]);
+    const out = await executar('curl', [...authCurl(url), '-sS', '-I', '-L', '-m', '30', '-o', '/dev/null', '-w', '%{http_code}', url]);
     return Number(out.trim());
   } catch {
     return 0;
@@ -72,7 +76,7 @@ async function statusHttp(url) {
 
 async function baixar(url, destino) {
   log('baixando', url);
-  await executar('curl', ['-fL', '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
+  await executar('curl', [...authCurl(url), '-fL', '--retry', '3', '--retry-delay', '5', '-sS', '-o', destino, url]);
 }
 
 /** Lê um zip com um CSV (latin1) linha a linha, sem descompactar em disco. */
