@@ -38,15 +38,24 @@ jobs:
           OUT=""
           add() { OUT="${OUT}$1%0A"; }
           T="$INDICE_RFB_SHARE_TOKEN"
+          if [ -z "$T" ]; then
+            add "BLOQUEADO: INDICE_RFB_SHARE_TOKEN não configurado; testes do link público/WebDAV foram pulados."
+          fi
           for m in 2026-09 2026-10 2026-08; do
-            for u in "https://dadosabertos.rfb.gov.br/CNPJ/dados_abertos_cnpj/$m/Cnaes.zip" \
-                     "https://arquivos.receitafederal.gov.br/index.php/s/$T/download?path=%2F$m&files=Cnaes.zip"; do
+            u="https://dadosabertos.rfb.gov.br/CNPJ/dados_abertos_cnpj/$m/Cnaes.zip"
+            c=$(curl -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' "$u" 2>&1 | tr -d '\n' | cut -c1-120)
+            add "$c <- $u"
+            if [ -n "$T" ]; then
+              # O token é credencial e faz parte da URL do link público: nunca ecoe a URL.
+              u="https://arquivos.receitafederal.gov.br/index.php/s/$T/download?path=%2F$m&files=Cnaes.zip"
               c=$(curl -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' "$u" 2>&1 | tr -d '\n' | cut -c1-120)
-              add "$c <- ${u:0:90}"
-            done
+              add "$c <- link público (token omitido), competência $m"
+            fi
           done
-          L=$(curl -sS -m 30 -u "$T:" -X PROPFIND -H 'Depth: 1' https://arquivos.receitafederal.gov.br/public.php/webdav/ 2>&1 | grep -o '<d:href>[^<]*' | sed 's/<d:href>//' | head -12 | tr '\n' ' ')
-          add "webdav raiz: ${L:-vazio}"
+          if [ -n "$T" ]; then
+            L=$(curl -sS -m 30 -u "$T:" -X PROPFIND -H 'Depth: 1' https://arquivos.receitafederal.gov.br/public.php/webdav/ 2>&1 | grep -o '<d:href>[^<]*' | sed 's/<d:href>//' | head -12 | tr '\n' ' ')
+            add "webdav raiz: ${L:-vazio}"
+          fi
           echo "::error title=Sondagem::${OUT}"
           exit 1
       - name: Ingestão
