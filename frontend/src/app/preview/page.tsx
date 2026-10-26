@@ -467,7 +467,7 @@ export default function LandingPreview() {
       </section>
 
       <footer className="border-t border-white/6 px-6 py-10 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><Link href="/privacidade" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.privacy}</Link><Link href="/termos" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.terms}</Link><span className="text-zinc-700">{c.footer}</span></div></div>
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-5 sm:flex-row"><BrandMark size="sm" subtitle="Reputação" href="/" /><div className="flex flex-wrap items-center justify-center gap-4 text-xs"><Link href="/privacidade" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.privacy}</Link><Link href="/termos" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">{c.terms}</Link><a href="/indice" className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">Índice Filtra.AI</a><span className="text-zinc-700">{c.footer}</span></div></div>
       </footer>
     </main>
     </>
