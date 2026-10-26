@@ -137,6 +137,21 @@ async function main() {
   };
   const limpar = async (z) => z.temporario && rm(z.caminho, { force: true });
 
+  // IBGE primeiro: se a API falhar, o erro aparece em segundos e não depois de horas de processamento.
+  // Nomes com acento vêm do IBGE (obrigatório: sem isso os títulos saem sem acento).
+  let jsonIbge;
+  if (args['ibge-arquivo']) {
+    log('lendo municípios do IBGE de', args['ibge-arquivo']);
+    jsonIbge = JSON.parse(await readFile(path.resolve(args['ibge-arquivo']), 'utf8'));
+  } else {
+    log('consultando municípios no IBGE');
+    const bruto = await executar('curl', ['-fsSL', '--retry', '6', '--retry-delay', '10', '--retry-all-errors', '-m', '120', 'https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome']);
+    jsonIbge = JSON.parse(bruto);
+  }
+  const ibge = ibgeParaLista(jsonIbge);
+  if (ibge.length < 5000 && !args.sintetico) falha(`IBGE trouxe só ${ibge.length} municípios (esperado ~5.570).`);
+  log('municípios no IBGE:', ibge.length);
+
   // 2) Descrições oficiais dos CNAEs (7 dígitos) e nomes dos municípios (código da Receita)
   const descricoes = new Map();
   const cn = await zipDe('Cnaes.zip');
@@ -193,20 +208,6 @@ async function main() {
     falha(`apenas ${lidas} linhas lidas (mínimo esperado ${LINHAS_MINIMAS}). A base parece incompleta.`);
   }
   if (!usadas) falha('nenhum estabelecimento caiu nos segmentos configurados.');
-
-  // 4) Nomes com acento via IBGE (obrigatório: sem isso os títulos saem sem acento)
-  let jsonIbge;
-  if (args['ibge-arquivo']) {
-    log('lendo municípios do IBGE de', args['ibge-arquivo']);
-    jsonIbge = JSON.parse(await readFile(path.resolve(args['ibge-arquivo']), 'utf8'));
-  } else {
-    log('consultando municípios no IBGE');
-    const resp = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome');
-    if (!resp.ok) falha(`IBGE respondeu HTTP ${resp.status}`);
-    jsonIbge = await resp.json();
-  }
-  const ibge = ibgeParaLista(jsonIbge);
-  if (ibge.length < 5000 && !args.sintetico) falha(`IBGE trouxe só ${ibge.length} municípios (esperado ~5.570).`);
 
   // 5) Monta saída
   const pares = [...agregador.dados.keys()].map((k) => {

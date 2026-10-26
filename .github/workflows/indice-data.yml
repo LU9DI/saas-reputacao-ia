@@ -73,4 +73,4 @@ jobs:
           git add -f indice/data
           git commit -m "chore(indice): dados do CNPJ aberto, competência $COMP"
           git push -u origin "$BR"
-          gh pr create --title "Índice: dados $COMP" --body "Dados regenerados por indice/scripts/ingest.mjs. Conferir indice/data/meta.json (linhasLidas, UFs) antes do merge." --base main
+          gh pr create --title "Índice: dados $COMP" --body "Dados regenerados por indice/scripts/ingest.mjs. Conferir indice/data/meta.json (linhasLidas, UFs) antes do merge." --base main || echo "::warning title=PR::Não foi possível abrir o PR automaticamente (ajuste de permissão do Actions?). A branch $BR foi enviada; abra o PR manualmente."
