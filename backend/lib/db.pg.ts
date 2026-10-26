@@ -109,7 +109,7 @@ export function getPgSslConfig(
 ): false | { rejectUnauthorized: true } {
   let hostname = "";
   try {
-    hostname = new URL(databaseUrl).hostname.toLowerCase();
+    hostname = new URL(databaseUrl).hostname.toLowerCase().replace(/^\\[|\\]$/g, "");
   } catch {
     // Leave malformed URL handling to the PostgreSQL driver with TLS validation enabled.
   }
