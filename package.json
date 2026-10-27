@@ -21,7 +21,7 @@
     "concurrently": "^9.1.2"
   },
   "dependencies": {
-    "@stripe/stripe-js": "^9.15.0",
+    "@stripe/stripe-js": "^10.1.0",
     "stripe": "^22.6.1"
   }
 }
