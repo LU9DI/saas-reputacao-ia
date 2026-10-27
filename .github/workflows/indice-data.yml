@@ -14,6 +14,9 @@ on:
       zip_inspecao:
         description: 'URL de um .zip: baixa e mostra a lista de arquivos, o cabeçalho e algumas linhas'
         required: false
+      filtro_inspecao:
+        description: 'regex (grep -E) aplicada às linhas do arquivo na inspeção'
+        required: false
       urls_sonda:
         description: 'URLs extras (separadas por espaço) para a sondagem; se preenchido, só estas são testadas'
         required: false
@@ -40,11 +43,12 @@ jobs:
         if: ${{ inputs.zip_inspecao != '' }}
         env:
           ZIP: ${{ inputs.zip_inspecao }}
+          FILTRO: ${{ inputs.filtro_inspecao }}
         run: |
           mkdir -p /tmp/insp && curl -sS -L -m 300 -o /tmp/insp/a.zip "$ZIP"
           LIST=$(unzip -l /tmp/insp/a.zip | cut -c1-100)
           F=$(unzip -Z1 /tmp/insp/a.zip | head -1)
-          HEAD=$(unzip -p /tmp/insp/a.zip "$F" | head -6 | cut -c1-400)
+          if [ -n "$FILTRO" ]; then HEAD=$(unzip -p /tmp/insp/a.zip "$F" | grep -E "$FILTRO" | head -40 | cut -c1-160); else HEAD=$(unzip -p /tmp/insp/a.zip "$F" | head -6 | cut -c1-400); fi
           LINES=$(unzip -p /tmp/insp/a.zip "$F" | wc -l)
           MSG=$(printf '%s\n\nlinhas: %s\n%s' "$LIST" "$LINES" "$HEAD" | sed ':a;N;$!ba;s/\n/%0A/g')
           echo "::error title=Inspecao::${MSG}"
