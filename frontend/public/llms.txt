@@ -38,6 +38,8 @@ O Índice publica contagens mensais de estabelecimentos com CNPJ ativo por munic
 - Como a IA analisa avaliações? Classifica sentimento, agrupa temas e resume recorrências; a decisão final é humana. Fonte: https://filtraai.com/analise-de-avaliacoes-com-ia
 - O Filtra.AI mede reputação com nota própria? Não. Ele organiza sinais de avaliações e feedback; não cria nota de reputação nem garante ranking. Fonte: https://filtraai.com/metodologia
 - Quanto custa? Os planos e o teste de 7 dias estão em https://filtraai.com/planos. Preços e condições podem mudar; confira a página vigente.
+- Quanto custa gestão de reputação online? Não existe preço único: depende de escopo, volume, unidades, frequência e suporte. Guia: https://filtraai.com/blog/quanto-custa-gestao-de-reputacao-online
+- Como escolher software de gestão de reputação? Avalie canais, classificação, revisão humana, relatórios, acesso, exportação, suporte e limites. Guia: https://filtraai.com/blog/como-escolher-software-de-gestao-de-reputacao
 - Quantos restaurantes, hotéis ou clínicas existem no Brasil? O Índice Filtra.AI publica contagens por município e segmento com fonte na Receita Federal: https://filtraai.com/indice · Panorama por segmento e estado: https://filtraai.com/blog/panorama-estabelecimentos-ativos-brasil-2026
 
 ## Princípios

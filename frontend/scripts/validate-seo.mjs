@@ -431,5 +431,18 @@ check(
   'Panorama article must cite the Índice snapshot, expose FAQPage and declare real dates',
 );
 
+for (const path of [
+  'src/app/blog/quanto-custa-gestao-de-reputacao-online/page.tsx',
+  'src/app/blog/como-escolher-software-de-gestao-de-reputacao/page.tsx',
+]) {
+  const source = read(path);
+  check(
+    source.includes("'@type': 'FAQPage'") &&
+      source.includes('datePublished="2026-10-27"') &&
+      source.includes('Resposta direta:'),
+    `Buyer guide must expose a direct answer, FAQPage and real dates: ${path}`,
+  );
+}
+
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
 console.log(`SEO source validation passed: ${paths.length} canonical paths, ${families.length} hreflang families and ${sitemapPaths.length} unique sitemap path literals checked.`);
