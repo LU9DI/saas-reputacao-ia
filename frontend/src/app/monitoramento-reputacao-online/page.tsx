@@ -60,6 +60,28 @@ export default function Page() {
         { heading: 'Compare unidades com contexto', body: 'Empresas com várias unidades precisam enxergar diferenças locais sem transformar realidades distintas em uma comparação enganosa.' },
         { heading: 'Crie uma rotina semanal', body: 'Uma revisão recorrente transforma avaliações dispersas em inteligência operacional, facilita decisões e mostra se os problemas estão diminuindo.' },
       ]}
+      faq={[
+        {
+          question: 'O que é monitoramento de reputação online?',
+          answer: 'É o acompanhamento contínuo de avaliações, feedback, menções e sinais públicos para identificar mudanças e padrões. O objetivo é detectar o que merece ação antes que o problema se torne recorrente.',
+        },
+        {
+          question: 'Com que frequência devo acompanhar?',
+          answer: 'Operações com volume de atendimento costumam revisar toda semana; negócios com pouco fluxo podem usar uma cadência mensal. O importante é definir responsável, frequência e o que fazer com cada sinal.',
+        },
+        {
+          question: 'Quais sinais acompanhar?',
+          answer: 'Nota e distribuição das avaliações, volume novo, temas recorrentes, avaliações sem resposta e diferenças entre unidades. A combinação mostra tendência e onde intervir, não apenas a média.',
+        },
+        {
+          question: 'Monitorar é o mesmo que responder avaliações?',
+          answer: 'Não. Responder é uma ação pontual; monitorar é identificar padrões ao longo do tempo. Uma empresa pode responder bem e ainda não perceber um problema que se repete em várias unidades.',
+        },
+        {
+          question: 'Dá para monitorar sem ferramenta?',
+          answer: 'Uma planilha funciona no começo, desde que alguém mantenha a rotina. Com volume maior, várias unidades ou exigência de histórico comparável, a consistência cai e uma ferramenta reduz o trabalho manual.',
+        },
+      ]}
     />
   );
 }

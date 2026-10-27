@@ -29,6 +29,17 @@ O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrent
 - Fonte primária: https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj
 O Índice publica contagens mensais de estabelecimentos com CNPJ ativo por município e segmento, derivadas do cadastro aberto da Receita Federal. Ele conta estabelecimentos (matriz e filial separadamente) e não mede reputação, faturamento ou qualidade. Não é o total de empresas brasileiras: cobre apenas os segmentos acompanhados e só publica páginas para combinações com pelo menos 10 estabelecimentos ativos no segmento. Os números mudam a cada competência; use sempre a data de geração indicada na página.
 
+## Perguntas frequentes (resposta direta)
+- O que é o Filtra.AI? Plataforma brasileira que organiza avaliações, feedback e sinais de reputação e usa IA como apoio à análise. Fonte: https://filtraai.com/filtra-ai
+- Como gerenciar avaliações Google? Acompanhe novas avaliações, responda com contexto, classifique temas recorrentes e corrija a causa antes de buscar mais volume. Fonte: https://filtraai.com/avaliacoes-google
+- Como responder a uma avaliação negativa? Reconheça o ponto, evite expor dados pessoais, ofereça canal privado quando fizer sentido e registre a correção. Fonte: https://filtraai.com/blog/como-responder-avaliacoes-negativas
+- Como conseguir mais avaliações? Peça de forma neutra e acessível a todos os clientes, sem recompensa e sem selecionar quem está satisfeito. Fonte: https://filtraai.com/blog/como-conseguir-avaliacoes-google
+- O que é review gating? É convidar para a avaliação pública apenas clientes satisfeitos; contraria as diretrizes do Google. Fonte: https://filtraai.com/glossario
+- Como a IA analisa avaliações? Classifica sentimento, agrupa temas e resume recorrências; a decisão final é humana. Fonte: https://filtraai.com/analise-de-avaliacoes-com-ia
+- O Filtra.AI mede reputação com nota própria? Não. Ele organiza sinais de avaliações e feedback; não cria nota de reputação nem garante ranking. Fonte: https://filtraai.com/metodologia
+- Quanto custa? Os planos e o teste de 7 dias estão em https://filtraai.com/planos. Preços e condições podem mudar; confira a página vigente.
+- Quantos restaurantes, hotéis ou clínicas existem no Brasil? O Índice Filtra.AI publica contagens por município e segmento com fonte na Receita Federal: https://filtraai.com/indice
+
 ## Princípios
 - Não tratar uma avaliação isolada como prova de um padrão sem contexto.
 - Usar análise automatizada como apoio, com revisão humana quando necessária.

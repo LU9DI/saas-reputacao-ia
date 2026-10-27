@@ -196,7 +196,7 @@ check(localSeoArticle.includes('Pacote básico, recorrente ou multiunidade?') &&
 check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: guia prático'"), 'Reputation guide must target the informational how-to intent');
 check(reputationGuide.includes('dateModified="2026-10-20"'), 'Reputation guide BlogPosting schema must use the actual content update date');
 check(sitemap.includes("'/blog/seo-local-avaliacoes-local-pack': '2026-10-20'"), 'Sitemap lastModified must reflect the local SEO article update');
-check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-22'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
+check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-27'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
 check(sitemap.includes("'/blog': '2026-10-22'"), 'Sitemap must reflect the blog hub metadata update');
 const sitemapLastModified = sitemap.match(/const LAST_MODIFIED[^=]*= \{([\s\S]*?)\n\};/)?.[1] ?? '';
 const sitemapLastModifiedKeys = [...sitemapLastModified.matchAll(/^  '([^']+)':/gm)].map((match) => match[1]);
@@ -352,16 +352,69 @@ function collectSourceFiles(directory = appRoot) {
   return found;
 }
 
-// O botão "Índice Filtra.AI" foi removido do rodapé. Nenhum href para /indice
-// pode voltar ao frontend, e o cleanup defensivo precisa continuar no layout.
+// O botão "Índice Filtra.AI" foi removido do rodapé. Links editoriais para o
+// Índice continuam permitidos; o que não pode voltar é o botão do rodapé.
 for (const file of collectSourceFiles()) {
   const source = readFileSync(file, 'utf8');
   const label = relative(process.cwd(), file).split(sep).join('/');
-  check(!/href=["']\/indice(?:\/|["'?])/.test(source), `legacy Índice footer link must not exist: ${label}`);
+  check(
+    !/href=["']\/indice["'][^>]*>\s*Índice Filtra\.AI/i.test(source),
+    `legacy Índice footer button must not exist: ${label}`,
+  );
 }
 check(
   rootLayout.includes('legacy-indice-footer-cleanup'),
   'Root layout must keep the defensive cleanup of the legacy Índice footer link',
+);
+
+// AEO: páginas prioritárias precisam de FAQ visível + schema, e as páginas de
+// segmento precisam citar o dado próprio do Índice.
+for (const path of [
+  'src/app/avaliacoes-google/page.tsx',
+  'src/app/monitoramento-reputacao-online/page.tsx',
+  'src/app/feedback-de-clientes/page.tsx',
+  'src/app/analise-de-avaliacoes-com-ia/page.tsx',
+  'src/app/clinicas/page.tsx',
+  'src/app/agencias/page.tsx',
+  'src/app/como-funciona/page.tsx',
+]) {
+  check(read(path).includes('faq={'), `priority page must expose a FAQ block: ${path}`);
+}
+for (const [path, segment] of [
+  ['src/app/hoteis/page.tsx', 'hoteis'],
+  ['src/app/restaurantes/page.tsx', 'restaurantes'],
+  ['src/app/clinicas/page.tsx', 'clinicas'],
+  ['src/app/blog/reputacao-online-hoteis/page.tsx', 'hoteis'],
+  ['src/app/blog/avaliacoes-google-restaurantes/page.tsx', 'restaurantes'],
+  ['src/app/blog/reputacao-online-clinicas/page.tsx', 'clinicas'],
+]) {
+  check(
+    read(path).includes(`<IndiceData segmento="${segment}"`),
+    `segment page must cite the Índice data: ${path}`,
+  );
+}
+check(
+  read('src/app/gestao-de-reputacao-online/page.tsx').includes('<IndiceData />'),
+  'Reputation page must cite the Índice totals',
+);
+
+const indiceSnapshot = JSON.parse(read('src/generated/indice-snapshot.json'));
+const glossarySource = read('src/app/glossario/page.tsx');
+for (const term of [
+  'AEO (Answer Engine Optimization)',
+  'GEO (Generative Engine Optimization)',
+  'E-E-A-T',
+  'Review bombing',
+]) {
+  check(glossarySource.includes(term), `Glossary must define the AEO/GEO term: ${term}`);
+}
+check(
+  indiceSnapshot.todos.ativos > 0 && Object.keys(indiceSnapshot.segmentos).length >= 9,
+  'Índice snapshot must contain all segments and a positive total',
+);
+check(
+  Boolean(indiceSnapshot.competencia) && Boolean(indiceSnapshot.geradoEm),
+  'Índice snapshot must carry competence and generation date',
 );
 
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));

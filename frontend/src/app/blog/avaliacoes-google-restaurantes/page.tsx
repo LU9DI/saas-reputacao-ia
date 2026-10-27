@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { IndiceData } from '../../components/IndiceData';
 import { BlogSchema } from '../../components/BlogSchema';
 import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
@@ -23,7 +24,7 @@ export default function Page() {
         description="Como restaurantes podem organizar feedback e analisar avaliações Google."
         canonical={canonical}
         datePublished="2026-10-05"
-        dateModified="2026-10-17"
+        dateModified="2026-10-27"
       />
       <BlogArticle
         kicker="Restaurantes · Google Reviews"
@@ -33,6 +34,7 @@ export default function Page() {
         <p>
           Atendimento, tempo de espera, comida, temperatura, ambiente e resolução de problemas aparecem com frequência em avaliações de restaurantes. A melhor rotina não tenta apagar esses sinais: ela organiza o que o cliente está dizendo para que a equipe consiga agir.
         </p>
+        <IndiceData segmento="restaurantes" />
         <H2>Conecte feedback ao momento certo</H2>
         <p>
           Um QR code pode facilitar o registro de feedback próximo da experiência. O importante é que o canal seja simples, rápido e explique o que acontece com a informação recebida.

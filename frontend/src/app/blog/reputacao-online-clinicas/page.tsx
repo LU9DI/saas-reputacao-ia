@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { IndiceData } from '../../components/IndiceData';
 import { BlogSchema } from '../../components/BlogSchema';
 import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
@@ -23,7 +24,7 @@ export default function Page() {
         description="Como clínicas podem transformar avaliações de pacientes e feedback privado em melhoria de experiência."
         canonical={canonical}
         datePublished="2026-10-05"
-        dateModified="2026-10-05"
+        dateModified="2026-10-27"
       />
       <BlogArticle
         kicker="Clínicas · reputação local"
@@ -33,6 +34,7 @@ export default function Page() {
         <p>
           Clínicas convivem com uma combinação difícil: expectativas altas, jornadas diferentes e pouco espaço para uma experiência ruim passar despercebida. Por isso, a gestão de reputação precisa conectar feedback do paciente, avaliação pública e operação.
         </p>
+        <IndiceData segmento="clinicas" />
         <H2>Onde pedir feedback</H2>
         <p>
           O melhor ponto é próximo de um momento que faça sentido para o paciente: depois de um atendimento concluído, após um retorno ou quando uma etapa importante da jornada terminou. O canal precisa ser simples e não aumentar a fricção.

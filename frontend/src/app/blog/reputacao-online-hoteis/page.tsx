@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
+import { IndiceData } from '../../components/IndiceData';
 import { BlogSchema } from '../../components/BlogSchema';
 import { OG_IMAGE_META, buildTwitter } from '../../lib/blogSchema';
 
@@ -23,7 +24,7 @@ export default function Page() {
         description="Como hotéis podem analisar avaliações e transformar feedback em prioridades operacionais."
         canonical={canonical}
         datePublished="2026-10-05"
-        dateModified="2026-10-22"
+        dateModified="2026-10-27"
       />
       <BlogArticle
         kicker="Hotéis · experiência do hóspede"
@@ -33,6 +34,7 @@ export default function Page() {
         <p>
           Uma avaliação pode mencionar quarto, café da manhã, limpeza, atendimento, localização ou velocidade de check-in. Quando o hotel lê cada comentário isoladamente, enxerga casos. Quando agrupa os temas, começa a enxergar padrões.
         </p>
+        <IndiceData segmento="hoteis" />
         <H2>Mapeie a jornada do hóspede</H2>
         <p>
           Organize os sinais por etapas: reserva, chegada, quarto, alimentação, atendimento, saída e pós-estadia. Esse mapa ajuda a localizar onde a percepção positiva ou negativa se concentra.
