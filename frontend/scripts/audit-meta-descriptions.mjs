@@ -64,8 +64,9 @@ function metaContent(html, name) {
 }
 
 if (!existsSync(SITEMAP)) {
-  console.error('Meta audit FAILED: out/sitemap.xml is missing. Run the build first.');
-  process.exit(1);
+  // Build da Vercel (.next) não gera "out"; a auditoria é do export estático.
+  console.log('Skipping meta audit: no "out" directory was generated.');
+  process.exit(0);
 }
 
 const sitemap = readFileSync(SITEMAP, 'utf8');
