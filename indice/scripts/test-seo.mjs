@@ -21,7 +21,7 @@ const PORT = Number(process.env.INDICE_TEST_PORT || 3101);
 const ORIGIN = `http://${HOST}:${PORT}`;
 const BASE_PATH = '/indice';
 const CANONICAL_BASE = 'https://filtraai.com/indice';
-const NEXT_BIN = resolve(ROOT, 'node_modules/next/dist/bin/next');
+const SERVER_ENTRY = resolve(ROOT, 'server.mjs');
 const BUILD_ID = resolve(ROOT, '.next/BUILD_ID');
 const DATA_DIR = resolve(process.env.INDICE_DATA_DIR || resolve(ROOT, 'data'));
 
@@ -70,6 +70,7 @@ async function request(path, { method = 'GET', follow = false } = {}) {
       contentType: response.headers.get('content-type') || '',
       robotsHeader: response.headers.get('x-robots-tag') || '',
       linkHeader: response.headers.get('link') || '',
+      cacheControl: response.headers.get('cache-control') || '',
       body,
     });
 
@@ -518,8 +519,8 @@ async function stopServer() {
   if (server.exitCode === null) server.kill('SIGKILL');
 }
 
-if (!existsSync(NEXT_BIN)) {
-  console.error(`next não encontrado em ${NEXT_BIN}. Execute npm ci.`);
+if (!existsSync(SERVER_ENTRY)) {
+  console.error(`Entrada de produção não encontrada em ${SERVER_ENTRY}.`);
   process.exit(1);
 }
 if (!existsSync(BUILD_ID)) {
@@ -533,9 +534,9 @@ const ESPERADOS = caminhosEsperados(DADOS);
 const AMOSTRAS = escolherAmostras(DADOS);
 const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
 
-const server = spawn(process.execPath, [NEXT_BIN, 'start', '-H', HOST, '-p', String(PORT)], {
+const server = spawn(process.execPath, [SERVER_ENTRY], {
   cwd: ROOT,
-  env: { ...process.env, NODE_ENV: 'production' },
+  env: { ...process.env, NODE_ENV: 'production', PORT: String(PORT) },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 
@@ -642,6 +643,11 @@ try {
       `robots=${meta.robots}; header=${page.final.robotsHeader}`,
     );
     check('404 abaixo do mínimo explica a ausência', /não encontrada|não existe/i.test(meta.text));
+    check(
+      '404 abaixo do mínimo não é cacheável',
+      /no-store/i.test(page.final.cacheControl) && !/s-maxage/.test(page.final.cacheControl),
+      page.final.cacheControl,
+    );
     check(
       'célula abaixo do mínimo não está no sitemap',
       !CONJUNTO_ESPERADO.has(canonicalPath(caminhoAbaixo)),
@@ -753,6 +759,14 @@ try {
     'gêmea da célula aponta a fonte canônica',
     mdCelula.final.body.startsWith(`> Fonte canônica: ${canonicalPath(caminhoCelula)} `),
     mdCelula.final.body.slice(0, 120),
+  );
+
+  const ufInvalida = await request(`${BASE_PATH}/xx`);
+  checkEqual('rota de UF inválida responde 404', ufInvalida.final.status, 404);
+  check(
+    '404 de UF inválida não é cacheável',
+    /no-store/i.test(ufInvalida.final.cacheControl) && !/s-maxage/.test(ufInvalida.final.cacheControl),
+    ufInvalida.final.cacheControl,
   );
 
   const mdAusente = await request(`${BASE_PATH}/md/zz/nao-existe`);

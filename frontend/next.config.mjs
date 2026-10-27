@@ -37,6 +37,15 @@ const nextConfig = {
   async redirects() {
     if (process.env.CLOUDFLARE_PAGES === '1') return [];
     return [
+      // O host canônico é o apex (Cloudflare); www ainda aponta para um
+      // deployment Vercel legado que responde 404 em /indice/*.
+      // Qualquer tráfego em www é levado ao apex antes das demais regras.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.filtraai.com' }],
+        destination: 'https://filtraai.com/:path*',
+        statusCode: 301,
+      },
       { source: '/en/hoteis', destination: '/en/hotels', statusCode: 301 },
       { source: '/en/clinicas', destination: '/en/clinics', statusCode: 301 },
       { source: '/en/auditoria-gratuita', destination: '/en/free-review-audit', statusCode: 301 },
