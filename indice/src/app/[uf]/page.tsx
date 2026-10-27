@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const r = resolver(uf);
   if (!r) return { robots: { index: false } };
   const meta = getMeta();
-  const titulo = `Estabelecimentos ativos por segmento em ${UFS[r.sigla]} (${r.sigla})`;
+  const titulo = `Estabelecimentos ativos por segmento no estado de ${UFS[r.sigla]} (${r.sigla})`;
   const descricao = corta(
     `Contagens de estabelecimentos com CNPJ ativo em ${r.municipios.length} municípios de ${UFS[r.sigla]}, por segmento. Fonte: Receita Federal, competência ${mesCurto(meta.competencia)}.`,
     158,
@@ -82,7 +82,7 @@ export default async function Page({ params }: Props) {
 
   const dataset = datasetDoRecorte({
     url: urlAbsoluta(`/${uf}`),
-    name: `Estabelecimentos ativos por segmento em ${nome} (${sigla})`,
+    name: `Estabelecimentos ativos por segmento no estado de ${nome} (${sigla})`,
     description: `Contagens de estabelecimentos com CNPJ ativo nos segmentos acompanhados pelo Índice em ${nome}, com totais do estado e das páginas publicadas.`,
     espacial: `${nome}, ${sigla}, Brasil`,
     meta,
@@ -99,7 +99,7 @@ export default async function Page({ params }: Props) {
       <JsonLd data={dataset} />
       <JsonLd data={breadcrumb([{ nome: 'Índice', caminho: '/' }, { nome, caminho: `/${uf}` }])} />
       <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome }]} />
-      <h1>Estabelecimentos ativos por segmento em {nome} ({sigla})</h1>
+      <h1>Estabelecimentos ativos por segmento no estado de {nome} ({sigla})</h1>
       <p className="lead">
         O Índice acompanha {coberturas.length} segmentos em {n(municipios.length)} municípios de {nome} com página publicada.
         São {n(totalPublicado)} estabelecimentos com CNPJ ativo nas páginas do estado, de {n(totalEstado)} nos segmentos
