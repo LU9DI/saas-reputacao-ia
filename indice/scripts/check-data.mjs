@@ -24,6 +24,10 @@ const lerJson = (caminho) => {
 if (!existsSync(path.join(dir, 'meta.json'))) falhaFatal(`Dados não encontrados em ${dir} (falta meta.json).`);
 
 const meta = lerJson(path.join(dir, 'meta.json'));
+if (meta.sintetico === true) {
+  console.error('\n[check-data] Base marcada como sintética. O build de produção foi bloqueado para impedir a publicação de números fictícios.\n');
+  process.exit(1);
+}
 const problemas = [];
 const exigir = (condicao, mensagem) => {
   if (!condicao) problemas.push(mensagem);
