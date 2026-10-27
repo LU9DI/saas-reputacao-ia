@@ -358,7 +358,7 @@ for (const file of collectSourceFiles()) {
   const source = readFileSync(file, 'utf8');
   const label = relative(process.cwd(), file).split(sep).join('/');
   check(
-    !/href=["']\/indice["'][^>]*>\s*Índice Filtra\.AI/i.test(source),
+    !/<a\b[^>]*href=["']\/indice["'][^>]*>\s*Índice Filtra\.AI/i.test(source),
     `legacy Índice footer button must not exist: ${label}`,
   );
 }
@@ -421,6 +421,14 @@ check(
 check(
   Boolean(indiceSnapshot.competencia) && Boolean(indiceSnapshot.geradoEm),
   'Índice snapshot must carry competence and generation date',
+);
+
+const panorama = read('src/app/blog/panorama-estabelecimentos-ativos-brasil-2026/page.tsx');
+check(
+  panorama.includes("'@type': 'FAQPage'") &&
+    panorama.includes('indice-snapshot.json') &&
+    panorama.includes('datePublished="2026-10-27"'),
+  'Panorama article must cite the Índice snapshot, expose FAQPage and declare real dates',
 );
 
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));

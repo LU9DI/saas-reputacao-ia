@@ -34,6 +34,7 @@ export const metadata: Metadata = {
 };
 
 const posts = [
+  { href: '/blog/panorama-estabelecimentos-ativos-brasil-2026', title: 'Panorama dos estabelecimentos ativos no Brasil (2026): 9 segmentos em números', intent: 'Dados · CNPJ' },
   { href: '/calculadora-nota-google', title: 'Calculadora de nota do Google: quantas avaliações faltam?', intent: 'Ferramenta gratuita' },
   { href: '/blog/gestao-reputacao-online-guia', title: 'Como fazer gestão de reputação online: guia prático', intent: 'Guia · Reputação' },
   { href: '/blog/como-responder-avaliacoes-negativas', title: 'Como responder avaliações negativas: guia para empresas', intent: 'Guia · Avaliações' },

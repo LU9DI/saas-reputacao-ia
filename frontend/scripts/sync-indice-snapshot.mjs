@@ -60,6 +60,7 @@ const segmentos = new Map(
   ]),
 );
 const porEstado = new Map(meta.segmentos.map((s) => [s.slug, new Map()]));
+const porEstadoTodos = new Map();
 const municipiosComPagina = new Map(meta.segmentos.map((s) => [s.slug, new Set()]));
 let ativosTodos = 0;
 const municipiosTodos = new Set();
@@ -74,6 +75,7 @@ for (const [uf, municipios] of Object.entries(stats)) {
       ativosTodos += registro.a;
       const mapa = porEstado.get(slug);
       mapa.set(uf, (mapa.get(uf) || 0) + registro.a);
+      porEstadoTodos.set(uf, (porEstadoTodos.get(uf) || 0) + registro.a);
       if (registro.a >= meta.minimoParaIndexar) {
         municipiosComPagina.get(slug).add(`${uf}/${municipio}`);
         municipiosTodos.add(`${uf}/${municipio}`);
@@ -104,6 +106,11 @@ const snapshot = {
     municipiosComPagina: municipiosTodos.size,
     estados: estadosTodos.size,
     segmentos: segmentos.size,
+    topEstados: [...porEstadoTodos.entries()]
+      .filter(([, ativos]) => ativos > 0)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .slice(0, 5)
+      .map(([uf, ativos]) => ({ uf, nome: ESTADOS[uf] || uf, ativos })),
   },
   segmentos: Object.fromEntries(segmentos),
 };
