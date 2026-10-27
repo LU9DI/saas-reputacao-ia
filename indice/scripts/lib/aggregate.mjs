@@ -49,7 +49,7 @@ export function parseLinha(linha) {
 }
 
 function dataValidaAAAAMMDD(texto) {
-  if (!/^\\d{8}$/.test(texto || '')) return false;
+  if (!/^\d{8}$/.test(texto || '')) return false;
   const ano = Number(texto.slice(0, 4));
   const mes = Number(texto.slice(4, 6));
   const dia = Number(texto.slice(6, 8));
@@ -100,8 +100,12 @@ export function validarLayout(campos) {
   if (!/^\d{7}$/.test(campos[COL.CNAE_PRINCIPAL])) problemas.push(`coluna ${COL.CNAE_PRINCIPAL} (CNAE) = "${campos[COL.CNAE_PRINCIPAL]}"`);
   if (!/^[A-Z]{2}$/.test(campos[COL.UF])) problemas.push(`coluna ${COL.UF} (UF) = "${campos[COL.UF]}"`);
   if (!/^\d{1,5}$/.test(campos[COL.MUNICIPIO])) problemas.push(`coluna ${COL.MUNICIPIO} (município) = "${campos[COL.MUNICIPIO]}"`);
-  const ini = campos[COL.DATA_INICIO];
-  if (ini !== '0' && ini !== '00000000' && ini !== '' && !/^\d{8}$/.test(ini)) problemas.push(`coluna ${COL.DATA_INICIO} (início) = "${ini}"`);
+  for (const coluna of [COL.DATA_SITUACAO, COL.DATA_INICIO]) {
+    const valor = campos[coluna];
+    if (valor !== '0' && valor !== '00000000' && valor !== '' && !dataValidaAAAAMMDD(valor)) {
+      problemas.push(`coluna ${coluna} (data AAAAMMDD) inválida = "${valor}"`);
+    }
+  }
   return problemas;
 }
 
