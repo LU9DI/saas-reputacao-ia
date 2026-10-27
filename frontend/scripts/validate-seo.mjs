@@ -342,5 +342,27 @@ for (const route of [
   check(line?.includes('statusCode: 301'), `${route} must redirect with statusCode 301`);
 }
 
+function collectSourceFiles(directory = appRoot) {
+  const found = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = resolve(directory, entry.name);
+    if (entry.isDirectory()) found.push(...collectSourceFiles(fullPath));
+    else if (entry.isFile() && /\.(tsx|ts)$/.test(entry.name)) found.push(fullPath);
+  }
+  return found;
+}
+
+// O botão "Índice Filtra.AI" foi removido do rodapé. Nenhum href para /indice
+// pode voltar ao frontend, e o cleanup defensivo precisa continuar no layout.
+for (const file of collectSourceFiles()) {
+  const source = readFileSync(file, 'utf8');
+  const label = relative(process.cwd(), file).split(sep).join('/');
+  check(!/href=["']\/indice(?:\/|["'?])/.test(source), `legacy Índice footer link must not exist: ${label}`);
+}
+check(
+  rootLayout.includes('legacy-indice-footer-cleanup'),
+  'Root layout must keep the defensive cleanup of the legacy Índice footer link',
+);
+
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
 console.log(`SEO source validation passed: ${paths.length} canonical paths, ${families.length} hreflang families and ${sitemapPaths.length} unique sitemap path literals checked.`);
