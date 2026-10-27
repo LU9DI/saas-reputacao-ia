@@ -38,6 +38,7 @@
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "seo:validate": "node scripts/validate-seo.mjs",
     "seo:audit": "node scripts/audit-indexing.mjs",
+    "seo:meta:audit": "node scripts/audit-meta-descriptions.mjs",
     "seo:markdown:validate": "node scripts/validate-markdown-twins.mjs",
     "seo:jsonld:test": "node scripts/test-seo-jsonld-global.mjs"
   }

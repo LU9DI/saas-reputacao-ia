@@ -4,7 +4,7 @@ import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
   title: 'IA para ChatGPT, Claude e Grok | Análise de reputação',
-  description: 'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação. Conecte o endpoint MCP oficial e leve os dados da sua empresa para seus agentes de IA.',
+  description: 'Analise avaliações e reputação com clientes de IA compatíveis com MCP. Conecte o endpoint oficial e leve os dados da sua empresa aos seus agentes.',
   alternates: {
     canonical: 'https://filtraai.com/ia',
     languages: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: 'Filtra.AI',
     locale: 'pt_BR',
     title: 'IA para ChatGPT, Claude e Grok | Análise de reputação',
-    description: 'Use o Filtra.AI com clientes de IA compatíveis com MCP para analisar avaliações e reputação. Conecte o endpoint MCP oficial e leve os dados da sua empresa para seus agentes de IA.',
+    description: 'Analise avaliações e reputação com clientes de IA compatíveis com MCP. Conecte o endpoint oficial e leve os dados da sua empresa aos seus agentes.',
     images: [OG_IMAGE_META],
   },
   twitter: {
