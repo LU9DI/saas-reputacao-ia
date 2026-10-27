@@ -10,7 +10,34 @@
     "ativos": 4105567,
     "municipiosComPagina": 5012,
     "estados": 27,
-    "segmentos": 9
+    "segmentos": 9,
+    "topEstados": [
+      {
+        "uf": "SP",
+        "nome": "São Paulo",
+        "ativos": 1145298
+      },
+      {
+        "uf": "MG",
+        "nome": "Minas Gerais",
+        "ativos": 473759
+      },
+      {
+        "uf": "RJ",
+        "nome": "Rio de Janeiro",
+        "ativos": 371642
+      },
+      {
+        "uf": "PR",
+        "nome": "Paraná",
+        "ativos": 296802
+      },
+      {
+        "uf": "RS",
+        "nome": "Rio Grande do Sul",
+        "ativos": 255287
+      }
+    ]
   },
   "segmentos": {
     "restaurantes": {
