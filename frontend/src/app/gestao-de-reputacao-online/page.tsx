@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { IndiceData } from '../components/IndiceData';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -111,6 +112,7 @@ export default function Page() {
           body: 'Acompanhe nota e distribuição das avaliações, volume novo, temas que subiram ou caíram, problemas recorrentes, elogios mais frequentes e evolução por unidade. O objetivo não é produzir outro relatório: é descobrir o que merece ação agora e verificar se a ação funcionou.'
         },
       ]}
+      afterSections={<IndiceData />}
       faq={faq}
     />
   );

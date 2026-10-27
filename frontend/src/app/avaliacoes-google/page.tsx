@@ -90,6 +90,28 @@ export default function Page() {
           body: 'IA acelera classificação, agrupamento, resumo e busca de padrões. Ela funciona melhor como camada de triagem e inteligência sobre a operação, preservando revisão humana quando o contexto do cliente exige interpretação.'
         },
       ]}
+      faq={[
+        {
+          question: 'O que é uma avaliação Google?',
+          answer: 'É uma nota de 1 a 5 estrelas, com comentário opcional, publicada por um cliente no perfil da empresa no Google. Ela aparece na Busca e no Maps e compõe a reputação pública do negócio.',
+        },
+        {
+          question: 'Como responder a uma avaliação negativa?',
+          answer: 'Reconheça o ponto, responda com respeito e evite discutir dados pessoais em público. Investigue a causa, ofereça um canal privado quando fizer sentido e acompanhe se o problema se repete. Não ofereça benefícios para alterar ou remover a avaliação.',
+        },
+        {
+          question: 'Posso pedir avaliações aos clientes?',
+          answer: 'Sim, com convite neutro, sem recompensa e sem selecionar apenas clientes satisfeitos. O Google não permite solicitar avaliações apenas de quem está satisfeito, prática conhecida como review gating.',
+        },
+        {
+          question: 'Quantas avaliações preciso para melhorar a nota?',
+          answer: 'Depende da nota atual, do volume e das notas já existentes. A calculadora de nota do Google estima o esforço necessário para atingir uma meta, mas o resultado não é garantido e a nota não deve ser tratada como ranking.',
+        },
+        {
+          question: 'Avaliações antigas ainda importam?',
+          answer: 'Sim. Elas continuam na média e no histórico, mas recência e volume também influenciam a percepção. Um fluxo contínuo de avaliações costuma transmitir mais atualidade do que um pico isolado.',
+        },
+      ]}
     />
   );
 }

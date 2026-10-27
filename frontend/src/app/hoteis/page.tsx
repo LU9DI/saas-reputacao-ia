@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { IndiceData } from '../components/IndiceData';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export const metadata: Metadata = {
@@ -91,6 +92,7 @@ export default function HoteisPage() {
           answer: 'Investigue o fato, responda com respeito e evite discutir detalhes pessoais em público. Quando necessário, convide para o canal privado, registre a causa e acompanhe a correção. Não ofereça benefícios para remover ou alterar a avaliação.',
         },
       ]}
+      afterSections={<IndiceData segmento="hoteis" />}
     />
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { IndiceData } from '../components/IndiceData';
 
 export const metadata: Metadata = {
   title: 'Avaliações Google para restaurantes',
@@ -79,6 +80,7 @@ export default function RestaurantesPage() {
           answer: 'Não selecione clientes pela nota esperada. Ofereça o canal a todos, sem pressão e sem benefícios condicionados à avaliação. Se alguém relatar um problema, ofereça atendimento, mas preserve a liberdade de publicar uma opinião honesta.',
         },
       ]}
+      afterSections={<IndiceData segmento="restaurantes" />}
     />
   );
 }

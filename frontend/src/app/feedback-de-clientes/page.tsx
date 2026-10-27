@@ -68,6 +68,28 @@ export default function Page() {
           body: 'Volume de feedback, distribuição por nota, temas recorrentes, evolução por período e diferenças entre unidades formam uma visão mais útil do que uma única nota média.'
         },
       ]}
+      faq={[
+        {
+          question: 'Qual a diferença entre feedback e avaliação pública?',
+          answer: 'O feedback é a opinião enviada em um canal da empresa, público ou privado; a avaliação pública é a nota e o comentário publicados no Google ou em outra plataforma. O feedback privado permite tratar o problema antes de uma exposição pública.',
+        },
+        {
+          question: 'Como coletar feedback do cliente?',
+          answer: 'Ofereça um canal simples logo após um ponto natural da jornada, como link direto, QR Code na mesa, na conta ou na embalagem. O convite deve ser neutro, sem pressão por nota e sem condicionar benefícios.',
+        },
+        {
+          question: 'Feedback privado pode virar avaliação pública?',
+          answer: 'Só se o cliente decidir publicar. Não publique conteúdo privado nem dados pessoais sem consentimento. O papel da empresa é responder e corrigir a causa, preservando a escolha do cliente.',
+        },
+        {
+          question: 'O que fazer com um feedback negativo?',
+          answer: 'Classifique o tema, responda com respeito, encaminhe para a área responsável e registre a correção. Acompanhe se o mesmo tema volta a aparecer para distinguir um caso isolado de um problema recorrente.',
+        },
+        {
+          question: 'Como tratar feedback e LGPD?',
+          answer: 'Colete o mínimo necessário, informe a finalidade e evite expor dados pessoais em respostas ou relatórios. Consulte a política de privacidade do Filtra.AI e as obrigações da sua empresa antes de reutilizar o conteúdo.',
+        },
+      ]}
     />
   );
 }

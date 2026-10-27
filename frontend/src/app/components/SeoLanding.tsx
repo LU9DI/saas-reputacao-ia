@@ -120,6 +120,7 @@ export function SeoLanding({
   contextLinks,
   mcpEndpoint,
   faq,
+  afterSections,
 }: {
   h1: string;
   lead: string;
@@ -130,6 +131,7 @@ export function SeoLanding({
   contextLinks?: ContextLink[];
   mcpEndpoint?: string;
   faq?: FaqItem[];
+  afterSections?: ReactNode;
 }) {
   const resolvedContextLinks = contextLinks || (breadcrumbHref ? CONTEXT_LINKS_BY_PATH[breadcrumbHref] : undefined) || DEFAULT_CONTEXT_LINKS;
   return (
@@ -189,6 +191,8 @@ export function SeoLanding({
             <p className="text-sm leading-relaxed text-zinc-300">{section.body}</p>
           </section>
         ))}
+
+        {afterSections}
 
         {faq && faq.length > 0 && (
           <section className="space-y-3">
