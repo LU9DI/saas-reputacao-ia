@@ -10,24 +10,6 @@ Filtra.AI é uma plataforma web para gestão de reputação online e análise de
 
 Não presumir integrações, automações ou garantias de resultado que não estejam descritas na documentação pública. Sugestões geradas por IA devem ser revisadas conforme o contexto.
 
-## Índice Filtra.AI (dados públicos de CNPJ)
-O Índice Filtra.AI é uma publicação separada da plataforma de reputação. Ele conta estabelecimentos com CNPJ ativo nos segmentos acompanhados, por estado e município, usando o cadastro aberto do CNPJ da Receita Federal do Brasil.
-
-- Índice: https://filtraai.com/indice
-- Metodologia do Índice: https://filtraai.com/indice/metodologia
-- Sitemap do Índice: https://filtraai.com/indice/sitemap-index.xml
-- Fonte primária: https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj
-- Unidade: estabelecimento com CNPJ; matriz e filial do mesmo grupo contam separadamente.
-- Universo: segmentos definidos pela atividade econômica principal (CNAE). Não é o total de empresas brasileiras.
-- Aberturas e baixas: janela de 12 meses fechados antes da competência; não formam um saldo líquido.
-- Publicação: só existem páginas para combinações município × segmento que atingem o mínimo de estabelecimentos ativos definido na metodologia.
-- Atualização: mensal, com a competência e a data de geração efetivamente processadas exibidas em cada página.
-- Limitações: situação cadastral ativa não garante funcionamento; a classificação CNAE pode diferir do uso popular; o Índice não mede reputação, faturamento, qualidade ou participação de mercado; correlação não é causalidade.
-- Outras bases: reclamações no Consumidor.gov.br e avaliações do Google são universos separados e não entram nas contagens do Índice.
-- Citação: Filtra.AI, título da página, competência e data de geração, com a URL canônica.
-
-O Índice não promete indexação, citação ou posição em buscadores ou sistemas de IA. A medição de indexação e tráfego é feita no Search Console, não por esse arquivo.
-
 ## Páginas oficiais
 - Página inicial: https://filtraai.com/
 - Plataforma: https://filtraai.com/filtra-ai
@@ -38,7 +20,6 @@ O Índice não promete indexação, citação ou posição em buscadores ou sist
 - Reputação no Google: https://filtraai.com/reputacao-google
 - Agências: https://filtraai.com/agencias
 - Planos: https://filtraai.com/planos
-- Índice Filtra.AI: https://filtraai.com/indice
 - Blog: https://filtraai.com/blog
 - Privacidade: https://filtraai.com/privacidade
 - Termos: https://filtraai.com/termos
