@@ -5,6 +5,7 @@ import { BrandMark } from '../components/BrandMark';
 import { PreviewNavigator } from '../components/PreviewNavigator';
 import { PlanCards } from '../components/PlanCards';
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
 
 type Copy = {
@@ -320,6 +321,26 @@ const TRIAL_HREF = '/preview/teste';
 export default function LandingPreview() {
   const { language } = useLanguage();
   const c = copy[language];
+
+  // Remove o link legado do Índice caso ele ainda venha de HTML/cache antigo.
+  useEffect(() => {
+    const removeLegacyIndexLink = () => {
+      document.querySelectorAll('footer a[href]').forEach((node) => {
+        const anchor = node as HTMLAnchorElement;
+        try {
+          const url = new URL(anchor.href, window.location.origin);
+          if (url.pathname.replace(/\\/$/, '') === '/indice') anchor.remove();
+        } catch {
+          // Ignore invalid links; keep the rest of the footer intact.
+        }
+      });
+    };
+
+    removeLegacyIndexLink();
+    const observer = new MutationObserver(removeLegacyIndexLink);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
   const seo = {
     pt: { eyebrow:'SEO & reputação', title:'Entenda e melhore a reputação da sua empresa.', text:'Conteúdos e ferramentas para transformar feedback, avaliações e reputação online em ações de crescimento.', more:'Saiba mais →', segment:'Soluções por segmento', guides:'Guias para aprofundar', links:[['/filtra-ai','Filtra.AI','Conheça a plataforma e como ela organiza reputação, avaliações e feedback com IA.'],['/reputacao-google','Reputação no Google','Entenda como fortalecer a presença e a confiança da empresa no Google.'],['/como-melhorar-avaliacoes-google','Como melhorar avaliações Google','Guia prático para criar uma rotina de feedback e avaliações.'],['/monitoramento-reputacao-online','Monitoramento de reputação online','Acompanhe sinais, avaliações e temas que merecem atenção.'],['/gestao-de-feedback','Gestão de feedback','Transforme opiniões de clientes em prioridades de melhoria.'],['/ia','Filtra.AI para IA','Leve análise de reputação, avaliações e feedback para ChatGPT, Claude e Grok.'],['/feedback-de-clientes','Feedback de clientes','Transforme opiniões em sinais claros para melhorar a experiência.'],['/analise-de-avaliacoes-com-ia','Análise de avaliações com IA','Encontre temas, sentimentos e pontos de atenção em escala.'],['/gestao-de-reputacao-online','Gestão de reputação online','Acompanhe avaliações, respostas, tendências e evolução.'],['/avaliacoes-google','Avaliações Google','Organize avaliações, respostas e temas recorrentes em uma rotina de gestão.'],['/auditoria-gratuita','Auditoria gratuita','Faça um diagnóstico inicial da reputação da sua empresa.'],['/calculadora-nota-google','Calculadora de nota do Google','Estime quantas avaliações seriam necessárias para alcançar uma nota desejada.']],segments:[['/hoteis','Hotéis','Avaliações de hóspedes e reputação hoteleira.'],['/restaurantes','Restaurantes','Feedback, avaliações e experiência no atendimento.'],['/clinicas','Clínicas','Reputação e experiência de pacientes.'],['/franquias','Franquias','Visão da reputação por unidade e rede.'],['/associacoes','Associações','Feedback de associados e entidades setoriais.'],['/turismo','Turismo','Reputação para operações e negócios turísticos.'],['/agencias','Agências','Gestão de reputação para carteiras de clientes.'],['/parceiros','Parceiros','Programa para consultorias, agências e entidades.']]},
     en: { eyebrow:'SEO & reputation', title:'Understand and improve your company reputation.', text:'Content and tools to turn feedback, reviews and online reputation into growth actions.', more:'Learn more →', segment:'Solutions by segment', guides:'Guides to go deeper', links:[['/filtra-ai','Filtra.AI','Brazilian platform for online reputation management, Google reviews and customer feedback with AI.'],['/reputacao-google','Google reputation','Strengthen your company presence and trust in Google.'],['/como-melhorar-avaliacoes-google','Improve Google reviews','A practical guide to building a review and feedback routine.'],['/monitoramento-reputacao-online','Online reputation monitoring','Track signals, reviews and themes that need attention.'],['/gestao-de-feedback','Feedback management','Turn customer opinions into improvement priorities.'],['/ia','Filtra.AI for AI','Bring reputation, review and feedback intelligence to ChatGPT, Claude and Grok.'],['/feedback-de-clientes','Customer feedback','Turn opinions into clear signals for better customer experience.'],['/analise-de-avaliacoes-com-ia','AI review analysis','Find themes, sentiment and attention points at scale.'],['/gestao-de-reputacao-online','Online reputation management','Track reviews, responses, trends and reputation progress.'],['/auditoria-gratuita','Free audit','Get an initial diagnosis of your company reputation.']],segments:[['/hoteis','Hotels','Guest reviews and hotel reputation.'],['/restaurantes','Restaurants','Feedback, reviews and service experience.'],['/clinicas','Clinics','Patient experience and reputation.'],['/franquias','Franchises','Reputation visibility by location and network.'],['/associacoes','Associations','Feedback from members and organizations.'],['/turismo','Tourism','Reputation for tourism operations and businesses.'],['/agencias','Agencies','Reputation management for client portfolios.'],['/parceiros','Partners','Program for consultants, agencies and organizations.']]},
