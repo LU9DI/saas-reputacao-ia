@@ -322,17 +322,24 @@ export default function LandingPreview() {
   const { language } = useLanguage();
   const c = copy[language];
 
-  // Remove o link legado do Índice caso ele ainda venha de HTML/cache antigo.
+  // Remove qualquer link legado do Índice no rodapé, inclusive URLs absolutas
+  // e links inseridos posteriormente por HTML/cache antigo.
   useEffect(() => {
     const removeLegacyIndexLink = () => {
       document.querySelectorAll('footer a[href]').forEach((node) => {
         const anchor = node as HTMLAnchorElement;
+        const href = anchor.getAttribute('href') || '';
+        let isIndexLink = /(?:^|\/)indice\/?(?:[?#].*)?$/i.test(href);
+
         try {
           const url = new URL(anchor.href, window.location.origin);
-          if (url.pathname.replace(/\\/$/, '') === '/indice') anchor.remove();
+          isIndexLink ||= url.pathname.replace(/\/$/, '').toLowerCase() === '/indice';
         } catch {
-          // Ignore invalid links; keep the rest of the footer intact.
+          // A checagem do href relativo acima continua válida.
         }
+
+        isIndexLink ||= /índice\s+filtra\.ai/i.test(anchor.textContent || '');
+        if (isIndexLink) anchor.remove();
       });
     };
 
