@@ -140,7 +140,7 @@ const homePage = read('src/app/preview/page.tsx');
 const llms = read('public/llms.txt');
 const llmsFull = read('public/llms-full.txt');
 
-check(homePage.includes('<a href="/indice"'), 'Home footer must link to the separately hosted Índice');
+check(!homePage.includes('<a href="/indice"'), 'Home footer must not link to the separately hosted Índice');
 check(
   llms.includes('https://filtraai.com/indice') && llms.includes('https://filtraai.com/indice/metodologia'),
   'llms.txt must list the Índice and its methodology',
