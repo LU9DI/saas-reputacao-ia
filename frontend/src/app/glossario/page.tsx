@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
@@ -123,7 +124,7 @@ export default function Page() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(definedTermSet) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(definedTermSet) }}
       />
       <SeoLanding
         h1="Glossário de reputação online e avaliações Google"

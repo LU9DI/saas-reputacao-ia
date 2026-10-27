@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -2145,7 +2146,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
 
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{__html:JSON.stringify({
+      dangerouslySetInnerHTML={{__html:serializeJsonLd({
         '@context':'https://schema.org',
         '@type':'WebPage',
         name:topic.title,
@@ -2161,7 +2162,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     />
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{__html:JSON.stringify({
+      dangerouslySetInnerHTML={{__html:serializeJsonLd({
         '@context':'https://schema.org',
         '@type':'BreadcrumbList',
         itemListElement:[
@@ -2173,7 +2174,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     {unique && unique.faq.length>0 && (
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{__html:JSON.stringify({
+        dangerouslySetInnerHTML={{__html:serializeJsonLd({
           '@context':'https://schema.org',
           '@type':'FAQPage',
           mainEntity:unique.faq.map(item=>({'@type':'Question',name:item.question,acceptedAnswer:{'@type':'Answer',text:item.answer}}))

@@ -1,3 +1,4 @@
+import { serializeJsonLd } from './lib/safeJsonLd';
 import type { Metadata } from 'next';
 import PreviewLanding from './preview/page';
 
@@ -51,7 +52,7 @@ export default function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(homepageSchema) }}
       />
       <PreviewLanding />
     </>

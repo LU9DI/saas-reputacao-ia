@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandMark } from '../../components/BrandMark';
@@ -70,7 +71,7 @@ export default function BlogReputacaoOnlinePage() {
       datePublished="2026-09-30"
       dateModified="2026-10-20"
     />
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }} />
     <div className="min-h-screen bg-black text-zinc-100 font-sans">
       <header className="w-full max-w-3xl mx-auto flex items-center justify-between px-4 pt-6 pb-4">
         <BrandMark size="md" subtitle="Blog" href="/" />

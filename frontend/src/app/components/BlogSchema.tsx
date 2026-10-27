@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 import {
   buildBlogPosting,
   buildBreadcrumbList,
@@ -12,11 +13,11 @@ export function BlogSchema(props: BlogPostingInput) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(article) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumb) }}
       />
     </>
   );

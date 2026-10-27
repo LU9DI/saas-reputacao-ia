@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SeoPageHeader } from '../components/SeoPageHeader';
@@ -80,15 +81,15 @@ export default function FiltraAiPage() {
       <main className="mx-auto max-w-4xl px-6 py-16 text-zinc-100">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webpageSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(entitySchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(entitySchema) }}
       />
       <p className="text-sm font-semibold uppercase tracking-wider text-indigo-400">Filtra.AI</p>
       <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-6xl">
