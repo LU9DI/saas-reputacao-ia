@@ -45,7 +45,12 @@ jobs:
           ZIP: ${{ inputs.zip_inspecao }}
           FILTRO: ${{ inputs.filtro_inspecao }}
         run: |
-          mkdir -p /tmp/insp && curl -sS -L -m 300 -o /tmp/insp/a.zip "$ZIP"
+          mkdir -p /tmp/insp
+          case "$ZIP" in
+            *.zip) ;;
+            *) T=$(curl -sS -L -m 120 "$ZIP" | tr -d '\r' | head -12 | cut -c1-200 | base64 -w0); echo "::error title=Inspecao::$T"; exit 1;;
+          esac
+          curl -sS -L -m 300 -o /tmp/insp/a.zip "$ZIP"
           LIST=$(unzip -l /tmp/insp/a.zip | cut -c1-100)
           F=$(unzip -Z1 /tmp/insp/a.zip | head -1)
           if [ -n "$FILTRO" ]; then HEAD=$(unzip -p /tmp/insp/a.zip "$F" | grep -E "$FILTRO" | head -40 | cut -c1-160); else HEAD=$(unzip -p /tmp/insp/a.zip "$F" | head -6 | cut -c1-400); fi
