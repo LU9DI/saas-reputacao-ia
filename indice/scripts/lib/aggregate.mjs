@@ -48,16 +48,28 @@ export function parseLinha(linha) {
   return linha.slice(1, fim).split('";"');
 }
 
+function dataValidaAAAAMMDD(texto) {
+  if (!/^\\d{8}$/.test(texto || '')) return false;
+  const ano = Number(texto.slice(0, 4));
+  const mes = Number(texto.slice(4, 6));
+  const dia = Number(texto.slice(6, 8));
+  if (ano < 1900 || mes < 1 || mes > 12 || dia < 1 || dia > 31) return false;
+  const data = new Date(Date.UTC(ano, mes - 1, dia));
+  return data.getUTCFullYear() === ano && data.getUTCMonth() === mes - 1 && data.getUTCDate() === dia;
+}
+
 function dataNumerica(texto) {
-  if (!texto || texto.length !== 8) return 0;
+  if (!dataValidaAAAAMMDD(texto)) return 0;
   const n = Number(texto);
-  return Number.isInteger(n) && n > 19000101 ? n : 0;
+  return n > 19000101 ? n : 0;
 }
 
 /** "2026-10" -> janelas de 12 meses fechados anteriores à competência. */
 export function janelas(competencia) {
   const m = /^(\d{4})-(\d{2})$/.exec(competencia);
-  if (!m) throw new Error(`Competência inválida: ${competencia} (esperado AAAA-MM)`);
+  if (!m || Number(m[1]) < 1900 || Number(m[2]) < 1 || Number(m[2]) > 12) {
+    throw new Error(`Competência inválida: ${competencia} (esperado AAAA-MM com mês entre 01 e 12)`);
+  }
   const ano = Number(m[1]);
   const mes = Number(m[2]);
   const inicioComp = ano * 10000 + mes * 100 + 1;
