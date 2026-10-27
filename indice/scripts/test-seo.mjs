@@ -69,6 +69,7 @@ async function request(path, { method = 'GET', follow = false } = {}) {
       location,
       contentType: response.headers.get('content-type') || '',
       robotsHeader: response.headers.get('x-robots-tag') || '',
+      linkHeader: response.headers.get('link') || '',
       body,
     });
 
@@ -709,6 +710,56 @@ try {
     'sitemap inclui o estado e o município amostrados',
     conjuntoLocs.has(canonicalPath(`/${AMOSTRAS.uf.toLowerCase()}`)) &&
       conjuntoLocs.has(canonicalPath(`/${AMOSTRAS.uf.toLowerCase()}/${AMOSTRAS.municipio}`)),
+  );
+
+  // GEO/AEO: arquivos para agentes e gêmeas em Markdown.
+  const llms = await request(`${BASE_PATH}/llms.txt`);
+  checkEqual('GET /indice/llms.txt status', llms.final.status, 200);
+  check('llms.txt é texto', llms.final.contentType.includes('text/plain'), llms.final.contentType);
+  check('llms.txt aponta a home do Índice', llms.final.body.includes(CANONICAL_BASE));
+  check(
+    'llms.txt inclui a fonte primária',
+    llms.final.body.includes('https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj'),
+  );
+  check('llms.txt delimita o que não mede', /não mede reputação/i.test(llms.final.body));
+  check('llms.txt não promete indexação', /não promete indexação/i.test(llms.final.body));
+  check('llms.txt lista as gêmeas em Markdown', llms.final.body.includes(`${CANONICAL_BASE}/md`));
+
+  const llmsFull = await request(`${BASE_PATH}/llms-full.txt`);
+  checkEqual('GET /indice/llms-full.txt status', llmsFull.final.status, 200);
+  check('llms-full.txt é texto', llmsFull.final.contentType.includes('text/plain'), llmsFull.final.contentType);
+  check('llms-full.txt traz a metodologia resumida', /Metodologia resumida/.test(llmsFull.final.body));
+  check('llms-full.txt traz o bloco de citação', /Como citar/.test(llmsFull.final.body));
+
+  const mdHome = await request(`${BASE_PATH}/md`);
+  checkEqual('GET /indice/md status', mdHome.final.status, 200);
+  check('gêmea da home é text/markdown', mdHome.final.contentType.includes('text/markdown'), mdHome.final.contentType);
+  check(
+    'gêmea da home declara o canonical via Link',
+    /rel="canonical"/.test(mdHome.final.linkHeader) && mdHome.final.linkHeader.includes(`<${CANONICAL_BASE}>`),
+    mdHome.final.linkHeader,
+  );
+  check('gêmea da home é noindex', /noindex/i.test(mdHome.final.robotsHeader), mdHome.final.robotsHeader);
+  check('gêmea da home tem H1', /^# .+/m.test(mdHome.final.body));
+  check('gêmea da home não tem HTML', !/<(div|script|nav)[\s>]/i.test(mdHome.final.body));
+
+  const mdUf = await request(`${BASE_PATH}/md/${AMOSTRAS.uf.toLowerCase()}`);
+  checkEqual('GET /indice/md/<uf> status', mdUf.final.status, 200);
+  check('gêmea do estado traz o recorte', /# Estabelecimentos ativos por segmento em/.test(mdUf.final.body));
+
+  const mdCelula = await request(`${BASE_PATH}/md${caminhoCelula}`);
+  checkEqual('GET /indice/md/<célula> status', mdCelula.final.status, 200);
+  check(
+    'gêmea da célula aponta a fonte canônica',
+    mdCelula.final.body.startsWith(`> Fonte canônica: ${canonicalPath(caminhoCelula)} `),
+    mdCelula.final.body.slice(0, 120),
+  );
+
+  const mdAusente = await request(`${BASE_PATH}/md/zz/nao-existe`);
+  checkEqual('gêmea de rota inexistente responde 404', mdAusente.final.status, 404);
+  check(
+    'sitemap não lista gêmeas em Markdown',
+    ![...conjuntoLocs].some((url) => url.endsWith('.md') || url.includes('/md/')),
   );
 
   console.log(`\nDados: competência ${META.competencia}, ${ESPERADOS.length} URLs indexáveis, ${conjuntoLocs.size} no sitemap.`);

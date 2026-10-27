@@ -30,6 +30,33 @@ Depois de confirmar a resposta pública do sitemap, enviar `https://filtraai.com
 
 Não reduzir ou aumentar `minimoParaIndexar` apenas para alterar o volume de URLs. Usar `npm run audit:indexability` para avaliar cobertura e células finas e tomar decisões com base nos dados e na qualidade editorial.
 
+## Arquivos para agentes (GEO/AEO)
+
+Além do HTML, o Índice publica representações em texto para agentes e motores generativos:
+
+- `/indice/llms.txt` — índice curado: o que é, números da competência, estados, segmentos, limites e fonte.
+- `/indice/llms-full.txt` — referência completa com metodologia resumida, cobertura por segmento, como citar e links.
+- `/indice/md/<caminho>` — gêmea em Markdown de cada página (home, metodologia, UF, município e célula), com `Content-Type: text/markdown`, `Link: rel="canonical"` para o HTML e `X-Robots-Tag: noindex`.
+
+Regras que não devem ser quebradas:
+
+- O HTML continua sendo a URL canônica. As gêmeas `.md` ficam fora do sitemap e são descobertas pelo `llms.txt`.
+- Nenhum texto de `llms.txt`/`llms-full.txt` promete indexação, ranqueamento ou citação.
+- Todo número publicado nesses arquivos vem de `data/` e é gerado no build; não escrever número à mão.
+- `llms.txt` é convenção emergente, não padrão. O Google declara não usá-lo; a decisão de publicar é de baixo custo e não substitui sitemap, canonical e conteúdo útil.
+
+O teste `npm run test:seo` verifica status, Content-Type, canonical via `Link` e ausência de HTML nas gêmeas.
+
+## IndexNow
+
+Depois do deploy, quando as URLs já respondem em produção:
+
+    npm run seo:indexnow -- --dry-run   # mostra quantas URLs seriam enviadas
+    npm run seo:indexnow                # núcleo: home, metodologia e 27 UFs
+    npm run seo:indexnow -- --all       # todas as URLs do sitemap, em lotes de 10 mil
+
+O protocolo é adotado por Bing, Yandex, Seznam e Naver; o Google não participa. A chave fica em `https://filtraai.com/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt`, servida pelo site principal. Aceite do IndexNow é notificação, não prova de rastreamento ou indexação.
+
 ## Estado verificado em 26/10/2026
 
 - `https://filtraai.com/indice/sitemap-index.xml` respondeu com um sitemap filho.

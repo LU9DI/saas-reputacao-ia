@@ -5,7 +5,7 @@ import { OG_IMAGE_META } from '../lib/socialMetadata';
 export const metadata: Metadata = {
   title: 'Como funciona: feedback, avaliações e reputação',
   description:
-    'Veja como o Filtra.AI organiza feedback, facilita convites para avaliações genuínas no Google e ajuda a equipe a transformar insatisfação em melhoria. Trial de 7 dias grátis.',
+    'Veja como o Filtra.AI organiza feedback, apoia convites para avaliações genuínas e ajuda a equipe a transformar insatisfação em melhoria.',
   alternates: {
     canonical: 'https://filtraai.com/como-funciona',
     languages: {
