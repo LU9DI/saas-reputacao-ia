@@ -24,5 +24,21 @@ Não presumir integrações, automações ou garantias de resultado que não est
 - Privacidade: https://filtraai.com/privacidade
 - Termos: https://filtraai.com/termos
 
+## Índice Filtra.AI (base pública de CNPJ)
+O Índice é uma publicação separada do produto, servida em https://filtraai.com/indice. Ele deriva contagens agregadas do cadastro aberto de CNPJ da Receita Federal e não contém dados pessoais, sócios, endereços ou contatos.
+
+- Índice: https://filtraai.com/indice
+- Metodologia: https://filtraai.com/indice/metodologia
+- Sitemap do Índice: https://filtraai.com/indice/sitemap-index.xml
+- Fonte primária: https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj
+
+O que é medido: estabelecimentos com situação cadastral ativa, classificados pela atividade econômica principal (CNAE) e agregados por município e segmento. Matriz e filial são contadas separadamente. Aberturas e baixas usam a janela de 12 meses fechada antes da competência.
+
+O que não é medido: reputação, nota, faturamento, qualidade do atendimento, participação de mercado e o total de empresas brasileiras. A base cobre apenas os segmentos acompanhados e só publica páginas para combinações com pelo menos 10 estabelecimentos ativos; combinações abaixo disso respondem 404 e ficam fora do sitemap.
+
+Atualização: a ingestão é mensal e a página informa a competência e a data real de geração. Não há atualização em tempo real; o dado pode ficar alguns dias atrás da publicação da Receita.
+
+Publicar o sitemap e os dados não promete indexação, ranqueamento ou citação em buscadores e assistentes. A inclusão depende de cada motor e deve ser medida no Search Console e no Bing Webmaster Tools.
+
 ## Privacidade e responsabilidade
 Não inferir nem divulgar dados pessoais ou privados de clientes. Conteúdo de avaliações não autoriza reutilização de informações pessoais. As decisões operacionais e a comunicação final são responsabilidade da empresa usuária.

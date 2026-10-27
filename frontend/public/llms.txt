@@ -20,6 +20,15 @@ O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrent
 - Privacidade: https://filtraai.com/privacidade
 - Termos: https://filtraai.com/termos
 
+## Índice Filtra.AI (dados abertos de CNPJ)
+- Índice: https://filtraai.com/indice
+- Metodologia do Índice: https://filtraai.com/indice/metodologia
+- Sitemap do Índice: https://filtraai.com/indice/sitemap-index.xml
+- Índice para agentes (llms.txt): https://filtraai.com/indice/llms.txt
+- Referência completa do Índice: https://filtraai.com/indice/llms-full.txt
+- Fonte primária: https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj
+O Índice publica contagens mensais de estabelecimentos com CNPJ ativo por município e segmento, derivadas do cadastro aberto da Receita Federal. Ele conta estabelecimentos (matriz e filial separadamente) e não mede reputação, faturamento ou qualidade. Não é o total de empresas brasileiras: cobre apenas os segmentos acompanhados e só publica páginas para combinações com pelo menos 10 estabelecimentos ativos no segmento. Os números mudam a cada competência; use sempre a data de geração indicada na página.
+
 ## Princípios
 - Não tratar uma avaliação isolada como prova de um padrão sem contexto.
 - Usar análise automatizada como apoio, com revisão humana quando necessária.
