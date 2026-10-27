@@ -397,6 +397,12 @@ check(
   read('src/app/gestao-de-reputacao-online/page.tsx').includes('<IndiceData />'),
   'Reputation page must cite the Índice totals',
 );
+check(
+  localizedPages.includes('IndiceDataIntl') &&
+    localizedPages.includes("'en:hotels'") &&
+    localizedPages.includes("'es:clinicas'"),
+  'Localized segment pages must cite the Índice data in EN and ES',
+);
 
 const indiceSnapshot = JSON.parse(read('src/generated/indice-snapshot.json'));
 const glossarySource = read('src/app/glossario/page.tsx');
