@@ -11,6 +11,9 @@ on:
       sondar:
         description: 'true = só testar endereços de download (cabeçalhos, sem baixar)'
         required: false
+      zip_inspecao:
+        description: 'URL de um .zip: baixa e mostra a lista de arquivos, o cabeçalho e algumas linhas'
+        required: false
       urls_sonda:
         description: 'URLs extras (separadas por espaço) para a sondagem; se preenchido, só estas são testadas'
         required: false
@@ -33,6 +36,19 @@ jobs:
       - name: Testes do agregador
         working-directory: indice
         run: npm ci && npm test
+      - name: Inspecionar zip (opcional)
+        if: ${{ inputs.zip_inspecao != '' }}
+        env:
+          ZIP: ${{ inputs.zip_inspecao }}
+        run: |
+          mkdir -p /tmp/insp && curl -sS -L -m 300 -o /tmp/insp/a.zip "$ZIP"
+          LIST=$(unzip -l /tmp/insp/a.zip | cut -c1-100)
+          F=$(unzip -Z1 /tmp/insp/a.zip | head -1)
+          HEAD=$(unzip -p /tmp/insp/a.zip "$F" | head -6 | cut -c1-400)
+          LINES=$(unzip -p /tmp/insp/a.zip "$F" | wc -l)
+          MSG=$(printf '%s\n\nlinhas: %s\n%s' "$LIST" "$LINES" "$HEAD" | sed ':a;N;$!ba;s/\n/%0A/g')
+          echo "::error title=Inspecao::${MSG}"
+          exit 1
       - name: Sondar endereços (opcional)
         if: ${{ inputs.sondar == 'true' }}
         env:
