@@ -8,6 +8,10 @@ on:
       competencia:
         description: 'AAAA-MM (vazio = mais recente disponível)'
         required: false
+      base:
+        description: 'br (CNPJ, padrão) ou us (County Business Patterns, EUA)'
+        required: false
+        default: 'br'
       sondar:
         description: 'true = só testar endereços de download (cabeçalhos, sem baixar)'
         required: false
@@ -71,19 +75,19 @@ jobs:
           echo "::error title=Sondagem::${OUT:-sem URLs}"
           exit 1
       - name: Ingestão
-        env:
-          INDICE_RFB_SHARE_TOKEN: ${{ secrets.INDICE_RFB_SHARE_TOKEN }}
         working-directory: indice
+        env:
+          BASE: ${{ inputs.base }}
+          COMP: ${{ inputs.competencia }}
         run: |
-          if [ -n "$INDICE_RFB_SHARE_TOKEN" ]; then echo "::add-mask::$INDICE_RFB_SHARE_TOKEN"; fi
-          if [ -z "$INDICE_RFB_SHARE_TOKEN" ]; then
-            echo "::error title=Ingestão::INDICE_RFB_SHARE_TOKEN não configurado; nenhum download foi iniciado."
-            exit 1
-          fi
-          ARGS=""
-          if [ -n "${{ inputs.competencia }}" ]; then ARGS="--competencia=${{ inputs.competencia }}"; fi
           set +e
-          node scripts/ingest.mjs $ARGS 2>&1 | tee /tmp/ingest.log
+          if [ "$BASE" = "us" ]; then
+            node scripts/ingest-us.mjs 2>&1 | tee /tmp/ingest.log
+          else
+            ARGS=""
+            if [ -n "$COMP" ]; then ARGS="--competencia=$COMP"; fi
+            node scripts/ingest.mjs $ARGS 2>&1 | tee /tmp/ingest.log
+          fi
           CODE=${PIPESTATUS[0]}
           if [ "$CODE" -ne 0 ]; then
             # Anotação legível pela API (o download do log completo pode ser bloqueado).
@@ -94,13 +98,19 @@ jobs:
       - name: Abrir PR
         env:
           GH_TOKEN: ${{ github.token }}
+          BASE: ${{ inputs.base }}
         run: |
-          COMP=$(node -p "require('./indice/data/meta.json').competencia")
-          BR="indice/dados-$COMP"
+          if [ "$BASE" = "us" ]; then
+            COMP=$(node -p "require('./indice/data-us/meta.json').ano")
+            BR="indice/dados-us-$COMP"; DIR=indice/data-us; TIT="Índice EUA: dados CBP $COMP"
+          else
+            COMP=$(node -p "require('./indice/data/meta.json').competencia")
+            BR="indice/dados-$COMP"; DIR=indice/data; TIT="Índice: dados $COMP"
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BR"
-          git add -f indice/data
-          git commit -m "chore(indice): dados do CNPJ aberto, competência $COMP"
+          git add -f "$DIR"
+          git commit -m "chore(indice): dados $BASE, $COMP"
           git push -u origin "$BR"
-          gh pr create --title "Índice: dados $COMP" --body "Dados regenerados por indice/scripts/ingest.mjs. Conferir indice/data/meta.json (linhasLidas, UFs) antes do merge." --base main || echo "::warning title=PR::Não foi possível abrir o PR automaticamente (ajuste de permissão do Actions?). A branch $BR foi enviada; abra o PR manualmente."
+          gh pr create --title "$TIT" --body "Dados regenerados pelo workflow. Conferir meta.json antes do merge." --base main || echo "::warning title=PR::Não foi possível abrir o PR automaticamente. A branch $BR foi enviada; abra o PR manualmente."

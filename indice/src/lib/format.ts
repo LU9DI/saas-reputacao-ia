@@ -27,3 +27,13 @@ export function corta(texto: string, max: number): string {
   const corte = texto.slice(0, max - 1);
   return `${corte.slice(0, corte.lastIndexOf(' ')).replace(/[,;:.\s]+$/, '')}…`;
 }
+
+// --- English / US formatting ---
+export const nUS = (x: number) => x.toLocaleString('en-US');
+export function ordUS(x: number): string {
+  const r100 = x % 100;
+  if (r100 >= 11 && r100 <= 13) return `${nUS(x)}th`;
+  return `${nUS(x)}${({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[x % 10] ?? 'th'}`;
+}
+export const pctUS = (parte: number, total: number, casas = 1) =>
+  total > 0 ? `${((parte / total) * 100).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: casas })}%` : '0%';
