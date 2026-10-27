@@ -1,0 +1,50 @@
+name: SEO property data contract
+
+on:
+  pull_request:
+    paths:
+      - "seo-property/**"
+      - ".github/workflows/seo-property.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "seo-property/**"
+      - ".github/workflows/seo-property.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate data-backed SEO property
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: seo-property
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate JSON data contracts
+        run: |
+          node -e "JSON.parse(require('node:fs').readFileSync('data/benchmarks.json', 'utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('data/sectors.json', 'utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('data/intents.json', 'utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('data/consumidor-gov-contract.json', 'utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('data/consumidor-gov-sector-trends.json', 'utf8'))"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build with empty authorized dataset
+        run: npm run build
+
+      - name: Build sector-level public data pages without indexing until origin is configured
+        run: npm run build:sector-trends

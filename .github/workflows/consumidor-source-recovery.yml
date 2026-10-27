@@ -1,0 +1,135 @@
+name: Consumidor.gov.br source recovery diagnostic
+
+on:
+  pull_request:
+    paths:
+      - "seo-property/scripts/inspect-source.mjs"
+      - "seo-property/scripts/source-catalog.mjs"
+      - ".github/workflows/consumidor-source-recovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe-official-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Probe official catalog, legacy CSV, and current open-data page
+        working-directory: seo-property
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+
+          const targets = [
+            { label: 'official_legacy_catalog', url: 'https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br', kind: 'html' },
+            { label: 'official_legacy_csv_2025_12', url: 'https://dados.mj.gov.br/dataset/0182f1bf-e73d-42b1-ae8c-fa94d9ce9451/resource/a5e4db97-f2f4-4c96-aff0-209e18d3c8ff/download/basecompleta2025-12.csv', kind: 'csv' },
+            { label: 'official_current_open_data_page', url: 'https://www.consumidor.gov.br/pages/dadosabertos/externo/', kind: 'html' }
+          ];
+
+          for (const target of targets) {
+            const safe = { label: target.label, host: new URL(target.url).hostname };
+            try {
+              const response = await fetch(target.url, {
+                redirect: 'follow',
+                signal: AbortSignal.timeout(45000),
+                headers: {
+                  'user-agent': 'FiltraAI-public-data-source-check/1.0',
+                  'accept': target.kind === 'csv' ? 'text/csv,application/octet-stream,*/*' : 'text/html,application/json,*/*'
+                }
+              });
+              safe.status = response.status;
+              safe.finalHost = new URL(response.url).hostname;
+              safe.contentType = response.headers.get('content-type') || null;
+              safe.contentLength = response.headers.get('content-length') || null;
+
+              if (response.ok && target.kind === 'csv') {
+                const hash = createHash('sha256');
+                const decoder = new TextDecoder('utf-8', { fatal: true });
+                let bytes = 0;
+                let firstLine = '';
+                let gotHeader = false;
+                for await (const chunk of response.body) {
+                  const buffer = Buffer.from(chunk);
+                  bytes += buffer.length;
+                  hash.update(buffer);
+                  if (!gotHeader) {
+                    const part = decoder.decode(buffer, { stream: true });
+                    const newline = part.indexOf('\n');
+                    if (newline >= 0) {
+                      firstLine += part.slice(0, newline);
+                      gotHeader = true;
+                    } else {
+                      firstLine += part;
+                      if (firstLine.length > 200000) throw new Error('header_line_too_large');
+                    }
+                  }
+                  if (bytes > 2000000000) throw new Error('source_over_2GB_limit');
+                }
+                safe.downloadedBytes = bytes;
+                safe.sha256 = hash.digest('hex');
+                safe.headerComplete = gotHeader;
+                const header = firstLine.replace(/^\uFEFF/, '').replace(/\r$/, '');
+                safe.looksLikeHtml = /^\s*</.test(header);
+                if (gotHeader && !safe.looksLikeHtml) {
+                  safe.header = header;
+                  safe.schemaStatus = 'DISCOVERED_NOT_APPROVED';
+                } else {
+                  safe.schemaStatus = 'UNAVAILABLE_OR_UNRECOGNIZED';
+                }
+              } else {
+                await response.body?.cancel();
+              }
+            } catch (error) {
+              safe.error = error?.name === 'TimeoutError'
+                ? 'timeout'
+                : String(error?.message || error).replace(/https?:\/\/[^\s]+/g, '[url-redacted]').slice(0, 240);
+            }
+            console.log(JSON.stringify(safe));
+          }
+
+          // Inspect only public frontend asset references for the current data-open page.
+          // Never print HTML or arbitrary source text; emit only allowlisted URL/path candidates.
+          const pageUrl = 'https://www.consumidor.gov.br/pages/dadosabertos/externo/';
+          try {
+            const pageResponse = await fetch(pageUrl, { signal: AbortSignal.timeout(30000) });
+            const pageHtml = pageResponse.ok ? await pageResponse.text() : '';
+            const scriptRefs = [...pageHtml.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)]
+              .map(match => match[1]).slice(0, 30);
+            const candidates = new Set();
+            for (const ref of scriptRefs) {
+              let asset;
+              try { asset = new URL(ref, pageUrl); } catch { continue; }
+              if (asset.protocol !== 'https:' || !['www.consumidor.gov.br', 'consumidor.gov.br'].includes(asset.hostname)) continue;
+              try {
+                const assetResponse = await fetch(asset, { signal: AbortSignal.timeout(20000) });
+                if (!assetResponse.ok) { await assetResponse.body?.cancel(); continue; }
+                const source = await assetResponse.text();
+                const literals = [...source.matchAll(/["']([^"']{1,300})["']/g)].map(match => match[1]);
+                for (const value of literals) {
+                  if (!/(finalizadas|dados.?abertos|\.csv|\.zip|download|\/api\/)/i.test(value)) continue;
+                  if (/^https?:\/\//i.test(value)) {
+                    try {
+                      const u = new URL(value);
+                      if (u.protocol === 'https:' && ['www.consumidor.gov.br', 'consumidor.gov.br'].includes(u.hostname)) candidates.add(u.toString());
+                    } catch {}
+                  } else if (value.startsWith('/')) {
+                    const u = new URL(value, pageUrl);
+                    if (/(finalizadas|dados.?abertos|\.csv|\.zip|download|\/api\/)/i.test(u.pathname)) candidates.add(u.toString());
+                  }
+                }
+              } catch {}
+            }
+            console.log(JSON.stringify({ label: 'current_portal_frontend_probe', pageStatus: pageResponse.status, scriptCount: scriptRefs.length, candidateCount: candidates.size, candidates: [...candidates].slice(0, 60) }));
+          } catch (error) {
+            console.log(JSON.stringify({ label: 'current_portal_frontend_probe', error: error?.name === 'TimeoutError' ? 'timeout' : 'request_failed' }));
+          }
+          NODE

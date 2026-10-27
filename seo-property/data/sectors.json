@@ -1,0 +1,252 @@
+[
+  {
+    "slug": "academias",
+    "name": "Academias",
+    "topics": "aulas, equipamentos, limpeza, lotação e retenção de alunos"
+  },
+  {
+    "slug": "clinicas",
+    "name": "Clínicas",
+    "topics": "agendamento, acolhimento, espera e comunicação com pacientes"
+  },
+  {
+    "slug": "dentistas",
+    "name": "Consultórios odontológicos",
+    "topics": "procedimentos, conforto, orçamento e acompanhamento"
+  },
+  {
+    "slug": "veterinarias",
+    "name": "Clínicas veterinárias",
+    "topics": "urgências, cuidado, comunicação e acompanhamento"
+  },
+  {
+    "slug": "petshops",
+    "name": "Pet shops",
+    "topics": "banho e tosa, pontualidade, cuidado e comunicação"
+  },
+  {
+    "slug": "restaurantes",
+    "name": "Restaurantes",
+    "topics": "qualidade, espera, atendimento, ambiente e entrega"
+  },
+  {
+    "slug": "cafeterias",
+    "name": "Cafeterias",
+    "topics": "consistência, atendimento, ambiente e cardápio"
+  },
+  {
+    "slug": "hoteis",
+    "name": "Hotéis e pousadas",
+    "topics": "reservas, limpeza, check-in, conforto e resolução de problemas"
+  },
+  {
+    "slug": "turismo",
+    "name": "Agências de turismo",
+    "topics": "roteiros, suporte, pontualidade e expectativas"
+  },
+  {
+    "slug": "imobiliarias",
+    "name": "Imobiliárias",
+    "topics": "comunicação, visitas, documentação e manutenção"
+  },
+  {
+    "slug": "construtoras",
+    "name": "Construtoras",
+    "topics": "prazos, transparência, acabamento e pós-venda"
+  },
+  {
+    "slug": "saloes-de-beleza",
+    "name": "Salões de beleza",
+    "topics": "agendamento, pontualidade, higiene e consistência"
+  },
+  {
+    "slug": "barbearias",
+    "name": "Barbearias",
+    "topics": "agenda, atendimento, ambiente e consistência do serviço"
+  },
+  {
+    "slug": "estetica",
+    "name": "Clínicas de estética",
+    "topics": "expectativas, segurança, explicação e acompanhamento"
+  },
+  {
+    "slug": "spas",
+    "name": "Spas e bem-estar",
+    "topics": "agendamento, ambiente, higiene e qualidade da experiência"
+  },
+  {
+    "slug": "escolas",
+    "name": "Escolas",
+    "topics": "comunicação, acolhimento, organização e suporte"
+  },
+  {
+    "slug": "cursos-livres",
+    "name": "Cursos livres",
+    "topics": "inscrição, conteúdo, suporte e clareza das informações"
+  },
+  {
+    "slug": "faculdades",
+    "name": "Instituições de ensino superior",
+    "topics": "atendimento, serviços e experiência acadêmica"
+  },
+  {
+    "slug": "oficinas-mecanicas",
+    "name": "Oficinas mecânicas",
+    "topics": "diagnóstico, orçamento, prazo e transparência"
+  },
+  {
+    "slug": "concessionarias",
+    "name": "Concessionárias",
+    "topics": "venda, entrega, pós-venda e manutenção"
+  },
+  {
+    "slug": "autopecas",
+    "name": "Lojas de autopeças",
+    "topics": "disponibilidade, compatibilidade, orientação e entrega"
+  },
+  {
+    "slug": "ecommerce",
+    "name": "Lojas virtuais",
+    "topics": "descrição, pagamento, entrega, troca e suporte"
+  },
+  {
+    "slug": "varejo",
+    "name": "Lojas físicas",
+    "topics": "atendimento, disponibilidade, preço e pós-venda"
+  },
+  {
+    "slug": "supermercados",
+    "name": "Supermercados",
+    "topics": "fila, disponibilidade, limpeza e atendimento"
+  },
+  {
+    "slug": "farmacias",
+    "name": "Farmácias",
+    "topics": "disponibilidade, atendimento e tempo de espera"
+  },
+  {
+    "slug": "oticas",
+    "name": "Óticas",
+    "topics": "atendimento, ajuste, prazo e clareza de orçamento"
+  },
+  {
+    "slug": "artes-marciais",
+    "name": "Escolas de artes marciais",
+    "topics": "acolhimento, horários, instrutores e segurança"
+  },
+  {
+    "slug": "coworkings",
+    "name": "Espaços de coworking",
+    "topics": "infraestrutura, internet, acesso e suporte"
+  },
+  {
+    "slug": "contabilidade",
+    "name": "Escritórios de contabilidade",
+    "topics": "prazo, clareza, organização e disponibilidade"
+  },
+  {
+    "slug": "advocacia",
+    "name": "Escritórios de advocacia",
+    "topics": "comunicação, previsibilidade, atendimento e transparência"
+  },
+  {
+    "slug": "consultorias",
+    "name": "Consultorias empresariais",
+    "topics": "escopo, comunicação, entregáveis e acompanhamento"
+  },
+  {
+    "slug": "agencias-marketing",
+    "name": "Agências de marketing",
+    "topics": "alinhamento, relatórios, prazos e resultados explicados"
+  },
+  {
+    "slug": "software-b2b",
+    "name": "Empresas de software B2B",
+    "topics": "onboarding, suporte, estabilidade e documentação"
+  },
+  {
+    "slug": "provedores-internet",
+    "name": "Provedores de internet",
+    "topics": "instalação, estabilidade, suporte e cobrança"
+  },
+  {
+    "slug": "telefonia",
+    "name": "Operadoras e lojas de telefonia",
+    "topics": "cobertura, contratação, cobrança e suporte"
+  },
+  {
+    "slug": "energia-solar",
+    "name": "Empresas de energia solar",
+    "topics": "proposta, instalação, prazo e suporte técnico"
+  },
+  {
+    "slug": "mudancas",
+    "name": "Empresas de mudança",
+    "topics": "orçamento, pontualidade, cuidado e comunicação"
+  },
+  {
+    "slug": "limpeza",
+    "name": "Empresas de limpeza",
+    "topics": "escopo, pontualidade, qualidade e confiança"
+  },
+  {
+    "slug": "dedetizacao",
+    "name": "Empresas de controle de pragas",
+    "topics": "orientação, segurança, execução e retorno"
+  },
+  {
+    "slug": "reformas",
+    "name": "Empresas de reforma",
+    "topics": "orçamento, cronograma, acabamento e comunicação"
+  },
+  {
+    "slug": "arquitetura",
+    "name": "Escritórios de arquitetura",
+    "topics": "briefing, projeto, revisões e acompanhamento"
+  },
+  {
+    "slug": "fotografia",
+    "name": "Estúdios de fotografia",
+    "topics": "agenda, entrega, direção e expectativas"
+  },
+  {
+    "slug": "eventos",
+    "name": "Espaços e organizadores de eventos",
+    "topics": "planejamento, comunicação, fornecedores e execução"
+  },
+  {
+    "slug": "buffets",
+    "name": "Buffets",
+    "topics": "cardápio, pontualidade, equipe e execução"
+  },
+  {
+    "slug": "pilates",
+    "name": "Estúdios de pilates",
+    "topics": "agenda, instrutores, ambiente e acompanhamento"
+  },
+  {
+    "slug": "fisioterapia",
+    "name": "Clínicas de fisioterapia",
+    "topics": "agendamento, comunicação e continuidade do cuidado"
+  },
+  {
+    "slug": "laboratorios",
+    "name": "Laboratórios de análises",
+    "topics": "agendamento, coleta, prazo e comunicação"
+  },
+  {
+    "slug": "transportadoras",
+    "name": "Transportadoras",
+    "topics": "prazo, rastreamento, integridade e suporte"
+  },
+  {
+    "slug": "logistica",
+    "name": "Operadores logísticos",
+    "topics": "visibilidade, prazo, avarias e resolução"
+  },
+  {
+    "slug": "associacoes",
+    "name": "Associações e entidades",
+    "topics": "comunicação, serviços, eventos e prestação de contas"
+  }
+]
