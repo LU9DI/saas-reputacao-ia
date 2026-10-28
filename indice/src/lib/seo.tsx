@@ -49,13 +49,18 @@ export const organization = {
 
 export const publisher = organization;
 
-export const baseDeDados = {
-  '@type': 'Dataset',
-  name: 'Cadastro Nacional da Pessoa Jurídica (CNPJ) — Dados Abertos',
-  description: 'Base de dados abertos do CNPJ publicada pela Receita Federal do Brasil, usada para as contagens do Índice.',
-  url: FONTE_URL,
-  publisher: { '@type': 'GovernmentOrganization', name: 'Receita Federal do Brasil' },
-};
+/**
+ * Fonte dos dados: CNPJ aberto da Receita Federal.
+ *
+ * Fica como URL, não como objeto `Dataset` aninhado. Motivo (verificado no
+ * Search Console em 26/10/2026): um `Dataset` embutido em `isBasedOn` é lido
+ * pelo Google como um conjunto de dados SEPARADO e validado por conta própria.
+ * Era exatamente esse item — "Cadastro Nacional da Pessoa Jurídica (CNPJ) —
+ * Dados Abertos" — que aparecia como entidade inválida, com `publisher` do tipo
+ * `GovernmentOrganization` recusado. `isBasedOn` aceita URL ou `CreativeWork`;
+ * a URL comunica a mesma procedência sem criar uma entidade fantasma.
+ */
+export const FONTE_DATASET_URL = FONTE_URL;
 
 type MetaResumo = {
   competencia: string;
@@ -66,7 +71,14 @@ type MetaResumo = {
 const TECNICA =
   'Contagem de estabelecimentos por situação cadastral, atividade econômica principal (CNAE) e município. Aberturas usam a data de início de atividade; baixas usam a data da situação cadastral, na janela de 12 meses fechada antes da competência.';
 
-/** Dataset do Índice inteiro. Home e metodologia compartilham o mesmo @id e o mesmo conteúdo. */
+/**
+ * Dataset do Índice inteiro. Home e metodologia compartilham o mesmo @id e o mesmo conteúdo.
+ *
+ * Sem `license`: a Filtra.AI não concedeu uma licença explícita sobre as
+ * contagens derivadas, e inventar uma URL de licença seria pior do que omitir.
+ * O Search Console trata `license` como aviso ("melhorar o aspecto"), não como
+ * erro crítico. Só volte a declarar o campo quando houver licença real.
+ */
 export function datasetDoIndice(meta: MetaResumo) {
   return {
     '@context': 'https://schema.org',
@@ -78,9 +90,9 @@ export function datasetDoIndice(meta: MetaResumo) {
     url: BASE,
     inLanguage: 'pt-BR',
     isAccessibleForFree: true,
-    creator: { '@id': ORG_ID },
+    creator: organization,
     publisher,
-    isBasedOn: baseDeDados,
+    isBasedOn: FONTE_DATASET_URL,
     dateModified: meta.geradoEm,
     temporalCoverage: `${meta.janela.inicio}/${meta.competencia}`,
     spatialCoverage: {
@@ -129,9 +141,9 @@ export function datasetDoRecorte({
     inLanguage: 'pt-BR',
     isAccessibleForFree: true,
     isPartOf: { '@id': INDEX_DATASET_ID },
-    creator: { '@id': ORG_ID },
+    creator: organization,
     publisher,
-    isBasedOn: baseDeDados,
+    isBasedOn: FONTE_DATASET_URL,
     dateModified: meta.geradoEm,
     temporalCoverage: temporal ?? `${meta.janela.inicio}/${meta.competencia}`,
     spatialCoverage: { '@type': 'Place', name: espacial },
