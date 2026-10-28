@@ -375,6 +375,14 @@ function conferirJsonLd(nome, meta, { esperarFaq = true, temporalEsperado = null
   const faqs = blocos.filter((bloco) => bloco['@type'] === 'FAQPage');
 
   check(`${nome}: Dataset presente`, datasets.length === 1, String(datasets.length));
+  // Um único Dataset no documento inteiro: entidades embutidas (por exemplo dentro
+  // de `isBasedOn`) são validadas separadamente pelo Google e já geraram erro no GSC.
+  const datasetsNoDocumento = (JSON.stringify(blocos).match(/"@type":"Dataset"/g) || []).length;
+  check(
+    `${nome}: documento declara exatamente um Dataset`,
+    datasetsNoDocumento === 1,
+    String(datasetsNoDocumento),
+  );
   check(`${nome}: BreadcrumbList presente`, breadcrumbs.length === 1, String(breadcrumbs.length));
   if (esperarFaq) {
     check(`${nome}: FAQPage presente`, faqs.length === 1, String(faqs.length));
@@ -395,12 +403,38 @@ function conferirJsonLd(nome, meta, { esperarFaq = true, temporalEsperado = null
       dataset.temporalCoverage,
     );
     check(
-      `${nome}: Dataset é derivado da fonte oficial`,
-      typeof dataset.isBasedOn?.url === 'string' && dataset.isBasedOn.url.startsWith('https://www.gov.br/receitafederal/'),
-      dataset.isBasedOn?.url,
+      `${nome}: Dataset declara descrição factual`,
+      typeof dataset.description === 'string' && dataset.description.length >= 50,
+      typeof dataset.description === 'string' ? `${dataset.description.length} chars` : String(dataset.description),
+    );
+    // Regressão do Search Console (26/10/2026): um Dataset embutido em `isBasedOn`
+    // vira uma entidade separada e era reportado como inválido. `isBasedOn` agora é
+    // uma URL, e o documento inteiro precisa conter exatamente UM Dataset.
+    check(
+      `${nome}: Dataset é derivado da fonte oficial por URL, sem Dataset aninhado`,
+      typeof dataset.isBasedOn === 'string' && dataset.isBasedOn.startsWith('https://www.gov.br/receitafederal/'),
+      JSON.stringify(dataset.isBasedOn),
     );
     check(`${nome}: Dataset tem variável medida`, Array.isArray(dataset.variableMeasured) && dataset.variableMeasured.length > 0);
-    check(`${nome}: Dataset está ligado à organização`, dataset.creator?.['@id'] === 'https://filtraai.com/#organization');
+    check(
+      `${nome}: creator é Organization tipada e ligada ao @id da marca`,
+      dataset.creator?.['@type'] === 'Organization' &&
+        dataset.creator?.['@id'] === 'https://filtraai.com/#organization' &&
+        typeof dataset.creator?.name === 'string',
+      JSON.stringify(dataset.creator),
+    );
+    check(
+      `${nome}: publisher é Organization tipada com nome e URL`,
+      dataset.publisher?.['@type'] === 'Organization' &&
+        typeof dataset.publisher?.name === 'string' &&
+        typeof dataset.publisher?.url === 'string',
+      JSON.stringify(dataset.publisher),
+    );
+    check(
+      `${nome}: Dataset não inventa license`,
+      dataset.license === undefined,
+      JSON.stringify(dataset.license),
+    );
     check(`${nome}: Dataset não aponta para onrender.com`, !JSON.stringify(dataset).includes('onrender.com'));
     check(
       `${nome}: Dataset tem cobertura espacial`,
