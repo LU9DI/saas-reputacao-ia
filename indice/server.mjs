@@ -2,15 +2,15 @@ import next from 'next';
 import { createServer } from 'node:http';
 
 // Entrada de produção usada pelo Render (`npm start`).
-// Rotas ISR que chamam notFound() herdam o Cache-Control cacheável da rota
-// (s-maxage=86400); um 404 transitório congelado em CDN (Cloudflare) já causou
-// /indice/sp inconsistente no domínio público. Aqui, respostas >= 400 saem
-// sempre não-cacheáveis; os 200/ISR continuam com os headers originais.
+// HOSTNAME é definido pelo runtime do container e não deve ser usado como
+// endereço de bind. O ingress do Render precisa alcançar o servidor em todas
+// as interfaces. HOST fica disponível como override explícito.
+// Respostas >= 400 são sempre não-cacheáveis para evitar 404 transitórios em CDN.
 
 const FORBID_CACHE = 'private, no-cache, no-store, max-age=0, must-revalidate';
 
 const port = Number(process.env.PORT || 3100);
-const hostname = process.env.HOSTNAME || '0.0.0.0';
+const hostname = process.env.HOST || '0.0.0.0';
 
 const app = next({ dev: false, hostname, port });
 const handle = app.getRequestHandler();
