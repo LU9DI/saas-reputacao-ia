@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { UFS } from './ufs';
+import { caminhosDeRankings } from './rankings';
 
 export type Registro = {
   a: number; // estabelecimentos ativos
@@ -95,9 +96,23 @@ function carregar(): Loja {
 }
 
 export const getMeta = () => carregar().meta;
+
+let lastmodCache: Record<string, string> | null = null;
+/** lastmod ISO (AAAA-MM-DD) de uma página; sem registro, cai na data de geração da base. */
+export function getLastmod(caminho: string): Date {
+  if (!lastmodCache) {
+    lastmodCache = {};
+    const arq = path.join(dir(), 'lastmod.json');
+    if (existsSync(arq)) lastmodCache = JSON.parse(readFileSync(arq, 'utf8')) as Record<string, string>;
+  }
+  const entrada = lastmodCache[caminho];
+  const data = entrada ? entrada.split('|')[1] : undefined;
+  return new Date(data || carregar().meta.geradoEm);
+}
 export const getSegmentos = () => carregar().meta.segmentos;
 export const getSegmento = (slug: string) => carregar().segmentos.get(slug) ?? null;
 export const getMunicipio = (uf: string, slug: string) => carregar().porChave.get(`${uf}/${slug}`) ?? null;
+export const getStats = () => carregar().stats;
 export const nomeSubclasse = (cod: string) => carregar().subclasses[cod] ?? cod;
 export const minimo = () => carregar().meta.minimoParaIndexar;
 
@@ -268,7 +283,7 @@ export function getPagina(uf: string, munSlug: string, segSlug: string): Pagina 
 
 /** Todos os caminhos indexáveis (relativos ao basePath), para o sitemap. */
 export function todosOsCaminhos(): string[] {
-  const caminhos = ['/', '/metodologia'];
+  const caminhos = ['/', '/metodologia', '/rankings/aberturas'];
   for (const u of ufsComDados()) {
     const uf = u.sigla.toLowerCase();
     caminhos.push(`/${uf}`);
@@ -277,5 +292,7 @@ export function todosOsCaminhos(): string[] {
       for (const { seg } of segmentosDoMunicipio(u.sigla, mun.slug)) caminhos.push(`/${uf}/${mun.slug}/${seg.slug}`);
     }
   }
+  // Rankings de aberturas por ano: caminhos calculados em lib/rankings.
+  caminhos.push(...caminhosDeRankings());
   return caminhos;
 }

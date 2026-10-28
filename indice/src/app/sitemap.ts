@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getMeta, todosOsCaminhos } from '@/lib/data';
+import { getLastmod, todosOsCaminhos } from '@/lib/data';
 import { urlAbsoluta } from '@/lib/seo';
 
 // Limite do protocolo: 50 mil URLs ou 50 MB por arquivo. 40 mil deixa folga.
@@ -12,9 +12,8 @@ export async function generateSitemaps() {
 
 export default async function sitemap(props: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
   const id = Number(await props.id);
-  // lastmod = data em que o dado foi gerado; só muda quando a base é reprocessada.
-  const lastModified = new Date(getMeta().geradoEm);
+  // lastmod por página: só muda quando as estatísticas exibidas nela mudam (ver scripts/lib/lastmod.mjs).
   return todosOsCaminhos()
     .slice(id * POR_ARQUIVO, (id + 1) * POR_ARQUIVO)
-    .map((caminho) => ({ url: urlAbsoluta(caminho), lastModified }));
+    .map((caminho) => ({ url: urlAbsoluta(caminho), lastModified: getLastmod(caminho) }));
 }

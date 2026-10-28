@@ -2,7 +2,7 @@
 // Auditoria estratificada de indexabilidade do Índice Filtra.AI.
 //
 // Lê os mesmos arquivos de dados usados pelo app e responde:
-//   - quantas URLs existem em cada estrato (home, metodologia, UF, município, célula);
+//   - quantas URLs existem em cada estrato (home, metodologia, UF, município, célula, rankings);
 //   - qual é a cobertura de cada segmento e de cada UF;
 //   - quantas células ficaram abaixo do mínimo (e, portanto, são 404, não noindex);
 //   - onde há baixa cobertura que merece revisão editorial.
@@ -16,6 +16,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { anosPublicados, calcularRanking, podePublicar } from './lib/rankings.mjs';
 
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dir = path.resolve(process.env.INDICE_DATA_DIR || path.join(raiz, 'data'));
@@ -60,11 +61,13 @@ const porUF = new Map();
 const porMunicipio = new Map();
 const celulas = [];
 const abaixoDoMinimo = [];
+const dadosPorUF = {};
 let celulasComDados = 0;
 
 for (const arquivo of arquivos.sort()) {
   const uf = arquivo.slice(0, 2);
   const dados = ler(path.join(statsDir, arquivo));
+  dadosPorUF[uf] = dados;
   const ufResumo = porUF.get(uf) || {
     uf,
     municipiosNoEstado: new Set(),
@@ -115,7 +118,14 @@ const municipiosComPagina = [...porMunicipio.values()].filter((m) => m.segmentos
 const ufsComPagina = [...porUF.values()].filter((u) => u.celulas > 0);
 const totalAtivosNosSegmentos = [...porSegmento.values()].reduce((t, s) => t + s.total, 0);
 const totalAtivosNasPaginas = [...porSegmento.values()].reduce((t, s) => t + s.totalNasPaginas, 0);
-const totalUrls = 2 + ufsComPagina.length + municipiosComPagina.length + celulas.length;
+
+const rankings = segmentos.map((seg) => {
+  const anos = anosPublicados(meta, dadosPorUF, seg).filter((ano) => podePublicar(calcularRanking(dadosPorUF, seg, ano)));
+  return { slug: seg, nome: nomeDoSegmento.get(seg), anos, urls: anos.length };
+});
+const urlsRankings = rankings.reduce((t, r) => t + r.urls, 0);
+const urlsHubRankings = urlsRankings > 0 ? 1 : 0;
+const totalUrls = 2 + ufsComPagina.length + municipiosComPagina.length + celulas.length + urlsHubRankings + urlsRankings;
 
 const distribuicao = { '1 segmento': 0, '2 a 3 segmentos': 0, '4 a 6 segmentos': 0, '7 a 9 segmentos': 0 };
 for (const mun of municipiosComPagina) {
@@ -154,6 +164,8 @@ const relatorio = {
     ufs: ufsComPagina.length,
     municipios: municipiosComPagina.length,
     celulas: celulas.length,
+    rankings: urlsRankings,
+    hubRankings: urlsHubRankings,
     totalUrls,
     abaixoDoMinimo: abaixoDoMinimo.length,
     celulasComDados,
@@ -171,6 +183,7 @@ const relatorio = {
     cobertura: percentual(s.totalNasPaginas, s.total),
   })),
   porUF: ufTabela,
+  rankings,
   revisao: {
     celulasFinas: celulasFinas.length,
     limiar: limiarRevisao,
@@ -195,9 +208,19 @@ if (json) {
   console.log(`- Estados com página: ${fix(ufsComPagina.length)}`);
   console.log(`- Municípios com ao menos uma página: ${fix(municipiosComPagina.length)}`);
   console.log(`- Células município × segmento: ${fix(celulas.length)}`);
+  console.log(`- Rankings de aberturas por ano: ${fix(urlsRankings)}${urlsHubRankings ? ' + hub de rankings' : ''}`);
   console.log(`- Total de URLs no sitemap: ${fix(totalUrls)}`);
   console.log(`- Células com dados mas abaixo do mínimo (404, não noindex): ${fix(abaixoDoMinimo.length)}`);
   console.log(`- Cobertura: ${fix(totalAtivosNasPaginas)} de ${fix(totalAtivosNosSegmentos)} ativos (${fix(coberturaGeral, 1)}%)\n`);
+
+  console.log('Rankings de aberturas publicados (anos fechados com dados suficientes)');
+  for (const r of rankings) {
+    console.log(
+      r.anos.length
+        ? `- ${r.nome}: ${fix(r.urls)} ranking(s) (${r.anos.join(', ')})`
+        : `- ${r.nome}: nenhum ranking publicável (anos fechados abaixo do mínimo de ${fix(100)} aberturas ou ${fix(10)} municípios)`,
+    );
+  }
 
   console.log('Cobertura por segmento');
   for (const s of relatorio.porSegmento) {

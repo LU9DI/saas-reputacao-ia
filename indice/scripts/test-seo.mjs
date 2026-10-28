@@ -14,6 +14,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
+import { anosPublicados, calcularRanking, podePublicar } from './lib/rankings.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const HOST = '127.0.0.1';
@@ -212,13 +213,14 @@ function carregarDados() {
   for (const file of readdirSync(statsDir).filter((name) => /^[A-Z]{2}\.json$/.test(name)).sort()) {
     stats[file.slice(0, 2)] = lerJson(`stats/${file}`);
   }
-  return { meta, municipios, stats };
+  const lastmod = existsSync(resolve(DATA_DIR, 'lastmod.json')) ? lerJson('lastmod.json') : {};
+  return { meta, municipios, stats, lastmod };
 }
 
 function caminhosEsperados({ meta, municipios, stats }) {
   const porChave = new Map(municipios.map((municipio) => [`${municipio.uf}/${municipio.slug}`, municipio]));
   const minimo = meta.minimoParaIndexar;
-  const paths = ['/', '/metodologia'];
+  const paths = ['/', '/metodologia', '/rankings/aberturas'];
   for (const uf of Object.keys(stats).sort()) {
     let ufTemPagina = false;
     const municipiosPublicados = [];
@@ -240,6 +242,13 @@ function caminhosEsperados({ meta, municipios, stats }) {
     for (const { slug, segmentosPublicados } of municipiosPublicados) {
       paths.push(`/${ufMinuscula}/${slug}`);
       for (const segmento of segmentosPublicados) paths.push(`/${ufMinuscula}/${slug}/${segmento}`);
+    }
+  }
+  for (const segmento of meta.segmentos) {
+    for (const ano of anosPublicados(meta, stats, segmento.slug)) {
+      if (podePublicar(calcularRanking(stats, segmento.slug, ano))) {
+        paths.push(`/rankings/aberturas/${segmento.slug}/${ano}`);
+      }
     }
   }
   return paths;
@@ -311,11 +320,43 @@ function escolherAmostras({ meta, municipios, stats }) {
   };
 }
 
+function escolherRankingAmostra({ meta, municipios, stats }) {
+  const porChave = new Map(municipios.map((municipio) => [`${municipio.uf}/${municipio.slug}`, municipio.nome]));
+  let escolha = null;
+  for (const segmento of meta.segmentos) {
+    const anos = anosPublicados(meta, stats, segmento.slug).filter((ano) =>
+      podePublicar(calcularRanking(stats, segmento.slug, ano)),
+    );
+    if (!anos.length) continue;
+    const ano = anos[0];
+    const ranking = calcularRanking(stats, segmento.slug, ano);
+    if (!escolha || ranking.total > escolha.ranking.total) {
+      escolha = { segmento, ano, ranking };
+    }
+  }
+  return escolha ? { ...escolha, porChave } : null;
+}
+
 function todosOsBlocos(meta) {
   return meta.jsonLd.flatMap((bloco) => (Array.isArray(bloco) ? bloco : [bloco]));
 }
 
-function conferirJsonLd(nome, meta) {
+function conferirCta(nome, body) {
+  const bloco = body.match(/<aside class="cta">([\s\S]*?)<\/aside>/i)?.[1] ?? '';
+  const texto = decodeEntities(bloco.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+  check(
+    `${nome}: CTA usa a rota real da auditoria gratuita`,
+    bloco.includes('https://filtraai.com/auditoria-gratuita'),
+    bloco,
+  );
+  check(
+    `${nome}: CTA não trata o ranking como prova de competição por nota ou avaliações`,
+    !/nota|coment[áa]rio|avaliaç/i.test(texto),
+    texto,
+  );
+}
+
+function conferirJsonLd(nome, meta, { esperarFaq = true, temporalEsperado = null } = {}) {
   check(`${nome}: todos os JSON-LD são JSON válido`, meta.jsonLdInvalid.length === 0, meta.jsonLdInvalid.join('; '));
   check(`${nome}: página tem JSON-LD`, meta.jsonLdCount > 0, String(meta.jsonLdCount));
 
@@ -335,7 +376,11 @@ function conferirJsonLd(nome, meta) {
 
   check(`${nome}: Dataset presente`, datasets.length === 1, String(datasets.length));
   check(`${nome}: BreadcrumbList presente`, breadcrumbs.length === 1, String(breadcrumbs.length));
-  check(`${nome}: FAQPage presente`, faqs.length === 1, String(faqs.length));
+  if (esperarFaq) {
+    check(`${nome}: FAQPage presente`, faqs.length === 1, String(faqs.length));
+  } else {
+    check(`${nome}: sem FAQPage (diretriz atual de rich results)`, faqs.length === 0, String(faqs.length));
+  }
 
   for (const dataset of datasets) {
     check(`${nome}: Dataset tem nome`, typeof dataset.name === 'string' && dataset.name.length > 10);
@@ -346,7 +391,7 @@ function conferirJsonLd(nome, meta) {
     );
     check(
       `${nome}: Dataset cobre a janela publicada`,
-      dataset.temporalCoverage === `${META.janela.inicio}/${META.competencia}`,
+      dataset.temporalCoverage === (temporalEsperado || `${META.janela.inicio}/${META.competencia}`),
       dataset.temporalCoverage,
     );
     check(
@@ -434,7 +479,7 @@ function conferirTabelas(nome, meta, { minimo = 1, tfoot = true, denominador = t
   }
 }
 
-async function conferirPagina(nome, caminho, { minTabelas = 1, tfoot = true, denominador = true } = {}) {
+async function conferirPagina(nome, caminho, { minTabelas = 1, tfoot = true, denominador = true, esperarFaq = true, temporal = null } = {}) {
   const url = caminho === '/' ? BASE_PATH : `${BASE_PATH}${caminho}`;
   const page = await request(url);
   const meta = parseHtml(page.final.body);
@@ -476,7 +521,7 @@ async function conferirPagina(nome, caminho, { minTabelas = 1, tfoot = true, den
   check(`${nome}: tem bloco de citação`, meta.text.includes('Como citar esta página') && meta.text.includes(canonical));
   check(`${nome}: não declara medir reputação`, /não mede reputação|não mede a reputação/i.test(meta.text));
 
-  conferirJsonLd(nome, meta);
+  conferirJsonLd(nome, meta, { esperarFaq, temporalEsperado: temporal });
   conferirTabelas(nome, meta, { minimo: minTabelas, tfoot, denominador });
 
   return { page, meta };
@@ -530,6 +575,7 @@ if (!existsSync(BUILD_ID)) {
 
 const DADOS = carregarDados();
 const META = DADOS.meta;
+const LAST_MOD = DADOS.lastmod;
 const ESPERADOS = caminhosEsperados(DADOS);
 const AMOSTRAS = escolherAmostras(DADOS);
 const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
@@ -631,6 +677,77 @@ try {
     check('segunda célula amostrada é coerente', outra.meta.h1s[0].includes('estabelecimentos ativos'));
   }
 
+  // Rankings de aberturas por ano.
+  const rankingAmostra = escolherRankingAmostra(DADOS);
+  check('amostra de ranking existe', Boolean(rankingAmostra), 'nenhum segmento com ranking publicável');
+  if (rankingAmostra) {
+    const { segmento, ano, ranking, porChave } = rankingAmostra;
+    const caminhoRanking = `/rankings/aberturas/${segmento.slug}/${ano}`;
+    const numero = (x) => x.toLocaleString('pt-BR');
+    const rk = await conferirPagina(`ranking ${segmento.slug} ${ano}`, caminhoRanking, {
+      minTabelas: 2,
+      esperarFaq: false,
+      temporal: `${ano}-01/${ano}-12`,
+    });
+
+    const lider = ranking.ordenado[0];
+    const nomeLider = porChave.get(`${lider.uf}/${lider.municipio}`) ?? lider.municipio;
+    const lead = rk.page.final.body.match(/<p class="lead">([\s\S]*?)<\/p>/i)?.[1] ?? '';
+    const leadTexto = decodeEntities(lead.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+    check('ranking abre com o resultado principal calculado', leadTexto.includes(`${nomeLider} (${lider.uf})`), leadTexto);
+    check(
+      'resposta direta usa números consistentes com os dados',
+      leadTexto.includes(numero(lider.v)) && leadTexto.includes(numero(ranking.total)) && leadTexto.includes(String(ano)),
+      leadTexto,
+    );
+    check(
+      'resposta direta cita competência e data de referência',
+      leadTexto.includes(dataCurta(META.geradoEm)) && leadTexto.includes(META.competencia),
+      leadTexto,
+    );
+    check('tabela do top 10 lista o líder calculado', rk.meta.text.includes(nomeLider));
+    check('ranking separa abertura de estoque ativo', /não é o estoque ativo|não é saldo líquido/i.test(rk.meta.text));
+    conferirCta(`CTA do ranking ${segmento.slug} ${ano}`, rk.page.final.body);
+
+    const anoCompetencia = META.competencia.slice(0, 4);
+    if (Number(anoCompetencia) > ano) {
+      const parcial = await request(`${BASE_PATH}/rankings/aberturas/${segmento.slug}/${anoCompetencia}`);
+      checkEqual(`ranking do ano parcial ${anoCompetencia} responde 404`, parcial.final.status, 404);
+      check(
+        'ranking do ano parcial não está no sitemap',
+        !CONJUNTO_ESPERADO.has(canonicalPath(`/rankings/aberturas/${segmento.slug}/${anoCompetencia}`)),
+      );
+    }
+    const segInvalido = await request(`${BASE_PATH}/rankings/aberturas/nao-existe/${ano}`);
+    checkEqual('ranking de segmento inválido responde 404', segInvalido.final.status, 404);
+    check(
+      'ranking de segmento inválido não está no sitemap',
+      !CONJUNTO_ESPERADO.has(canonicalPath(`/rankings/aberturas/nao-existe/${ano}`)),
+    );
+
+    const mdRanking = await request(`${BASE_PATH}/md${caminhoRanking}`);
+    checkEqual('GET /indice/md/ranking status', mdRanking.final.status, 200);
+    check(
+      'gêmea do ranking aponta a fonte canônica',
+      mdRanking.final.body.startsWith(`> Fonte canônica: ${canonicalPath(caminhoRanking)} `),
+      mdRanking.final.body.slice(0, 120),
+    );
+    check('gêmea do ranking é noindex', /noindex/i.test(mdRanking.final.robotsHeader), mdRanking.final.robotsHeader);
+    check('gêmea do ranking traz a resposta direta', mdRanking.final.body.includes(numero(lider.v)));
+
+    const hub = await conferirPagina('hub de rankings', '/rankings/aberturas', { minTabelas: 1, tfoot: false, denominador: false, esperarFaq: false });
+    check('hub lista o ranking amostrado', hub.page.final.body.includes(caminhoRanking));
+    check('hub explica anos fechados e parciais', /fechado/i.test(hub.meta.text) && /parcial/i.test(hub.meta.text));
+    conferirCta('CTA do hub de rankings', hub.page.final.body);
+
+    const mdHub = await request(`${BASE_PATH}/md/rankings/aberturas`);
+    checkEqual('GET /indice/md/rankings/aberturas status', mdHub.final.status, 200);
+    check('gêmea do hub de rankings é noindex', /noindex/i.test(mdHub.final.robotsHeader), mdHub.final.robotsHeader);
+
+    check('home descobre os rankings', rootHtml.includes('/rankings/aberturas'));
+    check('célula linka o ranking nacional de aberturas', celula.page.final.body.includes('/rankings/aberturas/'));
+  }
+
   const abaixo = AMOSTRAS.abaixoDoMinimo;
   if (abaixo) {
     const caminhoAbaixo = `/${abaixo.uf.toLowerCase()}/${abaixo.municipio}/${abaixo.segmento}`;
@@ -683,10 +800,26 @@ try {
     const lastmodsFilho = [...childXml.matchAll(/<lastmod>([^<]+)<\/lastmod>/gi)].map((match) => match[1]);
     check(`${caminhoFilho} tem URLs`, locsFilho.length > 0);
     check(`${caminhoFilho} tem lastmod em todas as URLs`, lastmodsFilho.length === locsFilho.length, `${lastmodsFilho.length}/${locsFilho.length}`);
-    check(
-      `${caminhoFilho} usa a data real de geração`,
-      lastmodsFilho.every((lastmod) => Date.parse(lastmod) === Date.parse(META.geradoEm)),
-    );
+    const dataGeracao = META.geradoEm.slice(0, 10);
+    for (const [indiceUrl, loc] of locsFilho.entries()) {
+      const lastmod = lastmodsFilho[indiceUrl];
+      const caminho = loc.replace(CANONICAL_BASE, '') || '/';
+      const entrada = LAST_MOD[caminho];
+      const dataEsperada = entrada ? entrada.split('|')[1] : dataGeracao;
+      check(
+        `${caminhoFilho} lastmod de ${caminho} segue lastmod.json (ou a data de geração)`,
+        Boolean(lastmod) && lastmod.startsWith(dataEsperada),
+        `${lastmod} != ${dataEsperada}`,
+      );
+      check(
+        `${caminhoFilho} lastmod de ${caminho} não é futuro`,
+        Boolean(lastmod) && lastmod.slice(0, 10) <= dataGeracao,
+        lastmod,
+      );
+      if (caminho.startsWith('/rankings/')) {
+        check(`${caminhoFilho} lastmod de ${caminho} tem entrada própria em lastmod.json`, Boolean(entrada), caminho);
+      }
+    }
     todasAsLocs.push(...locsFilho);
   }
 
@@ -730,6 +863,7 @@ try {
   check('llms.txt delimita o que não mede', /não mede reputação/i.test(llms.final.body));
   check('llms.txt não promete indexação', /não promete indexação/i.test(llms.final.body));
   check('llms.txt lista as gêmeas em Markdown', llms.final.body.includes(`${CANONICAL_BASE}/md`));
+  check('llms.txt lista os rankings de aberturas', llms.final.body.includes(`${CANONICAL_BASE}/rankings/aberturas`));
 
   const llmsFull = await request(`${BASE_PATH}/llms-full.txt`);
   checkEqual('GET /indice/llms-full.txt status', llmsFull.final.status, 200);

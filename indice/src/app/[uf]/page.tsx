@@ -103,7 +103,7 @@ export default async function Page({ params }: Props) {
       <p className="lead">
         O Índice acompanha {coberturas.length} segmentos em {n(municipios.length)} municípios de {nome} com página publicada.
         São {n(totalPublicado)} estabelecimentos com CNPJ ativo nas páginas do estado, de {n(totalEstado)} nos segmentos
-        acompanhados em todos os municípios da base ({coberturaEstado}). Competência {comp}.
+        acompanhados em todos os municípios da base ({coberturaEstado}). Competência {comp}, dados gerados em {dataCurta(meta.geradoEm)}.
       </p>
 
       <Definicao termo={`O que o Índice conta em ${nome}?`}>
