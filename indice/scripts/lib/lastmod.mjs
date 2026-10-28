@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { anosPublicados, calcularRanking, podePublicar, serieDoSegmento } from './rankings.mjs';
 
 const h8 = (s) => createHash('sha1').update(s).digest('hex').slice(0, 8);
 
@@ -18,9 +19,11 @@ function estavel(v) {
  * @param stats  { UF: { municipio: { segmento: registro } } }
  * @param previo { caminho: "hash|AAAA-MM-DD" } (lastmod.json anterior, ou {})
  * @param hoje   "AAAA-MM-DD"
+ * @param meta   meta.json ({ competencia, segmentos }); sem meta, só as páginas
+ *               de UF/município/célula são marcadas — os rankings não são calculados.
  * @returns      { caminho: "hash|AAAA-MM-DD" }
  */
-export function calcularLastmod(stats, previo, hoje) {
+export function calcularLastmod(stats, previo, hoje, meta) {
   const saida = {};
   const marcar = (caminho, hash) => {
     const ant = previo[caminho];
@@ -43,7 +46,49 @@ export function calcularLastmod(stats, previo, hoje) {
     }
     marcar(`/${ufSlug}`, h8(hashesMun.join('|')));
   }
+  if (meta) marcarRankings(stats, meta, marcar);
   return saida;
+}
+
+/**
+ * Hub e páginas de ranking. O conteúdo de /rankings/aberturas/{seg}/{ano} é o
+ * ranking do ano fechado, a série nacional inteira (o gráfico inclui o ano
+ * parcial da competência), os nomes do segmento e a estrutura de anos
+ * publicados de todos os segmentos (as páginas ligam entre si). O hub lista os
+ * anos publicados e o total do último ano de cada segmento.
+ */
+function marcarRankings(stats, meta, marcar) {
+  const porSegmento = meta.segmentos.map((seg) => ({
+    slug: seg.slug,
+    nome: seg.nome,
+    curto: seg.curto,
+    classes: seg.classes,
+    publicados: anosPublicados(meta, stats, seg.slug).filter((ano) =>
+      podePublicar(calcularRanking(stats, seg.slug, ano)),
+    ),
+    serie: serieDoSegmento(stats, seg.slug),
+  }));
+  const publicadosCompacto = porSegmento.map(({ slug, publicados }) => ({ slug, publicados }));
+  for (const seg of porSegmento) {
+    for (const ano of seg.publicados) {
+      const pagina = {
+        ranking: calcularRanking(stats, seg.slug, ano),
+        serie: seg.serie,
+        nome: seg.nome,
+        curto: seg.curto,
+        publicadosPorSegmento: publicadosCompacto,
+      };
+      marcar(`/rankings/aberturas/${seg.slug}/${ano}`, h8(estavel(pagina)));
+    }
+  }
+  const hub = porSegmento.map((seg) => ({
+    slug: seg.slug,
+    nome: seg.nome,
+    classes: seg.classes,
+    publicados: seg.publicados,
+    totalUltimo: seg.publicados.length ? calcularRanking(stats, seg.slug, seg.publicados[0]).total : 0,
+  }));
+  marcar('/rankings/aberturas', h8(estavel(hub)));
 }
 
 /** Extrai só a data de uma entrada "hash|AAAA-MM-DD". */

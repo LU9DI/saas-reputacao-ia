@@ -15,6 +15,6 @@ for (const f of readdirSync(path.join(DATA, 'stats'))) {
 }
 const arq = path.join(DATA, 'lastmod.json');
 const previo = existsSync(arq) ? JSON.parse(readFileSync(arq, 'utf8')) : {};
-const saida = calcularLastmod(stats, previo, hoje);
+const saida = calcularLastmod(stats, previo, hoje, meta);
 writeFileSync(arq, JSON.stringify(saida));
 console.log(`lastmod.json: ${Object.keys(saida).length} páginas`);

@@ -330,7 +330,7 @@ async function main() {
     sintetico: Boolean(args.sintetico),
   };
   await writeFile(path.join(OUT, 'meta.json'), JSON.stringify(meta, null, 2));
-  const lastmod = calcularLastmod(stats, lastmodPrevio, meta.geradoEm.slice(0, 10));
+  const lastmod = calcularLastmod(stats, lastmodPrevio, meta.geradoEm.slice(0, 10), meta);
   await writeFile(path.join(OUT, 'lastmod.json'), JSON.stringify(lastmod));
   if (semMatch.length) {
     log(`atenção: ${semMatch.length} municípios sem correspondência no IBGE (nome sem acento): ${semMatch.slice(0, 15).map((m) => `${m.nome}/${m.uf}`).join(', ')}`);

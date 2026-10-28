@@ -213,7 +213,8 @@ function carregarDados() {
   for (const file of readdirSync(statsDir).filter((name) => /^[A-Z]{2}\.json$/.test(name)).sort()) {
     stats[file.slice(0, 2)] = lerJson(`stats/${file}`);
   }
-  return { meta, municipios, stats };
+  const lastmod = existsSync(resolve(DATA_DIR, 'lastmod.json')) ? lerJson('lastmod.json') : {};
+  return { meta, municipios, stats, lastmod };
 }
 
 function caminhosEsperados({ meta, municipios, stats }) {
@@ -574,6 +575,7 @@ if (!existsSync(BUILD_ID)) {
 
 const DADOS = carregarDados();
 const META = DADOS.meta;
+const LAST_MOD = DADOS.lastmod;
 const ESPERADOS = caminhosEsperados(DADOS);
 const AMOSTRAS = escolherAmostras(DADOS);
 const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
@@ -798,10 +800,26 @@ try {
     const lastmodsFilho = [...childXml.matchAll(/<lastmod>([^<]+)<\/lastmod>/gi)].map((match) => match[1]);
     check(`${caminhoFilho} tem URLs`, locsFilho.length > 0);
     check(`${caminhoFilho} tem lastmod em todas as URLs`, lastmodsFilho.length === locsFilho.length, `${lastmodsFilho.length}/${locsFilho.length}`);
-    check(
-      `${caminhoFilho} usa a data real de geração`,
-      lastmodsFilho.every((lastmod) => Date.parse(lastmod) === Date.parse(META.geradoEm)),
-    );
+    const dataGeracao = META.geradoEm.slice(0, 10);
+    for (const [indiceUrl, loc] of locsFilho.entries()) {
+      const lastmod = lastmodsFilho[indiceUrl];
+      const caminho = loc.replace(CANONICAL_BASE, '') || '/';
+      const entrada = LAST_MOD[caminho];
+      const dataEsperada = entrada ? entrada.split('|')[1] : dataGeracao;
+      check(
+        `${caminhoFilho} lastmod de ${caminho} segue lastmod.json (ou a data de geração)`,
+        Boolean(lastmod) && lastmod.startsWith(dataEsperada),
+        `${lastmod} != ${dataEsperada}`,
+      );
+      check(
+        `${caminhoFilho} lastmod de ${caminho} não é futuro`,
+        Boolean(lastmod) && lastmod.slice(0, 10) <= dataGeracao,
+        lastmod,
+      );
+      if (caminho.startsWith('/rankings/')) {
+        check(`${caminhoFilho} lastmod de ${caminho} tem entrada própria em lastmod.json`, Boolean(entrada), caminho);
+      }
+    }
     todasAsLocs.push(...locsFilho);
   }
 
