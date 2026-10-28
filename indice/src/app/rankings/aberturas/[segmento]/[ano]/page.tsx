@@ -273,7 +273,7 @@ export default async function Page({ params }: Props) {
       <Citacao caminho={caminho} titulo={t.titulo} />
       <Cta
         campanha={`rankings-${seg.slug}-${p.ano}`}
-        texto={`Municípios no topo deste ranking concentram a concorrência por nota e comentários no Google. A auditoria gratuita mostra como está a reputação do seu negócio diante dos concorrentes locais.`}
+        texto={`O ranking conta aberturas cadastrais, não a reputação dos negócios. Veja como está a reputação do seu negócio com a auditoria gratuita.`}
       />
     </>
   );

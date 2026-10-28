@@ -135,7 +135,7 @@ export default function Page() {
       <Citacao caminho="/rankings/aberturas" titulo={titulo} />
       <Cta
         campanha="rankings-aberturas"
-        texto={`Quem aparece no topo destes rankings compete por nota e comentários no Google. A auditoria gratuita mostra como está a reputação do seu negócio.`}
+        texto={`Estes rankings contam aberturas cadastrais, não a reputação. Veja como está a reputação do seu negócio com a auditoria gratuita.`}
       />
     </>
   );

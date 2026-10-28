@@ -340,6 +340,21 @@ function todosOsBlocos(meta) {
   return meta.jsonLd.flatMap((bloco) => (Array.isArray(bloco) ? bloco : [bloco]));
 }
 
+function conferirCta(nome, body) {
+  const bloco = body.match(/<aside class="cta">([\s\S]*?)<\/aside>/i)?.[1] ?? '';
+  const texto = decodeEntities(bloco.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+  check(
+    `${nome}: CTA usa a rota real da auditoria gratuita`,
+    bloco.includes('https://filtraai.com/auditoria-gratuita'),
+    bloco,
+  );
+  check(
+    `${nome}: CTA não trata o ranking como prova de competição por nota ou avaliações`,
+    !/nota|coment[áa]rio|avaliaç/i.test(texto),
+    texto,
+  );
+}
+
 function conferirJsonLd(nome, meta, { esperarFaq = true, temporalEsperado = null } = {}) {
   check(`${nome}: todos os JSON-LD são JSON válido`, meta.jsonLdInvalid.length === 0, meta.jsonLdInvalid.join('; '));
   check(`${nome}: página tem JSON-LD`, meta.jsonLdCount > 0, String(meta.jsonLdCount));
@@ -690,6 +705,7 @@ try {
     );
     check('tabela do top 10 lista o líder calculado', rk.meta.text.includes(nomeLider));
     check('ranking separa abertura de estoque ativo', /não é o estoque ativo|não é saldo líquido/i.test(rk.meta.text));
+    conferirCta(`CTA do ranking ${segmento.slug} ${ano}`, rk.page.final.body);
 
     const anoCompetencia = META.competencia.slice(0, 4);
     if (Number(anoCompetencia) > ano) {
@@ -720,6 +736,7 @@ try {
     const hub = await conferirPagina('hub de rankings', '/rankings/aberturas', { minTabelas: 1, tfoot: false, denominador: false, esperarFaq: false });
     check('hub lista o ranking amostrado', hub.page.final.body.includes(caminhoRanking));
     check('hub explica anos fechados e parciais', /fechado/i.test(hub.meta.text) && /parcial/i.test(hub.meta.text));
+    conferirCta('CTA do hub de rankings', hub.page.final.body);
 
     const mdHub = await request(`${BASE_PATH}/md/rankings/aberturas`);
     checkEqual('GET /indice/md/rankings/aberturas status', mdHub.final.status, 200);
