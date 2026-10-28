@@ -65,6 +65,12 @@ const municipiosComPagina = new Map(meta.segmentos.map((s) => [s.slug, new Set()
 let ativosTodos = 0;
 const municipiosTodos = new Set();
 const estadosTodos = new Set();
+// Contagem de URLs indexáveis do app do Índice (/indice): home + metodologia,
+// 1 por UF, 1 por município e 1 por célula município×segmento acima do mínimo.
+// Precisa espelhar indice/src/lib/data.ts (todosOsCaminhos). O índice central de
+// sitemaps usa esse total para saber quantos shards existem em /indice/sitemap/.
+const ufsComPagina = new Set();
+let celulasComPagina = 0;
 
 for (const [uf, municipios] of Object.entries(stats)) {
   for (const [municipio, porSegmento] of Object.entries(municipios)) {
@@ -79,6 +85,8 @@ for (const [uf, municipios] of Object.entries(stats)) {
       if (registro.a >= meta.minimoParaIndexar) {
         municipiosComPagina.get(slug).add(`${uf}/${municipio}`);
         municipiosTodos.add(`${uf}/${municipio}`);
+        ufsComPagina.add(uf);
+        celulasComPagina += 1;
       }
       if (registro.a > 0) estadosTodos.add(uf);
     }
@@ -111,6 +119,16 @@ const snapshot = {
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .slice(0, 5)
       .map(([uf, ativos]) => ({ uf, nome: ESTADOS[uf] || uf, ativos })),
+  },
+  // URLs indexáveis publicadas em https://filtraai.com/indice — a mesma conta de
+  // indice/src/lib/data.ts#todosOsCaminhos. O sitemap central usa `total` para
+  // decidir quantos shards /indice/sitemap/<n>.xml existem.
+  urls: {
+    homeMetodologia: 2,
+    ufs: ufsComPagina.size,
+    municipios: municipiosTodos.size,
+    celulas: celulasComPagina,
+    total: 2 + ufsComPagina.size + municipiosTodos.size + celulasComPagina,
   },
   segmentos: Object.fromEntries(segmentos),
 };
