@@ -9,6 +9,7 @@ This runbook is for the production publication window. Do not submit URLs before
 3. Check these public endpoints in a browser or with HTTP requests:
    - `https://filtraai.com/robots.txt`
    - `https://filtraai.com/sitemap.xml`
+   - `https://filtraai.com/sitemap-index.xml`
    - `https://filtraai.com/`
    - `https://filtraai.com/en`, `/es`, and `/zh`
    - At least one public landing page and one blog article per language.
@@ -22,6 +23,36 @@ This runbook is for the production publication window. Do not submit URLs before
 4. Use **URL inspection** for a small priority set after deployment: homepage, core product/solution pages, free audit page, and representative translated pages.
 5. Use **Test live URL** first. If the page is accessible and indexable, request indexing. Requests are rate-limited and do not guarantee inclusion.
 6. Review **Page indexing** and **Manual actions / Security issues** reports over subsequent days. Distinguish crawled-not-indexed, duplicate/canonical, blocked, and server errors instead of repeatedly resubmitting the same URL.
+
+## Central sitemap index
+
+`https://filtraai.com/sitemap-index.xml` is the single discovery entry point for the canonical host. It is a `<sitemapindex>` that lists only sitemap files:
+
+- `https://filtraai.com/sitemap.xml` — the main site leaf (same directory).
+- `https://filtraai.com/indice/sitemap/0.xml` — the Índice Filtra.AI leaf (below the index).
+
+Rules this artifact must keep satisfying:
+
+1. Every child sitemap must be on the same site as the index. Cross-site submission is not configured, so a child on another host is an error.
+2. Every child must be in the same directory as the index or lower in the site hierarchy.
+3. List leaves, not nested indexes. `/indice/sitemap-index.xml` is itself a `<sitemapindex>` and is not referenced by the central index.
+4. Never list page URLs here. Pages belong to the leaves; duplicating them makes counts unreliable.
+5. No `<lastmod>` in the index. Index-level `lastmod` describes the sitemap file, not the pages. The UTF-8 `<lastmod>` that matters lives on each URL inside the leaves.
+
+`frontend/scripts/validate-seo.mjs` fails when the declared shard list diverges from the real Índice URL count (it reads `indice/scripts/audit-indexability.mjs`). Adding a shard means: bump the list in `frontend/src/app/sitemap-index.xml/route.ts`, run `npm run seo:validate`, then resubmit.
+
+`/sitemap.xml` stays a `<urlset>` leaf on purpose. `scripts/submit-indexnow.mjs` and external consumers read that exact URL.
+
+### Precondition before submitting
+
+The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Submitting a central index that points at an intermittently failing origin only documents the failure in Search Console. Require at least 20 consecutive `200` responses from `/indice/sitemap/0.xml` before submitting.
+
+### Tracking each group separately
+
+Search Console reports indexing per property, not per sitemap. The Sitemaps report shows read status and discovered URLs, not indexed coverage per file. To isolate the Índice:
+
+- Keep the Domain property for `filtraai.com` and submit the central index there.
+- Add a URL-prefix property for `https://filtraai.com/indice` (no trailing slash — the canonical form of the Índice home is `/indice` without a slash) and verify it with the same DNS TXT record.
 
 ## Bing Webmaster Tools and IndexNow
 
