@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getMeta, getPagina, nomeSubclasse, type Pagina } from '@/lib/data';
+import { anosPublicadosDoSegmento } from '@/lib/rankings';
 import { ufDeSlug, UFS } from '@/lib/ufs';
-import { n, ord, pct, minuscula, mesPorExtenso, mesCurto, corta } from '@/lib/format';
+import { n, ord, pct, minuscula, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Barras } from '@/components/Barras';
 import { Citacao } from '@/components/Citacao';
@@ -43,7 +44,7 @@ function textos(p: Pagina, sigla: string) {
     : `É ${posUF} e ${posBR}, entre ${n(p.totalRankBR)} municípios com ao menos um estabelecimento do segmento na base.`;
   const participacaoUF = pct(reg.a, p.totalUF);
   const participacaoBR = pct(reg.a, p.totalBR);
-  const lead = `${mun.nome} (${sigla}) tem ${n(reg.a)} estabelecimentos com CNPJ ativo de ${seg.curto} na competência ${comp}, segundo o cadastro aberto da Receita Federal. ${ranking}`;
+  const lead = `${mun.nome} (${sigla}) tem ${n(reg.a)} estabelecimentos com CNPJ ativo de ${seg.curto} na competência ${comp}, segundo o cadastro aberto da Receita Federal (dados gerados em ${dataCurta(meta.geradoEm)}). ${ranking}`;
   const titulo = `${seg.nome} em ${mun.nome} (${sigla}): ${n(reg.a)} estabelecimentos ativos`;
   const descricao = corta(
     `São ${n(reg.a)} estabelecimentos com CNPJ ativo de ${minuscula(seg.nome)} em ${mun.nome} (${sigla}), competência ${comp}. ${n(reg.ab)} abertos e ${n(reg.ba)} baixas em 12 meses.`,
@@ -104,6 +105,8 @@ export default async function Page({ params }: Props) {
   // Só marca como parcial o ano da competência se ele existir na série; caso contrário,
   // a nota explica que o último ano é o mais recente com aberturas registradas.
   const anoParcial = anos.includes(anoComp) ? anoComp : undefined;
+  const anosRanking = anosPublicadosDoSegmento(seg.slug);
+  const ultimoAnoRanking = anosRanking.length > 0 ? anosRanking[0] : null;
 
   const dataset = datasetDoRecorte({
     url: urlAbsoluta(caminho),
@@ -185,6 +188,11 @@ export default async function Page({ params }: Props) {
             {anoParcial ? `o ano de ${anoParcial} é parcial` : `o último ano com aberturas registradas é ${Math.max(...anos)}`}.
             Não é o estoque ativo.
           </p>
+          {ultimoAnoRanking !== null && (
+            <p className="nota">
+              Veja o <Link href={`/rankings/aberturas/${seg.slug}/${ultimoAnoRanking}`}>ranking nacional de aberturas de {seg.curto} em {ultimoAnoRanking}</Link> por município.
+            </p>
+          )}
         </>
       )}
 

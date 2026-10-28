@@ -139,6 +139,10 @@ export default function Page() {
         município sem página continua nos totais do segmento no estado e no Brasil. Nomes de municípios vêm do IBGE quando
         há correspondência; sem ela, usa-se o nome do cadastro da Receita.
       </p>
+      <p className="nota">
+        Rankings de aberturas por ano só são publicados para anos fechados com pelo menos 100 aberturas no segmento e 10
+        municípios com abertura no ano. Combinações abaixo disso não geram página indexável.
+      </p>
 
       <h2>Critérios e fórmulas</h2>
       <table>
@@ -155,6 +159,7 @@ export default function Page() {
           <tr><th scope="row">Parcela no Brasil</th><td>Ativos do município no segmento sobre o total nacional.</td><td><code>ativos(município, segmento) ÷ ativos(Brasil, segmento) × 100</code></td><td>Observado</td></tr>
           <tr><th scope="row">Ranking</th><td>Ordem decrescente de ativos entre municípios com ao menos um estabelecimento do segmento.</td><td>Empates dividem a mesma posição; não se limita às páginas publicadas.</td><td>Observado</td></tr>
           <tr><th scope="row">Cobertura das páginas</th><td>Ativos nas células com página sobre o total do segmento.</td><td><code>ativos nas páginas ÷ ativos no segmento × 100</code></td><td>Observado</td></tr>
+          <tr><th scope="row">Ranking de aberturas por ano</th><td>Municípios ordenados pelas aberturas do segmento em um ano completo, pela data de início de atividade.</td><td>Contagem por município e ano; empates dividem a mesma posição. Só anos fechados geram ranking; o ano da competência é parcial e não entra.</td><td>Observado</td></tr>
         </tbody>
       </table>
       <p>
