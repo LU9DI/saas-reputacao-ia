@@ -53,10 +53,12 @@ createServer((req, res) => {
   const queryIndex = requestUrl.indexOf('?');
   const pathname = queryIndex === -1 ? requestUrl : requestUrl.slice(0, queryIndex);
   const query = queryIndex === -1 ? '' : requestUrl.slice(queryIndex);
-  const ufMatch = pathname.match(/^\\/indice\\/([A-Z]{2})(?=\\/|$)(.*)$/);
-  if (ufMatch && req.method === 'GET') {
+  const pathSegments = pathname.split('/');
+  const uf = pathSegments[2] || '';
+  if (pathSegments[1] === 'indice' && /^[A-Z]{2}$/.test(uf) && req.method === 'GET') {
+    pathSegments[2] = uf.toLowerCase();
     res.statusCode = 308;
-    res.setHeader('Location', `/indice/${ufMatch[1].toLowerCase()}${ufMatch[2]}${query}`);
+    res.setHeader('Location', pathSegments.join('/') + query);
     res.setHeader('Cache-Control', 'public, max-age=86400');
     res.end();
     return;
