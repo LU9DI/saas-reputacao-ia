@@ -14,7 +14,7 @@ Com dados sintéticos o app marca todas as páginas como `noindex` e o build de 
 O ingest valida o layout nas primeiras linhas e aborta se algo não bater. Cada ZIP processado é registrado em `meta.json` com nome, tipo, tamanho em bytes e SHA-256; a URL de download é registrada quando o arquivo é baixado pelo script. Para arquivos locais, o caminho da máquina não é publicado e a URL fica `null`. Esses metadados permitem identificar os artefatos processados, mas não substituem a preservação dos ZIPs nem comprovam, sozinhos, a correção dos dados. O acesso WebDAV usa o segredo `INDICE_RFB_SHARE_TOKEN` no ambiente; não grave tokens no código ou nos logs. Sem esse segredo, a ingestão remota aborta antes de qualquer download com uma mensagem explícita. A sondagem opcional do workflow também omite o token das URLs que registra. Como o ambiente de desenvolvimento não acessa o portal, a ingestão real deve ser revisada antes de publicar.
 
 ## Páginas
-`/` · `/[uf]` · `/[uf]/[municipio]` · `/[uf]/[municipio]/[segmento]` · `/metodologia` · `/rankings/aberturas` · `/rankings/aberturas/[segmento]/[ano]` · `/sitemap-index.xml`
+`/` · `/[uf]` · `/[uf]/[municipio]` · `/[uf]/[municipio]/[segmento]` · `/metodologia` · `/rankings/aberturas` · `/rankings/aberturas/[segmento]/[ano]` · `/rankings/ativos` · `/rankings/ativos/[segmento]` · `/rankings/ativos/[segmento]/[uf]` · `/sitemap-index.xml`
 Só existem combinações com >= `minimoParaIndexar` ativos (padrão 10). As demais devolvem 404. Rankings de
 aberturas só existem para anos fechados com pelo menos 100 aberturas no segmento e 10 municípios com
 abertura no ano; o ano da competência é parcial e não gera página.
@@ -31,6 +31,9 @@ abertura no ano; o ano da competência é parcial e não gera página.
 - Rankings de aberturas por ano são calculados da mesma base agregada (nada é digitado no código), com
   período, geografia, segmento, fonte e data de referência explícitos. Empates dividem a posição e só
   anos fechados com dados suficientes ganham página; o ano da competência é parcial e não gera URL.
+- Rankings de ativos usam o estoque de estabelecimentos com CNPJ ativo por segmento, no Brasil e por UF.
+  O recorte estadual só é publicado com pelo menos 10 municípios no segmento; o nacional existe sempre que
+  há município publicável. Eles não repetem a tabela de aberturas: linkam para `/rankings/aberturas`.
 - Cada página de ranking abre com a resposta direta do número principal (município líder, total e
   parcela), que é o mesmo dado das tabelas e do JSON-LD `Dataset`.
 - As páginas de ranking não usam JSON-LD `FAQPage`/`HowTo` para perseguir rich results que o Google já

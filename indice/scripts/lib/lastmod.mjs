@@ -46,7 +46,10 @@ export function calcularLastmod(stats, previo, hoje, meta) {
     }
     marcar(`/${ufSlug}`, h8(hashesMun.join('|')));
   }
-  if (meta) marcarRankings(stats, meta, marcar);
+  if (meta) {
+    marcarRankings(stats, meta, marcar);
+    marcarAtivos(stats, meta, marcar);
+  }
   return saida;
 }
 
@@ -101,3 +104,45 @@ function marcarRankings(stats, meta, marcar) {
 
 /** Extrai só a data de uma entrada "hash|AAAA-MM-DD". */
 export const dataDeEntrada = (e) => (e ? e.split('|')[1] : undefined);
+
+/**
+ * Rankings de ativos por segmento (Brasil e UF). O hash cobre a lista ordenada
+ * de municípios e a assinatura da competência; o hub cobre todos os segmentos.
+ * O limite de 10 municípios espelha MIN_MUNICIPIOS_RANKING_UF em src/lib/data.ts.
+ */
+const MIN_MUNICIPIOS_RANKING_UF = 10;
+function marcarAtivos(stats, meta, marcar) {
+  const assinaturaMeta = { competencia: meta.competencia, geradoEm: meta.geradoEm };
+  const hub = [];
+  for (const seg of meta.segmentos) {
+    const linhas = [];
+    for (const uf of Object.keys(stats).sort()) {
+      for (const mun of Object.keys(stats[uf]).sort()) {
+        const reg = stats[uf][mun][seg.slug];
+        if (reg && reg.a >= meta.minimoParaIndexar) {
+          linhas.push({ uf, mun, a: reg.a, m: reg.m, ab: reg.ab, ba: reg.ba });
+        }
+      }
+    }
+    if (!linhas.length) continue;
+    linhas.sort((x, y) => y.a - x.a || `${x.mun}/${x.uf}`.localeCompare(`${y.mun}/${y.uf}`, 'pt-BR'));
+    marcar(`/rankings/ativos/${seg.slug}`, h8(estavel({ linhas, ...assinaturaMeta })));
+
+    const porUF = new Map();
+    for (const linha of linhas) {
+      if (!porUF.has(linha.uf)) porUF.set(linha.uf, []);
+      porUF.get(linha.uf).push(linha);
+    }
+    for (const [uf, lista] of porUF) {
+      if (lista.length >= MIN_MUNICIPIOS_RANKING_UF) {
+        marcar(`/rankings/ativos/${seg.slug}/${uf.toLowerCase()}`, h8(estavel({ linhas: lista, ...assinaturaMeta })));
+      }
+    }
+    hub.push({
+      slug: seg.slug,
+      ativos: linhas.reduce((total, linha) => total + linha.a, 0),
+      municipios: linhas.length,
+    });
+  }
+  marcar('/rankings/ativos', h8(estavel({ hub, ...assinaturaMeta })));
+}
