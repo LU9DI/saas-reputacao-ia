@@ -43,9 +43,10 @@ check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pr
 check(
   robots.includes("const base = 'https://filtraai.com'") &&
     robots.includes('sitemap: [') &&
+    robots.includes('`${base}/sitemap-index.xml`') &&
     robots.includes('`${base}/sitemap.xml`') &&
     robots.includes('`${base}/indice/sitemap-index.xml`'),
-  'Next robots metadata must reference both the main sitemap and the separately hosted Índice sitemap',
+  'Next robots metadata must reference the central sitemap index, the main sitemap and the separately hosted Índice sitemap',
 );
 check(!sitemap.includes("'/indice'") && !sitemap.includes('"/indice"'), 'Main sitemap must not list URLs hosted by the separate Índice app');
 
