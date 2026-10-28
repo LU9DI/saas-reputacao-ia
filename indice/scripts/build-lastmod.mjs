@@ -15,6 +15,8 @@ for (const f of readdirSync(path.join(DATA, 'stats'))) {
 }
 const arq = path.join(DATA, 'lastmod.json');
 const previo = existsSync(arq) ? JSON.parse(readFileSync(arq, 'utf8')) : {};
-const saida = calcularLastmod(stats, previo, hoje, meta);
+const municipios = JSON.parse(readFileSync(path.join(DATA, 'municipios.json'), 'utf8'));
+const nomes = Object.fromEntries(municipios.map((m) => [`${m.uf}/${m.slug}`, m.nome]));
+const saida = calcularLastmod(stats, previo, hoje, meta, nomes);
 writeFileSync(arq, JSON.stringify(saida));
 console.log(`lastmod.json: ${Object.keys(saida).length} páginas`);

@@ -32,8 +32,6 @@ export function RankingPagina({ m, caminho }: { m: ModeloRanking; caminho: strin
     ...(uf ? [{ nome: UFS[uf], caminho: `/${uf.toLowerCase()}` }] : []),
     { nome: `Ranking de ${seg.curto}`, caminho },
   ];
-  // Só linka o ranking de UF que existe (tem municípios suficientes).
-  const ufComRanking = uf ? rankingDoSegmento(seg.slug, 'a').filter((l) => l.mun.uf === uf).length >= MIN_MUNICIPIOS_RANKING_UF : false;
   return (
     <>
       <JsonLd data={dataset} />
@@ -84,12 +82,24 @@ export function RankingPagina({ m, caminho }: { m: ModeloRanking; caminho: strin
         {uf ? (
           <li><Link href={`/rankings/ativos/${seg.slug}`}>{seg.nome} no Brasil</Link><span>ranking nacional</span></li>
         ) : null}
-        {outros.map((s) => (
-          <li key={s.slug}>
-            <Link href={uf && ufComRanking ? `/rankings/ativos/${s.slug}/${uf.toLowerCase()}` : `/rankings/ativos/${s.slug}`}>{s.nome}{uf ? ` em ${UFS[uf]}` : ''}</Link>
-            <span>{uf ? 'ranking do estado' : 'ranking nacional'}</span>
-          </li>
-        ))}
+        {outros.map((s) => {
+          // Só linka o ranking de UF do segmento alvo que existe (>= 10 municípios na UF).
+          const temRankingNaUF = uf ? rankingDoSegmento(s.slug, 'a').filter((l) => l.mun.uf === uf).length >= MIN_MUNICIPIOS_RANKING_UF : false;
+          if (temRankingNaUF && uf) {
+            return (
+              <li key={s.slug}>
+                <Link href={`/rankings/ativos/${s.slug}/${uf.toLowerCase()}`}>{s.nome} em {UFS[uf]}</Link>
+                <span>ranking do estado</span>
+              </li>
+            );
+          }
+          return (
+            <li key={s.slug}>
+              <Link href={`/rankings/ativos/${s.slug}`}>{s.nome}</Link>
+              <span>ranking nacional</span>
+            </li>
+          );
+        })}
       </ul>
 
       <Cta

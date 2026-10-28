@@ -805,6 +805,33 @@ try {
     check('ranking de ativos por UF tem tabela', ufAtivos.meta.tables.length >= 1);
   }
 
+  // Todos os links internos de rankings de ativos devem levar a páginas publicadas
+  // (o gate da UF é por segmento-alvo, não pela página atual).
+  const hrefsAtivos = (html) =>
+    [...html.matchAll(/href="(?:\/indice)?(\/rankings\/ativos\/[^"#?]+)"/gi)].map((match) => match[1]);
+  const esperadosPaths = new Set(ESPERADOS);
+  let linksAtivos = 0;
+  let linksAtivosQuebrados = 0;
+  for (const caminho of ['/rankings/ativos', ...ativosPaths]) {
+    const pagina = await request(`${BASE_PATH}${caminho}`);
+    if (pagina.final.status !== 200) {
+      fail(`crawl de ativos: ${caminho} respondeu ${pagina.final.status}`);
+      continue;
+    }
+    for (const alvo of hrefsAtivos(pagina.final.body)) {
+      linksAtivos += 1;
+      if (!esperadosPaths.has(alvo)) {
+        linksAtivosQuebrados += 1;
+        fail(`link em ${caminho} aponta para página inexistente`, alvo);
+      }
+    }
+  }
+  check(
+    'nenhum link interno de rankings de ativos aponta para página inexistente',
+    linksAtivosQuebrados === 0,
+    `${linksAtivosQuebrados} de ${linksAtivos} links`,
+  );
+
   const ativosInvalido = await request(`${BASE_PATH}/rankings/ativos/nao-existe`);
   checkEqual('ranking de ativos de segmento inválido responde 404', ativosInvalido.final.status, 404);
   check(
