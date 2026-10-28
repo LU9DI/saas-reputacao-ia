@@ -46,6 +46,22 @@ createServer((req, res) => {
     }
     return originalWriteHead(statusCode, message);
   };
+  // Normalize uppercase Brazilian UF segments to the canonical lowercase route.
+  // Example: /indice/GO/goiania?x=1 -> /indice/go/goiania?x=1.
+  // Restrict this to the first path segment after the app basePath.
+  const requestUrl = req.url || '/';
+  const queryIndex = requestUrl.indexOf('?');
+  const pathname = queryIndex === -1 ? requestUrl : requestUrl.slice(0, queryIndex);
+  const query = queryIndex === -1 ? '' : requestUrl.slice(queryIndex);
+  const ufMatch = pathname.match(/^\\/indice\\/([A-Z]{2})(?=\\/|$)(.*)$/);
+  if (ufMatch && req.method === 'GET') {
+    res.statusCode = 308;
+    res.setHeader('Location', `/indice/${ufMatch[1].toLowerCase()}${ufMatch[2]}${query}`);
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.end();
+    return;
+  }
+
   handle(req, res);
 }).listen(port, hostname, () => {
   console.log(`filtra-indice pronto em http://${hostname}:${port}`);
