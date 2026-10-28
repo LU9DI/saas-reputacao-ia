@@ -22,6 +22,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { calcularLastmod } from './lib/lastmod.mjs';
 import { descreverArquivoFonte } from './lib/source-manifest.mjs';
 import {
   bloqueioTokenWebdav,
@@ -294,6 +295,9 @@ async function main() {
     }
   }
 
+  // lastmod por página: lido antes de apagar a saída, para herdar datas de páginas que não mudaram.
+  let lastmodPrevio = {};
+  try { lastmodPrevio = JSON.parse(await readFile(path.join(OUT, 'lastmod.json'), 'utf8')); } catch { /* primeira execução */ }
   await rm(OUT, { recursive: true, force: true });
   await mkdir(path.join(OUT, 'stats'), { recursive: true });
   const usadosMun = new Set();
@@ -326,6 +330,8 @@ async function main() {
     sintetico: Boolean(args.sintetico),
   };
   await writeFile(path.join(OUT, 'meta.json'), JSON.stringify(meta, null, 2));
+  const lastmod = calcularLastmod(stats, lastmodPrevio, meta.geradoEm.slice(0, 10));
+  await writeFile(path.join(OUT, 'lastmod.json'), JSON.stringify(lastmod));
   if (semMatch.length) {
     log(`atenção: ${semMatch.length} municípios sem correspondência no IBGE (nome sem acento): ${semMatch.slice(0, 15).map((m) => `${m.nome}/${m.uf}`).join(', ')}`);
   }

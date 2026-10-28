@@ -95,6 +95,19 @@ function carregar(): Loja {
 }
 
 export const getMeta = () => carregar().meta;
+
+let lastmodCache: Record<string, string> | null = null;
+/** lastmod ISO (AAAA-MM-DD) de uma página; sem registro, cai na data de geração da base. */
+export function getLastmod(caminho: string): Date {
+  if (!lastmodCache) {
+    lastmodCache = {};
+    const arq = path.join(dir(), 'lastmod.json');
+    if (existsSync(arq)) lastmodCache = JSON.parse(readFileSync(arq, 'utf8')) as Record<string, string>;
+  }
+  const entrada = lastmodCache[caminho];
+  const data = entrada ? entrada.split('|')[1] : undefined;
+  return new Date(data || carregar().meta.geradoEm);
+}
 export const getSegmentos = () => carregar().meta.segmentos;
 export const getSegmento = (slug: string) => carregar().segmentos.get(slug) ?? null;
 export const getMunicipio = (uf: string, slug: string) => carregar().porChave.get(`${uf}/${slug}`) ?? null;
