@@ -39,6 +39,7 @@ test('só a página alterada e seus ancestrais mudam de data', () => {
 
 const metaRankings = {
   competencia: '2026-10',
+  geradoEm: '2026-10-26T07:34:27.901Z',
   segmentos: [{ slug: 'restaurantes', nome: 'Restaurantes', curto: 'restaurantes', classes: ['5611-2/01'] }],
 };
 
@@ -77,6 +78,57 @@ test('mudança no ano fechado atualiza a página e o hub', () => {
   const m = calcularLastmod(novo, ant, '2026-11-01', metaRankings);
   assert.equal(dataDeEntrada(m['/rankings/aberturas/restaurantes/2024']), '2026-11-01');
   assert.equal(dataDeEntrada(m['/rankings/aberturas']), '2026-11-01');
+});
+
+test('mesmas estatísticas e mesmos metadados preservam todas as datas', () => {
+  const ant = calcularLastmod(statsComRanking(), {}, '2026-10-01', metaRankings);
+  const m = calcularLastmod(statsComRanking(), ant, '2026-11-01', metaRankings);
+  for (const k of Object.keys(ant)) {
+    assert.equal(dataDeEntrada(m[k]), '2026-10-01', k);
+  }
+});
+
+test('mudança em competencia ou geradoEm atualiza páginas de ranking e o hub, sem tocar UF/município/célula', () => {
+  const ant = calcularLastmod(statsComRanking(), {}, '2026-10-01', metaRankings);
+
+  const novaCompetencia = calcularLastmod(
+    statsComRanking(),
+    ant,
+    '2026-11-01',
+    { ...metaRankings, competencia: '2026-11' },
+  );
+  assert.equal(dataDeEntrada(novaCompetencia['/rankings/aberturas/restaurantes/2024']), '2026-11-01');
+  assert.equal(dataDeEntrada(novaCompetencia['/rankings/aberturas']), '2026-11-01');
+
+  const novoGeradoEm = calcularLastmod(
+    statsComRanking(),
+    ant,
+    '2026-11-01',
+    { ...metaRankings, geradoEm: '2026-11-01T09:00:00.000Z' },
+  );
+  assert.equal(dataDeEntrada(novoGeradoEm['/rankings/aberturas/restaurantes/2024']), '2026-11-01');
+  assert.equal(dataDeEntrada(novoGeradoEm['/rankings/aberturas']), '2026-11-01');
+
+  for (const caminho of ['/sp', '/sp/mun1', '/sp/mun1/restaurantes']) {
+    assert.equal(dataDeEntrada(novaCompetencia[caminho]), '2026-10-01', `${caminho} com competencia`);
+    assert.equal(dataDeEntrada(novoGeradoEm[caminho]), '2026-10-01', `${caminho} com geradoEm`);
+  }
+});
+
+test('hub só atualiza quando o próprio conteúdo muda', () => {
+  const ant = calcularLastmod(statsComRanking(), {}, '2026-10-01', metaRankings);
+
+  // Mudança em dado que o hub não exibe (estoque ativo): hub e ranking preservam a data.
+  const estoque = statsComRanking(12, { mun1: { a: 999, ano: { 2024: 10 } } });
+  const mEstoque = calcularLastmod(estoque, ant, '2026-11-01', metaRankings);
+  assert.equal(dataDeEntrada(mEstoque['/rankings/aberturas']), '2026-10-01');
+  assert.equal(dataDeEntrada(mEstoque['/rankings/aberturas/restaurantes/2024']), '2026-10-01');
+  assert.equal(dataDeEntrada(mEstoque['/sp/mun1/restaurantes']), '2026-11-01');
+
+  // Mudança no total do último ano publicado: hub atualiza.
+  const total = statsComRanking(12, { mun1: { a: 10, ano: { 2024: 25 } } });
+  const mTotal = calcularLastmod(total, ant, '2026-11-01', metaRankings);
+  assert.equal(dataDeEntrada(mTotal['/rankings/aberturas']), '2026-11-01');
 });
 
 // --- Coerência com os dados reais publicados ---------------------------------

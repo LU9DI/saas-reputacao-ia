@@ -53,9 +53,12 @@ export function calcularLastmod(stats, previo, hoje, meta) {
 /**
  * Hub e páginas de ranking. O conteúdo de /rankings/aberturas/{seg}/{ano} é o
  * ranking do ano fechado, a série nacional inteira (o gráfico inclui o ano
- * parcial da competência), os nomes do segmento e a estrutura de anos
- * publicados de todos os segmentos (as páginas ligam entre si). O hub lista os
- * anos publicados e o total do último ano de cada segmento.
+ * parcial da competência), os nomes do segmento, a estrutura de anos
+ * publicados de todos os segmentos (as páginas ligam entre si) e a competência
+ * com a data de geração (exibidas no lead, na resposta direta e em
+ * "Fonte e período dos dados"). O hub lista os anos publicados e o total do
+ * último ano de cada segmento e também exibe competência e data de geração no
+ * lead, no FAQ e na fonte — por isso esses campos entram no hash do hub.
  */
 function marcarRankings(stats, meta, marcar) {
   const porSegmento = meta.segmentos.map((seg) => ({
@@ -69,6 +72,7 @@ function marcarRankings(stats, meta, marcar) {
     serie: serieDoSegmento(stats, seg.slug),
   }));
   const publicadosCompacto = porSegmento.map(({ slug, publicados }) => ({ slug, publicados }));
+  const assinaturaMeta = { competencia: meta.competencia, geradoEm: meta.geradoEm };
   for (const seg of porSegmento) {
     for (const ano of seg.publicados) {
       const pagina = {
@@ -77,17 +81,21 @@ function marcarRankings(stats, meta, marcar) {
         nome: seg.nome,
         curto: seg.curto,
         publicadosPorSegmento: publicadosCompacto,
+        ...assinaturaMeta,
       };
       marcar(`/rankings/aberturas/${seg.slug}/${ano}`, h8(estavel(pagina)));
     }
   }
-  const hub = porSegmento.map((seg) => ({
-    slug: seg.slug,
-    nome: seg.nome,
-    classes: seg.classes,
-    publicados: seg.publicados,
-    totalUltimo: seg.publicados.length ? calcularRanking(stats, seg.slug, seg.publicados[0]).total : 0,
-  }));
+  const hub = {
+    ...assinaturaMeta,
+    porSegmento: porSegmento.map((seg) => ({
+      slug: seg.slug,
+      nome: seg.nome,
+      classes: seg.classes,
+      publicados: seg.publicados,
+      totalUltimo: seg.publicados.length ? calcularRanking(stats, seg.slug, seg.publicados[0]).total : 0,
+    })),
+  };
   marcar('/rankings/aberturas', h8(estavel(hub)));
 }
 
