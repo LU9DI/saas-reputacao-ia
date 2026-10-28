@@ -14,8 +14,10 @@ Com dados sintéticos o app marca todas as páginas como `noindex` e o build de 
 O ingest valida o layout nas primeiras linhas e aborta se algo não bater. Cada ZIP processado é registrado em `meta.json` com nome, tipo, tamanho em bytes e SHA-256; a URL de download é registrada quando o arquivo é baixado pelo script. Para arquivos locais, o caminho da máquina não é publicado e a URL fica `null`. Esses metadados permitem identificar os artefatos processados, mas não substituem a preservação dos ZIPs nem comprovam, sozinhos, a correção dos dados. O acesso WebDAV usa o segredo `INDICE_RFB_SHARE_TOKEN` no ambiente; não grave tokens no código ou nos logs. Sem esse segredo, a ingestão remota aborta antes de qualquer download com uma mensagem explícita. A sondagem opcional do workflow também omite o token das URLs que registra. Como o ambiente de desenvolvimento não acessa o portal, a ingestão real deve ser revisada antes de publicar.
 
 ## Páginas
-`/` · `/[uf]` · `/[uf]/[municipio]` · `/[uf]/[municipio]/[segmento]` · `/metodologia` · `/sitemap-index.xml`
-Só existem combinações com >= `minimoParaIndexar` ativos (padrão 10). As demais devolvem 404.
+`/` · `/[uf]` · `/[uf]/[municipio]` · `/[uf]/[municipio]/[segmento]` · `/metodologia` · `/rankings/aberturas` · `/rankings/aberturas/[segmento]/[ano]` · `/sitemap-index.xml`
+Só existem combinações com >= `minimoParaIndexar` ativos (padrão 10). As demais devolvem 404. Rankings de
+aberturas só existem para anos fechados com pelo menos 100 aberturas no segmento e 10 municípios com
+abertura no ano; o ano da competência é parcial e não gera página.
 
 ## Conteúdo e citabilidade (AEO)
 - Cada página tem H1 factual, definição curta, tabelas HTML com `caption`, unidade, período e denominador,
@@ -26,14 +28,21 @@ Só existem combinações com >= `minimoParaIndexar` ativos (padrão 10). As dem
   reputação, faturamento ou qualidade, e não soma bases como Consumidor.gov.br ou avaliações do Google.
 - Combinações abaixo do mínimo devolvem 404 e ficam fora do sitemap. Não há `noindex` em massa nem
   consolidação de URLs sem evidência.
+- Rankings de aberturas por ano são calculados da mesma base agregada (nada é digitado no código), com
+  período, geografia, segmento, fonte e data de referência explícitos. Empates dividem a posição e só
+  anos fechados com dados suficientes ganham página; o ano da competência é parcial e não gera URL.
+- Cada página de ranking abre com a resposta direta do número principal (município líder, total e
+  parcela), que é o mesmo dado das tabelas e do JSON-LD `Dataset`.
+- As páginas de ranking não usam JSON-LD `FAQPage`/`HowTo` para perseguir rich results que o Google já
+  não oferece de forma geral; o FAQ visível continua existindo como conteúdo.
 - A home revalida a cada 24 horas; as páginas de estado, município e célula são pré-geradas no build e só
   mudam em um novo deploy. A data de geração exibida é a da ingestão, não a do acesso.
 
 ## Auditoria de indexabilidade
     npm run audit:indexability
     npm run audit:indexability -- --json
-Lê os mesmos dados do app, sem rede, e mostra os estratos (home, metodologia, UF, município e célula),
-a cobertura por segmento e por UF, a distribuição de páginas por município, as células finas e as
+Lê os mesmos dados do app, sem rede, e mostra os estratos (home, metodologia, UF, município, célula e
+rankings), a cobertura por segmento e por UF, a distribuição de páginas por município, as células finas e as
 listagens profundas. A saída é diagnóstico: nenhuma URL é removida ou marcada como `noindex`
 automaticamente.
 
@@ -50,7 +59,7 @@ produção.
 
 ## Medição
 Publicar, enviar `https://filtraai.com/indice/sitemap-index.xml` e acompanhar o Search Console por
-estrato (home, metodologia, UF, município e célula), usando a data de geração como referência. O
+estrato (home, metodologia, UF, município, célula e rankings), usando a data de geração como referência. O
 baseline de 26/10/2026 tinha 28.607 URLs no sitemap do Índice e três URLs prioritárias com solicitação
 de indexação aceita, ainda sem indexação confirmada. O Índice não mede citações em IA nem tráfego
 orgânico por conta própria; não trate ausência de medição como resultado.

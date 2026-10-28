@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { coberturaDoSegmento, getMeta, getSegmentos, resumoDoIndice, topMunicipios, ufsComDados } from '@/lib/data';
+import { anosPublicadosDoSegmento } from '@/lib/rankings';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, datasetDoIndice } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
@@ -73,7 +74,7 @@ export default function Page() {
       <h1>Estabelecimentos ativos por município e segmento no Brasil</h1>
       <p className="lead">
         O Índice Filtra.AI reúne contagens mensais de estabelecimentos com CNPJ ativo nos {resumo.segmentos} segmentos acompanhados,
-        por estado e município. Fonte: cadastro aberto da Receita Federal, competência {comp}.
+        por estado e município: {n(resumo.ativosNosSegmentos)} estabelecimentos ativos em todos os municípios da base, com {n(resumo.municipiosComPagina)} municípios com página publicada. Fonte: cadastro aberto da Receita Federal, competência {comp}, dados gerados em {dataCurta(meta.geradoEm)}.
       </p>
 
       <Definicao termo="O que é o Índice Filtra.AI?">
@@ -168,6 +169,27 @@ export default function Page() {
           </section>
         );
       })}
+
+      <h2>Rankings de aberturas por ano</h2>
+      <p className="nota">
+        Municípios com mais estabelecimentos abertos em cada ano completo, contados pela data de início de atividade na
+        base da Receita Federal. Só os anos fechados têm ranking publicado; aberturas e baixas são eventos distintos e não
+        formam saldo.
+      </p>
+      <ul className="lista">
+        {segmentos.map((seg) => {
+          const anos = anosPublicadosDoSegmento(seg.slug);
+          if (!anos.length) return null;
+          return (
+            <li key={seg.slug}>
+              <Link href={`/rankings/aberturas/${seg.slug}/${anos[0]}`}>{seg.nome}</Link>
+              <span>
+                {anos[0]} e mais {anos.length - 1} {anos.length - 1 === 1 ? 'ano' : 'anos'}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
 
       <h2>Como ler os números</h2>
       <ul>

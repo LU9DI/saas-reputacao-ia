@@ -108,6 +108,7 @@ export function datasetDoRecorte({
   espacial,
   meta,
   variaveis,
+  temporal,
 }: {
   url: string;
   name: string;
@@ -115,6 +116,8 @@ export function datasetDoRecorte({
   espacial: string;
   meta: MetaResumo;
   variaveis: VariavelDataset[];
+  /** Cobertura temporal específica do recorte; o padrão é a janela de 12 meses da competência. */
+  temporal?: string;
 }) {
   return {
     '@context': 'https://schema.org',
@@ -130,7 +133,7 @@ export function datasetDoRecorte({
     publisher,
     isBasedOn: baseDeDados,
     dateModified: meta.geradoEm,
-    temporalCoverage: `${meta.janela.inicio}/${meta.competencia}`,
+    temporalCoverage: temporal ?? `${meta.janela.inicio}/${meta.competencia}`,
     spatialCoverage: { '@type': 'Place', name: espacial },
     measurementTechnique: TECNICA,
     variableMeasured: variaveis.map((v) => ({

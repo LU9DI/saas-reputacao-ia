@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { UFS } from './ufs';
+import { caminhosDeRankings } from './rankings';
 
 export type Registro = {
   a: number; // estabelecimentos ativos
@@ -111,6 +112,7 @@ export function getLastmod(caminho: string): Date {
 export const getSegmentos = () => carregar().meta.segmentos;
 export const getSegmento = (slug: string) => carregar().segmentos.get(slug) ?? null;
 export const getMunicipio = (uf: string, slug: string) => carregar().porChave.get(`${uf}/${slug}`) ?? null;
+export const getStats = () => carregar().stats;
 export const nomeSubclasse = (cod: string) => carregar().subclasses[cod] ?? cod;
 export const minimo = () => carregar().meta.minimoParaIndexar;
 
@@ -281,7 +283,7 @@ export function getPagina(uf: string, munSlug: string, segSlug: string): Pagina 
 
 /** Todos os caminhos indexáveis (relativos ao basePath), para o sitemap. */
 export function todosOsCaminhos(): string[] {
-  const caminhos = ['/', '/metodologia'];
+  const caminhos = ['/', '/metodologia', '/rankings/aberturas'];
   for (const u of ufsComDados()) {
     const uf = u.sigla.toLowerCase();
     caminhos.push(`/${uf}`);
@@ -290,5 +292,7 @@ export function todosOsCaminhos(): string[] {
       for (const { seg } of segmentosDoMunicipio(u.sigla, mun.slug)) caminhos.push(`/${uf}/${mun.slug}/${seg.slug}`);
     }
   }
+  // Rankings de aberturas por ano: caminhos calculados em lib/rankings.
+  caminhos.push(...caminhosDeRankings());
   return caminhos;
 }

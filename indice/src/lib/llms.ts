@@ -14,6 +14,7 @@ import {
 import { dataCurta, mesCurto, mesPorExtenso, n, pct } from './format';
 import { BASE, FONTE_DADOS_ABERTOS_URL, FONTE_URL } from './seo';
 import { UFS, ufDeSlug } from './ufs';
+import { anosPublicadosDoSegmento, getPaginaRanking, nomeDoMunicipio } from './rankings';
 
 /**
  * Representações em texto para agentes (GEO/AEO).
@@ -81,6 +82,16 @@ function listaEstados() {
     .join('\n');
 }
 
+function listaRankings() {
+  const linhas = getSegmentos().flatMap((s) => {
+    const anos = anosPublicadosDoSegmento(s.slug);
+    return anos.length
+      ? [`## ${s.nome}`, ...anos.map((a) => `- Aberturas de ${s.curto} em ${a}: ${html(`/rankings/aberturas/${s.slug}/${a}`)} · Markdown: ${md(`/rankings/aberturas/${s.slug}/${a}`)}`)]
+      : [];
+  });
+  return linhas.length ? [`- Hub de rankings: ${html('/rankings/aberturas')} · Markdown: ${md('/rankings/aberturas')}`, '', ...linhas] : [];
+}
+
 export function llmsIndex(): string {
   const meta = getMeta();
   const resumo = resumoDoIndice();
@@ -102,6 +113,9 @@ export function llmsIndex(): string {
     '',
     '## Estados',
     listaEstados(),
+    '',
+    '## Rankings de aberturas por ano',
+    ...listaRankings(),
     '',
     '## Segmentos acompanhados',
     getSegmentos().map((s) => `- ${s.nome} (${s.slug}; CNAE ${s.classes.join(', ')})`).join('\n'),
@@ -159,6 +173,7 @@ export function llmsFull(): string {
     `- Home: ${html('/')} · Markdown: ${md('/')}`,
     `- Metodologia: ${html('/metodologia')} · Markdown: ${md('/metodologia')}`,
     `- Sitemap: ${html('/sitemap-index.xml')}`,
+    ...listaRankings(),
     ...ufsComDados().map(
       (u) => `- ${u.nome} (${u.sigla}): ${html(`/${u.sigla.toLowerCase()}`)} · Markdown: ${md(`/${u.sigla.toLowerCase()}`)}`,
     ),
@@ -237,6 +252,64 @@ export function markdownDaPagina(caminho: string[]): Markdown | null {
         '',
       ].join('\n'),
     };
+  }
+
+  if (partes[0] === 'rankings' && partes[1] === 'aberturas') {
+    if (partes.length === 2) {
+      return {
+        htmlUrl: html('/rankings/aberturas'),
+        corpo: [
+          cabecalho('/rankings/aberturas'),
+          '',
+          '# Rankings de aberturas por ano',
+          '',
+          `Municípios com mais estabelecimentos abertos por ano completo, contados pela data de início de atividade na base da Receita Federal, competência ${comp}. Só anos fechados têm ranking; aberturas e baixas são eventos distintos e não formam saldo.`,
+          '',
+          ...listaRankings(),
+          '',
+          '## Limites',
+          ...limites().map((l) => `- ${l}`),
+          '',
+          '## Fonte',
+          fonte(),
+          '',
+        ].join('\n'),
+      };
+    }
+    if (partes.length === 4) {
+      const p = getPaginaRanking(partes[2], partes[3]);
+      if (!p) return null;
+      const caminho = `/rankings/aberturas/${partes[2]}/${partes[3]}`;
+      return {
+        htmlUrl: html(caminho),
+        corpo: [
+          cabecalho(caminho),
+          '',
+          `# Ranking de aberturas de ${p.seg.nome} em ${p.ano} por município`,
+          '',
+          p.resposta,
+          '',
+          `- Aberturas no Brasil em ${p.ano}: ${n(p.ranking.total)}`,
+          `- Municípios com ao menos uma abertura: ${n(p.ranking.municipiosComAbertura)}`,
+          `- Estados com abertura registrada: ${n(p.ranking.porUF.length)}`,
+          '',
+          '## Os 10 municípios com mais aberturas',
+          '| Posição | Município | Aberturas | Parcela |',
+          '| ---: | --- | ---: | ---: |',
+          ...p.ranking.ordenado.slice(0, 10).map(
+            (item) => `| ${item.posicao} | ${nomeDoMunicipio(item.uf, item.municipio)} (${item.uf}) | ${n(item.v)} | ${pct(item.v, p.ranking.total)} |`,
+          ),
+          '',
+          '## Limites',
+          ...limites().map((l) => `- ${l}`),
+          '',
+          '## Fonte',
+          fonte(),
+          '',
+        ].join('\n'),
+      };
+    }
+    return null;
   }
 
   const sigla = ufDeSlug(partes[0]);
