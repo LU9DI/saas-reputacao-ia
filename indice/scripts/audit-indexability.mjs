@@ -125,7 +125,41 @@ const rankings = segmentos.map((seg) => {
 });
 const urlsRankings = rankings.reduce((t, r) => t + r.urls, 0);
 const urlsHubRankings = urlsRankings > 0 ? 1 : 0;
-const totalUrls = 2 + ufsComPagina.length + municipiosComPagina.length + celulas.length + urlsHubRankings + urlsRankings;
+
+// Rankings de ativos: nacional por segmento + UF com pelo menos 10 municípios.
+const MIN_MUNICIPIOS_RANKING_UF = 10;
+const ativosRankings = segmentos.map((seg) => {
+  const porUF = new Map();
+  let municipios = 0;
+  for (const uf of Object.keys(dadosPorUF)) {
+    for (const mun of Object.keys(dadosPorUF[uf])) {
+      const reg = dadosPorUF[uf][mun][seg];
+      if (reg && reg.a >= minimo) {
+        municipios += 1;
+        porUF.set(uf, (porUF.get(uf) || 0) + 1);
+      }
+    }
+  }
+  return {
+    slug: seg,
+    nome: nomeDoSegmento.get(seg),
+    municipios,
+    ufs: [...porUF.values()].filter((qtd) => qtd >= MIN_MUNICIPIOS_RANKING_UF).length,
+  };
+});
+const urlsAtivosSegmentos = ativosRankings.filter((r) => r.municipios > 0).length;
+const urlsAtivosUF = ativosRankings.reduce((t, r) => t + r.ufs, 0);
+const urlsHubAtivos = urlsAtivosSegmentos > 0 ? 1 : 0;
+const totalUrls =
+  2 +
+  ufsComPagina.length +
+  municipiosComPagina.length +
+  celulas.length +
+  urlsHubRankings +
+  urlsRankings +
+  urlsHubAtivos +
+  urlsAtivosSegmentos +
+  urlsAtivosUF;
 
 const distribuicao = { '1 segmento': 0, '2 a 3 segmentos': 0, '4 a 6 segmentos': 0, '7 a 9 segmentos': 0 };
 for (const mun of municipiosComPagina) {
@@ -166,6 +200,9 @@ const relatorio = {
     celulas: celulas.length,
     rankings: urlsRankings,
     hubRankings: urlsHubRankings,
+    rankingsAtivos: urlsAtivosSegmentos,
+    rankingsAtivosUF: urlsAtivosUF,
+    hubRankingsAtivos: urlsHubAtivos,
     totalUrls,
     abaixoDoMinimo: abaixoDoMinimo.length,
     celulasComDados,
@@ -184,6 +221,7 @@ const relatorio = {
   })),
   porUF: ufTabela,
   rankings,
+  rankingsAtivos: ativosRankings,
   revisao: {
     celulasFinas: celulasFinas.length,
     limiar: limiarRevisao,
@@ -209,6 +247,7 @@ if (json) {
   console.log(`- Municípios com ao menos uma página: ${fix(municipiosComPagina.length)}`);
   console.log(`- Células município × segmento: ${fix(celulas.length)}`);
   console.log(`- Rankings de aberturas por ano: ${fix(urlsRankings)}${urlsHubRankings ? ' + hub de rankings' : ''}`);
+  console.log(`- Rankings de ativos: ${fix(urlsAtivosSegmentos)} nacional(is) + ${fix(urlsAtivosUF)} por UF${urlsHubAtivos ? ' + hub' : ''}`);
   console.log(`- Total de URLs no sitemap: ${fix(totalUrls)}`);
   console.log(`- Células com dados mas abaixo do mínimo (404, não noindex): ${fix(abaixoDoMinimo.length)}`);
   console.log(`- Cobertura: ${fix(totalAtivosNasPaginas)} de ${fix(totalAtivosNosSegmentos)} ativos (${fix(coberturaGeral, 1)}%)\n`);

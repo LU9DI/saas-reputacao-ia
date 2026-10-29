@@ -220,7 +220,7 @@ function carregarDados() {
 function caminhosEsperados({ meta, municipios, stats }) {
   const porChave = new Map(municipios.map((municipio) => [`${municipio.uf}/${municipio.slug}`, municipio]));
   const minimo = meta.minimoParaIndexar;
-  const paths = ['/', '/metodologia', '/rankings/aberturas'];
+  const paths = ['/', '/metodologia', '/rankings/aberturas', '/rankings/ativos'];
   for (const uf of Object.keys(stats).sort()) {
     let ufTemPagina = false;
     const municipiosPublicados = [];
@@ -249,6 +249,26 @@ function caminhosEsperados({ meta, municipios, stats }) {
       if (podePublicar(calcularRanking(stats, segmento.slug, ano))) {
         paths.push(`/rankings/aberturas/${segmento.slug}/${ano}`);
       }
+    }
+  }
+  // Rankings de ativos: nacional por segmento + UF com pelo menos 10 municípios.
+  const MIN_MUNICIPIOS_RANKING_UF = 10;
+  for (const segmento of meta.segmentos) {
+    const porUF = new Map();
+    let total = 0;
+    for (const uf of Object.keys(stats)) {
+      for (const porSegmento of Object.values(stats[uf])) {
+        const registro = porSegmento[segmento.slug];
+        if (registro && registro.a >= minimo) {
+          total += 1;
+          porUF.set(uf, (porUF.get(uf) || 0) + 1);
+        }
+      }
+    }
+    if (!total) continue;
+    paths.push(`/rankings/ativos/${segmento.slug}`);
+    for (const [uf, quantidade] of porUF) {
+      if (quantidade >= MIN_MUNICIPIOS_RANKING_UF) paths.push(`/rankings/ativos/${segmento.slug}/${uf.toLowerCase()}`);
     }
   }
   return paths;
@@ -562,7 +582,8 @@ async function conferirPagina(nome, caminho, { minTabelas = 1, tfoot = true, den
 }
 
 async function waitForServer() {
-  const deadline = Date.now() + 60_000;
+  // 120s: o app carrega 51k+ entradas de lastmod e os stats completos no boot.
+  const deadline = Date.now() + 120_000;
 
   while (Date.now() < deadline) {
     if (server.exitCode !== null) {
@@ -616,7 +637,7 @@ const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
 
 const server = spawn(process.execPath, [SERVER_ENTRY], {
   cwd: ROOT,
-  env: { ...process.env, NODE_ENV: 'production', PORT: String(PORT) },
+  env: { ...process.env, NODE_ENV: 'production', PORT: String(PORT), HOSTNAME: HOST },
   stdio: ['ignore', 'pipe', 'pipe'],
 });
 
@@ -781,6 +802,77 @@ try {
     check('home descobre os rankings', rootHtml.includes('/rankings/aberturas'));
     check('célula linka o ranking nacional de aberturas', celula.page.final.body.includes('/rankings/aberturas/'));
   }
+
+  // Rankings de ativos: hub, nacional por segmento e recorte por UF.
+  const ativosPaths = ESPERADOS.filter((caminho) => caminho.startsWith('/rankings/ativos/'));
+  const ativosSegmento = ativosPaths.find((caminho) => caminho.split('/').length === 4);
+  const ativosUF = ativosPaths.find((caminho) => caminho.split('/').length === 5);
+
+  const hubAtivos = await conferirPagina('hub de rankings de ativos', '/rankings/ativos', {
+    minTabelas: 1,
+    tfoot: true,
+    denominador: false,
+    esperarFaq: false,
+  });
+  check('hub de ativos lista os segmentos', hubAtivos.page.final.body.includes('/rankings/ativos/'));
+  conferirCta('CTA do hub de ativos', hubAtivos.page.final.body);
+
+  if (!ativosSegmento) {
+    fail('nenhum ranking de ativos por segmento foi publicado');
+  } else {
+    const segAtivos = await conferirPagina('ranking de ativos nacional', ativosSegmento, {
+      minTabelas: 1,
+      tfoot: false,
+      esperarFaq: false,
+    });
+    check('ranking de ativos tem tabela de ativos', /Mais estabelecimentos ativos/i.test(segAtivos.meta.text));
+    check('ranking de ativos linka as aberturas', segAtivos.page.final.body.includes('/rankings/aberturas'));
+    conferirCta('CTA do ranking de ativos', segAtivos.page.final.body);
+  }
+
+  if (ativosUF) {
+    const ufAtivos = await conferirPagina('ranking de ativos por UF', ativosUF, {
+      minTabelas: 1,
+      tfoot: false,
+      esperarFaq: false,
+    });
+    check('ranking de ativos por UF tem tabela', ufAtivos.meta.tables.length >= 1);
+  }
+
+  // Todos os links internos de rankings de ativos devem levar a páginas publicadas
+  // (o gate da UF é por segmento-alvo, não pela página atual).
+  const hrefsAtivos = (html) =>
+    [...html.matchAll(/href="(?:\/indice)?(\/rankings\/ativos\/[^"#?]+)"/gi)].map((match) => match[1]);
+  const esperadosPaths = new Set(ESPERADOS);
+  let linksAtivos = 0;
+  let linksAtivosQuebrados = 0;
+  for (const caminho of ['/rankings/ativos', ...ativosPaths]) {
+    const pagina = await request(`${BASE_PATH}${caminho}`);
+    if (pagina.final.status !== 200) {
+      fail(`crawl de ativos: ${caminho} respondeu ${pagina.final.status}`);
+      continue;
+    }
+    for (const alvo of hrefsAtivos(pagina.final.body)) {
+      linksAtivos += 1;
+      if (!esperadosPaths.has(alvo)) {
+        linksAtivosQuebrados += 1;
+        fail(`link em ${caminho} aponta para página inexistente`, alvo);
+      }
+    }
+  }
+  check(
+    'nenhum link interno de rankings de ativos aponta para página inexistente',
+    linksAtivosQuebrados === 0,
+    `${linksAtivosQuebrados} de ${linksAtivos} links`,
+  );
+
+  const ativosInvalido = await request(`${BASE_PATH}/rankings/ativos/nao-existe`);
+  checkEqual('ranking de ativos de segmento inválido responde 404', ativosInvalido.final.status, 404);
+  check(
+    'ranking de ativos inválido não está no sitemap',
+    !CONJUNTO_ESPERADO.has(canonicalPath('/rankings/ativos/nao-existe')),
+  );
+  check('home descobre os rankings de ativos', rootHtml.includes('/rankings/ativos'));
 
   const abaixo = AMOSTRAS.abaixoDoMinimo;
   if (abaixo) {

@@ -92,6 +92,11 @@ function listaRankings() {
   return linhas.length ? [`- Hub de rankings: ${html('/rankings/aberturas')} · Markdown: ${md('/rankings/aberturas')}`, '', ...linhas] : [];
 }
 
+function listaAtivos() {
+  const linhas = getSegmentos().map((s) => `- ${s.nome}: ${html(`/rankings/ativos/${s.slug}`)}`);
+  return linhas.length ? [`- Hub de rankings de ativos: ${html('/rankings/ativos')}`, '', ...linhas] : [];
+}
+
 export function llmsIndex(): string {
   const meta = getMeta();
   const resumo = resumoDoIndice();
@@ -117,11 +122,14 @@ export function llmsIndex(): string {
     '## Rankings de aberturas por ano',
     ...listaRankings(),
     '',
+    '## Rankings de estabelecimentos ativos',
+    ...listaAtivos(),
+    '',
     '## Segmentos acompanhados',
     getSegmentos().map((s) => `- ${s.nome} (${s.slug}; CNAE ${s.classes.join(', ')})`).join('\n'),
     '',
     '## Versões em Markdown',
-    'Cada página pública tem uma versão `.md` com o mesmo dado, sem navegação nem scripts, em `https://filtraai.com/indice/md/<caminho>`. A URL canônica continua sendo a página HTML. As versões `.md` ficam fora do sitemap e são descobertas por este arquivo.',
+    'As páginas principais, as UFs e os rankings de aberturas têm uma versão `.md` com o mesmo dado, sem navegação nem scripts, em `https://filtraai.com/indice/md/<caminho>`. A URL canônica continua sendo a página HTML. As versões `.md` ficam fora do sitemap e são descobertas por este arquivo.',
     '',
     '## Limites',
     ...limites().map((l) => `- ${l}`),
@@ -174,6 +182,7 @@ export function llmsFull(): string {
     `- Metodologia: ${html('/metodologia')} · Markdown: ${md('/metodologia')}`,
     `- Sitemap: ${html('/sitemap-index.xml')}`,
     ...listaRankings(),
+    ...listaAtivos(),
     ...ufsComDados().map(
       (u) => `- ${u.nome} (${u.sigla}): ${html(`/${u.sigla.toLowerCase()}`)} · Markdown: ${md(`/${u.sigla.toLowerCase()}`)}`,
     ),

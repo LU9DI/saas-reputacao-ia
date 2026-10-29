@@ -170,6 +170,24 @@ export default function Page() {
         );
       })}
 
+      <h2>Rankings de estabelecimentos ativos</h2>
+      <p className="nota">
+        Municípios com mais estabelecimentos com CNPJ ativo em cada segmento, no Brasil e por estado. O ranking usa o
+        estoque de estabelecimentos ativos, não eventos de abertura.
+      </p>
+      <ul className="lista">
+        <li>
+          <Link href="/rankings/ativos">Todos os rankings de ativos</Link>
+          <span>hub</span>
+        </li>
+        {segmentos.map((seg) => (
+          <li key={seg.slug}>
+            <Link href={`/rankings/ativos/${seg.slug}`}>{seg.nome}</Link>
+            <span>ranking nacional</span>
+          </li>
+        ))}
+      </ul>
+
       <h2>Rankings de aberturas por ano</h2>
       <p className="nota">
         Municípios com mais estabelecimentos abertos em cada ano completo, contados pela data de início de atividade na
