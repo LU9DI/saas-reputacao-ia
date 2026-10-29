@@ -2,8 +2,8 @@ const ORIGEM = "https://filtra-indice.onrender.com";
 const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504, 521, 522, 523, 524]);
 const CACHEABLE_PATH = /^\/indice\/(?:sitemap-index\.xml|sitemap\/\d+\.xml)$/;
 const FRESH_CACHE_MS = 60_000;
-const STALE_CACHE_SECONDS = 3600;
-const RETRY_DELAYS_MS = [150, 350];
+const STALE_CACHE_SECONDS = 604800;
+const RETRY_DELAYS_MS = [500, 1500, 3000, 5000];
 
 function cacheKeyFor(url) {
   return new Request(`${url.origin}${url.pathname}`, { method: "GET" });
