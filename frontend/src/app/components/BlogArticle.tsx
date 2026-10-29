@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import IndiceLinks from './IndiceLinks';
 import { BrandMark } from './BrandMark';
 import { BlogBreadcrumb } from './BlogBreadcrumb';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -98,6 +99,7 @@ export function BlogArticle({
           <Link href="/clinicas" className="hover:text-zinc-300">
             Clínicas
           </Link>
+          <IndiceLinks className="contents" />
         </nav>
       </article>
     </div>
