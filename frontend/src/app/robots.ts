@@ -6,10 +6,9 @@ const base = 'https://filtraai.com';
 export const dynamic = 'force-static';
 
 // Crawlers de busca/resposta e de treinamento/corpus que declaramos explicitamente.
-// Motivo: um crawler que encontra um grupo com o próprio nome obedece SÓ a esse
-// grupo e ignora `User-agent: *`. Sem o grupo explícito, o comportamento fica
-// implícito e pode divergir entre provedores. Aqui a decisão é deliberada:
-// permitimos rastreamento e citação, e mantemos /api/ bloqueado em todos.
+// Um crawler que encontra um grupo com o próprio nome obedece só a esse grupo,
+// então mantemos a mesma política deliberada em todos: rastrear páginas públicas
+// e bloquear apenas a API. Páginas privadas comunicam noindex no HTML.
 const AI_CRAWLERS = [
   // Busca e respostas em assistentes
   'OAI-SearchBot',
@@ -20,7 +19,7 @@ const AI_CRAWLERS = [
   'Claude-User',
   'DuckAssistBot',
   'MistralAI-User',
-  // Treinamento / corpus (inclui grounding de Gemini e Common Crawl)
+  // Treinamento / corpus
   'GPTBot',
   'ClaudeBot',
   'Google-Extended',
@@ -30,8 +29,6 @@ const AI_CRAWLERS = [
   'Amazonbot',
 ];
 
-// Páginas privadas levam noindex no HTML; continuam rastreáveis para que o
-// crawler consiga observar a diretiva. Não bloqueamos rotas privadas aqui.
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
@@ -46,9 +43,9 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/'],
       })),
     ],
-    // O Índice Filtra.AI é um app separado em /indice e mantém o próprio sitemap.
-    // O sitemap principal não deve listar essas URLs. O índice central em
-    // /sitemap-index.xml é o ponto único de descoberta do domínio e lista os dois leaves.
-    sitemap: [`${base}/sitemap-index.xml`, `${base}/sitemap.xml`, `${base}/indice/sitemap-index.xml`],
+    // Ponto único de descoberta: o índice central inclui o sitemap principal
+    // (106 URLs) e os três shards do Índice Filtra.AI (~28,8 mil URLs).
+    // Evita anunciar vários pontos de entrada independentes no robots.txt.
+    sitemap: `${base}/sitemap-index.xml`,
   };
 }
