@@ -1,9 +1,25 @@
+import { readFileSync } from "node:fs";
+
 const host = "filtraai.com";
 const key = "a3d7f1c94b2e6a805d1f7c3b9e4a6d82";
 const keyLocation = `https://${host}/${key}.txt`;
 const sitemapIndexUrl = `https://${host}/sitemap-index.xml`;
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 const MAX_URLS_PER_REQUEST = 10_000;
+
+const args = process.argv.slice(2);
+const shouldSubmit = args.includes("--submit");
+const allUrlsRequested = args.includes("--all");
+const dryRun = args.includes("--dry-run");
+const urlsFileArg = args.find((arg) => arg.startsWith("--urls-file="));
+const urlsFile = urlsFileArg?.slice("--urls-file=".length);
+
+if (shouldSubmit && !allUrlsRequested && !urlsFile) {
+  throw new Error("Submission requires --urls-file=<path> for changed URLs, or --all for an explicit full-sitemap submission.");
+}
+if (allUrlsRequested && urlsFile) {
+  throw new Error("Choose either --all or --urls-file, not both.");
+}
 
 function decodeXml(value) {
   return value
@@ -27,6 +43,17 @@ function sameHostHttps(value) {
   } catch {
     return false;
   }
+}
+
+function normalizeUrls(candidates) {
+  const urls = new Set();
+  for (const candidate of candidates) {
+    if (!sameHostHttps(candidate)) continue;
+    const url = new URL(candidate);
+    url.hash = "";
+    urls.add(url.toString());
+  }
+  return [...urls];
 }
 
 async function fetchSitemap(url) {
@@ -62,7 +89,6 @@ async function collectSitemapUrls(startUrl) {
     for (const candidate of locations(xml)) {
       if (!sameHostHttps(candidate)) continue;
       const url = new URL(candidate);
-      // Only submit canonical-host URLs; fragments are not sent to search engines.
       url.hash = "";
       discoveredUrls.add(url.toString());
     }
@@ -71,9 +97,25 @@ async function collectSitemapUrls(startUrl) {
   return [...discoveredUrls];
 }
 
-const urlList = await collectSitemapUrls(sitemapIndexUrl);
-if (urlList.length === 0) {
-  throw new Error(`No valid ${host} URLs found through ${sitemapIndexUrl}`);
+let urlList;
+if (urlsFile) {
+  const fileContent = readFileSync(urlsFile, "utf8");
+  urlList = normalizeUrls(fileContent.split(/\r?\n/).map((line) => line.trim()).filter(Boolean));
+  if (urlList.length === 0) {
+    throw new Error(`No valid https://${host} URLs found in ${urlsFile}`);
+  }
+} else {
+  urlList = await collectSitemapUrls(sitemapIndexUrl);
+  if (urlList.length === 0) {
+    throw new Error(`No valid ${host} URLs found through ${sitemapIndexUrl}`);
+  }
+}
+
+const batchCount = Math.ceil(urlList.length / MAX_URLS_PER_REQUEST);
+if (!shouldSubmit || dryRun) {
+  console.log(`IndexNow dry-run: ${urlList.length} unique canonical URLs; ${batchCount} request(s) would be needed.`);
+  console.log("No submission was sent. Use --submit with --urls-file=<path>, or --submit --all for a deliberate full submission.");
+  process.exit(0);
 }
 
 let accepted = 0;
@@ -100,4 +142,4 @@ for (let offset = 0; offset < urlList.length; offset += MAX_URLS_PER_REQUEST) {
   );
 }
 
-console.log(`IndexNow accepted ${accepted} unique URLs across ${Math.ceil(urlList.length / MAX_URLS_PER_REQUEST)} request(s).`);
+console.log(`IndexNow accepted ${accepted} unique URLs across ${batchCount} request(s).`);
