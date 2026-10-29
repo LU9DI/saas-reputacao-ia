@@ -93,7 +93,7 @@ check(
   'Índice snapshot urls.total must equal homeMetodologia + ufs + municípios + células',
 );
 const indiceTotalUrls = indiceUrls.total;
-const indiceShards = Math.max(1, Math.ceil(indiceTotalUrls / 40000));
+const indiceShards = Math.max(1, Math.ceil(indiceTotalUrls / 10000));
 const declaredShards = centralIndexChildren
   .filter((path) => /^\/indice\/sitemap\/\d+\.xml$/.test(path))
   .map((path) => Number(path.match(/(\d+)\.xml$/)[1]));
