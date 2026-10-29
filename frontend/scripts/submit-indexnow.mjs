@@ -6,6 +6,7 @@ const keyLocation = `https://${host}/${key}.txt`;
 const sitemapIndexUrl = `https://${host}/sitemap-index.xml`;
 const INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow";
 const MAX_URLS_PER_REQUEST = 10_000;
+const MIN_FULL_SITEMAP_URLS = 10_000;
 
 const args = process.argv.slice(2);
 const shouldSubmit = args.includes("--submit");
@@ -109,6 +110,13 @@ if (urlsFile) {
   if (urlList.length === 0) {
     throw new Error(`No valid ${host} URLs found through ${sitemapIndexUrl}`);
   }
+}
+
+if (allUrlsRequested && urlList.length < MIN_FULL_SITEMAP_URLS) {
+  throw new Error(
+    `Full-sitemap safety check failed: discovered only ${urlList.length} URLs through ${sitemapIndexUrl}; ` +
+    `expected at least ${MIN_FULL_SITEMAP_URLS}. No IndexNow request was sent. Check sitemap-index.xml and its child sitemaps.`,
+  );
 }
 
 const batchCount = Math.ceil(urlList.length / MAX_URLS_PER_REQUEST);
