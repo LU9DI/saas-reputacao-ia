@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
+import { IndiceData } from '../components/IndiceData';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -63,6 +64,29 @@ export default function ClinicasPage() {
           body: 'Uma rotina útil começa com linha de base, responsáveis e cadência. A equipe pode acompanhar novas avaliações, nota, recência, temas de atendimento, espera e comunicação, além de comparar unidades quando necessário. O objetivo é transformar avaliações em decisões de experiência do paciente, não apenas perseguir uma nota.',
         },
 
+      ]}
+      afterSections={<IndiceData segmento="clinicas" />}
+      faq={[
+        {
+          question: 'Como uma clínica pode organizar as avaliações Google?',
+          answer: 'Comece com um fluxo simples: convide o paciente a deixar feedback após um ponto natural do atendimento, acompanhe novas avaliações e classifique os temas recorrentes. A nota é o resumo; os comentários mostram o que corrigir.',
+        },
+        {
+          question: 'Posso pedir avaliação aos pacientes?',
+          answer: 'Sim, desde que o convite seja neutro e oferecido a todos, sem recompensa, pressão ou seleção de quem está satisfeito. Regras éticas e de publicidade profissional também se aplicam à comunicação da clínica.',
+        },
+        {
+          question: 'Avaliações de pacientes podem conter dados sensíveis?',
+          answer: 'Podem. Comentários sobre saúde, procedimentos ou atendimento exigem cuidado: não reproduza dados pessoais em respostas públicas e trate o conteúdo conforme a LGPD e as obrigações profissionais da clínica.',
+        },
+        {
+          question: 'O que acompanhar toda semana?',
+          answer: 'Volume novo, distribuição por nota, temas como espera, comunicação e cordialidade, avaliações sem resposta e diferenças entre unidades. A meta é agir sobre causas, não apenas acompanhar a média.',
+        },
+        {
+          question: 'O Filtra.AI substitui a equipe da clínica?',
+          answer: 'Não. A IA organiza temas e sugere respostas; a equipe revisa, decide e assume a comunicação. Casos sensíveis devem ser tratados por quem conhece o contexto do paciente.',
+        },
       ]}
     />
   );

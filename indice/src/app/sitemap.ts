@@ -2,8 +2,9 @@ import type { MetadataRoute } from 'next';
 import { todosOsItens } from '@/lib/caminhos';
 import { urlAbsoluta } from '@/lib/seo';
 
-// Limite do protocolo: 50 mil URLs ou 50 MB por arquivo. 40 mil deixa folga.
-export const POR_ARQUIVO = 40000;
+// Shards menores reduzem o risco de timeout/502 em crawlers e proxies. O protocolo permite
+// até 50 mil URLs/50 MB; 10 mil URLs por arquivo dá margem operacional adicional.
+export const POR_ARQUIVO = 10000;
 
 export async function generateSitemaps() {
   const qtd = Math.max(1, Math.ceil(todosOsItens().length / POR_ARQUIVO));
@@ -12,6 +13,7 @@ export async function generateSitemaps() {
 
 export default async function sitemap(props: { id: Promise<string> }): Promise<MetadataRoute.Sitemap> {
   const id = Number(await props.id);
+  // lastmod por página: só muda quando as estatísticas exibidas nela mudam (ver scripts/lib/lastmod.mjs).
   return todosOsItens()
     .slice(id * POR_ARQUIVO, (id + 1) * POR_ARQUIVO)
     .map(({ caminho, lastmod }) => ({ url: urlAbsoluta(caminho), lastModified: new Date(lastmod) }));

@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
@@ -86,7 +87,7 @@ export default function Page() {
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <BlogArticle
         kicker="SEO local para empresas e agências"

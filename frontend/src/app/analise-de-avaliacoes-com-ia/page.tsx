@@ -67,6 +67,28 @@ export default function Page() {
         { heading: 'Como transformar insights em ação', body: 'Escolha os temas prioritários, associe cada um a uma equipe responsável, defina uma ação verificável e acompanhe as avaliações seguintes. O valor do insight aparece quando ele produz melhoria mensurável.' },
         { heading: 'Indicadores para acompanhar', body: 'Observe volume de avaliações, distribuição por nota, temas recorrentes, frequência das reclamações, evolução por período e diferenças entre unidades. A combinação mostra onde a empresa está avançando e onde precisa intervir.' },
       ]}
+      faq={[
+        {
+          question: 'Como a IA analisa avaliações?',
+          answer: 'A IA pode classificar sentimento, agrupar temas e resumir recorrências em grandes volumes de comentários. Ela funciona como camada de triagem; a interpretação final continua com a equipe, que conhece o contexto.',
+        },
+        {
+          question: 'A IA acerta sempre?',
+          answer: 'Não. Ironia, gírias regionais, contexto do negócio e comentários curtos podem ser mal interpretados. Por isso a classificação é apoio à decisão e casos sensíveis devem passar por revisão humana.',
+        },
+        {
+          question: 'A IA responde avaliações automaticamente?',
+          answer: 'O Filtra.AI sugere respostas e tags de tema; a equipe aprova, edita ou descarta a sugestão. Não há publicação automática sem decisão da empresa.',
+        },
+        {
+          question: 'Preciso enviar dados pessoais para a análise?',
+          answer: 'Não. A análise é sobre o conteúdo do feedback e da avaliação. Evite inserir dados pessoais ou informações sensíveis desnecessárias e siga a política de privacidade.',
+        },
+        {
+          question: 'A análise substitui a leitura manual?',
+          answer: 'Não. Ela prioriza o que merece atenção e reduz trabalho repetitivo, mas não substitui o julgamento de quem entende da operação. O ganho está em direcionar a leitura, não em eliminá-la.',
+        },
+      ]}
     />
   );
 }

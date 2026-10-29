@@ -32,12 +32,14 @@
   },
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_API_URL=http://127.0.0.1:5000 next dev -H 127.0.0.1 -p 3000",
-    "build": "next build && node scripts/copy-llms-assets.mjs && node scripts/fix-static-html-lang.mjs && node scripts/validate-html-language.mjs && node scripts/generate-markdown-twins.mjs",
+    "build": "node scripts/sync-indice-snapshot.mjs --check && next build && node scripts/copy-llms-assets.mjs && node scripts/fix-static-html-lang.mjs && node scripts/validate-html-language.mjs && node scripts/generate-markdown-twins.mjs && node scripts/audit-meta-descriptions.mjs",
+    "sync:indice": "node scripts/sync-indice-snapshot.mjs",
     "start": "next start",
     "lint": "eslint .",
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "seo:validate": "node scripts/validate-seo.mjs",
     "seo:audit": "node scripts/audit-indexing.mjs",
+    "seo:meta:audit": "node scripts/audit-meta-descriptions.mjs",
     "seo:markdown:validate": "node scripts/validate-markdown-twins.mjs",
     "seo:jsonld:test": "node scripts/test-seo-jsonld-global.mjs"
   }

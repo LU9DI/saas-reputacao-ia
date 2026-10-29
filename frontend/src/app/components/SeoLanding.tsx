@@ -1,3 +1,5 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
+import IndiceLinks from './IndiceLinks';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { SeoPageHeader } from './SeoPageHeader';
@@ -119,6 +121,7 @@ export function SeoLanding({
   contextLinks,
   mcpEndpoint,
   faq,
+  afterSections,
 }: {
   h1: string;
   lead: string;
@@ -129,6 +132,7 @@ export function SeoLanding({
   contextLinks?: ContextLink[];
   mcpEndpoint?: string;
   faq?: FaqItem[];
+  afterSections?: ReactNode;
 }) {
   const resolvedContextLinks = contextLinks || (breadcrumbHref ? CONTEXT_LINKS_BY_PATH[breadcrumbHref] : undefined) || DEFAULT_CONTEXT_LINKS;
   return (
@@ -140,7 +144,7 @@ export function SeoLanding({
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
+              __html: serializeJsonLd({
                 '@context': 'https://schema.org',
                 '@type': 'WebPage',
                 name: h1,
@@ -157,7 +161,7 @@ export function SeoLanding({
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
+              __html: serializeJsonLd({
                 '@context': 'https://schema.org',
                 '@type': 'BreadcrumbList',
                 itemListElement: [
@@ -189,12 +193,14 @@ export function SeoLanding({
           </section>
         ))}
 
+        {afterSections}
+
         {faq && faq.length > 0 && (
           <section className="space-y-3">
             <script
               type="application/ld+json"
               dangerouslySetInnerHTML={{
-                __html: JSON.stringify({
+                __html: serializeJsonLd({
                   '@context': 'https://schema.org',
                   '@type': 'FAQPage',
                   mainEntity: faq.map((item) => ({
@@ -252,6 +258,7 @@ export function SeoLanding({
           {resolvedContextLinks.map((link) => (
             <Link key={link.href} href={link.href} className="hover:text-zinc-300">{link.title}</Link>
           ))}
+          <IndiceLinks className="contents" />
         </nav>
       </main>
     </div>

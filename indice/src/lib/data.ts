@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { UFS } from './ufs';
+import { caminhosDeRankings } from './rankings';
+import { posicionar, type Posicionada } from './ranking-core';
 
 export type Registro = {
   a: number; // estabelecimentos ativos
@@ -95,9 +97,23 @@ function carregar(): Loja {
 }
 
 export const getMeta = () => carregar().meta;
+
+let lastmodCache: Record<string, string> | null = null;
+/** lastmod ISO (AAAA-MM-DD) de uma página; sem registro, cai na data de geração da base. */
+export function getLastmod(caminho: string): Date {
+  if (!lastmodCache) {
+    lastmodCache = {};
+    const arq = path.join(dir(), 'lastmod.json');
+    if (existsSync(arq)) lastmodCache = JSON.parse(readFileSync(arq, 'utf8')) as Record<string, string>;
+  }
+  const entrada = lastmodCache[caminho];
+  const data = entrada ? entrada.split('|')[1] : undefined;
+  return new Date(data || carregar().meta.geradoEm);
+}
 export const getSegmentos = () => carregar().meta.segmentos;
 export const getSegmento = (slug: string) => carregar().segmentos.get(slug) ?? null;
 export const getMunicipio = (uf: string, slug: string) => carregar().porChave.get(`${uf}/${slug}`) ?? null;
+export const getStats = () => carregar().stats;
 export const nomeSubclasse = (cod: string) => carregar().subclasses[cod] ?? cod;
 export const minimo = () => carregar().meta.minimoParaIndexar;
 
@@ -268,13 +284,58 @@ export function getPagina(uf: string, munSlug: string, segSlug: string): Pagina 
 
 /** Todos os caminhos indexáveis (relativos ao basePath), para o sitemap. */
 export function todosOsCaminhos(): string[] {
-  const caminhos = ['/', '/metodologia'];
+  const caminhos = ['/', '/metodologia', '/rankings/aberturas', '/rankings/ativos'];
   for (const u of ufsComDados()) {
     const uf = u.sigla.toLowerCase();
     caminhos.push(`/${uf}`);
     for (const { mun } of municipiosDaUF(u.sigla)) {
       caminhos.push(`/${uf}/${mun.slug}`);
       for (const { seg } of segmentosDoMunicipio(u.sigla, mun.slug)) caminhos.push(`/${uf}/${mun.slug}/${seg.slug}`);
+    }
+  }
+  // Rankings de aberturas por ano (lib/rankings).
+  caminhos.push(...caminhosDeRankings());
+  // Rankings de ativos por segmento, Brasil e UF.
+  caminhos.push(...caminhosDeRanking());
+  return caminhos;
+}
+
+/** Um ranking por UF só é publicado se houver municípios suficientes para comparar. */
+export const MIN_MUNICIPIOS_RANKING_UF = 10;
+
+export type LinhaRanking = Posicionada<{ mun: Municipio; a: number; m: number; ab: number; ba: number }>;
+
+/**
+ * Municípios com página indexável no segmento, ordenados por ativos ("a") ou por aberturas
+ * nos últimos 12 meses ("ab"). Só entram municípios com ativos >= mínimo, os mesmos que têm página.
+ */
+export function rankingDoSegmento(seg: string, por: 'a' | 'ab', uf?: string): LinhaRanking[] {
+  const s = carregar();
+  const linhas: { mun: Municipio; a: number; m: number; ab: number; ba: number }[] = [];
+  for (const [sigla, porMun] of Object.entries(s.stats)) {
+    if (uf && sigla !== uf) continue;
+    for (const [slug, porSeg] of Object.entries(porMun)) {
+      const reg = porSeg[seg];
+      if (!reg || reg.a < s.meta.minimoParaIndexar) continue;
+      const mun = s.porChave.get(`${sigla}/${slug}`);
+      if (mun) linhas.push({ mun, a: reg.a, m: reg.m, ab: reg.ab, ba: reg.ba });
+    }
+  }
+  return posicionar(linhas, (x) => x[por], (x) => `${x.mun.nome}/${x.mun.uf}`);
+}
+
+/** Caminhos das páginas de ranking de ativos: Brasil por segmento e, onde há base, por UF. */
+export function caminhosDeRanking(): string[] {
+  const s = carregar();
+  const caminhos: string[] = [];
+  for (const seg of s.meta.segmentos) {
+    const nacional = rankingDoSegmento(seg.slug, 'a');
+    if (!nacional.length) continue;
+    caminhos.push(`/rankings/ativos/${seg.slug}`);
+    const porUF = new Map<string, number>();
+    for (const l of nacional) porUF.set(l.mun.uf, (porUF.get(l.mun.uf) ?? 0) + 1);
+    for (const uf of Object.keys(UFS)) {
+      if ((porUF.get(uf) ?? 0) >= MIN_MUNICIPIOS_RANKING_UF) caminhos.push(`/rankings/ativos/${seg.slug}/${uf.toLowerCase()}`);
     }
   }
   return caminhos;

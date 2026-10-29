@@ -108,7 +108,7 @@ export default async function Page({ params }: Props) {
       <h1>Estabelecimentos ativos por segmento em {mun.nome} ({sigla})</h1>
       <p className="lead">
         {mun.nome} tem {n(total)} estabelecimentos com CNPJ ativo nos {segs.length} {plural}, segundo o cadastro aberto da
-        Receita Federal (competência {comp}). O maior é {maior.seg.curto}, com {n(maior.reg.a)}.
+        Receita Federal (competência {comp}, dados gerados em {dataCurta(meta.geradoEm)}). O maior é {maior.seg.curto}, com {n(maior.reg.a)}.
       </p>
 
       <Definicao termo={`O que o Índice conta em ${mun.nome}?`}>

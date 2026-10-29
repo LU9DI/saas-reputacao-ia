@@ -1,8 +1,10 @@
+import { serializeJsonLd } from '../../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { LanguageSwitcher } from '../../components/LanguageSwitcher';
 import { BrandMark } from '../../components/BrandMark';
+import { IndiceDataIntl } from '../../components/IndiceDataIntl';
 import { serpTitle } from '../../lib/seoTitle';
 import { OG_IMAGE_META, buildTwitter } from '../../lib/socialMetadata';
 
@@ -13,6 +15,16 @@ type Faq = { question: string; answer: string };
 type Item = { slug:string; title:string; description:string; h1:string; intro:string; bullets:string[]; cta:string };
 
 const base='https://filtraai.com';
+
+// Páginas localizadas que citam o dado próprio do Índice (EN/ES).
+const INDICE_SEGMENT_BY_LOCALIZED: Record<string, 'hoteis' | 'restaurantes' | 'clinicas'> = {
+  'en:hotels': 'hoteis',
+  'es:hoteles': 'hoteis',
+  'en:restaurants': 'restaurantes',
+  'es:restaurantes': 'restaurantes',
+  'en:clinics': 'clinicas',
+  'es:clinicas': 'clinicas',
+};
 
 const pages: Record<Lang,Item[]> = {
 en:[
@@ -2145,7 +2157,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
 
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{__html:JSON.stringify({
+      dangerouslySetInnerHTML={{__html:serializeJsonLd({
         '@context':'https://schema.org',
         '@type':'WebPage',
         name:topic.title,
@@ -2161,7 +2173,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     />
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{__html:JSON.stringify({
+      dangerouslySetInnerHTML={{__html:serializeJsonLd({
         '@context':'https://schema.org',
         '@type':'BreadcrumbList',
         itemListElement:[
@@ -2173,7 +2185,7 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
     {unique && unique.faq.length>0 && (
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{__html:JSON.stringify({
+        dangerouslySetInnerHTML={{__html:serializeJsonLd({
           '@context':'https://schema.org',
           '@type':'FAQPage',
           mainEntity:unique.faq.map(item=>({'@type':'Question',name:item.question,acceptedAnswer:{'@type':'Answer',text:item.answer}}))
@@ -2202,6 +2214,13 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
           <h2 className="text-2xl font-bold tracking-tight">{t.why}</h2>
           <p className="mt-4 max-w-3xl text-base leading-8 text-zinc-300">{sectionCopy.why}</p>
         </section>
+      )}
+
+      {INDICE_SEGMENT_BY_LOCALIZED[`${lang}:${slug}`] && (
+        <IndiceDataIntl
+          locale={lang === 'en' ? 'en' : 'es'}
+          segmento={INDICE_SEGMENT_BY_LOCALIZED[`${lang}:${slug}`]!}
+        />
       )}
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">

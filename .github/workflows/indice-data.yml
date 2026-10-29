@@ -102,7 +102,7 @@ jobs:
         run: |
           if [ "$BASE" = "us" ]; then
             COMP=$(node -p "require('./indice/data-us/meta.json').ano")
-            BR="indice/dados-us-$COMP"; DIR=indice/data-us; TIT="Índice EUA: dados CBP $COMP"
+            BR="indice/dados-us-v2-$COMP"; DIR=indice/data-us; TIT="Índice EUA: dados CBP $COMP"
           else
             COMP=$(node -p "require('./indice/data/meta.json').competencia")
             BR="indice/dados-$COMP"; DIR=indice/data; TIT="Índice: dados $COMP"

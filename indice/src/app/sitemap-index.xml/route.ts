@@ -3,9 +3,10 @@ import { todosOsItens } from '@/lib/caminhos';
 import { BASE } from '@/lib/seo';
 
 export const dynamic = 'force-static';
-const POR_ARQUIVO = 40000;
+const POR_ARQUIVO = 10000;
 
 // O Next gera os sitemaps em /sitemap/[id].xml, mas não o arquivo de índice. Este é o índice.
+// Mantenha POR_ARQUIVO sincronizado com src/app/sitemap.ts para declarar todos os shards.
 export function GET() {
   const qtd = Math.max(1, Math.ceil(todosOsItens().length / POR_ARQUIVO));
   const lastmod = getMeta().geradoEm;

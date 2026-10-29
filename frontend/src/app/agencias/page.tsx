@@ -104,6 +104,24 @@ export default function AgenciasPage() {
           body: <>Uma proposta comercial forte separa estratégia de execução. Defina unidades, frequência, avaliações, reputação, conteúdo local, relatórios e responsáveis. O objetivo é vender uma rotina mensurável, não uma promessa de posição. Para comparar escopo, preço e entregáveis, consulte <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">o guia de pacotes de SEO local</Link>.</>
         },
       ]}
+      faq={[
+        {
+          question: 'Como uma agência pode oferecer gestão de reputação?',
+          answer: 'Estruture uma entrega recorrente: diagnóstico inicial, canal de feedback, acompanhamento de avaliações, temas e relatórios por cliente. O valor está na rotina de gestão, não em um relatório isolado.',
+        },
+        {
+          question: 'Como acompanhar vários clientes sem perder contexto?',
+          answer: 'Separe os sinais por cliente e por unidade, defina uma cadência de revisão e compare períodos equivalentes. Sem essa separação, um problema local pode parecer tendência de toda a carteira.',
+        },
+        {
+          question: 'Como precificar o serviço de reputação?',
+          answer: 'Considere escopo, volume de avaliações e feedback, número de unidades e frequência de análise. Evite prometer posição, nota ou prazo de resultado; combine entregas e indicadores verificáveis.',
+        },
+        {
+          question: 'Como provar resultado para o cliente?',
+          answer: 'Registre a linha de base, acompanhe indicadores intermediários como tempo de resposta, temas resolvidos e cobertura de unidades, e revise em 30, 60 e 90 dias. Correlação com a nota não é garantia de causalidade.',
+        },
+      ]}
     />
   );
 }

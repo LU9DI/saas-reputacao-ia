@@ -43,11 +43,69 @@ check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pr
 check(
   robots.includes("const base = 'https://filtraai.com'") &&
     robots.includes('sitemap: [') &&
+    robots.includes('`${base}/sitemap-index.xml`') &&
     robots.includes('`${base}/sitemap.xml`') &&
     robots.includes('`${base}/indice/sitemap-index.xml`'),
-  'Next robots metadata must reference both the main sitemap and the separately hosted Índice sitemap',
+  'Next robots metadata must reference the central sitemap index, the main sitemap and the separately hosted Índice sitemap',
 );
 check(!sitemap.includes("'/indice'") && !sitemap.includes('"/indice"'), 'Main sitemap must not list URLs hosted by the separate Índice app');
+
+// Índice central (src/app/sitemap-index.xml/route.ts).
+// Regras do Google que o teste protege: filhos no mesmo site, no mesmo diretório
+// ou abaixo, e um único ponto de descoberta para o domínio canônico.
+const centralIndex = read('src/app/sitemap-index.xml/route.ts');
+const centralIndexBlock = centralIndex.slice(
+  centralIndex.indexOf('const SITEMAPS = ['),
+  centralIndex.indexOf('] as const;'),
+);
+const centralIndexChildren = [...centralIndexBlock.matchAll(/`\$\{base\}(\/[^`]*)`/g)].map((match) => match[1]);
+check(
+  centralIndex.includes('sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"') &&
+    !centralIndex.includes('urlset xmlns='),
+  'Central sitemap index must be a <sitemapindex>, not a <urlset>',
+);
+check(centralIndexChildren.length > 0, 'Central sitemap index must declare its child sitemaps');
+check(centralIndexChildren.includes('/sitemap.xml'), 'Central sitemap index must reference the main /sitemap.xml leaf');
+check(centralIndexChildren.every((path) => path.startsWith('/') && !path.startsWith('//')), 'Central sitemap index children must be absolute paths on the canonical host');
+check(
+  !centralIndexChildren.includes('/indice/sitemap-index.xml'),
+  'Central sitemap index must reference the Índice leaf, not the nested /indice/sitemap-index.xml',
+);
+check(
+  centralIndexChildren.filter((path) => !/^\/indice\/sitemap\/\d+\.xml$/.test(path) && path !== '/sitemap.xml').length === 0,
+  'Central sitemap index must list only /sitemap.xml and /indice/sitemap/<n>.xml — never page URLs',
+);
+check(
+  !sitemap.includes('sitemapindex'),
+  'Main /sitemap.xml must remain a <urlset> leaf so IndexNow and external consumers keep working',
+);
+
+// A contagem vem de src/generated/indice-snapshot.json, gerado a partir de
+// indice/data por scripts/sync-indice-snapshot.mjs (e verificado no build com
+// --check). Não reimplemente a contagem aqui: o teste existe para detectar
+// divergência entre o total publicado pelo Índice e a lista de shards.
+const centralIndexSnapshot = JSON.parse(read('src/generated/indice-snapshot.json'));
+const indiceUrls = centralIndexSnapshot.urls;
+check(
+  indiceUrls &&
+    indiceUrls.total ===
+      indiceUrls.homeMetodologia + indiceUrls.ufs + indiceUrls.municipios + indiceUrls.celulas,
+  'Índice snapshot urls.total must equal homeMetodologia + ufs + municípios + células',
+);
+const indiceTotalUrls = indiceUrls.total;
+const indiceShards = Math.max(1, Math.ceil(indiceTotalUrls / 10000));
+const declaredShards = centralIndexChildren
+  .filter((path) => /^\/indice\/sitemap\/\d+\.xml$/.test(path))
+  .map((path) => Number(path.match(/(\d+)\.xml$/)[1]));
+check(
+  declaredShards.length === indiceShards,
+  `Central sitemap index must list ${indiceShards} Índice shard(s) for ${indiceTotalUrls} URLs, found ${declaredShards.length}`,
+);
+check(
+  declaredShards.every((id, index) => id === index),
+  'Central sitemap index Índice shards must be contiguous starting at 0',
+);
+
 check(robots.includes("disallow: ['/api/']"), 'robots metadata must disallow API endpoints only');
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
 check(localizedBlogs.includes('const translatedFamilies') && localizedBlogs.includes("if ('pt' in family)"), 'Translated blog metadata must cross-link all available languages without inventing a Portuguese equivalent');
@@ -140,7 +198,16 @@ const homePage = read('src/app/preview/page.tsx');
 const llms = read('public/llms.txt');
 const llmsFull = read('public/llms-full.txt');
 
-check(homePage.includes('<a href="/indice"'), 'Home footer must link to the separately hosted Índice');
+// O rodapé da home e a navegação das páginas SEO/blog levam ao Índice (porta de entrada de
+// rastreamento para as páginas do /indice). Ver components/IndiceLinks.tsx.
+const indiceLinks = read('src/app/components/IndiceLinks.tsx');
+check(
+  indiceLinks.includes('href="/indice"') && indiceLinks.includes('href="/indice/rankings/ativos"'),
+  'IndiceLinks must link to /indice and /indice/rankings/ativos',
+);
+check(homePage.includes('<IndiceLinks'), 'Home footer must include IndiceLinks');
+check(seoLandingComponent.includes('<IndiceLinks'), 'SeoLanding must include IndiceLinks');
+check(read('src/app/components/BlogArticle.tsx').includes('<IndiceLinks'), 'BlogArticle must include IndiceLinks');
 check(
   llms.includes('https://filtraai.com/indice') && llms.includes('https://filtraai.com/indice/metodologia'),
   'llms.txt must list the Índice and its methodology',
@@ -196,7 +263,7 @@ check(localSeoArticle.includes('Pacote básico, recorrente ou multiunidade?') &&
 check(reputationGuide.includes("title: 'Como fazer gestão de reputação online: guia prático'"), 'Reputation guide must target the informational how-to intent');
 check(reputationGuide.includes('dateModified="2026-10-20"'), 'Reputation guide BlogPosting schema must use the actual content update date');
 check(sitemap.includes("'/blog/seo-local-avaliacoes-local-pack': '2026-10-20'"), 'Sitemap lastModified must reflect the local SEO article update');
-check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-22'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
+check(sitemap.includes("'/gestao-de-reputacao-online': '2026-10-27'") && sitemap.includes("'/blog/gestao-reputacao-online-guia': '2026-10-20'"), 'Sitemap dates must align with the updated reputation pages');
 check(sitemap.includes("'/blog': '2026-10-22'"), 'Sitemap must reflect the blog hub metadata update');
 const sitemapLastModified = sitemap.match(/const LAST_MODIFIED[^=]*= \{([\s\S]*?)\n\};/)?.[1] ?? '';
 const sitemapLastModifiedKeys = [...sitemapLastModified.matchAll(/^  '([^']+)':/gm)].map((match) => match[1]);
@@ -340,6 +407,98 @@ for (const route of [
 ]) {
   const line = nextConfigSource.split(/\r?\n/).find((entry) => entry.includes(`source: '${route}'`));
   check(line?.includes('statusCode: 301'), `${route} must redirect with statusCode 301`);
+}
+
+function collectSourceFiles(directory = appRoot) {
+  const found = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = resolve(directory, entry.name);
+    if (entry.isDirectory()) found.push(...collectSourceFiles(fullPath));
+    else if (entry.isFile() && /\.(tsx|ts)$/.test(entry.name)) found.push(fullPath);
+  }
+  return found;
+}
+
+check(
+  !rootLayout.includes('legacy-indice-footer-cleanup'),
+  'Root layout must not strip the Índice links from the footer',
+);
+
+// AEO: páginas prioritárias precisam de FAQ visível + schema, e as páginas de
+// segmento precisam citar o dado próprio do Índice.
+for (const path of [
+  'src/app/avaliacoes-google/page.tsx',
+  'src/app/monitoramento-reputacao-online/page.tsx',
+  'src/app/feedback-de-clientes/page.tsx',
+  'src/app/analise-de-avaliacoes-com-ia/page.tsx',
+  'src/app/clinicas/page.tsx',
+  'src/app/agencias/page.tsx',
+  'src/app/como-funciona/page.tsx',
+]) {
+  check(read(path).includes('faq={'), `priority page must expose a FAQ block: ${path}`);
+}
+for (const [path, segment] of [
+  ['src/app/hoteis/page.tsx', 'hoteis'],
+  ['src/app/restaurantes/page.tsx', 'restaurantes'],
+  ['src/app/clinicas/page.tsx', 'clinicas'],
+  ['src/app/blog/reputacao-online-hoteis/page.tsx', 'hoteis'],
+  ['src/app/blog/avaliacoes-google-restaurantes/page.tsx', 'restaurantes'],
+  ['src/app/blog/reputacao-online-clinicas/page.tsx', 'clinicas'],
+]) {
+  check(
+    read(path).includes(`<IndiceData segmento="${segment}"`),
+    `segment page must cite the Índice data: ${path}`,
+  );
+}
+check(
+  read('src/app/gestao-de-reputacao-online/page.tsx').includes('<IndiceData />'),
+  'Reputation page must cite the Índice totals',
+);
+check(
+  localizedPages.includes('IndiceDataIntl') &&
+    localizedPages.includes("'en:hotels'") &&
+    localizedPages.includes("'es:clinicas'"),
+  'Localized segment pages must cite the Índice data in EN and ES',
+);
+
+const indiceSnapshot = JSON.parse(read('src/generated/indice-snapshot.json'));
+const glossarySource = read('src/app/glossario/page.tsx');
+for (const term of [
+  'AEO (Answer Engine Optimization)',
+  'GEO (Generative Engine Optimization)',
+  'E-E-A-T',
+  'Review bombing',
+]) {
+  check(glossarySource.includes(term), `Glossary must define the AEO/GEO term: ${term}`);
+}
+check(
+  indiceSnapshot.todos.ativos > 0 && Object.keys(indiceSnapshot.segmentos).length >= 9,
+  'Índice snapshot must contain all segments and a positive total',
+);
+check(
+  Boolean(indiceSnapshot.competencia) && Boolean(indiceSnapshot.geradoEm),
+  'Índice snapshot must carry competence and generation date',
+);
+
+const panorama = read('src/app/blog/panorama-estabelecimentos-ativos-brasil-2026/page.tsx');
+check(
+  panorama.includes("'@type': 'FAQPage'") &&
+    panorama.includes('indice-snapshot.json') &&
+    panorama.includes('datePublished="2026-10-27"'),
+  'Panorama article must cite the Índice snapshot, expose FAQPage and declare real dates',
+);
+
+for (const path of [
+  'src/app/blog/quanto-custa-gestao-de-reputacao-online/page.tsx',
+  'src/app/blog/como-escolher-software-de-gestao-de-reputacao/page.tsx',
+]) {
+  const source = read(path);
+  check(
+    source.includes("'@type': 'FAQPage'") &&
+      source.includes('datePublished="2026-10-27"') &&
+      source.includes('Resposta direta:'),
+    `Buyer guide must expose a direct answer, FAQPage and real dates: ${path}`,
+  );
 }
 
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));

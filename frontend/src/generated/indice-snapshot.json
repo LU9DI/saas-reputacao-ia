@@ -1,0 +1,357 @@
+{
+  "competencia": "2026-10",
+  "geradoEm": "2026-10-26T07:34:27.901Z",
+  "minimoParaIndexar": 10,
+  "fonte": {
+    "nome": "Cadastro Nacional da Pessoa Jurídica (CNPJ) — Dados Abertos, Receita Federal do Brasil",
+    "url": "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos"
+  },
+  "todos": {
+    "ativos": 4105567,
+    "municipiosComPagina": 5012,
+    "estados": 27,
+    "segmentos": 9,
+    "topEstados": [
+      {
+        "uf": "SP",
+        "nome": "São Paulo",
+        "ativos": 1145298
+      },
+      {
+        "uf": "MG",
+        "nome": "Minas Gerais",
+        "ativos": 473759
+      },
+      {
+        "uf": "RJ",
+        "nome": "Rio de Janeiro",
+        "ativos": 371642
+      },
+      {
+        "uf": "PR",
+        "nome": "Paraná",
+        "ativos": 296802
+      },
+      {
+        "uf": "RS",
+        "nome": "Rio Grande do Sul",
+        "ativos": 255287
+      }
+    ]
+  },
+  "urls": {
+    "homeMetodologia": 2,
+    "ufs": 27,
+    "municipios": 5012,
+    "celulas": 23566,
+    "total": 28607
+  },
+  "segmentos": {
+    "restaurantes": {
+      "nome": "Restaurantes, lanchonetes e bares",
+      "curto": "restaurantes, lanchonetes e bares",
+      "ativos": 1074601,
+      "municipiosComPagina": 4814,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 291186
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 125184
+        },
+        {
+          "uf": "RJ",
+          "nome": "Rio de Janeiro",
+          "ativos": 106405
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 69249
+        },
+        {
+          "uf": "RS",
+          "nome": "Rio Grande do Sul",
+          "ativos": 56428
+        }
+      ]
+    },
+    "hoteis": {
+      "nome": "Hotéis e similares",
+      "curto": "hotéis e similares",
+      "ativos": 48301,
+      "municipiosComPagina": 979,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 8090
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 5453
+        },
+        {
+          "uf": "BA",
+          "nome": "Bahia",
+          "ativos": 4090
+        },
+        {
+          "uf": "RJ",
+          "nome": "Rio de Janeiro",
+          "ativos": 3392
+        },
+        {
+          "uf": "SC",
+          "nome": "Santa Catarina",
+          "ativos": 2998
+        }
+      ]
+    },
+    "clinicas": {
+      "nome": "Clínicas médicas e odontológicas",
+      "curto": "clínicas médicas e odontológicas",
+      "ativos": 479097,
+      "municipiosComPagina": 2525,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 141360
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 58254
+        },
+        {
+          "uf": "RJ",
+          "nome": "Rio de Janeiro",
+          "ativos": 43388
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 35130
+        },
+        {
+          "uf": "RS",
+          "nome": "Rio Grande do Sul",
+          "ativos": 25118
+        }
+      ]
+    },
+    "profissionais-de-saude": {
+      "nome": "Profissionais de saúde (exceto médicos e dentistas)",
+      "curto": "profissionais de saúde, exceto médicos e dentistas",
+      "ativos": 270108,
+      "municipiosComPagina": 1786,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 91004
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 23582
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 22843
+        },
+        {
+          "uf": "RJ",
+          "nome": "Rio de Janeiro",
+          "ativos": 22527
+        },
+        {
+          "uf": "RS",
+          "nome": "Rio Grande do Sul",
+          "ativos": 16331
+        }
+      ]
+    },
+    "saloes-de-beleza": {
+      "nome": "Salões de beleza",
+      "curto": "salões de beleza, cabeleireiros, manicures e pedicures",
+      "ativos": 1319817,
+      "municipiosComPagina": 4320,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 393685
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 152705
+        },
+        {
+          "uf": "RJ",
+          "nome": "Rio de Janeiro",
+          "ativos": 138781
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 91020
+        },
+        {
+          "uf": "RS",
+          "nome": "Rio Grande do Sul",
+          "ativos": 84839
+        }
+      ]
+    },
+    "academias": {
+      "nome": "Academias e condicionamento físico",
+      "curto": "academias e atividades de condicionamento físico",
+      "ativos": 84359,
+      "municipiosComPagina": 1163,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 21199
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 9488
+        },
+        {
+          "uf": "RJ",
+          "nome": "Rio de Janeiro",
+          "ativos": 6282
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 5737
+        },
+        {
+          "uf": "RS",
+          "nome": "Rio Grande do Sul",
+          "ativos": 5626
+        }
+      ]
+    },
+    "farmacias": {
+      "nome": "Farmácias e produtos farmacêuticos",
+      "curto": "farmácias e comércio de produtos farmacêuticos, perfumaria e artigos médicos",
+      "ativos": 135277,
+      "municipiosComPagina": 2672,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 22716
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 14441
+        },
+        {
+          "uf": "RJ",
+          "nome": "Rio de Janeiro",
+          "ativos": 10127
+        },
+        {
+          "uf": "BA",
+          "nome": "Bahia",
+          "ativos": 9905
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 8446
+        }
+      ]
+    },
+    "oficinas": {
+      "nome": "Oficinas e manutenção de veículos",
+      "curto": "oficinas e manutenção de veículos automotores",
+      "ativos": 635664,
+      "municipiosComPagina": 3961,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 163720
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 77965
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 57342
+        },
+        {
+          "uf": "RS",
+          "nome": "Rio Grande do Sul",
+          "ativos": 51568
+        },
+        {
+          "uf": "SC",
+          "nome": "Santa Catarina",
+          "ativos": 40137
+        }
+      ]
+    },
+    "supermercados": {
+      "nome": "Supermercados, mercados e mercearias",
+      "curto": "supermercados, mercados e mercearias",
+      "ativos": 58343,
+      "municipiosComPagina": 1346,
+      "estados": 27,
+      "topEstados": [
+        {
+          "uf": "SP",
+          "nome": "São Paulo",
+          "ativos": 12338
+        },
+        {
+          "uf": "MG",
+          "nome": "Minas Gerais",
+          "ativos": 6687
+        },
+        {
+          "uf": "RS",
+          "nome": "Rio Grande do Sul",
+          "ativos": 4795
+        },
+        {
+          "uf": "PR",
+          "nome": "Paraná",
+          "ativos": 4623
+        },
+        {
+          "uf": "GO",
+          "nome": "Goiás",
+          "ativos": 3739
+        }
+      ]
+    }
+  }
+}

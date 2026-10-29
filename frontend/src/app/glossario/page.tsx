@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 import type { Metadata } from 'next';
 import { SeoLanding } from '../components/SeoLanding';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
@@ -97,9 +98,29 @@ const terms: { term: string; definition: string }[] = [
       'Resposta pública da empresa a um comentário. Mostra atenção ao cliente e, em avaliações negativas, é a chance de explicar e oferecer solução.',
   },
   {
-    term: 'GEO e AEO',
+    term: 'AEO (Answer Engine Optimization)',
     definition:
-      'GEO (Generative Engine Optimization) busca ser citado por assistentes de IA; AEO (Answer Engine Optimization) busca ser a resposta direta em buscadores. Ambos dependem de conteúdo claro, estruturado e com fonte.',
+      'Prática de estruturar o conteúdo para ele ser a resposta direta em buscadores e assistentes: definição curta, dado verificável, fonte e formato que dispensa contexto extra.',
+  },
+  {
+    term: 'GEO (Generative Engine Optimization)',
+    definition:
+      'Conjunto de práticas para aumentar a chance de uma marca ser citada em respostas de modelos generativos, como ChatGPT, Perplexity e AI Overviews. Depende de conteúdo claro, dado próprio e fonte verificável.',
+  },
+  {
+    term: 'E-E-A-T',
+    definition:
+      'Critério de qualidade do Google que considera experiência, especialidade, autoridade e confiabilidade. Não é um fator de ranking isolado nem uma nota pública da empresa.',
+  },
+  {
+    term: 'Review bombing',
+    definition:
+      'Ataque coordenado de avaliações negativas contra uma empresa, muitas vezes por motivo alheio ao atendimento. Exige análise de padrão, denúncia à plataforma e comunicação cuidadosa.',
+  },
+  {
+    term: 'Gestão de reputação online',
+    definition:
+      'Rotina de acompanhar avaliações, feedback e menções, responder com contexto e corrigir causas recorrentes. Não é o mesmo que comprar avaliações ou esconder críticas.',
   },
 ];
 
@@ -123,7 +144,7 @@ export default function Page() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(definedTermSet) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(definedTermSet) }}
       />
       <SeoLanding
         h1="Glossário de reputação online e avaliações Google"

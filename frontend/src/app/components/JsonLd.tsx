@@ -1,3 +1,4 @@
+import { serializeJsonLd } from '../lib/safeJsonLd';
 const siteUrl = 'https://filtraai.com';
 
 const graph = {
@@ -36,10 +37,17 @@ const graph = {
       url: siteUrl,
       description: 'Plataforma SaaS para monitorar avaliações, analisar feedback com IA, identificar oportunidades e organizar ações de reputação.',
       featureList: ['Monitoramento de avaliações', 'Análise de feedback com IA', 'Gestão de reputação online', 'Relatórios inteligentes', 'QR Code e links para avaliações'],
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'BRL', description: 'Teste gratuito de 7 dias sem cartão', url: siteUrl },
+      // O teste de 7 dias é gratuito, mas o produto tem assinatura paga. Não declarar price=0:
+      // isso faria o Google e outros consumidores de dados estruturados interpretarem o software como gratuito.
+      offers: {
+        '@type': 'Offer',
+        price: '69.90',
+        priceCurrency: 'BRL',
+        description: 'Plano Inicial mensal a partir de R$ 69,90; teste gratuito de 7 dias sem cartão.',
+        url: `${siteUrl}/planos`,
+      },
       provider: { '@id': `${siteUrl}/#organization` },
     },
-
   ],
 };
 
@@ -47,7 +55,7 @@ export function JsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(graph) }}
     />
   );
 };

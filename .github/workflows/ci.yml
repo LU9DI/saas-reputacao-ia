@@ -30,6 +30,21 @@ jobs:
         working-directory: frontend
         run: node scripts/validate-seo.mjs
 
+  cloudflare-indice-proxy:
+    name: Cloudflare Índice sitemap resilience
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test sitemap retry and stale-cache behavior
+        run: node --test infra/cloudflare/filtra-indice-proxy.test.mjs
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest
@@ -57,10 +72,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if ! npm ci; then
-            echo "npm ci falhou — regenerando lock e instalando..."
-            npm install
-          fi
+          npm ci
 
       - name: Audit backend dependencies
         run: npm audit
@@ -88,9 +100,10 @@ jobs:
       - name: Typecheck
         run: npx tsc --noEmit
 
-  # Export estático usado pela Cloudflare Pages. Mantém a auditoria de out/.
+  # Export estático do frontend. Mantém a auditoria de indexabilidade de out/
+  # e as guardas de regressão do artefato publicável.
   frontend:
-    name: Frontend (Cloudflare static export)
+    name: Frontend (static export)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -107,16 +120,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
         run: |
-          if ! npm ci; then
-            echo "npm ci falhou — regenerando lock e instalando..."
-            npm install
-          fi
+          npm ci
 
       - name: Typecheck
         run: npx tsc --noEmit
@@ -129,6 +139,40 @@ jobs:
 
       - name: Validate Markdown twins and llms files
         run: npm run seo:markdown:validate
+
+      - name: Verify static artifact
+        run: |
+          set -euo pipefail
+          test -d out
+          test -f out/index.html
+          test -f out/404.html
+          test -f out/sitemap.xml
+          test -f out/robots.txt
+          test -f out/planos.html
+          # Regression guardrails: keep the Filtra Dot homepage section and blog hub in production.
+          grep -q 'Filtra Dot' out/index.html
+          grep -q 'id="filtra-dot"' out/index.html
+          test -f out/blog.html
+          grep -q 'Blog Filtra.AI' out/blog.html
+          grep -q 'https://filtraai.com/planos' out/sitemap.xml
+          grep -q 'https://filtraai.com/planos' out/planos.html
+          test -f out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
+          grep -q 'https://filtraai.com/en' out/sitemap.xml
+          grep -q 'https://filtraai.com/es' out/sitemap.xml
+          # ZH routes remain accessible with noindex but must stay out of sitemap.
+          if grep -q 'https://filtraai.com/zh' out/sitemap.xml; then
+            echo "ZH URLs are noindex and must not appear in sitemap.xml" >&2
+            exit 1
+          fi
+          grep -q 'https://filtraai.com/en/blog/ai-review-analysis-guide' out/sitemap.xml
+          grep -q 'https://filtraai.com/es/blog/analisis-resenas-ia' out/sitemap.xml
+          # Apos o PR #55: paginas privadas sao crawlable com noindex no HTML;
+          # no robots.txt apenas /api/ permanece bloqueado.
+          grep -q 'Disallow: /api/' out/robots.txt
+          grep -q 'Sitemap: https://filtraai.com/sitemap.xml' out/robots.txt
+          grep -qx 'a3d7f1c94b2e6a805d1f7c3b9e4a6d82' out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
+          echo "Static artifact ready: $(du -sh out | cut -f1)"
+          echo "Sitemap URL count: $(grep -o '<loc>' out/sitemap.xml | wc -l)"
 
   # Build normal da Vercel: não define CLOUDFLARE_PAGES. O build não pode
   # depender de out/ nem do pós-processamento usado no export estático.
@@ -153,10 +197,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if ! npm ci; then
-            echo "npm ci falhou — regenerando lock e instalando..."
-            npm install
-          fi
+          npm ci
 
       - name: Audit dependencies
         run: npm audit
@@ -181,7 +222,7 @@ jobs:
         run: |
           echo "SEO/brand: ${{ needs.seo-brand.result }}"
           echo "Backend: ${{ needs.backend.result }}"
-          echo "Frontend (Cloudflare): ${{ needs.frontend.result }}"
+          echo "Frontend (static export): ${{ needs.frontend.result }}"
           echo "Frontend (Vercel): ${{ needs['frontend-vercel'].result }}"
           if [ "${{ needs.seo-brand.result }}" != "success" ] || [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ] || [ "${{ needs['frontend-vercel'].result }}" != "success" ]; then
             echo "CI failed"
