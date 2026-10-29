@@ -35,5 +35,11 @@ assert.match(indexNow, /MAX_URLS_PER_REQUEST = 10_000/, 'IndexNow requests must 
 assert.match(indexNow, /visitedSitemaps/, 'IndexNow must avoid loops and duplicate sitemap fetches');
 assert.match(indexNow, /discoveredUrls = new Set\(\)/, 'IndexNow must deduplicate discovered URLs');
 assert.match(indexNow, /response\.status/, 'IndexNow must check and report each submission response');
+assert.match(indexNow, /shouldSubmit = args\.includes\("--submit"\)/, 'IndexNow submissions must require an explicit --submit flag');
+assert.match(indexNow, /allUrlsRequested = args\.includes\("--all"\)/, 'Full-sitemap submissions must require an explicit --all flag');
+assert.match(indexNow, /urlsFileArg = args\.find\(\(arg\) => arg\.startsWith\("--urls-file="\)\)/, 'Incremental submissions must accept a supplied changed-URL file');
+assert.match(indexNow, /if \(!shouldSubmit \|\| dryRun\)/, 'IndexNow must default to a no-submit dry-run');
+assert.match(indexNow, /No submission was sent/, 'Dry-run output must clearly confirm no submission was sent');
+assert.match(indexNow, /Submission requires --urls-file/, 'A submission without an explicit URL scope must be rejected');
 
 console.log('SEO global JSON-LD, pricing consistency, and IndexNow coverage tests passed.');
