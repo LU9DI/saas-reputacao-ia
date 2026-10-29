@@ -39,16 +39,16 @@ async function storeCached(pathname, response, origin) {
 
 function validResource(pathname, body) {
   if (pathname === '/sitemap.xml') {
-    return /<urlset\\b/i.test(body) && /<loc>https:\\/\\/filtraai\\.com\\//i.test(body);
+    return /<urlset\b/i.test(body) && /<loc>https:\/\/filtraai\.com\//i.test(body);
   }
-  return /user-agent:/i.test(body) && /sitemap:\\s*https:\\/\\/filtraai\\.com\\/sitemap-index\\.xml/i.test(body);
+  return /user-agent:/i.test(body) && /sitemap:\s*https:\/\/filtraai\.com\/sitemap-index\.xml/i.test(body);
 }
 
 function sanitizeStaticSitemap(xml) {
-  if (!/<urlset\\b/i.test(xml)) throw new Error('Static sitemap fallback is not a urlset');
-  const entries = [...xml.matchAll(/<url\\b[\\s\\S]*?<\\/url>/gi)].map((match) => match[0]);
+  if (!/<urlset\b/i.test(xml)) throw new Error('Static sitemap fallback is not a urlset');
+  const entries = [...xml.matchAll(/<url\b[\s\S]*?<\/url>/gi)].map((match) => match[0]);
   const safeEntries = entries.filter((entry) => {
-    const loc = entry.match(/<loc>\\s*([^<]+?)\\s*<\\/loc>/i)?.[1]?.trim();
+    const loc = entry.match(/<loc>\s*([^<]+?)\s*<\/loc>/i)?.[1]?.trim();
     if (!loc) return false;
     try {
       const url = new URL(loc);
@@ -59,9 +59,9 @@ function sanitizeStaticSitemap(xml) {
     }
   });
   if (safeEntries.length === 0) throw new Error('Static sitemap fallback contains no canonical URLs');
-  return xml.replace(/<urlset\\b[^>]*>[\\s\\S]*?<\\/urlset>/i, (root) => {
-    const opening = root.match(/^<urlset\\b[^>]*>/i)?.[0] || '<urlset>';
-    return `${opening}\\n${safeEntries.join('\\n')}\\n</urlset>`;
+  return xml.replace(/<urlset\b[^>]*>[\s\S]*?<\/urlset>/i, (root) => {
+    const opening = root.match(/^<urlset\b[^>]*>/i)?.[0] || '<urlset>';
+    return `${opening}\n${safeEntries.join('\n')}\n</urlset>`;
   });
 }
 
@@ -72,14 +72,14 @@ function generatedRobotsFallback() {
     'GPTBot', 'ClaudeBot', 'Google-Extended', 'Applebot-Extended', 'CCBot',
     'meta-externalagent', 'Amazonbot',
   ];
-  const groups = ['User-agent: *\\nAllow: /\\nDisallow: /api/'];
-  for (const crawler of crawlers) groups.push(`User-agent: ${crawler}\\nAllow: /\\nDisallow: /api/`);
+  const groups = ['User-agent: *\nAllow: /\nDisallow: /api/'];
+  for (const crawler of crawlers) groups.push(`User-agent: ${crawler}\nAllow: /\nDisallow: /api/`);
   groups.push(
     'Sitemap: https://filtraai.com/sitemap-index.xml',
     'Sitemap: https://filtraai.com/sitemap.xml',
     'Sitemap: https://filtraai.com/indice/sitemap-index.xml',
   );
-  return groups.join('\\n') + '\\n';
+  return groups.join('\n') + '\n';
 }
 
 async function fetchCanonicalResource(pathname) {
