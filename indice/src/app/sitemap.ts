@@ -2,8 +2,9 @@ import type { MetadataRoute } from 'next';
 import { getLastmod, todosOsCaminhos } from '@/lib/data';
 import { urlAbsoluta } from '@/lib/seo';
 
-// Limite do protocolo: 50 mil URLs ou 50 MB por arquivo. 40 mil deixa folga.
-export const POR_ARQUIVO = 40000;
+// Shards menores reduzem o risco de timeout/502 em crawlers e proxies. O protocolo permite
+// até 50 mil URLs/50 MB; 10 mil URLs por arquivo dá margem operacional adicional.
+export const POR_ARQUIVO = 10000;
 
 export async function generateSitemaps() {
   const qtd = Math.max(1, Math.ceil(todosOsCaminhos().length / POR_ARQUIVO));
