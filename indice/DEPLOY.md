@@ -1,17 +1,18 @@
 # Publicar em filtraai.com/indice
 
-O site principal é estático (Cloudflare Pages). O Índice é um app Next.js separado, hospedado em servidor Node, com páginas de município/segmento geradas sob demanda e ISR.
+O site principal é servido pelo Render (runtime do frontend); `robots.txt` e `sitemap.xml` vêm do deploy da Vercel via Worker de rota exata. O Índice é um app Next.js separado, hospedado em servidor Node no Render, com páginas de município/segmento geradas sob demanda e ISR.
 
 ## Arquitetura e publicação
 
 1. Hospedar `indice/` como serviço Node separado: build `npm ci && npm run build` e start `npm start`. Usar Node 22, conforme `indice/package.json`.
 2. Para atualizar os dados, executar o workflow **Índice: atualizar dados**, revisar os arquivos e resultados gerados e fazer merge do PR em `indice/data/`. Não publicar dados sintéticos.
 3. Configurar a rota/Worker Cloudflare `filtraai.com/indice*` para encaminhar ao serviço sem remover o prefixo: o app usa `basePath: '/indice'`.
-4. A política de robots do site principal é mantida em `frontend/src/app/robots.ts` e deve declarar os dois sitemaps:
+4. A política de robots do site principal é mantida em `frontend/src/app/robots.ts` e deve declarar o índice central e os dois sitemaps:
+   - `https://filtraai.com/sitemap-index.xml` — índice central do domínio;
    - `https://filtraai.com/sitemap.xml` — site principal;
    - `https://filtraai.com/indice/sitemap-index.xml` — Índice separado.
    
-   Essa declaração já está presente no código e na resposta pública verificada em 26/10/2026. Não substituir por apenas um sitemap nem listar URLs do Índice no sitemap principal.
+   Essa declaração já está presente no código e na resposta pública verificada em 28/10/2026. Não substituir por apenas um sitemap nem listar URLs do Índice no sitemap principal.
 5. Depois de qualquer deploy, executar os testes locais (`npm test`, `npm run typecheck`, `npm run build` e `npm run test:seo`) e validar a produção conforme a checklist abaixo.
 
 ## Checklist de validação em produção
