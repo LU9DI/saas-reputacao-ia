@@ -160,7 +160,7 @@ for (const required of REQUIRED_URLS) {
   }
 }
 
-if (!robots.includes('Sitemap: https://filtraai.com/sitemap-index.xml')) {
+if (!robots.includes('Sitemap: https://filtraai.com/sitemap.xml')) {
   fail('robots.txt does not advertise the canonical sitemap URL');
 }
 if (!/Disallow:\s*\/api\//i.test(robots)) {
