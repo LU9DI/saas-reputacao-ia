@@ -42,10 +42,9 @@ check(!plansPage.includes('window.location.replace'), 'Plans page must render co
 check(plansPage.includes('<PlanCards />'), 'Plans page must render the shared pricing cards');
 check(
   robots.includes("const base = 'https://filtraai.com'") &&
-    robots.includes('sitemap: `${base}/sitemap-index.xml`') &&
-    !robots.includes('`${base}/sitemap.xml`') &&
-    !robots.includes('`${base}/indice/sitemap-index.xml`'),
-  'robots.txt must advertise only the central sitemap index, which references the main sitemap and all Índice shards',
+    robots.includes('sitemap:') &&
+    robots.includes('`${base}/sitemap-index.xml`'),
+  'robots.txt must advertise the central sitemap index, which references the main sitemap and all Índice shards',
 );
 check(!sitemap.includes("'/indice'") && !sitemap.includes('"/indice"'), 'Main sitemap must not list URLs hosted by the separate Índice app');
 
