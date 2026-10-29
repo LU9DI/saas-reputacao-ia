@@ -26,7 +26,7 @@ This runbook is for the production publication window. Do not submit URLs before
 
 ## Central sitemap index
 
-`https://filtraai.com/sitemap-index.xml` is the single discovery entry point for the canonical host. It is a `<sitemapindex>` that lists only sitemap files:
+`https://filtraai.com/sitemap-index.xml` is the **primary sitemap to submit in Search Console** for the canonical host. `robots.txt` may also list leaf sitemap URLs; that does not replace submitting the central index. The central index is a `<sitemapindex>` that lists only sitemap files:
 
 - `https://filtraai.com/sitemap.xml` — the main site leaf (same directory).
 - `https://filtraai.com/indice/sitemap/0.xml` — Índice shard 0 (up to 10,000 URLs).
@@ -53,7 +53,7 @@ The Índice app must answer consistently before the index points at it. On 2026-
 
 Search Console reports indexing per property, not per sitemap. The Sitemaps report shows read status and discovered URLs, not indexed coverage per file. To isolate the Índice:
 
-- Keep the Domain property for `filtraai.com` and submit only the central index as the primary discovery entry. The index references the main sitemap and all Índice shards.
+- Keep the Domain property for `filtraai.com` and submit the central index as the primary sitemap. The index references the main sitemap and all Índice shards. Other sitemap directives in `robots.txt` may remain for compatibility.
 - Add a URL-prefix property for `https://filtraai.com/indice` (no trailing slash — the canonical form of the Índice home is `/indice` without a slash) and verify it with the same DNS TXT record.
 
 ## Bing Webmaster Tools and IndexNow
