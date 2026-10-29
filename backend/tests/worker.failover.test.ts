@@ -55,7 +55,7 @@ test('primary response is used and warmed into Cloudflare cache', async () => {
   }
 });
 
-test('primary failure serves cached page and persists fallback state', async () => {
+test('upstream failures serve cached page without changing webhook-controlled failover state', async () => {
   const kv = new FakeKV();
   const cache = new FakeCache();
   installCaches(cache);
@@ -71,6 +71,7 @@ test('primary failure serves cached page and persists fallback state', async () 
   try {
     const response = await worker.fetch(request('/filtra-ai'), {
       FAILOVER_ORIGIN: kv,
+      FALLBACK_ORIGIN: 'https://fallback.example.com',
       PRIMARY_ORIGIN: 'https://primary.example.com',
       RECOVERY_PROBE_INTERVAL_MS: '300000',
     } as any);
@@ -80,7 +81,7 @@ test('primary failure serves cached page and persists fallback state', async () 
     assert.equal(response.headers.get('x-filtra-failover-origin'), 'cloudflare-cache');
 
     const state = JSON.parse((await kv.get('active_origin'))!);
-    assert.equal(state.origin, 'fallback');
+    assert.equal(state.origin, 'primary');
   } finally {
     globalThis.fetch = original;
   }
