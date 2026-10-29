@@ -18,7 +18,7 @@ This runbook is for the production publication window. Do not submit URLs before
 ## Google Search Console
 
 1. Open the verified Domain property for `filtraai.com`. If no Domain property exists, verify it using the DNS TXT method in Search Console.
-2. Open **Sitemaps** and submit `https://filtraai.com/sitemap.xml`.
+2. Open **Sitemaps** and submit the central index `https://filtraai.com/sitemap-index.xml` (not only `/sitemap.xml`). The central index lists the main site sitemap plus all three Índice shards. If Search Console shows only about 106 discovered URLs, first verify which sitemap entry was submitted and whether the central index was successfully read.
 3. Review the sitemap status and discovered URL count. Resolve fetch/parsing errors before requesting individual indexing.
 4. Use **URL inspection** for a small priority set after deployment: homepage, core product/solution pages, free audit page, and representative translated pages.
 5. Use **Test live URL** first. If the page is accessible and indexable, request indexing. Requests are rate-limited and do not guarantee inclusion.
@@ -26,10 +26,12 @@ This runbook is for the production publication window. Do not submit URLs before
 
 ## Central sitemap index
 
-`https://filtraai.com/sitemap-index.xml` is the single discovery entry point for the canonical host. It is a `<sitemapindex>` that lists only sitemap files:
+`https://filtraai.com/sitemap-index.xml` is the **primary sitemap to submit in Search Console** for the canonical host. `robots.txt` may also list leaf sitemap URLs; that does not replace submitting the central index. The central index is a `<sitemapindex>` that lists only sitemap files:
 
 - `https://filtraai.com/sitemap.xml` — the main site leaf (same directory).
-- `https://filtraai.com/indice/sitemap/0.xml` — the Índice Filtra.AI leaf (below the index).
+- `https://filtraai.com/indice/sitemap/0.xml` — Índice shard 0 (up to 10,000 URLs).
+- `https://filtraai.com/indice/sitemap/1.xml` — Índice shard 1 (up to 10,000 URLs).
+- `https://filtraai.com/indice/sitemap/2.xml` — Índice shard 2 (remaining URLs; current reported total: 28,853 across all three shards).
 
 Rules this artifact must keep satisfying:
 
@@ -45,19 +47,19 @@ Rules this artifact must keep satisfying:
 
 ### Precondition before submitting
 
-The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Submitting a central index that points at an intermittently failing origin only documents the failure in Search Console. Require at least 20 consecutive `200` responses from `/indice/sitemap/0.xml` before submitting.
+The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Require at least 20 consecutive `200` responses from each of `/indice/sitemap/0.xml`, `/indice/sitemap/1.xml`, and `/indice/sitemap/2.xml` before submitting or re-submitting the central index. A few successful responses from one shard do not establish stability for the whole sitemap set.
 
 ### Tracking each group separately
 
 Search Console reports indexing per property, not per sitemap. The Sitemaps report shows read status and discovered URLs, not indexed coverage per file. To isolate the Índice:
 
-- Keep the Domain property for `filtraai.com` and submit the central index there.
+- Keep the Domain property for `filtraai.com` and submit the central index as the primary sitemap. The index references the main sitemap and all Índice shards. Other sitemap directives in `robots.txt` may remain for compatibility.
 - Add a URL-prefix property for `https://filtraai.com/indice` (no trailing slash — the canonical form of the Índice home is `/indice` without a slash) and verify it with the same DNS TXT record.
 
 ## Bing Webmaster Tools and IndexNow
 
 1. Verify `filtraai.com` in Bing Webmaster Tools and import the verified Search Console property if offered.
-2. Submit `https://filtraai.com/sitemap.xml` in the Sitemaps area.
+2. Submit `https://filtraai.com/sitemap-index.xml` in the Sitemaps area so the main sitemap and Índice shards share one discovery entry.
 3. There is no deploy workflow in the repository: deployments are handled by the providers' own integrations (Render, Vercel). IndexNow submission is triggered by the exact-route Worker `filtra-indexnow-key` on a GET to the public key file, and can be run manually with `npm run seo:indexnow` (frontend) or `npm run seo:indexnow` (indice). The public key file must remain reachable at the exact URL declared by `frontend/scripts/submit-indexnow.mjs`.
 4. Treat an accepted IndexNow request as a notification, not proof of crawling or indexing. Check Bing Webmaster Tools for crawl and indexing results.
 
