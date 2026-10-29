@@ -135,6 +135,7 @@ export default {
       responseHeaders.set("x-indice-proxy", "render-origin");
       responseHeaders.set("x-indice-upstream-status", String(upstream.status));
       responseHeaders.set("cache-control", isSitemap ? "public, max-age=60, s-maxage=60" : "public, max-age=60, s-maxage=60");
+      if (isSitemap && request.method === "GET") responseHeaders.set("x-indice-cache", "refreshed");
       responseHeaders.delete("content-length");
       responseHeaders.delete("content-encoding");
       const response = new Response(request.method === "HEAD" ? null : upstream.body, {
