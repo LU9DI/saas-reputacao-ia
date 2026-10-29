@@ -248,7 +248,7 @@ addEventListener('fetch', (event) => {
           },
         });
       } catch {
-        // Do not fall back to a stale hard-coded sitemap or robots policy.
+        // The upstreams above already provide a validated fallback for this SEO resource.
         return new Response('SEO metadata temporarily unavailable', {
           status: 503,
           headers: {
