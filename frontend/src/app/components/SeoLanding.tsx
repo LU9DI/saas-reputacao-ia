@@ -1,4 +1,5 @@
 import { serializeJsonLd } from '../lib/safeJsonLd';
+import IndiceLinks from './IndiceLinks';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { SeoPageHeader } from './SeoPageHeader';
@@ -257,6 +258,7 @@ export function SeoLanding({
           {resolvedContextLinks.map((link) => (
             <Link key={link.href} href={link.href} className="hover:text-zinc-300">{link.title}</Link>
           ))}
+          <IndiceLinks className="contents" />
         </nav>
       </main>
     </div>

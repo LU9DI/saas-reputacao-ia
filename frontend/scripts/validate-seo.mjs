@@ -198,7 +198,16 @@ const homePage = read('src/app/preview/page.tsx');
 const llms = read('public/llms.txt');
 const llmsFull = read('public/llms-full.txt');
 
-check(!homePage.includes('<a href="/indice"'), 'Home footer must not link to the separately hosted Índice');
+// O rodapé da home e a navegação das páginas SEO/blog levam ao Índice (porta de entrada de
+// rastreamento para as páginas do /indice). Ver components/IndiceLinks.tsx.
+const indiceLinks = read('src/app/components/IndiceLinks.tsx');
+check(
+  indiceLinks.includes('href="/indice"') && indiceLinks.includes('href="/indice/rankings/ativos"'),
+  'IndiceLinks must link to /indice and /indice/rankings/ativos',
+);
+check(homePage.includes('<IndiceLinks'), 'Home footer must include IndiceLinks');
+check(seoLandingComponent.includes('<IndiceLinks'), 'SeoLanding must include IndiceLinks');
+check(read('src/app/components/BlogArticle.tsx').includes('<IndiceLinks'), 'BlogArticle must include IndiceLinks');
 check(
   llms.includes('https://filtraai.com/indice') && llms.includes('https://filtraai.com/indice/metodologia'),
   'llms.txt must list the Índice and its methodology',
@@ -410,19 +419,9 @@ function collectSourceFiles(directory = appRoot) {
   return found;
 }
 
-// O botão "Índice Filtra.AI" foi removido do rodapé. Links editoriais para o
-// Índice continuam permitidos; o que não pode voltar é o botão do rodapé.
-for (const file of collectSourceFiles()) {
-  const source = readFileSync(file, 'utf8');
-  const label = relative(process.cwd(), file).split(sep).join('/');
-  check(
-    !/<a\b[^>]*href=["']\/indice["'][^>]*>\s*Índice Filtra\.AI/i.test(source),
-    `legacy Índice footer button must not exist: ${label}`,
-  );
-}
 check(
-  rootLayout.includes('legacy-indice-footer-cleanup'),
-  'Root layout must keep the defensive cleanup of the legacy Índice footer link',
+  !rootLayout.includes('legacy-indice-footer-cleanup'),
+  'Root layout must not strip the Índice links from the footer',
 );
 
 // AEO: páginas prioritárias precisam de FAQ visível + schema, e as páginas de

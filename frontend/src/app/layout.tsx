@@ -69,16 +69,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "(function(){try{var segment=window.location.pathname.split('/')[1];var languages={en:'en',es:'es',zh:'zh'};document.documentElement.lang=languages[segment]||'pt-BR';}catch(e){}})();",
           }}
         />
-        {/* Remove o link legado "Índice Filtra.AI" do rodapé mesmo quando um chunk
-            antigo em cache ainda o renderiza. O link já não existe no código; este
-            cleanup defensivo evita que cache de JS o traga de volta. */}
-        <script
-          id="legacy-indice-footer-cleanup"
-          dangerouslySetInnerHTML={{
-            __html:
-              "(function(){function clean(){var links=document.querySelectorAll('footer a[href]');for(var i=0;i<links.length;i++){var a=links[i],h=a.getAttribute('href')||'',hit=/(^|\\/)indice\\/?(?:[?#].*)?$/i.test(h);try{var u=new URL(a.href,location.origin);hit=hit||u.pathname.replace(/\\/$/,'').toLowerCase()==='/indice';}catch(e){}hit=hit||/índice\\s+filtra\\.ai/i.test(a.textContent||'');if(hit&&a.parentNode){a.parentNode.removeChild(a);}}}function start(){clean();if(!window.MutationObserver){return;}var o=new MutationObserver(clean);o.observe(document.documentElement,{childList:true,subtree:true});setTimeout(function(){o.disconnect();clean();},8000);}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',start);}else{start();}})();",
-          }}
-        />
         <JsonLd />
         <Providers>
           {children}
