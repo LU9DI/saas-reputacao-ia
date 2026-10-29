@@ -1,0 +1,45 @@
+name: diag indice fetch
+on:
+  push:
+    branches: [diag/indice-fetch]
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Fetch como Googlebot
+        run: |
+          UA='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+          report=""
+          add() { report="$report$1"$'\n'; }
+          probe() {
+            url="$1"
+            out=$(curl -sS -A "$UA" -o /tmp/body -D /tmp/hdr -w '%{http_code} t=%{time_total}s size=%{size_download}' --max-time 90 "$url" 2>&1 || echo "CURL_FAIL")
+            xr=$(grep -i '^x-robots-tag' /tmp/hdr | tr -d '\r' | head -1)
+            ct=$(grep -i '^content-type' /tmp/hdr | tr -d '\r' | head -1)
+            loc=$(grep -i '^location' /tmp/hdr | tr -d '\r' | head -1)
+            extra=""
+            case "$url" in
+              *sitemap*.xml) extra="locs=$(grep -o '<loc>' /tmp/body | wc -l)";;
+              *robots.txt) extra="$(grep -i -E 'sitemap|indice|disallow' /tmp/body | tr '\n' ';' | cut -c1-400)";;
+              *) extra="canonical=$(grep -o '<link rel="canonical" href="[^"]*"' /tmp/body | head -1) noindex=$(grep -c -i 'name="robots" content="[^"]*noindex' /tmp/body)";;
+            esac
+            add "$url -> $out | $ct | $xr | $loc | $extra"
+          }
+          for u in \
+            https://filtraai.com/robots.txt \
+            https://filtraai.com/sitemap-index.xml \
+            https://filtraai.com/sitemap.xml \
+            https://filtraai.com/indice/sitemap-index.xml \
+            https://filtraai.com/indice/sitemap/0.xml \
+            https://filtraai.com/indice/sitemap/1.xml \
+            https://filtraai.com/indice/sitemap/2.xml \
+            https://filtraai.com/indice \
+            https://filtraai.com/indice/go \
+            https://filtraai.com/indice/rankings/ativos/restaurantes \
+            https://filtraai.com/indice/go/goiania/restaurantes ; do probe "$u"; done
+          # repete o sitemap 0 três vezes para ver variação/502
+          for i in 1 2 3; do probe https://filtraai.com/indice/sitemap/0.xml; done
+          echo "$report"
+          enc=$(printf '%s' "$report" | base64 -w0)
+          echo "::notice title=diag::$enc"
