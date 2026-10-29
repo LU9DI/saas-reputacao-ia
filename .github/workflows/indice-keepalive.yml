@@ -1,7 +1,7 @@
 name: Índice - manter acordado
 
-# O Índice roda no plano free do Render, que dorme após ~15 min sem tráfego.
-# Uma requisição periódica evita a primeira resposta lenta (ou 502) para o Googlebot.
+# O Índice roda no plano free do Render e pode dormir após ~15 min sem tráfego.
+# Acordar tanto o índice quanto o shard faz o Worker manter respostas válidas em cache.
 # O cron do GitHub é "melhor esforço": pode atrasar alguns minutos.
 on:
   schedule:
@@ -18,16 +18,29 @@ concurrency:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 8
     steps:
-      - name: Requisitar o índice de sitemaps
+      - name: Aquecer índice e shard do sitemap
+        shell: bash
         run: |
-          # Até 4 tentativas com espera: a primeira pode acordar o serviço (cold start ~30-60 s).
-          for i in 1 2 3 4; do
-            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 https://filtraai.com/indice/sitemap-index.xml || echo 000)
-            echo "tentativa $i: HTTP $code"
-            [ "$code" = "200" ] && exit 0
-            sleep 20
+          set -u
+          failed=0
+          for endpoint in \
+            "https://filtraai.com/indice/sitemap-index.xml" \
+            "https://filtraai.com/indice/sitemap/0.xml"; do
+            success=0
+            for attempt in 1 2 3 4; do
+              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 40 "$endpoint" || true)
+              echo "$endpoint — tentativa $attempt: HTTP ${code:-000}"
+              if [ "$code" = "200" ]; then
+                success=1
+                break
+              fi
+              if [ "$attempt" -lt 4 ]; then sleep 10; fi
+            done
+            if [ "$success" -ne 1 ]; then
+              echo "::error::Índice não respondeu HTTP 200: $endpoint"
+              failed=1
+            fi
           done
-          echo "::error::Índice não respondeu 200 em https://filtraai.com/indice/sitemap-index.xml (último HTTP $code)"
-          exit 1
+          [ "$failed" -eq 0 ]

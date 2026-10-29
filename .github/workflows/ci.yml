@@ -30,6 +30,21 @@ jobs:
         working-directory: frontend
         run: node scripts/validate-seo.mjs
 
+  cloudflare-indice-proxy:
+    name: Cloudflare Índice sitemap resilience
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test sitemap retry and stale-cache behavior
+        run: node --test infra/cloudflare/filtra-indice-proxy.test.mjs
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest

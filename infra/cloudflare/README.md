@@ -1,6 +1,6 @@
-# Cloudflare SEO / IndexNow Worker
+# Cloudflare SEO / Índice / IndexNow Workers
 
-Source of truth for the Worker named `filtra-indexnow-key`.
+Sources of truth for the production Workers `filtra-indexnow-key` (`filtra-indexnow-key.js`) and `filtra-indice-proxy` (`filtra-indice-proxy.js`).
 
 ## Responsibilities
 
@@ -15,6 +15,6 @@ The Worker is attached to exact routes for the key file, `/robots.txt`, and `/si
 
 ## Deployment and validation
 
-The production Worker is updated through the Cloudflare Workers API. After changing this source, deploy the same contents to the Worker named `filtra-indexnow-key`, then verify its latest deployment/version in Cloudflare. Public HTTP verification of the domain and confirmation of IndexNow acceptance remain separate checks.
+The production Workers are updated through the Cloudflare Workers API. After changing a source, deploy the same contents to its matching Worker (`filtra-indexnow-key` or `filtra-indice-proxy`), then verify the latest deployment/version in Cloudflare. `filtra-indice-proxy.js` retries transient failures for sitemap requests and keeps a last-known-good sitemap in the Worker Cache API for temporary Render outages; it must never cache authenticated or query-string sitemap requests. The Node tests for retry and stale-cache behavior run in CI. Public HTTP verification of the domain and confirmation of IndexNow acceptance remain separate checks.
 
 The canonical sitemap and robots source is the deployed frontend on Vercel. The main site itself is served by the Render frontend runtime, and there is no Cloudflare Pages deployment; the exact-route Worker responses depend only on the Vercel origin.
