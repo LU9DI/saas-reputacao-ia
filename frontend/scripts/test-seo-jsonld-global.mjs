@@ -37,6 +37,8 @@ assert.match(indexNow, /discoveredUrls = new Set\(\)/, 'IndexNow must deduplicat
 assert.match(indexNow, /response\.status/, 'IndexNow must check and report each submission response');
 assert.match(indexNow, /shouldSubmit = args\.includes\("--submit"\)/, 'IndexNow submissions must require an explicit --submit flag');
 assert.match(indexNow, /allUrlsRequested = args\.includes\("--all"\)/, 'Full-sitemap submissions must require an explicit --all flag');
+assert.match(indexNow, /MIN_FULL_SITEMAP_URLS = 10_000/, 'Full-sitemap submissions must have a minimum URL safety threshold');
+assert.match(indexNow, /Full-sitemap safety check failed/, 'IndexNow must stop rather than submit an incomplete full sitemap');
 assert.match(indexNow, /urlsFileArg = args\.find\(\(arg\) => arg\.startsWith\("--urls-file="\)\)/, 'Incremental submissions must accept a supplied changed-URL file');
 assert.match(indexNow, /if \(!shouldSubmit \|\| dryRun\)/, 'IndexNow must default to a no-submit dry-run');
 assert.match(indexNow, /No submission was sent/, 'Dry-run output must clearly confirm no submission was sent');
