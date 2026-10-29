@@ -17,4 +17,4 @@ The Worker is attached to exact routes for the key file, `/robots.txt`, and `/si
 
 The production Worker is updated through the Cloudflare Workers API. After changing this source, deploy the same contents to the Worker named `filtra-indexnow-key`, then verify its latest deployment/version in Cloudflare. Public HTTP verification of the domain and confirmation of IndexNow acceptance remain separate checks.
 
-The canonical sitemap and robots source is the deployed frontend on Vercel. The frontend Pages deployment is a separate process managed by `.github/workflows/deploy-cloudflare.yml`; it does not control these exact-route Worker responses.
+The canonical sitemap and robots source is the deployed frontend on Vercel. The main site itself is served by the Render frontend runtime, and there is no Cloudflare Pages deployment; the exact-route Worker responses depend only on the Vercel origin.

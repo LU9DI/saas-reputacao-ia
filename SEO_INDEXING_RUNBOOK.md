@@ -1,11 +1,11 @@
 # Filtra.AI — SEO indexing runbook
 
-This runbook is for the production publication window. Do not submit URLs before the static export is deployed and the production hostname serves the expected artifact.
+This runbook is for the production publication window. Do not submit URLs before the production hostname serves the expected artifact.
 
 ## Before publishing
 
 1. Wait for the full GitHub Actions CI to complete successfully, including the static export and `seo:audit` job.
-2. Confirm the Cloudflare Pages deployment completed and that production routing points at the intended artifact. A successful Pages upload alone does not prove that `https://filtraai.com` serves that deployment.
+2. Confirm the Render frontend service answered 200 for the changed routes and that `https://filtraai.com/robots.txt` and `/sitemap.xml` reflect the merged change (these are served by the exact-route Worker proxying the Vercel deployment). A successful deploy alone does not prove that `https://filtraai.com` serves that deployment.
 3. Check these public endpoints in a browser or with HTTP requests:
    - `https://filtraai.com/robots.txt`
    - `https://filtraai.com/sitemap.xml`
@@ -58,7 +58,7 @@ Search Console reports indexing per property, not per sitemap. The Sitemaps repo
 
 1. Verify `filtraai.com` in Bing Webmaster Tools and import the verified Search Console property if offered.
 2. Submit `https://filtraai.com/sitemap.xml` in the Sitemaps area.
-3. The deployment workflow sends sitemap URLs to IndexNow after the deployment step. The public key file must remain reachable at the exact URL declared by `frontend/scripts/submit-indexnow.mjs`.
+3. There is no deploy workflow in the repository: deployments are handled by the providers' own integrations (Render, Vercel). IndexNow submission is triggered by the exact-route Worker `filtra-indexnow-key` on a GET to the public key file, and can be run manually with `npm run seo:indexnow` (frontend) or `npm run seo:indexnow` (indice). The public key file must remain reachable at the exact URL declared by `frontend/scripts/submit-indexnow.mjs`.
 4. Treat an accepted IndexNow request as a notification, not proof of crawling or indexing. Check Bing Webmaster Tools for crawl and indexing results.
 
 ## Post-deploy smoke checks
@@ -77,4 +77,4 @@ Search Console reports indexing per property, not per sitemap. The Sitemaps repo
 
 ## Important limitations
 
-Sitemaps and IndexNow help discovery but do not guarantee indexing, ranking, or a timeline. Do not request indexing for URLs that are unavailable, thin, duplicate, or intentionally private. Do not publish until production routing has been verified; the Pages project name alone is not evidence that the main domain serves it. Google Search Console submission and inspection require authorized access to the property and must not be reported as completed without confirmation there.
+Sitemaps and IndexNow help discovery but do not guarantee indexing, ranking, or a timeline. Do not request indexing for URLs that are unavailable, thin, duplicate, or intentionally private. Do not publish until production routing has been verified; the Render deploy status alone is not evidence that the main domain serves it. Google Search Console submission and inspection require authorized access to the property and must not be reported as completed without confirmation there.
