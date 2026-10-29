@@ -84,7 +84,7 @@ test("serves last known-good sitemap if Render keeps returning 502", async () =>
     assert.equal(response.headers.get("x-indice-proxy"), "render-stale-cache");
     assert.equal(response.headers.get("cache-control"), "no-store");
     assert.match(await response.text(), /urlset/);
-    assert.equal(calls, 3);
+    assert.equal(calls, 5);
   });
 });
 
