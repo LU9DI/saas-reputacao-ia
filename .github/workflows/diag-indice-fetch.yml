@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Fetch como Googlebot
         run: |
+          set +e +o pipefail
           UA='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
           report=""
           add() { report="$report$1"$'\n'; }
