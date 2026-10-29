@@ -1,17 +1,47 @@
-const SEO_ORIGIN = 'https://saas-reputacao-ia.vercel.app';
+const SEO_ORIGIN = 'https://filtra-ai-web-runtime.onrender.com';
 const KEY = 'a3d7f1c94b2e6a805d1f7c3b9e4a6d82';
 const KEY_PATH = `/${KEY}.txt`;
 const INDEXNOW_ENDPOINT = 'https://api.indexnow.org/indexnow';
 
 async function fetchCanonicalResource(pathname) {
-  const response = await fetch(new URL(pathname, SEO_ORIGIN), {
-    method: 'GET',
-    headers: { accept: pathname === '/sitemap.xml' ? 'application/xml,text/xml' : 'text/plain' },
-  });
-  if (!response.ok) {
-    throw new Error(`Canonical SEO resource returned HTTP ${response.status}: ${pathname}`);
+  const isSitemap = pathname === '/sitemap.xml';
+  const cache = isSitemap ? globalThis.caches?.default : null;
+  const cacheKey = isSitemap ? new Request('https://filtraai.com/__seo-cache/sitemap.xml') : null;
+  let cached = null;
+  if (cache && cacheKey) {
+    try { cached = await cache.match(cacheKey); } catch {}
+    if (cached) {
+      const storedAt = Number(cached.headers.get('x-filtra-sitemap-cached-at'));
+      if (Number.isFinite(storedAt) && storedAt > 0 && Date.now() - storedAt < 60000) return cached;
+    }
   }
-  return response;
+  let lastError = null;
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      const response = await fetch(new URL(pathname, SEO_ORIGIN), { method: 'GET', headers: { accept: isSitemap ? 'application/xml,text/xml' : 'text/plain' }, redirect: 'follow' });
+      if (response.ok) {
+        if (cache && cacheKey && isSitemap) {
+          const headers = new Headers(response.headers);
+          headers.set('cache-control', 'public, max-age=604800');
+          headers.set('x-filtra-sitemap-cached-at', String(Date.now()));
+          headers.delete('content-length'); headers.delete('content-encoding');
+          try { await cache.put(cacheKey, new Response(response.clone().body, { status: 200, headers })); } catch {}
+        }
+        return response;
+      }
+      try { await response.body?.cancel(); } catch {}
+      if (![429, 500, 502, 503, 504, 521, 522, 523, 524].includes(response.status)) throw new Error('Canonical SEO resource returned HTTP ' + response.status + ': ' + pathname);
+      lastError = new Error('Canonical SEO resource returned HTTP ' + response.status + ': ' + pathname);
+    } catch (error) { lastError = error; }
+    if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, [500, 1500, 3000][attempt]));
+  }
+  if (isSitemap && cached) {
+    const headers = new Headers(cached.headers);
+    headers.set('x-filtra-sitemap-cache', 'stale'); headers.set('warning', '110 - "Response is stale"');
+    headers.delete('content-length'); headers.delete('content-encoding');
+    return new Response(cached.body, { status: 200, headers });
+  }
+  throw lastError || new Error('Canonical SEO resource temporarily unavailable: ' + pathname);
 }
 
 function urlsFromSitemap(xml) {
