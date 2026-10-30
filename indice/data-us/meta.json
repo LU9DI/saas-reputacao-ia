@@ -1,0 +1,87 @@
+{
+  "ano": "2023",
+  "geradoEm": "2026-10-29T20:45:38.564Z",
+  "fonte": {
+    "nome": "County Business Patterns, U.S. Census Bureau",
+    "url": "https://www.census.gov/programs-surveys/cbp.html"
+  },
+  "minimoParaIndexar": 10,
+  "segmentos": [
+    {
+      "slug": "restaurants-and-bars",
+      "nome": "Restaurants and bars",
+      "curto": "restaurants and bars",
+      "naics": [
+        "7225//",
+        "7224//"
+      ]
+    },
+    {
+      "slug": "hotels-and-motels",
+      "nome": "Hotels, motels and lodging",
+      "curto": "hotels, motels and other traveler lodging",
+      "naics": [
+        "7211//"
+      ]
+    },
+    {
+      "slug": "medical-and-dental-offices",
+      "nome": "Medical and dental offices",
+      "curto": "offices of physicians and dentists",
+      "naics": [
+        "6211//",
+        "6212//"
+      ]
+    },
+    {
+      "slug": "health-practitioner-offices",
+      "nome": "Other health practitioner offices",
+      "curto": "offices of chiropractors, optometrists, therapists and other health practitioners",
+      "naics": [
+        "6213//"
+      ]
+    },
+    {
+      "slug": "hair-nail-and-barber-shops",
+      "nome": "Hair, nail and barber shops",
+      "curto": "hair salons, nail salons and barber shops",
+      "naics": [
+        "81211/"
+      ]
+    },
+    {
+      "slug": "gyms-and-fitness-centers",
+      "nome": "Gyms and fitness centers",
+      "curto": "fitness and recreational sports centers",
+      "naics": [
+        "713940"
+      ]
+    },
+    {
+      "slug": "pharmacies",
+      "nome": "Pharmacies and drug stores",
+      "curto": "pharmacies and drug stores",
+      "naics": [
+        "446110"
+      ]
+    },
+    {
+      "slug": "auto-repair-shops",
+      "nome": "Auto repair shops",
+      "curto": "automotive repair and maintenance shops",
+      "naics": [
+        "8111//"
+      ]
+    },
+    {
+      "slug": "grocery-stores",
+      "nome": "Supermarkets and grocery stores",
+      "curto": "supermarkets and other grocery stores",
+      "naics": [
+        "445110"
+      ]
+    }
+  ],
+  "linhasLidas": 1100961,
+  "linhasNoEscopo": 23444
+}

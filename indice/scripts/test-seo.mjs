@@ -15,6 +15,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { anosPublicados, calcularRanking, podePublicar } from './lib/rankings.mjs';
+import { ESTADOS_US } from '../src/lib/us-states.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const HOST = '127.0.0.1';
@@ -215,6 +216,44 @@ function carregarDados() {
   }
   const lastmod = existsSync(resolve(DATA_DIR, 'lastmod.json')) ? lerJson('lastmod.json') : {};
   return { meta, municipios, stats, lastmod };
+}
+
+const US_DIR = resolve(ROOT, 'data-us');
+
+/** Páginas dos EUA esperadas, calculadas direto dos arquivos de dados (sem usar o código do app). */
+function carregarUS() {
+  if (!existsSync(resolve(US_DIR, 'meta.json'))) return null;
+  const meta = JSON.parse(readFileSync(resolve(US_DIR, 'meta.json'), 'utf8'));
+  const condados = new Map(
+    JSON.parse(readFileSync(resolve(US_DIR, 'counties.json'), 'utf8')).map((c) => [`${c.state}/${c.slug}`, c]),
+  );
+  const stats = {};
+  for (const arquivo of readdirSync(resolve(US_DIR, 'stats')).filter((f) => /^[A-Z]{2}\.json$/.test(f))) {
+    stats[arquivo.slice(0, 2)] = JSON.parse(readFileSync(resolve(US_DIR, 'stats', arquivo), 'utf8'));
+  }
+  return { meta, condados, stats };
+}
+
+function caminhosEsperadosUS(us) {
+  if (!us) return [];
+  const slugEstado = (sigla) => ESTADOS_US[sigla].toLowerCase().replace(/\s+/g, '-');
+  const paths = ['/us', '/us/methodology'];
+  for (const sigla of Object.keys(ESTADOS_US)) {
+    const porCondado = us.stats[sigla] || {};
+    const estado = [];
+    for (const [slug, porSeg] of Object.entries(porCondado)) {
+      if (!us.condados.has(`${sigla}/${slug}`)) continue;
+      const segs = us.meta.segmentos.map((s) => s.slug).filter((sl) => porSeg[sl] && porSeg[sl].e >= us.meta.minimoParaIndexar);
+      if (segs.length) estado.push({ slug, segs });
+    }
+    if (!estado.length) continue;
+    paths.push(`/us/${slugEstado(sigla)}`);
+    for (const { slug, segs } of estado) {
+      paths.push(`/us/${slugEstado(sigla)}/${slug}`);
+      for (const sl of segs) paths.push(`/us/${slugEstado(sigla)}/${slug}/${sl}`);
+    }
+  }
+  return paths;
 }
 
 function caminhosEsperados({ meta, municipios, stats }) {
@@ -631,7 +670,9 @@ if (!existsSync(BUILD_ID)) {
 const DADOS = carregarDados();
 const META = DADOS.meta;
 const LAST_MOD = DADOS.lastmod;
-const ESPERADOS = caminhosEsperados(DADOS);
+const US_DADOS = carregarUS();
+const US_DATA = US_DADOS ? US_DADOS.meta.geradoEm.slice(0, 10) : null;
+const ESPERADOS = [...caminhosEsperados(DADOS), ...caminhosEsperadosUS(US_DADOS)];
 const AMOSTRAS = escolherAmostras(DADOS);
 const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
 
@@ -930,8 +971,9 @@ try {
     for (const [indiceUrl, loc] of locsFilho.entries()) {
       const lastmod = lastmodsFilho[indiceUrl];
       const caminho = loc.replace(CANONICAL_BASE, '') || '/';
-      const entrada = LAST_MOD[caminho];
-      const dataEsperada = entrada ? entrada.split('|')[1] : dataGeracao;
+      const ehUS = caminho === '/us' || caminho.startsWith('/us/');
+      const entrada = ehUS ? undefined : LAST_MOD[caminho];
+      const dataEsperada = ehUS ? US_DATA : entrada ? entrada.split('|')[1] : dataGeracao;
       check(
         `${caminhoFilho} lastmod de ${caminho} segue lastmod.json (ou a data de geração)`,
         Boolean(lastmod) && lastmod.startsWith(dataEsperada),
@@ -939,7 +981,7 @@ try {
       );
       check(
         `${caminhoFilho} lastmod de ${caminho} não é futuro`,
-        Boolean(lastmod) && lastmod.slice(0, 10) <= dataGeracao,
+        Boolean(lastmod) && lastmod.slice(0, 10) <= (ehUS ? US_DATA : dataGeracao),
         lastmod,
       );
       if (caminho.startsWith('/rankings/')) {
