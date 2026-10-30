@@ -65,9 +65,10 @@ const municipiosComPagina = new Map(meta.segmentos.map((s) => [s.slug, new Set()
 let ativosTodos = 0;
 const municipiosTodos = new Set();
 const estadosTodos = new Set();
-// Contagem de URLs indexáveis do app do Índice (/indice): home + metodologia,
-// 1 por UF, 1 por município e 1 por célula município×segmento acima do mínimo.
-// Precisa espelhar indice/src/lib/data.ts (todosOsCaminhos). O índice central de
+// Contagem de URLs indexáveis do app do Índice (/indice): 4 páginas base
+// (home, metodologia e os dois hubs de ranking), 1 por UF, 1 por município,
+// 1 por célula município×segmento acima do mínimo e as páginas de ranking.
+// Precisa espelhar indice/src/lib/data.ts (iterarCaminhos). O índice central de
 // sitemaps usa esse total para saber quantos shards existem em /indice/sitemap/.
 const ufsComPagina = new Set();
 let celulasComPagina = 0;
@@ -104,6 +105,44 @@ for (const [slug, segmento] of segmentos) {
     .map(([uf, ativos]) => ({ uf, nome: ESTADOS[uf] || uf, ativos }));
 }
 
+// Rankings de aberturas: mesma regra de indice/scripts/lib/rankings.mjs.
+const { anosPublicados, calcularRanking, podePublicar } = await import(
+  new URL('../../indice/scripts/lib/rankings.mjs', import.meta.url).href
+);
+let rankingsAberturas = 0;
+for (const seg of meta.segmentos) {
+  for (const ano of anosPublicados(meta, stats, seg.slug)) {
+    if (podePublicar(calcularRanking(stats, seg.slug, ano))) rankingsAberturas += 1;
+  }
+}
+
+// Rankings de ativos: nacional por segmento + UF com pelo menos 10 municípios
+// publicados (espelha MIN_MUNICIPIOS_RANKING_UF em indice/src/lib/data.ts).
+const MIN_MUNICIPIOS_RANKING_UF = 10;
+let rankingsAtivosSegmentos = 0;
+let rankingsAtivosUF = 0;
+for (const seg of meta.segmentos) {
+  const porUF = new Map();
+  for (const [uf, muns] of Object.entries(stats)) {
+    for (const regs of Object.values(muns)) {
+      const reg = regs[seg.slug];
+      if (reg && reg.a >= meta.minimoParaIndexar) porUF.set(uf, (porUF.get(uf) || 0) + 1);
+    }
+  }
+  if ([...porUF.values()].reduce((total, qtd) => total + qtd, 0) > 0) rankingsAtivosSegmentos += 1;
+  for (const qtd of porUF.values()) if (qtd >= MIN_MUNICIPIOS_RANKING_UF) rankingsAtivosUF += 1;
+}
+
+const paginasBase = 4;
+const totalUrls =
+  paginasBase +
+  ufsComPagina.size +
+  municipiosTodos.size +
+  celulasComPagina +
+  rankingsAberturas +
+  rankingsAtivosSegmentos +
+  rankingsAtivosUF;
+
 const snapshot = {
   competencia: meta.competencia,
   geradoEm: meta.geradoEm,
@@ -124,11 +163,14 @@ const snapshot = {
   // indice/src/lib/data.ts#todosOsCaminhos. O sitemap central usa `total` para
   // decidir quantos shards /indice/sitemap/<n>.xml existem.
   urls: {
-    homeMetodologia: 2,
+    base: paginasBase,
     ufs: ufsComPagina.size,
     municipios: municipiosTodos.size,
     celulas: celulasComPagina,
-    total: 2 + ufsComPagina.size + municipiosTodos.size + celulasComPagina,
+    rankingsAberturas,
+    rankingsAtivosSegmentos,
+    rankingsAtivosUF,
+    total: totalUrls,
   },
   segmentos: Object.fromEntries(segmentos),
 };

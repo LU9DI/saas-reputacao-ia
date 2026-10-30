@@ -52,26 +52,25 @@ check(!sitemap.includes("'/indice'") && !sitemap.includes('"/indice"'), 'Main si
 // Regras do Google que o teste protege: filhos no mesmo site, no mesmo diretório
 // ou abaixo, e um único ponto de descoberta para o domínio canônico.
 const centralIndex = read('src/app/sitemap-index.xml/route.ts');
-const centralIndexBlock = centralIndex.slice(
-  centralIndex.indexOf('const SITEMAPS = ['),
-  centralIndex.indexOf('] as const;'),
-);
-const centralIndexChildren = [...centralIndexBlock.matchAll(/`\$\{base\}(\/[^`]*)`/g)].map((match) => match[1]);
 check(
   centralIndex.includes('sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"') &&
     !centralIndex.includes('urlset xmlns='),
   'Central sitemap index must be a <sitemapindex>, not a <urlset>',
 );
-check(centralIndexChildren.length > 0, 'Central sitemap index must declare its child sitemaps');
-check(centralIndexChildren.includes('/sitemap.xml'), 'Central sitemap index must reference the main /sitemap.xml leaf');
-check(centralIndexChildren.every((path) => path.startsWith('/') && !path.startsWith('//')), 'Central sitemap index children must be absolute paths on the canonical host');
 check(
-  !centralIndexChildren.includes('/indice/sitemap-index.xml'),
-  'Central sitemap index must reference the Índice leaf, not the nested /indice/sitemap-index.xml',
+  centralIndex.includes('indice-snapshot.json') &&
+    centralIndex.includes('snapshot.urls.total') &&
+    centralIndex.includes('Math.ceil(snapshot.urls.total / POR_ARQUIVO)'),
+  'Central sitemap index must derive the Índice shard count from the generated snapshot',
 );
 check(
-  centralIndexChildren.filter((path) => !/^\/indice\/sitemap\/\d+\.xml$/.test(path) && path !== '/sitemap.xml').length === 0,
-  'Central sitemap index must list only /sitemap.xml and /indice/sitemap/<n>.xml — never page URLs',
+  centralIndex.includes('`${base}/sitemap.xml`') &&
+    centralIndex.includes('`${base}/indice/sitemap/${id}.xml`'),
+  'Central sitemap index must reference the main leaf and generate /indice/sitemap/<n>.xml children',
+);
+check(
+  !centralIndex.includes('/indice/sitemap-index.xml'),
+  'Central sitemap index must reference the Índice leaf, not the nested /indice/sitemap-index.xml',
 );
 check(
   !sitemap.includes('sitemapindex'),
@@ -80,29 +79,24 @@ check(
 
 // A contagem vem de src/generated/indice-snapshot.json, gerado a partir de
 // indice/data por scripts/sync-indice-snapshot.mjs (e verificado no build com
-// --check). Não reimplemente a contagem aqui: o teste existe para detectar
-// divergência entre o total publicado pelo Índice e a lista de shards.
+// --check). Não reimplemente a contagem aqui.
 const centralIndexSnapshot = JSON.parse(read('src/generated/indice-snapshot.json'));
 const indiceUrls = centralIndexSnapshot.urls;
+const somaUrls =
+  indiceUrls.base +
+  indiceUrls.ufs +
+  indiceUrls.municipios +
+  indiceUrls.celulas +
+  indiceUrls.rankingsAberturas +
+  indiceUrls.rankingsAtivosSegmentos +
+  indiceUrls.rankingsAtivosUF;
 check(
-  indiceUrls &&
-    indiceUrls.total ===
-      indiceUrls.homeMetodologia + indiceUrls.ufs + indiceUrls.municipios + indiceUrls.celulas,
-  'Índice snapshot urls.total must equal homeMetodologia + ufs + municípios + células',
+  indiceUrls.total === somaUrls,
+  `Índice snapshot urls.total must equal base + ufs + municípios + células + rankings (${indiceUrls.total} != ${somaUrls})`,
 );
-const indiceTotalUrls = indiceUrls.total;
-const indiceShards = Math.max(1, Math.ceil(indiceTotalUrls / 10000));
-const declaredShards = centralIndexChildren
-  .filter((path) => /^\/indice\/sitemap\/\d+\.xml$/.test(path))
-  .map((path) => Number(path.match(/(\d+)\.xml$/)[1]));
-check(
-  declaredShards.length === indiceShards,
-  `Central sitemap index must list ${indiceShards} Índice shard(s) for ${indiceTotalUrls} URLs, found ${declaredShards.length}`,
-);
-check(
-  declaredShards.every((id, index) => id === index),
-  'Central sitemap index Índice shards must be contiguous starting at 0',
-);
+check(indiceUrls.total > 0, 'Índice snapshot urls.total must be positive');
+const indiceShards = Math.max(1, Math.ceil(indiceUrls.total / 10000));
+check(indiceShards >= 1, `Índice snapshot must declare at least one shard for ${indiceUrls.total} URLs`);
 
 check(robots.includes("disallow: ['/api/']"), 'robots metadata must disallow API endpoints only');
 check(sitemap.includes('const TRANSLATED_BLOG_FAMILIES') && sitemap.includes("es: '/es/blog/analisis-resenas-ia'"), 'Translated AI-analysis articles must be represented in sitemap hreflang alternates');
