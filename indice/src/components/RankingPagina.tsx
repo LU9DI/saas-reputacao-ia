@@ -43,10 +43,39 @@ export function RankingPagina({ m, caminho }: { m: ModeloRanking; caminho: strin
           { nome: `Ranking de ${seg.curto}` },
         ]}
       />
+      <span className="pilula">Competência {m.comp}</span>
       <h1>{m.titulo}</h1>
       <p className="lead">{m.lead}</p>
+      <Cta
+        compacto
+        campanha={`ranking-topo-${seg.slug}${uf ? `-${uf.toLowerCase()}` : ''}`}
+        texto={`São ${n(m.totalEscopo)} estabelecimentos de ${seg.curto} ${m.escopo}. Veja como o cliente enxerga a reputação do seu.`}
+      />
 
       <h2>Mais estabelecimentos ativos {m.escopo}</h2>
+      <ol className="podio">
+        {m.porAtivos.slice(0, 3).map((l) => (
+          <li key={`${l.mun.uf}/${l.mun.slug}`}>
+            <span className="pos">{ord(l.pos)}</span>
+            <Link className="cidade" href={href(l, seg.slug)}>{l.mun.nome}<small>{l.mun.uf}</small></Link>
+            <span className="valor">{n(l.a)}</span>
+            <span className="detalhe">estabelecimentos ativos · {pct(l.a, m.totalEscopo)} do segmento</span>
+          </li>
+        ))}
+      </ol>
+
+      <ol className="rank-barras" aria-label={`Dez primeiros municípios ${m.escopo}`}>
+        {m.porAtivos.slice(0, 10).map((l) => (
+          <li key={`${l.mun.uf}/${l.mun.slug}`}>
+            <Link href={href(l, seg.slug)}>{l.mun.nome}{uf ? '' : <small> {l.mun.uf}</small>}</Link>
+            <span className="trilho" aria-hidden="true"><i style={{ width: `${Math.max(2, (l.a / m.porAtivos[0].a) * 100)}%` }} /></span>
+            <b>{n(l.a)}</b>
+          </li>
+        ))}
+      </ol>
+
+      <h2>Lista completa</h2>
+      <div className="tabela">
       <table>
         <caption>
           {m.porAtivos.length < m.totalMunicipios ? `Os ${n(LIMITE_RANKING)} primeiros de ${n(m.totalMunicipios)} municípios` : `${n(m.totalMunicipios)} municípios`}{' '}
@@ -71,6 +100,7 @@ export function RankingPagina({ m, caminho }: { m: ModeloRanking; caminho: strin
           ))}
         </tbody>
       </table>
+      </div>
 
       <p>
         Este ranking é por estoque de estabelecimentos ativos. Para eventos de abertura por ano, veja os{' '}
