@@ -1,3 +1,5 @@
+import snapshot from '../../generated/indice-snapshot.json';
+
 // Índice central de descoberta do domínio canônico.
 //
 // Por que existe: o site principal publica /sitemap.xml (106 URLs) e o Índice
@@ -10,15 +12,16 @@
 //   2. Todo sitemap referenciado precisa estar no mesmo diretório do índice ou
 //      abaixo na hierarquia do site.
 //   3. O índice pode listar até 50.000 sitemaps e ter até 50 MB.
-// Verificado em produção: as 28.607 URLs do Índice já são publicadas em
+// Verificado em produção: as URLs do Índice já são publicadas em
 // https://filtraai.com/indice/... (mesmo host), então as condições 1 e 2 valem
-// sem cross-site submission.
+// sem cross-site submission. O total de URLs vem do snapshot gerado de
+// indice/data; ele inclui base, UFs, municípios, células e rankings.
 //
 // Decisões deliberadas:
 //   - /sitemap.xml continua sendo um <urlset> (leaf). Não é convertido em índice:
 //     scripts/submit-indexnow.mjs e consumidores externos leem exatamente essa URL.
-// //   - Aponta diretamente para os leaves /indice/sitemap/<n>.xml, não para
-//     /indice/sitemap-index.xml (índice dentro de índice não é documentado pelo Google).
+//   - Aponta diretamente para os leaves /indice/sitemap/<n>.xml, nunca para o
+//     índice do próprio Índice (índice dentro de índice não é documentado).
 //   - O Índice usa shards de 10.000 URLs para reduzir o tamanho de cada resposta e
 //     diminuir a superfície para timeouts/502 em proxies e crawlers.
 //   - Sem <lastmod> no índice. O lastmod do índice se refere à última modificação
@@ -31,15 +34,16 @@ const base = 'https://filtraai.com';
 
 export const dynamic = 'force-static';
 
-// Mantenha em sincronia com indice/src/app/sitemap.ts (POR_ARQUIVO = 10000).
-// O snapshot atual contém 28.607 URLs -> 3 shards. O teste SEO verifica a contagem
-// de shards e falha se os dados crescerem além da lista declarada.
+// O número de shards vem do snapshot gerado a partir de indice/data
+// (scripts/sync-indice-snapshot.mjs). Não hardcode a lista: quando o Índice
+// crescer além de 10.000 URLs por shard, o índice central precisa declarar o
+// novo /indice/sitemap/<n>.xml na mesma publicação.
+const POR_ARQUIVO = 10000;
+const shards = Math.max(1, Math.ceil(snapshot.urls.total / POR_ARQUIVO));
 const SITEMAPS = [
   `${base}/sitemap.xml`, // site principal — mesmo diretório
-  `${base}/indice/sitemap/0.xml`, // Índice Filtra.AI, shard 0 — até 10.000 URLs
-  `${base}/indice/sitemap/1.xml`, // Índice Filtra.AI, shard 1 — até 10.000 URLs
-  `${base}/indice/sitemap/2.xml`, // Índice Filtra.AI, shard 2 — restante das URLs atuais
-] as const;
+  ...Array.from({ length: shards }, (_, id) => `${base}/indice/sitemap/${id}.xml`),
+];
 
 export function GET() {
   const itens = SITEMAPS.map((loc) => `  <sitemap><loc>${loc}</loc></sitemap>`).join('\n');
