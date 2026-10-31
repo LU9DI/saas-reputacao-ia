@@ -284,7 +284,6 @@ segue documentado como convenção emergente (`indice/src/lib/llms.ts:17-22`).
 ### 11.1 Arquivos alterados (branch `cline/zv5xh6c6`)
 
 ```
-.github/workflows/indice-ci.yml          +5    gera e valida o sitemap estático no CI
 SEO_INDEXING_RUNBOOK.md                  +21   incidente 31/10, “cache != disponibilidade”, gate
 frontend/package.json                    +1    script seo:verify-production
 frontend/scripts/validate-seo.mjs        +44   guardrails zh/x-default/robots
