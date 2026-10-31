@@ -49,6 +49,27 @@ Rules this artifact must keep satisfying:
 
 The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Require at least 20 consecutive `200` responses from each of `/indice/sitemap/0.xml`, `/indice/sitemap/1.xml`, and `/indice/sitemap/2.xml` before submitting or re-submitting the central index. A few successful responses from one shard do not establish stability for the whole sitemap set.
 
+On 2026-10-31 the Render service `filtra-indice` was **suspended by billing** (`503`,
+`This service has been suspended.`). Every `/indice` page returned `503`, shard 1
+returned `429`, and shards 0 and 2 returned `200` **from the Worker cache only**
+(`x-indice-proxy: render-cache`, `cf-cache-status: STALE`, `age ≈ 107.8k s`). The
+lesson is fixed in the process: **a cached 200 is not availability**. Always check
+`x-indice-proxy` / `cf-cache-status` and hit the origin host directly before
+declaring a sitemap healthy.
+
+Automated gate (run before and after every publish):
+
+    cd frontend && npm run seo:verify-production
+    # 20 requests per shard, no 429/503, worker-cache responses flagged as WARN,
+    # shard count == snapshot.urls.total, leaf URLs all 200 with self canonical,
+    # no zh alternates, x-default present, required pages present, llms.txt links 200.
+
+Static sitemap fallback (removes the runtime dependency):
+
+    cd indice && npm run sitemaps:static && npm run sitemaps:static:check
+    # .static-sitemaps/sitemap-index.xml + sitemap-0..N.xml, same URL set as iterarCaminhos()
+
+
 ### Tracking each group separately
 
 Search Console reports indexing per property, not per sitemap. The Sitemaps report shows read status and discovered URLs, not indexed coverage per file. To isolate the Índice:

@@ -8,6 +8,9 @@ npm-debug.log*
 
 # Dados de amostra para desenvolvimento local (NUNCA publicar: são sintéticos).
 /data.sample/
+/data-us.sample/
 # Downloads temporários da ingestão.
 /.tmp/
-/data-us.sample/
+
+# Sitemap materializado como artefato estático (npm run sitemaps:static).
+/.static-sitemaps/

@@ -2,10 +2,12 @@ import snapshot from '../../generated/indice-snapshot.json';
 
 // Índice central de descoberta do domínio canônico.
 //
-// Por que existe: o site principal publica /sitemap.xml (106 URLs) e o Índice
+// Por que existe: o site principal publica /sitemap.xml (leaf de <urlset>) e o Índice
 // Filtra.AI é um app separado, servido em /indice, que publica o próprio sitemap.
 // Sem este arquivo o domínio tem dois pontos de descoberta independentes e nenhum
 // artefato único que represente "todas as URLs publicadas em filtraai.com".
+// O número de URLs do leaf principal não é fixado aqui de propósito: a única
+// contagem que este arquivo precisa conhecer é a do Índice (snapshot abaixo).
 //
 // Regras do Google que este arquivo respeita (Search Central, sitemap index):
 //   1. Todo sitemap referenciado precisa estar no mesmo site do índice.

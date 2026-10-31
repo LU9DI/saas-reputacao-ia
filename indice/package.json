@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Índice Filtra.AI: páginas programáticas (município x segmento) com dados abertos do CNPJ. Servido em filtraai.com/indice.",
-  "engines": { "node": "22.x" },
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev -H 127.0.0.1 -p 3100",
     "build": "node scripts/check-data.mjs && next build",
@@ -12,6 +14,8 @@
     "test": "node --test \"scripts/lib/*.test.mjs\"",
     "test:seo": "node scripts/test-seo.mjs",
     "audit:indexability": "node scripts/audit-indexability.mjs",
+    "sitemaps:static": "node scripts/build-static-sitemaps.mjs",
+    "sitemaps:static:check": "node scripts/build-static-sitemaps.mjs --check",
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "typecheck": "tsc --noEmit"
   },

@@ -49,6 +49,13 @@ export default function robots(): MetadataRoute.Robots {
     // O Índice Filtra.AI é um app separado em /indice e mantém o próprio sitemap.
     // O sitemap principal não deve listar essas URLs. O índice central em
     // /sitemap-index.xml é o ponto único de descoberta do domínio e lista os dois leaves.
-    sitemap: [`${base}/sitemap-index.xml`, `${base}/sitemap.xml`, `${base}/indice/sitemap-index.xml`],
+    // Descoberta de sitemap: um único ponto para o site principal (o índice
+    // central) e um ponto próprio para o Índice Filtra.AI, que é outro app.
+    //
+    // `/sitemap.xml` NÃO é declarado aqui de propósito: ele é filho do índice
+    // central, então declará-lo de novo duplicava a descoberta do mesmo leaf e
+    // misturava dois modelos (índice × leaf direto). Consumidores externos que
+    // leem `/sitemap.xml` continuam funcionando — o arquivo não saiu do ar.
+    sitemap: [`${base}/sitemap-index.xml`, `${base}/indice/sitemap-index.xml`],
   };
 }
