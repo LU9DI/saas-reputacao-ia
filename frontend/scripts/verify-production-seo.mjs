@@ -40,7 +40,9 @@ const warn = (msg) => {
 
 async function pegar(url, init) {
   try {
-    const resposta = await fetch(url, { redirect: 'manual', ...init });
+    // Sem timeout explícito, uma resposta de desafio do Cloudflare pode deixar o
+    // fetch pendurado e travar o gate inteiro.
+    const resposta = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(20_000), ...init });
     const corpo = await resposta.text();
     return { status: resposta.status, headers: resposta.headers, corpo };
   } catch (erro) {
@@ -115,9 +117,12 @@ for (let id = 0; id < shardsEsperados; id += 1) {
   const status = [];
   let ultimo = null;
   for (let n = 0; n < AMOSTRAS; n += 1) {
-    const resposta = await pegar(url);
+    // As amostras usam HEAD: provam disponibilidade sem baixar ~1,2 MB por
+    // requisição. O corpo é lido uma única vez, na última amostra.
+    const ultima = n === AMOSTRAS - 1;
+    const resposta = await pegar(url, ultima ? undefined : { method: 'HEAD' });
     status.push(resposta.status);
-    if (resposta.status === 200) ultimo = resposta;
+    if (ultima && resposta.status === 200) ultimo = resposta;
   }
   const ruins = status.filter((s) => s !== 200);
   if (ruins.length) {
