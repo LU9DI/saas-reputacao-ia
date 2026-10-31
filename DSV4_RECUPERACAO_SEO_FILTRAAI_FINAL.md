@@ -78,7 +78,16 @@ que transformou uma suspensão de billing em indisponibilidade de 28.853 URLs.
     (`urls.total`, `competencia`, número de shards), então o índice central não
     pode apontar para um artefato com contagem diferente.
 - `indice/scripts/lib/static-sitemaps.test.mjs` — 10 testes novos.
-- `.github/workflows/indice-ci.yml` — gera e valida o artefato em todo PR/push.
+- **Passo de CI preparado, não commitado**: o token do bot deste ambiente não tem
+  a permissão `workflows`, então alterar `.github/workflows/indice-ci.yml` faz o
+  push ser recusado pelo GitHub. Aplique este bloco depois de `Unit tests`:
+
+  ```yaml
+      - name: Sitemap estático (materializa e valida os 3 shards)
+        run: |
+          npm run sitemaps:static
+          npm run sitemaps:static:check
+  ```
 
 Resultado medido:
 
