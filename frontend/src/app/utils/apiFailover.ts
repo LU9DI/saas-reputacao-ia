@@ -36,7 +36,7 @@ let stickyBase: string | null = null;
 let stickyUntil = 0;
 
 function stripSlash(u: string): string {
-  return u.replace(/\\/+$/, '');
+  return u.replace(/\/+$/, '');
 }
 
 export function listApiBases(): string[] {
