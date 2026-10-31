@@ -175,10 +175,12 @@ mantém o índice do Índice.
 
 - Branch de trabalho: **`cline/zv5xh6c6`**, criada a partir de `main` @ `4a31e3a7`.
 - `main` não foi tocada, não houve merge, não houve force push, histórico preservado.
-- PR aberta em **rascunho** (`draft`): ver URL no rodapé desta entrega / `gh pr list`.
-- Commit(s):
-  1. `fix(seo): sitemap estático do Índice, hreflang x-default e gate de produção`
-  2. `docs(seo): relatório final da recuperação DSV4`
+- PR: **https://github.com/LU9DI/saas-reputacao-ia/pull/164** — `draft`, base `main`,
+  head `cline/zv5xh6c6`, 15 arquivos (+1217 / −30).
+- Commits:
+  1. `fc5e16c3` `fix(seo): sitemap estático do Índice, hreflang x-default e gate de produção`
+  2. `227c074c` `docs(seo): relatório final da recuperação DSV4 com evidências medidas`
+  3. `c2df5a74` + `docs(ci)`: registro do passo de CI como patch manual
 
 ## 4. Testes executados e resultados
 
