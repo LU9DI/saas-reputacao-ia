@@ -381,17 +381,22 @@ saudável e expira em até 7 dias (`STALE_CACHE_SECONDS`).
 
 ```
 $ git status --porcelain      → (vazio)
-$ git log --oneline -3
-<docs>  docs(seo): relatório final da recuperação DSV4
-<code>  fix(seo): sitemap estático do Índice, hreflang x-default e gate de produção
-4a31e3a7 chore: disable scheduled indice keepalive to conserve Render free hours   (main, intacta)
-$ git branch
-* cline/zv5xh6c6
-  main
+$ git log --oneline -6
+5200df5b docs(seo): registrar numero e URL da PR 164 no relatorio final
+e379d982 docs(ci): remove linha obsoleta do inventario de arquivos
+c2df5a74 docs(ci): registrar o passo de CI do artefato como patch manual
+227c074c docs(seo): relatório final da recuperação DSV4 com evidências medidas
+fc5e16c3 fix(seo): sitemap estático do Índice, hreflang x-default e gate de produção
+4a31e3a7 chore: disable scheduled indice keepalive …        == main == origin/main
+$ git branch -vv
+* cline/zv5xh6c6 5200df5b [origin/cline/zv5xh6c6]
+  main           4a31e3a7
 ```
 
-- `main` permanece exatamente em `4a31e3a7`.
-- Nenhum force push, nenhum rebase de histórico publicado, nenhum arquivo removido.
+- `main` e `origin/main` continuam exatamente em `4a31e3a7` (`git rev-parse` conferido).
+- Diff total da branch: **15 arquivos, +1219 / −30**; nenhum arquivo removido,
+  nenhum workflow alterado (o patch de CI está no §2.1 por limitação de permissão do token).
+- Nenhum force push, nenhum rebase de histórico publicado.
 - Artefatos de build (`frontend/.next`, `indice/.static-sitemaps`) são gitignored e
   foram removidos da árvore antes do commit final.
 
