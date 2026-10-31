@@ -25,6 +25,14 @@ acesso ao painel Render/billing, que esta execução não tem permissão para to
 O que foi feito é a remoção da **dependência** desse serviço para o artefato de
 sitemap, mais o gate que impede a produção de ser declarada saudável sem prova.
 
+> **Escopo do que foi validado.** As 28.853 URLs foram **reconstruídas e
+> validadas localmente** (mesmo conjunto de `iterarCaminhos()`, XML válido, sem
+> duplicatas, 3 shards). Isso **não** significa que as 28.853 páginas estejam
+> acessíveis ou indexadas no Google: em 31/10/2026 as páginas respondem **503**,
+> apenas **18.853** URLs são descobríveis pelos sitemaps servidos e o último dado
+> de indexação é de 11/10/2026 (**42 URLs**). Reconstruir o índice não recupera
+> disponibilidade nem indexação.
+
 ---
 
 ## 1. Diagnóstico revalidado antes de agir
@@ -152,14 +160,26 @@ valida o artefato **publicado**, não o código:
 Esse gate é o que faltava: em 31/10 o CI, o build e 58.709 asserções locais estavam
 verdes enquanto a produção servia outro artefato.
 
-### 2.5 Guardrails de fonte
+### 2.5 `robots.txt` de fallback do Worker de SEO alinhado (revisão da PR #164)
+
+`infra/cloudflare/filtra-indexnow-key.js:68-86` gera um `robots.txt` em código quando a
+origem falha. Ele ainda anunciava `Sitemap: /sitemap.xml`, o que **desfaria** a correção
+do `robots.ts` exatamente no cenário de falha. Agora anuncia apenas o índice central e o
+índice do Índice, com guardrail novo
+`infra/cloudflare/filtra-indexnow-key.test.mjs` (5 testes) que compara a lista de
+crawlers e a lista de sitemaps do Worker com `frontend/src/app/robots.ts`.
+Pendente: publicar o Worker (deploy Cloudflare) para valer em produção.
+
+Detalhes: `docs/DSV4_REVISAO_PR_164_2026-10-31.md`, Ponto 2.
+
+### 2.6 Guardrails de fonte
 
 `frontend/scripts/validate-seo.mjs` ganhou 7 verificações: `alternatesFor()`
 existe, exclui `zh`, declara `x-default`, o sitemap não emite `zh`, o HTML mantém
 `x-default`, `robots.txt` declara o índice central, **não** redeclara o leaf e
 mantém o índice do Índice.
 
-### 2.6 Documentação
+### 2.7 Documentação
 
 - `indice/DEPLOY.md` — estado real de 31/10 (suspensão Render, shard 1 em 429,
   cache ≠ disponibilidade) + seção "Sitemap como artefato estático".
@@ -196,6 +216,7 @@ mantém o índice do Índice.
 | Guardrails de fonte | `npm run seo:validate` | `SEO source validation passed` |
 | Guardrail de marca/conteúdo | `node spec-kit/audit-seo-brand.mjs` | PASSED |
 | Worker de resiliência | `node --test infra/cloudflare/filtra-indice-proxy.test.mjs` | 3/3 pass |
+| Worker de SEO (robots/sitemap fallback) | `node --test infra/cloudflare/filtra-indexnow-key.test.mjs` | **5/5 pass** (novo) |
 | Suíte SEO integrada do Índice | `cd indice && npm run test:seo` | 58.709 PASS / 0 FAIL (executada em 31/10 na auditoria, código do Índice não alterado funcionalmente) |
 | Gate de produção (novo) | `npm run seo:verify-production --samples=20` | **FAIL esperado** — ver §7 (produção não serve o build aprovado) |
 
@@ -253,7 +274,7 @@ pontos; o artefato publicado é que está velho. **Correção = deploy do fronte
 | `llms.txt` / `llms-full.txt` do Índice | implementados e derivados dos dados (não hardcoded); **503 em produção** |
 | Gêmeas `.md` do Índice | implementadas com `Link: rel=canonical` + `X-Robots-Tag: noindex, follow`; **503 em produção** |
 | Gêmeas `.md` do site principal | **404** em produção: o gerador só escreve em `out/` (export estático) e o host atual não serve `out/`; a cópia pública do `llms.txt` não lista `.md`, então **não há link quebrado anunciado** — é uma promessa não cumprida, não um link morto |
-| `robots.txt` para crawlers de IA | 16 UAs explícitos (GPTBot, OAI-SearchBot, ClaudeBot, Claude-SearchBot, Google-Extended, CCBot, PerplexityBot, Applebot-Extended, meta-externalagent, Amazonbot, …) |
+| `robots.txt` para crawlers de IA | 15 UAs de IA explícitos + `*` (GPTBot, OAI-SearchBot, ClaudeBot, Claude-SearchBot, Google-Extended, CCBot, PerplexityBot, Applebot-Extended, meta-externalagent, Amazonbot, …) |
 | IndexNow | chave 200; envio **bloqueado** porque `submit-indexnow.mjs` lê `/indice/sitemap/1.xml` (429) |
 | Dados estruturados | `Organization`, `WebSite`, `SoftwareApplication`+`Offer`, `BreadcrumbList`, `DefinedTermSet`, `FAQPage`, `Dataset`, `BlogPosting` — nenhum `AggregateRating`/preço/nota inventados |
 | Conteúdo original citável | contagens por município × segmento com fonte primária, competência, janela e técnica de medição |
@@ -274,7 +295,7 @@ segue documentado como convenção emergente (`indice/src/lib/llms.ts:17-22`).
 |---|---|---|---|
 | 1 | Reativar `filtra-indice` | painel/billing Render (proprietário) | nada a codar; documentado em `indice/DEPLOY.md` |
 | 2 | Publicar o build do frontend (sitemap 106 URLs, `lastmod`, `x-default`, sem `zh`, `.md`) | deploy Vercel/Render (proibido aqui) | PR pronta com diff e evidências |
-| 3 | Servir o sitemap estático do Índice | deploy (Pages/R2/KV ou host estático) | `npm run sitemaps:static` + artefato validado |
+| 3 | Servir o sitemap estático do Índice | deploy **+ decisão de rota**: o Worker intercepta todo `/indice/*` (ver `docs/DSV4_REVISAO_PR_164_2026-10-31.md`, Ponto 1) | `npm run sitemaps:static` + artefato validado |
 | 4 | Reenviar sitemap no GSC/Bing e confirmar indexação | GSC (conector indisponível) | `npm run seo:verify-production` como pré-condição |
 | 5 | Enviar IndexNow | depende de 1 ou 3 | `npm run seo:indexnow -- --dry-run` passa a funcionar |
 | 6 | Confirmar 20× 200 nos três shards | depende de 1 ou 3 | critério já implementado no gate |
@@ -300,6 +321,9 @@ indice/package.json                      +2   sitemaps:static / :check
 indice/scripts/build-static-sitemaps.mjs    NEW  CLI do artefato
 indice/scripts/lib/static-sitemaps.mjs      NEW  cálculo + XML + validação
 indice/scripts/lib/static-sitemaps.test.mjs NEW  10 testes
+infra/cloudflare/filtra-indexnow-key.js      +7/-2 fallback de robots alinhado à fonte
+infra/cloudflare/filtra-indexnow-key.test.mjs NEW 5 testes de alinhamento
+docs/DSV4_REVISAO_PR_164_2026-10-31.md       NEW  revisão: publicação, rotas/cache, CI
 ```
 
 ### 11.2 Comandos e saídas
