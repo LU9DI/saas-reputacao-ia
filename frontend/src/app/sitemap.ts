@@ -191,28 +191,35 @@ const highPriority = new Set([
   '/ia',
 ]);
 
+/**
+ * Alternates hreflang de uma família de páginas traduzidas.
+ *
+ * Regras que este mapa precisa respeitar (o HTML é a referência):
+ *   - `zh` fica de fora: as páginas /zh continuam acessíveis, mas são `noindex`
+ *     e não entram como <loc>; declarar `zh` em hreflang apontaria para página
+ *     noindex e quebraria a reciprocidade do cluster.
+ *   - `x-default` é obrigatório quando há mais de um idioma: o HTML
+ *     (src/app/[lang]/page.tsx) já declara `x-default` para o pt-BR, então o
+ *     sitemap precisa declarar exatamente o mesmo conjunto.
+ */
+function alternatesFor(family: Record<string, string>) {
+  const languages = Object.fromEntries(
+    Object.entries(family)
+      .filter(([lang]) => lang !== 'zh')
+      .map(([lang, target]) => [lang, base + target]),
+  );
+  // O HTML (src/app/[lang]/blog/[slug]/page.tsx) usa pt-BR como x-default quando
+  // existe versão em português e, quando o artigo só existe traduzido, usa o en.
+  const xDefault = languages['pt-BR'] ?? languages.en;
+  return { languages: xDefault ? { ...languages, 'x-default': xDefault } : languages };
+}
+
 function localizedAlternates(path: string) {
   for (const family of Object.values(SEO_FAMILIES)) {
-    if (Object.values(family).includes(path)) {
-      return {
-        languages: Object.fromEntries(
-          Object.entries(family)
-            .filter(([lang]) => lang !== 'zh')
-            .map(([lang, target]) => [lang, base + target]),
-        ),
-      };
-    }
+    if (Object.values(family).includes(path)) return alternatesFor(family);
   }
   for (const family of TRANSLATED_BLOG_FAMILIES) {
-    if (Object.values(family).includes(path as (typeof family)[keyof typeof family])) {
-      return {
-        languages: Object.fromEntries(
-          Object.entries(family)
-            .filter(([lang]) => lang !== 'zh')
-            .map(([lang, target]) => [lang, base + target]),
-        ),
-      };
-    }
+    if (Object.values(family).includes(path as (typeof family)[keyof typeof family])) return alternatesFor(family);
   }
   return undefined;
 }

@@ -10,3 +10,6 @@ npm-debug.log*
 /data.sample/
 # Downloads temporários da ingestão.
 /.tmp/
+
+# Sitemap materializado como artefato estático (npm run sitemaps:static).
+/.static-sitemaps/

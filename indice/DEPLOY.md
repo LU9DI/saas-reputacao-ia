@@ -58,12 +58,40 @@ Depois do deploy, quando as URLs já respondem em produção:
 
 O protocolo é adotado por Bing, Yandex, Seznam e Naver; o Google não participa. A chave fica em `https://filtraai.com/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt`, servida pelo site principal. Aceite do IndexNow é notificação, não prova de rastreamento ou indexação.
 
-## Estado verificado em 30/10/2026
+## Estado verificado em 31/10/2026 (auditoria DSV4)
 
-- `https://filtraai.com/indice/sitemap-index.xml` respondeu com três shards (10.000 + 10.000 + 8.853 = 28.853 URLs).
-- `https://filtraai.com/indice/sitemap/0.xml` e os shards 1 e 2 responderam HTTP 200 com XML válido.
-- O índice central `https://filtraai.com/sitemap-index.xml` lista `/sitemap.xml` e os três shards do Índice.
-- O sitemap principal respondeu com 106 URLs, sem rotas `/zh` e sem misturar URLs do Índice.
-- `/robots.txt` declarou o índice central, o sitemap principal e o sitemap do Índice.
-- Amostras de páginas de estados, municípios, segmentos e metodologia apresentaram canonical próprio e `index, follow`. Três rotas inválidas testadas responderam 404.
-- A indexação efetiva no Google ainda precisa ser confirmada no Search Console; não inferir cobertura total a partir do sitemap.
+- `https://filtraai.com/indice/sitemap-index.xml` respondeu 200, mas **de cache** do Worker
+  (`x-indice-proxy: render-cache`, `cf-cache-status: STALE`), com três shards
+  (10.000 + 10.000 + 8.853 = 28.853 URLs).
+- **A origem Render está suspensa**: `https://filtra-indice.onrender.com/indice/*` responde
+  503 com `This service has been suspended.` por isso **todas as páginas do Índice
+  respondem 503** (`/indice`, `/indice/metodologia`, `/indice/sp/sao-paulo`,
+  `/indice/llms.txt`, `/indice/llms-full.txt`, `/indice/md/*`).
+- O shard 1 responde **429** (desafio do Cloudflare) porque não há cópia em cache
+  naquele PoP: o cache do Worker é por PoP e expira em 7 dias
+  (`STALE_CACHE_SECONDS`). Portanto o cache **não** é prova de disponibilidade.
+- O sitemap principal publicado estava em um build antigo: **97 URLs, nenhum
+  `lastmod`, alternates `zh` e sem `/planos`, `/metodologia`, `/glossario`**.
+- Validação local do código do Índice no commit auditado: `npm run build` +
+  `npm run test:seo` → 58.709 verificações aprovadas, 0 falhas.
+
+## Sitemap como artefato estático (recuperação sem runtime)
+
+O sitemap do Índice é imutável entre ingestões: não precisa de um processo Node
+para ser servido. Para não depender do Render:
+
+    npm run sitemaps:static        # grava .static-sitemaps/sitemap-index.xml e sitemap-0..N.xml
+    npm run sitemaps:static:check  # falha se o artefato divergir de data/
+
+O diretório gerado contém exatamente as mesmas URLs que `iterarCaminhos()`
+(28.853 na competência 2026-10) e pode ser publicado em qualquer host estático
+(Pages, R2, KV). Sequência de recuperação, sem alterar dados:
+
+1. `npm run sitemaps:static` e publicar os XML no host estático.
+2. Apontar a rota `/indice/sitemap*` para o artefato (e manter as páginas HTML no
+   serviço Node quando ele voltar).
+3. Baixar `STALE_CACHE_SECONDS` do Worker ou pré-aquecer os três shards após
+   publicar, para não servir XML de uma competência anterior por até 7 dias.
+4. Rodar `cd frontend && npm run seo:verify-production` — ele exige 20 respostas
+   200 consecutivas por shard e compara a contagem com o snapshot.
+
