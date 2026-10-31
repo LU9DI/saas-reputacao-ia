@@ -7,30 +7,21 @@
  *  3. NEXT_PUBLIC_API_URLS         (lista extra, separada por vírgula)
  *  4. https://api.filtraai.com     (canônica — garantida em produção)
  *
- * Hosts comprovadamente obsoletos (ex.: serviços descomissionados) nunca
- * entram na rotação.
+ * Troca entre bases somente para métodos seguros (GET/HEAD/OPTIONS), quando
+ * há falha de rede, timeout ou HTTP 502/503/504/521/522.
  *
- * Troca quando: rede falha, timeout, ou HTTP 502/503/504.
+ * Requisições de escrita nunca são repetidas automaticamente em outra base:
+ * um timeout/502 pode ocorrer depois de o servidor ter processado a operação.
+ * Isso evita duplicidade de pagamentos, assinaturas e outras mutações.
+ *
  * Mantém a base que funcionou por 5 min (sticky) para não ficar oscilando.
- *
  * IMPORTANTE: para dados iguais nos dois hosts, use o MESMO DATABASE_URL (Postgres).
  */
 
 const STICKY_MS = 5 * 60 * 1000;
 const DEFAULT_TIMEOUT_MS = 12_000;
 
-/**
- * API canônica de produção. É garantida na lista mesmo quando a configuração
- * (NEXT_PUBLIC_API_URL / _BACKUP / _URLS) estiver ausente ou apontar para um
- * host comprovadamente morto — o frontend nunca fica sem uma base válida.
- */
 const CANONICAL_API_URL = 'https://api.filtraai.com';
-
-/**
- * Hosts comprovadamente obsoletos (respondem erro de aplicação e não fazem
- * parte da produção). Ficam fora da rotação para não atrasar o boot nem
- * segurar o sticky num host morto.
- */
 const OBSOLETE_API_HOSTS = new Set(['filtra-ai-dot-api.onrender.com']);
 
 function isObsoleteApiBase(base: string): boolean {
@@ -48,7 +39,6 @@ function stripSlash(u: string): string {
   return u.replace(/\/+$/, '');
 }
 
-/** Lista de bases configuradas (sem barra no final). */
 export function listApiBases(): string[] {
   const primary =
     (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_URL) ||
@@ -67,7 +57,6 @@ export function listApiBases(): string[] {
 
   const raw = [primary, backup, ...extras].map(stripSlash).filter(Boolean);
   const bases = [...new Set(raw)].filter((base) => !isObsoleteApiBase(base));
-  // Canônica garantida em produção mesmo com env ausente/desatualizada.
   if (
     typeof process !== 'undefined' &&
     process.env.NODE_ENV === 'production' &&
@@ -78,7 +67,6 @@ export function listApiBases(): string[] {
   return bases;
 }
 
-/** Base preferida no momento (sticky ou primeira da lista). */
 export function getApiBase(): string {
   if (stickyBase && Date.now() < stickyUntil) return stickyBase;
   return listApiBases()[0] || 'http://127.0.0.1:5000';
@@ -100,6 +88,11 @@ function shouldFailoverStatus(status: number): boolean {
   return status === 502 || status === 503 || status === 504 || status === 521 || status === 522;
 }
 
+function isSafeToRetry(method?: string): boolean {
+  const normalized = (method || 'GET').toUpperCase();
+  return normalized === 'GET' || normalized === 'HEAD' || normalized === 'OPTIONS';
+}
+
 export type ApiFetchOptions = RequestInit & {
   /** Timeout por tentativa (ms). Default 12s. */
   timeoutMs?: number;
@@ -110,11 +103,17 @@ export type ApiFetchOptions = RequestInit & {
 /**
  * fetch com failover automático entre as bases configuradas.
  * path: '/api/health' ou 'api/health'
+ *
+ * Somente GET/HEAD/OPTIONS podem ser repetidos em outra base. Para métodos
+ * mutáveis, a primeira resposta (inclusive 5xx) é devolvida sem replay.
+ * Se houver falha de rede/timeout numa mutação, a função lança erro e não
+ * tenta outra base, pois o resultado da operação pode ser indeterminado.
  */
 export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promise<Response> {
   const pathNorm = path.startsWith('/') ? path : `/${path}`;
   const { timeoutMs = DEFAULT_TIMEOUT_MS, noFailover, ...fetchInit } = init;
-  const bases = noFailover ? [getApiBase()] : orderedBases();
+  const safeToRetry = isSafeToRetry(fetchInit.method);
+  const bases = noFailover || !safeToRetry ? [getApiBase()] : orderedBases();
   const errors: string[] = [];
 
   for (const base of bases) {
@@ -138,7 +137,7 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
       clearTimeout(timer);
       if (external) external.removeEventListener('abort', onAbort);
 
-      if (shouldFailoverStatus(res.status)) {
+      if (shouldFailoverStatus(res.status) && safeToRetry && !noFailover) {
         errors.push(`${base} → HTTP ${res.status}`);
         continue;
       }
@@ -159,6 +158,7 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
       if (e?.name === 'AbortError' && external?.aborted) throw e;
       const msg = e?.name === 'AbortError' ? 'timeout/abort' : e?.message || 'network';
       errors.push(`${base} → ${msg}`);
+      if (!safeToRetry || noFailover) break;
     }
   }
 

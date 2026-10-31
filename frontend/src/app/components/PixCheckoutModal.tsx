@@ -86,7 +86,7 @@ export function PixCheckoutModal({
     if (!open || !pix?.payment_id || pago) return;
     const t = setInterval(async () => {
       try {
-        const res = await apiFetch(`/api/pix/payment/${pix.payment_id}`);
+        const res = await apiFetch(`/api/pix/payment/${pix.payment_id}`, { cache: 'no-store' });
         const data = await res.json().catch(() => ({}));
         if (data.approved || data.status === 'approved') {
           setPago(true);

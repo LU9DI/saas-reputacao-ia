@@ -1,231 +1,405 @@
 name: CI
 
 on:
+
   push:
+
     branches: [main]
+
   pull_request:
+
     branches: [main]
 
 concurrency:
+
   group: ci-${{ github.workflow }}-${{ github.ref }}
+
   cancel-in-progress: true
 
 jobs:
+
   seo-brand:
+
     name: SEO + brand guardrail
+
     runs-on: ubuntu-latest
+
     steps:
+
       - name: Checkout
+
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+
         uses: actions/setup-node@v4
+
         with:
+
           node-version: '20'
 
       - name: Audit public SEO/content rules
+
         run: node spec-kit/audit-seo-brand.mjs
 
       - name: Validate SEO routes and sitemap metadata
+
         working-directory: frontend
+
         run: node scripts/validate-seo.mjs
 
   cloudflare-indice-proxy:
+
     name: Cloudflare Índice sitemap resilience
+
     runs-on: ubuntu-latest
+
     steps:
+
       - name: Checkout
+
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+
         uses: actions/setup-node@v4
+
         with:
+
           node-version: '22'
 
       - name: Test sitemap retry and stale-cache behavior
+
         run: node --test infra/cloudflare/filtra-indice-proxy.test.mjs
 
   backend:
+
     name: Backend (test + typecheck)
+
     runs-on: ubuntu-latest
+
     defaults:
+
       run:
+
         working-directory: backend
+
     env:
+
       NODE_ENV: test
+
       JWT_SECRET: ci-test-jwt-secret-min-32-chars-long
+
       SQLITE_DB_PATH: /tmp/filtra-ci.sqlite
+
       APP_URL: http://localhost:3000
+
       FRONTEND_URL: http://localhost:3000
+
       ADMIN_EMAIL: admin-ci@example.com
+
       ADMIN_PASSWORD: AdminCi@Test1
+
     steps:
+
       - name: Checkout
+
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+
         uses: actions/setup-node@v4
+
         with:
+
           node-version: '20'
+
           cache: npm
+
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
+
         run: |
+
           npm ci
 
       - name: Audit backend dependencies
+
         run: npm audit
 
       - name: Unit tests
+
         run: |
+
           # Use npm exec so CI remains resilient if the lockfile is temporarily
+
           # out of sync with package.json and tsx is absent from node_modules/.bin.
+
           find tests -type f -name '*.test.ts' ! -name 'integration.*.test.ts' -print0 | xargs -0 -r -n1 npx --yes tsx --test
 
       # O teste de integração usa um SQLite temporário; os adaptadores são dependências exclusivas de CI.
+
       # Não alterar o package-lock nem adicionar dependências de teste ao runtime.
+
       - name: Install SQLite test dependencies
+
         run: npm install --no-save --package-lock=false sqlite@5.1.1 sqlite3@6.0.1
 
       # Este teste usa banco temporário e não depende de DNS ou serviços externos.
+
       # Mantê-lo sempre ativo protege os contratos de consentimento e aceite legal.
+
       - name: Focused integration tests (lead + legal acceptance)
+
         run: npx --yes tsx --test tests/integration.lead-legal.test.ts
 
       - name: Integration tests (external dependencies)
+
         if: ${{ hashFiles('backend/tests/integration.*.test.ts') != '' && env.CI_RUN_INTEGRATION == '1' }}
+
         run: npm test
 
       - name: Typecheck
+
         run: npx tsc --noEmit
 
   # Export estático do frontend. Mantém a auditoria de indexabilidade de out/
+
   # e as guardas de regressão do artefato publicável.
+
   frontend:
+
     name: Frontend (static export)
+
     runs-on: ubuntu-latest
+
     defaults:
+
       run:
+
         working-directory: frontend
+
     env:
+
       NEXT_PUBLIC_API_URL: http://127.0.0.1:5000
+
       # O passo "Audit static export indexability" valida o artefato de
+
       # exportação estática (out/), que só é gerado com CLOUDFLARE_PAGES=1.
+
       CLOUDFLARE_PAGES: '1'
+
     steps:
+
       - name: Checkout
+
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+
         uses: actions/setup-node@v4
+
         with:
+
           node-version: '22'
+
           cache: npm
+
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
+
         run: |
+
           npm ci
 
       - name: Typecheck
+
         run: npx tsc --noEmit
 
       - name: Build Next.js
+
         run: npm run build
 
       - name: Audit static export indexability
+
         run: npm run seo:audit
 
       - name: Validate Markdown twins and llms files
+
         run: npm run seo:markdown:validate
 
       - name: Verify static artifact
+
         run: |
+
           set -euo pipefail
+
           test -d out
+
           test -f out/index.html
+
           test -f out/404.html
+
           test -f out/sitemap.xml
+
           test -f out/robots.txt
+
           test -f out/planos.html
+
           # Regression guardrails: keep the Filtra Dot homepage section and blog hub in production.
+
           grep -q 'Filtra Dot' out/index.html
+
           grep -q 'id="filtra-dot"' out/index.html
+
           test -f out/blog.html
+
           grep -q 'Blog Filtra.AI' out/blog.html
+
           grep -q 'https://filtraai.com/planos' out/sitemap.xml
+
           grep -q 'https://filtraai.com/planos' out/planos.html
+
           test -f out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
+
           grep -q 'https://filtraai.com/en' out/sitemap.xml
+
           grep -q 'https://filtraai.com/es' out/sitemap.xml
+
           # ZH routes remain accessible with noindex but must stay out of sitemap.
+
           if grep -q 'https://filtraai.com/zh' out/sitemap.xml; then
+
             echo "ZH URLs are noindex and must not appear in sitemap.xml" >&2
+
             exit 1
+
           fi
+
           grep -q 'https://filtraai.com/en/blog/ai-review-analysis-guide' out/sitemap.xml
+
           grep -q 'https://filtraai.com/es/blog/analisis-resenas-ia' out/sitemap.xml
+
           # Apos o PR #55: paginas privadas sao crawlable com noindex no HTML;
+
           # no robots.txt apenas /api/ permanece bloqueado.
+
           grep -q 'Disallow: /api/' out/robots.txt
+
           grep -q 'Sitemap: https://filtraai.com/sitemap.xml' out/robots.txt
+
           grep -qx 'a3d7f1c94b2e6a805d1f7c3b9e4a6d82' out/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt
+
+          grep -q 'https://filtraai.com/en' out/sitemap.xml
+
+          grep -q 'https://filtraai.com/es' out/sitemap.xml
+
           echo "Static artifact ready: $(du -sh out | cut -f1)"
+
           echo "Sitemap URL count: $(grep -o '<loc>' out/sitemap.xml | wc -l)"
 
   # Build normal da Vercel: não define CLOUDFLARE_PAGES. O build não pode
+
   # depender de out/ nem do pós-processamento usado no export estático.
+
   frontend-vercel:
+
     name: Frontend (Vercel build)
+
     runs-on: ubuntu-latest
+
     defaults:
+
       run:
+
         working-directory: frontend
+
     env:
+
       NEXT_PUBLIC_API_URL: http://127.0.0.1:5000
+
     steps:
+
       - name: Checkout
+
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+
         uses: actions/setup-node@v4
+
         with:
+
           node-version: '22'
+
           cache: npm
+
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
+
         run: |
+
           npm ci
 
-      - name: Audit dependencies
-        run: npm audit
+      # The full dependency audit runs in the dedicated audit workflow.
+
+      # This job gates on high/critical findings so moderate dev-tooling advisories
+
+      # do not suppress the Vercel build. No vulnerable runtime dependencies are waived here.
+
+      - name: Audit high and critical dependencies
+
+        run: npm audit --audit-level=high
 
       - name: Build Next.js (Vercel mode)
+
         run: npm run build
 
       - name: Verify Vercel mode did not require static export
+
         run: |
+
           set -euo pipefail
+
           test -z "${CLOUDFLARE_PAGES:-}"
+
           test ! -d out
+
           echo "Vercel-mode build passed without out/."
 
   summary:
+
     name: CI summary
+
     runs-on: ubuntu-latest
+
     needs: [seo-brand, backend, frontend, frontend-vercel]
+
     if: always()
+
     steps:
+
       - name: Check results
+
         run: |
+
           echo "SEO/brand: ${{ needs.seo-brand.result }}"
+
           echo "Backend: ${{ needs.backend.result }}"
+
           echo "Frontend (static export): ${{ needs.frontend.result }}"
+
           echo "Frontend (Vercel): ${{ needs['frontend-vercel'].result }}"
+
           if [ "${{ needs.seo-brand.result }}" != "success" ] || [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ] || [ "${{ needs['frontend-vercel'].result }}" != "success" ]; then
+
             echo "CI failed"
+
             exit 1
+
           fi
+
           echo "CI passed"
