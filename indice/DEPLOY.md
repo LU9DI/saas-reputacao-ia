@@ -88,8 +88,17 @@ O diretório gerado contém exatamente as mesmas URLs que `iterarCaminhos()`
 (Pages, R2, KV). Sequência de recuperação, sem alterar dados:
 
 1. `npm run sitemaps:static` e publicar os XML no host estático.
-2. Apontar a rota `/indice/sitemap*` para o artefato (e manter as páginas HTML no
-   serviço Node quando ele voltar).
+2. Fazer o artefato responder nas URLs declaradas. **Só publicar não basta**: o
+   Worker `filtra-indice-proxy` intercepta todo `/indice/*` e encaminha para o
+   Render (`infra/cloudflare/filtra-indice-proxy.js:92-94`); caminhos novos como
+   `/indice/sitemap-0.xml` respondem 503 com `x-indice-proxy: render-origin`.
+   Duas saídas verificadas:
+   - **A)** ensinar o Worker a servir `/indice/sitemap*` da origem estática
+     (deploy de Cloudflare), no mesmo padrão de `filtra-indexnow-key.js`;
+   - **B)** publicar os shards na raiz do frontend (`/sitemap-indice-0.xml`,
+     `-1`, `-2`) e apontar o índice central para eles — a raiz não passa pelo
+     proxy do Índice, então funciona sem alterar Cloudflare.
+   Detalhes e evidências em `docs/DSV4_REVISAO_PR_164_2026-10-31.md`.
 3. Baixar `STALE_CACHE_SECONDS` do Worker ou pré-aquecer os três shards após
    publicar, para não servir XML de uma competência anterior por até 7 dias.
 4. Rodar `cd frontend && npm run seo:verify-production` — ele exige 20 respostas

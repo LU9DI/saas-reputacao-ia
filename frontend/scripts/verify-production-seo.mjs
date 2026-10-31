@@ -132,6 +132,17 @@ for (let id = 0; id < shardsEsperados; id += 1) {
   ok(`${url}: ${AMOSTRAS}/${AMOSTRAS} respostas 200`);
   const proxiado = ultimo.headers.get('x-indice-proxy') ?? '';
   if (proxiado.includes('cache')) warn(`${url}: servido de cache do Worker (${proxiado}); confirme a origem`);
+  // Sonda de origem: o Worker não cacheia requisição com query string, então este
+  // é o único jeito confiável de saber se a origem responde. Os cabeçalhos da
+  // cópia em cache (`x-indice-upstream-status: 200`, `x-indice-cache: refreshed`)
+  // são HISTÓRICOS e não provam saúde — em 31/10/2026 a origem estava em 503
+  // enquanto o cache devolvia 200 com x-indice-upstream-status=200.
+  const sonda = await pegar(`${url}?probe=${Date.now()}`, { method: 'HEAD' });
+  if (sonda.status !== 200) {
+    fail(`${url}: origem do Índice não responde (sonda sem cache → ${sonda.status}); o 200 vem apenas de cache`);
+  } else {
+    ok(`${url}: sonda de origem sem cache → 200`);
+  }
   const contentType = ultimo.headers.get('content-type') ?? '';
   if (!contentType.includes('xml')) fail(`${url}: content-type ${contentType || 'ausente'}`);
   const locsShard = locs(ultimo.corpo);
