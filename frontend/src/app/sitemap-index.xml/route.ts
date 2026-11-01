@@ -22,7 +22,7 @@ import snapshot from '../../generated/indice-snapshot.json';
 // Decisões deliberadas:
 //   - /sitemap.xml continua sendo um <urlset> (leaf). Não é convertido em índice:
 //     scripts/submit-indexnow.mjs e consumidores externos leem exatamente essa URL.
-//   - Aponta diretamente para os leaves /indice/sitemap/<n>.xml, nunca para o
+//   - Aponta diretamente para os leaves /sitemap-indice-<n>.xml, nunca para o
 //     índice do próprio Índice (índice dentro de índice não é documentado).
 //   - O Índice usa shards de 10.000 URLs para reduzir o tamanho de cada resposta e
 //     diminuir a superfície para timeouts/502 em proxies e crawlers.
@@ -39,12 +39,12 @@ export const dynamic = 'force-static';
 // O número de shards vem do snapshot gerado a partir de indice/data
 // (scripts/sync-indice-snapshot.mjs). Não hardcode a lista: quando o Índice
 // crescer além de 10.000 URLs por shard, o índice central precisa declarar o
-// novo /indice/sitemap/<n>.xml na mesma publicação.
+// novo /sitemap-indice-<n>.xml na mesma publicação.
 const POR_ARQUIVO = 10000;
 const shards = Math.max(1, Math.ceil(snapshot.urls.total / POR_ARQUIVO));
 const SITEMAPS = [
   `${base}/sitemap.xml`, // site principal — mesmo diretório
-  ...Array.from({ length: shards }, (_, id) => `${base}/indice/sitemap/${id}.xml`),
+  ...Array.from({ length: shards }, (_, id) => `${base}/sitemap-indice-${id}.xml`),
 ];
 
 export function GET() {
