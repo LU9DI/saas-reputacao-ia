@@ -133,9 +133,33 @@ for (const seg of meta.segmentos) {
   for (const qtd of porUF.values()) if (qtd >= MIN_MUNICIPIOS_RANKING_UF) rankingsAtivosUF += 1;
 }
 
+// Piloto dos EUA (indice/data-us): mesma regra de indexação de indice/src/lib/us.ts#usCaminhos.
+function contarUrlsEUA() {
+  const dir = path.resolve(frontendDir, '..', 'indice', 'data-us');
+  if (!existsSync(path.join(dir, 'meta.json'))) return 0;
+  const usMeta = JSON.parse(readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+  const condados = new Set(JSON.parse(readFileSync(path.join(dir, 'counties.json'), 'utf8')).map((c) => `${c.state}/${c.slug}`));
+  let total = 2; // /us e /us/methodology
+  for (const file of readdirSync(path.join(dir, 'stats'))) {
+    if (!file.endsWith('.json')) continue;
+    const sigla = file.replace(/\.json$/, '');
+    const porCondado = JSON.parse(readFileSync(path.join(dir, 'stats', file), 'utf8'));
+    let estado = 0;
+    for (const [slug, porSeg] of Object.entries(porCondado)) {
+      if (!condados.has(`${sigla}/${slug}`)) continue;
+      const segs = usMeta.segmentos.filter((sg) => porSeg[sg.slug] && porSeg[sg.slug].e >= usMeta.minimoParaIndexar).length;
+      if (segs) estado += 1 + segs;
+    }
+    if (estado) total += 1 + estado;
+  }
+  return total;
+}
+
 const paginasBase = 4;
+const urlsEUA = contarUrlsEUA();
 const totalUrls =
   paginasBase +
+  urlsEUA +
   ufsComPagina.size +
   municipiosTodos.size +
   celulasComPagina +
@@ -170,6 +194,7 @@ const snapshot = {
     rankingsAberturas,
     rankingsAtivosSegmentos,
     rankingsAtivosUF,
+    eua: urlsEUA,
     total: totalUrls,
   },
   segmentos: Object.fromEntries(segmentos),

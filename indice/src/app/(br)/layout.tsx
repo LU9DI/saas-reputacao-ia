@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
-import './globals.css';
+import '../globals.css';
 import { getMeta } from '@/lib/data';
 import { SITE, OG_IMAGE } from '@/lib/seo';
 import { mesPorExtenso } from '@/lib/format';

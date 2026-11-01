@@ -8,8 +8,21 @@ on:
       competencia:
         description: 'AAAA-MM (vazio = mais recente disponível)'
         required: false
+      base:
+        description: 'br (CNPJ, padrão) ou us (County Business Patterns, EUA)'
+        required: false
+        default: 'br'
       sondar:
         description: 'true = só testar endereços de download (cabeçalhos, sem baixar)'
+        required: false
+      zip_inspecao:
+        description: 'URL de um .zip: baixa e mostra a lista de arquivos, o cabeçalho e algumas linhas'
+        required: false
+      filtro_inspecao:
+        description: 'regex (grep -E) aplicada às linhas do arquivo na inspeção'
+        required: false
+      urls_sonda:
+        description: 'URLs extras (separadas por espaço) para a sondagem; se preenchido, só estas são testadas'
         required: false
   schedule:
     - cron: '0 6 15 * *'
@@ -30,52 +43,51 @@ jobs:
       - name: Testes do agregador
         working-directory: indice
         run: npm ci && npm test
+      - name: Inspecionar zip (opcional)
+        if: ${{ inputs.zip_inspecao != '' }}
+        env:
+          ZIP: ${{ inputs.zip_inspecao }}
+          FILTRO: ${{ inputs.filtro_inspecao }}
+        run: |
+          mkdir -p /tmp/insp
+          case "$ZIP" in
+            *.zip) ;;
+            *) T=$(curl -sS -L -m 120 "$ZIP" | tr -d '\r' | head -12 | cut -c1-200 | base64 -w0); echo "::error title=Inspecao::$T"; exit 1;;
+          esac
+          curl -sS -L -m 300 -o /tmp/insp/a.zip "$ZIP"
+          LIST=$(unzip -l /tmp/insp/a.zip | cut -c1-100)
+          F=$(unzip -Z1 /tmp/insp/a.zip | head -1)
+          if [ -n "$FILTRO" ]; then HEAD=$(unzip -p /tmp/insp/a.zip "$F" | grep -E "$FILTRO" | head -40 | cut -c1-160); else HEAD=$(unzip -p /tmp/insp/a.zip "$F" | head -6 | cut -c1-400); fi
+          LINES=$(unzip -p /tmp/insp/a.zip "$F" | wc -l)
+          MSG=$(printf '%s\nlinhas: %s\n%s' "$LIST" "$LINES" "$HEAD" | tr -d '\r' | head -c 20000 | base64 -w0)
+          echo "::error title=Inspecao::${MSG}"
+          exit 1
       - name: Sondar endereços (opcional)
         if: ${{ inputs.sondar == 'true' }}
         env:
-          INDICE_RFB_SHARE_TOKEN: ${{ secrets.INDICE_RFB_SHARE_TOKEN }}
+          URLS: ${{ inputs.urls_sonda }}
         run: |
           OUT=""
-          add() { OUT="${OUT}$1%0A"; }
-          esc() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
-          T="$INDICE_RFB_SHARE_TOKEN"
-          if [ -n "$T" ]; then echo "::add-mask::$T"; fi
-          if [ -z "$T" ]; then
-            add "BLOQUEADO: INDICE_RFB_SHARE_TOKEN não configurado; testes do link público/WebDAV foram pulados."
-          fi
-          for m in 2026-09 2026-10 2026-08; do
-            u="https://dadosabertos.rfb.gov.br/CNPJ/dados_abertos_cnpj/$m/Cnaes.zip"
-            c=$(curl -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' "$u" 2>/dev/null | tr -d '\n' | cut -c1-120)
-            add "$c <- $u"
-            if [ -n "$T" ]; then
-              # O token é credencial e faz parte da URL do link público: leve a URL
-              # pelo stdin do curl (-K -) e nunca ecoe o endereço autenticado.
-              u="https://arquivos.receitafederal.gov.br/index.php/s/$T/download?path=%2F$m&files=Cnaes.zip"
-              c=$(printf 'url = "%s"\n' "$(esc "$u")" | curl -K - -sS -L -o /dev/null -I -m 30 -w '%{http_code} %{content_type} %{size_download}' 2>/dev/null | tr -d '\n' | cut -c1-120)
-              add "$c <- link público (token omitido), competência $m"
-            fi
+          for u in $URLS; do
+            c=$(curl -sS -L -I -m 40 -o /dev/null -w '%{http_code} %{content_type} %{size_download}' "$u" 2>&1 | tr -d '\n' | cut -c1-140)
+            OUT="${OUT}${c} <- ${u:0:110}%0A"
           done
-          if [ -n "$T" ]; then
-            # Credencial via stdin (-K -), stderr descartado: nada do token vai para o log.
-            L=$(printf 'user = "%s:"\n' "$(esc "$T")" | curl -sS -m 30 -K - -X PROPFIND -H 'Depth: 1' https://arquivos.receitafederal.gov.br/public.php/webdav/ 2>/dev/null | grep -o '<d:href>[^<]*' | sed 's/<d:href>//' | head -12 | tr '\n' ' ')
-            add "webdav raiz: ${L:-vazio}"
-          fi
-          echo "::error title=Sondagem::${OUT}"
+          echo "::error title=Sondagem::${OUT:-sem URLs}"
           exit 1
       - name: Ingestão
-        env:
-          INDICE_RFB_SHARE_TOKEN: ${{ secrets.INDICE_RFB_SHARE_TOKEN }}
         working-directory: indice
+        env:
+          BASE: ${{ inputs.base }}
+          COMP: ${{ inputs.competencia }}
         run: |
-          if [ -n "$INDICE_RFB_SHARE_TOKEN" ]; then echo "::add-mask::$INDICE_RFB_SHARE_TOKEN"; fi
-          if [ -z "$INDICE_RFB_SHARE_TOKEN" ]; then
-            echo "::error title=Ingestão::INDICE_RFB_SHARE_TOKEN não configurado; nenhum download foi iniciado."
-            exit 1
-          fi
-          ARGS=""
-          if [ -n "${{ inputs.competencia }}" ]; then ARGS="--competencia=${{ inputs.competencia }}"; fi
           set +e
-          node scripts/ingest.mjs $ARGS 2>&1 | tee /tmp/ingest.log
+          if [ "$BASE" = "us" ]; then
+            node scripts/ingest-us.mjs 2>&1 | tee /tmp/ingest.log
+          else
+            ARGS=""
+            if [ -n "$COMP" ]; then ARGS="--competencia=$COMP"; fi
+            node scripts/ingest.mjs $ARGS 2>&1 | tee /tmp/ingest.log
+          fi
           CODE=${PIPESTATUS[0]}
           if [ "$CODE" -ne 0 ]; then
             # Anotação legível pela API (o download do log completo pode ser bloqueado).
@@ -86,13 +98,19 @@ jobs:
       - name: Abrir PR
         env:
           GH_TOKEN: ${{ github.token }}
+          BASE: ${{ inputs.base }}
         run: |
-          COMP=$(node -p "require('./indice/data/meta.json').competencia")
-          BR="indice/dados-$COMP"
+          if [ "$BASE" = "us" ]; then
+            COMP=$(node -p "require('./indice/data-us/meta.json').ano")
+            BR="indice/dados-us-v2-$COMP"; DIR=indice/data-us; TIT="Índice EUA: dados CBP $COMP"
+          else
+            COMP=$(node -p "require('./indice/data/meta.json').competencia")
+            BR="indice/dados-$COMP"; DIR=indice/data; TIT="Índice: dados $COMP"
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BR"
-          git add -f indice/data
-          git commit -m "chore(indice): dados do CNPJ aberto, competência $COMP"
+          git add -f "$DIR"
+          git commit -m "chore(indice): dados $BASE, $COMP"
           git push -u origin "$BR"
-          gh pr create --title "Índice: dados $COMP" --body "Dados regenerados por indice/scripts/ingest.mjs. Conferir indice/data/meta.json (linhasLidas, UFs) antes do merge." --base main || echo "::warning title=PR::Não foi possível abrir o PR automaticamente (ajuste de permissão do Actions?). A branch $BR foi enviada; abra o PR manualmente."
+          gh pr create --title "$TIT" --body "Dados regenerados pelo workflow. Conferir meta.json antes do merge." --base main || echo "::warning title=PR::Não foi possível abrir o PR automaticamente. A branch $BR foi enviada; abra o PR manualmente."

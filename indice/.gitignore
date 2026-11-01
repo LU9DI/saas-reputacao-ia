@@ -10,3 +10,4 @@ npm-debug.log*
 /data.sample/
 # Downloads temporários da ingestão.
 /.tmp/
+/data-us.sample/

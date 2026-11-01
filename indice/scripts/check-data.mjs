@@ -187,3 +187,18 @@ if (problemas.length) {
 console.log(
   `[check-data] ok: competência ${meta.competencia}, ${arquivos.length} UFs, ${slugs.size} segmentos, ${municipios.length} municípios${meta.sintetico ? ' (SINTÉTICO, só local)' : ''}.`,
 );
+
+// Dados dos EUA: opcionais, mas se existirem precisam estar completos e não podem ser sintéticos em produção.
+const dirUs = path.resolve(process.env.INDICE_US_DATA_DIR || path.join(raiz, 'data-us'));
+if (existsSync(path.join(dirUs, 'meta.json'))) {
+  const metaUs = JSON.parse(readFileSync(path.join(dirUs, 'meta.json'), 'utf8'));
+  if (!/^\d{4}$/.test(metaUs.ano || '')) erro('data-us/meta.json sem ano válido.');
+  if (metaUs.sintetico && process.env.INDICE_ALLOW_SAMPLE !== '1') erro('Os dados dos EUA são SINTÉTICOS e não podem ser publicados.');
+  for (const arq of ['counties.json']) if (!existsSync(path.join(dirUs, arq))) erro(`Arquivo ausente em data-us: ${arq}`);
+  const statsUs = path.join(dirUs, 'stats');
+  const estados = existsSync(statsUs) ? readdirSync(statsUs).filter((f) => f.endsWith('.json')) : [];
+  if (!metaUs.sintetico && estados.length < 45) erro(`Só ${estados.length} estados em data-us/stats (esperado 51). A ingestão parece incompleta.`);
+  console.log(`[check-data] EUA ok: ano ${metaUs.ano}, ${estados.length} estados${metaUs.sintetico ? ' (SINTÉTICO, só local)' : ''}.`);
+} else {
+  console.log('[check-data] sem dados dos EUA (data-us/): rotas /us ficam desligadas.');
+}
