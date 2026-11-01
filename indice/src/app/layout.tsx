@@ -4,6 +4,8 @@ import './globals.css';
 import { getMeta } from '@/lib/data';
 import { SITE, OG_IMAGE } from '@/lib/seo';
 import { mesPorExtenso } from '@/lib/format';
+import { SiteHeader } from '@/components/SiteHeader';
+import { BrandMark } from '@/components/BrandMark';
 
 export function generateMetadata(): Metadata {
   const meta = getMeta();
@@ -27,29 +29,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt-BR">
       <body>
         {meta.sintetico && <div className="amostra">DADOS SINTÉTICOS DE DESENVOLVIMENTO. NÃO PUBLICAR. NÃO REPRESENTAM A REALIDADE.</div>}
-        <header className="topo">
-          <div className="wrap">
-            <a className="marca" href="https://filtraai.com/">Filtra.AI <span>/ Índice</span></a>
-            <nav aria-label="Principal">
-              <Link href="/">Início</Link>
-              <Link href="/metodologia">Metodologia</Link>
-              <a href="https://filtraai.com/auditoria-gratuita?utm_source=indice&utm_medium=seo&utm_campaign=topo">Auditoria gratuita</a>
-            </nav>
-          </div>
-        </header>
+        <SiteHeader />
         <div className="wrap">
           <main>{children}</main>
-          <footer className="rodape">
-            <p>
-              Índice Filtra.AI: contagens agregadas do cadastro aberto de CNPJ da Receita Federal, competência {mesPorExtenso(meta.competencia)}.
-              Sem dados pessoais. <Link href="/metodologia">Como calculamos</Link>.
-            </p>
-            <p>
-              <a href="https://filtraai.com/">Filtra.AI</a> · <a href="https://filtraai.com/gestao-de-reputacao-online">Gestão de reputação online</a> ·{' '}
-              <a href="https://filtraai.com/avaliacoes-google">Avaliações Google</a> · <a href="https://filtraai.com/privacidade">Privacidade</a>
-            </p>
-          </footer>
         </div>
+        <footer className="rodape">
+          <div className="wrap rodape-in">
+            <BrandMark size="sm" uid="rodape" />
+            <div className="rodape-texto">
+              <p>
+                Índice Filtra.AI: contagens agregadas do cadastro aberto de CNPJ da Receita Federal, competência {mesPorExtenso(meta.competencia)}.
+                Sem dados pessoais. <Link href="/metodologia">Como calculamos</Link>.
+              </p>
+              <p>
+                <a href="https://filtraai.com/">Filtra.AI</a> · <a href="https://filtraai.com/gestao-de-reputacao-online">Gestão de reputação online</a> ·{' '}
+                <a href="https://filtraai.com/avaliacoes-google">Avaliações Google</a> · <a href="https://filtraai.com/privacidade">Privacidade</a>
+              </p>
+            </div>
+          </div>
+        </footer>
       </body>
     </html>
   );

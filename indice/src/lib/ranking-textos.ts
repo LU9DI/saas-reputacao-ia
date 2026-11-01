@@ -14,8 +14,8 @@ function lideres(linhas: LinhaRanking[], campo: 'a' | 'ab', unidade: string): st
     return `${topo.slice(0, 3).map(nomeMun).join(', ')}${topo.length > 3 ? ' e outros' : ''} empatam na primeira posição, com ${n(topo[0][campo])} ${unidade}`;
   }
   const [a, b, c] = linhas;
-  const resto = [b, c].filter(Boolean).map((l) => `${nomeMun(l)} (${n(l[campo])})`);
-  return `${nomeMun(a)} lidera com ${n(a[campo])} ${unidade}${resto.length ? `, seguido de ${resto.join(' e ')}` : ''}`;
+  const resto = [b, c].filter(Boolean).map((l) => `${nomeMun(l)}, com ${n(l[campo])}`);
+  return `${nomeMun(a)} lidera com ${n(a[campo])} ${unidade}${resto.length ? `, seguido de ${resto.join(', e ')}` : ''}`;
 }
 
 export type ModeloRanking = {
