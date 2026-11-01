@@ -1,0 +1,294 @@
+{
+  "dataset": "consumidor_gov_sector_resolution_supplement",
+  "status": "secondary_aggregate_dataset_verified_from_published_dataset_card",
+  "scope": "sector_level_only",
+  "not_for": [
+    "company_specific_scores",
+    "generic_filtra_reputation_benchmarks",
+    "mixing_with_private_filtra_reviews"
+  ],
+  "primarySource": {
+    "name": "Consumidor.gov.br — Dados Abertos, Senacon / Ministério da Justiça e Segurança Pública",
+    "url": "https://www.consumidor.gov.br/pages/dadosabertos/externo/",
+    "license": "CC BY (as stated by the secondary dataset author)"
+  },
+  "secondarySource": {
+    "publisher": "DNACX; Kammers, Diogo",
+    "title": "Três números de resolução do Consumidor.gov.br por setor",
+    "url": "https://huggingface.co/datasets/dnacx/tres-numeros-de-resolucao-consumidor-gov",
+    "versionDoi": "https://doi.org/10.5281/zenodo.22982134",
+    "publishedVersionDate": "2026-09-26",
+    "license": "CC BY 4.0",
+    "sha256": "5ea2eeac8461d673ee481a79c40e9da585c12694d63a0ceca11b8fa693a33d0e",
+    "note": "Secondary, pre-aggregated reproduction based on public source data. Not a direct ingestion of the official monthly CSV by this repository."
+  },
+  "metricDefinitions": {
+    "resolvedOverFinalizedPct": "resolved / finalized * 100",
+    "resolvedOverEvaluatedPct": "resolved / (resolved + not_resolved) * 100",
+    "officialSolutionIndexPct": "(resolved + not_evaluated) / finalized * 100"
+  },
+  "caveats": [
+    "Voluntary platform participation; does not represent all Brazilian consumers or all businesses.",
+    "The three percentages have different denominators and must not be treated as interchangeable.",
+    "Publication change in 2024 affects historical comparability; use the supplied window labels.",
+    "Sector aggregates cannot support conclusions about any named company.",
+    "This artifact is kept separate from the company-level benchmarks file."
+  ],
+  "windows": [
+    {
+      "window": "recent",
+      "startMonth": "2025-09",
+      "endMonth": "2026-08",
+      "sectors": [
+        {
+          "sector": "all",
+          "finalized": 3796145,
+          "resolved": 443361,
+          "notResolved": 722207,
+          "notEvaluated": 2630577,
+          "resolvedOverFinalizedPct": 11.7,
+          "resolvedOverEvaluatedPct": 38,
+          "officialSolutionIndexPct": 81,
+          "soughtCompanyBeforePct": 76.5,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 38.5,
+          "resolvedAmongEvaluatedDidNotSeekPct": 36.1
+        },
+        {
+          "sector": "banks",
+          "finalized": 1634105,
+          "resolved": 105615,
+          "notResolved": 301292,
+          "notEvaluated": 1227198,
+          "resolvedOverFinalizedPct": 6.5,
+          "resolvedOverEvaluatedPct": 26,
+          "officialSolutionIndexPct": 81.6,
+          "soughtCompanyBeforePct": 74.4,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 25.2,
+          "resolvedAmongEvaluatedDidNotSeekPct": 29
+        },
+        {
+          "sector": "telecom",
+          "finalized": 295598,
+          "resolved": 81102,
+          "notResolved": 36310,
+          "notEvaluated": 178186,
+          "resolvedOverFinalizedPct": 27.4,
+          "resolvedOverEvaluatedPct": 69.1,
+          "officialSolutionIndexPct": 87.7,
+          "soughtCompanyBeforePct": 84,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 68.8,
+          "resolvedAmongEvaluatedDidNotSeekPct": 70.6
+        },
+        {
+          "sector": "energy",
+          "finalized": 109287,
+          "resolved": 24041,
+          "notResolved": 18363,
+          "notEvaluated": 66883,
+          "resolvedOverFinalizedPct": 22,
+          "resolvedOverEvaluatedPct": 56.7,
+          "officialSolutionIndexPct": 83.2,
+          "soughtCompanyBeforePct": 89,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 55.4,
+          "resolvedAmongEvaluatedDidNotSeekPct": 67
+        },
+        {
+          "sector": "health_plans",
+          "finalized": 32207,
+          "resolved": 4307,
+          "notResolved": 7289,
+          "notEvaluated": 20611,
+          "resolvedOverFinalizedPct": 13.4,
+          "resolvedOverEvaluatedPct": 37.1,
+          "officialSolutionIndexPct": 77.4,
+          "soughtCompanyBeforePct": 93.1,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 36.9,
+          "resolvedAmongEvaluatedDidNotSeekPct": 41.2
+        },
+        {
+          "sector": "airlines",
+          "finalized": 135298,
+          "resolved": 39859,
+          "notResolved": 24174,
+          "notEvaluated": 71265,
+          "resolvedOverFinalizedPct": 29.5,
+          "resolvedOverEvaluatedPct": 62.2,
+          "officialSolutionIndexPct": 82.1,
+          "soughtCompanyBeforePct": 88.6,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 61.8,
+          "resolvedAmongEvaluatedDidNotSeekPct": 65.8
+        }
+      ]
+    },
+    {
+      "window": "after_publication_change",
+      "startMonth": "2024-08",
+      "endMonth": "2025-03",
+      "sectors": [
+        {
+          "sector": "all",
+          "finalized": 1063460,
+          "resolved": 189809,
+          "notResolved": 182199,
+          "notEvaluated": 691452,
+          "resolvedOverFinalizedPct": 17.8,
+          "resolvedOverEvaluatedPct": 51,
+          "officialSolutionIndexPct": 82.9,
+          "soughtCompanyBeforePct": 82.2,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 50.7,
+          "resolvedAmongEvaluatedDidNotSeekPct": 52.8
+        },
+        {
+          "sector": "banks",
+          "finalized": 384795,
+          "resolved": 38843,
+          "notResolved": 59270,
+          "notEvaluated": 286682,
+          "resolvedOverFinalizedPct": 10.1,
+          "resolvedOverEvaluatedPct": 39.6,
+          "officialSolutionIndexPct": 84.6,
+          "soughtCompanyBeforePct": 77.3,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 38.3,
+          "resolvedAmongEvaluatedDidNotSeekPct": 45.4
+        },
+        {
+          "sector": "telecom",
+          "finalized": 123868,
+          "resolved": 42162,
+          "notResolved": 13201,
+          "notEvaluated": 68505,
+          "resolvedOverFinalizedPct": 34,
+          "resolvedOverEvaluatedPct": 76.2,
+          "officialSolutionIndexPct": 89.3,
+          "soughtCompanyBeforePct": 84.6,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 75.8,
+          "resolvedAmongEvaluatedDidNotSeekPct": 78.1
+        },
+        {
+          "sector": "energy",
+          "finalized": 37829,
+          "resolved": 9564,
+          "notResolved": 6111,
+          "notEvaluated": 22154,
+          "resolvedOverFinalizedPct": 25.3,
+          "resolvedOverEvaluatedPct": 61,
+          "officialSolutionIndexPct": 83.8,
+          "soughtCompanyBeforePct": 90,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 59.6,
+          "resolvedAmongEvaluatedDidNotSeekPct": 72.8
+        },
+        {
+          "sector": "health_plans",
+          "finalized": 21391,
+          "resolved": 2649,
+          "notResolved": 4390,
+          "notEvaluated": 14352,
+          "resolvedOverFinalizedPct": 12.4,
+          "resolvedOverEvaluatedPct": 37.6,
+          "officialSolutionIndexPct": 79.5,
+          "soughtCompanyBeforePct": 94.4,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 37.7,
+          "resolvedAmongEvaluatedDidNotSeekPct": 35.7
+        },
+        {
+          "sector": "airlines",
+          "finalized": 61034,
+          "resolved": 21371,
+          "notResolved": 8935,
+          "notEvaluated": 30728,
+          "resolvedOverFinalizedPct": 35,
+          "resolvedOverEvaluatedPct": 70.5,
+          "officialSolutionIndexPct": 85.4,
+          "soughtCompanyBeforePct": 87.6,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 70.8,
+          "resolvedAmongEvaluatedDidNotSeekPct": 68.7
+        }
+      ]
+    },
+    {
+      "window": "historical_12_month_archive",
+      "startMonth": "2024-03",
+      "endMonth": "2025-03",
+      "sectors": [
+        {
+          "sector": "all",
+          "finalized": 1410587,
+          "resolved": 298525,
+          "notResolved": 274693,
+          "notEvaluated": 837369,
+          "resolvedOverFinalizedPct": 21.2,
+          "resolvedOverEvaluatedPct": 52.1,
+          "officialSolutionIndexPct": 80.5,
+          "soughtCompanyBeforePct": 83.6,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 51.7,
+          "resolvedAmongEvaluatedDidNotSeekPct": 54.7
+        },
+        {
+          "sector": "banks",
+          "finalized": 485189,
+          "resolved": 59679,
+          "notResolved": 85291,
+          "notEvaluated": 340219,
+          "resolvedOverFinalizedPct": 12.3,
+          "resolvedOverEvaluatedPct": 41.2,
+          "officialSolutionIndexPct": 82.4,
+          "soughtCompanyBeforePct": 78.3,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 39.9,
+          "resolvedAmongEvaluatedDidNotSeekPct": 47
+        },
+        {
+          "sector": "telecom",
+          "finalized": 172708,
+          "resolved": 68880,
+          "notResolved": 20119,
+          "notEvaluated": 83709,
+          "resolvedOverFinalizedPct": 39.9,
+          "resolvedOverEvaluatedPct": 77.4,
+          "officialSolutionIndexPct": 88.4,
+          "soughtCompanyBeforePct": 85.6,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 77.1,
+          "resolvedAmongEvaluatedDidNotSeekPct": 79.3
+        },
+        {
+          "sector": "energy",
+          "finalized": 53702,
+          "resolved": 15346,
+          "notResolved": 9773,
+          "notEvaluated": 28583,
+          "resolvedOverFinalizedPct": 28.6,
+          "resolvedOverEvaluatedPct": 61.1,
+          "officialSolutionIndexPct": 81.8,
+          "soughtCompanyBeforePct": 90.2,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 59.6,
+          "resolvedAmongEvaluatedDidNotSeekPct": 73.5
+        },
+        {
+          "sector": "health_plans",
+          "finalized": 30025,
+          "resolved": 4517,
+          "notResolved": 7548,
+          "notEvaluated": 17960,
+          "resolvedOverFinalizedPct": 15,
+          "resolvedOverEvaluatedPct": 37.4,
+          "officialSolutionIndexPct": 74.9,
+          "soughtCompanyBeforePct": 94.3,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 37.4,
+          "resolvedAmongEvaluatedDidNotSeekPct": 37.5
+        },
+        {
+          "sector": "airlines",
+          "finalized": 84506,
+          "resolved": 34014,
+          "notResolved": 13091,
+          "notEvaluated": 37401,
+          "resolvedOverFinalizedPct": 40.3,
+          "resolvedOverEvaluatedPct": 72.2,
+          "officialSolutionIndexPct": 84.5,
+          "soughtCompanyBeforePct": 88.1,
+          "resolvedAmongEvaluatedSoughtCompanyPct": 72.3,
+          "resolvedAmongEvaluatedDidNotSeekPct": 71.2
+        }
+      ]
+    }
+  ]
+}
