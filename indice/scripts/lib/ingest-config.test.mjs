@@ -16,6 +16,7 @@ import {
 
 const BASE = `https://arquivos.receitafederal.gov.br${CAMINHO_WEBDAV}`;
 const SCRIPT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'ingest.mjs');
+const CHECK_DATA_SCRIPT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'check-data.mjs');
 const TOKEN_TESTE = 'segredo-de-teste-nao-vazar';
 
 function semToken() {
@@ -130,6 +131,23 @@ test('token configurado não aparece na saída de erro do modo --local', async (
     );
     assert.equal(r.status, 1);
     assert.doesNotMatch(`${r.stdout}${r.stderr}`, new RegExp(TOKEN_TESTE));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+
+test('bloqueia o build quando meta.json marca dados como sintéticos', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'filtra-check-data-sintetico-'));
+  try {
+    await writeFile(path.join(dir, 'meta.json'), JSON.stringify({ sintetico: true }), 'utf8');
+    const resultado = spawnSync(process.execPath, [CHECK_DATA_SCRIPT], {
+      encoding: 'utf8',
+      env: { ...process.env, INDICE_DATA_DIR: dir },
+    });
+    assert.equal(resultado.status, 1, resultado.stdout + resultado.stderr);
+    assert.match(resultado.stderr, /Base marcada como sintética/);
+    assert.match(resultado.stderr, /build de produção foi bloqueado/);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
