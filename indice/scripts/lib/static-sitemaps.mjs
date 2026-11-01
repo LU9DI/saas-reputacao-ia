@@ -161,3 +161,54 @@ export function validarArtefato({ caminhos, shards, xmlIndex, porArquivo = POR_A
   }
   return erros;
 }
+
+/**
+ * Mapa sigla -> nome dos estados dos EUA, lido da MESMA fonte do app
+ * (`src/lib/us-states.ts`), em vez de duplicar 51 nomes aqui.
+ */
+export function lerEstadosUS(fonteTs) {
+  const pares = [...fonteTs.matchAll(/([A-Z]{2}):\s*'([^']+)'/g)].map((m) => [m[1], m[2]]);
+  if (pares.length < 51) throw new Error(`esperava 51 estados dos EUA, encontrei ${pares.length}`);
+  return Object.fromEntries(pares);
+}
+
+/**
+ * Caminhos do piloto dos EUA. Espelha `src/lib/us.ts: usCaminhos()`:
+ * `/us`, `/us/methodology`, um por estado com condado publicável, um por condado
+ * e um por célula condado x segmento com `e >= minimoParaIndexar`.
+ */
+export function caminhosUS({ meta, counties, stats, estados }) {
+  if (!meta || !counties?.length || !estados) return [];
+  const minimo = meta.minimoParaIndexar;
+  const nomePorChave = new Map(counties.map((c) => [`${c.state}/${c.slug}`, c.nome]));
+
+  const segmentosDoCondado = (sigla, county) => {
+    const porSeg = stats[sigla]?.[county] ?? {};
+    return meta.segmentos
+      .map((seg) => ({ slug: seg.slug, e: porSeg[seg.slug]?.e ?? 0 }))
+      .filter((x) => x.e >= minimo)
+      .sort((a, b) => b.e - a.e);
+  };
+
+  const caminhos = ['/us', '/us/methodology'];
+  for (const sigla of Object.keys(estados)) {
+    const slug = estados[sigla].toLowerCase().replace(/\s+/g, '-');
+    const condados = Object.keys(stats[sigla] ?? {})
+      .map((slugCondado) => {
+        const nome = nomePorChave.get(`${sigla}/${slugCondado}`);
+        const segs = segmentosDoCondado(sigla, slugCondado);
+        if (!nome || !segs.length) return null;
+        return { slug: slugCondado, nome, total: segs.reduce((t, x) => t + x.e, 0), segs };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
+
+    if (!condados.length) continue;
+    caminhos.push(`/us/${slug}`);
+    for (const condado of condados) {
+      caminhos.push(`/us/${slug}/${condado.slug}`);
+      for (const seg of condado.segs) caminhos.push(`/us/${slug}/${condado.slug}/${seg.slug}`);
+    }
+  }
+  return caminhos;
+}

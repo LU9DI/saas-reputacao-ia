@@ -18,8 +18,10 @@ import { fileURLToPath } from 'node:url';
 import { anosPublicados, calcularRanking, podePublicar } from './lib/rankings.mjs';
 import {
   caminhosIndexaveis,
+  caminhosUS,
   criarLastmodDe,
   dividirShards,
+  lerEstadosUS,
   validarArtefato,
   xmlSitemapIndex,
   xmlUrlset,
@@ -49,9 +51,31 @@ for (const arquivo of readdirSync(path.join(dirDados, 'stats')).filter((f) => /^
 const lastmodMapa = existsSync(path.join(dirDados, 'lastmod.json')) ? ler('lastmod.json') : {};
 
 const rankings = { anosPublicados, calcularRanking, podePublicar };
-const caminhos = caminhosIndexaveis({ meta, municipios, stats, rankings });
+const caminhosBR = caminhosIndexaveis({ meta, municipios, stats, rankings });
+
+// Piloto dos EUA (opcional): `data-us/` é a fonte que o app lê via src/lib/us.ts.
+const dirUS = path.resolve(process.env.INDICE_US_DATA_DIR || path.join(raiz, 'data-us'));
+let caminhosEUA = [];
+let usGeradoEm = null;
+if (existsSync(path.join(dirUS, 'meta.json'))) {
+  const metaUS = JSON.parse(readFileSync(path.join(dirUS, 'meta.json'), 'utf8'));
+  const counties = JSON.parse(readFileSync(path.join(dirUS, 'counties.json'), 'utf8'));
+  const statsUS = {};
+  for (const arquivo of readdirSync(path.join(dirUS, 'stats')).filter((f) => /^[A-Z]{2}\.json$/.test(f))) {
+    statsUS[arquivo.slice(0, 2)] = JSON.parse(readFileSync(path.join(dirUS, 'stats', arquivo), 'utf8'));
+  }
+  const estados = lerEstadosUS(readFileSync(path.join(raiz, 'src/lib/us-states.ts'), 'utf8'));
+  caminhosEUA = caminhosUS({ meta: metaUS, counties, stats: statsUS, estados });
+  usGeradoEm = metaUS.geradoEm;
+} else {
+  console.warn('[static-sitemaps] aviso: data-us/ ausente; apenas as URLs do Brasil foram geradas.');
+}
+
+const caminhos = [...caminhosBR, ...caminhosEUA];
 const shards = dividirShards(caminhos, POR_ARQUIVO);
-const lastmodDe = criarLastmodDe(lastmodMapa, meta.geradoEm);
+const lastmodBrasil = criarLastmodDe(lastmodMapa, meta.geradoEm);
+// US: a página não tem lastmod por página; usa a data de geração da base, como o app.
+const lastmodDe = (p) => (p.startsWith('/us') && usGeradoEm ? usGeradoEm : lastmodBrasil(p));
 const xmlIndex = xmlSitemapIndex(shards.length, meta.geradoEm);
 
 const erros = validarArtefato({ caminhos, shards, xmlIndex, porArquivo: POR_ARQUIVO, lastmodDe });

@@ -41,9 +41,10 @@ abertura no ano; o ano da competência é parcial e não gera página.
 - A home revalida a cada 24 horas; as páginas de estado, município e célula são pré-geradas no build e só
   mudam em um novo deploy. A data de geração exibida é a da ingestão, não a do acesso.
 - O sitemap também é materializado como artefato estático (`npm run sitemaps:static`),
-  com as mesmas URLs de `iterarCaminhos()`, para ser servido sem depender do
-  runtime Node do Render. `npm run sitemaps:static:check` falha se o artefato
-  divergir de `data/`.
+  com as mesmas URLs de `src/lib/caminhos.ts` — Brasil (`data/`) **e** piloto dos
+  EUA (`data-us/`, quando presente) — para ser servido sem depender do runtime Node
+  do Render. Na competência 2026-10 + CBP 2023 são 43.920 URLs em 5 shards.
+  `npm run sitemaps:static:check` falha se o artefato divergir das bases.
 
 ## Auditoria de indexabilidade
     npm run audit:indexability

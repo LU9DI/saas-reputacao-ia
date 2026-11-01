@@ -70,8 +70,10 @@ O protocolo é adotado por Bing, Yandex, Seznam e Naver; o Google não participa
 - O shard 1 responde **429** (desafio do Cloudflare) porque não há cópia em cache
   naquele PoP: o cache do Worker é por PoP e expira em 7 dias
   (`STALE_CACHE_SECONDS`). Portanto o cache **não** é prova de disponibilidade.
-- O sitemap principal publicado estava em um build antigo: **97 URLs, nenhum
-  `lastmod`, alternates `zh` e sem `/planos`, `/metodologia`, `/glossario`**.
+- Em 01/11/2026 o Índice voltou com o piloto dos EUA: **43.920 URLs em 5 shards**
+  (10.000 x4 + 3.920), todos 200 e com sonda de origem 200.
+- O sitemap principal publicado continuava atrás da `main`: 106 URLs contra 107 do
+  build, `/sobre` em 404 e `x-default` ausente nos alternates.
 - Validação local do código do Índice no commit auditado: `npm run build` +
   `npm run test:seo` → 58.709 verificações aprovadas, 0 falhas.
 
@@ -83,9 +85,11 @@ para ser servido. Para não depender do Render:
     npm run sitemaps:static        # grava .static-sitemaps/sitemap-index.xml e sitemap-0..N.xml
     npm run sitemaps:static:check  # falha se o artefato divergir de data/
 
-O diretório gerado contém exatamente as mesmas URLs que `iterarCaminhos()`
-(28.853 na competência 2026-10) e pode ser publicado em qualquer host estático
-(Pages, R2, KV). Sequência de recuperação, sem alterar dados:
+O diretório gerado contém exatamente as mesmas URLs que `src/lib/caminhos.ts`:
+Brasil (`data/`, competência 2026-10) mais o piloto dos EUA (`data-us/`, CBP 2023),
+com **43.920 URLs em 5 shards**. Pode ser publicado em qualquer host estático
+(Pages, R2, KV). O script lê os nomes dos estados de `src/lib/us-states.ts`, então
+não há lista duplicada a manter. Sequência de recuperação, sem alterar dados:
 
 1. `npm run sitemaps:static` e publicar os XML no host estático.
 2. Fazer o artefato responder nas URLs declaradas. **Só publicar não basta**: o

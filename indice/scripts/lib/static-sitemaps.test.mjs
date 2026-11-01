@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url';
 import { anosPublicados, calcularRanking, podePublicar } from './rankings.mjs';
 import {
   caminhosIndexaveis,
+  caminhosUS,
+  lerEstadosUS,
   criarLastmodDe,
   dividirShards,
   validarArtefato,
@@ -124,7 +126,54 @@ test('a regra de ranking por UF não divergiu do app', () => {
   assert.equal(Number(valor), MIN_MUNICIPIOS_RANKING_UF);
 });
 
-test('dados reais: 28.853 URLs em três shards de até 10.000', () => {
+test('US: espelha a regra do app (base, estado, condado e célula acima do mínimo)', () => {
+  const metaUS = { geradoEm: '2026-10-29T20:45:38.564Z', minimoParaIndexar: 10, segmentos: [{ slug: 'restaurants-and-bars' }, { slug: 'auto-repair-shops' }] };
+  const counties = [
+    { state: 'CA', slug: 'los-angeles-county', nome: 'Los Angeles County' },
+    { state: 'CA', slug: 'alpine-county', nome: 'Alpine County' },
+    { state: 'WY', slug: 'niobrara-county', nome: 'Niobrara County' },
+  ];
+  const stats = {
+    CA: {
+      'los-angeles-county': { 'restaurants-and-bars': { e: 4200 }, 'auto-repair-shops': { e: 12 } },
+      'alpine-county': { 'restaurants-and-bars': { e: 4 } },
+    },
+    WY: { 'niobrara-county': { 'restaurants-and-bars': { e: 1 } } },
+  };
+  const estados = { CA: 'California', WY: 'Wyoming' };
+  const caminhos = caminhosUS({ meta: metaUS, counties, stats, estados });
+  assert.deepEqual(caminhos, [
+    '/us',
+    '/us/methodology',
+    '/us/california',
+    '/us/california/los-angeles-county',
+    '/us/california/los-angeles-county/restaurants-and-bars',
+    '/us/california/los-angeles-county/auto-repair-shops',
+  ]);
+  assert.ok(!caminhos.some((c) => c.includes('alpine')), 'condado abaixo do mínimo não entra');
+  assert.ok(!caminhos.some((c) => c.includes('wyoming')), 'estado sem condado publicável não entra');
+});
+
+test('US: sem dados, não gera nenhuma rota', () => {
+  assert.deepEqual(caminhosUS({ meta: null, counties: [], stats: {}, estados: {} }), []);
+});
+
+test('lerEstadosUS lê a mesma fonte do app e cobre os arquivos de data-us', () => {
+  const fonte = readFileSync(path.resolve(raiz, 'src/lib/us-states.ts'), 'utf8');
+  const estados = lerEstadosUS(fonte);
+  assert.equal(Object.keys(estados).length, 51);
+  assert.equal(estados.CA, 'California');
+  assert.equal(estados.DC, 'District of Columbia');
+  const dirStatsUS = path.resolve(raiz, 'data-us/stats');
+  if (readdirSync(dirStatsUS, { withFileTypes: true }).length) {
+    for (const arquivo of readdirSync(dirStatsUS)) {
+      const sigla = arquivo.replace(/\.json$/, '');
+      assert.ok(estados[sigla], `data-us/stats/${arquivo} não tem estado correspondente em us-states.ts`);
+    }
+  }
+});
+
+test('dados reais: total do artefato bate com o snapshot do site principal', () => {
   const dir = path.resolve(raiz, 'data');
   const metaReal = JSON.parse(readFileSync(path.join(dir, 'meta.json'), 'utf8'));
   const municipiosReal = JSON.parse(readFileSync(path.join(dir, 'municipios.json'), 'utf8'));
@@ -134,14 +183,35 @@ test('dados reais: 28.853 URLs em três shards de até 10.000', () => {
       statsReal[arquivo.slice(0, 2)] = JSON.parse(readFileSync(path.join(dir, 'stats', arquivo), 'utf8'));
     }
   }
-  const real = caminhosIndexaveis({
+  const realBR = caminhosIndexaveis({
     meta: metaReal,
     municipios: municipiosReal,
     stats: statsReal,
     rankings: { anosPublicados, calcularRanking, podePublicar },
   });
+
+  // EUA são opcionais: só entram quando data-us/ existe.
+  const dirUS = path.resolve(raiz, 'data-us');
+  let realUS = [];
+  if (readFileSync(path.join(dirUS, 'meta.json'))) {
+    const metaUS = JSON.parse(readFileSync(path.join(dirUS, 'meta.json'), 'utf8'));
+    const counties = JSON.parse(readFileSync(path.join(dirUS, 'counties.json'), 'utf8'));
+    const statsUS = {};
+    for (const arquivo of readdirSync(path.join(dirUS, 'stats'))) {
+      if (/^[A-Z]{2}\.json$/.test(arquivo)) {
+        statsUS[arquivo.slice(0, 2)] = JSON.parse(readFileSync(path.join(dirUS, 'stats', arquivo), 'utf8'));
+      }
+    }
+    const estados = lerEstadosUS(readFileSync(path.resolve(raiz, 'src/lib/us-states.ts'), 'utf8'));
+    realUS = caminhosUS({ meta: metaUS, counties, stats: statsUS, estados });
+  }
+
+  const real = [...realBR, ...realUS];
   const shards = dividirShards(real, POR_ARQUIVO);
-  assert.equal(real.length, 28853);
-  assert.deepEqual(shards.map((s) => s.length), [10000, 10000, 8853]);
+  const snapshot = JSON.parse(readFileSync(path.resolve(raiz, '../frontend/src/generated/indice-snapshot.json'), 'utf8'));
+  assert.equal(real.length, snapshot.urls.total, 'total do artefato deve bater com o snapshot');
+  assert.equal(real.length, 43920);
+  assert.deepEqual(shards.map((s) => s.length), [10000, 10000, 10000, 10000, 3920]);
   assert.equal(new Set(real).size, real.length);
+  assert.ok(realUS.length > 0, 'data-us presente: deve gerar rotas /us');
 });
