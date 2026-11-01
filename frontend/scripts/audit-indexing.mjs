@@ -250,21 +250,29 @@ if (!existsSync(centralIndexPath)) {
   const locs = [...centralIndex.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((match) => match[1].trim());
   const snapshot = JSON.parse(readFileSync(resolve(process.cwd(), 'src/generated/indice-snapshot.json'), 'utf8'));
   const expectedShards = Math.max(1, Math.ceil(snapshot.urls.total / 10000));
-  const indiceShards = locs.filter((loc) => /\/indice\/sitemap\/\d+\.xml$/.test(loc));
+  const indiceShards = locs.filter((loc) => /\\/sitemap-indice-\\d+\\.xml$/.test(loc));
 
   if (!locs.includes('https://filtraai.com/sitemap.xml')) {
     fail('central sitemap index must reference https://filtraai.com/sitemap.xml');
   }
   if (indiceShards.length !== expectedShards) {
-    fail(`central sitemap index must list ${expectedShards} Índice shard(s) for ${snapshot.urls.total} URLs, found ${indiceShards.length}`);
+    fail(`central sitemap index must list ${expectedShards} root-level Índice shard(s) for ${snapshot.urls.total} URLs, found ${indiceShards.length}`);
   }
   indiceShards.forEach((loc, index) => {
-    if (!loc.endsWith(`/indice/sitemap/${index}.xml`)) {
-      fail(`central sitemap index shard ${index} must be /indice/sitemap/${index}.xml, got ${loc}`);
+    const expected = `https://filtraai.com/sitemap-indice-${index}.xml`;
+    if (loc !== expected) fail(`central sitemap index shard ${index} must be ${expected}, got ${loc}`);
+    const file = join(OUT, `sitemap-indice-${index}.xml`);
+    if (!existsSync(file)) fail(`static Índice shard is missing from export: ${file}`);
+    else {
+      const xml = readFileSync(file, 'utf8');
+      const count = [...xml.matchAll(/<loc>/g)].length;
+      const expectedCount = index < expectedShards - 1 ? 10000 : snapshot.urls.total - 10000 * (expectedShards - 1);
+      if (count !== expectedCount) fail(`shard ${index} has ${count} URLs; expected ${expectedCount}`);
+      if (!/<urlset\\b/i.test(xml)) fail(`shard ${index} is not a urlset`);
     }
   });
-  if (locs.some((loc) => !/^https:\/\/filtraai\.com\/(?:sitemap\.xml|indice\/sitemap\/\d+\.xml)$/.test(loc))) {
-    fail('central sitemap index must list only /sitemap.xml and /indice/sitemap/<n>.xml');
+  if (locs.some((loc) => !/^https:\\/\\/filtraai\\.com\\/(?:sitemap\\.xml|sitemap-indice-\\d+\\.xml)$/.test(loc))) {
+    fail('central sitemap index must list only /sitemap.xml and /sitemap-indice-<n>.xml');
   }
 }
 
