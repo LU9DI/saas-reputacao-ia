@@ -7,8 +7,8 @@
 | [../README.md](../README.md) | Subir local em 3 min |
 | [../SETUP.md](../SETUP.md) | Setup detalhado |
 | [../STRUCTURE.md](../STRUCTURE.md) | Onde fica cada coisa |
-| [../GO_LIVE.md](../GO_LIVE.md) | Checklist de produção |
-| [../DEPLOY.md](../DEPLOY.md) | Render + Vercel |
+| [../GO_LIVE.md](../GO_LIVE.md) | Checklist de produção no Render, SEO e Workers Cloudflare |
+| [../DEPLOY.md](../DEPLOY.md) | Arquitetura de produção e deploy no Render |
 
 ## Backend (guias em `backend/`)
 
