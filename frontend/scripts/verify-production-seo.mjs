@@ -92,7 +92,7 @@ if (principal.status !== 200) {
   else ok('/sitemap.xml sem alternates zh');
   if (!xml.includes('hreflang="x-default"')) fail('/sitemap.xml sem hreflang x-default (o HTML declara x-default)');
   else ok('/sitemap.xml com hreflang x-default');
-  for (const obrigatoria of ['/planos', '/metodologia', '/glossario', '/calculadora-nota-google']) {
+  for (const obrigatoria of ['/sobre', '/planos', '/metodologia', '/glossario', '/calculadora-nota-google']) {
     if (!urlsPrincipais.some((u) => u === `${SITE}${obrigatoria}`)) fail(`/sitemap.xml não inclui ${obrigatoria}`);
   }
 }
