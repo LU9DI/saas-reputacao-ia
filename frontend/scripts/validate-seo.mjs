@@ -494,5 +494,46 @@ for (const path of [
   );
 }
 
+// --- hreflang: sitemap e HTML precisam declarar o MESMO conjunto -------------
+// Bug real (auditoria DSV4, 31/10/2026): o sitemap listava alternates `zh`
+// apontando para páginas noindex e o HTML já declarava `x-default`, que o
+// sitemap não declarava. Cluster não recíproco é ignorado pelo Google.
+const alternatesBody = sitemap.match(/function alternatesFor\(family[\s\S]*?\n\}/)?.[0] ?? '';
+check(alternatesBody.length > 0, 'sitemap.ts must centralize hreflang alternates in alternatesFor()');
+check(
+  /\.filter\(\(\[lang\]\) => lang !== 'zh'\)/.test(alternatesBody),
+  'Sitemap hreflang alternates must exclude zh, because /zh pages are noindex and stay out of <loc>',
+);
+check(
+  alternatesBody.includes("'x-default'"),
+  'Sitemap hreflang alternates must declare x-default (the HTML already declares it for pt-BR)',
+);
+check(
+  !/'zh':\s*base \+ /.test(sitemap),
+  'Sitemap must not emit a zh hreflang alternate',
+);
+const localizedHomeAlternates = localizedHome.includes("'x-default':urls.pt");
+check(
+  localizedHomeAlternates,
+  'Localized HTML must keep declaring x-default so sitemap and HTML stay aligned',
+);
+
+// --- robots.txt: descoberta de sitemap sem duplicar o mesmo leaf --------------
+// O índice central já lista /sitemap.xml; declará-lo também em robots.txt
+// duplicava a descoberta do mesmo arquivo.
+const robotsSitemapBlock = robots.match(/sitemap:\s*\[([\s\S]*?)\]/)?.[1] ?? '';
+check(robotsSitemapBlock.length > 0, 'robots.ts must declare the sitemap list');
+check(
+  robotsSitemapBlock.includes('`${base}/sitemap-index.xml`'),
+  'robots.txt must advertise the central sitemap index',
+);
+// A desduplicação do leaf está bloqueada pelo grep do workflow CI (ver
+// frontend/scripts/audit-indexing.mjs). Aqui só garantimos que o índice central
+// é anunciado; o leaf é aceito como compatibilidade enquanto o workflow exigir.
+check(
+  robotsSitemapBlock.includes('`${base}/indice/sitemap-index.xml`'),
+  'robots.txt must keep advertising the Índice sitemap index (separate app)',
+);
+
 assert.equal(errors.length, 0, errors.map((error) => `- ${error}`).join('\n'));
 console.log(`SEO source validation passed: ${paths.length} canonical paths, ${families.length} hreflang families and ${sitemapPaths.length} unique sitemap path literals checked.`);

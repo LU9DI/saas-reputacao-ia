@@ -160,8 +160,10 @@ for (const required of REQUIRED_URLS) {
   }
 }
 
-if (!robots.includes('Sitemap: https://filtraai.com/sitemap.xml')) {
-  fail('robots.txt does not advertise the canonical sitemap URL');
+// O ponto de descoberta do site principal é o índice central; o leaf /sitemap.xml
+// é filho dele e não deve ser redeclarado em robots.txt (regra verificada abaixo).
+if (!robots.includes('Sitemap: https://filtraai.com/sitemap-index.xml')) {
+  fail('robots.txt does not advertise the central sitemap index');
 }
 if (!/Disallow:\s*\/api\//i.test(robots)) {
   fail('robots.txt must disallow API endpoints');
@@ -199,6 +201,86 @@ for (const route of ['/zh', '/zh/google-reviews', '/zh/blog']) {
     /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html) ||
     /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
   if (!hasNoindex) fail(`ZH route lacks a robots noindex directive: ${route}`);
+}
+
+// --- hreflang no sitemap precisa espelhar o HTML -----------------------------
+// Dois defeitos reais já observados em produção: o sitemap declarava `zh`
+// apontando para páginas noindex e não declarava `x-default`, que o HTML declara.
+// Cluster não recíproco é ignorado pelo Google, então o build falha aqui.
+const blocosDoUrl = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/gi)].map((m) => m[1]);
+const alternatesPorUrl = new Map();
+for (const bloco of blocosDoUrl) {
+  const loc = bloco.match(/<loc>\s*([^<]+?)\s*<\/loc>/i)?.[1];
+  if (!loc) continue;
+  const langs = [...bloco.matchAll(/<xhtml:link[^>]*hreflang=["']([^"']+)["']/gi)].map((m) => m[1].toLowerCase());
+  if (langs.length) alternatesPorUrl.set(loc.replaceAll('&amp;', '&'), new Set(langs));
+}
+
+if (alternatesPorUrl.size) {
+  const todosOsIdiomas = new Set([...alternatesPorUrl.values()].flatMap((s) => [...s]));
+  if (!todosOsIdiomas.has('x-default')) {
+    fail('sitemap declares hreflang alternates but no x-default (the HTML declares x-default)');
+  }
+  if (todosOsIdiomas.has('zh')) {
+    fail('sitemap must not declare hreflang zh: those pages are noindex and stay out of <loc>');
+  }
+
+  for (const [loc, langsDoSitemap] of alternatesPorUrl) {
+    let caminho;
+    try {
+      caminho = new URL(loc).pathname;
+    } catch {
+      continue;
+    }
+    const htmlPath = findHtml(caminho);
+    if (!htmlPath) continue;
+    const html = readFileSync(htmlPath, 'utf8');
+    const langsDoHtml = new Set(
+      [...html.matchAll(/<link[^>]*rel=["']alternate["'][^>]*hreflang=["']([^"']+)["']/gi)].map((m) =>
+        m[1].toLowerCase(),
+      ),
+    );
+    const faltamNoHtml = [...langsDoSitemap].filter((lang) => !langsDoHtml.has(lang));
+    const faltamNoSitemap = [...langsDoHtml].filter((lang) => !langsDoSitemap.has(lang));
+    if (faltamNoHtml.length || faltamNoSitemap.length) {
+      fail(
+        `hreflang mismatch for ${caminho}: sitemap=[${[...langsDoSitemap].sort().join(',')}] ` +
+          `html=[${[...langsDoHtml].sort().join(',')}]`,
+      );
+    }
+  }
+}
+
+// --- robots.txt precisa anunciar o índice central ----------------------------
+// A desduplicação do leaf (/sitemap.xml declarado em robots.txt E no índice) é
+// desejável, mas está BLOQUEADA: `.github/workflows/ci.yml` verifica
+// `grep -q 'Sitemap: https://filtraai.com/sitemap.xml' out/robots.txt` e o token
+// automatizado não tem a permissão `workflows` para atualizar o workflow. Quando
+// o workflow for atualizado (ver patch no relatório), volte a exigir apenas os
+// índices aqui e em frontend/src/app/robots.ts.
+const sitemapsNoRobots = [...robots.matchAll(/^\s*Sitemap:\s*(\S+)\s*$/gim)].map((m) => m[1]);
+const duplicadosNoRobots = sitemapsNoRobots.filter((loc, i) => sitemapsNoRobots.indexOf(loc) !== i);
+if (duplicadosNoRobots.length) {
+  fail(`robots.txt declares the same sitemap more than once: ${[...new Set(duplicadosNoRobots)].join(', ')}`);
+}
+if (!sitemapsNoRobots.includes('https://filtraai.com/sitemap-index.xml')) {
+  fail('robots.txt must advertise the central sitemap index');
+}
+const indexPathParaRobots = join(OUT, 'sitemap-index.xml');
+if (existsSync(indexPathParaRobots)) {
+  const filhosDoIndice = [
+    ...readFileSync(indexPathParaRobots, 'utf8').matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi),
+  ].map((m) => m[1].trim());
+  // Enquanto o workflow exigir o leaf em robots.txt, só registramos a redundância.
+  const redeclarados = sitemapsNoRobots.filter((loc) => filhosDoIndice.includes(loc));
+  if (redeclarados.length && process.env.SEO_STRICT_ROBOTS === '1') {
+    fail(`robots.txt redeclares sitemap(s) already listed by the central index: ${redeclarados.join(', ')}`);
+  } else if (redeclarados.length) {
+    console.log(
+      `info: robots.txt também declara ${redeclarados.join(', ')} (redundante, não é erro). ` +
+        'Ative SEO_STRICT_ROBOTS=1 depois de atualizar .github/workflows/ci.yml.',
+    );
+  }
 }
 
 const notFoundPath = join(OUT, '404.html');

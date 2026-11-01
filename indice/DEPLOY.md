@@ -58,12 +58,53 @@ Depois do deploy, quando as URLs já respondem em produção:
 
 O protocolo é adotado por Bing, Yandex, Seznam e Naver; o Google não participa. A chave fica em `https://filtraai.com/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt`, servida pelo site principal. Aceite do IndexNow é notificação, não prova de rastreamento ou indexação.
 
-## Estado verificado em 30/10/2026
+## Estado verificado em 31/10/2026 (auditoria DSV4)
 
-- `https://filtraai.com/indice/sitemap-index.xml` respondeu com três shards (10.000 + 10.000 + 8.853 = 28.853 URLs).
-- `https://filtraai.com/indice/sitemap/0.xml` e os shards 1 e 2 responderam HTTP 200 com XML válido.
-- O índice central `https://filtraai.com/sitemap-index.xml` lista `/sitemap.xml` e os três shards do Índice.
-- O sitemap principal respondeu com 106 URLs, sem rotas `/zh` e sem misturar URLs do Índice.
-- `/robots.txt` declarou o índice central, o sitemap principal e o sitemap do Índice.
-- Amostras de páginas de estados, municípios, segmentos e metodologia apresentaram canonical próprio e `index, follow`. Três rotas inválidas testadas responderam 404.
-- A indexação efetiva no Google ainda precisa ser confirmada no Search Console; não inferir cobertura total a partir do sitemap.
+- `https://filtraai.com/indice/sitemap-index.xml` respondeu 200, mas **de cache** do Worker
+  (`x-indice-proxy: render-cache`, `cf-cache-status: STALE`), com três shards
+  (10.000 + 10.000 + 8.853 = 28.853 URLs).
+- **A origem Render está suspensa**: `https://filtra-indice.onrender.com/indice/*` responde
+  503 com `This service has been suspended.` por isso **todas as páginas do Índice
+  respondem 503** (`/indice`, `/indice/metodologia`, `/indice/sp/sao-paulo`,
+  `/indice/llms.txt`, `/indice/llms-full.txt`, `/indice/md/*`).
+- O shard 1 responde **429** (desafio do Cloudflare) porque não há cópia em cache
+  naquele PoP: o cache do Worker é por PoP e expira em 7 dias
+  (`STALE_CACHE_SECONDS`). Portanto o cache **não** é prova de disponibilidade.
+- Em 01/11/2026 o Índice voltou com o piloto dos EUA: **43.920 URLs em 5 shards**
+  (10.000 x4 + 3.920), todos 200 e com sonda de origem 200.
+- O sitemap principal publicado continuava atrás da `main`: 106 URLs contra 107 do
+  build, `/sobre` em 404 e `x-default` ausente nos alternates.
+- Validação local do código do Índice no commit auditado: `npm run build` +
+  `npm run test:seo` → 58.709 verificações aprovadas, 0 falhas.
+
+## Sitemap como artefato estático (recuperação sem runtime)
+
+O sitemap do Índice é imutável entre ingestões: não precisa de um processo Node
+para ser servido. Para não depender do Render:
+
+    npm run sitemaps:static        # grava .static-sitemaps/sitemap-index.xml e sitemap-0..N.xml
+    npm run sitemaps:static:check  # falha se o artefato divergir de data/
+
+O diretório gerado contém exatamente as mesmas URLs que `src/lib/caminhos.ts`:
+Brasil (`data/`, competência 2026-10) mais o piloto dos EUA (`data-us/`, CBP 2023),
+com **43.920 URLs em 5 shards**. Pode ser publicado em qualquer host estático
+(Pages, R2, KV). O script lê os nomes dos estados de `src/lib/us-states.ts`, então
+não há lista duplicada a manter. Sequência de recuperação, sem alterar dados:
+
+1. `npm run sitemaps:static` e publicar os XML no host estático.
+2. Fazer o artefato responder nas URLs declaradas. **Só publicar não basta**: o
+   Worker `filtra-indice-proxy` intercepta todo `/indice/*` e encaminha para o
+   Render (`infra/cloudflare/filtra-indice-proxy.js:92-94`); caminhos novos como
+   `/indice/sitemap-0.xml` respondem 503 com `x-indice-proxy: render-origin`.
+   Duas saídas verificadas:
+   - **A)** ensinar o Worker a servir `/indice/sitemap*` da origem estática
+     (deploy de Cloudflare), no mesmo padrão de `filtra-indexnow-key.js`;
+   - **B)** publicar os shards na raiz do frontend (`/sitemap-indice-0.xml`,
+     `-1`, `-2`) e apontar o índice central para eles — a raiz não passa pelo
+     proxy do Índice, então funciona sem alterar Cloudflare.
+   Detalhes e evidências em `docs/DSV4_REVISAO_PR_164_2026-10-31.md`.
+3. Baixar `STALE_CACHE_SECONDS` do Worker ou pré-aquecer os três shards após
+   publicar, para não servir XML de uma competência anterior por até 7 dias.
+4. Rodar `cd frontend && npm run seo:verify-production` — ele exige 20 respostas
+   200 consecutivas por shard e compara a contagem com o snapshot.
+

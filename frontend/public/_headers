@@ -1,6 +1,19 @@
 # Cloudflare Pages custom headers (copiado para out/ no export estático).
 # Limites: 100 regras e 2.000 caracteres por linha.
 
+# Cabeçalhos de segurança para qualquer resposta do site.
+# HSTS sem `includeSubDomains`/`preload` de propósito: a zona tem subdomínios
+# servidos por terceiros (api e backup-api no Render, wildcard na Vercel) e
+# forçar HTTPS em todos eles sem auditar cada um poderia derrubar serviços.
+# CSP não entra aqui: a aplicação usa scripts inline do Next e uma política
+# estrita sem nonce quebraria a hidratação. Deve ser adotada em
+# Content-Security-Policy-Report-Only primeiro, com observação de violações.
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+
 # Versões em Markdown geradas por scripts/generate-markdown-twins.mjs.
 # O HTML continua sendo a URL canônica: o Link abaixo aponta para ele
 # (`:splat` é o caminho sem a extensão .md). Os .md ficam fora do sitemap e são

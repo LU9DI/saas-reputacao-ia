@@ -40,6 +40,11 @@ abertura no ano; o ano da competência é parcial e não gera página.
   não oferece de forma geral; o FAQ visível continua existindo como conteúdo.
 - A home revalida a cada 24 horas; as páginas de estado, município e célula são pré-geradas no build e só
   mudam em um novo deploy. A data de geração exibida é a da ingestão, não a do acesso.
+- O sitemap também é materializado como artefato estático (`npm run sitemaps:static`),
+  com as mesmas URLs de `src/lib/caminhos.ts` — Brasil (`data/`) **e** piloto dos
+  EUA (`data-us/`, quando presente) — para ser servido sem depender do runtime Node
+  do Render. Na competência 2026-10 + CBP 2023 são 43.920 URLs em 5 shards.
+  `npm run sitemaps:static:check` falha se o artefato divergir das bases.
 
 ## Auditoria de indexabilidade
     npm run audit:indexability
@@ -55,6 +60,7 @@ automaticamente.
     npm run build
     npm run test:seo
     npm run audit:indexability
+    npm run sitemaps:static && npm run sitemaps:static:check
 `npm run build` roda `check-data.mjs` antes do Next e recusa base sintética, metadados incoerentes ou
 estatísticas inconsistentes. `test:seo` sobe o build de produção em `127.0.0.1:3101` e valida canonical,
 redirects, JSON-LD, datas, tabelas semânticas, 404 abaixo do mínimo e completude do sitemap. Não toca
