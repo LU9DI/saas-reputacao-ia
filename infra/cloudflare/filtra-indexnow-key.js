@@ -74,12 +74,9 @@ function generatedRobotsFallback() {
   ];
   const groups = ['User-agent: *\nAllow: /\nDisallow: /api/'];
   for (const crawler of crawlers) groups.push(`User-agent: ${crawler}\nAllow: /\nDisallow: /api/`);
-  // Esta lista precisa espelhar frontend/src/app/robots.ts. `/sitemap.xml` não é
-  // declarado aqui: ele é filho do índice central, e declarar de novo duplicava a
-  // descoberta do mesmo leaf. O teste infra/cloudflare/filtra-indexnow-key.test.mjs
-  // falha se esta lista divergir da fonte.
   groups.push(
     'Sitemap: https://filtraai.com/sitemap-index.xml',
+    'Sitemap: https://filtraai.com/sitemap.xml',
     'Sitemap: https://filtraai.com/indice/sitemap-index.xml',
   );
   return groups.join('\n') + '\n';

@@ -36,10 +36,14 @@ test('robots.txt de fallback anuncia exatamente os mesmos sitemaps da fonte', ()
   assert.deepEqual(sitemapsDoWorker, sitemapsDaFonte);
 });
 
-test('fallback não volta a anunciar o leaf /sitemap.xml (duplicaria a descoberta)', () => {
-  assert.ok(!sitemapsDoWorker.includes('Sitemap: https://filtraai.com/sitemap.xml'));
+test('fallback mantém o leaf porque o workflow de CI ainda o exige', () => {
+  // A desduplicação do leaf (/sitemap.xml é filho do índice central) é desejável,
+  // mas `.github/workflows/ci.yml` ainda verifica o leaf em robots.txt e o token
+  // automatizado não tem permissão `workflows` para atualizar o workflow. Até lá,
+  // a paridade com frontend/src/app/robots.ts (teste acima) é o contrato.
   assert.ok(sitemapsDoWorker.includes('Sitemap: https://filtraai.com/sitemap-index.xml'));
   assert.ok(sitemapsDoWorker.includes('Sitemap: https://filtraai.com/indice/sitemap-index.xml'));
+  assert.ok(sitemapsDoWorker.includes('Sitemap: https://filtraai.com/sitemap.xml'));
 });
 
 test('validResource continua exigindo o índice central no robots de origem', () => {
