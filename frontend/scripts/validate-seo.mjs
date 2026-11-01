@@ -65,8 +65,8 @@ check(
 );
 check(
   centralIndex.includes('`${base}/sitemap.xml`') &&
-    centralIndex.includes('`${base}/indice/sitemap/${id}.xml`'),
-  'Central sitemap index must reference the main leaf and generate /indice/sitemap/<n>.xml children',
+    centralIndex.includes('`${base}/sitemap-indice-${id}.xml`'),
+  'Central sitemap index must reference the main leaf and generate root-level /sitemap-indice-<n>.xml children',
 );
 check(
   !centralIndex.includes('/indice/sitemap-index.xml'),
