@@ -1,0 +1,40 @@
+name: Índice - IndexNow
+
+# Avisa Bing, Yandex, Seznam e Naver sobre as URLs do Índice. O Google NÃO usa IndexNow;
+# para ele vale o sitemap com lastmod real. Uma notificação aceita não prova indexação.
+#
+# - Semanal (segunda): só o núcleo (home, metodologia, 27 UFs e /us), uma única visita por
+#   semana ao Render para não consumir a cota de horas do plano Free.
+# - Manual: marque "todas" para enviar todas as URLs do sitemap, em lotes.
+on:
+  schedule:
+    - cron: '17 12 * * 1'
+  workflow_dispatch:
+    inputs:
+      todas:
+        description: 'Enviar todas as URLs do sitemap (e não só o núcleo)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indice-indexnow
+  cancel-in-progress: false
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Plano (dry-run)
+        working-directory: indice
+        run: node scripts/submit-indexnow.mjs --dry-run ${{ inputs.todas && '--all' || '' }}
+      - name: Enviar ao IndexNow
+        working-directory: indice
+        run: node scripts/submit-indexnow.mjs ${{ inputs.todas && '--all' || '' }}
