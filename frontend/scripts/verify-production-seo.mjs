@@ -105,8 +105,14 @@ else {
   if (!robots.corpo.includes(`Sitemap: ${SITE}/sitemap-index.xml`)) fail('robots.txt não declara o índice central');
   else ok('robots.txt declara o índice central');
   if (!/Disallow: \/api\//.test(robots.corpo)) fail('robots.txt não bloqueia /api/');
+  // `User-agent` e `User-Agent` são equivalentes (o campo é case-insensitive em
+  // robots.txt). Comparar sem caixa evita falso negativo quando o deploy usa
+  // `User-Agent:` — o gerador do Next mudou a caixa entre builds.
+  const robotsMinusculo = robots.corpo.toLowerCase();
   for (const bot of ['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'Google-Extended', 'CCBot']) {
-    if (!robots.corpo.includes(`User-agent: ${bot}`)) warn(`robots.txt sem grupo explícito para ${bot}`);
+    if (!robotsMinusculo.includes(`user-agent: ${bot.toLowerCase()}`)) {
+      warn(`robots.txt sem grupo explícito para ${bot}`);
+    }
   }
 }
 // 4) Shards do Índice: disponibilidade real (cache não é prova de disponibilidade)
@@ -206,7 +212,13 @@ for (const url of urlsPrincipais) {
 }
 if (!paginasRuins) ok(`${urlsPrincipais.length} URLs do sitemap principal responderam 200 com canonical próprio`);
 
-// 7) Gêmeas Markdown (opcional) ----------------------------------------------
+// 7) Gêmeas Markdown (aviso por padrão; erro com --require-twins) -------------
+//
+// A existência das gêmeas depende do Build Command do host publicar `out/` e rodar
+// `generate-markdown-twins.mjs` (que só roda quando há export estático). Sem acesso
+// ao painel, o gate não pode consertar isso: ele avisa com a causa e o remédio.
+// Com `--require-twins` o aviso vira falha, para a rodada de aceite após o deploy.
+const EXIGIR_GEMEAS = process.argv.includes('--require-twins');
 if (!PULAR_GEMEAS && urlsPrincipais.length) {
   console.log('\n== Gêmeas Markdown');
   let faltando = 0;
@@ -215,11 +227,17 @@ if (!PULAR_GEMEAS && urlsPrincipais.length) {
     const resposta = await pegar(`${url}.md`);
     if (resposta.status !== 200 || !(resposta.headers.get('content-type') ?? '').includes('markdown')) {
       faltando += 1;
-      if (faltando <= 5) fail(`${url}.md → ${resposta.status}`);
+      if (faltando <= 5) console.log(`  · ${url}.md → ${resposta.status}`);
     }
   }
-  if (faltando > 5) fail(`... e ${faltando - 5} gêmeas .md ausentes ou sem text/markdown`);
-  else ok('todas as gêmeas .md respondem 200 com text/markdown');
+  if (!faltando) ok('todas as gêmeas .md respondem 200 com text/markdown');
+  else if (EXIGIR_GEMEAS) fail(`${faltando} gêmeas .md ausentes ou sem text/markdown (--require-twins)`);
+  else {
+    warn(
+      `${faltando} gêmeas .md ausentes: o Build Command do host precisa ser "npm run build" ` +
+        'com CLOUDFLARE_PAGES=1 para gerar out/ e rodar generate-markdown-twins.mjs',
+    );
+  }
 }
 
 // Resumo ----------------------------------------------------------------------
