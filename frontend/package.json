@@ -42,5 +42,8 @@
     "seo:meta:audit": "node scripts/audit-meta-descriptions.mjs",
     "seo:markdown:validate": "node scripts/validate-markdown-twins.mjs",
     "seo:jsonld:test": "node scripts/test-seo-jsonld-global.mjs"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }
