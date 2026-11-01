@@ -40,11 +40,15 @@
     ]
   },
   "urls": {
-    "homeMetodologia": 2,
+    "base": 4,
     "ufs": 27,
     "municipios": 5012,
     "celulas": 23566,
-    "total": 28607
+    "rankingsAberturas": 27,
+    "rankingsAtivosSegmentos": 9,
+    "rankingsAtivosUF": 208,
+    "eua": 15067,
+    "total": 43920
   },
   "segmentos": {
     "restaurantes": {

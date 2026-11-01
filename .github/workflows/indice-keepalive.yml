@@ -1,11 +1,8 @@
-name: Índice - manter acordado
+name: Índice - verificação manual
 
-# O Índice roda no plano free do Render e pode dormir após ~15 min sem tráfego.
-# Acordar tanto o índice quanto o shard faz o Worker manter respostas válidas em cache.
-# O cron do GitHub é "melhor esforço": pode atrasar alguns minutos.
+# Execução manual apenas. Não manter o serviço Render acordado continuamente:
+# o keepalive frequente consome a cota compartilhada de horas do plano Free.
 on:
-  schedule:
-    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -18,9 +15,9 @@ concurrency:
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 4
     steps:
-      - name: Aquecer índice e shard do sitemap
+      - name: Verificar índice e sitemap (sem retries prolongados)
         shell: bash
         run: |
           set -u
@@ -28,18 +25,10 @@ jobs:
           for endpoint in \
             "https://filtraai.com/indice/sitemap-index.xml" \
             "https://filtraai.com/indice/sitemap/0.xml"; do
-            success=0
-            for attempt in 1 2 3 4; do
-              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 40 "$endpoint" || true)
-              echo "$endpoint — tentativa $attempt: HTTP ${code:-000}"
-              if [ "$code" = "200" ]; then
-                success=1
-                break
-              fi
-              if [ "$attempt" -lt 4 ]; then sleep 10; fi
-            done
-            if [ "$success" -ne 1 ]; then
-              echo "::error::Índice não respondeu HTTP 200: $endpoint"
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 "$endpoint" || true)
+            echo "$endpoint — HTTP ${code:-000}"
+            if [ "$code" != "200" ]; then
+              echo "::error::Endpoint não respondeu HTTP 200: $endpoint"
               failed=1
             fi
           done

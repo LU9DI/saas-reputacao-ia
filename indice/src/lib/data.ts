@@ -282,22 +282,41 @@ export function getPagina(uf: string, munSlug: string, segSlug: string): Pagina 
   };
 }
 
-/** Todos os caminhos indexáveis (relativos ao basePath), para o sitemap. */
-export function todosOsCaminhos(): string[] {
-  const caminhos = ['/', '/metodologia', '/rankings/aberturas', '/rankings/ativos'];
+/**
+ * Itera os caminhos indexáveis sem manter a lista completa em memória.
+ * A ordem é a mesma de todosOsCaminhos() para preservar a divisão estável dos shards.
+ */
+export function* iterarCaminhos(): Generator<string> {
+  yield '/';
+  yield '/metodologia';
+  yield '/rankings/aberturas';
+  yield '/rankings/ativos';
   for (const u of ufsComDados()) {
     const uf = u.sigla.toLowerCase();
-    caminhos.push(`/${uf}`);
+    yield `/${uf}`;
     for (const { mun } of municipiosDaUF(u.sigla)) {
-      caminhos.push(`/${uf}/${mun.slug}`);
-      for (const { seg } of segmentosDoMunicipio(u.sigla, mun.slug)) caminhos.push(`/${uf}/${mun.slug}/${seg.slug}`);
+      yield `/${uf}/${mun.slug}`;
+      for (const { seg } of segmentosDoMunicipio(u.sigla, mun.slug)) {
+        yield `/${uf}/${mun.slug}/${seg.slug}`;
+      }
     }
   }
   // Rankings de aberturas por ano (lib/rankings).
-  caminhos.push(...caminhosDeRankings());
+  yield* caminhosDeRankings();
   // Rankings de ativos por segmento, Brasil e UF.
-  caminhos.push(...caminhosDeRanking());
-  return caminhos;
+  yield* caminhosDeRanking();
+}
+
+/** Todos os caminhos indexáveis (relativos ao basePath), para consumidores que precisam da lista. */
+export function todosOsCaminhos(): string[] {
+  return Array.from(iterarCaminhos());
+}
+
+/** Conta caminhos sem alocar uma lista com todas as URLs. */
+export function contarCaminhos(): number {
+  let total = 0;
+  for (const _ of iterarCaminhos()) total += 1;
+  return total;
 }
 
 /** Um ranking por UF só é publicado se houver municípios suficientes para comparar. */

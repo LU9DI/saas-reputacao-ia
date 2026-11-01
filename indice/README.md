@@ -63,7 +63,8 @@ produção.
 ## Medição
 Publicar, enviar `https://filtraai.com/indice/sitemap-index.xml` e acompanhar o Search Console por
 estrato (home, metodologia, UF, município, célula e rankings), usando a data de geração como referência. O
-baseline de 26/10/2026 tinha 28.607 URLs no sitemap do Índice e três URLs prioritárias com solicitação
-de indexação aceita, ainda sem indexação confirmada. O Índice não mede citações em IA nem tráfego
-orgânico por conta própria; não trate ausência de medição como resultado.
+baseline de 26/10/2026 tinha 28.607 URLs no sitemap do Índice; após a integração dos rankings, o
+snapshot de outubro/2026 tem 28.853 URLs e três URLs prioritárias com solicitação de indexação aceita,
+ainda sem indexação confirmada. O Índice não mede citações em IA nem tráfego orgânico por conta própria;
+não trate ausência de medição como resultado.
 

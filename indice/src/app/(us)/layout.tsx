@@ -3,6 +3,7 @@ import Link from 'next/link';
 import '../globals.css';
 import { usMeta } from '@/lib/us';
 import { SITE, OG_IMAGE } from '@/lib/seo';
+import { BrandMark } from '@/components/BrandMark';
 
 export function generateMetadata(): Metadata {
   const meta = usMeta();
@@ -25,27 +26,35 @@ export default function UsLayout({ children }: { children: React.ReactNode }) {
       <body>
         {meta.sintetico && <div className="amostra">SYNTHETIC DEVELOPMENT DATA. DO NOT PUBLISH. NUMBERS ARE NOT REAL.</div>}
         <header className="topo">
-          <div className="wrap">
-            <a className="marca" href="https://filtraai.com/en">Filtra.AI <span>/ US Index</span></a>
+          <div className="wrap topo-in">
+            <div className="topo-marca">
+              <BrandMark uid="topo" />
+              <Link className="topo-secao" href="/us">US Index</Link>
+            </div>
             <nav aria-label="Main">
               <Link href="/us">Home</Link>
               <Link href="/us/methodology">Methodology</Link>
-              <a href="https://filtraai.com/en/free-review-audit?utm_source=indice&utm_medium=seo&utm_campaign=top">Free review audit</a>
+              <a className="botao botao-sm" href="https://filtraai.com/en/free-review-audit?utm_source=indice&utm_medium=seo&utm_campaign=top">Free review audit</a>
             </nav>
           </div>
         </header>
         <div className="wrap">
           <main>{children}</main>
-          <footer className="rodape">
-            <p>
-              Filtra.AI US Index: counts of business establishments with paid employees, from the U.S. Census Bureau&apos;s County Business Patterns ({meta.ano}).{' '}
-              <Link href="/us/methodology">How we calculate</Link>.
-            </p>
-            <p>
-              <a href="https://filtraai.com/en">Filtra.AI</a> · <a href="https://filtraai.com/en/free-review-audit">Free review audit</a>
-            </p>
-          </footer>
         </div>
+        <footer className="rodape">
+          <div className="wrap rodape-in">
+            <BrandMark size="sm" uid="rodape" />
+            <div className="rodape-texto">
+              <p>
+                Filtra.AI US Index: counts of business establishments with paid employees, from the U.S. Census Bureau&apos;s County Business Patterns ({meta.ano}).{' '}
+                <Link href="/us/methodology">How we calculate</Link>.
+              </p>
+              <p>
+                <a href="https://filtraai.com/en">Filtra.AI</a> · <a href="https://filtraai.com/en/free-review-audit">Free review audit</a>
+              </p>
+            </div>
+          </div>
+        </footer>
       </body>
     </html>
   );

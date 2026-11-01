@@ -58,11 +58,12 @@ Depois do deploy, quando as URLs já respondem em produção:
 
 O protocolo é adotado por Bing, Yandex, Seznam e Naver; o Google não participa. A chave fica em `https://filtraai.com/a3d7f1c94b2e6a805d1f7c3b9e4a6d82.txt`, servida pelo site principal. Aceite do IndexNow é notificação, não prova de rastreamento ou indexação.
 
-## Estado verificado em 26/10/2026
+## Estado verificado em 30/10/2026
 
-- `https://filtraai.com/indice/sitemap-index.xml` respondeu com um sitemap filho.
-- `https://filtraai.com/indice/sitemap/0.xml` declarou 28.607 URLs.
-- O sitemap principal respondeu com 103 URLs, sem rotas `/zh` e sem misturar URLs do Índice.
-- `/robots.txt` declarou os dois sitemaps.
+- `https://filtraai.com/indice/sitemap-index.xml` respondeu com três shards (10.000 + 10.000 + 8.853 = 28.853 URLs).
+- `https://filtraai.com/indice/sitemap/0.xml` e os shards 1 e 2 responderam HTTP 200 com XML válido.
+- O índice central `https://filtraai.com/sitemap-index.xml` lista `/sitemap.xml` e os três shards do Índice.
+- O sitemap principal respondeu com 106 URLs, sem rotas `/zh` e sem misturar URLs do Índice.
+- `/robots.txt` declarou o índice central, o sitemap principal e o sitemap do Índice.
 - Amostras de páginas de estados, municípios, segmentos e metodologia apresentaram canonical próprio e `index, follow`. Três rotas inválidas testadas responderam 404.
 - A indexação efetiva no Google ainda precisa ser confirmada no Search Console; não inferir cobertura total a partir do sitemap.

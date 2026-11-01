@@ -125,6 +125,11 @@ export default async function Page({ params }: Props) {
 
       <h1>{t.titulo}</h1>
       <p className="lead">{p.resposta}</p>
+      <p className="nota">
+        Para o estoque de estabelecimentos ativos de {seg.curto}, veja o{' '}
+        <Link href={`/rankings/ativos/${seg.slug}`}>ranking nacional de ativos</Link> ou o{' '}
+        <Link href="/rankings/ativos">hub de rankings de ativos</Link>.
+      </p>
 
       <div className="cards">
         <div className="card"><strong>{n(ranking.total)}</strong><small>estabelecimentos iniciaram atividade no Brasil em {p.ano}</small></div>

@@ -89,6 +89,10 @@ export default function Page() {
       </Definicao>
 
       <h2>Rankings publicados por segmento</h2>
+      <p className="nota">
+        Para o estoque de estabelecimentos ativos, veja os{' '}
+        <Link href="/rankings/ativos">rankings de ativos por segmento e estado</Link>.
+      </p>
       <table>
         <caption>
           Anos fechados com página de ranking por segmento. Cada página traz o top 10 nacional, os líderes por estado e a

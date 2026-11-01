@@ -672,7 +672,16 @@ const META = DADOS.meta;
 const LAST_MOD = DADOS.lastmod;
 const US_DADOS = carregarUS();
 const US_DATA = US_DADOS ? US_DADOS.meta.geradoEm.slice(0, 10) : null;
-const ESPERADOS = [...caminhosEsperados(DADOS), ...caminhosEsperadosUS(US_DADOS)];
+const ESPERADOS_BR = caminhosEsperados(DADOS);
+const ESPERADOS = [...ESPERADOS_BR, ...caminhosEsperadosUS(US_DADOS)];
+const SNAPSHOT_FRONTEND = JSON.parse(
+  readFileSync(resolve(ROOT, '..', 'frontend', 'src', 'generated', 'indice-snapshot.json'), 'utf8'),
+);
+check(
+  'snapshot do site principal usa a mesma contagem de URLs',
+  SNAPSHOT_FRONTEND.urls.total === ESPERADOS.length,
+  `snapshot=${SNAPSHOT_FRONTEND.urls.total} caminhos=${ESPERADOS.length}`,
+);
 const AMOSTRAS = escolherAmostras(DADOS);
 const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
 
@@ -842,6 +851,8 @@ try {
 
     check('home descobre os rankings', rootHtml.includes('/rankings/aberturas'));
     check('célula linka o ranking nacional de aberturas', celula.page.final.body.includes('/rankings/aberturas/'));
+    check('hub de aberturas linka os rankings de ativos', hub.page.final.body.includes('/rankings/ativos'));
+    check('ranking de aberturas linka os ativos do segmento', rk.page.final.body.includes('/rankings/ativos/'));
   }
 
   // Rankings de ativos: hub, nacional por segmento e recorte por UF.
@@ -949,6 +960,11 @@ try {
   check('sitemap index não expõe onrender.com', !/onrender\.com/i.test(sitemapIndexXml));
 
   const filhos = sitemapLocs(sitemapIndexXml);
+  check(
+    'índice central do site principal declara todos os shards',
+    filhos.length === Math.max(1, Math.ceil(SNAPSHOT_FRONTEND.urls.total / 10000)),
+    `filhos=${filhos.length} snapshot=${SNAPSHOT_FRONTEND.urls.total}`,
+  );
   check('sitemap index tem filhos', filhos.length > 0, String(filhos.length));
   check('sitemap index não repete filhos', new Set(filhos).size === filhos.length);
   check('todos os filhos do sitemap estão sob /indice', filhos.every((url) => url.startsWith(`${CANONICAL_BASE}/sitemap/`)));

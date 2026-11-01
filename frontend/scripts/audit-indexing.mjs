@@ -242,5 +242,31 @@ if (!existsSync(redirectsPath)) {
   }
 }
 
+const centralIndexPath = join(OUT, 'sitemap-index.xml');
+if (!existsSync(centralIndexPath)) {
+  fail('out/sitemap-index.xml is missing');
+} else {
+  const centralIndex = readFileSync(centralIndexPath, 'utf8');
+  const locs = [...centralIndex.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map((match) => match[1].trim());
+  const snapshot = JSON.parse(readFileSync(resolve(process.cwd(), 'src/generated/indice-snapshot.json'), 'utf8'));
+  const expectedShards = Math.max(1, Math.ceil(snapshot.urls.total / 10000));
+  const indiceShards = locs.filter((loc) => /\/indice\/sitemap\/\d+\.xml$/.test(loc));
+
+  if (!locs.includes('https://filtraai.com/sitemap.xml')) {
+    fail('central sitemap index must reference https://filtraai.com/sitemap.xml');
+  }
+  if (indiceShards.length !== expectedShards) {
+    fail(`central sitemap index must list ${expectedShards} Índice shard(s) for ${snapshot.urls.total} URLs, found ${indiceShards.length}`);
+  }
+  indiceShards.forEach((loc, index) => {
+    if (!loc.endsWith(`/indice/sitemap/${index}.xml`)) {
+      fail(`central sitemap index shard ${index} must be /indice/sitemap/${index}.xml, got ${loc}`);
+    }
+  });
+  if (locs.some((loc) => !/^https:\/\/filtraai\.com\/(?:sitemap\.xml|indice\/sitemap\/\d+\.xml)$/.test(loc))) {
+    fail('central sitemap index must list only /sitemap.xml and /indice/sitemap/<n>.xml');
+  }
+}
+
 if (process.exitCode) process.exit(process.exitCode);
 console.log(`Indexing audit PASSED: ${urls.length} unique URLs, static files, canonicals, social images, dynamic shells and noindex routes verified.`);

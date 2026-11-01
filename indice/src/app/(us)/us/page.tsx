@@ -41,7 +41,7 @@ export default function Page() {
       <h2>Choose a state</h2>
       <ul className="grade">
         {estados.map((e) => (
-          <li key={e.sigla}><Link href={`/us/${e.slug}`}>{e.nome}<small>{nUS(e.condados)} counties</small></Link></li>
+          <li key={e.sigla}><Link href={`/us/${e.slug}`}>{e.nome}<small>{nUS(e.condados)} {e.condados === 1 ? 'county' : 'counties'}</small></Link></li>
         ))}
       </ul>
       {usSegmentos().map((seg) => {
