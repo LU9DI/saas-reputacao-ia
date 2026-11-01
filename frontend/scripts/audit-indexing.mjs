@@ -256,19 +256,19 @@ if (!existsSync(centralIndexPath)) {
     fail('central sitemap index must reference https://filtraai.com/sitemap.xml');
   }
   if (indiceShards.length !== expectedShards) {
-    fail(\`central sitemap index must list \${expectedShards} root-level Índice shard(s) for \${snapshot.urls.total} URLs, found \${indiceShards.length}\`);
+    fail(`central sitemap index must list ${expectedShards} root-level Índice shard(s) for ${snapshot.urls.total} URLs, found ${indiceShards.length}`);
   }
   indiceShards.forEach((loc, index) => {
-    const expected = \`https://filtraai.com/sitemap-indice-\${index}.xml\`;
-    if (loc !== expected) fail(\`central sitemap index shard \${index} must be \${expected}, got \${loc}\`);
-    const file = join(OUT, \`sitemap-indice-\${index}.xml\`);
-    if (!existsSync(file)) fail(\`static Índice shard is missing from export: \${file}\`);
+    const expected = `https://filtraai.com/sitemap-indice-${index}.xml`;
+    if (loc !== expected) fail(`central sitemap index shard ${index} must be ${expected}, got ${loc}`);
+    const file = join(OUT, `sitemap-indice-${index}.xml`);
+    if (!existsSync(file)) fail(`static Índice shard is missing from export: ${file}`);
     else {
       const xml = readFileSync(file, 'utf8');
       const count = [...xml.matchAll(/<loc>/g)].length;
       const expectedCount = index < expectedShards - 1 ? 10000 : snapshot.urls.total - 10000 * (expectedShards - 1);
-      if (count !== expectedCount) fail(\`shard \${index} has \${count} URLs; expected \${expectedCount}\`);
-      if (!/<urlset\b/i.test(xml)) fail(\`shard \${index} is not a urlset\`);
+      if (count !== expectedCount) fail(`shard ${index} has ${count} URLs; expected ${expectedCount}`);
+      if (!/<urlset\b/i.test(xml)) fail(`shard ${index} is not a urlset`);
     }
   });
   if (locs.some((loc) => !/^https:\/\/filtraai\.com\/(?:sitemap\.xml|sitemap-indice-\d+\.xml)$/.test(loc))) {
