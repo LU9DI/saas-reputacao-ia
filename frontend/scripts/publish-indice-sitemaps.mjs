@@ -27,13 +27,13 @@ if (!existsSync(generator) || !existsSync(data)) {
 
 try {
   execFileSync(process.execPath, [generator, `--out=${temp}`], { cwd: resolve(repoRoot, 'indice'), stdio: 'inherit' });
-  const files = readdirSync(temp).filter((name) => /^sitemap-\\d+\\.xml$/.test(name));
+  const files = readdirSync(temp).filter((name) => /^sitemap-\d+\\.xml$/.test(name));
   if (!files.length) throw new Error('Índice sitemap generator produced no shards.');
   for (const name of readdirSync(publicDir)) {
-    if (/^sitemap-indice-\\d+\\.xml$/.test(name)) rmSync(join(publicDir, name), { force: true });
+    if (/^sitemap-indice-\d+\\.xml$/.test(name)) rmSync(join(publicDir, name), { force: true });
   }
   for (const name of files) {
-    const id = name.match(/^sitemap-(\\d+)\\.xml$/)[1];
+    const id = name.match(/^sitemap-(\d+)\\.xml$/)[1];
     copyFileSync(join(temp, name), join(publicDir, `sitemap-indice-${id}.xml`));
   }
   console.log(`[seo-sitemaps] published ${files.length} root-level static shards.`);
