@@ -14,6 +14,7 @@ O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrent
 - Reputação no Google: https://filtraai.com/reputacao-google
 - Metodologia (como os dados são analisados e limites): https://filtraai.com/metodologia
 - Glossário de reputação online: https://filtraai.com/glossario
+- Sobre o Filtra.AI (quem somos e origem dos dados): https://filtraai.com/sobre
 - Agências: https://filtraai.com/agencias
 - Planos: https://filtraai.com/planos
 - Blog: https://filtraai.com/blog
