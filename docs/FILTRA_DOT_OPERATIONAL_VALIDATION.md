@@ -174,7 +174,7 @@ Nenhuma asserção foi enfraquecida e nenhum teste foi substituído por mock par
 | --- | --- |
 | Servidor temporário | **parado** (`pg_ctl … stop -m fast`; nenhum processo `postgres -D` ativo) |
 | Diretório de dados | preservado: `/tmp/filtra-dot-pg-validation/data` (48 MB) |
-| Log do cluster | preservado: `/tmp/filtra-dot-pg-validation/postgres.log` (36 KB) |
+| Log do cluster | preservado: `/tmp/filtra-dot-pg-validation/postgres.log` (~40 KB) |
 | Cluster temporário apagado | **não** (preservado para inspeção, conforme instrução) |
 | Clusters PostgreSQL 17/18 instalados | não existem neste ambiente; nada foi parado ou alterado |
 | `FILTRA_DOT_ENABLED` | **não definida** |
@@ -217,7 +217,7 @@ derivada da leitura do código e está registrada no adendo.
 
 ```
 branch: cline/ae79k7nx
-HEAD:   test(dot): harness PostgreSQL real para autorização, isolamento e concorrência
+HEAD:   614e79dc docs(dot): segundo registro da execução (2 commits de código/docs)
 main:   4e6439ea8f7d3da734f3fe0a1664768b44d04a3d (intacta)
 ```
 
