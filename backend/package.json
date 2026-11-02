@@ -10,8 +10,8 @@
     "start": "tsx server.ts",
     "start:prod": "tsx server.ts",
     "smtp:test": "tsx scripts/smtp-connectivity-test.ts",
-    "test": "find tests -type f -name '*.test.ts' ! -name '*.pg.test.ts' -print0 | xargs -0 -r tsx --test",
-    "test:postgres": "find tests -type f -name '*.pg.test.ts' -print0 | xargs -0 -r tsx --test",
+    "test": "node scripts/test-runner.mjs",
+    "test:postgres": "node scripts/test-runner.mjs --postgres",
     "audit": "npm audit --omit=dev"
   },
   "engines": {
@@ -41,6 +41,8 @@
     "@types/nodemailer": "^6.4.17",
     "@types/pg": "^8.11.11",
     "@types/web-push": "^3.6.4",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^6.0.1",
     "typescript": "^5.8.2"
   },
   "overrides": {

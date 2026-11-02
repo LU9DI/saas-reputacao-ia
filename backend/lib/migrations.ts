@@ -29,6 +29,16 @@ function isPgDatabase(db: Database): db is Database & PgDatabase {
   return typeof (db as unknown as Partial<PgDatabase>).withMigrationLock === 'function';
 }
 
+/** Nomes reais das colunas (caixa preservada). Vazio quando a tabela não existe. */
+export async function tableColumnNames(db: Database, table: string): Promise<string[]> {
+  const rows = await db.all(`PRAGMA table_info(${table})`);
+  return (rows || []).map((row: any) => String(row.name));
+}
+
+function quoteIdentifier(name: string): string {
+  return `"${name.replace(/"/g, '""')}"`;
+}
+
 /** Colunas de uma tabela, minúsculas. Vazio quando a tabela não existe. */
 export async function tableColumns(db: Database, table: string): Promise<string[]> {
   const rows = await db.all(`PRAGMA table_info(${table})`);
@@ -214,10 +224,76 @@ async function migrateCoreTables(db: Database): Promise<void> {
   );
 }
 
+/**
+ * Migra a data de criação das avaliações preservando a série histórica.
+ *
+ * Variantes encontradas em bancos reais:
+ * - `createdAt` — DDL original (`initDB`) no SQLite, que preserva a caixa;
+ * - `createdat` — a mesma DDL no PostgreSQL, onde identificador sem aspas é
+ *   dobrado para minúsculas;
+ * - `created_at` — schemas antigos/hand-made em snake_case.
+ *
+ * O canônico é o nome que as consultas da aplicação (`createdAt` sem aspas)
+ * realmente resolvem em cada dialeto: `createdat` no PostgreSQL e `createdAt`
+ * no SQLite. A coluna só é criada sem DEFAULT e preenchida por backfill, para
+ * que `NOW()` jamais substitua uma data histórica válida; o default (PostgreSQL)
+ * é aplicado depois, valendo apenas para linhas futuras.
+ */
+async function migrateReviewsCreatedAt(db: Database): Promise<void> {
+  const pg = isPgDatabase(db);
+  const actual = await tableColumnNames(db, 'reviews');
+  if (actual.length === 0) return;
+
+  const lower = new Set(actual.map((name) => name.toLowerCase()));
+  const canonical = pg ? 'createdat' : 'createdAt';
+
+  // Em SQLite identificadores são case-insensitive: `createdat` já atende as
+  // consultas `createdAt` e não se pode criar outra coluna com o mesmo nome
+  // (SQLite rejeitaria como duplicada).
+  const hasCanonical = pg ? actual.includes(canonical) : lower.has('createdat');
+
+  if (!hasCanonical) {
+    await db.exec(
+      `ALTER TABLE reviews ADD COLUMN ${canonical} ${pg ? 'TIMESTAMPTZ' : 'DATETIME'}`,
+    );
+    actual.push(canonical);
+  }
+
+  const canonicalName = pg
+    ? canonical
+    : actual.find((name) => name.toLowerCase() === 'createdat') || canonical;
+
+  // Fontes históricas distintas do canônico. A ordem preserva a semântica
+  // original da aplicação (`createdAt`, depois `created_at`).
+  const sources = actual.filter((name) => {
+    if (name === canonicalName) return false;
+    const normalized = name.toLowerCase();
+    return normalized === 'createdat' || normalized === 'created_at';
+  });
+  sources.sort((a, b) => {
+    const rank = (name: string) => (name === 'createdAt' ? 0 : name.toLowerCase() === 'created_at' ? 1 : 2);
+    return rank(a) - rank(b);
+  });
+
+  for (const source of sources) {
+    // Só preenche lacunas: datas já existentes na coluna canônica nunca são
+    // sobrescritas por backfill.
+    await db.exec(
+      `UPDATE reviews SET ${quoteIdentifier(canonicalName)} = ${quoteIdentifier(source)} ` +
+        `WHERE ${quoteIdentifier(canonicalName)} IS NULL AND ${quoteIdentifier(source)} IS NOT NULL`,
+    );
+  }
+
+  if (pg) {
+    // Aplicado depois do backfill, então não afeta nenhuma linha existente.
+    await db.exec(
+      `ALTER TABLE reviews ALTER COLUMN ${quoteIdentifier(canonicalName)} SET DEFAULT CURRENT_TIMESTAMP`,
+    );
+  }
+}
+
 async function migrateReviewsColumns(db: Database): Promise<void> {
-  // `createdAt` é comparado sem diferenciar caixa: bancos PostgreSQL antigos
-  // criados pelo adapter sem aspas guardam a coluna como `createdat`.
-  await addColumnIfMissing(db, 'reviews', 'createdAt', 'TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP');
+  await migrateReviewsCreatedAt(db);
   await addColumnIfMissing(db, 'reviews', 'is_test', 'INTEGER DEFAULT 0');
 }
 
@@ -327,7 +403,7 @@ async function migrateDotActionSchema(db: Database): Promise<void> {
  * tempo.
  */
 export async function runCentralMigrations(db: Database): Promise<void> {
-  const execute = async () => {
+  const execute = async (db: Database) => {
     await migrateCoreTables(db);
     await migrateReviewsColumns(db);
     await migrateAuthSchema(db);
@@ -336,9 +412,9 @@ export async function runCentralMigrations(db: Database): Promise<void> {
   };
 
   if (isPgDatabase(db)) {
-    await db.withMigrationLock(PG_MIGRATION_LOCK_KEY, execute);
+    await db.withMigrationLock(PG_MIGRATION_LOCK_KEY, (scoped) => execute(scoped));
     return;
   }
 
-  await execute();
+  await execute(db);
 }

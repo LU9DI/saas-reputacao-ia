@@ -112,7 +112,7 @@ export type PgDatabase = {
    * dedicada (fora do pool rotativo). Usado exclusivamente pela inicialização
    * central para serializar migrações entre processos/instâncias.
    */
-  withMigrationLock: <T>(lockKey: number | bigint, work: () => Promise<T>) => Promise<T>;
+  withMigrationLock: <T>(lockKey: number | bigint, work: (db: PgDatabase) => Promise<T>) => Promise<T>;
   close: () => Promise<void>;
 };
 
@@ -132,6 +132,50 @@ export function getPgSslConfig(
     throw new Error("PGSSL=0 is permitted only for localhost PostgreSQL connections");
   }
   return isLocal ? false : { rejectUnauthorized: true };
+}
+
+type ClientMethods = Pick<PgDatabase, 'exec' | 'run' | 'get' | 'all'>;
+
+/**
+ * Métodos do adapter ligados a UM `PoolClient` específico.
+ * Usado pela transação e pelo lock de migração, garantindo que todas as
+ * operações daquele escopo usem exatamente a mesma conexão.
+ */
+function createClientMethods(client: pg.PoolClient): ClientMethods {
+  return {
+    async exec(sql: string) {
+      const adapted = adaptSql(sql);
+      for (const st of adapted.split(';').map((x) => x.trim()).filter(Boolean)) {
+        if (/^PRAGMA/i.test(st)) continue;
+        try {
+          await client.query(st);
+        } catch (error: any) {
+          console.error('pg.exec falhou:', describePgError(error));
+          console.error('SQL:', st.slice(0, 500));
+          throw error;
+        }
+      }
+    },
+
+    async run(sql: string, params: any[] = []) {
+      if (/^PRAGMA/i.test(sql.trim())) return { changes: 0 };
+      const result = await client.query(convertPlaceholders(adaptSql(sql)), params);
+      const first = result.rows?.[0];
+      return { changes: result.rowCount || 0, lastID: first?.id != null ? Number(first.id) : undefined };
+    },
+
+    async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+      if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(client, sql))[0] as T;
+      const result = await client.query(convertPlaceholders(adaptSql(sql)), params);
+      return result.rows[0] as T | undefined;
+    },
+
+    async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+      if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(client, sql)) as T[];
+      const result = await client.query(convertPlaceholders(adaptSql(sql)), params);
+      return result.rows as T[];
+    },
+  };
 }
 
 export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
@@ -233,35 +277,9 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
       // Um único PoolClient entre BEGIN, operações, COMMIT e ROLLBACK.
       const txClient = await pool.connect();
       const tx: PgDatabase = {
-        exec: async (sql: string) => {
-          const adapted = adaptSql(sql);
-          for (const st of adapted.split(';').map((x) => x.trim()).filter(Boolean)) {
-            if (/^PRAGMA/i.test(st)) continue;
-            await txClient.query(st);
-          }
-        },
-        run: async (sql: string, params: any[] = []) => {
-          if (/^PRAGMA/i.test(sql.trim())) return { changes: 0 };
-          const adapted = adaptSql(sql);
-          const q = convertPlaceholders(adapted);
-          const result = await txClient.query(q, params);
-          const first = result.rows?.[0];
-          return { changes: result.rowCount || 0, lastID: first?.id != null ? Number(first.id) : undefined };
-        },
-        get: async <T2 = any>(sql: string, params: any[] = []) => {
-          if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(txClient, sql))[0] as T2;
-          const adapted = adaptSql(sql);
-          const result = await txClient.query(convertPlaceholders(adapted), params);
-          return result.rows[0] as T2 | undefined;
-        },
-        all: async <T2 = any>(sql: string, params: any[] = []) => {
-          if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(txClient, sql)) as T2[];
-          const adapted = adaptSql(sql);
-          const result = await txClient.query(convertPlaceholders(adapted), params);
-          return result.rows as T2[];
-        },
+        ...createClientMethods(txClient),
         transaction: async <T2>(nested: (nestedTx: PgDatabase) => Promise<T2>) => nested(tx),
-        withMigrationLock: async <T2>(_lockKey: number | bigint, nested: () => Promise<T2>) => nested(),
+        withMigrationLock: async <T2>(_lockKey: number | bigint, nested: (db: PgDatabase) => Promise<T2>) => nested(tx),
         close: async () => undefined,
       };
       try {
@@ -282,7 +300,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
       }
     },
 
-    async withMigrationLock<T>(lockKey: number | bigint, work: () => Promise<T>): Promise<T> {
+    async withMigrationLock<T>(lockKey: number | bigint, work: (db: PgDatabase) => Promise<T>): Promise<T> {
       const key = typeof lockKey === 'bigint' ? lockKey.toString() : String(Math.trunc(lockKey));
 
       // Conexão dedicada reservada durante toda a sequência de migrações.
@@ -293,6 +311,30 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
           `Falha fatal ao abrir conexão dedicada do advisory lock de migração PostgreSQL (${key}): ${describePgError(error)}`,
         );
       });
+
+      // As migrações rodam NESTA conexão, não no pool. Isso evita deadlock
+      // quando `PG_POOL_MAX=1` (a única conexão do pool já está reservada pelo
+      // lock) e elimina a necessidade de um mínimo de duas conexões.
+      const scoped: PgDatabase = {
+        ...createClientMethods(lockClient),
+        transaction: async <T2>(nested: (nestedTx: PgDatabase) => Promise<T2>) => {
+          await lockClient.query('BEGIN');
+          try {
+            const nestedResult = await nested(scoped);
+            await lockClient.query('COMMIT');
+            return nestedResult;
+          } catch (error) {
+            try {
+              await lockClient.query('ROLLBACK');
+            } catch (rollbackError: any) {
+              console.error('pg.migrationLock: ROLLBACK falhou:', describePgError(rollbackError));
+            }
+            throw error;
+          }
+        },
+        withMigrationLock: async <T2>(_nestedKey: number | bigint, nested: (db: PgDatabase) => Promise<T2>) => nested(scoped),
+        close: async () => undefined,
+      };
 
       let lockAcquired = false;
       let connectionLost = false;
@@ -317,7 +359,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
         }
 
         try {
-          result = await work();
+          result = await work(scoped);
         } catch (error) {
           failure = error;
         }

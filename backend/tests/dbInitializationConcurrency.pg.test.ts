@@ -175,3 +175,34 @@ test('falha deliberada de migração é propagada e o advisory lock é liberado'
     await dropTestDatabase(name);
   }
 });
+
+test('três processos com PG_POOL_MAX=1 inicializam o mesmo banco sem deadlock', async () => {
+  const { name, url } = await createTestDatabase('pg_init_pool_one');
+  const previousUrl = process.env.DATABASE_URL;
+  try {
+    process.env.DATABASE_URL = url;
+    const results = await Promise.all([
+      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url, PG_POOL_MAX: '1' }, 60_000),
+      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url, PG_POOL_MAX: '1' }, 60_000),
+      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url, PG_POOL_MAX: '1' }, 60_000),
+    ]);
+
+    for (const [index, result] of results.entries()) {
+      assert.equal(result.timedOut, false, `worker ${index + 1} entrou em deadlock com PG_POOL_MAX=1`);
+      console.log(`worker PG_POOL_MAX=1 ${index + 1}: exit=${result.code} stderr=${result.stderr.trim()}`);
+      assert.equal(result.code, 0, `worker ${index + 1} falhou\nstderr:\n${result.stderr}`);
+      assertNoDdlErrors(result.stderr, `worker PG_POOL_MAX=1 ${index + 1}`);
+      parseWorkerJson<any>(result, `worker PG_POOL_MAX=1 ${index + 1}`);
+    }
+
+    const probe = await initPgDatabase(url);
+    try {
+      await assertRequiredSchema(probe, 'após inicialização com PG_POOL_MAX=1');
+    } finally {
+      await probe.close();
+    }
+  } finally {
+    process.env.DATABASE_URL = previousUrl;
+    await dropTestDatabase(name);
+  }
+});

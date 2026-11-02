@@ -66,9 +66,9 @@ export async function criarReview(input:ReviewInput,db:Database=getDb()):Promise
   }else if(!isTest&&rating<=3&&comment){aiTags=JSON.stringify(rating<=2?['#NegativeExperience']:['#Neutral']);}
   const baseParams=[empresaId,name||'Anônimo',rating,comment||null,aiReply,aiTags];let result:any;
   const attempts=[
-    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,sentiment,sentiment_score,sentiment_source,client_whatsapp,locale,unidade_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',sentiment.label,sentiment.score,sentiment.source,clientWpp,locale,unidadeId]},
-    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,client_whatsapp) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',clientWpp]},
-    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags) VALUES (?,?,?,?,?,?)`,params:baseParams}
+    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,sentiment,sentiment_score,sentiment_source,client_whatsapp,locale,unidade_id,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',sentiment.label,sentiment.score,sentiment.source,clientWpp,locale,unidadeId]},
+    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,client_whatsapp,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',clientWpp]},
+    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,createdAt) VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)`,params:baseParams}
   ];
   let lastErr:any;for(const a of attempts){try{result=await db.run(a.sql,a.params);lastErr=null;break;}catch(e){lastErr=e;}}if(lastErr)throw lastErr;
   if (empresaId) invalidateCompanyReviewsCache(empresaId);

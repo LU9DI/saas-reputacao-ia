@@ -9,7 +9,13 @@ import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { Client } from 'pg';
 
-export type WorkerResult = { code: number | null; stdout: string; stderr: string; signal: NodeJS.Signals | null };
+export type WorkerResult = {
+  code: number | null;
+  stdout: string;
+  stderr: string;
+  signal: NodeJS.Signals | null;
+  timedOut: boolean;
+};
 
 /** Erros de DDL/corrida que jamais podem aparecer em stderr. */
 export const DDL_ERROR_PATTERNS: RegExp[] = [
@@ -73,7 +79,12 @@ export async function serverVersion(): Promise<string> {
  * Executa um script Node/TS em processo filho, preservando stdout/stderr
  * separados para inspeção (não basta olhar o exit code).
  */
-export function runNodeScript(scriptUrl: URL, args: string[] = [], env: NodeJS.ProcessEnv = {}): Promise<WorkerResult> {
+export function runNodeScript(
+  scriptUrl: URL,
+  args: string[] = [],
+  env: NodeJS.ProcessEnv = {},
+  timeoutMs = 0,
+): Promise<WorkerResult> {
   return new Promise((resolve, reject) => {
     const child = spawn(
       process.execPath,
@@ -86,10 +97,17 @@ export function runNodeScript(scriptUrl: URL, args: string[] = [], env: NodeJS.P
     );
     let stdout = '';
     let stderr = '';
+    let timedOut = false;
+    const timer = timeoutMs > 0
+      ? setTimeout(() => { timedOut = true; child.kill('SIGKILL'); }, timeoutMs)
+      : undefined;
     child.stdout.setEncoding('utf8').on('data', (chunk) => { stdout += chunk; });
     child.stderr.setEncoding('utf8').on('data', (chunk) => { stderr += chunk; });
     child.on('error', reject);
-    child.on('close', (code, signal) => resolve({ code, stdout, stderr, signal }));
+    child.on('close', (code, signal) => {
+      if (timer) clearTimeout(timer);
+      resolve({ code, stdout, stderr, signal, timedOut });
+    });
   });
 }
 
