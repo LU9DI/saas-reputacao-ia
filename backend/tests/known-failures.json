@@ -1,0 +1,21 @@
+{
+  "$comment": "DSV4 Bloco E — defeitos ABERTOS documentados por teste. O gate (scripts/dsv4-test-gate.mjs) exige que estes testes continuem FALHANDO. Quando a correção do EF chegar, remova a entrada no mesmo PR; se esquecer, o gate falha (invariante I2).",
+  "entries": [
+    {
+      "file": "dsv4.state-window.test.ts",
+      "test": "F7",
+      "ef": "EF-05",
+      "requirement": "REQ-STATE-07",
+      "reason": "gate de probe nao atomico: 5 requisicoes concorrentes produzem 5 probes",
+      "fixBlock": "B (Fase 3.5.1)"
+    },
+    {
+      "file": "dsv4.tolerance.test.ts",
+      "test": "T6",
+      "ef": "EF-18",
+      "requirement": "REQ-STATE-02",
+      "reason": "ordem W1/W2 sem try/catch: falha de KV.put no webhook gera rejeicao nao tratada",
+      "fixBlock": "A (Fase 3.5.1)"
+    }
+  ]
+}
