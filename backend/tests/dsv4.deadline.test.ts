@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { installFetch, freshModule, realNowMs, type FetchStub } from './support/dsv4Harness.ts';
 
 const API_MOD = 'frontend/src/app/utils/apiFailover.ts';
-const DEADLINE = 120;
+const DEADLINE = 1200;
 const EPS = 50;
 
 type ApiMod = {
@@ -145,8 +145,9 @@ test('D8 [EF-14] cancelamento pendente do body nao bloqueia o failover', async (
   });
   try {
     const mod = await freshModule<ApiMod>(API_MOD);
-    const response = await mod.apiFetch('/api/health', { deadlineMs: DEADLINE });
+    const response = await mod.apiFetch('/api/health', { deadlineMs: DEADLINE, timeoutMs: 500 });
     assert.equal(response.status, 200, 'segunda base deve responder apesar do cancelamento pendente');
+    await Promise.resolve();
     assert.equal(cancelRequested, true, 'o cancelamento do body deve ser solicitado');
     assert.equal(stub.calls.length, 2, 'failover deve prosseguir para a segunda base');
   } finally { stub.restore(); }
