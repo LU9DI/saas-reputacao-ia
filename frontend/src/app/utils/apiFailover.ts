@@ -11,13 +11,31 @@
  * entram na rotação.
  *
  * Troca quando: rede falha, timeout, ou HTTP 502/503/504.
- * Mantém a base que funcionou por 5 min (sticky) para não ficar oscilando.
+ * Mantém a base que funcionou por 6 h (sticky) para não ficar oscilando.
  *
  * IMPORTANTE: para dados iguais nos dois hosts, use o MESMO DATABASE_URL (Postgres).
  */
 
-const STICKY_MS = 5 * 60 * 1000;
+/**
+ * Janela sticky (DSV4 REQ-STATE-04 / D-13).
+ * DEVE permanecer igual a `STICKY_WINDOW_MS` de `app/lib/failoverState.ts`
+ * e a `infra/cloudflare/worker.js`: 6 horas.
+ */
+const STICKY_MS = 6 * 60 * 60 * 1000;
+/**
+ * Orçamento temporal (DSV4 REQ-TEMP-01..04 / D-10, com o achado F-01 da Fase 3.4):
+ * o deadline é ÚNICO e compartilhado por todas as tentativas; o timeout de cada
+ * tentativa é derivado do orçamento, nunca fixo.
+ *   a = ⌊(D − R − B(N_max)) / N_max⌋,  N_max = 5  ⇒  a = 2.056 ms
+ */
 const DEFAULT_TIMEOUT_MS = 12_000;
+const DEFAULT_DEADLINE_MS = 12_000;
+const DEFAULT_RESPONSE_RESERVE_MS = 400;
+const BACKOFF_BASE_MS = 100;
+const BACKOFF_MAX_MS = 400;
+const BACKOFF_JITTER_RATIO = 0.2;
+/** 4 bases configuráveis + a canônica garantida em produção (F-01). */
+const MAX_ATTEMPTS = 5;
 
 /**
  * API canônica de produção. É garantida na lista mesmo quando a configuração
@@ -103,9 +121,53 @@ function shouldFailoverStatus(status: number): boolean {
 export type ApiFetchOptions = RequestInit & {
   /** Timeout por tentativa (ms). Default 12s. */
   timeoutMs?: number;
+  /** Orçamento total compartilhado por todas as tentativas (ms). Default 12s. */
+  deadlineMs?: number;
+  /** Reserva após obtenção dos cabeçalhos HTTP; o consumo do body não integra o deadline (ms). */
+  responseReserveMs?: number;
   /** Se true, não faz failover (só tenta a base sticky/primary). */
   noFailover?: boolean;
 };
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Liga um controller a múltiplos sinais, sem depender de AbortSignal.any. */
+function linkAbort(target: AbortController, sources: Array<AbortSignal | undefined>): void {
+  for (const source of sources) {
+    if (!source) continue;
+    if (source.aborted) { target.abort(); continue; }
+    source.addEventListener('abort', () => target.abort(), { once: true });
+  }
+}
+
+/**
+ * Budget de tentativa derivado do deadline (REQ-TEMP-02).
+ * Escalas de backoff e reserva acompanham D, preservando a prova do teto.
+ */
+function attemptBudget(deadlineMs: number, reserveMs: number, attempts: number): {
+  perAttempt: number;
+  backoffBase: number;
+  backoffMax: number;
+} {
+  const scale = deadlineMs / DEFAULT_DEADLINE_MS;
+  const backoffBase = Math.max(1, Math.round(BACKOFF_BASE_MS * scale));
+  const backoffMax = Math.max(backoffBase, Math.round(BACKOFF_MAX_MS * scale));
+  let backoffBudget = 0;
+  for (let k = 1; k <= attempts - 1; k += 1) {
+    backoffBudget += Math.round(Math.min(backoffMax, backoffBase * 2 ** (k - 1)) * (1 + BACKOFF_JITTER_RATIO));
+  }
+  const usable = deadlineMs - reserveMs - backoffBudget;
+  const perAttempt = Math.max(1, Math.min(usable > 0 ? Math.floor(usable / attempts) : 1, deadlineMs));
+  return { perAttempt, backoffBase, backoffMax };
+}
+
+/** Backoff exponencial com jitter (REQ-TEMP-04). */
+function backoffFor(k: number, base: number, max: number): number {
+  const exponential = Math.min(max, base * 2 ** (k - 1));
+  return Math.round(exponential * (1 + Math.random() * BACKOFF_JITTER_RATIO));
+}
 
 /**
  * fetch com failover automático entre as bases configuradas.
@@ -113,19 +175,42 @@ export type ApiFetchOptions = RequestInit & {
  */
 export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promise<Response> {
   const pathNorm = path.startsWith('/') ? path : `/${path}`;
-  const { timeoutMs = DEFAULT_TIMEOUT_MS, noFailover, ...fetchInit } = init;
-  const bases = noFailover ? [getApiBase()] : orderedBases();
+  const {
+    timeoutMs = DEFAULT_TIMEOUT_MS,
+    deadlineMs = DEFAULT_DEADLINE_MS,
+    responseReserveMs,
+    noFailover,
+    ...fetchInit
+  } = init;
+  const scale = deadlineMs / DEFAULT_DEADLINE_MS;
+  const reserveMs = responseReserveMs ?? Math.max(1, Math.round(DEFAULT_RESPONSE_RESERVE_MS * scale));
+  const candidateBases = noFailover ? [getApiBase()] : orderedBases();
+  const bases = candidateBases.slice(0, MAX_ATTEMPTS);
   const errors: string[] = [];
 
-  for (const base of bases) {
-    const controller = new AbortController();
-    const external = fetchInit.signal;
-    const onAbort = () => controller.abort();
-    if (external) {
-      if (external.aborted) controller.abort();
-      else external.addEventListener('abort', onAbort, { once: true });
+  const startedAt = Date.now();
+  const deadlineAt = startedAt + deadlineMs;
+  const { perAttempt, backoffBase, backoffMax } = attemptBudget(deadlineMs, reserveMs, bases.length);
+  const external = fetchInit.signal ?? undefined;
+
+  for (let index = 0; index < bases.length; index += 1) {
+    const base = bases[index];
+
+    // REQ-TEMP-01: nenhuma tentativa começa sem orçamento para ela + reserva.
+    const remaining = deadlineAt - Date.now() - reserveMs;
+    if (remaining <= 0) break;
+
+    if (index > 0) {
+      const wait = backoffFor(index, backoffBase, backoffMax);
+      if (Date.now() + wait + reserveMs >= deadlineAt) break;
+      await sleep(wait);
     }
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    const controller = new AbortController();
+    // O sinal externo permanece ligado após o sucesso para cancelar a leitura do corpo.
+    linkAbort(controller, [external]);
+    const budget = Math.max(1, Math.min(perAttempt, Math.max(1, timeoutMs), deadlineAt - Date.now() - reserveMs));
+    const timer = setTimeout(() => controller.abort(), budget);
 
     try {
       if (external?.aborted) {
@@ -136,10 +221,16 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
         signal: controller.signal,
       });
       clearTimeout(timer);
-      if (external) external.removeEventListener('abort', onAbort);
 
       if (shouldFailoverStatus(res.status)) {
         errors.push(`${base} → HTTP ${res.status}`);
+        // Solicita a liberação sem bloquear o failover: cancel() pode ficar
+        // pendente indefinidamente em streams/custom fetches. Rejeições são
+        // consumidas para evitar unhandled rejection.
+        try {
+          const cancellation = res.body?.cancel();
+          if (cancellation) void cancellation.catch(() => { /* cancelamento best-effort */ });
+        } catch { /* corpo já consumido/fechado ou cancelamento síncrono indisponível */ }
         continue;
       }
 
@@ -155,10 +246,11 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
       return res;
     } catch (e: any) {
       clearTimeout(timer);
-      if (external) external.removeEventListener('abort', onAbort);
       if (e?.name === 'AbortError' && external?.aborted) throw e;
+      const exhausted = Date.now() + reserveMs >= deadlineAt;
       const msg = e?.name === 'AbortError' ? 'timeout/abort' : e?.message || 'network';
       errors.push(`${base} → ${msg}`);
+      if (exhausted) break;
     }
   }
 

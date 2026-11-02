@@ -9,7 +9,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
   "include": ["**/*.ts", "types/**/*.d.ts"],
   "exclude": ["node_modules"]
