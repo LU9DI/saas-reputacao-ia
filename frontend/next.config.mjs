@@ -37,9 +37,6 @@ const nextConfig = {
   async redirects() {
     if (process.env.CLOUDFLARE_PAGES === '1') return [];
     return [
-      // O host canônico é o apex (Cloudflare); www ainda aponta para um
-      // deployment Vercel legado que responde 404 em /indice/*.
-      // Qualquer tráfego em www é levado ao apex antes das demais regras.
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'www.filtraai.com' }],
@@ -61,6 +58,15 @@ const nextConfig = {
 
   async headers() {
     return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+        ],
+      },
       {
         source: '/sw.js',
         headers: [
