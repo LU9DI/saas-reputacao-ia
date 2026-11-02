@@ -81,7 +81,7 @@ export async function getFailoverState(): Promise<FailoverState> {
     const origin: FailoverOrigin = parsed.origin === 'fallback' ? 'fallback' : 'primary';
     const changedAt = Number(parsed.changedAt) || 0;
     const rawNext = parsed.nextProbeAt;
-    const hasNext = rawNext !== undefined && rawNext !== null && rawNext !== '';
+    const hasNext = rawNext !== undefined && rawNext !== null;
     const parsedNext = hasNext ? Number(rawNext) : Number.NaN;
     // Estado legado (sem nextProbeAt válido) não pode abrir a janela: deriva de changedAt.
     const nextProbeAt = hasNext && Number.isFinite(parsedNext)
