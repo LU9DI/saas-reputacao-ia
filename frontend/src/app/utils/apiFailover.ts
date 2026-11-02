@@ -191,7 +191,7 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
   const startedAt = Date.now();
   const deadlineAt = startedAt + deadlineMs;
   const { perAttempt, backoffBase, backoffMax } = attemptBudget(deadlineMs, reserveMs, bases.length);
-  const external = fetchInit.signal;
+  const external = fetchInit.signal ?? undefined;
 
   for (let index = 0; index < bases.length; index += 1) {
     const base = bases[index];
