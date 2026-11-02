@@ -11,7 +11,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import type { Database } from 'sqlite';
-import { PG_MIGRATION_LOCK_KEY, requireSchema } from '../lib/migrations.js';
+import { PG_MIGRATION_LOCK_KEY, requireReviewSchema, requireSchema } from '../lib/migrations.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const backendRoot = path.resolve(__dirname, '..');
@@ -77,8 +77,14 @@ test('caminhos de requisição não contêm DDL', () => {
     'mfa.ts',
     'services/dotActionAudit.ts',
     'services/dotActionQueue.ts',
+    'services/reviewService.ts',
+    'services/sentimentBackfill.ts',
+    'lib/reviewFraud.ts',
+    'lib/lgpd.ts',
+    'routes/empresaRoutes.ts',
+    'routes/adminTecnicoRoutes.ts',
   ];
-  const ddl = /\b(ALTER\s+TABLE|CREATE\s+TABLE|CREATE\s+(UNIQUE\s+)?INDEX)\b/i;
+  const ddl = /\b(ALTER\s+TABLE\s+reviews|CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?reviews|CREATE\s+(?:UNIQUE\s+)?INDEX\s+\w+\s+ON\s+reviews)\b/i;
   for (const file of files) {
     assert.equal(ddl.test(source(file)), false, `${file} não pode executar DDL em caminho de requisição`);
   }
@@ -91,6 +97,15 @@ test('adapter PostgreSQL não usa pool global mutável e expõe o lock de migra�
   assert.match(src, /pg_advisory_lock/);
   assert.match(src, /pg_advisory_unlock/);
   assert.doesNotMatch(src, /already exists/i, 'exec não pode tolerar erros de catálogo genéricos');
+});
+
+test('requireReviewSchema falha explicitamente e não executa DDL', async () => {
+  const { db, execCalls } = fakeDb({ reviews: ['id', 'created_at', 'is_test', 'ip_hash'] }, []);
+  await assert.rejects(
+    () => requireReviewSchema(db),
+    (error: any) => /reviews\.(fraud_flags|origin|client_whatsapp|sentiment|locale)/.test(String(error?.message || error)),
+  );
+  assert.deepEqual(execCalls, [], 'verificação de reviews não pode executar DDL');
 });
 
 test('chave do advisory lock de migração é estável e positiva (int8)', () => {

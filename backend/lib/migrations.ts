@@ -108,6 +108,107 @@ export async function requireSchema(db: Database, requirements: SchemaRequiremen
   }
 }
 
+/**
+ * Colunas de `reviews` que a aplicação usa. A DDL de todas elas vive nesta
+ * migração central; os serviços apenas verificam a existência com
+ * `requireReviewSchema`/`requireSchema`.
+ */
+export const REVIEW_COLUMNS = [
+  'createdAt',
+  'is_test',
+  'ip_hash',
+  'fraud_flags',
+  'origin',
+  'client_whatsapp',
+  'sentiment',
+  'sentiment_score',
+  'sentiment_source',
+  'locale',
+  'unidade_id',
+  'treated_at',
+  'treated_note',
+] as const;
+
+export type ReviewColumn = (typeof REVIEW_COLUMNS)[number];
+
+/** Verificação (sem DDL) das colunas de reviews usadas por um serviço. */
+export async function requireReviewSchema(
+  db: Database,
+  columns: readonly string[] = REVIEW_COLUMNS,
+): Promise<void> {
+  await requireSchema(db, { columns: { reviews: [...columns] } });
+}
+
+/** Definições reais de índices (nome, tabela, DDL), sem placeholders. */
+export type IndexDefinition = {
+  name: string;
+  table: string;
+  definition: string;
+  unique: boolean;
+};
+
+function normalizeIndexDefinition(definition: string): string {
+  return String(definition || '').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Snapshot real dos índices. PostgreSQL: `pg_indexes` (indexname, tablename,
+ * indexdef). SQLite: `PRAGMA index_list` + `sqlite_master` (e `PRAGMA
+ * index_info` para índices automáticos sem DDL).
+ */
+export async function listIndexDefinitions(
+  db: Database,
+  tables?: readonly string[],
+): Promise<IndexDefinition[]> {
+  const allowed = tables ? new Set(tables) : null;
+  if (isPgDatabase(db)) {
+    const rows = await db.all(
+      `SELECT indexname AS name, tablename AS table, indexdef AS definition
+         FROM pg_indexes
+        WHERE schemaname = 'public'
+        ORDER BY tablename, indexname`,
+    );
+    return (rows as any[])
+      .map((row) => ({
+        name: String(row.name),
+        table: String(row.table),
+        definition: normalizeIndexDefinition(String(row.definition)),
+        unique: /^CREATE UNIQUE INDEX/i.test(String(row.definition)),
+      }))
+      .filter((row) => !allowed || allowed.has(row.table));
+  }
+
+  const tableRows: any[] = await db.all(
+    `SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name`,
+  );
+  const result: IndexDefinition[] = [];
+  for (const tableRow of tableRows) {
+    const table = String(tableRow.name);
+    if (allowed && !allowed.has(table)) continue;
+    const indexes: any[] = await db.all(`PRAGMA index_list(${table})`);
+    for (const index of indexes || []) {
+      const name = String(index.name);
+      const master: any = await db.get(
+        `SELECT sql FROM sqlite_master WHERE type = 'index' AND name = ?`,
+        [name],
+      );
+      let definition = master?.sql ? String(master.sql) : '';
+      if (!definition) {
+        const info: any[] = await db.all(`PRAGMA index_info(${name})`);
+        const columns = (info || []).map((column) => String(column.name)).join(', ');
+        definition = `CREATE ${Number(index.unique) ? 'UNIQUE ' : ''}INDEX ${name} ON ${table} (${columns})`;
+      }
+      result.push({
+        name,
+        table,
+        definition: normalizeIndexDefinition(definition),
+        unique: Boolean(Number(index.unique)),
+      });
+    }
+  }
+  return result.sort((a, b) => a.table.localeCompare(b.table) || a.name.localeCompare(b.name));
+}
+
 async function createTableIfMissing(db: Database, table: string, ddl: string): Promise<void> {
   if (await tableExists(db, table)) return;
   await db.exec(ddl);
@@ -294,7 +395,25 @@ async function migrateReviewsCreatedAt(db: Database): Promise<void> {
 
 async function migrateReviewsColumns(db: Database): Promise<void> {
   await migrateReviewsCreatedAt(db);
-  await addColumnIfMissing(db, 'reviews', 'is_test', 'INTEGER DEFAULT 0');
+  // Tipos compatíveis com SQLite e PostgreSQL; o adapter traduz REAL para
+  // DOUBLE PRECISION no PostgreSQL. Nenhuma coluna existente é recriada.
+  const definitions: Record<string, string> = {
+    is_test: 'INTEGER DEFAULT 0',
+    ip_hash: 'TEXT',
+    fraud_flags: 'TEXT',
+    origin: 'TEXT',
+    client_whatsapp: 'TEXT',
+    sentiment: 'TEXT',
+    sentiment_score: 'REAL',
+    sentiment_source: 'TEXT',
+    locale: 'TEXT',
+    unidade_id: 'TEXT',
+    treated_at: 'TIMESTAMPTZ',
+    treated_note: 'TEXT',
+  };
+  for (const [column, definition] of Object.entries(definitions)) {
+    await addColumnIfMissing(db, 'reviews', column, definition);
+  }
 }
 
 async function migrateAuthSchema(db: Database): Promise<void> {

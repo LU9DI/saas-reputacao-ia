@@ -190,11 +190,19 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
     console.error('pg pool: erro em cliente ocioso:', describePgError(error));
   });
 
-  const client = await pool.connect();
   try {
-    await client.query('SELECT 1');
-  } finally {
-    client.release();
+    const client = await pool.connect();
+    try {
+      await client.query('SELECT 1');
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    // A conexão inicial falhou: não deixar o pool recém-criado aberto.
+    await pool.end().catch((endError) => {
+      console.error('initPgDatabase: falha ao encerrar pool após erro de conexão:', describePgError(endError));
+    });
+    throw error;
   }
 
   const db: PgDatabase = {

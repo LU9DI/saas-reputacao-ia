@@ -1,13 +1,13 @@
 import type { Express, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { getDb, findEmpresa } from '../lib/db.js';
+import { requireReviewSchema } from '../lib/migrations.js';
 import {
   normalizarWhatsapp,
   linkWhatsapp,
   mensagemEmpresaParaCliente,
 } from '../lib/whatsapp.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
-import { ensureReviewFraudColumns } from '../lib/reviewFraud.js';
 import {
   allowPlanSwitch,
   PLANOS_OFICIAIS,
@@ -24,7 +24,6 @@ import {
   contarReviewsMes,
 } from '../lib/quota.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
-import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
 import { ensureUnidadesSchema } from '../lib/unidades.js';
 import { loadCompanyReviewsCached } from '../services/companyReviewsCache.js';
 import {
@@ -463,39 +462,9 @@ function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
 }
 
 async function ensurePainelColumns(db: any) {
-  try {
-    await ensureReviewFraudColumns(db);
-  } catch (e: any) {
-    console.warn('ensureReviewFraudColumns:', e?.message || e);
-  }
-  try {
-    await ensureReviewTreatmentColumns(db);
-  } catch (e: any) {
-    console.warn('ensureReviewTreatmentColumns:', e?.message || e);
-  }
-  const extras = [
-    'sentiment TEXT',
-    'sentiment_score DOUBLE PRECISION',
-    'sentiment_source TEXT',
-    'is_test INTEGER DEFAULT 0',
-    'fraud_flags TEXT',
-    'origin TEXT',
-    'client_whatsapp TEXT',
-    'unidade_id TEXT',
-    'treated_at TIMESTAMPTZ',
-    'treated_note TEXT',
-  ];
-  for (const ddl of extras) {
-    try {
-      await db.exec(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS ${ddl}`);
-    } catch {
-      try {
-        await db.exec(`ALTER TABLE reviews ADD COLUMN ${ddl}`);
-      } catch {
-        /* ok */
-      }
-    }
-  }
+  // Sem DDL: o schema completo de reviews é criado na inicialização central.
+  // Se faltar algo, o erro é explícito e não é convertido em painel vazio.
+  await requireReviewSchema(db);
 }
 
 const PAINEL_RECENTES_LIMIT = 500;
@@ -769,11 +738,7 @@ export function mountEmpresaRoutes(app: Express) {
 
       try {
         const db = getDb();
-        try {
-          await ensurePainelColumns(db);
-        } catch (e: any) {
-          console.warn('ensurePainelColumns:', e?.message || e);
-        }
+        await ensurePainelColumns(db);
 
         const planAtual = String(empresa.plan || 'trial').toLowerCase();
         // A análise respeita a capacidade do plano; a UI recebe apenas os feedbacks recentes.

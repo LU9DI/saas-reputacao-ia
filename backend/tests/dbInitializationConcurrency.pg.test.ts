@@ -14,6 +14,7 @@ import { initPgDatabase } from '../lib/db.pg.js';
 import {
   PG_MIGRATION_LOCK_KEY,
   indexExists,
+  listIndexDefinitions,
   runCentralMigrations,
   tableColumns,
   tableExists,
@@ -74,12 +75,22 @@ async function assertRequiredSchema(db: any, label: string) {
   }
 }
 
+const SNAPSHOT_TABLES = [
+  'empresas',
+  'usuarios',
+  'reviews',
+  'password_resets',
+  'dot_action_queue',
+  'dot_action_audit',
+];
+
+/** Snapshot real: colunas + definições de índices (pg_indexes), sem placeholders. */
 async function snapshot(db: any) {
   return {
     reviews: await tableColumns(db, 'reviews'),
     usuarios: await tableColumns(db, 'usuarios'),
     audit: await tableColumns(db, 'dot_action_audit'),
-    indexes: REQUIRED_INDEXES.map(() => true),
+    indexes: await listIndexDefinitions(db, SNAPSHOT_TABLES),
   };
 }
 
@@ -122,6 +133,15 @@ test('três processos inicializam um banco PostgreSQL vazio simultaneamente sem 
     // Conferência independente (pool do processo de teste).
     await assertRequiredSchema(probe, 'após inicialização concorrente');
     const firstSnapshot = await snapshot(probe);
+    assert.equal(firstSnapshot.indexes.length > 0, true, 'snapshot deve conter índices reais');
+    for (const required of REQUIRED_INDEXES) {
+      const entry = firstSnapshot.indexes.find((index: any) => index.name === required);
+      assert.ok(entry, `snapshot sem o índice ${required}`);
+      assert.ok(entry.definition.includes(`INDEX ${required}`), 'definição real do índice deve ser capturada');
+    }
+    const partial = firstSnapshot.indexes.find((index: any) => index.name === 'ux_dot_action_queue_one_active_decision');
+    assert.equal(partial?.unique, true, 'índice parcial deve ser único');
+    assert.match(String(partial?.definition), /WHERE/i, 'definição do índice parcial deve aparecer no snapshot');
 
     // Segunda inicialização no mesmo banco: comprova idempotência.
     await runCentralMigrations(probe);

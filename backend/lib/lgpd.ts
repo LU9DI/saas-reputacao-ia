@@ -2,49 +2,13 @@
  * LGPD: anonimiza WhatsApp antigo — datas em JS (Postgres-safe).
  */
 import type { Database } from 'sqlite';
+import { requireReviewSchema } from './migrations.js';
 
 const DEFAULT_DAYS = Number(process.env.LGPD_WHATSAPP_RETENTION_DAYS || 90);
 
-/** Lista colunas de `reviews` sem depender só de PRAGMA (SQLite). */
-async function listReviewColumns(db: Database): Promise<string[]> {
-  try {
-    const rows = await db.all(`PRAGMA table_info(reviews)`);
-    if (Array.isArray(rows) && rows.length) {
-      return rows.map((c: any) => String(c.name));
-    }
-  } catch {
-    /* Postgres ou adapter */
-  }
-  try {
-    const rows = await db.all(
-      `SELECT column_name as name
-       FROM information_schema.columns
-       WHERE table_schema = 'public' AND table_name = 'reviews'`
-    );
-    return (rows || []).map((c: any) => String(c.name || c.column_name));
-  } catch {
-    return [];
-  }
-}
-
+/** Verifica (sem DDL) as colunas de tratamento LGPD em reviews. */
 export async function ensureReviewTreatmentColumns(db: Database): Promise<void> {
-  const cols = await listReviewColumns(db);
-  for (const [name, def] of [
-    ['treated_at', 'TEXT'],
-    ['treated_note', 'TEXT'],
-    ['client_whatsapp', 'TEXT'],
-  ] as const) {
-    if (cols.length && cols.includes(name)) continue;
-    try {
-      await db.exec(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS ${name} ${def}`);
-    } catch {
-      try {
-        await db.exec(`ALTER TABLE reviews ADD COLUMN ${name} ${def}`);
-      } catch {
-        /* */
-      }
-    }
-  }
+  await requireReviewSchema(db, ['treated_at', 'treated_note', 'client_whatsapp']);
 }
 
 export async function anonymizeOldClientWhatsapp(

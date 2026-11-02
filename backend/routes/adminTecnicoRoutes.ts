@@ -6,6 +6,7 @@
  */
 import type { Express, Request, Response } from 'express';
 import { getDb } from '../lib/db.js';
+import { requireReviewSchema } from '../lib/migrations.js';
 import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
 import {
@@ -135,14 +136,8 @@ export function mountAdminTecnicoRoutes(app: Express) {
       const mpLast24hOk =
         mpHealth.total === 0 ? null : mpHealth.errors === 0 && mpHealth.ok > 0;
 
-      const cols = (await db.all(`PRAGMA table_info(reviews)`)).map((c: any) => c.name);
-      if (!cols.includes('client_whatsapp')) {
-        try {
-          await db.exec(`ALTER TABLE reviews ADD COLUMN client_whatsapp TEXT`);
-        } catch {
-          /* */
-        }
-      }
+      // Sem DDL: colunas garantidas pela migração central (verificação explícita).
+      await requireReviewSchema(db, ['client_whatsapp', 'origin']);
 
       const criticas = await db.all(
         `SELECT r.id, r.name, r.rating, r.comment, r.ai_reply, r.ai_tags, r.createdAt,

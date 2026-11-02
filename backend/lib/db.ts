@@ -85,44 +85,68 @@ async function initPostgres(): Promise<Database> {
 
 export async function initDB(): Promise<Database> {
   const url = process.env.DATABASE_URL?.trim();
+  const previousDb = _db;
+  const previousEngine = _engine;
+  let created: Database | null = null;
 
-  if (isPostgresUrl(url)) {
-    _db = await initPostgres();
-  } else if (isProd && process.env.SQLITE_ALLOW_PROD !== '1') {
-    throw new Error(
-      'Produção exige DATABASE_URL Postgres. Defina no Render ou SQLITE_ALLOW_PROD=1.'
-    );
-  } else {
-    if (isProd) {
-      console.warn('⚠️  SQLITE_ALLOW_PROD=1 — disco efêmero pode apagar dados.');
+  try {
+    if (isPostgresUrl(url)) {
+      created = await initPostgres();
+    } else if (isProd && process.env.SQLITE_ALLOW_PROD !== '1') {
+      throw new Error(
+        'Produção exige DATABASE_URL Postgres. Defina no Render ou SQLITE_ALLOW_PROD=1.'
+      );
+    } else {
+      if (isProd) {
+        console.warn('⚠️  SQLITE_ALLOW_PROD=1 — disco efêmero pode apagar dados.');
+      }
+      created = await initSqlite();
     }
-    _db = await initSqlite();
-  }
 
-  // Inicialização central: toda a DDL do núcleo roda aqui, uma única vez,
-  // sob advisory lock global no PostgreSQL. Requisições nunca migram schema.
-  await runCentralMigrations(_db!);
-  console.log('Schema inicializado (migrações centrais idempotentes)');
+    // Inicialização central: toda a DDL do núcleo roda aqui, uma única vez,
+    // sob advisory lock global no PostgreSQL. Requisições nunca migram schema.
+    await runCentralMigrations(created);
+    console.log('Schema inicializado (migrações centrais idempotentes)');
 
-  const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
-  const adminPass = process.env.ADMIN_PASSWORD || '';
-  if (adminMail && adminPass.length >= 12) {
-    const adminExiste = await _db.get('SELECT id FROM usuarios WHERE email = ?', [adminMail]);
-    if (!adminExiste) {
-      const hash = await bcrypt.hash(adminPass, 12);
-      try {
-        await _db.run(
-          'INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email) VALUES (?, ?, ?, ?, ?, ?)',
-          [crypto.randomUUID(), '00000000000000', 'Admin', 'admin', hash, adminMail]
-        );
-        console.log(`🔑 Admin criado: ${adminMail}`);
-      } catch (e: any) {
-        console.warn('Admin seed:', e?.message || e);
+    const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+    const adminPass = process.env.ADMIN_PASSWORD || '';
+    if (adminMail && adminPass.length >= 12) {
+      const adminExiste = await created.get('SELECT id FROM usuarios WHERE email = ?', [adminMail]);
+      if (!adminExiste) {
+        const hash = await bcrypt.hash(adminPass, 12);
+        try {
+          await created.run(
+            'INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email) VALUES (?, ?, ?, ?, ?, ?)',
+            [crypto.randomUUID(), '00000000000000', 'Admin', 'admin', hash, adminMail]
+          );
+          console.log(`🔑 Admin criado: ${adminMail}`);
+        } catch (e: any) {
+          console.warn('Admin seed:', e?.message || e);
+        }
       }
     }
-  }
 
-  return _db;
+    _db = created;
+    return created;
+  } catch (error) {
+    // Falha em migração/verificação: fecha SOMENTE a instância criada por esta
+    // chamada, limpa o estado e propaga o erro original. Uma instância anterior
+    // (outra chamada) não é tocada.
+    if (created && created !== previousDb) {
+      try {
+        const candidate = created as unknown as { close?: () => Promise<void> };
+        if (typeof candidate.close === 'function') await candidate.close();
+      } catch (closeError: any) {
+        console.error(
+          'initDB: falha ao fechar instância após erro de inicialização:',
+          closeError?.message || closeError,
+        );
+      }
+    }
+    _db = previousDb;
+    _engine = previousEngine;
+    throw error;
+  }
 }
 
 /**
