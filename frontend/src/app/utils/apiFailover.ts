@@ -224,8 +224,13 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
 
       if (shouldFailoverStatus(res.status)) {
         errors.push(`${base} → HTTP ${res.status}`);
-        // Libera a conexão da tentativa rejeitada antes de iniciar outra base.
-        try { await res.body?.cancel(); } catch { /* corpo já consumido/fechado */ }
+        // Solicita a liberação sem bloquear o failover: cancel() pode ficar
+        // pendente indefinidamente em streams/custom fetches. Rejeições são
+        // consumidas para evitar unhandled rejection.
+        try {
+          const cancellation = res.body?.cancel();
+          if (cancellation) void cancellation.catch(() => { /* cancelamento best-effort */ });
+        } catch { /* corpo já consumido/fechado ou cancelamento síncrono indisponível */ }
         continue;
       }
 
