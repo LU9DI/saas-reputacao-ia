@@ -1,0 +1,3754 @@
+From 57699191f4503ee0699b6e02020745ddd1781c4f Mon Sep 17 00:00:00 2001
+From: Cline Agent <cline@localhost>
+Date: Mon, 2 Nov 2026 20:08:56 +0000
+Subject: [PATCH 1/2] fix(db): centralize schema migrations and protect initDB
+ (integration from cline/rf9q7dty)
+
+---
+ lib/db.pg.ts                                 | 230 ++++++--
+ lib/db.ts                                    | 227 +++-----
+ lib/lgpd.ts                                  |  16 +-
+ lib/migrations.ts                            | 558 +++++++++++++++++++
+ lib/reviewFraud.ts                           |  21 +-
+ mfa.ts                                       |  21 +-
+ package-lock.json                            |   6 +-
+ package.json                                 |   4 +-
+ passwordResetRoutes.ts                       |  41 +-
+ routes/adminTecnicoRoutes.ts                 |  11 +-
+ routes/empresaRoutes.ts                      |  38 +-
+ scripts/run-tests.mjs                        |  19 +-
+ scripts/schema-ddl-audit.mjs                 |  71 +++
+ services/dotActionAudit.ts                   |  39 +-
+ services/dotActionQueue.ts                   |  40 +-
+ services/reviewService.ts                    |  16 +-
+ services/sentimentBackfill.ts                |  13 +-
+ tests/dbIndexSnapshot.pg.test.ts             |  56 ++
+ tests/dbInitFailureRecovery.pg.test.ts       | 117 ++++
+ tests/dbInitializationConcurrency.pg.test.ts | 237 ++++++++
+ tests/dbInstances.pg.test.ts                 |  79 +++
+ tests/dbMigrationsGuards.test.ts             | 118 ++++
+ tests/dbPoolMaxOne.pg.test.ts                |  54 ++
+ tests/dot-security-hardening.test.ts         |   5 +-
+ tests/dotActionConcurrency.pg.test.ts        |  40 +-
+ tests/dotActionSchemaGuard.pg.test.ts        |  57 ++
+ tests/helpers/init-db-worker.pg.ts           |  65 +++
+ tests/helpers/pg-test-utils.ts               | 131 +++++
+ tests/reviewsCentralSchema.pg.test.ts        | 128 +++++
+ tests/reviewsCentralSchema.test.ts           | 126 +++++
+ tests/reviewsCreatedAtHistory.pg.test.ts     | 191 +++++++
+ tests/reviewsCreatedAtHistory.test.ts        | 144 +++++
+ tests/schemaDdlAudit.test.ts                 |  36 ++
+ tests/testRunner.test.ts                     |  51 ++
+ 34 files changed, 2595 insertions(+), 411 deletions(-)
+ create mode 100644 lib/migrations.ts
+ create mode 100644 scripts/schema-ddl-audit.mjs
+ create mode 100644 tests/dbIndexSnapshot.pg.test.ts
+ create mode 100644 tests/dbInitFailureRecovery.pg.test.ts
+ create mode 100644 tests/dbInitializationConcurrency.pg.test.ts
+ create mode 100644 tests/dbInstances.pg.test.ts
+ create mode 100644 tests/dbMigrationsGuards.test.ts
+ create mode 100644 tests/dbPoolMaxOne.pg.test.ts
+ create mode 100644 tests/dotActionSchemaGuard.pg.test.ts
+ create mode 100644 tests/helpers/init-db-worker.pg.ts
+ create mode 100644 tests/helpers/pg-test-utils.ts
+ create mode 100644 tests/reviewsCentralSchema.pg.test.ts
+ create mode 100644 tests/reviewsCentralSchema.test.ts
+ create mode 100644 tests/reviewsCreatedAtHistory.pg.test.ts
+ create mode 100644 tests/reviewsCreatedAtHistory.test.ts
+ create mode 100644 tests/schemaDdlAudit.test.ts
+ create mode 100644 tests/testRunner.test.ts
+
+diff --git a/lib/db.pg.ts b/lib/db.pg.ts
+index 3247729..57e4f7a 100644
+--- a/lib/db.pg.ts
++++ b/lib/db.pg.ts
+@@ -7,7 +7,6 @@ import pg from 'pg';
+ import type { Database } from 'sqlite';
+ 
+ const { Pool } = pg;
+-let pool: pg.Pool | null = null;
+ 
+ function convertPlaceholders(sql: string): string {
+   let n = 0;
+@@ -94,6 +93,8 @@ export type PgDatabase = {
+   all: <T = any>(sql: string, params?: any[]) => Promise<T[]>;
+   close: () => Promise<void>;
+   transaction: <T>(fn: (tx: PgDatabase) => Promise<T>) => Promise<T>;
++  /** Executa `work` com um advisory lock PostgreSQL em conexão dedicada. */
++  withMigrationLock: <T>(lockKey: number | bigint, work: (db: PgDatabase) => Promise<T>) => Promise<T>;
+ };
+ 
+ export function getPgSslConfig(
+@@ -126,6 +127,70 @@ export function getPgSslConfig(
+   };
+ }
+ 
++function describePgError(error: any): string {
++  const code = error?.code ? ` [${error.code}]` : '';
++  return `${error?.message || error}:${code}`;
++}
++
++/**
++ * Tolerância ESTREITA a corrida de DDL idempotente: apenas comandos com
++ * `IF NOT EXISTS` podem colidir no catálogo quando duas instâncias criam o
++ * mesmo objeto ao mesmo tempo. Qualquer outro erro (inclusive 42P07/42701 em
++ * DDL sem IF NOT EXISTS) propaga.
++ */
++function isIdempotentDdlRace(statement: string, error: any): boolean {
++  if (!/IF\s+NOT\s+EXISTS/i.test(statement)) return false;
++  const message = String(error?.message || error);
++  if (error?.code === '42P07' || error?.code === '42701') return true;
++  if (/already exists/i.test(message)) return true;
++  return (
++    error?.code === '23505' &&
++    /unique constraint "pg_(type|class|attribute|index|constraint|proc)/i.test(message)
++  );
++}
++
++type ClientMethods = Pick<PgDatabase, 'exec' | 'run' | 'get' | 'all'>;
++
++/** Métodos do adapter ligados a UM PoolClient (transação e lock de migração). */
++function createClientMethods(client: pg.PoolClient): ClientMethods {
++  return {
++    async exec(sql: string) {
++      const adapted = adaptSql(sql);
++      for (const st of adapted.split(';').map((x) => x.trim()).filter(Boolean)) {
++        if (/^PRAGMA/i.test(st)) continue;
++        try {
++          await client.query(st);
++        } catch (error: any) {
++          if (isIdempotentDdlRace(st, error)) {
++            console.warn('pg.exec: corrida de DDL idempotente ignorada:', describePgError(error));
++            continue;
++          }
++          console.error('pg.exec falhou:', describePgError(error));
++          console.error('SQL:', st.slice(0, 500));
++          throw error;
++        }
++      }
++    },
++    async run(sql: string, params: any[] = []) {
++      if (/^PRAGMA/i.test(sql.trim())) return { changes: 0 };
++      const q = convertPlaceholders(adaptSql(sql));
++      const r = await client.query(q, params);
++      const returnedId = (r.rows?.[0] && (r.rows[0].id ?? r.rows[0].ID)) as number | undefined;
++      return { changes: r.rowCount || 0, lastID: returnedId };
++    },
++    async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
++      if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(client, sql))[0] as T;
++      const r = await client.query(convertPlaceholders(adaptSql(sql)), params);
++      return r.rows[0] as T | undefined;
++    },
++    async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
++      if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(client, sql)) as T[];
++      const r = await client.query(convertPlaceholders(adaptSql(sql)), params);
++      return r.rows as T[];
++    },
++  };
++}
++
+ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+   const connectionTimeoutMs = Math.max(
+     3000,
+@@ -136,7 +201,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+     Number(process.env.PG_CONNECT_ATTEMPTS || 3),
+   );
+ 
+-  pool = new Pool({
++  const pool = new Pool({
+     connectionString: databaseUrl,
+     ssl: getPgSslConfig(databaseUrl),
+     max: Number(process.env.PG_POOL_MAX || 10),
+@@ -170,7 +235,6 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+ 
+   if (lastError) {
+     await pool.end().catch(() => undefined);
+-    pool = null;
+     throw lastError;
+   }
+ 
+@@ -181,28 +245,20 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+         .split(';')
+         .map((x) => x.trim())
+         .filter(Boolean);
+-      const c = await pool!.connect();
++      const c = await pool.connect();
+       try {
+         for (const st of statements) {
+           if (/^PRAGMA/i.test(st)) continue;
+           try {
+             await c.query(st);
+-          } catch (e: any) {
+-            const msg = String(e?.message || e);
+-            if (
+-              /already exists/i.test(msg) ||
+-              e?.code === '42P07' ||
+-              e?.code === '42701' ||
+-              // Corrida de DDL entre instâncias: dois CREATE TABLE/INDEX
+-              // IF NOT EXISTS simultâneos podem colidir nos índices únicos do
+-              // catálogo (pg_type, pg_class, pg_attribute...). O objeto foi
+-              // criado pela outra instância; seguir é idempotente.
+-              (e?.code === '23505' && /unique constraint "pg_(type|class|attribute|index|constraint|proc)/i.test(msg))
+-            ) {
++          } catch (error: any) {
++            if (isIdempotentDdlRace(st, error)) {
++              console.warn('pg.exec: corrida de DDL idempotente ignorada:', describePgError(error));
+               continue;
+             }
+-            console.error('pg.exec falhou:', msg);
+-            throw e;
++            console.error('pg.exec falhou:', describePgError(error));
++            console.error('SQL:', st.slice(0, 500));
++            throw error;
+           }
+         }
+       } finally {
+@@ -211,7 +267,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+     },
+ 
+     async run(sql: string, params: any[] = []) {
+-      const c = await pool!.connect();
++      const c = await pool.connect();
+       try {
+         if (/^PRAGMA/i.test(sql.trim())) return { changes: 0 };
+         const q = convertPlaceholders(adaptSql(sql));
+@@ -224,7 +280,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+     },
+ 
+     async get<T = any>(sql: string, params: any[] = []): Promise<T | undefined> {
+-      const c = await pool!.connect();
++      const c = await pool.connect();
+       try {
+         if (/PRAGMA\s+table_info/i.test(sql)) {
+           const rows = await handlePragma(c, sql);
+@@ -239,7 +295,7 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+     },
+ 
+     async all<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+-      const c = await pool!.connect();
++      const c = await pool.connect();
+       try {
+         if (/PRAGMA\s+table_info/i.test(sql)) {
+           return (await handlePragma(c, sql)) as T[];
+@@ -253,54 +309,124 @@ export async function initPgDatabase(databaseUrl: string): Promise<PgDatabase> {
+     },
+ 
+     async close() {
+-      await pool?.end();
+-      pool = null;
++      // Encerra somente o pool desta instância.
++      await pool.end();
+     },
+ 
+     async transaction<T>(fn: (tx: PgDatabase) => Promise<T>) {
+-      const c = await pool!.connect();
++      // Um único PoolClient entre BEGIN, operações, COMMIT e ROLLBACK.
++      const txClient = await pool.connect();
+       const tx: PgDatabase = {
+-        async exec(sql: string) {
+-          const adapted = adaptSql(sql);
+-          for (const st of adapted.split(';').map((x) => x.trim()).filter(Boolean)) {
+-            if (/^PRAGMA/i.test(st)) continue;
+-            await c.query(st);
+-          }
+-        },
+-        async run(sql: string, params: any[] = []) {
+-          if (/^PRAGMA/i.test(sql.trim())) return { changes: 0 };
+-          const q = convertPlaceholders(adaptSql(sql));
+-          const r = await c.query(q, params);
+-          const returnedId = (r.rows?.[0] && (r.rows[0].id ?? r.rows[0].ID)) as number | undefined;
+-          return { changes: r.rowCount || 0, lastID: returnedId };
+-        },
+-        async get<T2 = any>(sql: string, params: any[] = []) {
+-          if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(c, sql))[0] as T2;
+-          const r = await c.query(convertPlaceholders(adaptSql(sql)), params);
+-          return r.rows[0] as T2 | undefined;
+-        },
+-        async all<T2 = any>(sql: string, params: any[] = []) {
+-          if (/PRAGMA\s+table_info/i.test(sql)) return (await handlePragma(c, sql)) as T2[];
+-          const r = await c.query(convertPlaceholders(adaptSql(sql)), params);
+-          return r.rows as T2[];
+-        },
++        ...createClientMethods(txClient),
+         async close() { /* transaction client owns its connection */ },
+         async transaction<T2>(nested: (tx: PgDatabase) => Promise<T2>) {
+           return nested(tx);
+         },
++        withMigrationLock: async <T2>(_lockKey: number | bigint, nested: (db: PgDatabase) => Promise<T2>) => nested(tx),
+       };
+       try {
+-        await c.query('BEGIN');
++        await txClient.query('BEGIN');
+         const result = await fn(tx);
+-        await c.query('COMMIT');
++        await txClient.query('COMMIT');
+         return result;
+       } catch (error) {
+-        try { await c.query('ROLLBACK'); } catch {}
++        try {
++          await txClient.query('ROLLBACK');
++        } catch (rollbackError: any) {
++          // Nunca mascarar o erro original da transação.
++          console.error('pg.transaction: ROLLBACK falhou:', describePgError(rollbackError));
++        }
+         throw error;
+       } finally {
+-        c.release();
++        txClient.release();
+       }
+     },
++
++    async withMigrationLock<T>(lockKey: number | bigint, work: (db: PgDatabase) => Promise<T>): Promise<T> {
++      const key = typeof lockKey === 'bigint' ? lockKey.toString() : String(Math.trunc(lockKey));
++
++      // Conexão dedicada mantida durante toda a sequência de migrações.
++      const lockClient = await pool.connect().catch((error: any) => {
++        throw new Error(
++          `Falha fatal ao abrir conexão dedicada do advisory lock de migração PostgreSQL (${key}): ${describePgError(error)}`,
++        );
++      });
++
++      // As migrações rodam NESTA conexão (não no pool): funciona com
++      // PG_POOL_MAX=1 e não exige uma segunda conexão.
++      const scoped: PgDatabase = {
++        ...createClientMethods(lockClient),
++        async close() { /* a conexão pertence ao lock */ },
++        async transaction<T2>(nested: (tx: PgDatabase) => Promise<T2>) {
++          await lockClient.query('BEGIN');
++          try {
++            const result = await nested(scoped);
++            await lockClient.query('COMMIT');
++            return result;
++          } catch (error) {
++            try {
++              await lockClient.query('ROLLBACK');
++            } catch (rollbackError: any) {
++              console.error('pg.migrationLock: ROLLBACK falhou:', describePgError(rollbackError));
++            }
++            throw error;
++          }
++        },
++        withMigrationLock: async <T2>(_nestedKey: number | bigint, nested: (db: PgDatabase) => Promise<T2>) => nested(scoped),
++      };
++
++      let lockAcquired = false;
++      let connectionLost = false;
++      let result: T | undefined;
++      let failure: unknown;
++      let unlockFailure: unknown;
++
++      const onConnectionError = (error: Error) => {
++        connectionLost = true;
++        console.error('[migrations] conexão dedicada do lock PostgreSQL perdida:', describePgError(error));
++      };
++      lockClient.on('error', onConnectionError);
++
++      try {
++        try {
++          await lockClient.query('SELECT pg_advisory_lock($1)', [key]);
++          lockAcquired = true;
++        } catch (error: any) {
++          throw new Error(
++            `Falha fatal ao adquirir o advisory lock de migração PostgreSQL (${key}): ${describePgError(error)}`,
++          );
++        }
++
++        try {
++          result = await work(scoped);
++        } catch (error) {
++          failure = error;
++        }
++
++        if (!failure && connectionLost) {
++          failure = new Error(
++            `Conexão dedicada do advisory lock de migração PostgreSQL (${key}) foi perdida durante a inicialização`,
++          );
++        }
++
++        if (lockAcquired && !connectionLost) {
++          try {
++            await lockClient.query('SELECT pg_advisory_unlock($1)', [key]);
++          } catch (error: any) {
++            unlockFailure = new Error(
++              `Falha fatal ao liberar o advisory lock de migração PostgreSQL (${key}): ${describePgError(error)}`,
++            );
++          }
++        }
++      } finally {
++        lockClient.removeListener('error', onConnectionError);
++        lockClient.release(connectionLost);
++      }
++
++      if (failure) throw failure;
++      if (unlockFailure) throw unlockFailure;
++      return result as T;
++    },
+   };
+ 
+   return db;
+diff --git a/lib/db.ts b/lib/db.ts
+index bd27a60..17e8861 100644
+--- a/lib/db.ts
++++ b/lib/db.ts
+@@ -8,9 +8,8 @@ import crypto from 'crypto';
+ import bcrypt from 'bcrypt';
+ import type { Database } from 'sqlite';
+ import { fileURLToPath } from 'url';
+-import { ensureAuthColumns } from '../passwordResetRoutes.js';
+-import { ensureMfaColumns } from '../mfa.js';
+ import { initPgDatabase, isPostgresUrl, asSqliteDb } from './db.pg.js';
++import { runCentralMigrations } from './migrations.js';
+ 
+ const __filename = fileURLToPath(import.meta.url);
+ const __dirname = path.dirname(__filename);
+@@ -117,175 +116,81 @@ async function initPostgres(): Promise<Database> {
+ }
+ 
+ export async function initDB(): Promise<Database> {
+-  const useSupabase = process.env.USE_SUPABASE_DB === '1';
+-  const supabasePassword = (process.env.SUPABASE_DB_PASSWORD || '').trim();
+-  const supabaseHost = (process.env.SUPABASE_DB_HOST || '').trim();
+-  const supabaseUser = (process.env.SUPABASE_DB_USER || '').trim();
+-  const supabaseName = (process.env.SUPABASE_DB_NAME || 'postgres').trim();
+-  const supabasePort = Number(process.env.SUPABASE_DB_PORT || 5432);
++  const previousDb = _db;
++  const previousEngine = _engine;
++  let created: Database | null = null;
+ 
+-  if (useSupabase) {
+-    if (!supabasePassword || !supabaseHost || !supabaseUser) {
+-      throw new Error('USE_SUPABASE_DB=1 exige SUPABASE_DB_PASSWORD, SUPABASE_DB_HOST e SUPABASE_DB_USER.');
+-    }
+-    const auth = encodeURIComponent(supabaseUser) + ':' + encodeURIComponent(supabasePassword);
+-    const url = 'postgresql://' + auth + '@' + supabaseHost + ':' + supabasePort + '/' + encodeURIComponent(supabaseName);
+-    _db = await initPostgresWithUrl(url);
+-  } else {
+-    const url = process.env.DATABASE_URL?.trim();
+-    if (isPostgresUrl(url)) {
+-      _db = await initPostgres();
+-    } else if (isProd) {
+-      throw new Error(
+-        'DATABASE_URL com uma URL PostgreSQL válida é obrigatória em produção. SQLite não é permitido.'
+-      );
++  try {
++    const useSupabase = process.env.USE_SUPABASE_DB === '1';
++    const supabasePassword = (process.env.SUPABASE_DB_PASSWORD || '').trim();
++    const supabaseHost = (process.env.SUPABASE_DB_HOST || '').trim();
++    const supabaseUser = (process.env.SUPABASE_DB_USER || '').trim();
++    const supabaseName = (process.env.SUPABASE_DB_NAME || 'postgres').trim();
++    const supabasePort = Number(process.env.SUPABASE_DB_PORT || 5432);
++
++    if (useSupabase) {
++      if (!supabasePassword || !supabaseHost || !supabaseUser) {
++        throw new Error('USE_SUPABASE_DB=1 exige SUPABASE_DB_PASSWORD, SUPABASE_DB_HOST e SUPABASE_DB_USER.');
++      }
++      const auth = encodeURIComponent(supabaseUser) + ':' + encodeURIComponent(supabasePassword);
++      const url = 'postgresql://' + auth + '@' + supabaseHost + ':' + supabasePort + '/' + encodeURIComponent(supabaseName);
++      created = await initPostgresWithUrl(url);
+     } else {
+-      _db = await initSqlite();
++      const url = process.env.DATABASE_URL?.trim();
++      if (isPostgresUrl(url)) {
++        created = await initPostgres();
++      } else if (isProd) {
++        throw new Error(
++          'DATABASE_URL com uma URL PostgreSQL válida é obrigatória em produção. SQLite não é permitido.'
++        );
++      } else {
++        created = await initSqlite();
++      }
+     }
+-  }
+-
+ 
+-  await _db.exec(`
+-    CREATE TABLE IF NOT EXISTS empresas (
+-      id TEXT PRIMARY KEY,
+-      cnpj TEXT UNIQUE NOT NULL,
+-      nome_empresa TEXT NOT NULL,
+-      slug TEXT UNIQUE,
+-      status TEXT DEFAULT 'trial',
+-      plan TEXT DEFAULT 'trial',
+-      criado_em TIMESTAMPTZ NOT NULL,
+-      expira_em TIMESTAMPTZ NOT NULL,
+-      google_review_url TEXT,
+-      voice_style TEXT,
+-      empresa_pai_id TEXT,
+-      whatsapp_suporte TEXT
+-    )
+-  `);
+-  await _db.exec(`
+-    CREATE TABLE IF NOT EXISTS usuarios (
+-      id TEXT PRIMARY KEY,
+-      cnpj TEXT NOT NULL,
+-      nome_funcionario TEXT NOT NULL,
+-      empresa_id TEXT NOT NULL,
+-      senha_hash TEXT NOT NULL
+-    )
+-  `);
+-  await _db.exec(`
+-    CREATE TABLE IF NOT EXISTS reviews (
+-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+-      empresa_id TEXT,
+-      name TEXT,
+-      rating INTEGER,
+-      comment TEXT,
+-      ai_reply TEXT,
+-      ai_tags TEXT,
+-      is_test INTEGER DEFAULT 0,
+-      createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+-    )
+-  `);
+-  // Migração compatível: bancos Postgres antigos podem ter criado reviews.created_at
+-  // antes do schema atual usar o identificador legado "createdAt". O painel e alguns
+-  // fluxos dependem desse campo; mantemos ambos durante a transição.
+-  try {
+-    await _db.exec('ALTER TABLE reviews ADD COLUMN "createdAt" TIMESTAMPTZ');
+-  } catch {
+-    /* coluna já existe */
+-  }
+-  // A2 — avaliações de teste: [is_test] marca avaliações não-produto (seed de
+-  // validação e testes de staging). Todo o pipeline (contagem de cota, fraud,
+-  // relatórios PDF, Dot monitor) as ignora via COALESCE(is_test, 0). A migração
+-  // é idempotente e roda em SQLite e Postgres.
+-  try {
+-    const columns = await _db.all('PRAGMA table_info(reviews)');
+-    if (!(columns || []).some((column: { name?: string }) => column.name === 'is_test')) {
+-      await _db.exec('ALTER TABLE reviews ADD COLUMN is_test INTEGER DEFAULT 0');
+-    }
+-  } catch {
+-    try {
+-      await _db.exec('ALTER TABLE reviews ADD COLUMN IF NOT EXISTS is_test INTEGER DEFAULT 0');
+-    } catch {
+-      /* coluna já existe (corrida de duas instâncias) — nada a fazer */
++    // Toda a DDL do núcleo (reviews, auth/MFA, dot_action_queue/audit e
++    // tabelas base) vive em lib/migrations.ts e roda sob advisory lock global
++    // no PostgreSQL. Caminhos de requisição nunca migram schema.
++    await runCentralMigrations(created);
++    console.log('Schema inicializado (migrações centrais idempotentes)');
++
++    const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
++    const adminPass = process.env.ADMIN_PASSWORD || '';
++    if (adminMail && adminPass.length >= 12) {
++      const adminExiste = await created.get('SELECT id FROM usuarios WHERE email = ?', [adminMail]);
++      if (!adminExiste) {
++        const hash = await bcrypt.hash(adminPass, 12);
++        try {
++          await created.run(
++            'INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email) VALUES (?, ?, ?, ?, ?, ?)',
++            [crypto.randomUUID(), '00000000000000', 'Admin', 'admin', hash, adminMail]
++          );
++          console.log(`🔑 Admin criado: ${adminMail}`);
++        } catch (e: any) {
++          console.warn('Admin seed:', e?.message || e);
++        }
++      }
++    } else if (isProd && adminMail && adminPass.length > 0 && adminPass.length < 12) {
++      console.warn('⚠️  ADMIN_PASSWORD curta (<12) — admin não será seedado automaticamente.');
+     }
+-  }
+-  try {
+-    await _db.run(
+-      'UPDATE reviews SET "createdAt" = created_at WHERE "createdAt" IS NULL AND created_at IS NOT NULL'
+-    );
+-  } catch {
+-    /* banco já usa somente createdAt */
+-  }
+-  try {
+-    await _db.run(
+-      'UPDATE reviews SET "createdAt" = createdat WHERE "createdAt" IS NULL AND createdat IS NOT NULL'
+-    );
+-  } catch {
+-    /* variante sem aspas não existe */
+-  }
+-  try {
+-    await _db.exec('ALTER TABLE reviews ALTER COLUMN "createdAt" SET DEFAULT CURRENT_TIMESTAMP');
+-  } catch {
+-    /* SQLite não suporta ALTER COLUMN; o schema local já cria createdAt com default */
+-  }
+ 
+-  await _db.exec(`
+-    CREATE TABLE IF NOT EXISTS trial_registrations (
+-      id TEXT PRIMARY KEY,
+-      email TEXT UNIQUE NOT NULL,
+-      ip_hash TEXT UNIQUE NOT NULL,
+-      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+-    )
+-  `);
+-  await _db.exec(`
+-    CREATE TABLE IF NOT EXISTS ai_usage (
+-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+-      empresa_id TEXT,
+-      tipo TEXT NOT NULL,
+-      tokens INTEGER NOT NULL DEFAULT 0,
+-      criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+-    )
+-  `);
+-  await _db.exec(`
+-    CREATE TABLE IF NOT EXISTS usage (
+-      plan TEXT NOT NULL,
+-      month TEXT NOT NULL,
+-      tags INTEGER DEFAULT 0,
+-      respostas INTEGER DEFAULT 0,
+-      PRIMARY KEY (plan, month)
+-    )
+-  `);
+-
+-  try {
+-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_reviews_empresa ON reviews(empresa_id)`);
+-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_cnpj ON empresas(cnpj)`);
+-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_slug ON empresas(slug)`);
+-  } catch {
+-    /* ok */
+-  }
+-
+-  await ensureAuthColumns(_db);
+-  await ensureMfaColumns(_db);
+-
+-  const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+-  const adminPass = process.env.ADMIN_PASSWORD || '';
+-  if (adminMail && adminPass.length >= 12) {
+-    const adminExiste = await _db.get('SELECT id FROM usuarios WHERE email = ?', [adminMail]);
+-    if (!adminExiste) {
+-      const hash = await bcrypt.hash(adminPass, 12);
++    _db = created;
++    return created;
++  } catch (error) {
++    // Falha em migração/verificação: fecha SOMENTE a instância criada por
++    // esta chamada, restaura o estado anterior e propaga o erro original.
++    if (created && created !== previousDb) {
+       try {
+-        await _db.run(
+-          'INSERT INTO usuarios (id, cnpj, nome_funcionario, empresa_id, senha_hash, email) VALUES (?, ?, ?, ?, ?, ?)',
+-          [crypto.randomUUID(), '00000000000000', 'Admin', 'admin', hash, adminMail]
+-        );
+-        console.log(`🔑 Admin criado: ${adminMail}`);
+-      } catch (e: any) {
+-        console.warn('Admin seed:', e?.message || e);
++        const candidate = created as unknown as { close?: () => Promise<void> };
++        if (typeof candidate.close === 'function') await candidate.close();
++      } catch (closeError: any) {
++        console.error('initDB: falha ao fechar instância após erro de inicialização:', closeError?.message || closeError);
+       }
+     }
+-  } else if (isProd && adminMail && adminPass.length > 0 && adminPass.length < 12) {
+-    console.warn('⚠️  ADMIN_PASSWORD curta (<12) — admin não será seedado automaticamente.');
++    _db = previousDb;
++    _engine = previousEngine;
++    throw error;
+   }
+-
+-  return _db;
+ }
+ 
+ export async function findEmpresa(ref: string) {
+diff --git a/lib/lgpd.ts b/lib/lgpd.ts
+index 5d2ce18..032dded 100644
+--- a/lib/lgpd.ts
++++ b/lib/lgpd.ts
+@@ -1,27 +1,19 @@
+ /** LGPD: colunas + anonimização sem funções de data ambíguas no SQL. */
+ import type { Database } from 'sqlite';
++import { requireReviewSchema } from './migrations.js';
+ 
+ const DEFAULT_DAYS = Number(process.env.LGPD_WHATSAPP_RETENTION_DAYS || 90);
+ 
++/** Verifica (sem DDL) as colunas de tratamento LGPD em reviews. */
+ export async function ensureReviewTreatmentColumns(db: Database): Promise<void> {
+-  for (const name of ['treated_at', 'treated_note', 'client_whatsapp'] as const) {
+-    try {
+-      await db.exec(`ALTER TABLE reviews ADD COLUMN ${name} TEXT`);
+-    } catch {
+-      /* exists */
+-    }
+-  }
++  await requireReviewSchema(db, ['treated_at', 'treated_note', 'client_whatsapp']);
+ }
+ 
+ export async function anonymizeOldClientWhatsapp(
+   db: Database,
+   opts?: { retentionDays?: number; limit?: number }
+ ): Promise<{ anonymized: number }> {
+-  try {
+-    await ensureReviewTreatmentColumns(db);
+-  } catch {
+-    /* */
+-  }
++  await ensureReviewTreatmentColumns(db);
+   const limit = Math.max(1, Math.min(500, opts?.limit ?? 200));
+   const treatedCut = Date.now() - 7 * 86400000;
+   const createdCut = Date.now() - (opts?.retentionDays ?? DEFAULT_DAYS) * 86400000;
+diff --git a/lib/migrations.ts b/lib/migrations.ts
+new file mode 100644
+index 0000000..43670a4
+--- /dev/null
++++ b/lib/migrations.ts
+@@ -0,0 +1,558 @@
++/**
++ * Inicialização central de schema (PostgreSQL e SQLite).
++ *
++ * Toda a DDL do núcleo vive aqui, em `runCentralMigrations`, e roda apenas
++ * durante `initDB()`. Caminhos de requisição usam `requireSchema`/`assert*`
++ * para *verificar* o schema e falhar explicitamente quando algo está ausente —
++ * nunca para corrigi-lo silenciosamente.
++ *
++ * Idempotência: cada alteração consulta antes o catálogo (PostgreSQL) ou
++ * `PRAGMA table_info`/`PRAGMA index_list` (SQLite). Nada presume que bancos
++ * antigos compartilham o mesmo schema.
++ */
++import type { Database } from 'sqlite';
++import type { PgDatabase } from './db.pg.js';
++
++/**
++ * Advisory lock global de migração PostgreSQL.
++ *
++ * Chave estável e documentada: FNV-1a 64 bits de
++ * `filtra-ia:postgres:migrations:v1`, truncada para 63 bits (int8 positivo)
++ * para caber em `pg_advisory_lock(bigint)`.
++ *
++ * Nunca altere este valor sem uma migração coordenada: processos antigos e
++ * novos precisam disputar exatamente o mesmo lock.
++ */
++export const PG_MIGRATION_LOCK_KEY = 8005998760133593297n;
++
++function isPgDatabase(db: Database | PgDatabase): db is Database & PgDatabase {
++  db = db as Database;
++  return typeof (db as unknown as Partial<PgDatabase>).withMigrationLock === 'function';
++}
++
++/** Nomes reais das colunas (caixa preservada). Vazio quando a tabela não existe. */
++export async function tableColumnNames(db: Database | PgDatabase, table: string): Promise<string[]> {
++  db = db as Database;
++  const rows = await db.all(`PRAGMA table_info(${table})`);
++  return (rows || []).map((row: any) => String(row.name));
++}
++
++function quoteIdentifier(name: string): string {
++  return `"${name.replace(/"/g, '""')}"`;
++}
++
++/** Colunas de uma tabela, minúsculas. Vazio quando a tabela não existe. */
++export async function tableColumns(db: Database | PgDatabase, table: string): Promise<string[]> {
++  db = db as Database;
++  const rows = await db.all(`PRAGMA table_info(${table})`);
++  return (rows || []).map((row: any) => String(row.name).toLowerCase());
++}
++
++export async function tableExists(db: Database | PgDatabase, table: string): Promise<boolean> {
++  db = db as Database;
++  return (await tableColumns(db, table)).length > 0;
++}
++
++export async function columnExists(db: Database | PgDatabase, table: string, column: string): Promise<boolean> {
++  db = db as Database;
++  return (await tableColumns(db, table)).includes(column.toLowerCase());
++}
++
++export async function indexExists(db: Database | PgDatabase, table: string, index: string): Promise<boolean> {
++  db = db as Database;
++  if (isPgDatabase(db)) {
++    const row = await db.get(
++      `SELECT 1 AS ok FROM pg_indexes WHERE schemaname = 'public' AND lower(indexname) = ? LIMIT 1`,
++      [index.toLowerCase()],
++    );
++    return Boolean(row);
++  }
++  const rows = await db.all(`PRAGMA index_list(${table})`);
++  return (rows || []).some((row: any) => String(row.name).toLowerCase() === index.toLowerCase());
++}
++
++export type SchemaRequirements = {
++  tables?: string[];
++  columns?: Record<string, string[]>;
++  indexes?: Array<{ table: string; name: string }>;
++};
++
++/**
++ * Verifica estruturas obrigatórias sem executar DDL.
++ * Registra o problema e lança erro explícito quando algo está ausente.
++ */
++export async function requireSchema(db: Database | PgDatabase, requirements: SchemaRequirements): Promise<void> {
++  db = db as Database;
++  const missing: string[] = [];
++
++  for (const table of requirements.tables || []) {
++    if (!(await tableExists(db, table))) missing.push(`tabela ${table}`);
++  }
++
++  for (const [table, columns] of Object.entries(requirements.columns || {})) {
++    if (!(await tableExists(db, table))) {
++      missing.push(`tabela ${table}`);
++      continue;
++    }
++    const existing = await tableColumns(db, table);
++    for (const column of columns) {
++      if (!existing.includes(column.toLowerCase())) missing.push(`coluna ${table}.${column}`);
++    }
++  }
++
++  for (const index of requirements.indexes || []) {
++    if (!(await indexExists(db, index.table, index.name))) {
++      missing.push(`índice ${index.name} (${index.table})`);
++    }
++  }
++
++  if (missing.length > 0) {
++    const detail = missing.join(', ');
++    console.error(`[schema] Estruturas obrigatórias ausentes: ${detail}`);
++    throw new Error(
++      `Schema desatualizado: ${detail}. Execute initDB()/runCentralMigrations() antes de usar este recurso.`,
++    );
++  }
++}
++
++/**
++ * Colunas de `reviews` que a aplicação usa. A DDL de todas elas vive nesta
++ * migração central; os serviços apenas verificam a existência com
++ * `requireReviewSchema`/`requireSchema`.
++ */
++export const REVIEW_COLUMNS = [
++  'createdAt',
++  'is_test',
++  'ip_hash',
++  'fraud_flags',
++  'origin',
++  'client_whatsapp',
++  'sentiment',
++  'sentiment_score',
++  'sentiment_source',
++  'locale',
++  'unidade_id',
++  'treated_at',
++  'treated_note',
++] as const;
++
++export type ReviewColumn = (typeof REVIEW_COLUMNS)[number];
++
++/** Verificação (sem DDL) das colunas de reviews usadas por um serviço. */
++export async function requireReviewSchema(
++  db: Database | PgDatabase,
++  columns: readonly string[] = REVIEW_COLUMNS,
++): Promise<void> {
++  await requireSchema(db, { columns: { reviews: [...columns] } });
++}
++
++/** Definições reais de índices (nome, tabela, DDL), sem placeholders. */
++export type IndexDefinition = {
++  name: string;
++  table: string;
++  definition: string;
++  unique: boolean;
++};
++
++function normalizeIndexDefinition(definition: string): string {
++  return String(definition || '').replace(/\s+/g, ' ').trim();
++}
++
++/**
++ * Snapshot real dos índices. PostgreSQL: `pg_indexes` (indexname, tablename,
++ * indexdef). SQLite: `PRAGMA index_list` + `sqlite_master` (e `PRAGMA
++ * index_info` para índices automáticos sem DDL).
++ */
++export async function listIndexDefinitions(
++  db: Database | PgDatabase,
++  tables?: readonly string[],
++): Promise<IndexDefinition[]> {
++  const allowed = tables ? new Set(tables) : null;
++  if (isPgDatabase(db)) {
++    const rows = await db.all(
++      `SELECT indexname AS name, tablename AS table, indexdef AS definition
++         FROM pg_indexes
++        WHERE schemaname = 'public'
++        ORDER BY tablename, indexname`,
++    );
++    return (rows as any[])
++      .map((row) => ({
++        name: String(row.name),
++        table: String(row.table),
++        definition: normalizeIndexDefinition(String(row.definition)),
++        unique: /^CREATE UNIQUE INDEX/i.test(String(row.definition)),
++      }))
++      .filter((row) => !allowed || allowed.has(row.table));
++  }
++
++  const tableRows: any[] = await db.all(
++    `SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name`,
++  );
++  const result: IndexDefinition[] = [];
++  for (const tableRow of tableRows) {
++    const table = String(tableRow.name);
++    if (allowed && !allowed.has(table)) continue;
++    const indexes: any[] = await db.all(`PRAGMA index_list(${table})`);
++    for (const index of indexes || []) {
++      const name = String(index.name);
++      const master: any = await db.get(
++        `SELECT sql FROM sqlite_master WHERE type = 'index' AND name = ?`,
++        [name],
++      );
++      let definition = master?.sql ? String(master.sql) : '';
++      if (!definition) {
++        const info: any[] = await db.all(`PRAGMA index_info(${name})`);
++        const columns = (info || []).map((column) => String(column.name)).join(', ');
++        definition = `CREATE ${Number(index.unique) ? 'UNIQUE ' : ''}INDEX ${name} ON ${table} (${columns})`;
++      }
++      result.push({
++        name,
++        table,
++        definition: normalizeIndexDefinition(definition),
++        unique: Boolean(Number(index.unique)),
++      });
++    }
++  }
++  return result.sort((a, b) => a.table.localeCompare(b.table) || a.name.localeCompare(b.name));
++}
++
++async function createTableIfMissing(db: Database | PgDatabase, table: string, ddl: string): Promise<void> {
++  db = db as Database;
++  if (await tableExists(db, table)) return;
++  await db.exec(ddl);
++}
++
++async function addColumnIfMissing(
++  db: Database | PgDatabase,
++  table: string,
++  column: string,
++  definition: string,
++): Promise<void> {
++  if (await columnExists(db, table, column)) return;
++  await db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
++}
++
++async function createIndexIfMissing(
++  db: Database | PgDatabase,
++  table: string,
++  name: string,
++  ddl: string,
++): Promise<void> {
++  if (await indexExists(db, table, name)) return;
++  await db.exec(ddl);
++}
++
++async function migrateCoreTables(db: Database | PgDatabase): Promise<void> {
++  db = db as Database;
++  await createTableIfMissing(
++    db,
++    'empresas',
++    `CREATE TABLE IF NOT EXISTS empresas (
++      id TEXT PRIMARY KEY,
++      cnpj TEXT UNIQUE NOT NULL,
++      nome_empresa TEXT NOT NULL,
++      slug TEXT UNIQUE,
++      status TEXT DEFAULT 'trial',
++      plan TEXT DEFAULT 'trial',
++      criado_em TIMESTAMPTZ NOT NULL,
++      expira_em TIMESTAMPTZ NOT NULL,
++      google_review_url TEXT,
++      voice_style TEXT,
++      empresa_pai_id TEXT,
++      whatsapp_suporte TEXT
++    )`,
++  );
++
++  await createTableIfMissing(
++    db,
++    'usuarios',
++    `CREATE TABLE IF NOT EXISTS usuarios (
++      id TEXT PRIMARY KEY,
++      cnpj TEXT NOT NULL,
++      nome_funcionario TEXT NOT NULL,
++      empresa_id TEXT NOT NULL,
++      senha_hash TEXT NOT NULL
++    )`,
++  );
++
++  await createTableIfMissing(
++    db,
++    'reviews',
++    `CREATE TABLE IF NOT EXISTS reviews (
++      id INTEGER PRIMARY KEY AUTOINCREMENT,
++      empresa_id TEXT,
++      name TEXT,
++      rating INTEGER,
++      comment TEXT,
++      ai_reply TEXT,
++      ai_tags TEXT,
++      createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
++    )`,
++  );
++
++  await createTableIfMissing(
++    db,
++    'ai_usage',
++    `CREATE TABLE IF NOT EXISTS ai_usage (
++      id INTEGER PRIMARY KEY AUTOINCREMENT,
++      empresa_id TEXT,
++      tipo TEXT NOT NULL,
++      tokens INTEGER NOT NULL DEFAULT 0,
++      criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
++    )`,
++  );
++
++  await createTableIfMissing(
++    db,
++    'usage',
++    `CREATE TABLE IF NOT EXISTS usage (
++      plan TEXT NOT NULL,
++      month TEXT NOT NULL,
++      tags INTEGER DEFAULT 0,
++      respostas INTEGER DEFAULT 0,
++      PRIMARY KEY (plan, month)
++    )`,
++  );
++
++
++  await createTableIfMissing(
++    db,
++    'trial_registrations',
++    `CREATE TABLE IF NOT EXISTS trial_registrations (
++      id TEXT PRIMARY KEY,
++      email TEXT UNIQUE NOT NULL,
++      ip_hash TEXT UNIQUE NOT NULL,
++      created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
++    )`,
++  );
++
++  await createIndexIfMissing(
++    db,
++    'reviews',
++    'idx_reviews_empresa',
++    'CREATE INDEX IF NOT EXISTS idx_reviews_empresa ON reviews(empresa_id)',
++  );
++  await createIndexIfMissing(
++    db,
++    'empresas',
++    'idx_empresas_cnpj',
++    'CREATE INDEX IF NOT EXISTS idx_empresas_cnpj ON empresas(cnpj)',
++  );
++  await createIndexIfMissing(
++    db,
++    'empresas',
++    'idx_empresas_slug',
++    'CREATE INDEX IF NOT EXISTS idx_empresas_slug ON empresas(slug)',
++  );
++}
++
++/**
++ * Migra a data de criação das avaliações preservando a série histórica.
++ *
++ * O adapter deste backend reescreve `createdAt` sem aspas para o identificador
++ * citado `"createdAt"`; por isso o canônico é `createdAt` exato nos dois
++ * dialetos. Fontes históricas aceitas: `createdat` (DDL antiga sem aspas no
++ * PostgreSQL) e `created_at` (schemas em snake_case).
++ *
++ * A coluna é criada SEM DEFAULT e preenchida por backfill; o default do
++ * PostgreSQL é aplicado depois e vale apenas para linhas futuras.
++ */
++async function migrateReviewsCreatedAt(db: Database | PgDatabase): Promise<void> {
++  db = db as Database;
++  const pg = isPgDatabase(db);
++  const actual = await tableColumnNames(db, 'reviews');
++  if (actual.length === 0) return;
++
++  const lower = new Set(actual.map((name) => name.toLowerCase()));
++  const canonical = 'createdAt';
++  // SQLite é case-insensitive para identificadores: se já existe `createdat`,
++  // ele atende `createdAt` e criar outra coluna seria um erro de duplicidade.
++  const hasCanonical = pg ? actual.includes(canonical) : lower.has('createdat');
++
++  if (!hasCanonical) {
++    await db.exec(
++      `ALTER TABLE reviews ADD COLUMN ${canonical} ${pg ? 'TIMESTAMPTZ' : 'DATETIME'}`,
++    );
++    actual.push(canonical);
++  }
++
++  const canonicalName = pg
++    ? canonical
++    : actual.find((name) => name.toLowerCase() === 'createdat') || canonical;
++
++  const sources = actual.filter((name) => {
++    if (name === canonicalName) return false;
++    const normalized = name.toLowerCase();
++    return normalized === 'createdat' || normalized === 'created_at';
++  });
++  sources.sort((a, b) => {
++    const rank = (name: string) =>
++      name === 'createdat' ? 0 : name.toLowerCase() === 'created_at' ? 1 : 2;
++    return rank(a) - rank(b);
++  });
++
++  for (const source of sources) {
++    // Só preenche lacunas: datas válidas no canônico nunca são sobrescritas.
++    await db.exec(
++      `UPDATE reviews SET ${quoteIdentifier(canonicalName)} = ${quoteIdentifier(source)} ` +
++        `WHERE ${quoteIdentifier(canonicalName)} IS NULL AND ${quoteIdentifier(source)} IS NOT NULL`,
++    );
++  }
++
++  if (pg) {
++    await db.exec(
++      `ALTER TABLE reviews ALTER COLUMN ${quoteIdentifier(canonicalName)} SET DEFAULT CURRENT_TIMESTAMP`,
++    );
++  }
++}
++
++async function migrateReviewsColumns(db: Database | PgDatabase): Promise<void> {
++  db = db as Database;
++  await migrateReviewsCreatedAt(db);
++  // Tipos compatíveis com SQLite e PostgreSQL; o adapter traduz REAL para
++  // DOUBLE PRECISION no PostgreSQL. Nenhuma coluna existente é recriada.
++  const definitions: Record<string, string> = {
++    is_test: 'INTEGER DEFAULT 0',
++    ip_hash: 'TEXT',
++    fraud_flags: 'TEXT',
++    origin: 'TEXT',
++    client_whatsapp: 'TEXT',
++    sentiment: 'TEXT',
++    sentiment_score: 'REAL',
++    sentiment_source: 'TEXT',
++    locale: 'TEXT',
++    unidade_id: 'TEXT',
++    treated_at: 'TIMESTAMPTZ',
++    treated_note: 'TEXT',
++  };
++  for (const [column, definition] of Object.entries(definitions)) {
++    await addColumnIfMissing(db, 'reviews', column, definition);
++  }
++}
++
++async function migrateAuthSchema(db: Database | PgDatabase): Promise<void> {
++  db = db as Database;
++  await addColumnIfMissing(db, 'usuarios', 'email', 'TEXT');
++
++  await createTableIfMissing(
++    db,
++    'password_resets',
++    `CREATE TABLE IF NOT EXISTS password_resets (
++      id TEXT PRIMARY KEY,
++      usuario_id TEXT NOT NULL,
++      token_hash TEXT NOT NULL,
++      expira_em TIMESTAMPTZ NOT NULL,
++      usado INTEGER DEFAULT 0,
++      criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
++    )`,
++  );
++
++  await createIndexIfMissing(
++    db,
++    'usuarios',
++    'idx_usuarios_email',
++    'CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_email ON usuarios(email)',
++  );
++  await createIndexIfMissing(
++    db,
++    'password_resets',
++    'idx_password_resets_usuario',
++    'CREATE INDEX IF NOT EXISTS idx_password_resets_usuario ON password_resets(usuario_id, usado)',
++  );
++}
++
++async function migrateMfaSchema(db: Database | PgDatabase): Promise<void> {
++  db = db as Database;
++  await addColumnIfMissing(db, 'usuarios', 'mfa_secret', 'TEXT');
++  await addColumnIfMissing(db, 'usuarios', 'mfa_enabled', 'INTEGER DEFAULT 0');
++  await addColumnIfMissing(db, 'usuarios', 'mfa_backup_hashes', 'TEXT');
++  await addColumnIfMissing(db, 'usuarios', 'mfa_pending_secret', 'TEXT');
++}
++
++async function migrateDotActionSchema(db: Database | PgDatabase): Promise<void> {
++  db = db as Database;
++  await createTableIfMissing(
++    db,
++    'dot_action_queue',
++    `CREATE TABLE IF NOT EXISTS dot_action_queue (
++      id INTEGER PRIMARY KEY AUTOINCREMENT,
++      empresa_id TEXT NOT NULL,
++      decision_id INTEGER NOT NULL,
++      option_id TEXT NOT NULL,
++      action TEXT NOT NULL,
++      status TEXT NOT NULL DEFAULT 'prepared',
++      approved_at TEXT,
++      executed_at TEXT,
++      error TEXT,
++      created_at TEXT NOT NULL
++    )`,
++  );
++  await createIndexIfMissing(
++    db,
++    'dot_action_queue',
++    'ux_dot_action_queue_decision_option',
++    'CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_decision_option ON dot_action_queue(empresa_id, decision_id, option_id)',
++  );
++  await createIndexIfMissing(
++    db,
++    'dot_action_queue',
++    'ux_dot_action_queue_one_active_decision',
++    "CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_one_active_decision ON dot_action_queue(empresa_id, decision_id) WHERE status IN ('prepared','approved','executing')",
++  );
++
++  await createTableIfMissing(
++    db,
++    'dot_action_audit',
++    `CREATE TABLE IF NOT EXISTS dot_action_audit (
++      id INTEGER PRIMARY KEY AUTOINCREMENT,
++      empresa_id TEXT NOT NULL,
++      action_id INTEGER NOT NULL,
++      decision_id INTEGER,
++      event TEXT NOT NULL,
++      actor_type TEXT NOT NULL,
++      actor_id TEXT,
++      metadata TEXT,
++      created_at TEXT NOT NULL
++    )`,
++  );
++  // Bancos criados antes do campo metadata: CREATE TABLE IF NOT EXISTS não
++  // altera tabelas existentes, por isso a verificação explícita.
++  await addColumnIfMissing(db, 'dot_action_audit', 'metadata', 'TEXT');
++  await createIndexIfMissing(
++    db,
++    'dot_action_audit',
++    'idx_dot_action_audit_empresa',
++    'CREATE INDEX IF NOT EXISTS idx_dot_action_audit_empresa ON dot_action_audit(empresa_id, created_at)',
++  );
++  await createIndexIfMissing(
++    db,
++    'dot_action_audit',
++    'idx_dot_action_audit_action',
++    'CREATE INDEX IF NOT EXISTS idx_dot_action_audit_action ON dot_action_audit(empresa_id, action_id, created_at)',
++  );
++}
++
++/**
++ * Sequência central de inicialização. Idempotente.
++ * Em PostgreSQL roda inteira sob o advisory lock global, em uma conexão
++ * dedicada, garantindo que processos concorrentes não executem DDL ao mesmo
++ * tempo.
++ */
++export async function runCentralMigrations(db: Database | PgDatabase): Promise<void> {
++  db = db as Database;
++  const execute = async (db: Database | PgDatabase) => {
++    db = db as Database;
++    await migrateCoreTables(db);
++    await migrateReviewsColumns(db);
++    await migrateAuthSchema(db);
++    await migrateMfaSchema(db);
++    await migrateDotActionSchema(db);
++  };
++
++  if (isPgDatabase(db)) {
++    await db.withMigrationLock(PG_MIGRATION_LOCK_KEY, (scoped) => execute(scoped as unknown as Database));
++    return;
++  }
++
++  await execute(db);
++}
+diff --git a/lib/reviewFraud.ts b/lib/reviewFraud.ts
+index 9064836..4773f8a 100644
+--- a/lib/reviewFraud.ts
++++ b/lib/reviewFraud.ts
+@@ -7,6 +7,7 @@
+  */
+ import crypto from 'crypto';
+ import type { Database } from 'sqlite';
++import { requireReviewSchema } from './migrations.js';
+ 
+ const recentHits = new Map<string, number[]>();
+ 
+@@ -76,25 +77,9 @@ export function checkMemoryRate(ip: string, empresaId: string): void {
+   recentHits.set(key, list);
+ }
+ 
++/** Verifica (sem DDL) as colunas anti-fraude de reviews. */
+ export async function ensureReviewFraudColumns(db: Database): Promise<void> {
+-  const cols = [
+-    'is_test INTEGER DEFAULT 0',
+-    'ip_hash TEXT',
+-    'fraud_flags TEXT',
+-    'origin TEXT',
+-    'client_whatsapp TEXT',
+-  ];
+-  for (const ddl of cols) {
+-    try {
+-      await db.exec(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS ${ddl}`);
+-    } catch {
+-      try {
+-        await db.exec(`ALTER TABLE reviews ADD COLUMN ${ddl}`);
+-      } catch {
+-        /* já existe */
+-      }
+-    }
+-  }
++  await requireReviewSchema(db, ['is_test', 'ip_hash', 'fraud_flags', 'origin', 'client_whatsapp']);
+ }
+ 
+ function normalizeComment(c: string): string {
+diff --git a/mfa.ts b/mfa.ts
+index 21180ea..acc46ba 100644
+--- a/mfa.ts
++++ b/mfa.ts
+@@ -8,6 +8,7 @@ import crypto from 'crypto';
+ import bcrypt from 'bcrypt';
+ import jwt from 'jsonwebtoken';
+ import rateLimit from 'express-rate-limit';
++import { requireSchema } from './lib/migrations.js';
+ 
+ const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+ 
+@@ -97,18 +98,16 @@ function generateBackupCodes(n = 8): string[] {
+   return codes;
+ }
+ 
++/**
++ * Verifica as colunas MFA em `usuarios` — sem DDL.
++ * A DDL vive em `runCentralMigrations` (lib/migrations.ts).
++ */
+ export async function ensureMfaColumns(db: Database): Promise<void> {
+-  const cols = (await db.all(`PRAGMA table_info(usuarios)`)).map((c: any) => c.name);
+-  if (!cols.includes('mfa_secret')) await db.exec(`ALTER TABLE usuarios ADD COLUMN mfa_secret TEXT`);
+-  if (!cols.includes('mfa_enabled')) {
+-    await db.exec(`ALTER TABLE usuarios ADD COLUMN mfa_enabled INTEGER DEFAULT 0`);
+-  }
+-  if (!cols.includes('mfa_backup_hashes')) {
+-    await db.exec(`ALTER TABLE usuarios ADD COLUMN mfa_backup_hashes TEXT`);
+-  }
+-  if (!cols.includes('mfa_pending_secret')) {
+-    await db.exec(`ALTER TABLE usuarios ADD COLUMN mfa_pending_secret TEXT`);
+-  }
++  await requireSchema(db, {
++    columns: {
++      usuarios: ['mfa_secret', 'mfa_enabled', 'mfa_backup_hashes', 'mfa_pending_secret'],
++    },
++  });
+ }
+ 
+ function isAdminUser(u: any): boolean {
+diff --git a/package-lock.json b/package-lock.json
+index bea14e8..e773017 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -2264,9 +2264,9 @@
+       }
+     },
+     "node_modules/qs": {
+-      "version": "6.16.0",
+-      "resolved": "https://registry.npmjs.org/qs/-/qs-6.16.0.tgz",
+-      "integrity": "sha512-h6fhOIaRrID2CbEY2fqs+7t+UXZo+MLAnU5gRIq85uFtdiUPCdsApMlHhXogKVM4HM2DVbIjGNTTYH2OcmP1vA==",
++      "version": "6.17.1",
++      "resolved": "https://registry.npmjs.org/qs/-/qs-6.17.1.tgz",
++      "integrity": "sha512-jd3COkaKVgGUW+ZHyEHCG9bH7RoaaiWuMgzsIBjUMVjLAaWGWpoUAVwljVvBHxRu/2qEHnadLGZrkutYUBPQJA==",
+       "license": "BSD-3-Clause",
+       "dependencies": {
+         "es-define-property": "^1.0.1",
+diff --git a/package.json b/package.json
+index 6409797..0d33c43 100644
+--- a/package.json
++++ b/package.json
+@@ -14,7 +14,7 @@
+     "test": "node scripts/run-tests.mjs",
+     "audit": "npm audit --omit=dev",
+     "mcp:smoke": "tsx scripts/mcp-smoke-test.ts",
+-    "test:postgres": "node --import tsx --test tests/dotActionConcurrency.pg.test.ts"
++    "test:postgres": "node scripts/run-tests.mjs --postgres"
+   },
+   "engines": {
+     "node": ">=20"
+@@ -52,7 +52,7 @@
+     "typescript": "^5.8.2"
+   },
+   "overrides": {
+-    "qs": "^6.14.1",
++    "qs": "^6.17.1",
+     "bcrypt": "npm:bcryptjs@^3.0.2"
+   }
+ }
+diff --git a/passwordResetRoutes.ts b/passwordResetRoutes.ts
+index 7ce9718..ee5f7dc 100644
+--- a/passwordResetRoutes.ts
++++ b/passwordResetRoutes.ts
+@@ -9,6 +9,7 @@ import bcrypt from 'bcrypt';
+ import rateLimit from 'express-rate-limit';
+ import { enviarEmail, smtpConfigured } from './lib/mailer.js';
+ import { validarSenhaEmpresa } from './passwordPolicy.js';
++import { requireSchema } from './lib/migrations.js';
+ 
+ const APP_URL = (process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(
+   /\/$/,
+@@ -43,35 +44,19 @@ export async function invalidatePasswordResetTokens(
+   return Number(result.changes || 0);
+ }
+ 
++/**
++ * Garante que o schema de autenticação já existe — sem executar DDL.
++ * A DDL vive em `runCentralMigrations` (lib/migrations.ts), executada no boot.
++ */
+ export async function ensureAuthColumns(db: Database) {
+-  const cols = (await db.all(`PRAGMA table_info(usuarios)`)).map((c: any) => c.name);
+-  if (!cols.includes('email')) {
+-    await db.exec(`ALTER TABLE usuarios ADD COLUMN email TEXT`);
+-  }
+-  try {
+-    await db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_email ON usuarios(email)`);
+-  } catch {
+-    /* ok */
+-  }
+-
+-  await db.exec(`
+-    CREATE TABLE IF NOT EXISTS password_resets (
+-      id TEXT PRIMARY KEY,
+-      usuario_id TEXT NOT NULL,
+-      token_hash TEXT NOT NULL,
+-      expira_em TIMESTAMPTZ NOT NULL,
+-      usado INTEGER DEFAULT 0,
+-      criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+-    )
+-  `);
+-
+-  try {
+-    await db.exec(
+-      `CREATE INDEX IF NOT EXISTS idx_password_resets_usuario ON password_resets(usuario_id, usado)`
+-    );
+-  } catch {
+-    /* ok */
+-  }
++  await requireSchema(db, {
++    columns: { usuarios: ['email'] },
++    tables: ['password_resets'],
++    indexes: [
++      { table: 'usuarios', name: 'idx_usuarios_email' },
++      { table: 'password_resets', name: 'idx_password_resets_usuario' },
++    ],
++  });
+ }
+ 
+ export async function createUsuarioForEmpresa(
+diff --git a/routes/adminTecnicoRoutes.ts b/routes/adminTecnicoRoutes.ts
+index 737354a..e204942 100644
+--- a/routes/adminTecnicoRoutes.ts
++++ b/routes/adminTecnicoRoutes.ts
+@@ -6,6 +6,7 @@
+  */
+ import type { Express, Request, Response } from 'express';
+ import { getDb } from '../lib/db.js';
++import { requireReviewSchema } from '../lib/migrations.js';
+ import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
+ import { asyncHandler } from '../middleware/errorHandler.js';
+ import {
+@@ -138,14 +139,8 @@ export function mountAdminTecnicoRoutes(app: Express) {
+       const mpLast24hOk =
+         mpHealth.total === 0 ? null : mpHealth.errors === 0 && mpHealth.ok > 0;
+ 
+-      const cols = (await db.all(`SELECT column_name AS name FROM information_schema.columns WHERE table_name = 'reviews'`)).map((c: any) => c.name);
+-      if (!cols.includes('client_whatsapp')) {
+-        try {
+-          await db.exec(`ALTER TABLE reviews ADD COLUMN client_whatsapp TEXT`);
+-        } catch {
+-          /* */
+-        }
+-      }
++      // Sem DDL: colunas garantidas pela migração central (verificação explícita).
++      await requireReviewSchema(db, ['client_whatsapp', 'origin']);
+ 
+       const criticas = await db.all(
+         `SELECT r.id, r.name, r.rating, r.comment, r.ai_reply, r.ai_tags,
+diff --git a/routes/empresaRoutes.ts b/routes/empresaRoutes.ts
+index 70f19eb..e121e0d 100644
+--- a/routes/empresaRoutes.ts
++++ b/routes/empresaRoutes.ts
+@@ -1,13 +1,13 @@
+ import type { Express, Request, Response } from 'express';
+ import rateLimit from 'express-rate-limit';
+ import { getDb, findEmpresa } from '../lib/db.js';
++import { requireReviewSchema } from '../lib/migrations.js';
+ import {
+   normalizarWhatsapp,
+   linkWhatsapp,
+   mensagemEmpresaParaCliente,
+ } from '../lib/whatsapp.js';
+ import { asyncHandler } from '../middleware/errorHandler.js';
+-import { ensureReviewFraudColumns } from '../lib/reviewFraud.js';
+ import {
+   allowPlanSwitch,
+   PLANOS_OFICIAIS,
+@@ -23,7 +23,6 @@ import {
+   contarReviewsMes,
+ } from '../lib/quota.js';
+ import { autenticarToken, isAdminUser, type AuthRequest } from '../lib/auth.js';
+-import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
+ import { ensureUnidadesSchema } from '../lib/unidades.js';
+ import { loadCompanyReviewsCached } from '../services/companyReviewsCache.js';
+ 
+@@ -454,39 +453,8 @@ function podeGerirEmpresa(req: AuthRequest, empresaId: string): boolean {
+ }
+ 
+ async function ensurePainelColumns(db: any) {
+-  try {
+-    await ensureReviewFraudColumns(db);
+-  } catch (e: any) {
+-    console.warn('ensureReviewFraudColumns:', e?.message || e);
+-  }
+-  try {
+-    await ensureReviewTreatmentColumns(db);
+-  } catch (e: any) {
+-    console.warn('ensureReviewTreatmentColumns:', e?.message || e);
+-  }
+-  const extras = [
+-    'sentiment TEXT',
+-    'sentiment_score DOUBLE PRECISION',
+-    'sentiment_source TEXT',
+-    'is_test INTEGER DEFAULT 0',
+-    'fraud_flags TEXT',
+-    'origin TEXT',
+-    'client_whatsapp TEXT',
+-    'unidade_id TEXT',
+-    'treated_at TIMESTAMPTZ',
+-    'treated_note TEXT',
+-  ];
+-  for (const ddl of extras) {
+-    try {
+-      await db.exec(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS ${ddl}`);
+-    } catch {
+-      try {
+-        await db.exec(`ALTER TABLE reviews ADD COLUMN ${ddl}`);
+-      } catch {
+-        /* ok */
+-      }
+-    }
+-  }
++  // Sem DDL: schema de reviews criado na inicialização central. Falha é explícita.
++  await requireReviewSchema(db);
+ }
+ 
+ const PAINEL_RECENTES_LIMIT = 500;
+diff --git a/scripts/run-tests.mjs b/scripts/run-tests.mjs
+index 290b678..8943f14 100644
+--- a/scripts/run-tests.mjs
++++ b/scripts/run-tests.mjs
+@@ -16,24 +16,39 @@ import { spawnSync } from 'node:child_process';
+ 
+ const root = process.cwd();
+ const testsDir = join(root, 'tests');
++const args = process.argv.slice(2);
++const postgres = args.includes('--postgres');
++const listOnly = args.includes('--list');
++const unknown = args.filter((arg) => !['--postgres', '--list'].includes(arg));
++if (unknown.length > 0) {
++  console.error('Argumento desconhecido: ' + unknown.join(' '));
++  process.exit(1);
++}
+ 
+ function collect(dir) {
+   const out = [];
+   for (const entry of readdirSync(dir, { withFileTypes: true })) {
+     const full = join(dir, entry.name);
+     if (entry.isDirectory()) out.push(...collect(full));
+-    else if (entry.isFile() && entry.name.endsWith('.test.ts') && !entry.name.endsWith('.pg.test.ts')) out.push(full);
++    else if (entry.isFile() && entry.name.endsWith('.test.ts')) {
++      const isPostgres = entry.name.endsWith('.pg.test.ts');
++      if (postgres ? isPostgres : !isPostgres) out.push(full);
++    }
+   }
+   return out;
+ }
+ 
+ const files = collect(testsDir).map((file) => relative(root, file)).sort();
++if (listOnly) {
++  process.stdout.write(JSON.stringify(files, null, 2) + '\n');
++  process.exit(0);
++}
+ if (files.length === 0) {
+   console.error('Nenhum arquivo de teste encontrado em ' + relative(root, testsDir) + '.');
+   process.exit(1);
+ }
+ 
+-console.log('Executando ' + files.length + ' arquivo(s) de teste em ' + process.version + '.\n');
++console.log('Executando ' + files.length + ' arquivo(s) de teste' + (postgres ? ' PostgreSQL' : '') + ' em ' + process.version + '.\n');
+ 
+ // Concorrencia 1: varios testes usam arquivos sqlite fixos em /tmp e nao
+ // podem rodar em paralelo no mesmo host (flakes de corrida).
+diff --git a/scripts/schema-ddl-audit.mjs b/scripts/schema-ddl-audit.mjs
+new file mode 100644
+index 0000000..ce87b18
+--- /dev/null
++++ b/scripts/schema-ddl-audit.mjs
+@@ -0,0 +1,71 @@
++#!/usr/bin/env node
++/**
++ * Auditoria de DDL fora de `lib/migrations.ts`.
++ *
++ * Lista toda ocorrência de ALTER TABLE / CREATE TABLE / CREATE INDEX no código
++ * de aplicação (lib, services, routes, middleware e arquivos raiz). Usada pelo
++ * teste `tests/schemaDdlAudit.test.ts` para garantir que `reviews` não tem mais
++ * DDL em caminhos de requisição.
++ *
++ * Uso: node scripts/schema-ddl-audit.mjs [--json]
++ */
++import { readdirSync, readFileSync, statSync } from 'node:fs';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++
++const here = path.dirname(fileURLToPath(import.meta.url));
++const backendRoot = path.resolve(here, '..');
++const SCAN_DIRS = ['lib', 'services', 'routes', 'middleware'];
++const SKIP = new Set(['node_modules', 'tests', 'scripts', 'dist', 'data']);
++const DDL = /\b(ALTER\s+TABLE|CREATE\s+(?:UNIQUE\s+)?(?:TABLE|INDEX))\b/gi;
++
++function walk(dir) {
++  const files = [];
++  for (const entry of readdirSync(dir, { withFileTypes: true })) {
++    if (entry.name.startsWith('.') || SKIP.has(entry.name)) continue;
++    const full = path.join(dir, entry.name);
++    if (entry.isDirectory()) files.push(...walk(full));
++    else if (entry.isFile() && full.endsWith('.ts')) files.push(full);
++  }
++  return files;
++}
++
++function relative(file) {
++  return path.relative(backendRoot, file).split(path.sep).join('/');
++}
++
++export function collectSchemaDdl(root = backendRoot) {
++  const files = [];
++  for (const dir of SCAN_DIRS) files.push(...walk(path.join(root, dir)));
++  for (const entry of readdirSync(root, { withFileTypes: true })) {
++    if (entry.isFile() && entry.name.endsWith('.ts')) files.push(path.join(root, entry.name));
++  }
++
++  const occurrences = [];
++  for (const file of files.sort()) {
++    if (relative(file) === 'lib/migrations.ts') continue;
++    const lines = readFileSync(file, 'utf8').split(/\r?\n/);
++    lines.forEach((line, index) => {
++      for (const match of line.matchAll(DDL)) {
++        occurrences.push({
++          file: relative(file),
++          line: index + 1,
++          statement: match[0].replace(/\s+/g, ' ').toUpperCase(),
++          excerpt: line.trim().slice(0, 200),
++        });
++      }
++    });
++  }
++  return occurrences;
++}
++
++if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
++  const json = process.argv.includes('--json');
++  const occurrences = collectSchemaDdl();
++  if (json) {
++    process.stdout.write(`${JSON.stringify(occurrences, null, 2)}\n`);
++  } else {
++    for (const item of occurrences) console.log(`${item.file}:${item.line}  ${item.statement}`);
++    console.log(`\n${occurrences.length} ocorrência(s) fora de lib/migrations.ts`);
++  }
++}
+diff --git a/services/dotActionAudit.ts b/services/dotActionAudit.ts
+index f298728..668f9b6 100644
+--- a/services/dotActionAudit.ts
++++ b/services/dotActionAudit.ts
+@@ -1,4 +1,5 @@
+ import { getDb } from '../lib/db.js';
++import { requireSchema } from '../lib/migrations.js';
+ 
+ export type DotActionAuditEvent =
+   | 'prepared'
+@@ -17,32 +18,22 @@ export type DotActionAuditInput = {
+   metadata?: unknown;
+ };
+ 
++/**
++ * Verifica o schema de auditoria — sem DDL.
++ * Tabela/coluna/índices são criados apenas em `runCentralMigrations`.
++ */
+ export async function ensureDotActionAuditSchema() {
+   const db = getDb();
+-  await db.exec(`CREATE TABLE IF NOT EXISTS dot_action_audit (
+-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+-    empresa_id TEXT NOT NULL,
+-    action_id INTEGER NOT NULL,
+-    decision_id INTEGER,
+-    event TEXT NOT NULL,
+-    actor_type TEXT NOT NULL,
+-    actor_id TEXT,
+-    metadata TEXT,
+-    created_at TEXT NOT NULL
+-  )`);
+-  // Compatibilidade com bancos criados antes do campo metadata.
+-  // CREATE TABLE IF NOT EXISTS não altera uma tabela já existente.
+-  try {
+-    await db.exec('ALTER TABLE dot_action_audit ADD COLUMN metadata TEXT');
+-  } catch (error: any) {
+-    const message = String(error?.message || error).toLowerCase();
+-    if (!message.includes('duplicate column') && !message.includes('already exists')) {
+-      throw error;
+-    }
+-  }
+-
+-  await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_action_audit_empresa ON dot_action_audit(empresa_id, created_at)');
+-  await db.exec('CREATE INDEX IF NOT EXISTS idx_dot_action_audit_action ON dot_action_audit(empresa_id, action_id, created_at)');
++  await requireSchema(db, {
++    tables: ['dot_action_audit'],
++    columns: {
++      dot_action_audit: ['empresa_id', 'action_id', 'decision_id', 'event', 'actor_type', 'metadata'],
++    },
++    indexes: [
++      { table: 'dot_action_audit', name: 'idx_dot_action_audit_empresa' },
++      { table: 'dot_action_audit', name: 'idx_dot_action_audit_action' },
++    ],
++  });
+ }
+ 
+ export async function recordDotActionAudit(input: DotActionAuditInput) {
+diff --git a/services/dotActionQueue.ts b/services/dotActionQueue.ts
+index 2eb34ff..884cd11 100644
+--- a/services/dotActionQueue.ts
++++ b/services/dotActionQueue.ts
+@@ -1,4 +1,5 @@
+ import { dbEngine, getDb, withDbTransaction } from '../lib/db.js';
++import { requireSchema } from '../lib/migrations.js';
+ import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRegistry.js';
+ import { ensureDotActionAuditSchema } from './dotActionAudit.js';
+ import { executeDotActionThroughGateway } from './dotExecutionGateway.js';
+@@ -35,22 +36,33 @@ function normalizeActionRow(row: any) {
+   };
+ }
+ 
++/**
++ * Verifica o schema da fila de ações — sem DDL em caminho de requisição.
++ * Tabela/índices são criados apenas em `runCentralMigrations`.
++ */
+ async function ensureSchema() {
+   const db = getDb();
+-  await db.exec(`CREATE TABLE IF NOT EXISTS dot_action_queue (
+-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+-    empresa_id TEXT NOT NULL,
+-    decision_id INTEGER NOT NULL,
+-    option_id TEXT NOT NULL,
+-    action TEXT NOT NULL,
+-    status TEXT NOT NULL DEFAULT 'prepared',
+-    approved_at TEXT,
+-    executed_at TEXT,
+-    error TEXT,
+-    created_at TEXT NOT NULL
+-  )`);
+-  await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_decision_option ON dot_action_queue(empresa_id, decision_id, option_id)');
+-  await db.exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_one_active_decision ON dot_action_queue(empresa_id, decision_id) WHERE status IN ('prepared','approved','executing')");
++  await requireSchema(db, {
++    tables: ['dot_action_queue'],
++    columns: {
++      dot_action_queue: [
++        'id',
++        'empresa_id',
++        'decision_id',
++        'option_id',
++        'action',
++        'status',
++        'approved_at',
++        'executed_at',
++        'error',
++        'created_at',
++      ],
++    },
++    indexes: [
++      { table: 'dot_action_queue', name: 'ux_dot_action_queue_decision_option' },
++      { table: 'dot_action_queue', name: 'ux_dot_action_queue_one_active_decision' },
++    ],
++  });
+ }
+ 
+ export async function prepareDotActionFromDecision(
+diff --git a/services/reviewService.ts b/services/reviewService.ts
+index a46e665..181ee41 100644
+--- a/services/reviewService.ts
++++ b/services/reviewService.ts
+@@ -3,24 +3,24 @@ import type { Database } from 'sqlite';
+ import { getDb, findEmpresa } from '../lib/db.js';
+ import { gerarRespostaReview, gerarTagsSemanticas, analisarSentimento, aiConfigured } from '../groqService.js';
+ import { planTemIA, getFeedbackLimit, contarReviewsMes, assertEmpresaTokenQuota } from '../lib/quota.js';
+-import { assertNotHoneypot, checkDbRateByIp, checkDuplicateComment, checkMemoryRate, checkOneComplaintOnly, checkOneFeedbackOnly, ensureReviewFraudColumns, hashIp, softFraudFlags, ReviewFraudError } from '../lib/reviewFraud.js';
++import { assertNotHoneypot, checkDbRateByIp, checkDuplicateComment, checkMemoryRate, checkOneComplaintOnly, checkOneFeedbackOnly,  hashIp, softFraudFlags, ReviewFraudError } from '../lib/reviewFraud.js';
+ import { notifyCrisisReview } from '../lib/push.js';
+ import { normalizarWhatsapp, linkWhatsapp, mensagemClienteParaEmpresa } from '../lib/whatsapp.js';
+ import { notificarCriticaPrivada, notificarAlertaCrise } from '../lib/notifications.js';
+ import { normalizeLocale } from '../lib/locale.js';
+ import { invalidateCompanyReviewsCache } from './companyReviewsCache.js';
++import { requireReviewSchema } from '../lib/migrations.js';
+ export type ReviewInput={name?:string;comment?:string;rating:number;empresa_id?:string;empresa_ref?:string;website?:string;is_test?:boolean;company_self?:boolean;ip?:string;client_whatsapp?:string;locale?:string;unidade_id?:string};
+ export type ReviewResult={success:true;id:number|undefined;ai:boolean;is_test?:boolean;sentiment?:string;ai_skipped_quota?:boolean;locale?:string;whatsapp_empresa_url?:string|null;whatsapp_mensagem?:string|null};
+ export class ReviewNotFoundError extends Error{status=404;constructor(message='Empresa não encontrada.'){super(message);this.name='ReviewNotFoundError';}}
+ export class ReviewQuotaError extends Error{status=429;constructor(message:string){super(message);this.name='ReviewQuotaError';}}
+ export class ReviewValidationError extends Error{status=400;constructor(message:string){super(message);this.name='ReviewValidationError';}}
+ export {ReviewFraudError};
+-async function ensureSentimentColumns(db:Database){const extras=['sentiment TEXT','sentiment_score DOUBLE PRECISION','sentiment_source TEXT','client_whatsapp TEXT','locale TEXT','unidade_id TEXT'];for(const ddl of extras){try{await db.exec(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS ${ddl}`);}catch{try{await db.exec(`ALTER TABLE reviews ADD COLUMN ${ddl}`);}catch{}}}}
+ async function emailDaEmpresa(db:Database,empresaId:string):Promise<string|null>{try{const row=await db.get(`SELECT email FROM usuarios WHERE empresa_id=? AND email IS NOT NULL AND email!='' LIMIT 1`,[empresaId]);return row?.email?String(row.email):null;}catch{return null;}}
+ function limitarRespostaIA(texto:string,maxFrases=3,maxTokens=180):string{let text=String(texto||'').replace(/\s+/g,' ').trim();if(!text)return '';const frases=text.match(/[^.!?。！？]+[.!?。！？]+|[^.!?。！？]+$/g)||[text];text=frases.slice(0,maxFrases).join(' ').trim();const words=text.split(/\s+/).filter(Boolean);while(words.length>1&&Math.ceil(words.join(' ').length/4)>maxTokens)words.pop();text=words.join(' ').trim();if(text&&!/[.!?。！？]$/.test(text))text+='.';return text;}
+ export async function criarReview(input:ReviewInput,db:Database=getDb()):Promise<ReviewResult>{
+-  try{await ensureReviewFraudColumns(db);}catch(e:any){console.warn('ensureReviewFraudColumns:',e?.message||e);}
+-  try{await ensureSentimentColumns(db);}catch(e:any){console.warn('ensureSentimentColumns:',e?.message||e);}
++  // Sem DDL e sem catch: schema incompleto falha explicitamente.
++  await requireReviewSchema(db);
+   assertNotHoneypot(input.website);
+   const name=input.name?String(input.name).slice(0,100):'';
+   const comment=input.comment?String(input.comment).slice(0,500):'';
+@@ -62,9 +62,9 @@ export async function criarReview(input:ReviewInput,db:Database=getDb()):Promise
+   }else if(!isTest&&rating<=3&&comment){aiTags=JSON.stringify(rating<=2?['#NegativeExperience']:['#Neutral']);}
+   const baseParams=[empresaId,name||'Anônimo',rating,comment||null,aiReply,aiTags];let result:any;
+   const attempts=[
+-    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,sentiment,sentiment_score,sentiment_source,client_whatsapp,locale,unidade_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',sentiment.label,sentiment.score,sentiment.source,clientWpp,locale,unidadeId]},
+-    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,client_whatsapp) VALUES (?,?,?,?,?,?,?,?,?,?,?)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',clientWpp]},
+-    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags) VALUES (?,?,?,?,?,?)`,params:baseParams}
++    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,sentiment,sentiment_score,sentiment_source,client_whatsapp,locale,unidade_id,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',sentiment.label,sentiment.score,sentiment.source,clientWpp,locale,unidadeId]},
++    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,is_test,ip_hash,fraud_flags,origin,client_whatsapp,createdAt) VALUES (?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)`,params:[...baseParams,isTest?1:0,isTest?null:ipHash,flags.length?JSON.stringify(flags):null,isTest?'painel_teste':'publico',clientWpp]},
++    {sql:`INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,createdAt) VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)`,params:baseParams}
+   ];
+   let lastErr:any;for(const a of attempts){try{result=await db.run(a.sql,a.params);lastErr=null;break;}catch(e){lastErr=e;}}if(lastErr)throw lastErr;
+   if(empresaId)invalidateCompanyReviewsCache(empresaId);
+@@ -75,4 +75,4 @@ export async function criarReview(input:ReviewInput,db:Database=getDb()):Promise
+   let whatsapp_empresa_url:string|null=null;let whatsapp_mensagem:string|null=null;if(!isTest&&rating<=3&&empresaWpp){whatsapp_mensagem=mensagemClienteParaEmpresa({nomeEmpresa,nomeCliente:name||undefined,rating,comment:comment||undefined});whatsapp_empresa_url=linkWhatsapp(empresaWpp,whatsapp_mensagem);}
+   return{success:true,id:result?.lastID,ai:Boolean(aiReply),is_test:isTest,sentiment:sentiment.label,ai_skipped_quota:aiSkippedQuota,locale,whatsapp_empresa_url,whatsapp_mensagem};
+ }
+-export async function listarReviews(ref:string,db:Database=getDb()){const emp=await findEmpresa(ref);if(!emp)throw new ReviewNotFoundError();await ensureReviewFraudColumns(db);await ensureSentimentColumns(db);try{return await db.all(`SELECT * FROM reviews WHERE empresa_id=? ORDER BY id DESC LIMIT 100`,[emp.id]);}catch{return[];}}
++export async function listarReviews(ref:string,db:Database=getDb()){const emp=await findEmpresa(ref);if(!emp)throw new ReviewNotFoundError();await requireReviewSchema(db);return await db.all(`SELECT * FROM reviews WHERE empresa_id=? ORDER BY id DESC LIMIT 100`,[emp.id]);}
+diff --git a/services/sentimentBackfill.ts b/services/sentimentBackfill.ts
+index 74471d0..0bb59bf 100644
+--- a/services/sentimentBackfill.ts
++++ b/services/sentimentBackfill.ts
+@@ -6,18 +6,11 @@
+ import type { Database } from 'sqlite';
+ import { analyzeSentimentHeuristic } from '../lib/sentiment.js';
+ import { analisarSentimento } from '../groqService.js';
++import { requireReviewSchema } from '../lib/migrations.js';
+ 
++/** Verifica (sem DDL) as colunas de sentimento; DDL vive na migração central. */
+ export async function ensureSentimentColumns(db: Database): Promise<void> {
+-  const cols = (await db.all(`PRAGMA table_info(reviews)`)).map((c: any) => c.name);
+-  if (!cols.includes('sentiment')) {
+-    await db.exec(`ALTER TABLE reviews ADD COLUMN sentiment TEXT`);
+-  }
+-  if (!cols.includes('sentiment_score')) {
+-    await db.exec(`ALTER TABLE reviews ADD COLUMN sentiment_score REAL`);
+-  }
+-  if (!cols.includes('sentiment_source')) {
+-    await db.exec(`ALTER TABLE reviews ADD COLUMN sentiment_source TEXT`);
+-  }
++  await requireReviewSchema(db, ['sentiment', 'sentiment_score', 'sentiment_source']);
+ }
+ 
+ export type BackfillOptions = {
+diff --git a/tests/dbIndexSnapshot.pg.test.ts b/tests/dbIndexSnapshot.pg.test.ts
+new file mode 100644
+index 0000000..0b99531
+--- /dev/null
++++ b/tests/dbIndexSnapshot.pg.test.ts
+@@ -0,0 +1,56 @@
++/**
++ * Snapshot real de índices (pg_indexes): nome, tabela e definição.
++ * Deve detectar índice ausente e definição alterada (inclusive único/parcial).
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { initPgDatabase } from '../lib/db.pg.js';
++import { listIndexDefinitions, runCentralMigrations } from '../lib/migrations.js';
++import { createTestDatabase, dropTestDatabase } from './helpers/pg-test-utils.js';
++
++const TABLES = ['empresas', 'usuarios', 'reviews', 'password_resets', 'dot_action_queue', 'dot_action_audit'];
++
++test('snapshot de índices captura definições reais e detecta ausência/alteração', async () => {
++  const created = await createTestDatabase('pg_index_snapshot');
++  const db = await initPgDatabase(created.url);
++  try {
++    await runCentralMigrations(db);
++    const baseline = await listIndexDefinitions(db, TABLES);
++    assert.ok(baseline.length > 0);
++    for (const index of baseline) {
++      assert.ok(index.name.length > 0);
++      assert.ok(TABLES.includes(index.table));
++      assert.match(index.definition, /^CREATE (UNIQUE )?INDEX /, `definição inválida: ${index.definition}`);
++    }
++
++    const unique = baseline.find((index) => index.name === 'idx_usuarios_email');
++    assert.equal(unique?.unique, true, 'índice único deve ser identificado pela definição real');
++    const partial = baseline.find((index) => index.name === 'ux_dot_action_queue_one_active_decision');
++    assert.equal(partial?.unique, true);
++    assert.match(String(partial?.definition), /WHERE/i, 'índice parcial deve manter o predicado na definição');
++
++    // Ausência detectada.
++    await db.exec('DROP INDEX idx_dot_action_audit_empresa');
++    const semIndice = await listIndexDefinitions(db, TABLES);
++    assert.equal(semIndice.some((index) => index.name === 'idx_dot_action_audit_empresa'), false);
++    assert.notDeepEqual(semIndice, baseline, 'snapshot deve mudar quando um índice desaparece');
++
++    // Definição alterada detectada.
++    await db.exec('CREATE INDEX idx_dot_action_audit_empresa ON dot_action_audit(created_at)');
++    const alterado = await listIndexDefinitions(db, TABLES);
++    const original = baseline.find((index) => index.name === 'idx_dot_action_audit_empresa');
++    const diferente = alterado.find((index) => index.name === 'idx_dot_action_audit_empresa');
++    assert.ok(original && diferente);
++    assert.notEqual(diferente?.definition, original?.definition, 'definição diferente deve ser detectada');
++    assert.notDeepEqual(alterado, baseline);
++
++    // Migração restaura a definição canônica quando o índice está ausente.
++    await db.exec('DROP INDEX idx_dot_action_audit_empresa');
++    await runCentralMigrations(db);
++    const restaurado = await listIndexDefinitions(db, TABLES);
++    assert.deepEqual(restaurado, baseline, 'segunda inicialização deve restaurar exatamente as definições');
++  } finally {
++    await db.close();
++    await dropTestDatabase(created.name);
++  }
++});
+diff --git a/tests/dbInitFailureRecovery.pg.test.ts b/tests/dbInitFailureRecovery.pg.test.ts
+new file mode 100644
+index 0000000..48206bb
+--- /dev/null
++++ b/tests/dbInitFailureRecovery.pg.test.ts
+@@ -0,0 +1,117 @@
++/**
++ * initDB() deve ser atômico: se a conexão abre mas a migração falha, fecha a
++ * instância criada, limpa o estado, propaga o erro original e permite nova
++ * tentativa. Uma instância anterior (de outra chamada) nunca é fechada.
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { Client } from 'pg';
++import { closeDB, getDb, initDB } from '../lib/db.js';
++import { tableColumns } from '../lib/migrations.js';
++import {
++  createTestDatabase,
++  dropTestDatabase,
++  withAdminClient,
++} from './helpers/pg-test-utils.js';
++
++async function withRaw(url: string, sql: string): Promise<void> {
++  const client = new Client({ connectionString: url });
++  await client.connect();
++  try {
++    await client.query(sql);
++  } finally {
++    await client.end();
++  }
++}
++
++async function connectionsFor(database: string): Promise<number> {
++  return withAdminClient(async (client) => {
++    const result = await client.query(
++      'SELECT count(*)::int AS c FROM pg_stat_activity WHERE datname = $1',
++      [database],
++    );
++    return Number(result.rows[0].c);
++  });
++}
++
++async function waitForNoConnections(database: string): Promise<number> {
++  const deadline = Date.now() + 5_000;
++  let count = await connectionsFor(database);
++  while (count !== 0 && Date.now() < deadline) {
++    await new Promise((resolve) => setTimeout(resolve, 100));
++    count = await connectionsFor(database);
++  }
++  return count;
++}
++
++test('falha na migração de initDB fecha o pool, propaga o erro e permite nova tentativa', async () => {
++  const created = await createTestDatabase('pg_init_failure_recovery');
++  const previousUrl = process.env.DATABASE_URL;
++  process.env.DATABASE_URL = created.url;
++  try {
++    // Bloqueia a tabela reviews com uma view: a migração falha de verdade.
++    await withRaw(created.url, 'CREATE VIEW reviews AS SELECT 1 AS id');
++
++    await assert.rejects(
++      () => initDB(),
++      (error: any) => {
++        assert.match(String(error?.message || error), /reviews|relation|index/i);
++        console.log('erro original propagado:', error?.message, 'code=', error?.code);
++        return true;
++      },
++      'initDB deve rejeitar quando a migração falha',
++    );
++
++    // Estado limpo: nenhum banco ativo e nenhuma conexão pendurada.
++    assert.throws(() => getDb(), /não inicializado/, 'getDb não pode devolver instância após falha');
++    const remaining = await waitForNoConnections(created.name);
++    assert.equal(remaining, 0, `pool deveria estar fechado, mas há ${remaining} conexão(ões)`);
++
++    // Corrige o schema e tenta novamente: recuperação completa.
++    await withRaw(created.url, 'DROP VIEW reviews');
++    const db = await initDB();
++    const columns = await tableColumns(db, 'reviews');
++    for (const column of ['createdat', 'is_test', 'ip_hash', 'sentiment_score', 'treated_at']) {
++      assert.ok(columns.includes(column), `recuperação deve criar reviews.${column}`);
++    }
++    await closeDB();
++  } finally {
++    await closeDB().catch(() => undefined);
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(created.name);
++  }
++});
++
++test('falha de uma nova initDB não fecha a instância de uma chamada anterior', async () => {
++  const good = await createTestDatabase('pg_init_keep_previous');
++  const bad = await createTestDatabase('pg_init_new_failure');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    process.env.DATABASE_URL = good.url;
++    const first = await initDB();
++    await first.run('INSERT INTO empresas (id, cnpj, nome_empresa, criado_em, expira_em) VALUES (?,?,?,?,?)', [
++      'empresa-keep',
++      '12345678000199',
++      'Empresa Keep',
++      new Date().toISOString(),
++      new Date(Date.now() + 86400000).toISOString(),
++    ]);
++
++    await withRaw(bad.url, 'CREATE VIEW reviews AS SELECT 1 AS id');
++    process.env.DATABASE_URL = bad.url;
++    await assert.rejects(() => initDB(), /reviews|relation|index/i);
++
++    // A instância anterior continua ativa e utilizável.
++    assert.equal(getDb(), first, 'getDb deve continuar apontando para a instância anterior');
++    const row = await getDb().get('SELECT nome_empresa FROM empresas WHERE id = ?', ['empresa-keep']);
++    assert.equal(String(row?.nome_empresa), 'Empresa Keep');
++    assert.equal(await waitForNoConnections(bad.name), 0, 'a instância que falhou não pode manter pool aberto');
++
++    await closeDB();
++  } finally {
++    await closeDB().catch(() => undefined);
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(good.name);
++    await dropTestDatabase(bad.name);
++  }
++});
+diff --git a/tests/dbInitializationConcurrency.pg.test.ts b/tests/dbInitializationConcurrency.pg.test.ts
+new file mode 100644
+index 0000000..6e1cd36
+--- /dev/null
++++ b/tests/dbInitializationConcurrency.pg.test.ts
+@@ -0,0 +1,237 @@
++/**
++ * Teste real de inicialização concorrente em PostgreSQL descartável.
++ *
++ * Cenário: banco vazio + 3 processos Node independentes chamando `initDB()`
++ * ao mesmo tempo. Valida que o advisory lock global serializa as migrações,
++ * que nenhum processo falha, que nenhum DDL concorrente vaza para stderr e
++ * que uma segunda inicialização é idempotente.
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { Client } from 'pg';
++import { closeDB, getDb, initDB } from '../lib/db.js';
++import { initPgDatabase } from '../lib/db.pg.js';
++import {
++  PG_MIGRATION_LOCK_KEY,
++  indexExists,
++  REVIEW_COLUMNS,
++  listIndexDefinitions,
++  runCentralMigrations,
++  tableColumns,
++  tableExists,
++} from '../lib/migrations.js';
++import {
++  assertNoDdlErrors,
++  createTestDatabase,
++  dropTestDatabase,
++  parseWorkerJson,
++  runNodeScript,
++  serverVersion,
++} from './helpers/pg-test-utils.js';
++
++const INIT_WORKER = new URL('./helpers/init-db-worker.pg.ts', import.meta.url);
++
++const REQUIRED_INDEXES = [
++  'idx_reviews_empresa',
++  'idx_empresas_cnpj',
++  'idx_empresas_slug',
++  'idx_usuarios_email',
++  'idx_password_resets_usuario',
++  'ux_dot_action_queue_decision_option',
++  'ux_dot_action_queue_one_active_decision',
++  'idx_dot_action_audit_empresa',
++  'idx_dot_action_audit_action',
++];
++
++async function assertRequiredSchema(db: any, label: string) {
++  for (const table of ['empresas', 'usuarios', 'reviews', 'ai_usage', 'usage', 'password_resets', 'dot_action_queue', 'dot_action_audit']) {
++    assert.equal(await tableExists(db, table), true, `${label}: tabela ${table} deve existir`);
++  }
++
++  const reviewColumns = await tableColumns(db, 'reviews');
++  for (const column of REVIEW_COLUMNS) {
++    assert.equal(reviewColumns.includes(column.toLowerCase()), true, `${label}: reviews.${column} ausente (${reviewColumns.join(',')})`);
++  }
++
++  const userColumns = await tableColumns(db, 'usuarios');
++  for (const column of ['email', 'mfa_secret', 'mfa_enabled', 'mfa_backup_hashes', 'mfa_pending_secret']) {
++    assert.equal(userColumns.includes(column), true, `${label}: usuarios.${column} ausente (${userColumns.join(',')})`);
++  }
++
++  const auditColumns = await tableColumns(db, 'dot_action_audit');
++  assert.equal(auditColumns.includes('metadata'), true, `${label}: dot_action_audit.metadata ausente`);
++
++  const indexTables: Record<string, string> = {
++    idx_reviews_empresa: 'reviews',
++    idx_empresas_cnpj: 'empresas',
++    idx_empresas_slug: 'empresas',
++    idx_usuarios_email: 'usuarios',
++    idx_password_resets_usuario: 'password_resets',
++    ux_dot_action_queue_decision_option: 'dot_action_queue',
++    ux_dot_action_queue_one_active_decision: 'dot_action_queue',
++    idx_dot_action_audit_empresa: 'dot_action_audit',
++    idx_dot_action_audit_action: 'dot_action_audit',
++  };
++  for (const index of REQUIRED_INDEXES) {
++    assert.equal(await indexExists(db, indexTables[index], index), true, `${label}: índice ${index} ausente`);
++  }
++}
++
++const SNAPSHOT_TABLES = [
++  'empresas',
++  'usuarios',
++  'reviews',
++  'password_resets',
++  'dot_action_queue',
++  'dot_action_audit',
++];
++
++/** Snapshot real: colunas + definições de índices (pg_indexes), sem placeholders. */
++async function snapshot(db: any) {
++  return {
++    reviews: await tableColumns(db, 'reviews'),
++    usuarios: await tableColumns(db, 'usuarios'),
++    audit: await tableColumns(db, 'dot_action_audit'),
++    indexes: await listIndexDefinitions(db, SNAPSHOT_TABLES),
++  };
++}
++
++test('três processos inicializam um banco PostgreSQL vazio simultaneamente sem erro de DDL', async () => {
++  const version = await serverVersion();
++  console.log(`PostgreSQL real em uso: ${version}`);
++  assert.ok(Number(version.split('.')[0]) >= 16, `PostgreSQL >= 16 esperado, recebido ${version}`);
++
++  const { name, url } = await createTestDatabase('pg_init_concurrent');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    process.env.DATABASE_URL = url;
++
++    // Banco começa vazio: nenhuma tabela pré-existente.
++    const probe = await initPgDatabase(url);
++    assert.equal(await tableExists(probe, 'reviews'), false, 'o banco de teste deve começar vazio');
++
++    // Três processos independentes, cada um com seu próprio pool, partindo juntos.
++    const results = await Promise.all([
++      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url }),
++      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url }),
++      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url }),
++    ]);
++
++    for (const [index, result] of results.entries()) {
++      console.log(`worker ${index + 1}: exit=${result.code} stdout=${result.stdout} stderr=${result.stderr.trim()}`);
++      assert.equal(result.code, 0, `worker ${index + 1} falhou com código ${result.code}\nstderr:\n${result.stderr}`);
++      assertNoDdlErrors(result.stderr, `worker ${index + 1}`);
++    }
++
++    const payloads = results.map((result, index) => parseWorkerJson<any>(result, `worker ${index + 1}`));
++    const pids = new Set(payloads.map((payload) => payload.pid));
++    assert.equal(pids.size, 3, 'cada worker deve rodar em um processo Node próprio');
++    for (const payload of payloads) {
++      assert.equal(payload.engine, 'postgres');
++      assert.ok(payload.serverVersion?.startsWith('16.'), `worker deve falar com PostgreSQL 16, recebeu ${payload.serverVersion}`);
++      assert.ok(payload.indexes.idx_dot_action_audit_action, 'worker deve enxergar os índices de auditoria');
++      for (const column of REVIEW_COLUMNS) {
++        assert.equal(
++          payload.reviewsColumns.includes(column.toLowerCase()),
++          true,
++          `worker não enxerga reviews.${column}: ${payload.reviewsColumns.join(',')}`,
++        );
++      }
++    }
++
++    // Conferência independente (pool do processo de teste).
++    await assertRequiredSchema(probe, 'após inicialização concorrente');
++    const firstSnapshot = await snapshot(probe);
++    assert.equal(firstSnapshot.indexes.length > 0, true, 'snapshot deve conter índices reais');
++    for (const required of REQUIRED_INDEXES) {
++      const entry = firstSnapshot.indexes.find((index: any) => index.name === required);
++      assert.ok(entry, `snapshot sem o índice ${required}`);
++      assert.ok(entry.definition.includes(`INDEX ${required}`), 'definição real do índice deve ser capturada');
++    }
++    const partial = firstSnapshot.indexes.find((index: any) => index.name === 'ux_dot_action_queue_one_active_decision');
++    assert.equal(partial?.unique, true, 'índice parcial deve ser único');
++    assert.match(String(partial?.definition), /WHERE/i, 'definição do índice parcial deve aparecer no snapshot');
++
++    // Segunda inicialização no mesmo banco: comprova idempotência.
++    await runCentralMigrations(probe);
++    await assertRequiredSchema(probe, 'segunda inicialização');
++    const secondSnapshot = await snapshot(probe);
++    assert.deepEqual(secondSnapshot, firstSnapshot, 'segunda inicialização não pode alterar o schema');
++    console.log('idempotência comprovada: schema idêntico após segunda inicialização');
++
++    // `initDB()` global também deve ser idempotente.
++    await initDB();
++    await assertRequiredSchema(getDb(), 'initDB() repetido');
++    await probe.close();
++    await closeDB();
++  } finally {
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(name);
++  }
++});
++
++test('falha deliberada de migração é propagada e o advisory lock é liberado', async () => {
++  const { name, url } = await createTestDatabase('pg_init_failure');
++  try {
++    // Impede a criação de `reviews`: um objeto com o mesmo nome já existe.
++    const blocker = new Client({ connectionString: url });
++    await blocker.connect();
++    await blocker.query('CREATE VIEW reviews AS SELECT 1 AS id');
++    await blocker.end();
++
++    const db = await initPgDatabase(url);
++    try {
++      await assert.rejects(
++        () => runCentralMigrations(db),
++        (error: any) => {
++          console.log('erro propagado como esperado:', error?.message);
++          return /reviews|exist|relation/i.test(String(error?.message || error));
++        },
++        'migração quebrada deve rejeitar a inicialização',
++      );
++    } finally {
++      await db.close();
++    }
++
++    // O lock não pode ficar preso após a falha.
++    const checker = new Client({ connectionString: url });
++    await checker.connect();
++    const lock = await checker.query('SELECT pg_try_advisory_lock($1) AS locked', [PG_MIGRATION_LOCK_KEY.toString()]);
++    assert.equal(lock.rows[0].locked, true, 'advisory lock deve ter sido liberado no finally');
++    await checker.query('SELECT pg_advisory_unlock($1)', [PG_MIGRATION_LOCK_KEY.toString()]);
++    await checker.end();
++  } finally {
++    await dropTestDatabase(name);
++  }
++});
++
++test('três processos com PG_POOL_MAX=1 inicializam o mesmo banco sem deadlock', async () => {
++  const { name, url } = await createTestDatabase('pg_init_pool_one');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    process.env.DATABASE_URL = url;
++    const results = await Promise.all([
++      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url, PG_POOL_MAX: '1' }, 60_000),
++      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url, PG_POOL_MAX: '1' }, 60_000),
++      runNodeScript(INIT_WORKER, [], { DATABASE_URL: url, PG_POOL_MAX: '1' }, 60_000),
++    ]);
++
++    for (const [index, result] of results.entries()) {
++      assert.equal(result.timedOut, false, `worker ${index + 1} entrou em deadlock com PG_POOL_MAX=1`);
++      console.log(`worker PG_POOL_MAX=1 ${index + 1}: exit=${result.code} stderr=${result.stderr.trim()}`);
++      assert.equal(result.code, 0, `worker ${index + 1} falhou\nstderr:\n${result.stderr}`);
++      assertNoDdlErrors(result.stderr, `worker PG_POOL_MAX=1 ${index + 1}`);
++      parseWorkerJson<any>(result, `worker PG_POOL_MAX=1 ${index + 1}`);
++    }
++
++    const probe = await initPgDatabase(url);
++    try {
++      await assertRequiredSchema(probe, 'após inicialização com PG_POOL_MAX=1');
++    } finally {
++      await probe.close();
++    }
++  } finally {
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(name);
++  }
++});
+diff --git a/tests/dbInstances.pg.test.ts b/tests/dbInstances.pg.test.ts
+new file mode 100644
+index 0000000..c2daa29
+--- /dev/null
++++ b/tests/dbInstances.pg.test.ts
+@@ -0,0 +1,79 @@
++/**
++ * Isolamento de pools: cada `initPgDatabase` captura o próprio `pg.Pool`.
++ * Fechar (ou inicializar) uma instância não pode encerrar/alterar as conexões
++ * de outra instância já existente.
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { initPgDatabase } from '../lib/db.pg.js';
++import { createTestDatabase, dropTestDatabase } from './helpers/pg-test-utils.js';
++
++test('fechar uma instância PostgreSQL não encerra a outra', async () => {
++  const a = await createTestDatabase('pg_instance_a');
++  const b = await createTestDatabase('pg_instance_b');
++  try {
++    const first = await initPgDatabase(a.url);
++    const second = await initPgDatabase(b.url);
++
++    await first.exec('CREATE TABLE instancia_a (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT)');
++    await second.exec('CREATE TABLE instancia_b (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT)');
++
++    // Inicializar/`fechar` um terceiro banco não pode tocar nas instâncias vivas.
++    const third = await initPgDatabase(a.url);
++    await third.exec('CREATE TABLE instancia_c (id INTEGER PRIMARY KEY AUTOINCREMENT)');
++    await third.close();
++
++    // `second` segue funcionando após fechar a outra instância do banco A.
++    await first.close();
++
++    const stillAlive = await second.get<{ ok: number }>('SELECT 1 AS ok');
++    assert.equal(stillAlive?.ok, 1, 'a instância B deve continuar respondendo após B fechar A');
++    await second.run('INSERT INTO instancia_b (nome) VALUES (?)', ['viva']);
++    const rows = await second.all<{ nome: string }>('SELECT nome FROM instancia_b');
++    assert.equal(rows.length, 1, 'a instância B deve continuar aceitando escritas');
++
++    // A instância fechada não pode mais ser usada (seu pool foi encerrado).
++    await assert.rejects(
++      () => first.get('SELECT 1 AS ok'),
++      /pool|closed|encerrad|Cannot use a pool/i,
++      'a instância fechada deve rejeitar novas operações',
++    );
++
++    await second.close();
++    await assert.rejects(
++      () => second.get('SELECT 1 AS ok'),
++      /pool|closed|encerrad|Cannot use a pool/i,
++      'a segunda instância também deve encerrar apenas o próprio pool',
++    );
++  } finally {
++    await dropTestDatabase(a.name);
++    await dropTestDatabase(b.name);
++  }
++});
++
++test('exec propaga erros inesperados de catálogo em vez de mascará-los', async () => {
++  const created = await createTestDatabase('pg_exec_errors');
++  const db = await initPgDatabase(created.url);
++  try {
++    await db.exec('CREATE TABLE alvo (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT)');
++
++    // 42P07 duplicate_table não pode ser engolido.
++    await assert.rejects(() => db.exec('CREATE TABLE alvo (id INTEGER)'), /already exists|42P07/i);
++    // 42701 duplicate_column não pode ser engolido.
++    await assert.rejects(() => db.exec('ALTER TABLE alvo ADD COLUMN id TEXT'), /already exists|duplicate column|42701/i);
++    // 42P01 undefined_table precisa propagar.
++    await assert.rejects(
++      () => db.exec('ALTER TABLE tabela_inexistente ADD COLUMN a TEXT'),
++      /does not exist|42P01/i,
++    );
++    // 42601 syntax error precisa propagar.
++    await assert.rejects(() => db.exec('SELEC 1'), /syntax|42601/i);
++
++    // IF NOT EXISTS continua idempotente quando usado de forma explícita.
++    await db.exec('CREATE TABLE IF NOT EXISTS alvo (id INTEGER)');
++    await db.exec('CREATE INDEX IF NOT EXISTS idx_alvo_nome ON alvo(nome)');
++  } finally {
++    await db.close();
++    await dropTestDatabase(created.name);
++  }
++});
+diff --git a/tests/dbMigrationsGuards.test.ts b/tests/dbMigrationsGuards.test.ts
+new file mode 100644
+index 0000000..a9e352f
+--- /dev/null
++++ b/tests/dbMigrationsGuards.test.ts
+@@ -0,0 +1,118 @@
++/**
++ * Guardas de arquitetura das migrações (sem banco):
++ * - caminhos de requisição não executam DDL;
++ * - `requireSchema` apenas verifica, nunca corrige;
++ * - o adapter PostgreSQL não mantém pool global mutável;
++ * - a chave do advisory lock é estável.
++ */
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { test } from 'node:test';
++import type { Database } from 'sqlite';
++import { PG_MIGRATION_LOCK_KEY, requireReviewSchema, requireSchema } from '../lib/migrations.js';
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const backendRoot = path.resolve(__dirname, '..');
++
++function source(relative: string): string {
++  return fs.readFileSync(path.join(backendRoot, relative), 'utf8');
++}
++
++function fakeDb(
++  tables: Record<string, string[]>,
++  indexes: string[] = [],
++): { db: Database; execCalls: string[] } {
++  const execCalls: string[] = [];
++  const db = {
++    async all(sql: string) {
++      const pragma = /PRAGMA\s+table_info\(\s*([\w]+)\s*\)/i.exec(sql);
++      if (pragma) return (tables[pragma[1]] || []).map((name) => ({ name }));
++      if (/PRAGMA\s+index_list/i.test(sql)) return indexes.map((name) => ({ name }));
++      return [];
++    },
++    async get(sql: string, params: any[] = []) {
++      if (/pg_indexes/i.test(sql)) return indexes.includes(String(params[0])) ? { ok: 1 } : undefined;
++      return undefined;
++    },
++    async exec(sql: string) {
++      execCalls.push(sql);
++    },
++  } as unknown as Database;
++  return { db, execCalls };
++}
++
++test('requireSchema valida sem executar DDL quando o schema está completo', async () => {
++  const { db, execCalls } = fakeDb(
++    { usuarios: ['id', 'email', 'mfa_secret', 'mfa_enabled', 'mfa_backup_hashes', 'mfa_pending_secret'] },
++    ['idx_usuarios_email'],
++  );
++  await requireSchema(db, {
++    tables: ['usuarios'],
++    columns: { usuarios: ['email', 'mfa_secret', 'mfa_enabled', 'mfa_backup_hashes', 'mfa_pending_secret'] },
++    indexes: [{ table: 'usuarios', name: 'idx_usuarios_email' }],
++  });
++  assert.deepEqual(execCalls, [], 'verificação de schema não pode executar DDL');
++});
++
++test('requireSchema falha explicitamente quando uma estrutura obrigatória está ausente', async () => {
++  const { db, execCalls } = fakeDb({ usuarios: ['id'] }, []);
++  await assert.rejects(
++    () => requireSchema(db, { columns: { usuarios: ['email'] }, tables: ['password_resets'] }),
++    (error: any) => {
++      const message = String(error?.message || error);
++      assert.match(message, /Schema desatualizado/);
++      assert.match(message, /usuarios\.email/);
++      assert.match(message, /password_resets/);
++      return true;
++    },
++  );
++  assert.deepEqual(execCalls, [], 'falha de verificação não pode tentar corrigir o schema');
++});
++
++test('caminhos de requisição não contêm DDL', () => {
++  const files = [
++    'passwordResetRoutes.ts',
++    'mfa.ts',
++    'services/dotActionAudit.ts',
++    'services/dotActionQueue.ts',
++    'services/reviewService.ts',
++    'services/sentimentBackfill.ts',
++    'lib/reviewFraud.ts',
++    'lib/lgpd.ts',
++    'routes/empresaRoutes.ts',
++    'routes/adminTecnicoRoutes.ts',
++  ];
++  const ddl = /\b(ALTER\s+TABLE\s+reviews|CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?reviews|CREATE\s+(?:UNIQUE\s+)?INDEX\s+\w+\s+ON\s+reviews)\b/i;
++  for (const file of files) {
++    assert.equal(ddl.test(source(file)), false, `${file} não pode executar DDL em caminho de requisição`);
++  }
++});
++
++test('adapter PostgreSQL não usa pool global mutável e expõe o lock de migração', () => {
++  const src = source('lib/db.pg.ts');
++  assert.equal(/^\s*let\s+pool\b/m.test(src), false, 'lib/db.pg.ts não pode ter pool global mutável');
++  assert.match(src, /withMigrationLock/);
++  assert.match(src, /pg_advisory_lock/);
++  assert.match(src, /pg_advisory_unlock/);
++  // Tolerância só é permitida para DDL com IF NOT EXISTS (corrida de catálogo).
++  assert.match(src, /isIdempotentDdlRace/);
++  assert.match(src, /IF\\s\+NOT\\s\+EXISTS/);
++  assert.doesNotMatch(src, /if \(\s*\/already exists\/i\.test\(msg\)\s*\)\s*\{\s*continue;/);
++});
++
++test('requireReviewSchema falha explicitamente e não executa DDL', async () => {
++  const { db, execCalls } = fakeDb({ reviews: ['id', 'created_at', 'is_test', 'ip_hash'] }, []);
++  await assert.rejects(
++    () => requireReviewSchema(db),
++    (error: any) => /reviews\.(fraud_flags|origin|client_whatsapp|sentiment|locale)/.test(String(error?.message || error)),
++  );
++  assert.deepEqual(execCalls, [], 'verificação de reviews não pode executar DDL');
++});
++
++test('chave do advisory lock de migração é estável e positiva (int8)', () => {
++  assert.equal(PG_MIGRATION_LOCK_KEY, 8005998760133593297n);
++  assert.ok(PG_MIGRATION_LOCK_KEY > 0n);
++  assert.ok(PG_MIGRATION_LOCK_KEY <= 9223372036854775807n, 'precisa caber em int8 assinado');
++});
+diff --git a/tests/dbPoolMaxOne.pg.test.ts b/tests/dbPoolMaxOne.pg.test.ts
+new file mode 100644
+index 0000000..f76deb7
+--- /dev/null
++++ b/tests/dbPoolMaxOne.pg.test.ts
+@@ -0,0 +1,54 @@
++/**
++ * Regressão de deadlock: as migrações rodam NA conexão dedicada que mantém o
++ * advisory lock, então `PG_POOL_MAX=1` é suficiente. Se a implementação
++ * tentasse pegar uma segunda conexão do pool, este teste travaria.
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { initPgDatabase } from '../lib/db.pg.js';
++import { runCentralMigrations } from '../lib/migrations.js';
++import { createTestDatabase, dropTestDatabase } from './helpers/pg-test-utils.js';
++
++const MIGRATION_TIMEOUT_MS = 20_000;
++
++test('PG_POOL_MAX=1 conclui migrações sem deadlock e libera a conexão', async () => {
++  const previousMax = process.env.PG_POOL_MAX;
++  process.env.PG_POOL_MAX = '1';
++  const created = await createTestDatabase('pg_pool_one');
++  const db = await initPgDatabase(created.url);
++  try {
++    let timer: NodeJS.Timeout | undefined;
++    const deadlock = new Promise<never>((_, reject) => {
++      timer = setTimeout(
++        () => reject(new Error(`deadlock: migrações não terminaram em ${MIGRATION_TIMEOUT_MS}ms com PG_POOL_MAX=1`)),
++        MIGRATION_TIMEOUT_MS,
++      );
++    });
++    try {
++      await Promise.race([runCentralMigrations(db), deadlock]);
++      await Promise.race([runCentralMigrations(db), deadlock]); // idempotente, ainda com 1 conexão
++    } finally {
++      if (timer) clearTimeout(timer);
++    }
++
++    const columns = await db.all(`SELECT column_name AS name FROM information_schema.columns WHERE table_schema='public' AND table_name='reviews'`);
++    const names = columns.map((row: any) => String(row.name).toLowerCase());
++    assert.ok(names.includes('createdat'), 'coluna canônica deve existir após migração');
++
++    // Pool continua utilizável depois que o lock devolve a única conexão.
++    const ok = await db.get<{ ok: number }>('SELECT 1 AS ok');
++    assert.equal(ok?.ok, 1);
++
++    // Nenhuma conexão extra foi necessária: só a do próprio teste permanece.
++    const others = await db.get<{ c: number }>(
++      `SELECT count(*)::int AS c FROM pg_stat_activity
++        WHERE datname = current_database() AND pid <> pg_backend_pid()`,
++    );
++    assert.equal(Number(others?.c), 0, 'migração não pode abrir conexões extras além da conexão do lock');
++  } finally {
++    await db.close();
++    if (previousMax === undefined) delete process.env.PG_POOL_MAX;
++    else process.env.PG_POOL_MAX = previousMax;
++    await dropTestDatabase(created.name);
++  }
++});
+diff --git a/tests/dot-security-hardening.test.ts b/tests/dot-security-hardening.test.ts
+index 5e6c25c..a54d7dc 100644
+--- a/tests/dot-security-hardening.test.ts
++++ b/tests/dot-security-hardening.test.ts
+@@ -85,9 +85,12 @@ test('DOT execution cannot proceed without an authenticated actor permission', (
+ test('DOT execution audit preserves the authenticated actor', () => {
+   const gateway = read('services/dotExecutionGateway.ts');
+   const audit = read('services/dotActionAudit.ts');
++  const migrations = read('lib/migrations.ts');
+   assert.match(gateway, /actorType: 'user'/);
+   assert.match(gateway, /actorId: actorUserId \|\| null/);
+-  assert.match(audit, /actor_id TEXT/);
++  // O schema da trilha vive na migração central; o serviço só registra.
++  assert.match(migrations, /actor_id TEXT/);
++  assert.doesNotMatch(audit, /CREATE TABLE|ALTER TABLE/);
+   assert.match(audit, /input\.actorId \|\| null/);
+ });
+ 
+diff --git a/tests/dotActionConcurrency.pg.test.ts b/tests/dotActionConcurrency.pg.test.ts
+index 6a0bbf0..d3de39f 100644
+--- a/tests/dotActionConcurrency.pg.test.ts
++++ b/tests/dotActionConcurrency.pg.test.ts
+@@ -4,24 +4,17 @@
+  */
+ import assert from 'node:assert/strict';
+ import crypto from 'node:crypto';
+-import { spawn } from 'node:child_process';
+ import { test } from 'node:test';
+-import { fileURLToPath } from 'node:url';
++import { parseWorkerJson, runNodeScript } from './helpers/pg-test-utils.js';
+ import { initDB, getDb, closeDB } from '../lib/db.js';
+ 
+-function runWorker(args: string[]): Promise<{ stdout: string; stderr: string }> {
+-  return new Promise((resolve, reject) => {
+-    const worker = args[0] === 'approve' ? 'approve-dot-action.pg.ts' : 'prepare-dot-action.pg.ts';
+-    const workerArgs = args[0] === 'approve' ? args.slice(1) : args;
+-    const child = spawn(process.execPath, ['--import', 'tsx', fileURLToPath(new URL(`./helpers/${worker}`, import.meta.url)), ...workerArgs], {
+-      cwd: process.cwd(), env: { ...process.env, NODE_ENV: 'test' }, stdio: ['ignore', 'pipe', 'pipe'],
+-    });
+-    let stdout = ''; let stderr = '';
+-    child.stdout.setEncoding('utf8').on('data', (chunk) => { stdout += chunk; });
+-    child.stderr.setEncoding('utf8').on('data', (chunk) => { stderr += chunk; });
+-    child.on('error', reject);
+-    child.on('close', (code) => code === 0 ? resolve({ stdout, stderr }) : reject(new Error(`worker exit ${code}: ${stderr}`)));
+-  });
++const PREPARE_WORKER = new URL('./helpers/prepare-dot-action.pg.ts', import.meta.url);
++const APPROVE_WORKER = new URL('./helpers/approve-dot-action.pg.ts', import.meta.url);
++const WORKER_TIMEOUT_MS = 60_000;
++
++function workerEnv(): NodeJS.ProcessEnv {
++  assert.ok(process.env.DATABASE_URL, 'DATABASE_URL de teste é obrigatória');
++  return { DATABASE_URL: process.env.DATABASE_URL };
+ }
+ 
+ test('duas instâncias PostgreSQL concorrentes retornam a mesma ação sem auditoria duplicada', async () => {
+@@ -58,9 +51,12 @@ test('duas instâncias PostgreSQL concorrentes retornam a mesma ação sem audit
+   assert.ok(decisionId > 0, 'decisão de teste deve ser criada');
+   try {
+     const args = [empresaId, String(decisionId), 'opcao_pg'];
+-    const [a, b] = await Promise.all([runWorker(args), runWorker(args)]);
+-    const resultA = JSON.parse(a.stdout);
+-    const resultB = JSON.parse(b.stdout);
++    const results = await Promise.all([
++      runNodeScript(PREPARE_WORKER, args, workerEnv(), WORKER_TIMEOUT_MS),
++      runNodeScript(PREPARE_WORKER, args, workerEnv(), WORKER_TIMEOUT_MS),
++    ]);
++    const resultA = parseWorkerJson<{ id: number; status: string }>(results[0], 'prepare-worker-1');
++    const resultB = parseWorkerJson<{ id: number; status: string }>(results[1], 'prepare-worker-2');
+     assert.equal(resultA.id, resultB.id, 'ambas as instâncias devem receber o mesmo ID idempotente');
+     const actions = await db.all('SELECT id,status FROM dot_action_queue WHERE empresa_id = ? AND decision_id = ?', [empresaId, decisionId]);
+     assert.equal(actions.length, 1, 'deve existir exatamente uma ação');
+@@ -97,11 +93,11 @@ test('duas instâncias PostgreSQL não aprovam duas vezes a mesma ação', async
+     );
+     assert.ok(prepared?.id);
+     const args = [empresaId, String(prepared.id), 'pg-approver'];
+-    const [a, b] = await Promise.all([
+-      runWorker(['approve', ...args]),
+-      runWorker(['approve', ...args]),
++    const outputs = await Promise.all([
++      runNodeScript(APPROVE_WORKER, args, workerEnv(), WORKER_TIMEOUT_MS),
++      runNodeScript(APPROVE_WORKER, args, workerEnv(), WORKER_TIMEOUT_MS),
+     ]);
+-    const results = [JSON.parse(a.stdout), JSON.parse(b.stdout)];
++    const results = outputs.map((output, index) => parseWorkerJson<any>(output, `approve-worker-${index + 1}`));
+     assert.equal(results.filter((result) => result?.status === 'approved').length, 1,
+       'exatamente uma instância deve concluir a aprovação');
+     assert.equal(results.filter((result) => result === null).length, 1,
+diff --git a/tests/dotActionSchemaGuard.pg.test.ts b/tests/dotActionSchemaGuard.pg.test.ts
+new file mode 100644
+index 0000000..3f3a897
+--- /dev/null
++++ b/tests/dotActionSchemaGuard.pg.test.ts
+@@ -0,0 +1,57 @@
++/**
++ * Prova comportamental (não apenas regex) de que os serviços de fila/auditoria
++ * do Dot NÃO executam DDL em caminho de requisição: com o schema incompleto,
++ * falham explicitamente e não recriam índice/coluna.
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { closeDB, getDb, initDB } from '../lib/db.js';
++import { listDotActions } from '../services/dotActionQueue.js';
++import { listDotActionAudit, recordDotActionAudit } from '../services/dotActionAudit.js';
++import { createTestDatabase, dropTestDatabase } from './helpers/pg-test-utils.js';
++
++test('serviços Dot não executam DDL quando o schema está incompleto', async () => {
++  const created = await createTestDatabase('pg_dot_schema_guard');
++  const previousUrl = process.env.DATABASE_URL;
++  process.env.DATABASE_URL = created.url;
++  try {
++    const db = await initDB();
++
++    // Índice único da fila ausente: listagem falha e não recria o índice.
++    await db.exec('DROP INDEX ux_dot_action_queue_decision_option');
++    await assert.rejects(
++      () => listDotActions('empresa-sem-schema'),
++      /ux_dot_action_queue_decision_option/i,
++    );
++    const index = await db.get(
++      "SELECT 1 AS ok FROM pg_indexes WHERE schemaname = 'public' AND indexname = 'ux_dot_action_queue_decision_option'",
++    );
++    assert.equal(index, undefined, 'serviço não pode recriar índice durante a requisição');
++
++    // Coluna metadata ausente: registro/consulta falham e não alteram a tabela.
++    await db.exec('ALTER TABLE dot_action_audit DROP COLUMN metadata');
++    await assert.rejects(
++      () => recordDotActionAudit({
++        empresaId: 'empresa-sem-schema',
++        actionId: 1,
++        event: 'prepared',
++        actorType: 'dot',
++      }),
++      /dot_action_audit\.metadata/i,
++    );
++    await assert.rejects(
++      () => listDotActionAudit('empresa-sem-schema', 1),
++      /dot_action_audit\.metadata/i,
++    );
++    const column = await db.get(
++      "SELECT 1 AS ok FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'dot_action_audit' AND column_name = 'metadata'",
++    );
++    assert.equal(column, undefined, 'serviço não pode recriar coluna durante a requisição');
++
++    await closeDB();
++  } finally {
++    await closeDB().catch(() => undefined);
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(created.name);
++  }
++});
+diff --git a/tests/helpers/init-db-worker.pg.ts b/tests/helpers/init-db-worker.pg.ts
+new file mode 100644
+index 0000000..2713459
+--- /dev/null
++++ b/tests/helpers/init-db-worker.pg.ts
+@@ -0,0 +1,65 @@
++/**
++ * Worker de inicialização concorrente: roda `initDB()` em um processo Node
++ * isolado (pool próprio) e imprime um snapshot JSON do schema em stdout.
++ * Logs humanos vão para stderr para manter stdout parseável.
++ */
++import { initDB, closeDB, dbEngine } from '../../lib/db.js';
++import { indexExists, requireSchema, tableColumns } from '../../lib/migrations.js';
++
++process.env.NODE_ENV = 'test';
++console.log = (...args: unknown[]) => console.error(...args);
++
++const REQUIRED_INDEXES: Array<{ table: string; name: string }> = [
++  { table: 'reviews', name: 'idx_reviews_empresa' },
++  { table: 'empresas', name: 'idx_empresas_cnpj' },
++  { table: 'empresas', name: 'idx_empresas_slug' },
++  { table: 'usuarios', name: 'idx_usuarios_email' },
++  { table: 'password_resets', name: 'idx_password_resets_usuario' },
++  { table: 'dot_action_queue', name: 'ux_dot_action_queue_decision_option' },
++  { table: 'dot_action_queue', name: 'ux_dot_action_queue_one_active_decision' },
++  { table: 'dot_action_audit', name: 'idx_dot_action_audit_empresa' },
++  { table: 'dot_action_audit', name: 'idx_dot_action_audit_action' },
++];
++
++let exitCode = 0;
++try {
++  await initDB();
++  const { getDb } = await import('../../lib/db.js');
++  const db = getDb();
++  await requireSchema(db, {
++    tables: ['empresas', 'usuarios', 'reviews', 'ai_usage', 'usage', 'password_resets', 'dot_action_queue', 'dot_action_audit'],
++    columns: {
++      reviews: ['createdAt', 'is_test'],
++      usuarios: ['email', 'mfa_secret', 'mfa_enabled', 'mfa_backup_hashes', 'mfa_pending_secret'],
++      dot_action_audit: ['metadata'],
++    },
++    indexes: REQUIRED_INDEXES,
++  });
++
++  const version: any = await db.get('SHOW server_version').catch(() => undefined);
++  const indexSnapshot: Record<string, boolean> = {};
++  for (const index of REQUIRED_INDEXES) {
++    indexSnapshot[index.name] = await indexExists(db, index.table, index.name);
++  }
++
++  process.stdout.write(
++    JSON.stringify({
++      pid: process.pid,
++      engine: dbEngine(),
++      serverVersion: version?.server_version ?? null,
++      reviewsColumns: await tableColumns(db, 'reviews'),
++      usuariosColumns: await tableColumns(db, 'usuarios'),
++      auditColumns: await tableColumns(db, 'dot_action_audit'),
++      indexes: indexSnapshot,
++    }),
++  );
++} catch (error: any) {
++  console.error('init-db-worker falhou:', error?.stack || error);
++  exitCode = 1;
++} finally {
++  await closeDB().catch((error) => {
++    console.error('init-db-worker: closeDB falhou:', error);
++    exitCode = 1;
++  });
++}
++process.exitCode = exitCode;
+diff --git a/tests/helpers/pg-test-utils.ts b/tests/helpers/pg-test-utils.ts
+new file mode 100644
+index 0000000..962b33c
+--- /dev/null
++++ b/tests/helpers/pg-test-utils.ts
+@@ -0,0 +1,131 @@
++/**
++ * Utilitários compartilhados pelos testes PostgreSQL reais (*.pg.test.ts).
++ * Nunca fazem parte de `npm test`: exigem DATABASE_URL apontando para um
++ * PostgreSQL descartável e criam/derrubam bancos temporários.
++ */
++import assert from 'node:assert/strict';
++import crypto from 'node:crypto';
++import { spawn } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++import { Client } from 'pg';
++
++export type WorkerResult = {
++  code: number | null;
++  stdout: string;
++  stderr: string;
++  signal: NodeJS.Signals | null;
++  timedOut: boolean;
++};
++
++/** Erros de DDL/corrida que jamais podem aparecer em stderr. */
++export const DDL_ERROR_PATTERNS: RegExp[] = [
++  /already exists/i,
++  /\b42P07\b/,
++  /\b42701\b/,
++  /\b23505\b/,
++  /duplicate column/i,
++  /duplicate key value violates unique constraint/i,
++  /pg\.exec falhou/i,
++  /pg\.transaction: ROLLBACK falhou/i,
++  /advisory lock/i,
++];
++
++export function databaseUrl(): string {
++  const url = process.env.DATABASE_URL?.trim();
++  assert.ok(url, 'DATABASE_URL de teste PostgreSQL é obrigatória para testes *.pg.test.ts');
++  return url;
++}
++
++function postgresAdminUrl(): string {
++  const url = new URL(databaseUrl());
++  url.pathname = '/postgres';
++  return url.toString();
++}
++
++export async function withAdminClient<T>(work: (client: Client) => Promise<T>): Promise<T> {
++  const client = new Client({ connectionString: postgresAdminUrl() });
++  await client.connect();
++  try {
++    return await work(client);
++  } finally {
++    await client.end();
++  }
++}
++
++export async function createTestDatabase(prefix: string): Promise<{ name: string; url: string }> {
++  const name = `${prefix}_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`.toLowerCase();
++  await withAdminClient(async (client) => {
++    await client.query(`CREATE DATABASE "${name}"`);
++  });
++  const url = new URL(databaseUrl());
++  url.pathname = `/${name}`;
++  return { name, url: url.toString() };
++}
++
++export async function dropTestDatabase(name: string): Promise<void> {
++  await withAdminClient(async (client) => {
++    await client.query(`DROP DATABASE IF EXISTS "${name}" WITH (FORCE)`);
++  });
++}
++
++export async function serverVersion(): Promise<string> {
++  return withAdminClient(async (client) => {
++    const result = await client.query('SHOW server_version');
++    return String(result.rows[0].server_version);
++  });
++}
++
++/**
++ * Executa um script Node/TS em processo filho, preservando stdout/stderr
++ * separados para inspeção (não basta olhar o exit code).
++ */
++export function runNodeScript(
++  scriptUrl: URL,
++  args: string[] = [],
++  env: NodeJS.ProcessEnv = {},
++  timeoutMs = 0,
++): Promise<WorkerResult> {
++  return new Promise((resolve, reject) => {
++    const child = spawn(
++      process.execPath,
++      ['--import', 'tsx', fileURLToPath(scriptUrl), ...args],
++      {
++        cwd: process.cwd(),
++        env: { ...process.env, NODE_ENV: 'test', ...env },
++        stdio: ['ignore', 'pipe', 'pipe'],
++      },
++    );
++    let stdout = '';
++    let stderr = '';
++    let timedOut = false;
++    const timer = timeoutMs > 0
++      ? setTimeout(() => { timedOut = true; child.kill('SIGKILL'); }, timeoutMs)
++      : undefined;
++    child.stdout.setEncoding('utf8').on('data', (chunk) => { stdout += chunk; });
++    child.stderr.setEncoding('utf8').on('data', (chunk) => { stderr += chunk; });
++    child.on('error', reject);
++    child.on('close', (code, signal) => {
++      if (timer) clearTimeout(timer);
++      resolve({ code, stdout, stderr, signal, timedOut });
++    });
++  });
++}
++
++export function assertNoDdlErrors(stderr: string, label: string): void {
++  for (const pattern of DDL_ERROR_PATTERNS) {
++    assert.ok(
++      !pattern.test(stderr),
++      `${label}: stderr contém erro de DDL/corrida (${pattern}):\n${stderr}`,
++    );
++  }
++}
++
++export function parseWorkerJson<T>(result: WorkerResult, label: string): T {
++  assert.equal(result.code, 0, `${label}: processo terminou com código ${result.code} (sinal ${result.signal})\nstderr:\n${result.stderr}`);
++  assertNoDdlErrors(result.stderr, label);
++  try {
++    return JSON.parse(result.stdout) as T;
++  } catch (error) {
++    throw new Error(`${label}: stdout não é JSON (${String(error)}):\n${result.stdout}\nstderr:\n${result.stderr}`);
++  }
++}
+diff --git a/tests/reviewsCentralSchema.pg.test.ts b/tests/reviewsCentralSchema.pg.test.ts
+new file mode 100644
+index 0000000..16d72b6
+--- /dev/null
++++ b/tests/reviewsCentralSchema.pg.test.ts
+@@ -0,0 +1,128 @@
++/**
++ * Banco legado PostgreSQL com apenas as colunas originais de `reviews`.
++ * A migração central deve adicionar todas as colunas usadas pela aplicação,
++ * com tipos compatíveis, preservando os dados e falhando explicitamente quando
++ * uma coluna obrigatória for removida.
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { Client } from 'pg';
++import { closeDB, initDB } from '../lib/db.js';
++import { ensureReviewFraudColumns } from '../lib/reviewFraud.js';
++import { ensureSentimentColumns } from '../services/sentimentBackfill.js';
++import { ensureReviewTreatmentColumns } from '../lib/lgpd.js';
++import { REVIEW_COLUMNS, listIndexDefinitions, requireReviewSchema, tableColumnNames } from '../lib/migrations.js';
++import { createTestDatabase, dropTestDatabase } from './helpers/pg-test-utils.js';
++
++const EXPECTED_TYPES: Record<string, string> = {
++  createdat: 'timestamp with time zone',
++  is_test: 'integer',
++  ip_hash: 'text',
++  fraud_flags: 'text',
++  origin: 'text',
++  client_whatsapp: 'text',
++  sentiment: 'text',
++  sentiment_score: 'double precision',
++  sentiment_source: 'text',
++  locale: 'text',
++  unidade_id: 'text',
++  treated_at: 'timestamp with time zone',
++  treated_note: 'text',
++};
++
++test('PostgreSQL legado recebe todas as colunas de reviews sem perder dados', async () => {
++  const created = await createTestDatabase('pg_reviews_central');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    const client = new Client({ connectionString: created.url });
++    await client.connect();
++    await client.query(`
++      CREATE TABLE reviews (
++        id SERIAL PRIMARY KEY,
++        empresa_id TEXT,
++        name TEXT,
++        rating INTEGER,
++        comment TEXT,
++        ai_reply TEXT,
++        ai_tags TEXT,
++        created_at TIMESTAMPTZ
++      )`);
++    await client.query(
++      `INSERT INTO reviews (id, empresa_id, name, rating, comment, created_at)
++       VALUES (1, 'empresa-legado', 'Cliente', 4, 'histórico', '2021-02-03T04:05:06Z')`,
++    );
++    await client.end();
++
++    process.env.DATABASE_URL = created.url;
++    const db = await initDB();
++
++    const columns = await tableColumnNames(db, 'reviews');
++    for (const column of REVIEW_COLUMNS) {
++      assert.ok(
++        columns.some((name) => name.toLowerCase() === column.toLowerCase()),
++        `coluna reviews.${column} ausente (${columns.join(',')})`,
++      );
++    }
++
++    const tipos = await db.all(
++      `SELECT column_name AS name, data_type AS type
++         FROM information_schema.columns
++        WHERE table_schema = 'public' AND table_name = 'reviews'`,
++    );
++    for (const [column, expected] of Object.entries(EXPECTED_TYPES)) {
++      const row: any = tipos.find((entry: any) => String(entry.name).toLowerCase() === column);
++      assert.ok(row, `coluna ${column} não encontrada em information_schema`);
++      assert.equal(String(row.type), expected, `tipo inesperado para reviews.${column}`);
++    }
++
++    const row: any = await db.get('SELECT createdAt, sentiment, treated_at FROM reviews WHERE id = 1');
++    assert.equal(new Date(String(row.createdat ?? row.createdAt)).toISOString(), '2021-02-03T04:05:06.000Z');
++    assert.equal(row.sentiment, null);
++    assert.equal(row.treated_at, null);
++
++    await requireReviewSchema(db);
++    await ensureReviewFraudColumns(db);
++    await ensureSentimentColumns(db);
++    await ensureReviewTreatmentColumns(db);
++
++    assert.equal((await listIndexDefinitions(db, ['reviews'])).some((index) => index.name === 'idx_reviews_empresa'), true);
++    await closeDB();
++  } finally {
++    await closeDB().catch(() => undefined);
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(created.name);
++  }
++});
++
++test('coluna obrigatória ausente falha explicitamente (sem DDL silenciosa)', async () => {
++  const created = await createTestDatabase('pg_reviews_missing');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    process.env.DATABASE_URL = created.url;
++    const db = await initDB();
++
++    await db.exec('ALTER TABLE reviews DROP COLUMN locale');
++    await assert.rejects(
++      () => requireReviewSchema(db),
++      (error: any) => {
++        assert.match(String(error?.message || error), /Schema desatualizado/);
++        assert.match(String(error?.message || error), /reviews\.locale/i);
++        return true;
++      },
++      'requireReviewSchema deve falhar de forma explícita',
++    );
++
++    await db.exec('ALTER TABLE reviews DROP COLUMN fraud_flags');
++    await assert.rejects(() => ensureReviewFraudColumns(db), /reviews\.fraud_flags/i);
++    await db.exec('ALTER TABLE reviews DROP COLUMN sentiment_source');
++    await assert.rejects(() => ensureSentimentColumns(db), /reviews\.sentiment_source/i);
++
++    // Nenhuma tentativa automática de recriar a coluna.
++    assert.equal((await tableColumnNames(db, 'reviews')).includes('locale'), false);
++    await closeDB();
++  } finally {
++    await closeDB().catch(() => undefined);
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(created.name);
++  }
++});
+diff --git a/tests/reviewsCentralSchema.test.ts b/tests/reviewsCentralSchema.test.ts
+new file mode 100644
+index 0000000..1ff18e4
+--- /dev/null
++++ b/tests/reviewsCentralSchema.test.ts
+@@ -0,0 +1,126 @@
++/**
++ * SQLite legado: a migração central precisa criar todas as colunas de reviews
++ * usadas pela aplicação, com tipos compatíveis, sem recriar a tabela nem
++ * perder dados históricos, e permanecer idempotente.
++ */
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import { after, test } from 'node:test';
++import { fileURLToPath } from 'node:url';
++import { closeDB, getDb, initDB } from '../lib/db.js';
++import { REVIEW_COLUMNS, requireReviewSchema, tableColumnNames } from '../lib/migrations.js';
++
++const backendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const dataDir = path.join(backendRoot, 'data');
++const files: string[] = [];
++
++async function createLegacy(): Promise<string> {
++  fs.mkdirSync(dataDir, { recursive: true });
++  const file = path.join(dataDir, `legacy-reviews-central-${Date.now()}-${Math.random().toString(16).slice(2)}.sqlite`);
++  files.push(file);
++  const { open } = await import('sqlite');
++  const sqlite3 = (await import('sqlite3')).default;
++  const db = await open({ filename: file, driver: sqlite3.Database });
++  try {
++    await db.exec(`CREATE TABLE reviews (
++      id INTEGER PRIMARY KEY AUTOINCREMENT,
++      empresa_id TEXT,
++      name TEXT,
++      rating INTEGER,
++      comment TEXT,
++      ai_reply TEXT,
++      ai_tags TEXT,
++      created_at DATETIME
++    )`);
++    await db.run(
++      'INSERT INTO reviews (id, empresa_id, name, rating, comment, created_at) VALUES (?,?,?,?,?,?)',
++      [1, 'empresa-legado', 'Cliente', 4, 'histórico', '2021-02-03 04:05:06'],
++    );
++  } finally {
++    await db.close();
++  }
++  return file;
++}
++
++async function boot(file: string) {
++  await closeDB();
++  process.env.DATABASE_URL = '';
++  process.env.SQLITE_DB_PATH = file;
++  await initDB();
++  return getDb();
++}
++
++test('SQLite legado recebe todas as colunas de reviews e preserva dados', async () => {
++  const file = await createLegacy();
++  const db = await boot(file);
++
++  const columns = await tableColumnNames(db, 'reviews');
++  const lower = new Set(columns.map((name) => name.toLowerCase()));
++  for (const column of REVIEW_COLUMNS) {
++    assert.ok(lower.has(column.toLowerCase()), `coluna reviews.${column} ausente (${columns.join(',')})`);
++  }
++
++  const info: any[] = await db.all('PRAGMA table_info(reviews)');
++  const typeOf = (name: string) =>
++    String(info.find((row) => String(row.name).toLowerCase() === name)?.type || '').toUpperCase();
++  assert.equal(typeOf('is_test'), 'INTEGER');
++  assert.equal(typeOf('ip_hash'), 'TEXT');
++  assert.equal(typeOf('fraud_flags'), 'TEXT');
++  assert.equal(typeOf('origin'), 'TEXT');
++  assert.equal(typeOf('client_whatsapp'), 'TEXT');
++  assert.equal(typeOf('sentiment'), 'TEXT');
++  assert.equal(typeOf('sentiment_score'), 'REAL');
++  assert.equal(typeOf('sentiment_source'), 'TEXT');
++  assert.equal(typeOf('locale'), 'TEXT');
++  assert.equal(typeOf('unidade_id'), 'TEXT');
++  assert.equal(typeOf('treated_at'), 'TIMESTAMPTZ');
++  assert.equal(typeOf('treated_note'), 'TEXT');
++
++  const rows: any[] = await db.all('SELECT * FROM reviews ORDER BY id');
++  assert.equal(rows.length, 1);
++  assert.equal(String(rows[0].createdAt ?? rows[0].createdat), '2021-02-03 04:05:06');
++  assert.equal(rows[0].sentiment, null);
++  assert.equal(rows[0].treated_at, null);
++
++  await requireReviewSchema(db);
++
++  const before = await tableColumnNames(db, 'reviews');
++  const db2 = await boot(file);
++  const after = await tableColumnNames(db2, 'reviews');
++  assert.deepEqual(after, before, 'segunda inicialização não pode alterar as colunas');
++  const again: any[] = await db2.all('SELECT createdAt FROM reviews ORDER BY id');
++  assert.equal(String(again[0].createdAt), '2021-02-03 04:05:06');
++});
++
++after(async () => {
++  await closeDB();
++  for (const file of files) fs.rmSync(file, { force: true });
++});
++
++test('SQLite: falha na migração limpa o estado e permite nova inicialização', async () => {
++  fs.mkdirSync(dataDir, { recursive: true });
++  const file = path.join(dataDir, `legacy-reviews-failure-${Date.now()}.sqlite`);
++  files.push(file);
++  const { open } = await import('sqlite');
++  const sqlite3 = (await import('sqlite3')).default;
++  const setup = await open({ filename: file, driver: sqlite3.Database });
++  await setup.exec('CREATE VIEW reviews AS SELECT 1 AS id');
++  await setup.close();
++
++  await closeDB();
++  process.env.DATABASE_URL = '';
++  process.env.SQLITE_DB_PATH = file;
++  await assert.rejects(() => initDB(), /reviews|index|exist/i);
++  assert.throws(() => getDb(), /não inicializado/);
++
++  // Remove o bloqueio com uma conexão nova e tenta novamente.
++  const fix = await open({ filename: file, driver: sqlite3.Database });
++  await fix.exec('DROP VIEW reviews');
++  await fix.close();
++
++  const db = await initDB();
++  const columns = await tableColumnNames(db, 'reviews');
++  assert.ok(columns.some((name) => name.toLowerCase() === 'createdat'));
++  assert.ok(columns.includes('sentiment_score'));
++});
+diff --git a/tests/reviewsCreatedAtHistory.pg.test.ts b/tests/reviewsCreatedAtHistory.pg.test.ts
+new file mode 100644
+index 0000000..28854c7
+--- /dev/null
++++ b/tests/reviewsCreatedAtHistory.pg.test.ts
+@@ -0,0 +1,191 @@
++/**
++ * Migração histórica de `reviews.createdAt` no PostgreSQL.
++ *
++ * Variantes reais:
++ * - `createdat` — nome gerado pela DDL original (`createdAt` sem aspas);
++ * - `created_at` — schemas antigos em snake_case;
++ * - `"createdAt"` — coluna criada com aspas por outra ferramenta.
++ *
++ * A migração precisa preservar os valores históricos, não preencher lacunas
++ * com `NOW()` e manter as consultas `createdAt` da aplicação funcionando.
++ */
++import assert from 'node:assert/strict';
++import { test } from 'node:test';
++import { Client } from 'pg';
++import { closeDB, getDb, initDB } from '../lib/db.js';
++import { tableColumnNames } from '../lib/migrations.js';
++import { createTestDatabase, dropTestDatabase } from './helpers/pg-test-utils.js';
++
++async function withClient<T>(url: string, work: (client: Client) => Promise<T>): Promise<T> {
++  const client = new Client({ connectionString: url });
++  await client.connect();
++  try {
++    return await work(client);
++  } finally {
++    await client.end();
++  }
++}
++
++async function boot(url: string) {
++  await closeDB();
++  process.env.DATABASE_URL = url;
++  await initDB();
++  return getDb();
++}
++
++function iso(value: unknown): string {
++  return new Date(String(value)).toISOString();
++}
++
++// O adapter do backend reescreve `createdAt` para `"createdAt"`; a coluna
++// canônica é exatamente essa e as fontes históricas seguem intactas.
++function canonicalDate(row: any): unknown {
++  return row.createdat ?? row.createdAt ?? row.created_at;
++}
++
++test('PostgreSQL: created_at histórico é copiado para createdat sem perder datas', async () => {
++  const created = await createTestDatabase('pg_reviews_created_at');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    await withClient(created.url, async (client) => {
++      await client.query(`
++        CREATE TABLE reviews (
++          id SERIAL PRIMARY KEY,
++          empresa_id TEXT,
++          name TEXT,
++          rating INTEGER,
++          comment TEXT,
++          ai_reply TEXT,
++          ai_tags TEXT,
++          created_at TIMESTAMPTZ
++        )`);
++      await client.query(
++        `INSERT INTO reviews (id, empresa_id, name, rating, comment, created_at) VALUES
++          (1, 'empresa-historica', 'Antigo', 5, 'antigo', '2020-05-06T07:08:09Z'),
++          (2, 'empresa-historica', 'Recente', 2, 'recente', '2023-11-12T13:14:15Z'),
++          (3, 'empresa-historica', 'Sem data', 4, 'sem data', NULL)`,
++      );
++      // Mantém a sequência SERIAL coerente com os IDs históricos inseridos.
++      await client.query(`SELECT setval(pg_get_serial_sequence('reviews', 'id'), 3, true)`);
++    });
++
++    const db = await boot(created.url);
++    const columns = await tableColumnNames(db, 'reviews');
++    assert.ok(columns.includes('createdAt'), `coluna canônica createdAt ausente: ${columns.join(',')}`);
++    assert.ok(columns.includes('created_at'), 'coluna histórica não pode ser removida');
++
++    const rows = await db.all('SELECT id, createdAt, created_at FROM reviews ORDER BY id');
++    assert.equal(rows.length, 3);
++    assert.equal(iso(canonicalDate(rows[0])), '2020-05-06T07:08:09.000Z');
++    assert.equal(iso(canonicalDate(rows[1])), '2023-11-12T13:14:15.000Z');
++    assert.equal(iso(rows[0].created_at), '2020-05-06T07:08:09.000Z');
++    assert.equal(canonicalDate(rows[2]), null, 'lacuna histórica não pode ser preenchida com NOW()');
++
++    // Consultas reais da aplicação (lib/quota, lib/reviewFraud, cache/rotas).
++    const noPeriodo = await db.get(
++      'SELECT COUNT(*) AS c FROM reviews WHERE empresa_id = ? AND createdAt >= ? AND createdAt < ?',
++      ['empresa-historica', '2020-01-01T00:00:00Z', '2024-01-01T00:00:00Z'],
++    );
++    assert.equal(Number(noPeriodo.c), 2, 'consulta por createdAt deve enxergar as datas históricas');
++
++    const ordenado = await db.all(
++      'SELECT id, createdAt FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC NULLS LAST',
++      ['empresa-historica'],
++    );
++    assert.deepEqual(ordenado.map((row: any) => Number(row.id)), [2, 1, 3]);
++    assert.equal(iso(canonicalDate(ordenado[0])), '2023-11-12T13:14:15.000Z');
++
++    // Novas linhas usam o default aplicado depois do backfill.
++    await db.run('INSERT INTO reviews (empresa_id, name, rating) VALUES (?,?,?)', ['empresa-historica', 'Novo', 5]);
++    const novo: any = await db.get('SELECT createdAt FROM reviews WHERE name = ?', ['Novo']);
++    assert.ok(canonicalDate(novo), 'review novo deve receber CURRENT_TIMESTAMP');
++    assert.ok(
++      new Date(String(canonicalDate(novo))).getTime() >= Date.now() - 120_000,
++      'default de novas linhas deve ser o momento da inserção',
++    );
++
++    // Restart não altera os valores históricos.
++    const db2 = await boot(created.url);
++    const depois = await db2.all('SELECT id, createdAt FROM reviews WHERE id IN (1,2) ORDER BY id');
++    assert.equal(iso(canonicalDate(depois[0])), '2020-05-06T07:08:09.000Z');
++    assert.equal(iso(canonicalDate(depois[1])), '2023-11-12T13:14:15.000Z');
++  } finally {
++    await closeDB();
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(created.name);
++  }
++});
++
++test('PostgreSQL: coluna legada createdat é copiada para createdAt', async () => {
++  const created = await createTestDatabase('pg_reviews_quoted');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    await withClient(created.url, async (client) => {
++      await client.query(`
++        CREATE TABLE reviews (
++          id SERIAL PRIMARY KEY,
++          empresa_id TEXT,
++          name TEXT,
++          rating INTEGER,
++          comment TEXT,
++          ai_reply TEXT,
++          ai_tags TEXT,
++          createdat TIMESTAMPTZ
++        )`);
++      await client.query(
++        `INSERT INTO reviews (id, empresa_id, name, rating, comment, createdat)
++         VALUES (1, 'empresa-quoted', 'Antigo', 5, 'antigo', '2019-03-04T05:06:07Z')`,
++      );
++    });
++
++    const db = await boot(created.url);
++    const columns = await tableColumnNames(db, 'reviews');
++    assert.ok(columns.includes('createdAt'), 'coluna canônica criada pela migração deve existir');
++    assert.ok(columns.includes('createdat'), 'a coluna legada sem aspas deve continuar existindo');
++
++    const row: any = await db.get('SELECT id, createdAt, createdat AS legado FROM reviews WHERE id = 1');
++    assert.equal(iso(canonicalDate(row)), '2019-03-04T05:06:07.000Z');
++    assert.equal(iso(row.legado), '2019-03-04T05:06:07.000Z');
++  } finally {
++    await closeDB();
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(created.name);
++  }
++});
++
++test('PostgreSQL: backfill não sobrescreve createdat já válido', async () => {
++  const created = await createTestDatabase('pg_reviews_no_overwrite');
++  const previousUrl = process.env.DATABASE_URL;
++  try {
++    await withClient(created.url, async (client) => {
++      await client.query(`
++        CREATE TABLE reviews (
++          id SERIAL PRIMARY KEY,
++          empresa_id TEXT,
++          name TEXT,
++          rating INTEGER,
++          comment TEXT,
++          ai_reply TEXT,
++          ai_tags TEXT,
++          createdat TIMESTAMPTZ,
++          created_at TIMESTAMPTZ
++        )`);
++      await client.query(
++        `INSERT INTO reviews (id, empresa_id, name, rating, comment, createdat, created_at) VALUES
++          (1, 'empresa-overwrite', 'Canônico', 5, 'canonico', '2018-02-03T04:05:06Z', '2022-09-09T10:11:12Z'),
++          (2, 'empresa-overwrite', 'Lacuna', 5, 'lacuna', NULL, '2021-07-08T09:10:11Z')`,
++      );
++    });
++
++    const db = await boot(created.url);
++    const rows = await db.all('SELECT id, createdAt, created_at, createdat FROM reviews ORDER BY id');
++    assert.equal(iso(canonicalDate(rows[0])), '2018-02-03T04:05:06.000Z', 'data canônica válida não pode ser sobrescrita');
++    assert.equal(iso(rows[0].created_at), '2022-09-09T10:11:12.000Z', 'coluna histórica permanece intacta');
++    assert.equal(iso(rows[0].createdat), '2018-02-03T04:05:06.000Z', 'fonte createdat permanece intacta');
++    assert.equal(iso(canonicalDate(rows[1])), '2021-07-08T09:10:11.000Z', 'lacuna é preenchida com a fonte histórica');
++  } finally {
++    await closeDB();
++    process.env.DATABASE_URL = previousUrl;
++    await dropTestDatabase(created.name);
++  }
++});
+diff --git a/tests/reviewsCreatedAtHistory.test.ts b/tests/reviewsCreatedAtHistory.test.ts
+new file mode 100644
+index 0000000..220e6c8
+--- /dev/null
++++ b/tests/reviewsCreatedAtHistory.test.ts
+@@ -0,0 +1,144 @@
++/**
++ * Migração histórica de `reviews.createdAt` no SQLite.
++ *
++ * Schemas antigos podem ter a data como `created_at`, `createdat` ou
++ * `createdAt`. A migração deve preservar os valores existentes, nunca
++ * substituí-los por `CURRENT_TIMESTAMP`, e manter as consultas da aplicação
++ * (que usam `createdAt`) funcionando.
++ */
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import { after, test } from 'node:test';
++import { fileURLToPath } from 'node:url';
++import { closeDB, getDb, initDB } from '../lib/db.js';
++import { tableColumnNames } from '../lib/migrations.js';
++
++const backendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const dataDir = path.join(backendRoot, 'data');
++const createdFiles: string[] = [];
++
++const HISTORICAL = [
++  { id: 1, empresa_id: 'empresa-historica', rating: 5, comment: 'antigo', date: '2020-05-06 07:08:09' },
++  { id: 2, empresa_id: 'empresa-historica', rating: 2, comment: 'recente', date: '2023-11-12 13:14:15' },
++];
++
++async function createLegacyDatabase(column: string, extraColumns = ''): Promise<string> {
++  fs.mkdirSync(dataDir, { recursive: true });
++  const file = path.join(dataDir, `legacy-reviews-${column}-${Date.now()}-${Math.random().toString(16).slice(2)}.sqlite`);
++  createdFiles.push(file);
++  const { open } = await import('sqlite');
++  const sqlite3 = (await import('sqlite3')).default;
++  const legacy = await open({ filename: file, driver: sqlite3.Database });
++  try {
++    await legacy.exec(`CREATE TABLE reviews (
++      id INTEGER PRIMARY KEY AUTOINCREMENT,
++      empresa_id TEXT,
++      name TEXT,
++      rating INTEGER,
++      comment TEXT,
++      ai_reply TEXT,
++      ai_tags TEXT,
++      ${column} DATETIME DEFAULT CURRENT_TIMESTAMP${extraColumns}
++    )`);
++    for (const row of HISTORICAL) {
++      await legacy.run(
++        `INSERT INTO reviews (id, empresa_id, name, rating, comment, ${column}) VALUES (?,?,?,?,?,?)`,
++        [row.id, row.empresa_id, 'Cliente', row.rating, row.comment, row.date],
++      );
++    }
++    await legacy.run(
++      `INSERT INTO reviews (id, empresa_id, name, rating, comment, ${column}) VALUES (?,?,?,?,?,NULL)`,
++      [3, 'empresa-historica', 'Sem data', 4, 'sem data'],
++    );
++  } finally {
++    await legacy.close();
++  }
++  return file;
++}
++
++async function boot(file: string) {
++  await closeDB();
++  process.env.DATABASE_URL = '';
++  process.env.SQLITE_DB_PATH = file;
++  await initDB();
++  return getDb();
++}
++
++async function assertHistoryPreserved(db: any) {
++  const rows = await db.all('SELECT * FROM reviews ORDER BY id');
++  assert.equal(rows.length, 3);
++  const createdAt = (row: any) =>
++    'createdAt' in row ? row.createdAt : 'createdat' in row ? row.createdat : row.created_at;
++  assert.equal(String(createdAt(rows[0])), HISTORICAL[0].date);
++  assert.equal(String(createdAt(rows[1])), HISTORICAL[1].date);
++  assert.equal(createdAt(rows[2]), null, 'linha sem data histórica não pode ser inventada com NOW()');
++
++  // Consulta usada pela aplicação (lib/quota, lib/reviewFraud, rotas).
++  const noPeriodo = await db.get(
++    'SELECT COUNT(*) AS c FROM reviews WHERE empresa_id = ? AND createdAt >= ? AND createdAt < ?',
++    ['empresa-historica', '2020-01-01 00:00:00', '2024-01-01 00:00:00'],
++  );
++  assert.equal(Number(noPeriodo.c), 2, 'consulta por createdAt deve enxergar as datas históricas');
++
++  const ordenado = await db.all(
++    'SELECT id FROM reviews WHERE empresa_id = ? ORDER BY createdAt DESC, id DESC',
++    ['empresa-historica'],
++  );
++  assert.equal(Number(ordenado[0].id), 2, 'ordenação por createdAt deve refletir a data histórica mais recente');
++}
++
++test('preserva datas históricas em created_at (snake_case)', async () => {
++  const file = await createLegacyDatabase('created_at');
++  const db = await boot(file);
++  const columns = await tableColumnNames(db, 'reviews');
++  assert.ok(columns.includes('created_at'), 'coluna legada não pode ser destruída');
++  assert.ok(columns.some((name) => name.toLowerCase() === 'createdat'), 'coluna canônica deve existir');
++  await assertHistoryPreserved(db);
++  const legado = await db.all('SELECT id, created_at FROM reviews ORDER BY id');
++  assert.equal(String(legado[0].created_at), HISTORICAL[0].date);
++  assert.equal(String(legado[1].created_at), HISTORICAL[1].date);
++
++  // Reinicialização (restart) não pode alterar as datas.
++  const db2 = await boot(file);
++  await assertHistoryPreserved(db2);
++
++  // Inserção no formato da aplicação (services/reviewService.ts) continua
++  // preenchendo createdAt mesmo sem default na coluna recém-criada.
++  await db2.run(
++    'INSERT INTO reviews (empresa_id,name,rating,comment,ai_reply,ai_tags,createdAt) VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)',
++    ['empresa-historica', 'Novo', 5, 'novo', null, null],
++  );
++  const novo = await db2.get('SELECT createdAt FROM reviews WHERE name = ?', ['Novo']);
++  assert.ok(novo?.createdAt, 'review novo deve ter createdAt preenchido');
++});
++
++test('preserva datas históricas em createdat (minúsculo)', async () => {
++  const file = await createLegacyDatabase('createdat');
++  const db = await boot(file);
++  const columns = await tableColumnNames(db, 'reviews');
++  assert.equal(
++    columns.filter((name) => name.toLowerCase() === 'createdat').length,
++    1,
++    'SQLite não pode ganhar coluna duplicada para a mesma data',
++  );
++  await assertHistoryPreserved(db);
++});
++
++test('preserva datas históricas em createdAt (schema original)', async () => {
++  const file = await createLegacyDatabase('createdAt');
++  const db = await boot(file);
++  assert.ok((await tableColumnNames(db, 'reviews')).includes('createdAt'));
++  await assertHistoryPreserved(db);
++});
++
++test('preserva datas anteriores mesmo quando a coluna é adicionada com DEFAULT legado', async () => {
++  const file = await createLegacyDatabase('created_at', ', is_test INTEGER DEFAULT 0');
++  const db = await boot(file);
++  await assertHistoryPreserved(db);
++});
++
++after(async () => {
++  await closeDB();
++  for (const file of createdFiles) fs.rmSync(file, { force: true });
++});
+diff --git a/tests/schemaDdlAudit.test.ts b/tests/schemaDdlAudit.test.ts
+new file mode 100644
+index 0000000..41bb5b1
+--- /dev/null
++++ b/tests/schemaDdlAudit.test.ts
+@@ -0,0 +1,36 @@
++/**
++ * Auditoria automatizada: nenhuma DDL de `reviews` pode existir fora de
++ * lib/migrations.ts. DDL de outras tabelas é permitida, mas precisa aparecer
++ * na auditoria para ser justificada no relatório do PR.
++ */
++import assert from 'node:assert/strict';
++import path from 'node:path';
++import { spawnSync } from 'node:child_process';
++import { test } from 'node:test';
++import { fileURLToPath } from 'node:url';
++
++const backendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const script = path.join(backendRoot, 'scripts', 'schema-ddl-audit.mjs');
++
++type Occurrence = { file: string; line: number; statement: string; excerpt: string };
++
++function audit(): Occurrence[] {
++  const result = spawnSync(process.execPath, [script, '--json'], { cwd: backendRoot, encoding: 'utf8' });
++  assert.equal(result.status, 0, result.stderr);
++  return JSON.parse(result.stdout) as Occurrence[];
++}
++
++test('nenhuma DDL de reviews fora de lib/migrations.ts', () => {
++  const occurrences = audit();
++  assert.ok(occurrences.length > 0, 'a auditoria deve encontrar DDL de outras tabelas');
++  assert.equal(occurrences.some((item) => item.file === 'lib/migrations.ts'), false);
++  const reviews = occurrences.filter((item) => /\breviews\b/i.test(item.excerpt));
++  assert.deepEqual(reviews, [], `DDL de reviews encontrada fora da migração central: ${JSON.stringify(reviews)}`);
++});
++
++test('auditoria cobre os módulos com DDL remanescente para justificativa', () => {
++  const files = new Set(audit().map((item) => item.file));
++  for (const expected of ['lib/planPricing.ts', 'lib/auditLog.ts', 'routes/pixRoutes.ts', 'services/trialService.ts']) {
++    assert.ok(files.has(expected), `${expected} deveria aparecer na auditoria de DDL`);
++  }
++});
+diff --git a/tests/testRunner.test.ts b/tests/testRunner.test.ts
+new file mode 100644
+index 0000000..4c4d8a3
+--- /dev/null
++++ b/tests/testRunner.test.ts
+@@ -0,0 +1,51 @@
++/**
++ * Garante que o runner de testes é multiplataforma: não usa `find`/`xargs`
++ * (indisponíveis no PowerShell) e mantém a separação padrão/PostgreSQL.
++ */
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import { spawnSync } from 'node:child_process';
++import { test } from 'node:test';
++import { fileURLToPath } from 'node:url';
++
++const backendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
++const runner = path.join(backendRoot, 'scripts', 'run-tests.mjs');
++
++function list(args: string[]): string[] {
++  const result = spawnSync(process.execPath, [runner, '--list', ...args], {
++    cwd: backendRoot,
++    encoding: 'utf8',
++  });
++  assert.equal(result.status, 0, `runner falhou: ${result.stderr}`);
++  return JSON.parse(result.stdout) as string[];
++}
++
++test('runner padrão lista testes comuns e exclui *.pg.test.ts', () => {
++  const files = list([]);
++  assert.ok(files.length > 0, 'a suíte padrão não pode ficar vazia');
++  assert.equal(files.some((file) => file.endsWith('.pg.test.ts')), false);
++  assert.ok(files.some((file) => file.endsWith('dbMigrationsGuards.test.ts')));
++  for (const file of files) {
++    assert.ok(fs.existsSync(path.resolve(backendRoot, file)), `arquivo deve existir: ${file}`);
++  }
++});
++
++test('runner --postgres lista somente *.pg.test.ts', () => {
++  const files = list(['--postgres']);
++  assert.ok(files.length > 0);
++  assert.ok(files.every((file) => file.endsWith('.pg.test.ts')));
++  assert.ok(files.some((file) => file.endsWith('dbInitializationConcurrency.pg.test.ts')));
++});
++
++test('scripts de teste não dependem de find/xargs (Windows/PowerShell)', () => {
++  const pkg = JSON.parse(fs.readFileSync(path.join(backendRoot, 'package.json'), 'utf8'));
++  for (const script of ['test', 'test:postgres']) {
++    const command = String(pkg.scripts[script] || '');
++    assert.equal(/\bfind\b/.test(command), false, `${script} não pode usar find`);
++    assert.equal(/\bxargs\b/.test(command), false, `${script} não pode usar xargs`);
++    assert.match(command, /node\s+scripts\/run-tests\.mjs/);
++  }
++  const runnerSource = fs.readFileSync(runner, 'utf8');
++  assert.equal(/spawnSync\('find'|\bxargs\b/.test(runnerSource), false);
++});
+-- 
+2.39.5
+
+From ad58d052bcfe1e195f0a1dad94e4ef364b700177 Mon Sep 17 00:00:00 2001
+From: Cline Agent <cline@localhost>
+Date: Mon, 2 Nov 2026 20:09:23 +0000
+Subject: [PATCH 2/2] docs(pr139): integration report (backend)
+
+---
+ docs/pr139-integracao-backend.md | 128 +++++++++++++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
+ create mode 100644 docs/pr139-integracao-backend.md
+
+diff --git a/docs/pr139-integracao-backend.md b/docs/pr139-integracao-backend.md
+new file mode 100644
+index 0000000..411e8dd
+--- /dev/null
++++ b/docs/pr139-integracao-backend.md
+@@ -0,0 +1,128 @@
++# PR #139 — Relatório de integração (saas-reputacao-ia → backend)
++
++> **Repositório de destino:** `LU9DI/backend`
++> **PR:** #139 • **Branch de destino:** `fix/dot-audit-integrity-postgres`
++> **Origem:** `LU9DI/saas-reputacao-ia` • `cline/rf9q7dty` @ `f363c092`
++> **Base do destino:** `a74c75d` (histórico do PR preservado, sem merge)
++> **SHA local desta integração:** ver `git rev-parse HEAD` (commit de código `5769919`)
++>
++> **Entrega bloqueada no push:** a conta `cline-cloud[bot]` tem
++> `push:false` em `LU9DI/backend` (HTTP 403). Os commits existem apenas no clone
++> local e o patch está em `pr139-backend-integration.patch`. Nenhum merge ou
++> deploy foi feito. **PR não está pronto para merge.**
++
++## 1. Commits preservados
++
++O histórico do PR foi mantido integralmente; a integração é UM commit novo
++sobre `a74c75d`, sem rebase, sem amend e sem substituição de branch:
++
++```
++a74c75d test(dot): route approval race to dedicated worker
++bd311f5 test(dot): add PostgreSQL approval worker
++c59255d test(dot): cover concurrent PostgreSQL approval
++ce2e163 test: exclude dedicated PostgreSQL tests from SQLite runner
++11b3a1c test(dot): keep PostgreSQL fixture timestamp within integer range
++... (histórico anterior do PR preservado)
++```
++
++Correções do PR #139 preservadas e cobertas por testes:
++
++- ator autenticado na preparação (`actorUserId ? 'user' : 'dot'`);
++- evento `prepared` gravado na MESMA transação da criação da ação;
++- deduplicação idempotente sem segundo evento de auditoria;
++- `SELECT ... FOR UPDATE` no PostgreSQL (decisão e ação);
++- proteção CSRF da sessão administrativa (inalterada);
++- testes `dotActionAuditIntegrity`, `dotActionQueue`, `dotActionConcurrency.pg`
++  e `dot-security-hardening` verdes.
++
++## 2. Arquivos alterados
++
++```
++ lib/db.pg.ts                                 | 230 ++++++++---
++ lib/db.ts                                    | 227 ++++-------
++ lib/lgpd.ts                                  |  16 +-
++ lib/migrations.ts                            | 558 +++++++++++++++++++++++++++
++ lib/reviewFraud.ts                           |  21 +-
++ mfa.ts                                       |  21 +-
++ package-lock.json                            |   6 +-
++ package.json                                 |   4 +-
++ passwordResetRoutes.ts                       |  41 +-
++ routes/adminTecnicoRoutes.ts                 |  11 +-
++ routes/empresaRoutes.ts                      |  38 +-
++ scripts/run-tests.mjs                        |  19 +-
++ scripts/schema-ddl-audit.mjs                 |  71 +++
++ services/dotActionAudit.ts                   |  39 +-
++ services/dotActionQueue.ts                   |  40 +-
++ services/reviewService.ts                    |  16 +-
++ services/sentimentBackfill.ts                |  13 +-
++ tests/* (14 arquivos novos/ajustados)        | ~1400 +++
++ 34 files changed, 2595 insertions(+), 411 deletions(-)
++```
++
++## 3. Conflitos e decisões de integração
++
++| Tema | Destino (PR #139) | Origem | Decisão |
++|---|---|---|---|
++| Pool | `let pool` global mutável | pool por instância + lock | portado pool local e `withMigrationLock` |
++| Coluna canônica | adapter reescreve `createdAt` → `"createdAt"` | canônico `createdat` no PG | mantido `"createdAt"` (comportamento do adapter do backend); backfill de `createdat`/`created_at` |
++| `exec` | engolia 42P07/42701/23505/`already exists` | removeu toda tolerância | mantida tolerância **somente** para comandos com `IF NOT EXISTS` (corrida de catálogo documentada); demais erros propagam |
++| `dot_action_queue`/`audit` | DDL em `ensureSchema`/`ensureDotActionAuditSchema` | verificação sem DDL | DDL movida para a migração central; auditoria transacional intacta |
++| Auth/MFA | DDL em recuperação de senha/MFA | verificação sem DDL | portado `requireSchema` |
++| Runner | já era Node multiplataforma | runner próprio | estendido `scripts/run-tests.mjs` com `--postgres`/`--list` (sem runner duplicado) |
++| `initDB` | atribuía `_db` antes das migrações | atômico | mantida lógica Supabase/retry + cleanup e restauração do estado anterior |
++| `createdAt` em INSERTs | default da tabela | explícito | `createdAt = CURRENT_TIMESTAMP` nos 3 INSERTs (SQLite legado sem default) |
++
++Nenhuma tabela é recriada; todas as colunas são adicionadas por
++`ALTER TABLE ADD COLUMN` após checagem de catálogo/PRAGMA, preservando dados.
++
++## 4. Validação executada
++
++| Comando | Resultado |
++|---|---|
++| `npm test` | **303/303** (59 suites), 0 falhas/cancelados/skipped |
++| `npm run test:postgres` (PostgreSQL 16.15) | **17/17**, 0 falhas |
++| `npm run build` (`tsc --noEmit`) | 0 erros |
++| `npm audit --omit=dev` | 1 vulnerabilidade moderada **pré-existente** (`@hono/node-server` via MCP; `qs` atualizado via override para 6.17.1) |
++| `git diff --check` | sem saídas |
++
++Cenários PostgreSQL cobertos: inicialização concorrente (3 processos),
++`PG_POOL_MAX=1`, falha de migração + recuperação, falha não fecha instância
++anterior, snapshot real de índices (`pg_indexes`), banco legado com todas as
++colunas, backfill/`createdAt` histórico, ausência de DDL em serviços e
++concorrência de preparação/aprovação do Dot.
++
++## 5. Auditoria de DDL
++
++`node scripts/schema-ddl-audit.mjs --json`:
++
++- **152 ocorrências em 42 arquivos** fora de `lib/migrations.ts`;
++- **0 ocorrências em `reviews`** (grep direto e teste `schemaDdlAudit.test.ts`);
++- **0 ocorrências em `dot_action_queue`/`dot_action_audit`**.
++
++As ocorrências restantes são bootstrap idempotente de tabelas de outros
++módulos (DOT, pagamentos, relatórios, aquisição, observabilidade). Fora do
++escopo desta integração; ficam registradas como dívida técnica e não tocam
++`reviews` nem as tabelas de ação/auditoria.
++
++Além da varredura textual, há prova comportamental: com índice/coluna removidos,
++`listDotActions`, `recordDotActionAudit` e `listDotActionAudit` falham de forma
++explícita e **não recriam** o objeto (teste `dotActionSchemaGuard.pg`).
++
++## 6. Diferenças remanescentes em relação à origem
++
++- Canônico de data é `"createdAt"` (não `createdat`) por causa do `adaptSql`
++  deste repositório; backfill e testes foram adaptados.
++- Runner de testes é o `scripts/run-tests.mjs` já existente (estendido), em vez
++  do runner separado da origem.
++- DDL lazy dos demais módulos não foi centralizada (documentada acima).
++- Vulnerabilidade moderada de `@hono/node-server` é pré-existente e exige
++  upgrade do MCP (não executado para não alterar API neste PR).
++
++## 7. Confirmações
++
++- Sem merge, sem deploy, sem publicação, sem alteração de Render/Supabase/env.
++- Nenhuma flag do Filtra Dot foi ativada.
++- `main`/`master` do destino intocada; histórico do PR #139 preservado.
++- **PR #139 não está pronto para merge**: integração pendente de revisão
++  independente e de permissão de push (`cline-cloud[bot]` sem `push` no
++  repositório de destino).
+-- 
+2.39.5
+
