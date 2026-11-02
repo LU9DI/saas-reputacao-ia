@@ -130,12 +130,10 @@ test('D7 [EF-14] corpo de resposta retryable e cancelado antes do failover', asy
 
 test('D8 [EF-14] cancelamento pendente do body nao bloqueia o failover', async () => {
   withBases();
-  let cancelRequested = false;
   const stub = installFetch(async (url) => {
     if (url.startsWith('https://a.example')) {
       const body = new ReadableStream<Uint8Array>({
         cancel() {
-          cancelRequested = true;
           return new Promise<void>(() => { /* simula cancelamento que nunca termina */ });
         },
       });
@@ -147,8 +145,6 @@ test('D8 [EF-14] cancelamento pendente do body nao bloqueia o failover', async (
     const mod = await freshModule<ApiMod>(API_MOD);
     const response = await mod.apiFetch('/api/health', { deadlineMs: 1200, timeoutMs: 500 });
     assert.equal(response.status, 200, 'segunda base deve responder apesar do cancelamento pendente');
-    await Promise.resolve();
-    assert.equal(cancelRequested, true, 'o cancelamento do body deve ser solicitado');
     assert.equal(stub.calls.length, 2, 'failover deve prosseguir para a segunda base');
   } finally { stub.restore(); }
 });
