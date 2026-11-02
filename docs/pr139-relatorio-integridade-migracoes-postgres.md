@@ -415,7 +415,8 @@ Render/Supabase/variáveis de produção e sem ativar o Filtra Dot.
 
 > Repositório: `LU9DI/saas-reputacao-ia` • Branch: `cline/rf9q7dty`
 > Base desta rodada: `5f886549` • Código/testes: `c43cb925`
-> **SHA final da branch: `75f96c186e9f38a67311f8c1edd356a9b105244b`**
+> **SHA final da branch: ver `git rev-parse HEAD`** (o HEAD é o commit que
+> contém este relatório; o commit de código desta rodada é `c43cb925`)
 > Sem merge, sem deploy/publicação, `main` intocada, Render/Supabase e flags do
 > Filtra Dot inalterados. **PR #139 não está pronto para merge**: o transporte
 > para `LU9DI/backend` é etapa posterior, após revisão independente.
