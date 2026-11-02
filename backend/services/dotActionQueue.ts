@@ -1,4 +1,5 @@
 import { getDb, withDbTransaction } from '../lib/db.js';
+import { requireSchema } from '../lib/migrations.js';
 import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRegistry.js';
 import { recordDotActionAudit } from './dotActionAudit.js';
 import { executeDotActionThroughGateway } from './dotExecutionGateway.js';
@@ -35,27 +36,43 @@ function normalizeActionRow(row: any) {
   };
 }
 
+/**
+ * Verifica o schema da fila de ações — sem executar DDL.
+ * Tabela e índices únicos são criados apenas em `runCentralMigrations`
+ * (lib/migrations.ts) durante `initDB()`.
+ */
 async function ensureSchema() {
   const db = getDb();
-  await db.exec(`CREATE TABLE IF NOT EXISTS dot_action_queue (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    empresa_id TEXT NOT NULL,
-    decision_id INTEGER NOT NULL,
-    option_id TEXT NOT NULL,
-    action TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'prepared',
-    approved_at TEXT,
-    executed_at TEXT,
-    error TEXT,
-    created_at TEXT NOT NULL
-  )`);
-  await db.exec('CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_decision_option ON dot_action_queue(empresa_id, decision_id, option_id)');
-  await db.exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_one_active_decision ON dot_action_queue(empresa_id, decision_id) WHERE status IN ('prepared','approved','executing')");
+  await requireSchema(db, {
+    tables: ['dot_action_queue'],
+    columns: {
+      dot_action_queue: [
+        'id',
+        'empresa_id',
+        'decision_id',
+        'option_id',
+        'action',
+        'status',
+        'approved_at',
+        'executed_at',
+        'error',
+        'created_at',
+      ],
+    },
+    indexes: [
+      { table: 'dot_action_queue', name: 'ux_dot_action_queue_decision_option' },
+      { table: 'dot_action_queue', name: 'ux_dot_action_queue_one_active_decision' },
+    ],
+  });
 }
 
 export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string, actorUserId?: string | null) {
   await ensureSchema();
   let prepared;
+  // Só a chamada que realmente inseriu a ação registra o evento `prepared`.
+  // Recuperações idempotentes (mesma ação já existente, inclusive quando outra
+  // instância vence a corrida do índice único) não duplicam auditoria.
+  let createdHere = false;
   try {
     prepared = await withActionLock(`prepare:${empresaId}:${decisionId}`, () =>
       withDbTransaction(async (tx) => {
@@ -97,6 +114,7 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
         );
         if (promoted.changes !== 1) throw new Error('Não foi possível preparar a decisão; transação revertida.');
       }
+      createdHere = true;
       return normalizeActionRow({ id, decision_id: decisionId, option_id: option.id, action: definition.action, status: 'prepared' });
       }),
     );
@@ -110,7 +128,7 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
     prepared = normalizeActionRow(existing);
   }
 
-  if (prepared?.id) {
+  if (prepared?.id && createdHere) {
     await recordDotActionAudit({
       empresaId,
       actionId: Number(prepared.id),

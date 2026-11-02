@@ -8,9 +8,8 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import type { Database } from 'sqlite';
 import { fileURLToPath } from 'url';
-import { ensureAuthColumns } from '../passwordResetRoutes.js';
-import { ensureMfaColumns } from '../mfa.js';
 import { initPgDatabase, isPostgresUrl, asSqliteDb, type PgDatabase } from './db.pg.js';
+import { runCentralMigrations } from './migrations.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -100,72 +99,10 @@ export async function initDB(): Promise<Database> {
     _db = await initSqlite();
   }
 
-  await _db.exec(`
-    CREATE TABLE IF NOT EXISTS empresas (
-      id TEXT PRIMARY KEY,
-      cnpj TEXT UNIQUE NOT NULL,
-      nome_empresa TEXT NOT NULL,
-      slug TEXT UNIQUE,
-      status TEXT DEFAULT 'trial',
-      plan TEXT DEFAULT 'trial',
-      criado_em TIMESTAMPTZ NOT NULL,
-      expira_em TIMESTAMPTZ NOT NULL,
-      google_review_url TEXT,
-      voice_style TEXT,
-      empresa_pai_id TEXT,
-      whatsapp_suporte TEXT
-    )
-  `);
-  await _db.exec(`
-    CREATE TABLE IF NOT EXISTS usuarios (
-      id TEXT PRIMARY KEY,
-      cnpj TEXT NOT NULL,
-      nome_funcionario TEXT NOT NULL,
-      empresa_id TEXT NOT NULL,
-      senha_hash TEXT NOT NULL
-    )
-  `);
-  await _db.exec(`
-    CREATE TABLE IF NOT EXISTS reviews (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      empresa_id TEXT,
-      name TEXT,
-      rating INTEGER,
-      comment TEXT,
-      ai_reply TEXT,
-      ai_tags TEXT,
-      createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  await _db.exec(`
-    CREATE TABLE IF NOT EXISTS ai_usage (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      empresa_id TEXT,
-      tipo TEXT NOT NULL,
-      tokens INTEGER NOT NULL DEFAULT 0,
-      criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  await _db.exec(`
-    CREATE TABLE IF NOT EXISTS usage (
-      plan TEXT NOT NULL,
-      month TEXT NOT NULL,
-      tags INTEGER DEFAULT 0,
-      respostas INTEGER DEFAULT 0,
-      PRIMARY KEY (plan, month)
-    )
-  `);
-
-  try {
-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_reviews_empresa ON reviews(empresa_id)`);
-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_cnpj ON empresas(cnpj)`);
-    await _db.exec(`CREATE INDEX IF NOT EXISTS idx_empresas_slug ON empresas(slug)`);
-  } catch {
-    /* ok */
-  }
-
-  await ensureAuthColumns(_db);
-  await ensureMfaColumns(_db);
+  // Inicialização central: toda a DDL do núcleo roda aqui, uma única vez,
+  // sob advisory lock global no PostgreSQL. Requisições nunca migram schema.
+  await runCentralMigrations(_db!);
+  console.log('Schema inicializado (migrações centrais idempotentes)');
 
   const adminMail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
   const adminPass = process.env.ADMIN_PASSWORD || '';
@@ -186,6 +123,18 @@ export async function initDB(): Promise<Database> {
   }
 
   return _db;
+}
+
+/**
+ * Encerra o pool/conexão da instância ativa deste módulo.
+ * Necessário para testes que criam e descartam bancos independentes.
+ */
+export async function closeDB(): Promise<void> {
+  const db = _db;
+  _db = null;
+  if (!db) return;
+  const close = (db as unknown as { close?: () => Promise<void> }).close;
+  if (typeof close === 'function') await close();
 }
 
 export async function findEmpresa(ref: string) {
