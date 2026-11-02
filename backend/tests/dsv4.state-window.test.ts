@@ -138,6 +138,37 @@ test('F6 [controle] mesmo eventId grava estado uma unica vez', async () => {
   } finally { stub.restore(); resetClock(); }
 });
 
+
+test('F8 [EF-03] frontend e Worker normalizam nextProbeAt vazio, nulo e ausente', async () => {
+  setClock(T0); withCloudflareEnv();
+  const api = installCloudflareApi();
+  const mod = await freshModule<{ getFailoverState: () => Promise<{ nextProbeAt: number }> }>(STATE_MOD);
+  try {
+    const legacyStates = [
+      { origin: 'fallback', changedAt: T0, reason: 'legacy', nextProbeAt: '' },
+      { origin: 'fallback', changedAt: T0, reason: 'legacy', nextProbeAt: null },
+      { origin: 'fallback', changedAt: T0, reason: 'legacy' },
+    ];
+    for (const state of legacyStates) {
+      api.store.set('active_origin', JSON.stringify(state));
+      const frontend = await mod.getFailoverState();
+      assert.equal(frontend.nextProbeAt, T0 + STICKY_6H,
+        'frontend deve derivar a mesma janela para estado legado');
+      const kv = new FakeKV();
+      kv.seed('active_origin', state);
+      new FakeCache().install();
+      const worker = await freshWorker();
+      setClock(T0 + 60_000);
+      const stub = installFetch(async () => new Response('<html>fallback</html>', { status: 200, headers: { 'content-type': 'text/html' } }));
+      try {
+        await worker.fetch(getReq(), WORKER_ENV(kv));
+        assert.equal(stub.hostCount('primary.example.com'), 0,
+          'Worker não pode sondar antes do fim da janela derivada');
+      } finally { stub.restore(); }
+    }
+  } finally { api.restore(); resetClock(); }
+});
+
 test('F7 [REQ-STATE-07, fora do escopo 3.4] 5 requisicoes concorrentes geram no maximo 1 probe', async () => {
   const kv = new FakeKV({ latencyMs: 8 });
   kv.seed('active_origin', { origin: 'fallback', changedAt: T0 - HOUR, reason: 'x', nextProbeAt: T0 });
