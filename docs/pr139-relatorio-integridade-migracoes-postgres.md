@@ -10,20 +10,27 @@
 |---|---|---|
 | Antes | `main` | `4e6439ea8f7d3da734f3fe0a1664768b44d04a3d` |
 | Após implementação (código + testes) | `cline/rf9q7dty` | `50ec2694` |
-| Após correção final de `closeDB` + este relatório | `cline/rf9q7dty` | commit seguinte a este arquivo |
+| Após correção final de `closeDB` + relatório | `cline/rf9q7dty` | `3fd5cf4b` |
+| Ajuste editorial deste relatório | `cline/rf9q7dty` | commit seguinte (ver `git log -1`) |
 
-`git diff --check`: sem saídas. `git diff --stat` (código):
+`git diff --check`: sem saídas. `git diff --stat main..HEAD`:
 
 ```
- backend/lib/db.pg.ts                       | 200 ++++++++++++++++++----------
- backend/lib/db.ts                          |  90 +------
- backend/lib/migrations.ts                  | 344 ++++++++++++++++++++++++++++++
- backend/mfa.ts                             |  20 +-
- backend/package.json                       |   1 +
- backend/passwordResetRoutes.ts             |  40 +--
- backend/services/dotActionAudit.ts         |  36 +--
- backend/services/dotActionQueue.ts         |  57 +++-
- testes novos (6 arquivos)                   | ~1.200 linhas
+ backend/lib/db.pg.ts                               | 144 +++++++--
+ backend/lib/db.ts                                  |  85 +----
+ backend/lib/migrations.ts                          | 344 +++++++++++++++++++++
+ backend/mfa.ts                                     |  22 +-
+ backend/package.json                               |   3 +-
+ backend/passwordResetRoutes.ts                     |  43 +--
+ backend/services/dotActionAudit.ts                 |  38 +--
+ backend/services/dotActionQueue.ts                 |  48 ++-
+ backend/tests/dbInitializationConcurrency.pg.test.ts | 177 +++++++++++++
+ backend/tests/dbInstances.pg.test.ts               |  79 +++++
+ backend/tests/dbMigrationsGuards.test.ts           | 100 ++++++
+ backend/tests/dotActionConcurrency.pg.test.ts      | 148 ++++++++++
+ backend/tests/helpers/*                            | 207 ++++++
+ docs/pr139-relatorio-integridade-migracoes-postgres.md | 225 ++++++++++++++
+ 17 files changed, 1488 insertions(+), 175 deletions(-)
 ```
 
 Nenhum arquivo de configuração de produção foi tocado (Render, Supabase, `.env`,
