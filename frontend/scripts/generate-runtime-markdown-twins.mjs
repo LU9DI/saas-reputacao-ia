@@ -110,7 +110,7 @@ const sections = groups
   .filter(([, items]) => items.length)
   .map(([title, items]) => `\n## ${title}\n${items.map((p) => `- ${p.pathname}: ${SITE}${p.pathname}.md`).join('\n')}\n`)
   .join('');
-const llms = `${llmsSource}\n\n## Versões em Markdown\nCada página pública tem uma versão `.md` com o mesmo conteúdo, sem navegação nem scripts. A URL canônica continua sendo a página HTML.\n${sections}`;
+const llms = llmsSource + '\n\n## Versões em Markdown\nCada página pública tem uma versão .md com o mesmo conteúdo, sem navegação nem scripts. A URL canônica continua sendo a página HTML.\n' + sections;
 await writeFile(llmsPath, llms, 'utf8');
 
 const fullPath = path.join(publicDir, 'llms-full.txt');
