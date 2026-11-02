@@ -1,4 +1,11 @@
 const STATE_KEY = 'active_origin';
+/**
+ * Janela sticky de failover (DSV4 REQ-STATE-04 / D-13): após entrar em fallback,
+ * nenhuma sondagem é permitida antes de `changedAt + STICKY_WINDOW_MS`.
+ * DEVE permanecer alinhada a `frontend/src/app/lib/failoverState.ts`.
+ */
+const STICKY_WINDOW_MS = 6 * 60 * 60 * 1000;
+const STICKY_JITTER_RATIO = 0.15;
 const RETRYABLE = new Set([402, 429, 500, 502, 503, 504, 521, 522, 523, 524]);
 const WEBHOOK_PATH = '/_failover/vercel';
 const STATIC_ORIGIN = 'https://filtra-ai-frontend.filtra-ai.workers.dev';
@@ -35,20 +42,45 @@ function buildTarget(origin, requestUrl) {
 }
 
 async function readState(env) {
-  const raw = await env.FAILOVER_ORIGIN.get(STATE_KEY);
+  let raw;
+  try {
+    raw = await env.FAILOVER_ORIGIN.get(STATE_KEY);
+  } catch {
+    // REQ-STATE-06: indisponibilidade do KV não pode derrubar a requisição.
+    return { origin: 'primary', changedAt: 0, reason: 'kv-unavailable', nextProbeAt: 0 };
+  }
   if (!raw) return { origin: 'primary', changedAt: 0, reason: 'default', nextProbeAt: 0 };
   try {
     const state = JSON.parse(raw);
+    const origin = state.origin === 'fallback' ? 'fallback' : 'primary';
+    const changedAt = Number(state.changedAt) || 0;
+    const rawNext = state.nextProbeAt;
+    const hasNext = rawNext !== undefined && rawNext !== null && rawNext !== '';
+    const parsedNext = hasNext ? Number(rawNext) : Number.NaN;
+    // EF-03: um `nextProbeAt` explícito e numérico (inclusive 0 = "vencido") é
+    // autoridade; ausência ou valor inválido NÃO pode abrir a janela e é
+    // derivado de changedAt para estado legado em fallback.
+    const nextProbeAt = hasNext && Number.isFinite(parsedNext)
+      ? parsedNext
+      : origin === 'fallback' && changedAt > 0
+        ? changedAt + STICKY_WINDOW_MS
+        : 0;
     return {
-      origin: state.origin === 'fallback' ? 'fallback' : 'primary',
-      changedAt: Number(state.changedAt) || 0,
+      origin,
+      changedAt,
       reason: String(state.reason || 'unknown'),
-      nextProbeAt: Number(state.nextProbeAt) || 0,
+      nextProbeAt,
       eventId: state.eventId ? String(state.eventId) : undefined,
     };
   } catch {
     return { origin: 'primary', changedAt: 0, reason: 'invalid-state', nextProbeAt: 0 };
   }
+}
+
+/** Instante mínimo da próxima sondagem, com jitter (REQ-STATE-04/08). */
+function stickyNextProbeAt(changedAt) {
+  const jitter = Math.round(STICKY_WINDOW_MS * STICKY_JITTER_RATIO * Math.random());
+  return changedAt + STICKY_WINDOW_MS + jitter;
 }
 
 async function writeState(env, state) { await env.FAILOVER_ORIGIN.put(STATE_KEY, JSON.stringify(state)); }
@@ -120,15 +152,16 @@ async function handleFailoverWebhook(request, env) {
 
   if (action === 'failover') {
     const current = await readState(env);
-    const cooldownMs = 300000;
-    const inCooldown = current.changedAt > 0 && Date.now() - current.changedAt < cooldownMs;
+    const now = Date.now();
+    const inWindow = current.origin === 'fallback' && current.changedAt > 0 && now < current.nextProbeAt;
 
-    if (current.origin !== 'fallback' || !inCooldown) {
+    // T2: dentro da janela, o evento não renova changedAt/nextProbeAt (REQ-STATE-04).
+    if (!inWindow) {
       await writeState(env, {
         origin: 'fallback',
-        changedAt: Date.now(),
+        changedAt: now,
         reason: source === '90pct-monitor' ? 'spend-90-monitor' : 'spend-threshold-' + String(threshold),
-        nextProbeAt: Date.now() + cooldownMs,
+        nextProbeAt: stickyNextProbeAt(now),
         eventId,
       });
     }
@@ -194,25 +227,43 @@ async function fetchPrimary(request, env) {
   }
 }
 
-async function cacheResponse(request, response) {
+/**
+ * Aquece o cache sem bloquear a resposta (REQ-CACHE-08 / EF-12).
+ * Em Workers, a promessa vai para `ctx.waitUntil`; fora dele é aguardada com
+ * erro descartado. Falha de cache nunca altera a resposta entregue.
+ */
+function cacheResponse(request, response, ctx) {
   if (request.method !== 'GET' || !response || !response.ok) return;
   if (!publicPath(new URL(request.url).pathname)) return;
 
-  const cached = response.clone();
-  const headers = new Headers(cached.headers);
-  if (!headers.has('cache-control')) headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
+  const write = (async () => {
+    const cached = response.clone();
+    const headers = new Headers(cached.headers);
+    if (!headers.has('cache-control')) headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
 
-  await caches.default.put(request, new Response(cached.body, {
-    status: cached.status,
-    statusText: cached.statusText,
-    headers,
-  }));
+    await caches.default.put(request, new Response(cached.body, {
+      status: cached.status,
+      statusText: cached.statusText,
+      headers,
+    }));
+  })().catch(() => {});
+
+  if (ctx && typeof ctx.waitUntil === 'function') {
+    ctx.waitUntil(write);
+    return;
+  }
+  return write;
 }
 
 async function readCache(request) {
   if (request.method !== 'GET') return null;
-  const cached = await caches.default.match(request);
-  return cached ? new Response(cached.body, cached) : null;
+  try {
+    const cached = await caches.default.match(request);
+    return cached ? new Response(cached.body, cached) : null;
+  } catch {
+    // Cache indisponível é equivalente a miss (EF-12).
+    return null;
+  }
 }
 
 async function decorate(response, origin, requestUrl = response.url) {
@@ -233,10 +284,10 @@ async function decorate(response, origin, requestUrl = response.url) {
   return new Response(body, { status: response.status, statusText: response.statusText, headers });
 }
 
-async function fallbackResponse(request, reason, env) {
+async function fallbackResponse(request, reason, env, ctx) {
   const fallback = await fetchFallback(request, env);
   if (fallback.response && !fallback.retryable) {
-    await cacheResponse(request, fallback.response);
+    cacheResponse(request, fallback.response, ctx);
     return decorate(fallback.response, 'cloudflare-fallback');
   }
   if (publicPath(new URL(request.url).pathname)) {
@@ -262,7 +313,7 @@ async function fallbackResponse(request, reason, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (url.pathname === WEBHOOK_PATH && request.method === 'POST') {
@@ -286,12 +337,12 @@ export default {
             nextProbeAt: 0,
           });
 
-          await cacheResponse(request, primary.response);
+          cacheResponse(request, primary.response, ctx);
           return decorate(primary.response, 'primary');
         }
       }
 
-      return fallbackResponse(request, 'configured-fallback', env);
+      return fallbackResponse(request, 'configured-fallback', env, ctx);
     }
 
     if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml') {
@@ -309,15 +360,15 @@ export default {
 
     const runtime = await fetchRuntimeFast(request, env);
     if (runtime.response && !runtime.retryable) {
-      await cacheResponse(request, runtime.response);
+      cacheResponse(request, runtime.response, ctx);
       return decorate(runtime.response, 'render-frontend-runtime');
     }
 
     const primary = await fetchPrimary(request, env);
     if (primary.response && !primary.retryable) {
-      await cacheResponse(request, primary.response);
+      cacheResponse(request, primary.response, ctx);
       return decorate(primary.response, 'primary');
     }
-    return fallbackResponse(request, runtime.response ? 'runtime-http-' + runtime.response.status : 'runtime-network-error', env);
+    return fallbackResponse(request, runtime.response ? 'runtime-http-' + runtime.response.status : 'runtime-network-error', env, ctx);
   },
 };
