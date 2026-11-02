@@ -11,7 +11,7 @@
  * entram na rotação.
  *
  * Troca quando: rede falha, timeout, ou HTTP 502/503/504.
- * Mantém a base que funcionou por 5 min (sticky) para não ficar oscilando.
+ * Mantém a base que funcionou por 6 h (sticky) para não ficar oscilando.
  *
  * IMPORTANTE: para dados iguais nos dois hosts, use o MESMO DATABASE_URL (Postgres).
  */
@@ -123,7 +123,7 @@ export type ApiFetchOptions = RequestInit & {
   timeoutMs?: number;
   /** Orçamento total compartilhado por todas as tentativas (ms). Default 12s. */
   deadlineMs?: number;
-  /** Reserva para montagem da resposta, fora do orçamento das tentativas (ms). */
+  /** Reserva após obtenção dos cabeçalhos HTTP; o consumo do body não integra o deadline (ms). */
   responseReserveMs?: number;
   /** Se true, não faz failover (só tenta a base sticky/primary). */
   noFailover?: boolean;
@@ -224,6 +224,8 @@ export async function apiFetch(path: string, init: ApiFetchOptions = {}): Promis
 
       if (shouldFailoverStatus(res.status)) {
         errors.push(`${base} → HTTP ${res.status}`);
+        // Libera a conexão da tentativa rejeitada antes de iniciar outra base.
+        try { await res.body?.cancel(); } catch { /* corpo já consumido/fechado */ }
         continue;
       }
 
