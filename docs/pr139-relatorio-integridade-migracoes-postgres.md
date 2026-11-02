@@ -230,3 +230,181 @@ found 0 vulnerabilities
 - `main` não foi modificada; histórico não foi reescrito.
 - Nenhum teste foi ignorado, cancelado ou marcado como `skip`; todos os testes
   PostgreSQL acima rodaram contra PostgreSQL 16.15 real.
+
+---
+
+# Revisão complementar (2ª rodada)
+
+> Branch: `cline/rf9q7dty` (sem merge, sem deploy, sem alterar Render/Supabase,
+> Filtra Dot permanece desligado).
+> HEAD desta rodada de código/testes: `51594b10`; HEAD final da branch: o commit
+> que adiciona esta seção (ver `git log -1`).
+
+## 1. Compatibilidade Windows
+
+Os scripts `test` e `test:postgres` não usam mais `find`/`xargs`:
+
+```json
+"test": "node scripts/test-runner.mjs",
+"test:postgres": "node scripts/test-runner.mjs --postgres"
+```
+
+`backend/scripts/test-runner.mjs` caminha na pasta com `fs.readdirSync` e
+`node:path` (separadores nativos), executa `node --import tsx --test <arquivos>`
+e mantém a mesma separação de suítes:
+
+| Modo | Arquivos (antes via `find`) | Arquivos (runner Node) |
+|---|---|---|
+| padrão (exclui `*.pg.test.ts`) | 36 | 36 |
+| `--postgres` (somente `*.pg.test.ts`) | 5 | 5 |
+
+Também aceita `--list` (JSON) e `--dir`, e `tests/testRunner.test.ts` falha se
+alguém reintroduzir `find`/`xargs` ou quebrar a exclusão dos testes PostgreSQL.
+
+**Execução em PowerShell.** O sandbox desta revisão é Linux, então não existe
+`cmd.exe`/Windows para executar. Para validar a invocação em PowerShell foi
+usado PowerShell 7.4.6 real (`pwsh`) sobre o mesmo checkout, sem utilitários
+POSIX nos scripts:
+
+```powershell
+PS> cd /workspace/backend
+PS> npm test
+ℹ tests 178
+ℹ pass 178
+ℹ fail 0
+
+PS> $env:DATABASE_URL='postgres://...'
+PS> $env:NODE_ENV='test'
+PS> npm run test:postgres
+ℹ tests 11
+ℹ pass 11
+ℹ fail 0
+```
+
+A portabilidade de caminhos é garantida por `node:path` (não há `/` ou `\\`
+hardcoded nos scripts) e coberta por teste automatizado. A execução em um host
+Windows nativo não é possível neste ambiente — esta é a única lacuna declarada.
+
+## 2. Migração histórica de `reviews`
+
+### Schemas antigos inspecionados
+
+O histórico de `backend/lib/db.ts` mostra que a DDL sempre usou `createdAt`
+**sem aspas**, variando apenas o tipo:
+
+```
++      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
++      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
++      createdAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
++      createdAt ${timestampType} DEFAULT CURRENT_TIMESTAMP
+```
+
+Consequências reais:
+
+- **SQLite** preserva a caixa → coluna `createdAt`;
+- **PostgreSQL** dobra identificador sem aspas → coluna `createdat`;
+- schemas antigos/hand-made usam `created_at` (a própria aplicação já tinha
+  fallbacks para isso em `companyReviewsCache.ts`, `lib/quota.ts`,
+  `routes/empresaRoutes.ts` e `relatorioProfissional.ts`);
+- ferramentas externas podem ter criado `"createdAt"` com aspas, invisível para
+  consultas sem aspas no PostgreSQL.
+
+### Estratégia implementada (`migrateReviewsCreatedAt`)
+
+1. Lê os nomes reais via `PRAGMA table_info` (SQLite usa comparação
+   case-insensitive; PostgreSQL exige `createdat` minúsculo para as consultas
+   `createdAt` existentes continuarem resolvendo).
+2. Se o canônico não existe, cria a coluna **sem DEFAULT** — `NOW()` não é
+   aplicado a linhas antigas.
+3. Copia (`UPDATE ... WHERE canonico IS NULL AND legado IS NOT NULL`) de todas
+   as variantes (`created_at`, `"createdAt"`, `createdat`), sem sobrescrever
+   nenhuma data já válida.
+4. Só depois aplica `SET DEFAULT CURRENT_TIMESTAMP` no PostgreSQL, valendo
+   apenas para linhas futuras.
+5. `services/reviewService.ts` passou a gravar `createdAt`
+   (`CURRENT_TIMESTAMP`, traduzido para `NOW()` no PostgreSQL) nos três INSERTs
+   de fallback — assim bancos SQLite legados, cuja coluna nova não pode receber
+   default via `ALTER TABLE`, continuam criando reviews com data.
+
+### Evidência de preservação (SQLite — 4 testes)
+
+```
+✔ preserva datas históricas em created_at (snake_case)
+✔ preserva datas históricas em createdat (minúsculo)
+✔ preserva datas históricas em createdAt (schema original)
+✔ preserva datas anteriores mesmo quando a coluna é adicionada com DEFAULT legado
+```
+
+Cada teste insere registros reais (`2020-05-06 07:08:09`, `2023-11-12 13:14:15`
+e uma linha NULL), roda `initDB()` duas vezes e confirma: valores idênticos,
+linha NULL continua NULL (nada é inventado), `COUNT(...) WHERE createdAt BETWEEN`
+retorna 2 e `ORDER BY createdAt DESC` trás a data de 2023 primeiro.
+
+### Evidência de preservação (PostgreSQL — 3 testes)
+
+```
+✔ PostgreSQL: created_at histórico é copiado para createdat sem perder datas
+✔ PostgreSQL: coluna "createdAt" com aspas é copiada para createdat
+✔ PostgreSQL: backfill não sobrescreve createdat já válido
+```
+
+O primeiro cobre `created_at` → `createdat` (2020 e 2023 preservados, NULL não
+fabricado), consulta por faixa e ordenação, default em linha nova e restart. O
+segundo cobre a variante com aspas. O terceiro garante que uma data canônica
+válida (`2018-02-03`) **não** é sobrescrita por `created_at` (`2022-09-09`),
+enquanto a lacuna NULL é preenchida pela fonte histórica.
+
+## 3. Pool e advisory lock com `PG_POOL_MAX=1`
+
+As migrações agora rodam **na própria conexão dedicada que mantém o advisory
+lock**: `withMigrationLock(key, (scopedDb) => ...)` entrega um adapter vinculado
+ao mesmo `PoolClient` (exec/run/get/all/transaction). Não há segunda conexão e,
+portanto, não há mínimo de duas conexões nem deadlock.
+
+Testes:
+
+```
+✔ PG_POOL_MAX=1 conclui migrações sem deadlock e libera a conexão
+✔ três processos com PG_POOL_MAX=1 inicializam o mesmo banco sem deadlock
+```
+
+O primeiro roda as migrações duas vezes em 20 s de limite, confirma a coluna
+canônica, reutiliza o pool depois e verifica em `pg_stat_activity` que nenhuma
+conexão extra foi aberta (`count = 0` além da conexão do teste). O segundo sobe
+3 processos Node independentes com `PG_POOL_MAX=1` (timeout de 60 s por worker,
+stderr auditado) e valida o schema ao final.
+
+## 4. Validação final desta rodada
+
+| Comando | Resultado |
+|---|---|
+| `npm test` (via PowerShell) | 178/178, 38 suites, 0 falhas, 0 cancelados, 0 skipped |
+| `npm run test:postgres` (PostgreSQL 16.15) | 11/11, 0 falhas, 0 cancelados, 0 skipped |
+| `npx tsc --noEmit -p tsconfig.json` | 0 erros |
+| `npm audit --omit=dev` | `found 0 vulnerabilities` |
+| `git diff --check` | sem saídas |
+
+### Arquivos alterados nesta rodada
+
+```
+ backend/lib/db.pg.ts                               | 104 ++-
+ backend/lib/migrations.ts                          |  88 ++-
+ backend/package-lock.json                          | 726 +++++++++++++++++++++
+ backend/package.json                               |   6 +-
+ backend/scripts/test-runner.mjs                    | 101 +++
+ backend/services/reviewService.ts                  |   6 +-
+ backend/tests/dbInitializationConcurrency.pg.test.ts |  31 +
+ backend/tests/dbPoolMaxOne.pg.test.ts              |  54 ++
+ backend/tests/helpers/pg-test-utils.ts             |  24 +-
+ backend/tests/reviewsCreatedAtHistory.pg.test.ts   | 190 ++++++
+ backend/tests/reviewsCreatedAtHistory.test.ts      | 144 ++++
+ backend/tests/testRunner.test.ts                   |  52 ++
+ 12 files changed, 1481 insertions(+), 45 deletions(-)
+```
+
+Observação: `sqlite`/`sqlite3` foram adicionados como `devDependencies` porque a
+suíte já dependia deles para os testes de integração e sem isso `npm test` não
+roda em uma máquina limpa (incluindo Windows).
+
+Confirmações: sem merge, sem deploy, sem publicação, sem alteração de
+Render/Supabase/variáveis de produção e sem ativar o Filtra Dot.
