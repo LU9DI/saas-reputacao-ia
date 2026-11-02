@@ -227,25 +227,43 @@ async function fetchPrimary(request, env) {
   }
 }
 
-async function cacheResponse(request, response) {
+/**
+ * Aquece o cache sem bloquear a resposta (REQ-CACHE-08 / EF-12).
+ * Em Workers, a promessa vai para `ctx.waitUntil`; fora dele é aguardada com
+ * erro descartado. Falha de cache nunca altera a resposta entregue.
+ */
+function cacheResponse(request, response, ctx) {
   if (request.method !== 'GET' || !response || !response.ok) return;
   if (!publicPath(new URL(request.url).pathname)) return;
 
-  const cached = response.clone();
-  const headers = new Headers(cached.headers);
-  if (!headers.has('cache-control')) headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
+  const write = (async () => {
+    const cached = response.clone();
+    const headers = new Headers(cached.headers);
+    if (!headers.has('cache-control')) headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
 
-  await caches.default.put(request, new Response(cached.body, {
-    status: cached.status,
-    statusText: cached.statusText,
-    headers,
-  }));
+    await caches.default.put(request, new Response(cached.body, {
+      status: cached.status,
+      statusText: cached.statusText,
+      headers,
+    }));
+  })().catch(() => {});
+
+  if (ctx && typeof ctx.waitUntil === 'function') {
+    ctx.waitUntil(write);
+    return;
+  }
+  return write;
 }
 
 async function readCache(request) {
   if (request.method !== 'GET') return null;
-  const cached = await caches.default.match(request);
-  return cached ? new Response(cached.body, cached) : null;
+  try {
+    const cached = await caches.default.match(request);
+    return cached ? new Response(cached.body, cached) : null;
+  } catch {
+    // Cache indisponível é equivalente a miss (EF-12).
+    return null;
+  }
 }
 
 async function decorate(response, origin, requestUrl = response.url) {
@@ -266,10 +284,10 @@ async function decorate(response, origin, requestUrl = response.url) {
   return new Response(body, { status: response.status, statusText: response.statusText, headers });
 }
 
-async function fallbackResponse(request, reason, env) {
+async function fallbackResponse(request, reason, env, ctx) {
   const fallback = await fetchFallback(request, env);
   if (fallback.response && !fallback.retryable) {
-    await cacheResponse(request, fallback.response);
+    cacheResponse(request, fallback.response, ctx);
     return decorate(fallback.response, 'cloudflare-fallback');
   }
   if (publicPath(new URL(request.url).pathname)) {
@@ -295,7 +313,7 @@ async function fallbackResponse(request, reason, env) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (url.pathname === WEBHOOK_PATH && request.method === 'POST') {
@@ -319,12 +337,12 @@ export default {
             nextProbeAt: 0,
           });
 
-          await cacheResponse(request, primary.response);
+          cacheResponse(request, primary.response, ctx);
           return decorate(primary.response, 'primary');
         }
       }
 
-      return fallbackResponse(request, 'configured-fallback', env);
+      return fallbackResponse(request, 'configured-fallback', env, ctx);
     }
 
     if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml') {
@@ -342,15 +360,15 @@ export default {
 
     const runtime = await fetchRuntimeFast(request, env);
     if (runtime.response && !runtime.retryable) {
-      await cacheResponse(request, runtime.response);
+      cacheResponse(request, runtime.response, ctx);
       return decorate(runtime.response, 'render-frontend-runtime');
     }
 
     const primary = await fetchPrimary(request, env);
     if (primary.response && !primary.retryable) {
-      await cacheResponse(request, primary.response);
+      cacheResponse(request, primary.response, ctx);
       return decorate(primary.response, 'primary');
     }
-    return fallbackResponse(request, runtime.response ? 'runtime-http-' + runtime.response.status : 'runtime-network-error', env);
+    return fallbackResponse(request, runtime.response ? 'runtime-http-' + runtime.response.status : 'runtime-network-error', env, ctx);
   },
 };
