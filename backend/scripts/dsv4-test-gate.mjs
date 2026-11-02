@@ -109,8 +109,16 @@ function main() {
       violations.push({ kind: 'I1', detail: `${name} :: "${testName}" foi SKIP/TODO; testes ignorados não são aceitos pelo gate` });
     }
 
-    if (fileLevel || (results.length === 0 && status !== 0)) {
-      violations.push({ kind: 'I1', detail: `${name}: falha em nível de arquivo (runner status ${status})` });
+    // Um arquivo só é válido quando o runner termina com sucesso E produz
+    // resultados TAP de nível superior reconhecíveis. Saída vazia/incompatível
+    // nunca pode ser interpretada como uma suíte aprovada.
+    if (status !== 0 || fileLevel || results.length === 0) {
+      const reason = status !== 0
+        ? `runner terminou com status ${status}`
+        : fileLevel
+          ? 'falha em nível de arquivo'
+          : 'nenhum resultado TAP de nível superior reconhecido';
+      violations.push({ kind: 'I1', detail: `${name}: ${reason}` });
       continue;
     }
 
