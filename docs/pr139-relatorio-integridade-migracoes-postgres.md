@@ -408,3 +408,220 @@ roda em uma máquina limpa (incluindo Windows).
 
 Confirmações: sem merge, sem deploy, sem publicação, sem alteração de
 Render/Supabase/variáveis de produção e sem ativar o Filtra Dot.
+
+---
+
+# Rodada final de endurecimento (3ª rodada)
+
+> Repositório: `LU9DI/saas-reputacao-ia` • Branch: `cline/rf9q7dty`
+> Base desta rodada: `5f886549` • Código/testes: `c43cb925`
+> **SHA final da branch: `75f96c186e9f38a67311f8c1edd356a9b105244b`**
+> Sem merge, sem deploy/publicação, `main` intocada, Render/Supabase e flags do
+> Filtra Dot inalterados. **PR #139 não está pronto para merge**: o transporte
+> para `LU9DI/backend` é etapa posterior, após revisão independente.
+
+## 1. Arquivos modificados
+
+```
+ backend/lib/db.pg.ts                       |  16 ++-
+ backend/lib/db.ts                          |  84 +++++++++-----
+ backend/lib/lgpd.ts                        |  42 +------
+ backend/lib/migrations.ts                  | 121 ++++++++++++++++++-
+ backend/lib/reviewFraud.ts                 |  24 +---
+ backend/routes/adminTecnicoRoutes.ts       |  11 +-
+ backend/routes/empresaRoutes.ts            |  45 +-------
+ backend/scripts/schema-ddl-audit.mjs       |  71 ++++++++++++
+ backend/services/reviewService.ts          |  16 ++-
+ backend/services/sentimentBackfill.ts      |  13 +--
+ backend/tests/dbIndexSnapshot.pg.test.ts   |  56 +++++++++
+ backend/tests/dbInitFailureRecovery.pg.test.ts | 117 +++++++++++++++++++
+ backend/tests/dbInitializationConcurrency.pg.test.ts | 22 +++-
+ backend/tests/dbMigrationsGuards.test.ts   |  19 ++-
+ backend/tests/reviewsCentralSchema.pg.test.ts | 128 +++++++++++++++++++++
+ backend/tests/reviewsCentralSchema.test.ts | 126 ++++++++++++++++++++
+ backend/tests/schemaDdlAudit.test.ts       |  36 ++++++
+ 17 files changed, 785 insertions(+), 162 deletions(-)
+```
+
+## 2. Problemas encontrados
+
+1. **DDL de reviews espalhada e silenciosa.** `lib/reviewFraud.ts`,
+   `services/reviewService.ts`, `services/sentimentBackfill.ts`, `lib/lgpd.ts`,
+   `routes/empresaRoutes.ts` e `routes/adminTecnicoRoutes.ts` executavam
+   `ALTER TABLE reviews` em caminhos de requisição, com `try/catch` que
+   engoliam qualquer erro (`/* já existe */`, `catch { return [] }`).
+   Dependendo do endpoint chamado, o schema era corrigido “por acidente” ou a
+   falha virava lista vazia/painel vazio.
+2. **`initDB()` não era atômico.** `_db` era atribuído antes de rodar as
+   migrações; uma falha deixava pool/conexão aberto, `_db` preenchido com uma
+   instância inválida e bloqueava nova tentativa.
+3. **`initPgDatabase` vazava pool** se a conexão inicial (`SELECT 1`) falhasse
+   depois do `new Pool(...)`.
+4. **Snapshot de índices falso.** O teste preenchia `REQUIRED_INDEXES.map(() => true)`,
+   incapaz de detectar índice ausente ou definição alterada.
+5. **`listarReviews` mascarava erro de schema** com `catch { return [] }`.
+
+## 3. Solução implementada
+
+### 3.1 Migração central de reviews (`lib/migrations.ts`)
+
+Nova lista canônica `REVIEW_COLUMNS` e DDL idempotente para todas as colunas:
+
+| Coluna | Tipo SQLite | Tipo PostgreSQL |
+|---|---|---|
+| `createdAt`/`createdat` | `DATETIME` (backfill histórico) | `TIMESTAMPTZ` (backfill + default futuro) |
+| `is_test` | `INTEGER DEFAULT 0` | `INTEGER DEFAULT 0` |
+| `ip_hash` | `TEXT` | `TEXT` |
+| `fraud_flags` | `TEXT` | `TEXT` |
+| `origin` | `TEXT` | `TEXT` |
+| `client_whatsapp` | `TEXT` | `TEXT` |
+| `sentiment` | `TEXT` | `TEXT` |
+| `sentiment_score` | `REAL` | `DOUBLE PRECISION` (tradução do adapter) |
+| `sentiment_source` | `TEXT` | `TEXT` |
+| `locale` | `TEXT` | `TEXT` |
+| `unidade_id` | `TEXT` | `TEXT` |
+| `treated_at` | `TIMESTAMPTZ` | `TIMESTAMPTZ` |
+| `treated_note` | `TEXT` | `TEXT` |
+
+Nenhuma tabela é recriada e nenhum dado é apagado: `addColumnIfMissing` consulta
+`PRAGMA table_info` antes de cada `ALTER`. A migração histórica de `createdAt`
+continua criando a coluna sem default, fazendo backfill de `created_at` /
+`createdat` / `"createdAt"` e só então aplicando default para linhas futuras.
+
+### 3.2 Serviços passam a apenas verificar
+
+`ensureReviewFraudColumns`, `ensureSentimentColumns`,
+`ensureReviewTreatmentColumns` e `ensurePainelColumns` agora chamam
+`requireReviewSchema()` (sem DDL, sem catch). `listarReviews` deixou de devolver
+`[]` em erro e `ensurePainelColumns` não é mais envolvido em `try/catch`.
+
+### 3.3 `initDB()` atômico (`lib/db.ts`)
+
+- a instância é criada em variável local; `_db` só é atribuído ao final;
+- qualquer falha em migração/verificação fecha **somente** a instância criada
+  por esta chamada, restaura `_db`/`_engine` anteriores e relança o erro
+  original;
+- falha de `pool.connect()` em `initPgDatabase` encerra o pool recém-criado;
+- nova tentativa funciona após corrigir a causa (testado).
+
+### 3.4 Snapshot real de índices
+
+Novo `listIndexDefinitions(db, tables)`:
+
+- PostgreSQL: `pg_indexes` → `indexname`, `tablename`, `indexdef`, flag `unique`
+  derivada de `CREATE UNIQUE INDEX`;
+- SQLite: `PRAGMA index_list` + `sqlite_master.sql` (+ `PRAGMA index_info` para
+  índices automáticos sem DDL).
+
+O teste de inicialização concorrente agora compara as definições reais antes/depois
+e há teste dedicado que remove um índice (detecta ausência), cria um índice com
+outra definição (detecta alteração) e confirma restauração após nova migração.
+
+## 4. Resultados dos testes
+
+| Comando | Resultado |
+|---|---|
+| `npm test` | **183/183**, 38 suites, 0 falhas/cancelados/skipped |
+| `npm run test:postgres` | **16/16** em PostgreSQL 16.15 |
+| `npx tsc --noEmit -p tsconfig.json` | 0 erros |
+| `npm audit --omit=dev` | 0 vulnerabilidades |
+| `git diff --check` | sem saídas |
+
+Novos testes desta rodada:
+
+```
+✔ banco vazio: migração central completa (3 processos + snapshot real de índices)
+✔ PostgreSQL legado recebe todas as colunas de reviews sem perder dados
+✔ SQLite legado recebe todas as colunas de reviews e preserva dados
+✔ coluna obrigatória ausente falha explicitamente (sem DDL silenciosa)
+✔ falha na migração de initDB fecha o pool, propaga o erro e permite nova tentativa
+✔ falha de uma nova initDB não fecha a instância de uma chamada anterior
+✔ SQLite: falha na migração limpa o estado e permite nova inicialização
+✔ snapshot de índices captura definições reais e detecta ausência/alteração
+✔ PG_POOL_MAX=1 conclui migrações sem deadlock e libera a conexão
+✔ três processos com PG_POOL_MAX=1 inicializam o mesmo banco sem deadlock
+✔ nenhuma DDL de reviews fora de lib/migrations.ts
+✔ caminhos de requisição não contêm DDL (10 arquivos, incluindo os de reviews)
+```
+
+Comando executado também via **PowerShell 7.4.6** (`pwsh`): `npm test` → 183/183
+e `npm run test:postgres` → 16/16. Limitação declarada: o sandbox é Linux; não há
+host Windows nativo disponível para executar o PowerShell do Windows.
+
+## 5. Auditoria de DDL fora de `lib/migrations.ts`
+
+Ferramenta reproduzível: `node backend/scripts/schema-ddl-audit.mjs [--json]`
+(cobre `lib/`, `services/`, `routes/`, `middleware/` e `*.ts` da raiz). Resultado
+atual: **130 ocorrências em 30 arquivos, zero em `reviews`** (verificado por
+`tests/schemaDdlAudit.test.ts`).
+
+| Arquivo | Ocorrências | Justificativa |
+|---|---:|---|
+| `services/dotSchema.ts` | 20 | Schema local do DOT (`dot_events`, `dot_decisions`, …), serviço desligado; fora do escopo de reviews |
+| `routes/acquisitionRoutes.ts` | 12 | Tabelas de aquisição (`acquisition_*`), bootstrap idempotente do módulo |
+| `services/dotFollowUp.ts` | 9 | Tabelas do DOT (followups/events), fora do escopo de reviews |
+| `routes/monthlyReportJobsRoutes.ts` | 8 | Colunas de relatório mensal em `empresas`/`relatorio_envios_mensais` |
+| `services/trialService.ts` | 7 | Colunas de trial em `empresas` (`signup_ip`, verificação) |
+| `routes/pixRoutes.ts` | 6 | Tabela `pix_payments` + colunas de pagamento em `empresas` |
+| `stripeRoutes.ts` | 6 | Colunas Stripe em `empresas`, com checagem de colunas |
+| `lib/retryHandlers.ts` | 5 | Colunas de cobrança em `empresas` durante replay de retry |
+| `services/dotAccessControl.ts` | 5 | Schema do controle de acesso DOT |
+| `lib/auditLog.ts` | 4 | Tabela/índices de auditoria de plataforma |
+| `lib/opsLog.ts` | 4 | `webhook_events`/`pdf_generation_log` |
+| `lib/aiUsage.ts` | 3 | Colunas `provider`/`feature` em `ai_usage` |
+| `lib/retryQueue.ts` | 3 | `retry_queue` + índices |
+| `lib/unidades.ts` | 3 | Tabela `unidades` multi-filial |
+| `routes/paypalRoutes.ts` | 3 | `paypal_webhook_events` + colunas em `empresas` |
+| `services/dotContext.ts` | 3 | Schema DOT |
+| `services/dotInternalExecutors.ts` | 3 | Schema DOT |
+| `services/dotToolRegistry.ts` | 3 | Schema DOT |
+| `services/leadService.ts` | 3 | Tabela `leads` + índices |
+| `lib/planPricing.ts` | 2 | `plan_prices`/`system_settings` |
+| `lib/push.ts` | 2 | `push_subscriptions` |
+| `lib/webauthn.ts` | 2 | `webauthn_credentials` |
+| `routes/adminDashboardRoutes.ts` | 2 | Ajustes de schema do dashboard admin |
+| `routes/dotRoutes.ts` | 2 | Schema DOT |
+| `services/billingService.ts` | 2 | Coluna de relatório em `empresas` |
+| `services/dotDecision.ts` | 2 | Schema DOT |
+| `services/dotMonitor.ts` | 2 | Schema DOT |
+| `services/dotScheduler.ts` | 2 | Schema DOT |
+| `routes/jobsRoutes.ts` | 1 | Colunas de `empresas` em job operacional |
+| `services/dotPreferences.ts` | 1 | Coluna `dot_preferences_json` em `empresas` |
+
+Todas são DDL idempotente (`IF NOT EXISTS` ou checagem prévia de coluna) de
+tabelas **fora de `reviews`**; centralizá-las exigiria uma onda de migração
+separada para ~20 módulos, fora do escopo deste PR. Ficam registradas como
+dívida técnica explicitada, sem nenhuma ocorrência de `reviews`.
+
+## 6. Decisões de compatibilidade
+
+- `sentiment_score` usa `REAL` (SQLite) e o adapter traduz para
+  `DOUBLE PRECISION` (PostgreSQL), mantendo o tipo já existente em cada dialeto.
+- `treated_at` usa `TIMESTAMPTZ`, aceito pelo SQLite e mapeado para
+  `timestamp with time zone` no PostgreSQL (validado via `information_schema`).
+- Colunas são adicionadas com `ALTER TABLE ADD COLUMN` (nunca recriação de
+  tabela), preservando índices, triggers e dados existentes.
+- `createdAt` continua com backfill histórico e default apenas para linhas
+  futuras; nenhuma data válida é sobrescrita.
+- Em SQLite, a comparação de identificadores é case-insensitive; em PostgreSQL,
+  o canônico é `createdat` (resultado do identificador sem aspas usado pela DDL
+  original).
+
+## 7. Limitações restantes
+
+- Execução em **Windows nativo** não foi possível neste ambiente; a validação
+  foi feita com PowerShell 7.4.6 sobre Linux e o runner não depende de
+  utilitários POSIX.
+- DDL lazy das demais tabelas (seção 5) permanece fora da migração central;
+  é dívida técnica registrada, sem impacto em `reviews`.
+- Este código está em `LU9DI/saas-reputacao-ia`; **não foi transportado** para
+  `LU9DI/backend` e **não está pronto para merge** — depende de revisão
+  independente e da etapa de transporte.
+
+## 8. Confirmações
+
+- Sem merge, sem deploy, sem publicação, sem ativar Filtra Dot.
+- `main` não foi alterada e nenhum arquivo de configuração de produção
+  (Render/Supabase/workflows/env) foi tocado.
+- Nenhum erro de schema, conexão ou DDL foi convertido em sucesso silencioso;
+  os testes de falha comprovam propagação do erro original.
