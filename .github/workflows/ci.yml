@@ -78,10 +78,9 @@ jobs:
         run: npm audit
 
       - name: Unit tests
-        run: |
-          # Use npm exec so CI remains resilient if the lockfile is temporarily
-          # out of sync with package.json and tsx is absent from node_modules/.bin.
-          find tests -type f -name '*.test.ts' ! -name 'integration.*.test.ts' -print0 | xargs -0 -r -n1 npx --yes tsx --test
+        env:
+          DSV4_TEST_RUNNER: npx --yes tsx
+        run: node scripts/dsv4-test-gate.mjs
 
       # O teste de integração usa um SQLite temporário; os adaptadores são dependências exclusivas de CI.
       # Não alterar o package-lock nem adicionar dependências de teste ao runtime.
