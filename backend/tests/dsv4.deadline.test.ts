@@ -106,6 +106,28 @@ test('D5 [controle] cancelamento do cliente e propagado sem tentar mais bases', 
   } finally { stub.restore(); }
 });
 
+
+test('D7 [EF-14] corpo de resposta retryable e cancelado antes do failover', async () => {
+  withBases();
+  let bodyCancelled = false;
+  const stub = installFetch(async (url) => {
+    if (url.startsWith('https://a.example')) {
+      const body = new ReadableStream<Uint8Array>({
+        cancel() { bodyCancelled = true; },
+      });
+      return new Response(body, { status: 503 });
+    }
+    return new Response('ok', { status: 200 });
+  });
+  try {
+    const mod = await freshModule<ApiMod>(API_MOD);
+    const response = await mod.apiFetch('/api/health');
+    assert.equal(response.status, 200);
+    assert.equal(bodyCancelled, true, 'corpo 503 deve ser cancelado antes da segunda base');
+    assert.equal(stub.calls.length, 2);
+  } finally { stub.restore(); }
+});
+
 test('D6 [EF-14] ultima tentativa deixa reserva para a resposta (R)', async () => {
   withBases();
   const stub = hangingFetch();
