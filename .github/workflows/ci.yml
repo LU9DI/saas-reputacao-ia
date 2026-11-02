@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, 'dsv4/phase34-validation-base']
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
