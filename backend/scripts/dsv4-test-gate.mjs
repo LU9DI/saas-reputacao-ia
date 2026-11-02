@@ -68,10 +68,15 @@ function runTestFile(file) {
   const results = [];
   const ignored = [];
   let fileLevel = false;
+  let planCount = null;
+  let observedCount = 0;
   for (const line of stdout.split('\n')) {
+    const plan = /^1\.\.(\d+)\s*$/.exec(line);
+    if (plan) planCount = Number(plan[1]);
     // Apenas nível superior: linhas TAP de subteste são indentadas.
     const match = /^(not ok|ok)\s+\d+\s+-\s+(.*)$/.exec(line);
     if (!match) continue;
+    observedCount += 1;
     const name = match[2].trim();
     if (/\s+#\s*(SKIP|TODO)\b/i.test(name)) {
       ignored.push(name);
@@ -81,7 +86,7 @@ function runTestFile(file) {
     if (name === relName || name === relative(TESTS_DIR, file)) { fileLevel = true; continue; }
     results.push({ ok: match[1] === 'ok', name });
   }
-  return { status: res.status, results, ignored, fileLevel, stderr: res.stderr || '' };
+  return { status: res.status, results, ignored, fileLevel, planCount, observedCount, stderr: res.stderr || '' };
 }
 
 function matches(entry, testName) {
@@ -103,7 +108,7 @@ function main() {
 
   for (const file of files) {
     const name = relative(TESTS_DIR, file);
-    const { status, results, ignored, fileLevel } = runTestFile(file);
+    const { status, results, ignored, fileLevel, planCount, observedCount } = runTestFile(file);
 
     for (const testName of ignored) {
       violations.push({ kind: 'I1', detail: `${name} :: "${testName}" foi SKIP/TODO; testes ignorados não são aceitos pelo gate` });
@@ -112,11 +117,12 @@ function main() {
     // Um arquivo só é válido quando o runner termina com sucesso E produz
     // resultados TAP de nível superior reconhecíveis. Saída vazia/incompatível
     // nunca pode ser interpretada como uma suíte aprovada.
-    if (status !== 0 || fileLevel || results.length === 0) {
-      const reason = status !== 0
-        ? `runner terminou com status ${status}`
-        : fileLevel
-          ? 'falha em nível de arquivo'
+    const completeTap = planCount !== null && planCount === observedCount;
+    if (fileLevel || results.length === 0 || !completeTap) {
+      const reason = fileLevel
+        ? 'falha em nível de arquivo'
+        : !completeTap
+          ? `protocolo TAP incompleto (plano=${planCount ?? 'ausente'}, resultados=${observedCount})`
           : 'nenhum resultado TAP de nível superior reconhecido';
       violations.push({ kind: 'I1', detail: `${name}: ${reason}` });
       continue;
