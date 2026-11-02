@@ -16,7 +16,12 @@
  * IMPORTANTE: para dados iguais nos dois hosts, use o MESMO DATABASE_URL (Postgres).
  */
 
-const STICKY_MS = 5 * 60 * 1000;
+/**
+ * Janela sticky (DSV4 REQ-STATE-04 / D-13).
+ * DEVE permanecer igual a `STICKY_WINDOW_MS` de `app/lib/failoverState.ts`
+ * e a `infra/cloudflare/worker.js`: 6 horas.
+ */
+const STICKY_MS = 6 * 60 * 60 * 1000;
 const DEFAULT_TIMEOUT_MS = 12_000;
 
 /**

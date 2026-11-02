@@ -1,4 +1,11 @@
 const STATE_KEY = 'active_origin';
+/**
+ * Janela sticky de failover (DSV4 REQ-STATE-04 / D-13): após entrar em fallback,
+ * nenhuma sondagem é permitida antes de `changedAt + STICKY_WINDOW_MS`.
+ * DEVE permanecer alinhada a `frontend/src/app/lib/failoverState.ts`.
+ */
+const STICKY_WINDOW_MS = 6 * 60 * 60 * 1000;
+const STICKY_JITTER_RATIO = 0.15;
 const RETRYABLE = new Set([402, 429, 500, 502, 503, 504, 521, 522, 523, 524]);
 const WEBHOOK_PATH = '/_failover/vercel';
 const STATIC_ORIGIN = 'https://filtra-ai-frontend.filtra-ai.workers.dev';
@@ -35,20 +42,45 @@ function buildTarget(origin, requestUrl) {
 }
 
 async function readState(env) {
-  const raw = await env.FAILOVER_ORIGIN.get(STATE_KEY);
+  let raw;
+  try {
+    raw = await env.FAILOVER_ORIGIN.get(STATE_KEY);
+  } catch {
+    // REQ-STATE-06: indisponibilidade do KV não pode derrubar a requisição.
+    return { origin: 'primary', changedAt: 0, reason: 'kv-unavailable', nextProbeAt: 0 };
+  }
   if (!raw) return { origin: 'primary', changedAt: 0, reason: 'default', nextProbeAt: 0 };
   try {
     const state = JSON.parse(raw);
+    const origin = state.origin === 'fallback' ? 'fallback' : 'primary';
+    const changedAt = Number(state.changedAt) || 0;
+    const rawNext = state.nextProbeAt;
+    const hasNext = rawNext !== undefined && rawNext !== null && rawNext !== '';
+    const parsedNext = hasNext ? Number(rawNext) : Number.NaN;
+    // EF-03: um `nextProbeAt` explícito e numérico (inclusive 0 = "vencido") é
+    // autoridade; ausência ou valor inválido NÃO pode abrir a janela e é
+    // derivado de changedAt para estado legado em fallback.
+    const nextProbeAt = hasNext && Number.isFinite(parsedNext)
+      ? parsedNext
+      : origin === 'fallback' && changedAt > 0
+        ? changedAt + STICKY_WINDOW_MS
+        : 0;
     return {
-      origin: state.origin === 'fallback' ? 'fallback' : 'primary',
-      changedAt: Number(state.changedAt) || 0,
+      origin,
+      changedAt,
       reason: String(state.reason || 'unknown'),
-      nextProbeAt: Number(state.nextProbeAt) || 0,
+      nextProbeAt,
       eventId: state.eventId ? String(state.eventId) : undefined,
     };
   } catch {
     return { origin: 'primary', changedAt: 0, reason: 'invalid-state', nextProbeAt: 0 };
   }
+}
+
+/** Instante mínimo da próxima sondagem, com jitter (REQ-STATE-04/08). */
+function stickyNextProbeAt(changedAt) {
+  const jitter = Math.round(STICKY_WINDOW_MS * STICKY_JITTER_RATIO * Math.random());
+  return changedAt + STICKY_WINDOW_MS + jitter;
 }
 
 async function writeState(env, state) { await env.FAILOVER_ORIGIN.put(STATE_KEY, JSON.stringify(state)); }
@@ -120,15 +152,16 @@ async function handleFailoverWebhook(request, env) {
 
   if (action === 'failover') {
     const current = await readState(env);
-    const cooldownMs = 300000;
-    const inCooldown = current.changedAt > 0 && Date.now() - current.changedAt < cooldownMs;
+    const now = Date.now();
+    const inWindow = current.origin === 'fallback' && current.changedAt > 0 && now < current.nextProbeAt;
 
-    if (current.origin !== 'fallback' || !inCooldown) {
+    // T2: dentro da janela, o evento não renova changedAt/nextProbeAt (REQ-STATE-04).
+    if (!inWindow) {
       await writeState(env, {
         origin: 'fallback',
-        changedAt: Date.now(),
+        changedAt: now,
         reason: source === '90pct-monitor' ? 'spend-90-monitor' : 'spend-threshold-' + String(threshold),
-        nextProbeAt: Date.now() + cooldownMs,
+        nextProbeAt: stickyNextProbeAt(now),
         eventId,
       });
     }
