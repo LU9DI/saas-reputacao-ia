@@ -36,7 +36,7 @@ try {
     indexes: REQUIRED_INDEXES,
   });
 
-  const version = await db.get<{ server_version: string }>('SHOW server_version').catch(() => undefined);
+  const version: any = await db.get('SHOW server_version').catch(() => undefined);
   const indexSnapshot: Record<string, boolean> = {};
   for (const index of REQUIRED_INDEXES) {
     indexSnapshot[index.name] = await indexExists(db, index.table, index.name);

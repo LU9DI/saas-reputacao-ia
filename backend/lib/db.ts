@@ -133,8 +133,8 @@ export async function closeDB(): Promise<void> {
   const db = _db;
   _db = null;
   if (!db) return;
-  const close = (db as unknown as { close?: () => Promise<void> }).close;
-  if (typeof close === 'function') await close();
+  const candidate = db as unknown as { close?: () => Promise<void> };
+  if (typeof candidate.close === 'function') await candidate.close();
 }
 
 export async function findEmpresa(ref: string) {
