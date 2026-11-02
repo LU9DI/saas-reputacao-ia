@@ -80,7 +80,7 @@ export async function getFailoverState(): Promise<FailoverState> {
     const parsed = JSON.parse(raw) as Partial<FailoverState>;
     const origin: FailoverOrigin = parsed.origin === 'fallback' ? 'fallback' : 'primary';
     const changedAt = Number(parsed.changedAt) || 0;
-    const rawNext = parsed.nextProbeAt;
+    const rawNext = (parsed as Record<string, unknown>).nextProbeAt;
     const hasNext = rawNext !== undefined && rawNext !== null && rawNext !== '';
     const parsedNext = hasNext ? Number(rawNext) : Number.NaN;
     // Estado legado (sem nextProbeAt válido) não pode abrir a janela: deriva de changedAt.
