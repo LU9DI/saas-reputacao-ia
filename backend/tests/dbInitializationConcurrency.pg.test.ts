@@ -14,6 +14,7 @@ import { initPgDatabase } from '../lib/db.pg.js';
 import {
   PG_MIGRATION_LOCK_KEY,
   indexExists,
+  REVIEW_COLUMNS,
   listIndexDefinitions,
   runCentralMigrations,
   tableColumns,
@@ -48,8 +49,9 @@ async function assertRequiredSchema(db: any, label: string) {
   }
 
   const reviewColumns = await tableColumns(db, 'reviews');
-  assert.equal(reviewColumns.includes('createdat'), true, `${label}: reviews.createdAt ausente (${reviewColumns.join(',')})`);
-  assert.equal(reviewColumns.includes('is_test'), true, `${label}: reviews.is_test ausente`);
+  for (const column of REVIEW_COLUMNS) {
+    assert.equal(reviewColumns.includes(column.toLowerCase()), true, `${label}: reviews.${column} ausente (${reviewColumns.join(',')})`);
+  }
 
   const userColumns = await tableColumns(db, 'usuarios');
   for (const column of ['email', 'mfa_secret', 'mfa_enabled', 'mfa_backup_hashes', 'mfa_pending_secret']) {
@@ -128,6 +130,13 @@ test('três processos inicializam um banco PostgreSQL vazio simultaneamente sem 
       assert.equal(payload.engine, 'postgres');
       assert.ok(payload.serverVersion?.startsWith('16.'), `worker deve falar com PostgreSQL 16, recebeu ${payload.serverVersion}`);
       assert.ok(payload.indexes.idx_dot_action_audit_action, 'worker deve enxergar os índices de auditoria');
+      for (const column of REVIEW_COLUMNS) {
+        assert.equal(
+          payload.reviewsColumns.includes(column.toLowerCase()),
+          true,
+          `worker não enxerga reviews.${column}: ${payload.reviewsColumns.join(',')}`,
+        );
+      }
     }
 
     // Conferência independente (pool do processo de teste).
