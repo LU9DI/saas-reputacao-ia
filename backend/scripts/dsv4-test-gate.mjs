@@ -118,9 +118,19 @@ function main() {
     // resultados TAP de nível superior reconhecíveis. Saída vazia/incompatível
     // nunca pode ser interpretada como uma suíte aprovada.
     const completeTap = planCount !== null && planCount === observedCount;
-    if (status !== 0 || fileLevel || results.length === 0 || !completeTap) {
-      const reason = status !== 0
-        ? `runner terminou com código ${status}`
+    const failedResults = results.filter((result) => !result.ok);
+    const unexpectedFailures = failedResults.filter((result) =>
+      !allowlist.some((entry) => entry.file === name && matches(entry, result.name)),
+    );
+    // Código 1 é esperado somente quando o TAP completo contém falhas
+    // exclusivamente conhecidas. Qualquer outra saída não zero é infraestrutura.
+    const expectedKnownFailureExit =
+      status === 1 && failedResults.length > 0 && unexpectedFailures.length === 0;
+    const unexpectedExit = status !== 0 && !expectedKnownFailureExit;
+
+    if (unexpectedExit || fileLevel || results.length === 0 || !completeTap) {
+      const reason = unexpectedExit
+        ? `runner terminou com código inesperado ${status}`
         : fileLevel
           ? 'falha em nível de arquivo'
           : !completeTap
