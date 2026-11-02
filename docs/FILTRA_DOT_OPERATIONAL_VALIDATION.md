@@ -134,6 +134,13 @@ tests 12 | pass 12 | fail 0 | cancelled 0 | skipped 0 | duration_ms 7010
 | Ignorados | 0 |
 | Duração | 7.010 s |
 
+### 5.1 Repetição (confirma reprodutibilidade)
+
+Uma segunda execução, no mesmo cluster já encerrado e reiniciado (`/tmp/dot-pg-final2.log`),
+repetiu o resultado: **12 testes, 12 aprovados, 0 falhos, 0 cancelados, 0 ignorados, 7.020 s**.
+Isso confirma que a suíte é reexecutável sobre um banco não vazio (o `before` trunca apenas as
+tabelas `dot_*` e recria os tenants sintéticos `pg-it-*`).
+
 ## 6. Suíte completa do backend (não regressão)
 
 `npm test` com `DOT_PG_TEST_DATABASE_URL` definida — log em `/tmp/dot-full-suite.log`:
