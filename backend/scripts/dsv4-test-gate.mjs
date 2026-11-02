@@ -66,18 +66,22 @@ function runTestFile(file) {
   const stdout = res.stdout || '';
   const relName = relative(BACKEND_ROOT, file);
   const results = [];
+  const ignored = [];
   let fileLevel = false;
   for (const line of stdout.split('\n')) {
     // Apenas nível superior: linhas TAP de subteste são indentadas.
     const match = /^(not ok|ok)\s+\d+\s+-\s+(.*)$/.exec(line);
     if (!match) continue;
     const name = match[2].trim();
-    if (/\s+#\s*(SKIP|TODO)/i.test(name)) continue; // skip/todo não são pass/fail
+    if (/\s+#\s*(SKIP|TODO)\b/i.test(name)) {
+      ignored.push(name);
+      continue;
+    }
     // Node emite um pseudo-teste com o caminho do arquivo quando ele nem carrega.
     if (name === relName || name === relative(TESTS_DIR, file)) { fileLevel = true; continue; }
     results.push({ ok: match[1] === 'ok', name });
   }
-  return { status: res.status, results, fileLevel, stderr: res.stderr || '' };
+  return { status: res.status, results, ignored, fileLevel, stderr: res.stderr || '' };
 }
 
 function matches(entry, testName) {
@@ -99,7 +103,11 @@ function main() {
 
   for (const file of files) {
     const name = relative(TESTS_DIR, file);
-    const { status, results, fileLevel } = runTestFile(file);
+    const { status, results, ignored, fileLevel } = runTestFile(file);
+
+    for (const testName of ignored) {
+      violations.push({ kind: 'I1', detail: `${name} :: "${testName}" foi SKIP/TODO; testes ignorados não são aceitos pelo gate` });
+    }
 
     if (fileLevel || (results.length === 0 && status !== 0)) {
       violations.push({ kind: 'I1', detail: `${name}: falha em nível de arquivo (runner status ${status})` });
