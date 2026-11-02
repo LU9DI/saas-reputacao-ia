@@ -75,7 +75,6 @@ async function walk(dir) {
     main.querySelectorAll('a[aria-label="Filtra.AI"]').forEach((node) => node.remove());
     const markdown = td
       .turndown(main.innerHTML)
-      .replace(/\]\((\/[^)\s]*)\)/g, (_match, href) => `] (${SITE}${href})`.replace('] (', ']('))
       .replace(/\n{3,}/g, '\n\n')
       .trim();
     if (markdown.length < 200) continue;
