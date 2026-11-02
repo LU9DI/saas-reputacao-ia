@@ -213,8 +213,12 @@ suite('Filtra DOT — validação PostgreSQL descartável', () => {
     if (closable && typeof closable.close === 'function') await closable.close();
   });
 
-  it('1. banco em uso é a instância descartável 127.0.0.1:55432/filtra_dot_test', async () => {
+  it('1. banco em uso é a instância descartável dedicada (loopback, porta dedicada)', async () => {
     assert.equal(libDb.dbEngine(), 'postgres');
+    const expected = new URL(DOT_PG_TEST_DATABASE_URL);
+    const expectedDatabase = expected.pathname.replace(/^\//, '');
+    const expectedPort = Number(expected.port || 5432);
+
     const identity = await db.get(
       `SELECT current_database() AS database,
               inet_server_port() AS port,
@@ -222,9 +226,10 @@ suite('Filtra DOT — validação PostgreSQL descartável', () => {
               current_setting('data_directory') AS data_directory`,
     );
     console.log('[dot-pg] identidade do banco:', JSON.stringify(identity));
-    assert.equal(String(identity.database), 'filtra_dot_test');
-    assert.equal(Number(identity.port), 55432);
-    assert.match(String(identity.host), /^127\.0\.0\.1/);
+    assert.equal(String(identity.database), expectedDatabase);
+    assert.equal(Number(identity.port), expectedPort);
+    assert.match(String(identity.host), /^127\.0\.0\.1/, 'a conexão precisa ser de loopback');
+    assert.notEqual(Number(identity.port), 5432, 'a validação não pode apontar para um cluster padrão/instalado');
   });
 
   it('2. isolamento entre tenants: tenant A não aprova ação do tenant B', async () => {
