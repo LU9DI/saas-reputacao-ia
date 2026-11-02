@@ -235,13 +235,28 @@ export const REPO_ROOT = REPO_ROOT_URL.pathname;
 let modCounter = 0;
 
 /**
- * Importa um módulo do repositório com cache-busting, isolando estado de módulo.
+ * Importa uma cópia temporária do módulo com identidade própria.
  * O caminho é relativo à raiz do repositório (não ao arquivo deste harness).
+ * O arquivo temporário fica no mesmo diretório para preservar imports relativos.
  */
 export async function freshModule<T = Record<string, unknown>>(repoPath: string): Promise<T> {
   modCounter += 1;
-  const href = new URL(repoPath.replace(/^\/+/, ''), REPO_ROOT_URL).href;
-  return (await import(`${href}?dsv4=${modCounter}`)) as T;
+
+  const targetUrl = new URL(repoPath.replace(/^\/+/, ''), REPO_ROOT_URL);
+  const extension = targetUrl.pathname.match(/\.[^/.]+$/)?.[0] ?? '.ts';
+  const tempUrl = new URL(targetUrl.href);
+
+  tempUrl.pathname =
+    `${targetUrl.pathname.slice(0, -extension.length)}.dsv4-${modCounter}${extension}`;
+
+  const { copyFile, unlink } = await import('node:fs/promises');
+  await copyFile(targetUrl, tempUrl);
+
+  try {
+    return (await import(tempUrl.href)) as T;
+  } finally {
+    await unlink(tempUrl).catch(() => undefined);
+  }
 }
 
 export async function freshWorker(): Promise<{
@@ -289,4 +304,3 @@ export function withCloudflareEnv(): void {
   process.env.CLOUDFLARE_KV_NAMESPACE_ID = 'ns';
   process.env.CLOUDFLARE_API_TOKEN = 'tok';
 }
-
