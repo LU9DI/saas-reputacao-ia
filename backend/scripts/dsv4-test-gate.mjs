@@ -118,12 +118,14 @@ function main() {
     // resultados TAP de nível superior reconhecíveis. Saída vazia/incompatível
     // nunca pode ser interpretada como uma suíte aprovada.
     const completeTap = planCount !== null && planCount === observedCount;
-    if (fileLevel || results.length === 0 || !completeTap) {
-      const reason = fileLevel
-        ? 'falha em nível de arquivo'
-        : !completeTap
-          ? `protocolo TAP incompleto (plano=${planCount ?? 'ausente'}, resultados=${observedCount})`
-          : 'nenhum resultado TAP de nível superior reconhecido';
+    if (status !== 0 || fileLevel || results.length === 0 || !completeTap) {
+      const reason = status !== 0
+        ? `runner terminou com código ${status}`
+        : fileLevel
+          ? 'falha em nível de arquivo'
+          : !completeTap
+            ? `protocolo TAP incompleto (plano=${planCount ?? 'ausente'}, resultados=${observedCount})`
+            : 'nenhum resultado TAP de nível superior reconhecido';
       violations.push({ kind: 'I1', detail: `${name}: ${reason}` });
       continue;
     }
