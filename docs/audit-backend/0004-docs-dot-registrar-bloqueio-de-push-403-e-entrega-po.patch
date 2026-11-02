@@ -1,0 +1,73 @@
+From 7535918d886754c36ad63941e93b3fb22a85e133 Mon Sep 17 00:00:00 2001
+From: LU9DI Audit <audit@local>
+Date: Mon, 2 Nov 2026 03:52:06 +0000
+Subject: [PATCH 4/4] docs(dot): registrar bloqueio de push (403) e entrega por
+ patches
+
+---
+ docs/DOT_AUDIT_REPORT.md | 48 +++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 43 insertions(+), 5 deletions(-)
+
+diff --git a/docs/DOT_AUDIT_REPORT.md b/docs/DOT_AUDIT_REPORT.md
+index 19e87f3..4214892 100644
+--- a/docs/DOT_AUDIT_REPORT.md
++++ b/docs/DOT_AUDIT_REPORT.md
+@@ -312,12 +312,50 @@ Revisão estática de `frontend/src/app/dot/page.tsx` (326 linhas) e
+ 
+ ## 11. Situação de cada PR criado
+ 
+-| PR | Repositório | Conteúdo | Estado |
+-| --- | --- | --- | --- |
+-| ver seção 13 (número/URL) | `LU9DI/backend` | 3 commits: correções de auditoria, testes de regressão, este relatório | Aberto para revisão — **sem merge** |
++**Nenhum PR pôde ser aberto.** A conta de automação desta sessão não tem permissão de
++escrita no repositório `LU9DI/backend`:
++
++```
++$ git push -u origin audit/dot-security-audit
++remote: Permission to LU9DI/backend.git denied to cline-cloud[bot].
++fatal: ... The requested URL returned error: 403
++
++$ gh api repos/LU9DI/backend --jq '.permissions'
++{"admin":false,"maintain":false,"pull":false,"push":false,"triage":false}
++```
++
++| Item | Estado |
++| --- | --- |
++| Branch local | `audit/dot-security-audit` (3 commits sobre `b8caf40`) |
++| Branch no remoto | **não publicada** (403) |
++| PR em `LU9DI/backend` | **não criado** (sem permissão) |
++| `master` | intacta (`b8caf40`) — nenhum merge, nenhum commit direto |
++| Entrega alternativa | 3 patches `git format-patch` gerados (abaixo) para o revisor aplicar |
++| Frontend | nenhuma alteração necessária; nenhum PR |
++
++Commits da branch:
++
++```
++389cba7 docs(dot): relatório da auditoria de segurança e integração
++36ba938 test(dot): regressão de auditoria da preparação e cabeçalho no DELETE de sessão
++96780b6 fix(dot): auditoria atômica e com ator na preparação; CSRF no bloqueio de sessão
++b8caf40 (base) fix(dot): registrar ator autenticado na aprovação de ações
++```
++
++Para publicar/revisar, basta, com uma conta que tenha `push`:
++
++```bash
++git checkout -b audit/dot-security-audit origin/master
++git am 0001-*.patch 0002-*.patch 0003-*.patch
++git push -u origin audit/dot-security-audit
++gh pr create --base master --head audit/dot-security-audit \
++  --title "audit(dot): integridade de auditoria da preparação e CSRF no bloqueio de sessão"
++```
++
++Os patches também foram preservados em `docs/audit-backend/` do repositório
++`LU9DI/saas-reputacao-ia` (branch `cline/ae79k7nx`) para não se perderem com o
++ambiente efêmero.
+ 
+-Nenhum PR foi criado no frontend (nenhuma alteração necessária).
+-Nenhuma alteração foi feita em `master`; nenhum merge automático; nenhum deploy.
+ 
+ ## 12. Recomendação objetiva sobre prontidão para produção
+ 
+-- 
+2.39.5
+

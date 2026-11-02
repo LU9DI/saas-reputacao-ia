@@ -1,0 +1,124 @@
+From 96780b6618e490f75645bce16c8b43120566dc0e Mon Sep 17 00:00:00 2001
+From: LU9DI Audit <audit@local>
+Date: Mon, 2 Nov 2026 03:51:47 +0000
+Subject: [PATCH 1/4] =?UTF-8?q?fix(dot):=20auditoria=20at=C3=B4mica=20e=20?=
+ =?UTF-8?q?com=20ator=20na=20prepara=C3=A7=C3=A3o;=20CSRF=20no=20bloqueio?=
+ =?UTF-8?q?=20de=20sess=C3=A3o?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ routes/dotAdminRoutes.ts   |  4 ++++
+ routes/dotRoutes.ts        |  2 +-
+ services/dotActionQueue.ts | 44 +++++++++++++++++++++++++++-----------
+ 3 files changed, 37 insertions(+), 13 deletions(-)
+
+diff --git a/routes/dotAdminRoutes.ts b/routes/dotAdminRoutes.ts
+index e6cdf4e..9a6423c 100644
+--- a/routes/dotAdminRoutes.ts
++++ b/routes/dotAdminRoutes.ts
+@@ -188,10 +188,14 @@ export function mountDotAdminRoutes(app: Express) {
+   });
+ 
+   // Bloqueio: revoga a sessão atual (idempotente).
++  // A mutação exige o mesmo cabeçalho anti-CSRF das demais operações
++  // administrativas: encerrar a sessão de outro usuário/tenant por CSRF é
++  // negado antes de qualquer efeito (ver docs/DOT_PRODUCAO.md §7).
+   app.delete('/api/dot/admin/session', async (req: Request, res: Response) => {
+     try {
+       const gate = await resolveDotGate(req);
+       if (!gate.allowed) return denyGate(res, gate);
++      ensureHeader(req);
+       const token = readDotAdminCookie(req);
+       if (token && gate.empresaId && gate.userId) {
+         const revoked = await revokeDotAdminSessionByToken(token, 'lock');
+diff --git a/routes/dotRoutes.ts b/routes/dotRoutes.ts
+index 72331b8..441d64f 100644
+--- a/routes/dotRoutes.ts
++++ b/routes/dotRoutes.ts
+@@ -394,7 +394,7 @@ export function mountDotRoutes(app: Express) {
+     if (!(await requireMutationPermission(res, access, 'filtra', 'create', { route: '/api/dot/decisions/:id/prepare-action' }))) return;
+     const optionId = String(req.body?.optionId || '');
+     if (!['opcao_1', 'opcao_2'].includes(optionId)) return res.status(400).json({ error: 'Opção inválida.' });
+-    const action = await prepareDotActionFromDecision(access.empresaId, Number(req.params.id), optionId);
++    const action = await prepareDotActionFromDecision(access.empresaId, Number(req.params.id), optionId, access.userId || null);
+     if (!action) return res.status(404).json({ error: 'Decisão ou opção não encontrada.' });
+     res.json({ ok: true, action, executed: false });
+   });
+diff --git a/services/dotActionQueue.ts b/services/dotActionQueue.ts
+index eb66b42..2af0846 100644
+--- a/services/dotActionQueue.ts
++++ b/services/dotActionQueue.ts
+@@ -1,6 +1,6 @@
+ import { getDb, withDbTransaction } from '../lib/db.js';
+ import { dotActionRequiresApproval, getDotActionDefinition } from './dotActionRegistry.js';
+-import { ensureDotActionAuditSchema, recordDotActionAudit } from './dotActionAudit.js';
++import { ensureDotActionAuditSchema } from './dotActionAudit.js';
+ import { executeDotActionThroughGateway } from './dotExecutionGateway.js';
+ 
+ export type DotActionStatus = 'prepared' | 'approved' | 'executing' | 'executed' | 'failed' | 'cancelled';
+@@ -53,8 +53,14 @@ async function ensureSchema() {
+   await db.exec("CREATE UNIQUE INDEX IF NOT EXISTS ux_dot_action_queue_one_active_decision ON dot_action_queue(empresa_id, decision_id) WHERE status IN ('prepared','approved','executing')");
+ }
+ 
+-export async function prepareDotActionFromDecision(empresaId: string, decisionId: number, optionId: string) {
++export async function prepareDotActionFromDecision(
++  empresaId: string,
++  decisionId: number,
++  optionId: string,
++  actorUserId?: string | null,
++) {
+   await ensureSchema();
++  await ensureDotActionAuditSchema();
+   const prepared = await withActionLock(`prepare:${empresaId}:${decisionId}`, () =>
+     withDbTransaction(async (tx) => {
+       const decision = await tx.get('SELECT * FROM dot_decisions WHERE id = ? AND empresa_id = ? LIMIT 1', [decisionId, empresaId]);
+@@ -106,20 +112,34 @@ export async function prepareDotActionFromDecision(empresaId: string, decisionId
+         );
+         if (promoted.changes !== 1) throw new Error('Não foi possível preparar a decisão; transação revertida.');
+       }
++      // O evento 'prepared' participa da MESMA transação da criação da ação:
++      //  - a ação preparada nunca existe sem a trilha de auditoria (falha na
++      //    auditoria reverte a preparação);
++      //  - um ator autenticado que pediu a preparação é registrado como
++      //    `user`; apenas chamadas do próprio Dot (monitor/scheduler) ficam
++      //    como `dot`, sem ator;
++      //  - o caminho de deduplicação (`existing`, acima) NÃO grava auditoria
++      //    nova: repetir a preparação não inventa uma segunda transição.
++      await tx.run(
++        `INSERT INTO dot_action_audit
++          (empresa_id, action_id, decision_id, event, actor_type, actor_id, metadata, created_at)
++          VALUES (?,?,?,?,?,?,?,?)`,
++        [
++          empresaId,
++          id,
++          decisionId,
++          'prepared',
++          actorUserId ? 'user' : 'dot',
++          actorUserId || null,
++          JSON.stringify({ optionId: option.id }).slice(0, 12000),
++          new Date().toISOString(),
++        ],
++      );
++
+       return normalizeActionRow({ id, decision_id: decisionId, option_id: option.id, action: definition.action, status: 'prepared' });
+     }),
+   );
+ 
+-  if (prepared?.id) {
+-    await recordDotActionAudit({
+-      empresaId,
+-      actionId: Number(prepared.id),
+-      decisionId,
+-      event: 'prepared',
+-      actorType: 'dot',
+-      metadata: { optionId: prepared.optionId },
+-    });
+-  }
+   return prepared;
+ }
+ 
+-- 
+2.39.5
+
