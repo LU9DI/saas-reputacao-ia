@@ -1,6 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { ate, emUF, deUF, rotuloSegmento } from '../../src/lib/rotulos.ts';
+
+/** Extrai os literais de string de uma chamada `ate(60, ...)` do fonte. */
+function candidatosDoTitulo(relativo) {
+  const fonte = readFileSync(new URL(relativo, import.meta.url), 'utf8');
+  const chamada = fonte.match(/const\s+tituloMeta\s*=\s*ate\(\s*60\s*,([\s\S]*?)\);/);
+  assert.ok(chamada, `${relativo} deve definir tituloMeta com ate(60, …)`);
+  return [...chamada[1].matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]);
+}
+
+test('os hubs do Índice limitam o título a 60 caracteres via ate()', () => {
+  const hubs = ['../../src/app/(br)/page.tsx', '../../src/app/(us)/us/page.tsx'];
+  for (const hub of hubs) {
+    const candidatos = candidatosDoTitulo(hub);
+    assert.ok(candidatos.length > 0, `${hub} deve ter ao menos um candidato de título`);
+    for (const candidato of candidatos) {
+      assert.ok(
+        candidato.length <= 60,
+        `${hub}: candidato com ${candidato.length} caracteres excede 60 -> "${candidato}"`,
+      );
+    }
+    // O primeiro candidato é o que vence: precisa caber, não pode depender do truncamento.
+    assert.ok(ate(60, ...candidatos).length <= 60);
+    assert.equal(ate(60, ...candidatos), candidatos[0], `${hub}: o primeiro candidato deve caber em 60`);
+  }
+});
 
 test('ate escolhe o primeiro candidato que cabe', () => {
   assert.equal(ate(10, 'muito longo mesmo', 'curto'), 'curto');
