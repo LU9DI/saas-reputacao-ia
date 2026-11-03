@@ -36,8 +36,9 @@ type Diagnostic = {
 
 const API = getEnv('NEXT_PUBLIC_API_URL');
 
-export function AuditoriaGratuitaClient() {
-  const { language } = useLanguage();
+export function AuditoriaGratuitaClient({ languageOverride }: { languageOverride?: Language } = {}) {
+  const { language: contextLanguage } = useLanguage();
+  const language = languageOverride ?? contextLanguage;
   const c = { ...COPY[language], ...cExtra(language) };
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
