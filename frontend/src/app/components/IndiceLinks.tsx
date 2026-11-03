@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 /**
  * Porta de entrada para o Índice Filtra.AI (publicado em /indice, outro serviço).
- * Dois links bastam: o resto do Índice é descoberto pelos links internos dele.
+ * Links para as edições brasileira e americana; cada hub conduz à sua própria árvore interna.
  * prefetch desligado: /indice não é renderizado por este app.
  */
 export default function IndiceLinks({ className = '' }: { className?: string }) {
@@ -10,6 +10,7 @@ export default function IndiceLinks({ className = '' }: { className?: string }) 
     <span className={className}>
       <Link href="/indice" prefetch={false} className="hover:text-zinc-300">Índice de estabelecimentos por município</Link>
       <Link href="/indice/rankings/ativos" prefetch={false} className="hover:text-zinc-300">Rankings por segmento</Link>
+      <Link href="/indice/us" prefetch={false} hrefLang="en" lang="en" className="hover:text-zinc-300">US Business Index</Link>
     </span>
   );
 }
