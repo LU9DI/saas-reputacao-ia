@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { temDadosUS, usMeta, usPagina, usTopCondados, type UsPagina } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug, slugEstado } from '@/lib/us-states';
 import { nUS, ordUS, pctUS, corta } from '@/lib/format';
+import { ate } from '@/lib/rotulos';
 import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, publisher } from '@/lib/seo';
 import { Faq } from '@/components/Faq';
 import { Cta } from '@/components/Cta';
@@ -26,6 +27,7 @@ function textos(p: UsPagina, ano: string) {
   const micro = pctUS(reg.sz[0], soma, 0);
   const grandes = pctUS(reg.sz[3] + reg.sz[4] + reg.sz[5], soma, 0);
   const titulo = `${seg.nome} in ${county.nome}, ${st}: how many are there?`;
+  const tituloMeta = ate(60, titulo, `${seg.nome} in ${county.nome}, ${st}`, `${seg.nome} in ${county.nome}`);
   const descricao = corta(
     `${county.nome}, ${st} has ${nUS(reg.e)} ${seg.curto} with paid employees (Census CBP ${ano}): ranked ${ordUS(p.rankUS)} of ${nUS(p.condadosUS)} US counties. Size and employment.`,
     158,
@@ -43,7 +45,7 @@ function textos(p: UsPagina, ano: string) {
       resposta: `${micro} of them have fewer than 5 employees and ${grandes} have 20 or more, based on the number of employees per establishment.`,
     },
   ];
-  return { titulo, descricao, lead, faq, soma };
+  return { titulo, tituloMeta, descricao, lead, faq, soma };
 }
 
 function resolver(state: string, county: string, segment: string) {
@@ -59,11 +61,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = textos(p, usMeta().ano);
   const url = urlAbsoluta(`/us/${state}/${county}/${segment}`);
   return {
-    title: { absolute: t.titulo },
+    title: { absolute: t.tituloMeta },
     description: t.descricao,
     alternates: { canonical: url },
-    openGraph: { title: t.titulo, description: t.descricao, url, type: 'article', locale: 'en_US', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
-    twitter: { card: 'summary_large_image', title: t.titulo, description: t.descricao, images: [OG_IMAGE] },
+    openGraph: { title: t.tituloMeta, description: t.descricao, url, type: 'article', locale: 'en_US', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: t.tituloMeta, description: t.descricao, images: [OG_IMAGE] },
   };
 }
 
@@ -88,10 +90,14 @@ export default async function Page({ params }: Props) {
       <JsonLd data={{
         '@context': 'https://schema.org',
         '@type': 'Dataset',
+        '@id': `${urlAbsoluta(`/us/${state}/${county}/${segment}`)}#data`,
         name: `${seg.nome} in ${p.county.nome}, ${st}: establishments with paid employees`,
         description: t.descricao,
         url: urlAbsoluta(`/us/${state}/${county}/${segment}`),
         inLanguage: 'en',
+        isAccessibleForFree: true,
+        measurementTechnique: 'Count of establishments with paid employees by county and industry category, from the U.S. Census Bureau County Business Patterns. Businesses with no paid employees are not counted.',
+        variableMeasured: [{ '@type': 'PropertyValue', name: 'Establishments with paid employees', value: reg.e, unitText: 'establishments' }],
         dateModified: meta.geradoEm,
         temporalCoverage: meta.ano,
         spatialCoverage: { '@type': 'Place', name: `${p.county.nome}, ${estado}, United States` },

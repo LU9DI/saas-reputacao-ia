@@ -5,6 +5,7 @@ import { getMeta, getPagina, nomeSubclasse, type Pagina } from '@/lib/data';
 import { anosPublicadosDoSegmento } from '@/lib/rankings';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, ord, pct, minuscula, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
+import { ate, maiuscula, rotuloSegmento } from '@/lib/rotulos';
 import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Barras } from '@/components/Barras';
 import { Citacao } from '@/components/Citacao';
@@ -46,6 +47,8 @@ function textos(p: Pagina, sigla: string) {
   const participacaoBR = pct(reg.a, p.totalBR);
   const lead = `${mun.nome} (${sigla}) tem ${n(reg.a)} estabelecimentos com CNPJ ativo de ${seg.curto} na competência ${comp}, segundo o cadastro aberto da Receita Federal (dados gerados em ${dataCurta(meta.geradoEm)}). ${ranking}`;
   const titulo = `${seg.nome} em ${mun.nome} (${sigla}): ${n(reg.a)} estabelecimentos ativos`;
+  const rot = maiuscula(rotuloSegmento(seg.slug, seg.nome));
+  const tituloMeta = ate(60, `${rot} em ${mun.nome} (${sigla}): ${n(reg.a)} estabelecimentos ativos`, `${rot} em ${mun.nome} (${sigla}): ${n(reg.a)} ativos`, `${rot} em ${mun.nome} (${sigla})`);
   const descricao = corta(
     `São ${n(reg.a)} estabelecimentos com CNPJ ativo de ${minuscula(seg.nome)} em ${mun.nome} (${sigla}), competência ${comp}. ${n(reg.ab)} abertos e ${n(reg.ba)} baixas em 12 meses.`,
     158,
@@ -72,7 +75,7 @@ function textos(p: Pagina, sigla: string) {
       resposta: `A contagem usa a atividade principal declarada no CNPJ e a situação cadastral da competência ${comp}. Uma busca no Google pode mostrar empresas com outra classificação CNAE, estabelecimentos já fechados, negócios sem CNPJ ou perfis sem correspondência direta com o cadastro. Os dois números medem coisas diferentes.`,
     },
   ];
-  return { meta, nomeUF, comp, janela, ranking, lead, titulo, descricao, participacaoUF, participacaoBR, faq };
+  return { meta, nomeUF, comp, janela, ranking, lead, titulo, tituloMeta, descricao, participacaoUF, participacaoBR, faq };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -82,11 +85,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = textos(r.pagina, r.sigla);
   const url = urlAbsoluta(`/${uf}/${municipio}/${segmento}`);
   return {
-    title: { absolute: t.titulo },
+    title: { absolute: t.tituloMeta },
     description: t.descricao,
     alternates: { canonical: url },
-    openGraph: { title: t.titulo, description: t.descricao, url, type: 'article', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
-    twitter: { card: 'summary_large_image', title: t.titulo, description: t.descricao, images: [OG_IMAGE] },
+    openGraph: { title: t.tituloMeta, description: t.descricao, url, type: 'article', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: t.tituloMeta, description: t.descricao, images: [OG_IMAGE] },
   };
 }
 

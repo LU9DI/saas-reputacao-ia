@@ -17,11 +17,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!m) return { robots: { index: false } };
   const url = urlAbsoluta(`/rankings/ativos/${segmento}`);
   return {
-    title: { absolute: m.titulo },
+    title: { absolute: m.tituloMeta },
     description: m.descricao,
     alternates: { canonical: url },
-    openGraph: { title: m.titulo, description: m.descricao, url, type: 'article', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
-    twitter: { card: 'summary_large_image', title: m.titulo, description: m.descricao, images: [OG_IMAGE] },
+    openGraph: { title: m.tituloMeta, description: m.descricao, url, type: 'article', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: m.tituloMeta, description: m.descricao, images: [OG_IMAGE] },
   };
 }
 
