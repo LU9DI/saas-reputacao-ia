@@ -195,8 +195,11 @@ const llmsFull = read('public/llms-full.txt');
 // rastreamento para as páginas do /indice). Ver components/IndiceLinks.tsx.
 const indiceLinks = read('src/app/components/IndiceLinks.tsx');
 check(
-  indiceLinks.includes('href="/indice"') && indiceLinks.includes('href="/indice/rankings/ativos"'),
-  'IndiceLinks must link to /indice and /indice/rankings/ativos',
+  indiceLinks.includes('href="/indice"') &&
+    indiceLinks.includes('href="/indice/rankings/ativos"') &&
+    indiceLinks.includes('href="/indice/us"') &&
+    indiceLinks.includes('hrefLang="en"'),
+  'IndiceLinks must link to the Brazilian Índice, its active rankings and the English US Business Index',
 );
 check(homePage.includes('<IndiceLinks'), 'Home footer must include IndiceLinks');
 check(seoLandingComponent.includes('<IndiceLinks'), 'SeoLanding must include IndiceLinks');
