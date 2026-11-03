@@ -45,6 +45,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="https://filtraai.com/">Filtra.AI</a> · <a href="https://filtraai.com/gestao-de-reputacao-online">Gestão de reputação online</a> ·{' '}
                 <a href="https://filtraai.com/avaliacoes-google">Avaliações Google</a> · <a href="https://filtraai.com/privacidade">Privacidade</a>
               </p>
+              {/* Link recíproco com o hub dos EUA. Fica no rodapé porque aparece em
+                  TODAS as páginas do Índice: é o caminho de descoberta que não
+                  depende do sitemap. O rótulo é o título real da página de destino. */}
+              <p>
+                Edição dos Estados Unidos:{' '}
+                <Link href="/us" hrefLang="en" lang="en">Filtra.AI US Index</Link> — contagens por condado do Census Bureau (County Business Patterns).
+              </p>
             </div>
           </div>
         </footer>
