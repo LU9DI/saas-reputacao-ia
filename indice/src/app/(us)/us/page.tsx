@@ -4,23 +4,30 @@ import { notFound } from 'next/navigation';
 import { temDadosUS, usMeta, usSegmentos, usTopCondados, usTotalSeg, usEstadosComDados } from '@/lib/us';
 import { slugEstado } from '@/lib/us-states';
 import { nUS } from '@/lib/format';
+import { ate } from '@/lib/rotulos';
 import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
 export const revalidate = 86400;
-const titulo = 'Filtra.AI US Index: how many businesses are there by county and category';
+// 72 caracteres é longo demais para a SERP: usa a mesma regra do resto do app.
+const tituloMeta = ate(
+  60,
+  'Filtra.AI US Index: businesses by county and category',
+  'Filtra.AI US Index: businesses by county',
+  'Filtra.AI US Index: businesses',
+);
 
 export function generateMetadata(): Metadata {
   if (!temDadosUS()) return { robots: { index: false } };
   const meta = usMeta();
   const descricao = `Establishments with paid employees (restaurants, clinics, hotels, gyms and more) by U.S. county, from Census Bureau County Business Patterns ${meta.ano}.`;
   return {
-    title: { absolute: titulo },
+    title: { absolute: tituloMeta },
     description: descricao,
     alternates: { canonical: urlAbsoluta('/us') },
-    openGraph: { title: titulo, description: descricao, url: urlAbsoluta('/us'), type: 'website', locale: 'en_US', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
-    twitter: { card: 'summary_large_image', title: titulo, description: descricao, images: [OG_IMAGE] },
+    openGraph: { title: tituloMeta, description: descricao, url: urlAbsoluta('/us'), type: 'website', locale: 'en_US', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: tituloMeta, description: descricao, images: [OG_IMAGE] },
   };
 }
 

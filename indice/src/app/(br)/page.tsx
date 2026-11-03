@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { coberturaDoSegmento, getMeta, getSegmentos, resumoDoIndice, topMunicipios, ufsComDados } from '@/lib/data';
 import { anosPublicadosDoSegmento } from '@/lib/rankings';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
+import { ate } from '@/lib/rotulos';
 import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, datasetDoIndice } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
@@ -13,7 +14,15 @@ import { Migalhas } from '@/components/Migalhas';
 
 export const revalidate = 86400;
 
-const titulo = 'Índice Filtra.AI: estabelecimentos ativos por município e segmento';
+// O título do hub era a única string fixa do app que não passava por `ate()`.
+// Com 66 caracteres o Google truncava a SERP; agora segue a mesma regra das
+// páginas de UF, município e ranking (limite de 60, candidatos decrescentes).
+const tituloMeta = ate(
+  60,
+  'Índice Filtra.AI: estabelecimentos ativos por município',
+  'Índice Filtra.AI: estabelecimentos ativos no Brasil',
+  'Índice Filtra.AI: estabelecimentos ativos',
+);
 
 export function generateMetadata(): Metadata {
   const meta = getMeta();
@@ -23,11 +32,11 @@ export function generateMetadata(): Metadata {
     158,
   );
   return {
-    title: { absolute: titulo },
+    title: { absolute: tituloMeta },
     description: descricao,
     alternates: { canonical: urlAbsoluta('/') },
-    openGraph: { title: titulo, description: descricao, url: urlAbsoluta('/'), type: 'website', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
-    twitter: { card: 'summary_large_image', title: titulo, description: descricao, images: [OG_IMAGE] },
+    openGraph: { title: tituloMeta, description: descricao, url: urlAbsoluta('/'), type: 'website', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: tituloMeta, description: descricao, images: [OG_IMAGE] },
   };
 }
 
