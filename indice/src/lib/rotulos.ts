@@ -1,6 +1,26 @@
-/** Escolhe o primeiro candidato que cabe em `max` caracteres; se nenhum couber, o último (o mais curto). */
+/**
+ * Escolhe o primeiro candidato que cabe em `max` caracteres.
+ * Se nenhum couber, encurta o último candidato com reticências, sem ultrapassar o limite.
+ */
 export function ate(max: number, ...candidatos: string[]): string {
-  return candidatos.find((t) => t.length <= max) ?? candidatos[candidatos.length - 1];
+  if (!Number.isSafeInteger(max) || max < 1) {
+    throw new RangeError('max deve ser um inteiro positivo');
+  }
+
+  const escolhido = candidatos.find((texto) => texto.length <= max);
+  if (escolhido !== undefined) return escolhido;
+
+  const fallback = candidatos[candidatos.length - 1] ?? '';
+  if (fallback.length <= max) return fallback;
+  if (max === 1) return '…';
+
+  let prefixo = fallback.slice(0, max - 1).trimEnd();
+  const ultimoEspaco = prefixo.lastIndexOf(' ');
+  if (ultimoEspaco >= Math.floor((max - 1) * 0.6)) {
+    prefixo = prefixo.slice(0, ultimoEspaco);
+  }
+
+  return `${prefixo}…`;
 }
 
 /** Nome curto do segmento para títulos (o nome longo da CNAE estoura 60 caracteres). */
