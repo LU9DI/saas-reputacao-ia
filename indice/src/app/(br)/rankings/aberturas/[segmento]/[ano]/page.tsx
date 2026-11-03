@@ -5,6 +5,7 @@ import { getMeta, getRegistro, getSegmento, getSegmentos, minimo } from '@/lib/d
 import { anosPublicadosDoSegmento, getPaginaRanking, nomeDoMunicipio, type PaginaRanking } from '@/lib/rankings';
 import { UFS } from '@/lib/ufs';
 import { n, ord, pct, mesPorExtenso, mesCurto, corta, dataCurta, minuscula } from '@/lib/format';
+import { ate, rotuloSegmento } from '@/lib/rotulos';
 import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Barras } from '@/components/Barras';
 import { Citacao } from '@/components/Citacao';
@@ -37,6 +38,8 @@ function textos(p: PaginaRanking) {
   const comp = mesPorExtenso(meta.competencia);
   const { seg, ano, ranking } = p;
   const titulo = `Ranking de aberturas de ${seg.nome} em ${ano} por município`;
+  const rot = rotuloSegmento(seg.slug, seg.nome);
+  const tituloMeta = ate(60, `Ranking de aberturas de ${rot} em ${ano} por município`, `Aberturas de ${rot} por município em ${ano}`, `Aberturas de ${rot} em ${ano}`);
   const descricao = corta(
     `Em ${ano}, ${n(ranking.total)} estabelecimentos de ${minuscula(seg.nome)} iniciaram atividade no Brasil, em ${n(ranking.municipiosComAbertura)} municípios. Competência ${comp}, dados gerados em ${dataCurta(meta.geradoEm)}.`,
     158,
@@ -64,7 +67,7 @@ function textos(p: PaginaRanking) {
       resposta: 'Não. Ele conta eventos cadastrais (início de atividade) por município. Nota, comentários, faturamento e qualidade não fazem parte do conjunto de dados, e mais aberturas não significam mercado melhor nem mais demanda.',
     },
   ];
-  return { meta, comp, titulo, descricao, faq };
+  return { meta, comp, titulo, tituloMeta, descricao, faq };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -74,11 +77,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = textos(p);
   const url = urlAbsoluta(`/rankings/aberturas/${segmento}/${ano}`);
   return {
-    title: { absolute: t.titulo },
+    title: { absolute: t.tituloMeta },
     description: t.descricao,
     alternates: { canonical: url },
-    openGraph: { title: t.titulo, description: t.descricao, url, type: 'article', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
-    twitter: { card: 'summary_large_image', title: t.titulo, description: t.descricao, images: [OG_IMAGE] },
+    openGraph: { title: t.tituloMeta, description: t.descricao, url, type: 'article', locale: 'pt_BR', siteName: 'Filtra.AI', images: [{ url: OG_IMAGE, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: t.tituloMeta, description: t.descricao, images: [OG_IMAGE] },
   };
 }
 

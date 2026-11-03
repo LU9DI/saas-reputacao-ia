@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { coberturaDoSegmento, getMeta, getSegmentos, municipiosDaUF, topMunicipios } from '@/lib/data';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
+import { ate } from '@/lib/rotulos';
 import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, datasetDoRecorte } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const r = resolver(uf);
   if (!r) return { robots: { index: false } };
   const meta = getMeta();
-  const titulo = `Estabelecimentos ativos por segmento no estado de ${UFS[r.sigla]} (${r.sigla})`;
+  const titulo = ate(60, `Estabelecimentos ativos em ${UFS[r.sigla]} (${r.sigla}) por segmento`, `Estabelecimentos ativos em ${UFS[r.sigla]} por segmento`, `Estabelecimentos ativos em ${UFS[r.sigla]}`);
   const descricao = corta(
     `Contagens de estabelecimentos com CNPJ ativo em ${r.municipios.length} municípios de ${UFS[r.sigla]}, por segmento. Fonte: Receita Federal, competência ${mesCurto(meta.competencia)}.`,
     158,
