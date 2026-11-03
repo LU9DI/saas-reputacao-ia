@@ -18,7 +18,7 @@ This runbook is for the production publication window. Do not submit URLs before
 ## Google Search Console
 
 1. Open the verified Domain property for `filtraai.com`. If no Domain property exists, verify it using the DNS TXT method in Search Console.
-2. Open **Sitemaps** and submit the central index `https://filtraai.com/sitemap-index.xml` (not only `/sitemap.xml`). The central index lists the main site sitemap plus all three Índice shards. If Search Console shows only about 106 discovered URLs, first verify which sitemap entry was submitted and whether the central index was successfully read.
+2. Open **Sitemaps** and submit the central index `https://filtraai.com/sitemap-index.xml` (not only `/sitemap.xml`). The central index lists the main site sitemap plus **all five** Índice shards (0–4), covering **43,920** URLs (28,853 Brazil + 15,067 US). If Search Console shows only about 106 discovered URLs, first verify which sitemap entry was submitted and whether the central index was successfully read.
 3. Review the sitemap status and discovered URL count. Resolve fetch/parsing errors before requesting individual indexing.
 4. Use **URL inspection** for a small priority set after deployment: homepage, core product/solution pages, free audit page, and representative translated pages.
 5. Use **Test live URL** first. If the page is accessible and indexable, request indexing. Requests are rate-limited and do not guarantee inclusion.
@@ -29,9 +29,13 @@ This runbook is for the production publication window. Do not submit URLs before
 `https://filtraai.com/sitemap-index.xml` is the **primary sitemap to submit in Search Console** for the canonical host. `robots.txt` may also list leaf sitemap URLs; that does not replace submitting the central index. The central index is a `<sitemapindex>` that lists only sitemap files:
 
 - `https://filtraai.com/sitemap.xml` — the main site leaf (same directory).
-- `https://filtraai.com/indice/sitemap/0.xml` — Índice shard 0 (up to 10,000 URLs).
-- `https://filtraai.com/indice/sitemap/1.xml` — Índice shard 1 (up to 10,000 URLs).
-- `https://filtraai.com/indice/sitemap/2.xml` — Índice shard 2 (remaining URLs; current reported total: 28,853 across all three shards).
+- `https://filtraai.com/indice/sitemap/0.xml` — Índice shard 0 (10,000 URLs, Brazil only).
+- `https://filtraai.com/indice/sitemap/1.xml` — Índice shard 1 (10,000 URLs, Brazil only).
+- `https://filtraai.com/indice/sitemap/2.xml` — Índice shard 2 (8,853 Brazil + 1,147 US = 10,000 URLs).
+- `https://filtraai.com/indice/sitemap/3.xml` — Índice shard 3 (10,000 URLs, US only).
+- `https://filtraai.com/indice/sitemap/4.xml` — Índice shard 4 (3,920 URLs, US only).
+
+Current published total: **43,920** URLs (28,853 Brazil + 15,067 US). Do **not** read the sitemap API's `indexed` field as a measurement — it is deprecated and always `0` for domain properties. The only real per-bucket numbers come from the **Page indexing** report export.
 
 Rules this artifact must keep satisfying:
 
@@ -47,7 +51,7 @@ Rules this artifact must keep satisfying:
 
 ### Precondition before submitting
 
-The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Require at least 20 consecutive `200` responses from each of `/indice/sitemap/0.xml`, `/indice/sitemap/1.xml`, and `/indice/sitemap/2.xml` before submitting or re-submitting the central index. A few successful responses from one shard do not establish stability for the whole sitemap set.
+The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Require at least 20 consecutive `200` responses from each of `/indice/sitemap/0.xml` through `/indice/sitemap/4.xml` after `npm run seo:verify-production` (2026-11-03) before submitting or re-submitting the central index. A few successful responses from one shard do not establish stability for the whole sitemap set.
 
 On 2026-10-31 the Render service `filtra-indice` was **suspended by billing** (`503`,
 `This service has been suspended.`). Every `/indice` page returned `503`, shard 1
@@ -90,6 +94,7 @@ Search Console reports indexing per property, not per sitemap. The Sitemaps repo
 - Confirm redirects and canonical URLs converge on HTTPS `filtraai.com` and do not point to an obsolete deployment host.
 - Confirm the sitemap contains only public, canonical URLs; private dashboard, evaluation, widget, admin, recovery, and test routes must not appear.
 - Confirm `robots.txt` does not block pages whose HTML must communicate `noindex`. Blocking crawling can prevent search engines from observing that directive.
+- **Confirm the reciprocal hub links are live.** `curl https://filtraai.com/indice | grep -c 'href="/indice/us"'` must be ≥ 1 and `curl https://filtraai.com/indice/us | grep -c 'href="/indice"'` must be ≥ 1. Regression guard: `indice/scripts/lib/hub-links.test.mjs`. Until 2026-11-03 the US hub had **zero** internal links, so its only discovery path was the sitemap.
 - Re-run the CI audit on every material SEO or routing change.
 
 ## Priority

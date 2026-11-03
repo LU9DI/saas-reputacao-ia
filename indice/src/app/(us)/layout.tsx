@@ -34,6 +34,8 @@ export default function UsLayout({ children }: { children: React.ReactNode }) {
             <nav aria-label="Main">
               <Link href="/us">Home</Link>
               <Link href="/us/methodology">Methodology</Link>
+              {/* Hub irmão (pt-BR). Rótulo no idioma de destino. */}
+              <Link href="/" hrefLang="pt-BR" lang="pt-BR">Índice Brasil</Link>
               <a className="botao botao-sm" href="https://filtraai.com/en/free-review-audit?utm_source=indice&utm_medium=seo&utm_campaign=top">Free review audit</a>
             </nav>
           </div>
@@ -51,6 +53,11 @@ export default function UsLayout({ children }: { children: React.ReactNode }) {
               </p>
               <p>
                 <a href="https://filtraai.com/en">Filtra.AI</a> · <a href="https://filtraai.com/en/free-review-audit">Free review audit</a>
+              </p>
+              {/* Link recíproco com o Índice Brasil, presente em TODAS as páginas /us. */}
+              <p>
+                Brazil edition:{' '}
+                <Link href="/" hrefLang="pt-BR" lang="pt-BR">Índice Filtra.AI</Link> — counts by Brazilian municipality from the federal CNPJ registry.
               </p>
             </div>
           </div>
