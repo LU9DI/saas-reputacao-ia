@@ -2,10 +2,24 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ate, emUF, deUF, rotuloSegmento } from '../../src/lib/rotulos.ts';
 
-test('ate escolhe o primeiro candidato que cabe, senão o último', () => {
+test('ate escolhe o primeiro candidato que cabe', () => {
   assert.equal(ate(10, 'muito longo mesmo', 'curto'), 'curto');
   assert.equal(ate(10, 'cabe', 'outro'), 'cabe');
-  assert.equal(ate(3, 'aaaa', 'bbbb'), 'bbbb');
+  assert.equal(ate(10, '1234567890', 'fallback'), '1234567890');
+});
+
+test('ate nunca ultrapassa o limite quando todos os candidatos são longos', () => {
+  assert.equal(ate(3, 'aaaa', 'bbbb'), 'bb…');
+  assert.equal(ate(10, 'candidato extenso', 'um nome muito comprido'), 'um nome…');
+  assert.equal(ate(1, 'texto longo'), '…');
+  assert.equal(ate(60, 'x'.repeat(114)), `${'x'.repeat(59)}…`);
+  assert.equal(ate(8), '');
+});
+
+test('ate rejeita limites inválidos', () => {
+  assert.throws(() => ate(0, 'título'), RangeError);
+  assert.throws(() => ate(-1, 'título'), RangeError);
+  assert.throws(() => ate(1.5, 'título'), RangeError);
 });
 
 test('artigo dos estados em "em" e "de"', () => {
