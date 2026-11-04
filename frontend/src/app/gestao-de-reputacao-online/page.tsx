@@ -6,7 +6,7 @@ import { OG_IMAGE_META } from '../lib/socialMetadata';
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Software de gestão de reputação online',
-    description: 'Software para monitorar avaliações Google, analisar feedback com IA e transformar temas recorrentes em ações de melhoria.',
+    description: 'Organize avaliações e feedback de clientes, analise temas com IA e transforme recorrências em ações de melhoria para a reputação online.',
     alternates: {
       canonical: 'https://filtraai.com/gestao-de-reputacao-online',
       languages: {
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'Filtra.AI',
       locale: 'pt_BR',
       title: 'Software de gestão de reputação online',
-      description: 'Software para monitorar avaliações, analisar feedback e organizar a gestão da reputação online com IA.',
+      description: 'Organize avaliações e feedback, analise temas com IA e conduza a gestão da reputação online.',
       images: [OG_IMAGE_META],
     },
     twitter: {

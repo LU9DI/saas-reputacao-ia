@@ -35,8 +35,8 @@ const graph = {
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web',
       url: siteUrl,
-      description: 'Plataforma SaaS para monitorar avaliações, analisar feedback com IA, identificar oportunidades e organizar ações de reputação.',
-      featureList: ['Monitoramento de avaliações', 'Análise de feedback com IA', 'Gestão de reputação online', 'Relatórios inteligentes', 'QR Code e links para avaliações'],
+      description: 'Plataforma SaaS para organizar avaliações e feedback, analisar temas com IA e apoiar a gestão da reputação online.',
+      featureList: ['Organização de avaliações e feedback', 'Análise de feedback com IA', 'Gestão de reputação online', 'Relatórios inteligentes', 'QR Code e links para avaliações'],
       // O teste de 7 dias é gratuito, mas o produto tem assinatura paga. Não declarar price=0:
       // isso faria o Google e outros consumidores de dados estruturados interpretarem o software como gratuito.
       offers: {

@@ -21,17 +21,17 @@ type HomeCopy={
 const content:Record<Lang,HomeCopy>={
   en:{
     title:'AI reputation management platform',
-    description:'Manage online reputation, Google reviews and customer feedback with AI. Turn customer voice into growth decisions.',
+    description:'Understand online reputation, Google reviews and customer feedback with AI. Turn customer voice into growth decisions.',
     h1:'Turn customer voice into growth with AI',
     intro:'Filtra.AI organizes reviews and customer feedback so businesses can identify patterns, improve experience and manage reputation as a growth discipline.',
-    points:['Manage Google reviews and reputation signals','Analyze customer feedback with AI','Identify recurring themes and operational priorities','Build a continuous reputation management routine'],
+    points:['Understand Google reviews and reputation signals','Analyze customer feedback with AI','Identify recurring themes and operational priorities','Build a continuous reputation management routine'],
     sections:[
       {heading:'From reviews to operational decisions',body:'Reviews are not only a public score. They are a stream of customer evidence. Filtra.AI helps teams identify recurring themes, separate urgent signals from noise and turn customer voice into actions that can be measured.'},
       {heading:'A continuous reputation workflow',body:'Strong reputation management is a process: collect feedback close to the experience, understand what customers are saying, identify repeated friction, act with the responsible team and monitor whether perception improves over time.'},
       {heading:'Built for teams, agencies and multi-location businesses',body:'The same workflow can support a local business, an agency managing client accounts, a clinic, restaurant, hotel or franchise network. The goal is to create repeatable reputation operations without losing the context behind each review.'}
     ],
     links:[
-      {href:'/en/google-reviews',label:'Google Reviews management'},
+      {href:'/en/google-reviews',label:'Google reviews and reputation'},
       {href:'/en/online-reputation-management',label:'Online reputation management'},
       {href:'/en/ai-review-analysis',label:'AI review analysis'},
       {href:'/en/agencies',label:'Agencies'},
@@ -43,17 +43,17 @@ const content:Record<Lang,HomeCopy>={
   },
   es:{
     title:'Plataforma de gestión de reputación online con IA',
-    description:'Gestiona reputación online, reseñas de Google y feedback de clientes con IA. Convierte la voz del cliente en decisiones de crecimiento.',
+    description:'Comprende la reputación online, las reseñas de Google y el feedback de clientes con IA. Convierte la voz del cliente en decisiones de crecimiento.',
     h1:'Convierte la voz del cliente en crecimiento con IA',
     intro:'Filtra.AI organiza reseñas y feedback para identificar patrones, mejorar la experiencia y gestionar la reputación como una disciplina de crecimiento.',
-    points:['Gestiona reseñas de Google y señales de reputación','Analiza feedback de clientes con IA','Identifica temas recurrentes y prioridades operativas','Construye una rutina continua de gestión de reputación'],
+    points:['Comprende las reseñas de Google y las señales de reputación','Analiza feedback de clientes con IA','Identifica temas recurrentes y prioridades operativas','Construye una rutina continua de gestión de reputación'],
     sections:[
       {heading:'De las reseñas a las decisiones operativas',body:'Las reseñas no son solo una puntuación pública. Son evidencia continua de la experiencia del cliente. Filtra.AI ayuda a detectar temas recurrentes, separar señales importantes del ruido y convertir la voz del cliente en acciones medibles.'},
       {heading:'Un flujo continuo de gestión de reputación',body:'Una reputación sólida se gestiona como un proceso: recoger feedback cerca de la experiencia, entender lo que dicen los clientes, detectar fricciones repetidas, actuar con el equipo responsable y comprobar si la percepción mejora.'},
       {heading:'Para empresas, agencias y redes con varias ubicaciones',body:'El mismo flujo puede apoyar a un negocio local, una agencia que gestiona clientes, una clínica, un restaurante, un hotel o una red de franquicias. El objetivo es crear operaciones de reputación repetibles sin perder el contexto de cada reseña.'}
     ],
     links:[
-      {href:'/es/resenas-google',label:'Gestión de reseñas de Google'},
+      {href:'/es/resenas-google',label:'Reseñas de Google y reputación'},
       {href:'/es/gestion-reputacion-online',label:'Gestión de reputación online'},
       {href:'/es/analisis-resenas-ia',label:'Análisis de reseñas con IA'},
       {href:'/es/agencias',label:'Agencias'},
@@ -65,17 +65,17 @@ const content:Record<Lang,HomeCopy>={
   },
   zh:{
     title:'在线声誉管理与客户反馈平台',
-    description:'使用 AI 管理在线声誉、Google 评价和客户反馈，将客户声音转化为增长决策。',
+    description:'使用 AI 理解在线声誉、Google 评价和客户反馈，将客户声音转化为增长决策。',
     h1:'用 AI 将客户声音转化为业务增长',
     intro:'Filtra.AI 整理评价和客户反馈，帮助企业发现模式、改善体验，并把声誉管理变成持续的增长能力。',
-    points:['管理 Google 评价和声誉信号','使用 AI 分析客户反馈','发现重复主题和运营优先事项','建立持续的声誉管理流程'],
+    points:['理解 Google 评价和声誉信号','使用 AI 分析客户反馈','发现重复主题和运营优先事项','建立持续的声誉管理流程'],
     sections:[
       {heading:'从评价走向运营决策',body:'评价不只是公开分数，也是持续的客户体验证据。Filtra.AI 帮助团队识别重复主题、区分重要信号与噪音，并把客户声音转化为可以持续跟踪的行动。'},
       {heading:'持续的声誉管理流程',body:'稳定的声誉来自持续流程：在体验后及时收集反馈，理解客户在说什么，发现重复摩擦，交给负责团队处理，并观察客户感知是否随着改进而变化。'},
       {heading:'适用于企业、代理机构与多门店业务',body:'同一套方法可以服务本地企业、管理客户账户的代理机构、诊所、餐厅、酒店和连锁网络。重点是在保留每条评价上下文的同时，建立可重复的声誉运营流程。'}
     ],
     links:[
-      {href:'/zh/google-reviews',label:'Google 评价管理'},
+      {href:'/zh/google-reviews',label:'Google 评价与声誉'},
       {href:'/zh/online-reputation-management',label:'在线声誉管理'},
       {href:'/zh/ai-review-analysis',label:'AI 评论分析'},
       {href:'/zh/agencies',label:'代理机构'},

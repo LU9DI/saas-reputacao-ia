@@ -5,10 +5,10 @@ import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Gestão de avaliações Google para clínicas',
-    description: 'Organize avaliações Google, feedback de pacientes e sinais de experiência para clínicas e redes com o Filtra.AI.',
+    title: 'Avaliações Google para clínicas: reputação e feedback',
+    description: 'Entenda o papel das avaliações Google na reputação de clínicas e organize o feedback de pacientes com o Filtra.AI.',
     alternates: { canonical:'https://filtraai.com/clinicas', languages:{ 'pt-BR':'https://filtraai.com/clinicas', en:'https://filtraai.com/en/clinics', es:'https://filtraai.com/es/clinicas', 'x-default':'https://filtraai.com/clinicas' } },
-    openGraph: { title:'Gestão de avaliações Google para clínicas', description:'Organize avaliações Google, feedback de pacientes e sinais de experiência para clínicas e redes com o Filtra.AI.', url:'https://filtraai.com/clinicas', type:'website',
+    openGraph: { title:'Avaliações Google para clínicas: reputação e feedback', description:'Entenda o papel das avaliações Google na reputação de clínicas e organize o feedback de pacientes com o Filtra.AI.', url:'https://filtraai.com/clinicas', type:'website',
       images: [OG_IMAGE_META],
     },
   };
@@ -17,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function ClinicasPage() {
   return (
     <SeoLanding
-      h1="Gestão de avaliações Google para clínicas"
+      h1="Avaliações Google para clínicas: reputação e feedback"
       lead="A reputação de uma clínica depende da experiência percebida em cada etapa. O Filtra.AI organiza feedback de pacientes, avaliações e temas recorrentes para a equipe entender o que precisa de atenção."
       breadcrumbHref="/clinicas"
       contextLinks={[
