@@ -28,7 +28,7 @@ export default function Page() {
   return (
     <SeoLanding
       h1="Gestão de avaliações Google com IA"
-      lead="Transforme avaliações Google e feedback de clientes em uma rotina de gestão: acompanhe o que mudou, identifique padrões e conecte os comentários às decisões da equipe."
+      lead="Entenda como gerir avaliações públicas do Google e feedback privado. Importante: o Filtra.AI não importa nem monitora automaticamente avaliações do Google; a plataforma analisa feedback enviado à empresa por link ou QR Code."
       breadcrumbHref="/avaliacoes-google"
       contextLinks={[
         { href: '/monitoramento-reputacao-online', title: 'Monitoramento de reputação online', description: 'Acompanhe mudanças e temas recorrentes depois das avaliações.' },
@@ -45,8 +45,8 @@ export default function Page() {
       ]}
       sections={[
         {
-          heading: 'Como fazer gestão de avaliações Google na prática',
-          body: 'Comece por uma linha de base: volume de avaliações, nota, recência, distribuição por nota e principais temas. Depois defina uma cadência para acompanhar novas avaliações, responder quando necessário e encaminhar problemas recorrentes para a equipe responsável. A Filtra.AI apoia a triagem e análise; a decisão continua com a empresa.'
+          heading: 'Como gerir avaliações públicas e feedback privado',
+          body: 'Avaliações públicas do Google são publicadas no Perfil da Empresa e devem ser acompanhadas no próprio Google. O Filtra.AI não se conecta a esse perfil para importar ou monitorar reviews automaticamente. Na plataforma, a empresa coleta feedback privado por link ou QR Code e analisa notas e comentários enviados pelos clientes.'
         },
         {
           heading: 'Gestão de avaliações Google para empresas locais e redes',
@@ -66,8 +66,8 @@ export default function Page() {
           body: 'Para negócios locais, avaliação e presença no Google Maps fazem parte do mesmo ecossistema de descoberta. O objetivo não é apenas acumular estrelas: é construir uma experiência que produza feedback consistente e identificar rapidamente o que precisa mudar.'
         },
         {
-          heading: 'Do feedback à avaliação pública',
-          body: 'Uma jornada de avaliação eficiente reduz fricção no momento certo, com links diretos ou QR Code e uma comunicação clara. A coleta deve continuar sendo natural e nunca depender de condicionar benefício a uma nota positiva.'
+          heading: 'Do feedback privado à avaliação pública',
+          body: 'O link ou QR Code do Filtra.AI coleta feedback para análise privada pela empresa. Se a empresa também convidar o cliente a publicar uma avaliação no Google, esse é um fluxo separado: o convite deve ser neutro, sem recompensa e sem direcionar apenas clientes satisfeitos.'
         },
         {
           heading: 'Como analisar centenas de reviews',
@@ -91,6 +91,10 @@ export default function Page() {
         },
       ]}
       faq={[
+        {
+          question: 'O Filtra.AI importa avaliações diretamente do Google?',
+          answer: 'Não. O Filtra.AI não importa nem monitora automaticamente avaliações publicadas no Google. A plataforma analisa feedback enviado pelo cliente por link ou QR Code. A auditoria gratuita, por sua vez, permite colar avaliações fornecidas pela própria empresa para gerar um diagnóstico pontual.',
+        },
         {
           question: 'O que é uma avaliação Google?',
           answer: 'É uma nota de 1 a 5 estrelas, com comentário opcional, publicada por um cliente no perfil da empresa no Google. Ela aparece na Busca e no Maps e compõe a reputação pública do negócio.',

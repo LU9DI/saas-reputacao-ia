@@ -3,8 +3,8 @@ import { SeoLanding } from '../components/SeoLanding';
 import { OG_IMAGE_META } from '../lib/socialMetadata';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const title = 'Monitoramento de reputação online para empresas';
-  const description = 'Monitore avaliações, feedback e sinais de reputação online em uma rotina organizada com análise por temas e prioridades.';
+  const title = 'Monitoramento de feedback e reputação online para empresas';
+  const description = 'Acompanhe o feedback recebido por link ou QR Code, identifique temas recorrentes e organize prioridades de melhoria.';
   const url = 'https://filtraai.com/monitoramento-reputacao-online';
 
   return {
@@ -40,46 +40,35 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function Page() {
   return (
     <SeoLanding
-      h1="Monitoramento de reputação online para empresas sem depender de planilhas"
-      lead="Monitorar reputação é acompanhar mudanças, entender causas e agir. A Filtra.AI organiza avaliações e feedback para transformar sinais dispersos em prioridades."
+      h1="Monitoramento de feedback e reputação online para empresas"
+      lead="Acompanhe ao longo do tempo o feedback que os clientes enviam à empresa pelo link ou QR Code do Filtra.AI. A plataforma organiza notas e comentários recebidos para ajudar a identificar mudanças e prioridades; não monitora nem importa automaticamente avaliações públicas do Google."
       breadcrumbHref="/monitoramento-reputacao-online"
       contextLinks={[
-        { href: '/filtra-ai', title: 'Filtra.AI', description: 'Gestão de reputação, avaliações Google e feedback com IA.' },
-        { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Organize avaliações e feedback.' },
-        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Estruture uma rotina contínua.' },
-        { href: '/agencias', title: 'Gestão de reputação para agências de SEO local', description: 'Transforme monitoramento em entrega recorrente para clientes.' },
-        { href: '/blog/seo-local-avaliacoes-local-pack', title: 'Pacotes de SEO local', description: 'Veja como monitoramento e reputação entram no pacote.' },
+        { href: '/filtra-ai', title: 'Filtra.AI', description: 'Coleta de feedback e análise com IA.' },
+        { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Entenda a diferença entre reviews públicos e feedback privado.' },
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Estruture uma rotina contínua de melhoria.' },
+        { href: '/metodologia', title: 'Metodologia', description: 'Veja a origem dos dados e os limites da análise.' },
       ]}
       sections={[
-        { heading: 'Como montar um monitoramento de reputação online', body: 'Defina primeiro quais fontes e sinais importam, depois estabeleça frequência, responsáveis e critérios de prioridade. Uma rotina útil registra mudanças, contexto e próxima ação em vez de apenas acumular alertas.' },
-        { heading: 'Monitoramento de reputação para agências de SEO local', body: 'Para agências, o valor está em transformar monitoramento em uma entrega recorrente e comparável entre clientes. Padronize linha de base, temas, indicadores e relatório, mantendo espaço para exceções de cada negócio.' },
-        { heading: 'O que fazer quando aparece um sinal crítico', body: 'Confirme se o sinal é isolado ou recorrente, identifique a unidade ou etapa da jornada envolvida, encaminhe para o responsável e acompanhe as avaliações seguintes. Evite tratar todo alerta como crise.' },
-        { heading: 'O que monitorar', body: 'Acompanhe volume de avaliações, variações de nota, temas recorrentes, novos problemas e mudanças relevantes na percepção dos clientes.' },
-        { heading: 'Separe ruído de mudança real', body: 'Um comentário isolado merece atenção, mas uma tendência persistente ou acelerada normalmente fornece um sinal mais forte para a gestão.' },
-        { heading: 'Priorize o que pode virar ação', body: 'Classifique temas por frequência, impacto no negócio e capacidade da equipe responsável de agir sobre eles.' },
-        { heading: 'Compare unidades com contexto', body: 'Empresas com várias unidades precisam enxergar diferenças locais sem transformar realidades distintas em uma comparação enganosa.' },
-        { heading: 'Crie uma rotina semanal', body: 'Uma revisão recorrente transforma avaliações dispersas em inteligência operacional, facilita decisões e mostra se os problemas estão diminuindo.' },
+        { heading: 'O que o Filtra.AI acompanha', body: 'O acompanhamento da plataforma se baseia nos feedbacks enviados pelos clientes pelo link ou QR Code da empresa: notas de 1 a 5 e comentários opcionais. A equipe pode observar temas recorrentes e usar esses sinais para priorizar melhorias.' },
+        { heading: 'O que não é monitorado automaticamente', body: 'O Filtra.AI não se conecta ao Perfil da Empresa no Google para buscar novas avaliações públicas, importar reviews ou acompanhar respostas. Para acompanhar avaliações publicadas no Google, use os recursos do próprio Google. A auditoria gratuita é separada e analisa o conteúdo que a empresa cola manualmente.' },
+        { heading: 'Como transformar sinais em ação', body: 'Confirme se o tema aparece em mais de um feedback, identifique a etapa da experiência envolvida, encaminhe o ponto para o responsável e acompanhe os próximos ciclos de feedback para avaliar se houve mudança.' },
+        { heading: 'Separe sinal isolado de recorrência', body: 'Um comentário isolado merece atenção, mas não prova sozinho um problema sistêmico. Considere quantidade, contexto e clareza dos relatos antes de priorizar uma mudança.' },
+        { heading: 'Compare unidades com contexto', body: 'Empresas com várias unidades podem organizar feedback por local e observar diferenças, sem transformar realidades distintas em uma comparação enganosa.' },
+        { heading: 'Crie uma rotina de revisão', body: 'Uma revisão periódica dos feedbacks recebidos ajuda a transformar comentários em decisões operacionais. Defina responsáveis e verifique se as ações adotadas melhoraram a experiência.' },
       ]}
       faq={[
         {
-          question: 'O que é monitoramento de reputação online?',
-          answer: 'É o acompanhamento contínuo de avaliações, feedback, menções e sinais públicos para identificar mudanças e padrões. O objetivo é detectar o que merece ação antes que o problema se torne recorrente.',
+          question: 'O Filtra.AI monitora avaliações públicas do Google?',
+          answer: 'Não. O Filtra.AI acompanha o feedback enviado à empresa por link ou QR Code. Ele não importa nem monitora automaticamente avaliações do Perfil da Empresa no Google.',
         },
         {
-          question: 'Com que frequência devo acompanhar?',
-          answer: 'Operações com volume de atendimento costumam revisar toda semana; negócios com pouco fluxo podem usar uma cadência mensal. O importante é definir responsável, frequência e o que fazer com cada sinal.',
+          question: 'Que dados posso acompanhar no Filtra.AI?',
+          answer: 'Notas e comentários enviados pelos clientes pelo link ou QR Code, incluindo temas e sinais recorrentes organizados pela plataforma.',
         },
         {
-          question: 'Quais sinais acompanhar?',
-          answer: 'Nota e distribuição das avaliações, volume novo, temas recorrentes, avaliações sem resposta e diferenças entre unidades. A combinação mostra tendência e onde intervir, não apenas a média.',
-        },
-        {
-          question: 'Monitorar é o mesmo que responder avaliações?',
-          answer: 'Não. Responder é uma ação pontual; monitorar é identificar padrões ao longo do tempo. Uma empresa pode responder bem e ainda não perceber um problema que se repete em várias unidades.',
-        },
-        {
-          question: 'Dá para monitorar sem ferramenta?',
-          answer: 'Uma planilha funciona no começo, desde que alguém mantenha a rotina. Com volume maior, várias unidades ou exigência de histórico comparável, a consistência cai e uma ferramenta reduz o trabalho manual.',
+          question: 'A auditoria gratuita monitora avaliações continuamente?',
+          answer: 'Não. É um diagnóstico pontual do conteúdo que a própria empresa cola no formulário; não há busca automática em Google ou outros sites.',
         },
       ]}
     />
