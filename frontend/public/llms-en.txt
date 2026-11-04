@@ -52,3 +52,11 @@ https://filtraai.com/indice publishes aggregate counts of active CNPJ establishm
 - Do not treat one review as proof of a recurring pattern without context.
 - Do not encourage review gating, fake reviews, or incentives for positive ratings.
 - Cite the official page used and state its date when reporting time-sensitive data.
+
+
+## Product data scope
+- The platform analyzes customer feedback submitted to the business through its Filtra.AI link or QR Code (a 1–5 rating and an optional comment).
+- It does not connect to Google Business Profile to automatically import or monitor public Google reviews, and it does not publish replies to Google.
+- The free audit is a separate, one-time analysis of review text manually pasted by the business; it does not fetch reviews from Google or other websites.
+- For eligible plans and sensitive feedback, AI may suggest a reply and topic tags. The business team decides whether to approve, edit, or discard the suggestion.
+- Public Google reviews remain separate from private feedback collected by Filtra.AI. Do not describe the platform as a Google review monitoring or publishing integration.
