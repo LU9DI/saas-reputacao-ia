@@ -20,15 +20,26 @@ import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 
 const STATIC_EXPORT = process.env.CLOUDFLARE_PAGES === '1';
+const ON_VERCEL = process.env.VERCEL === '1';
 const OUT = resolve(process.cwd(), STATIC_EXPORT ? 'out' : join('.next', 'server', 'app'));
 const TARGET_LABEL = STATIC_EXPORT ? 'out/' : '.next/server/app/';
 
+// A Vercel embrulha o build em `.vercel/output` e não publica o HTML a partir de
+// `.next/server/app`. O passe não se aplica lá (a produção do domínio é o Render,
+// que roda `next start` sobre esse diretório).
+if (ON_VERCEL && !STATIC_EXPORT) {
+  console.log('HTML language pass skipped: Vercel deployment, layout not served from .next/server/app.');
+  process.exit(0);
+}
+
 if (!statSyncSafe(OUT)) {
-  throw new Error(
-    STATIC_EXPORT
-      ? 'CLOUDFLARE_PAGES=1 but the static export directory out/ is missing.'
-      : `Server build output ${TARGET_LABEL} is missing; run \`next build\` before this pass.`,
-  );
+  if (STATIC_EXPORT) {
+    throw new Error('CLOUDFLARE_PAGES=1 but the static export directory out/ is missing.');
+  }
+  // Não falhar o build por um layout diferente: o guardrail de produção
+  // (verify-production-seo.mjs) é quem reprova idioma errado no domínio público.
+  console.log(`${TARGET_LABEL} not found; HTML language pass skipped for this build.`);
+  process.exit(0);
 }
 
 function statSyncSafe(path) {
