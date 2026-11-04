@@ -7,6 +7,7 @@ import { BrandMark } from '../../components/BrandMark';
 import { IndiceDataIntl } from '../../components/IndiceDataIntl';
 import { serpTitle } from '../../lib/seoTitle';
 import { OG_IMAGE_META, buildTwitter } from '../../lib/socialMetadata';
+import { AuditoriaGratuitaClient } from '../../auditoria-gratuita/AuditoriaGratuitaClient';
 
 type Lang = 'en' | 'es' | 'zh';
 function isLang(value: string): value is Lang { return value === 'en' || value === 'es' || value === 'zh'; }
@@ -2084,6 +2085,11 @@ export default async function Page({params}:{params:Promise<{lang:string;slug:st
   if(!isLang(lang))notFound();
   const found=get(lang,slug);
   if(!found)notFound();
+
+  // Reuse the real interactive audit form on every localized audit route.
+  if (sourcePathForPage(lang, slug) === '/auditoria-gratuita') {
+    return <AuditoriaGratuitaClient languageOverride={lang} />;
+  }
 
   const t=labels[lang];
   const topic=found.item;
