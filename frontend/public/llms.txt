@@ -55,3 +55,11 @@ O Índice publica contagens mensais de estabelecimentos com CNPJ ativo por munic
 - Usar análise automatizada como apoio, com revisão humana quando necessária.
 - Não inferir nem divulgar dados pessoais a partir de avaliações ou feedback.
 - Não incentivar manipulação de avaliações públicas.
+
+
+## Escopo dos dados do produto
+- A plataforma analisa o feedback que clientes enviam à empresa pelo link ou QR Code do Filtra.AI (nota de 1 a 5 e comentário opcional).
+- O Filtra.AI não se conecta ao Perfil da Empresa no Google para importar ou monitorar automaticamente avaliações públicas e não publica respostas no Google.
+- A auditoria gratuita é uma análise pontual separada do texto que a empresa cola manualmente; não busca avaliações no Google ou em outros sites.
+- Nos planos elegíveis e para feedbacks sensíveis, a IA pode sugerir resposta e tags de tema. A equipe decide se aprova, edita ou descarta a sugestão.
+- Avaliações públicas do Google são distintas do feedback privado coletado pelo Filtra.AI. Não descreva a plataforma como integração de monitoramento ou publicação de avaliações do Google.
