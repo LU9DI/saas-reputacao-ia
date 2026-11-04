@@ -212,6 +212,57 @@ for (const url of urlsPrincipais) {
 }
 if (!paginasRuins) ok(`${urlsPrincipais.length} URLs do sitemap principal responderam 200 com canonical próprio`);
 
+// 6b) Idioma do HTML inicial e política de cache do HTML publicado -----------
+// O `<html lang>` precisa estar correto já no HTML que o crawler recebe: o
+// script inline do root layout só corrige depois do JavaScript. E o HTML não
+// pode sair com `s-maxage=31536000` (padrão do Next para página pré-renderizada),
+// porque um cache compartilhado guardaria a versão antiga por um ano.
+console.log('\n== Idioma do HTML inicial e cache do HTML');
+const IDIOMAS_ESPERADOS = [
+  { caminho: '/en', lang: 'en' },
+  { caminho: '/es', lang: 'es' },
+  { caminho: '/zh', lang: 'zh' },
+  { caminho: '/', lang: 'pt-BR' },
+];
+for (const { caminho, lang } of IDIOMAS_ESPERADOS) {
+  const pagina = await pegar(`${BASE}${caminho}`);
+  if (pagina.status !== 200) {
+    fail(`${caminho} respondeu ${pagina.status}; não foi possível verificar <html lang>`);
+    continue;
+  }
+  const langRecebido = pagina.corpo.match(/<html\b[^>]*\blang\s*=\s*["']([^"']+)["']/i)?.[1];
+  if (langRecebido !== lang) {
+    fail(`${caminho} entrega <html lang="${langRecebido ?? 'ausente'}"> no HTML inicial (esperado "${lang}")`);
+  } else {
+    ok(`${caminho} entrega <html lang="${lang}"> no HTML inicial`);
+  }
+}
+for (const caminho of ['/', '/en', '/es']) {
+  const pagina = await pegar(`${BASE}${caminho}`);
+  const cache = pagina.headers.get('cache-control') ?? '';
+  const anos = Number(cache.match(/s-maxage=(\d+)/)?.[1] ?? 0);
+  if (!cache) {
+    fail(`${caminho} sem Cache-Control no HTML`);
+  } else if (anos > 3600) {
+    fail(`${caminho} serve HTML com Cache-Control "${cache}": cache compartilhado longo trava a atualização pós-deploy`);
+  } else {
+    ok(`${caminho} serve HTML com Cache-Control "${cache}"`);
+  }
+}
+const homeHtml = await pegar(`${BASE}/en`);
+const assetEstatico = homeHtml.corpo.match(/\/_next\/static\/[^"']+\.css/)?.[0];
+if (!assetEstatico) {
+  warn('não foi possível localizar um CSS de /_next/static no HTML de /en');
+} else {
+  const asset = await pegar(`${BASE}${assetEstatico}`, { method: 'HEAD' });
+  const cacheAsset = asset.headers.get('cache-control') ?? '';
+  if (!/max-age=31536000/.test(cacheAsset)) {
+    fail(`${assetEstatico} deveria manter cache longo imutável; recebido "${cacheAsset}"`);
+  } else {
+    ok(`${assetEstatico} mantém cache longo imutável ("${cacheAsset}")`);
+  }
+}
+
 // 7) Gêmeas Markdown (aviso por padrão; erro com --require-twins) -------------
 //
 // A existência das gêmeas depende do Build Command do host publicar `out/` e rodar

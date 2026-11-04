@@ -61,11 +61,29 @@ const nextConfig = {
       {
         source: '/:path*',
         headers: [
+          // HTML precisa revalidar: o corpo muda a cada deploy e o padrão do
+          // Next para páginas pré-renderizadas é `s-maxage=31536000`, o que
+          // deixaria uma cópia antiga em qualquer cache compartilhado (CDN)
+          // por até um ano, invisível para purge até o TTL expirar.
+          // `max-age=0, must-revalidate` mantém o HTML sempre verificável e
+          // não afeta os arquivos com hash em `/_next/static` (regra abaixo).
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
         ],
+      },
+      {
+        // Build assets têm hash no nome: cache longo e imutável é seguro e
+        // precisa sobreviver à regra de revalidação acima.
+        source: '/_next/static/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        // Rotas de servidor nunca entram em cache compartilhado.
+        source: '/api/:path*',
+        headers: [{ key: 'Cache-Control', value: 'private, no-store, max-age=0, must-revalidate' }],
       },
       {
         source: '/sw.js',

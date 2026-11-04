@@ -1,23 +1,34 @@
 #!/usr/bin/env node
 
 /**
- * Corrects the initial HTML language attribute in Next.js static exports.
+ * Corrects the initial HTML language attribute of the generated HTML.
  *
  * The root layout uses pt-BR for the shared React tree and a client-side
- * script for localized routes. For Cloudflare's static export, fix the
- * generated HTML itself so crawlers and assistive technology receive the
- * correct language before JavaScript runs. This is a no-op in Vercel mode.
+ * script for localized routes. Crawlers and assistive technology must receive
+ * the correct language before JavaScript runs, so this pass rewrites the
+ * `<html lang>` attribute in the HTML that will actually be served:
+ *
+ *   - `CLOUDFLARE_PAGES=1` → the static export in `out/`.
+ *   - otherwise (Render / `next start`) → the prerendered HTML in
+ *     `.next/server/app/`, which is what the Node server sends on the first
+ *     response for statically generated routes such as `/en`, `/es` and `/zh`.
+ *
+ * Routes whose first path segment is a supported locale get that locale;
+ * every other route (pt-BR) keeps the root layout default.
  */
 import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 
-const OUT = resolve(process.cwd(), 'out');
-if (process.env.CLOUDFLARE_PAGES !== '1') {
-  console.log('Static HTML language pass skipped: CLOUDFLARE_PAGES is not enabled.');
-  process.exit(0);
-}
+const STATIC_EXPORT = process.env.CLOUDFLARE_PAGES === '1';
+const OUT = resolve(process.cwd(), STATIC_EXPORT ? 'out' : join('.next', 'server', 'app'));
+const TARGET_LABEL = STATIC_EXPORT ? 'out/' : '.next/server/app/';
+
 if (!statSyncSafe(OUT)) {
-  throw new Error('CLOUDFLARE_PAGES=1 but the static export directory out/ is missing.');
+  throw new Error(
+    STATIC_EXPORT
+      ? 'CLOUDFLARE_PAGES=1 but the static export directory out/ is missing.'
+      : `Server build output ${TARGET_LABEL} is missing; run \`next build\` before this pass.`,
+  );
 }
 
 function statSyncSafe(path) {
@@ -45,7 +56,7 @@ let checked = 0;
 for (const file of walk(OUT)) {
   const html = readFileSync(file, 'utf8');
   const match = html.match(/<html\b([^>]*)>/i);
-  if (!match) throw new Error(`No <html> element found in exported file: ${relative(OUT, file)}`);
+  if (!match) throw new Error(`No <html> element found in generated file: ${TARGET_LABEL}${relative(OUT, file).split(sep).join('/')}`);
   const expected = languageForFile(file);
   const attrs = match[1];
   const current = attrs.match(/\blang\s*=\s*(["'])(.*?)\1/i);
@@ -62,4 +73,4 @@ for (const file of walk(OUT)) {
   checked += 1;
 }
 
-console.log(`Static HTML language pass: checked ${checked} HTML files; corrected ${changed}.`);
+console.log(`${TARGET_LABEL} HTML language pass: checked ${checked} HTML files; corrected ${changed}.`);
