@@ -10,7 +10,11 @@
  * Regras:
  * - cada URL do sitemap precisa de HTML, <title> e meta description;
  * - description entre 50 e 170 caracteres;
- * - nenhuma description ou title repetido entre URLs diferentes.
+ * - nenhuma description ou title repetido entre URLs diferentes;
+ * - title/description não podem prometer monitoramento, importação ou gestão
+ *   automática de avaliações públicas do Google: o produto analisa feedback
+ *   enviado pela empresa (link/QR Code) e a auditoria gratuita aceita conteúdo
+ *   colado manualmente; não há conexão com o Perfil da Empresa no Google.
  *
  * Sem dependências: roda no CI antes do deploy.
  */
@@ -22,6 +26,25 @@ const OUT = resolve(process.cwd(), 'out');
 const SITEMAP = join(OUT, 'sitemap.xml');
 const MIN_DESCRIPTION = 50;
 const MAX_DESCRIPTION = 170;
+
+// Coerência entre marketing e escopo real do produto. Se o produto passar a
+// oferecer integração com o Google, remova/atualize estas regras junto com a
+// documentação funcional — não basta apagar o teste.
+const SCOPE_VIOLATIONS = [
+  /monitore,\s*analise e responda/i,
+  /software para monitorar avaliações google/i,
+  /organize avaliações google/i,
+  /gestão de avaliações google/i,
+  /manage google reviews/i,
+  /google reviews management/i,
+  /monitor google reviews/i,
+  /monitor customer reviews/i,
+  /gestiona reseñas de google/i,
+  /monitorea reseñas de google/i,
+  /gestión y análisis de reseñas de google/i,
+  /管理 google 评价/i,
+  /监测客户评论/i,
+];
 
 const failures = [];
 const fail = (message) => failures.push(message);
@@ -108,6 +131,11 @@ for (const raw of urls) {
   }
   if (description && description.length > MAX_DESCRIPTION) {
     fail(`description longa (${description.length}): ${pathname}`);
+  }
+
+  for (const pattern of SCOPE_VIOLATIONS) {
+    if (pattern.test(title)) fail(`title promete escopo não suportado (${pattern}): ${pathname} — "${title}"`);
+    if (pattern.test(description)) fail(`description promete escopo não suportado (${pattern}): ${pathname} — "${description}"`);
   }
 
   if (title) {
