@@ -3,6 +3,7 @@ import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { listDotPermissions, setDotPermission, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
+import { resolveDotPlan } from '../lib/plans.js';
 import { listDotTools, invokeDotTool } from '../services/dotToolRegistry.js';
 
 const resources: DotAccessResource[] = ['filtra','customers','sales','marketing','operations','finance','hr','crm','documents','calendar','email','whatsapp','erp','other'];
@@ -25,6 +26,10 @@ async function access(req: Request) {
     }
     const empresa = await findEmpresa(payload.empresa_id);
     if (!empresa || !empresaTemAcesso(empresa)) return { ok: false, reason: 'Assinatura/trial inativo.' };
+    // Fail-closed: as rotas do Dot exigem um plano Dot identificado na empresa
+    // autenticada. Não há fallback para Rei.
+    const decision = resolveDotPlan(empresa.plan);
+    if (!decision.allowed) return { ok: false, reason: decision.reason || 'Acesso ao Dot não liberado para o plano da empresa.' };
     const role = String(payload.role || '').toLowerCase();
     const canManagePermissions = ['empresa', 'owner', 'empresa_admin', 'admin_empresa'].includes(role);
     return { ok: true, empresaId: empresa.id, userId: String(payload.id || '') || null, canManagePermissions, demo: false };

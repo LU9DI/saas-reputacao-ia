@@ -11,7 +11,7 @@ import { prepareDotActionFromDecision, approveDotAction, executeDotAction, listD
 import { listDotFollowUps, completeDotFollowUp } from '../services/dotFollowUp.js';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
-import { planLabel } from '../lib/plans.js';
+import { planLabel, normalizePlan, resolveDotPlan, type PlanoOficial } from '../lib/plans.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { getDotSchedulerStatus } from '../services/dotScheduler.js';
 import { selectDotModel } from '../services/dotModelRouting.js';
@@ -50,15 +50,17 @@ IMPORTANTE: estes números são apenas para o protótipo local e não representa
 `;
 
 type ChatItem = { role: 'user' | 'dot'; text: string; at: number };
-type DotAccess = {
-  allowed: boolean;
+type DotAccessBase = {
   demo: boolean;
   empresaId?: string;
-  plan?: string;
-  planLabel?: string;
+  planIdentified: boolean;
   reason?: string;
   userId: string | null;
 };
+
+type DotAccess =
+  | (DotAccessBase & { allowed: true; plan: PlanoOficial; planLabel: string })
+  | (DotAccessBase & { allowed: false; plan: PlanoOficial | null; planLabel: string | null });
 
 const sessions = new Map<string, ChatItem[]>();
 const MAX_HISTORY = 12;
@@ -83,26 +85,32 @@ function cleanupDotTokenReservations(now = Date.now()) {
   }
 }
 
-function dotPlanKey(plan?: string | null): string {
-  const normalized = String(plan || 'rei').toLowerCase();
-  return normalized === 'corp' ? 'corporativo' : normalized;
+function dotPlanKey(plan?: string | null): PlanoOficial | null {
+  // Sem fallback: plano ausente/inválido não vira Rei nem recebe orçamento.
+  return normalizePlan(plan);
 }
 
 function dotResponseTokenLimit(plan?: string | null): number {
-  return DOT_RESPONSE_TOKEN_LIMITS[dotPlanKey(plan)] || 900;
+  const key = dotPlanKey(plan);
+  return key ? (DOT_RESPONSE_TOKEN_LIMITS[key] || 0) : 0;
 }
 
 async function checkDotTokenBudget(
   empresaId: string | null | undefined,
   plan: string | null | undefined,
 ): Promise<{ ok: boolean; used: number; feature_used: number; limit: number; feature_limit: number; response_limit: number; remaining: number; feature_remaining: number; feedback_limit: number }> {
+  const normalizedPlan = dotPlanKey(plan);
   const responseLimit = dotResponseTokenLimit(plan);
+  if (!normalizedPlan) {
+    // Fail-closed: sem plano identificado não há orçamento de IA.
+    return { ok: false, used: 0, feature_used: 0, limit: 0, feature_limit: 0, response_limit: 0, remaining: 0, feature_remaining: 0, feedback_limit: 0 };
+  }
   if (!empresaId) {
-    return { ok: true, used: 0, feature_used: 0, limit: 0, feature_limit: 0, response_limit: responseLimit, remaining: responseLimit, feature_remaining: responseLimit, feedback_limit: 0 };
+    // Apenas o modo demo local chega aqui; sessões reais sem empresa já foram negadas.
+    return { ok: true, used: 0, feature_used: 0, limit: 0, feature_limit: 0, response_limit: responseLimit, remaining: responseLimit, feature_remaining: responseLimit, feedback_limit: getTokenLimit(normalizedPlan) };
   }
 
   cleanupDotTokenReservations();
-  const normalizedPlan = dotPlanKey(plan);
   const featureLimit = getTokenLimit(normalizedPlan);
   const feedbackLimit = getTokenLimit(normalizedPlan);
   const featureUsed = await tokensUsadosMes(empresaId, 'dot');
@@ -150,7 +158,8 @@ async function checkDotTokenBudget(
 const DOT_TOKEN_WARNING_THRESHOLD = 0.8;
 
 async function getDotTokenUsage(empresaId: string | null | undefined, plan: string | null | undefined) {
-  const limit = getTokenLimit(dotPlanKey(plan));
+  const planKey = dotPlanKey(plan);
+  const limit = planKey ? getTokenLimit(planKey) : 0;
   if (!empresaId || limit <= 0) {
     return { used: 0, limit, percent: 0, warning: false, exhausted: false, remaining: Math.max(0, limit) };
   }
@@ -210,36 +219,38 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
   const token = extrairToken(req);
 
   // Localhost continua permitindo o protótipo demonstrativo sem login.
+  // O plano do demo é um fixture explícito do modo local (nunca disponível
+  // em produção) e não serve de fallback para sessões reais.
   if (!token) {
     if (process.env.DOT_DEMO_MODE === '1' && process.env.NODE_ENV !== 'production') {
-      return { allowed: true, demo: true, plan: 'rei', planLabel: 'Rei', userId: null };
+      return { allowed: true, demo: true, plan: 'rei', planLabel: 'REI', userId: null, planIdentified: true };
     }
-    return { allowed: false, demo: false, userId: null, reason: 'Autenticação necessária.' };
+    return { allowed: false, demo: false, plan: null, planLabel: null, userId: null, planIdentified: false, reason: 'Autenticação necessária.' };
   }
 
   try {
     const payload = verifyAccessToken(token);
-    const userId = String(payload.id || '') || null;
     if (isAdminUser({ empresa_id: payload.empresa_id, role: payload.role })) {
-      return { allowed: false, demo: false, userId, reason: 'Conta admin não possui acesso ao Dot de empresa.' };
+      return { allowed: false, demo: false, plan: null, planLabel: null, userId: null, planIdentified: false, reason: 'Conta admin não possui acesso ao Dot de empresa.' };
     }
 
     const empresa = await findEmpresa(payload.empresa_id);
     if (!empresa || !empresaTemAcesso(empresa)) {
-      return { allowed: false, demo: false, userId, reason: 'Assinatura/trial inativo.' };
+      return { allowed: false, demo: false, plan: null, planLabel: null, userId: null, planIdentified: false, reason: 'Assinatura/trial inativo.' };
     }
 
-    const plan = String(empresa.plan || '').toLowerCase();
-    const liberado = plan === 'rei' || plan === 'corporativo' || plan === 'corp';
-    if (!liberado) {
+    // A empresa autenticada é a ÚNICA fonte de verdade para o plano.
+    const decision = resolveDotPlan(empresa.plan);
+    if (!decision.allowed || !decision.plan) {
       return {
         allowed: false,
         demo: false,
         empresaId: empresa.id,
-        plan,
-        planLabel: planLabel(plan),
-        userId,
-        reason: 'O Filtra Dot está em acesso antecipado para os planos Rei e Corporativo.',
+        plan: decision.plan,
+        planLabel: decision.label,
+        userId: null,
+        planIdentified: decision.plan !== null,
+        reason: decision.reason || 'O Filtra Dot está em acesso antecipado para os planos Rei e Corporativo.',
       };
     }
 
@@ -251,9 +262,10 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
         allowed: false,
         demo: false,
         empresaId: empresa.id,
-        plan,
-        planLabel: planLabel(plan),
-        userId,
+        plan: decision.plan,
+        planLabel: planLabel(decision.plan),
+        userId: String(payload.id || '') || null,
+        planIdentified: true,
         reason: 'Não foi possível inicializar as permissões internas do DOT.',
       };
     }
@@ -262,12 +274,13 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
       allowed: true,
       demo: false,
       empresaId: empresa.id,
-      plan,
-      planLabel: planLabel(plan),
-      userId,
+      plan: decision.plan,
+      planLabel: planLabel(decision.plan),
+      userId: String(payload.id || '') || null,
+      planIdentified: true,
     };
   } catch {
-    return { allowed: false, demo: false, userId: null, reason: 'Token inválido ou expirado.' };
+    return { allowed: false, demo: false, plan: null, planLabel: null, userId: null, planIdentified: false, reason: 'Token inválido ou expirado.' };
   }
 }
 
@@ -310,8 +323,10 @@ export function mountDotRoutes(app: Express) {
         (process.env.NODE_ENV !== 'production' || process.env.FILTRA_DOT_ENABLED === '1'),
       access: access.allowed,
       demo: access.demo,
-      plan: access.plan || 'rei',
-      plan_label: access.planLabel || 'Rei',
+      empresa_id: access.empresaId ?? null,
+      plan: access.plan ?? null,
+      plan_label: access.planLabel ?? null,
+      plan_identified: Boolean(access.plan),
       priority_access: ['rei', 'corporativo'],
       scheduler: getDotSchedulerStatus(),
       token_budget: await getDotTokenUsage(access.empresaId, access.plan),
@@ -557,8 +572,8 @@ export function mountDotRoutes(app: Express) {
     res.json({
       ok: true,
       demo: access.demo,
-      plan: access.plan || 'rei',
-      plan_label: access.planLabel || 'Rei',
+      plan: access.plan,
+      plan_label: access.planLabel,
       context,
       briefing: access.demo
         ? {
@@ -588,7 +603,7 @@ export function mountDotRoutes(app: Express) {
     return res.json({
       ok: true,
       demo: access.demo,
-      plan: access.plan || 'rei',
+      plan: access.plan,
       proposal: prepareDotAction(action, access.demo),
     });
   });
@@ -647,23 +662,23 @@ export function mountDotRoutes(app: Express) {
           latency_ms: 0,
           tokens_used: 0,
           demo: false,
-          plan: access.plan || 'rei',
-          plan_label: access.planLabel || 'Rei',
+          plan: access.plan,
+          plan_label: access.planLabel,
           session_id: requestedSessionId,
           memory_turns: Math.floor(history.length / 2),
           token_scope: 'dot',
-          feedback_token_limit: getTokenLimit(access.plan || 'rei'),
+          feedback_token_limit: getTokenLimit(access.plan),
           feedback_isolated: true,
           response_token_limit: 0,
           context_mode: 'cached',
           context_source: 'cache',
           context_refresh_required: false,
           context_reason: contextResult.decision.reason,
-          dot_token_limit: getTokenLimit(access.plan || 'rei'),
+          dot_token_limit: getTokenLimit(access.plan),
           dot_tokens_used: await tokensUsadosMes(access.empresaId as string, 'dot'),
           dot_tokens_remaining_estimate: Math.max(
             0,
-            getTokenLimit(access.plan || 'rei') -
+            getTokenLimit(access.plan) -
               await tokensUsadosMes(access.empresaId as string, 'dot'),
           ),
         });
@@ -683,7 +698,7 @@ export function mountDotRoutes(app: Express) {
         history.push({ role: 'user', text: message, at: Date.now() });
         history.push({ role: 'dot', text: semanticCached.answer, at: Date.now() });
         while (history.length > MAX_HISTORY) history.shift();
-        const dotLimit = getTokenLimit(access.plan || 'rei');
+        const dotLimit = getTokenLimit(access.plan);
         const dotUsed = await tokensUsadosMes(access.empresaId as string, 'dot');
         return res.json({
           ok: true,
@@ -696,12 +711,12 @@ export function mountDotRoutes(app: Express) {
           tokens_used: 0,
           tokens_saved_estimate: semanticCached.tokens_used,
           demo: false,
-          plan: access.plan || 'rei',
-          plan_label: access.planLabel || 'Rei',
+          plan: access.plan,
+          plan_label: access.planLabel,
           session_id: requestedSessionId,
           memory_turns: Math.floor(history.length / 2),
           token_scope: 'dot',
-          feedback_token_limit: getTokenLimit(access.plan || 'rei'),
+          feedback_token_limit: getTokenLimit(access.plan),
           feedback_isolated: true,
           response_token_limit: 0,
           context_mode: 'cached',
@@ -787,8 +802,8 @@ Entregue uma resposta completa dentro desse orçamento. Priorize, nesta ordem: c
         latency_ms: result.latency_ms,
         tokens_used: result.tokens,
         demo: access.demo,
-        plan: access.plan || 'rei',
-        plan_label: access.planLabel || 'Rei',
+        plan: access.plan,
+        plan_label: access.planLabel,
         session_id: requestedSessionId,
         memory_turns: Math.floor(history.length / 2),
         token_limit: tokenBudget.limit || null,
