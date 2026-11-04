@@ -41,7 +41,7 @@ export default function AdminTecnicoPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
-  const [auto, setAuto] = useState(true);
+  const [auto, setAuto] = useState(false);
 
   const carregar = useCallback(async () => {
     setErro('');
