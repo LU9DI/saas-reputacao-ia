@@ -205,10 +205,8 @@ export function PlanCards({ empresaId, requireEmpresa = false, email }: Props) {
       }
     };
     carregar();
-    const id = window.setInterval(carregar, 60_000);
     return () => {
       cancelled = true;
-      window.clearInterval(id);
     };
   }, []);
 
