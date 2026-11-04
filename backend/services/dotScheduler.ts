@@ -74,7 +74,7 @@ export async function runDueDotMonitors() {
     const companies = await db.all(
       `SELECT id, plan, status, dot_monitor_last_at FROM empresas
        WHERE status IN ('ativo', 'trial')
-         AND LOWER(COALESCE(plan, '')) IN ('rei', 'corporativo', 'corp')`
+         AND LOWER(COALESCE(plan, '')) IN ('rei', 'rei-anual', 'corporativo', 'corporativo-anual', 'corp', 'corp-anual', 'corporate', 'corporate-anual')`
     );
     let processed = 0;
     let skipped = 0;

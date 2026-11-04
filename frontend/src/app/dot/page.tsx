@@ -53,8 +53,18 @@ export default function DotPage() {
     setLoading(true);
     setError('');
     try {
-      const [status, decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
-        getJson('/api/dot/status'),
+      // Consulta primeiro o status: quando o plano não autoriza o Dot, as rotas
+      // operacionais retornam 403 e não devem esconder o plano real na interface.
+      const status = await getJson('/api/dot/status');
+      if (!status.access) {
+        setData({ status, decisions: [], actions: [], cases: [], followups: [], events: [], briefing: null });
+        setAdminState(null);
+        setError(status.plan_identified
+          ? 'O plano identificado da empresa não inclui acesso ao Filtra Dot.'
+          : 'Plano da empresa não identificado. O acesso ao Filtra Dot permanece bloqueado.');
+        return;
+      }
+      const [decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
         getJson('/api/dot/decisions'),
         getJson('/api/dot/actions'),
         getJson('/api/dot/cases'),
@@ -158,7 +168,8 @@ export default function DotPage() {
               <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-500">{data?.briefing?.briefing?.suggestedAction || 'O Dot observa sinais, cria decisões e prepara ações internas para aprovação humana.'}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <span className={`${pill} border-indigo-400/20 bg-indigo-400/5 text-indigo-200`}>{String(data?.status?.plan_label || data?.status?.plan || 'REI')}</span>
+              {/* Fail-closed: plano ausente nunca deve ser apresentado como REI. */}
+              <span className={`${pill} border-indigo-400/20 bg-indigo-400/5 text-indigo-200`}>{String(data?.status?.plan_label || data?.status?.plan || 'Plano não identificado')}</span>
               <span className={`${pill} ${data?.status?.enabled ? 'border-emerald-400/20 bg-emerald-400/5 text-emerald-200' : 'border-amber-400/20 bg-amber-400/5 text-amber-200'}`}>{data?.status?.enabled ? 'ATIVO' : 'DESLIGADO'}</span>
               <span className={`${pill} border-white/10 bg-white/3 text-zinc-400`}>aprovação humana obrigatória</span>
             </div>
