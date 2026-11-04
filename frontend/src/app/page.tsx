@@ -5,7 +5,7 @@ import PreviewLanding from './preview/page';
 export const metadata: Metadata = {
   title: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
   description:
-    'Monitore avaliações Google, feedback e reputação da sua empresa com IA. Identifique padrões, melhore respostas e transforme a voz do cliente em crescimento.',
+    'Colete feedback de clientes por link ou QR Code, analise padrões com IA e transforme a voz do cliente em prioridades de melhoria.',
   alternates: {
     canonical: 'https://filtraai.com/',
     languages: {
@@ -21,14 +21,14 @@ export const metadata: Metadata = {
     title: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
     siteName: 'Filtra.AI',
     description:
-      'Analise avaliações Google, feedback e reputação online com IA e transforme a voz do cliente em ações de crescimento.',
+      'Colete feedback por link ou QR Code, analise temas com IA e transforme a voz do cliente em ações de melhoria.',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Filtra.AI — Gestão de avaliações Google' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
     description:
-      'Transforme avaliações e feedback em crescimento: análise de reputação online com IA. Teste 7 dias grátis, sem cartão.',
+      'Colete feedback de clientes, analise temas com IA e acompanhe oportunidades de melhoria. Teste 7 dias grátis, sem cartão.',
     images: ['/og-image.png'],
   },
 };
