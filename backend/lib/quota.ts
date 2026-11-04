@@ -2,6 +2,7 @@
 import { getDb, dbEngine } from './db.js';
 import { getCurrentMonth } from './planUtils.js';
 import { ensureAiUsageSchema } from './aiUsage.js';
+import { normalizePlan } from './plans.js';
 
 export const PLAN_FEEDBACK_LIMITS: Record<string, number> = { trial: 30, teste: 30, inicial: 100, pro: 300, ultra: 800, corporativo: 2500, rei: 8000 };
 export const PLAN_TOKEN_LIMITS: Record<string, number> = { trial: 25_000, teste: 25_000, inicial: 0, pro: 0, ultra: 120_000, corporativo: 400_000, rei: 1_200_000 };
@@ -11,9 +12,14 @@ const AI_RESERVATION_TTL_MS = Math.max(5_000, Number(process.env.AI_REVIEW_RESER
 const aiReservations = new Map<string, { tokens: number; expiresAt: number }>();
 function cleanupAiReservations(now = Date.now()) { for (const [empresaId, r] of aiReservations) if (r.expiresAt <= now) aiReservations.delete(empresaId); }
 
-export function planTemIA(plan: string | null | undefined): boolean { const p = String(plan || '').toLowerCase(); if (p === 'inicial' || p === 'pro') return false; return ['ultra','corporativo','rei','trial','teste'].includes(p); }
-export function getFeedbackLimit(plan: string): number { return PLAN_FEEDBACK_LIMITS[String(plan || 'trial').toLowerCase()] ?? PLAN_FEEDBACK_LIMITS.trial; }
-export function getTokenLimit(plan: string): number { return PLAN_TOKEN_LIMITS[String(plan || 'trial').toLowerCase()] ?? PLAN_TOKEN_LIMITS.trial; }
+/** Chave canônica de cota: aliases como `corp`/`corporate` nunca caem em trial. */
+function quotaPlanKey(plan: string | null | undefined): string {
+  return normalizePlan(plan) || String(plan ?? '').trim().toLowerCase() || 'trial';
+}
+
+export function planTemIA(plan: string | null | undefined): boolean { const p = quotaPlanKey(plan); if (p === 'inicial' || p === 'pro') return false; return ['ultra','corporativo','rei','trial','teste'].includes(p); }
+export function getFeedbackLimit(plan: string): number { return PLAN_FEEDBACK_LIMITS[quotaPlanKey(plan)] ?? PLAN_FEEDBACK_LIMITS.trial; }
+export function getTokenLimit(plan: string): number { return PLAN_TOKEN_LIMITS[quotaPlanKey(plan)] ?? PLAN_TOKEN_LIMITS.trial; }
 function monthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); return `${m}-01T00:00:00.000Z`; }
 function nextMonthStartIso(mes?: string): string { const m = mes || getCurrentMonth(); const [y, mo] = m.split('-').map(Number); return new Date(Date.UTC(y, mo, 1)).toISOString(); }
 
