@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Bot, X, Target, ShieldCheck, Play, Loader2 } from 'lucide-react';
 import { apiFetch } from '../utils/apiFailover';
 
@@ -12,7 +12,15 @@ type Goal = {
   progress: number;
 };
 
-type DotStatus = { access: boolean; enabled: boolean; demo: boolean; plan?: string; plan_label?: string };
+type DotStatus = {
+  access: boolean;
+  enabled: boolean;
+  demo: boolean;
+  empresa_id?: string | null;
+  plan?: string | null;
+  plan_label?: string | null;
+  plan_identified?: boolean;
+};
 type Permission = { resource: string; action: string; granted: number };
 type Integration = { provider: string; label: string; status: string };
 type Mission = { id: number; goal_id: number; title: string; status: string; current_step: number; total_steps: number };
@@ -29,31 +37,72 @@ export function DotAgentSurface() {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [statusError, setStatusError] = useState('');
   const [actionBusy, setActionBusy] = useState<number | null>(null);
+  // Identifica a empresa da sessão atual para descartar estado antigo quando
+  // o usuário troca de empresa/conta sem recarregar a página.
+  const empresaRef = useRef<string | null>(null);
+
+  function resetCompanyState() {
+    setWorkspace(null);
+    setPermissions([]);
+    setMissions([]);
+    setIntegrations([]);
+    setDraft('');
+    setError('');
+    setLoading(true);
+  }
 
   async function loadStatus() {
     try {
-      const res = await apiFetch('/api/dot/status', { credentials: 'include' });
-      if (!res.ok) return;
+      const res = await apiFetch('/api/dot/status', { credentials: 'include', cache: 'no-store' });
+      if (!res.ok) {
+        // Falha de API nunca vira plano: o estado fica explicitamente indisponível.
+        empresaRef.current = null;
+        setStatus(null);
+        resetCompanyState();
+        setStatusError('Não foi possível confirmar o plano da empresa agora. Tente novamente.');
+        return;
+      }
       const data = await res.json();
+
+      const empresaId = data?.empresa_id != null ? String(data.empresa_id) : null;
+      if (empresaId !== empresaRef.current) {
+        // Outra empresa/sessão: descarta objetivos, permissões, missões e
+        // integrações da empresa anterior antes de pintar o novo estado.
+        empresaRef.current = empresaId;
+        resetCompanyState();
+      }
+
+      setStatusError('');
       setStatus({
-        access: Boolean(data.access),
-        enabled: Boolean(data.enabled),
-        demo: Boolean(data.demo),
-        plan: data.plan,
-        plan_label: data.plan_label,
+        access: Boolean(data?.access),
+        enabled: Boolean(data?.enabled),
+        demo: Boolean(data?.demo),
+        empresa_id: empresaId,
+        plan: data?.plan ?? null,
+        plan_label: data?.plan_label ?? null,
+        plan_identified: Boolean(data?.plan_identified),
       });
-    } catch { /* DOT is non-blocking */ }
+    } catch {
+      empresaRef.current = null;
+      setStatus(null);
+      resetCompanyState();
+      setStatusError('Não foi possível confirmar o plano da empresa agora. Tente novamente.');
+    }
   }
 
   async function loadWorkspace() {
+    const expectedEmpresa = empresaRef.current;
     try {
       setError('');
       const [workspaceRes, permissionRes, missionsRes] = await Promise.all([
-        apiFetch('/api/dot/agent/workspace', { credentials: 'include' }),
-        apiFetch('/api/dot/agent/permissions', { credentials: 'include' }),
-        apiFetch('/api/dot/agent/missions', { credentials: 'include' }),
+        apiFetch('/api/dot/agent/workspace', { credentials: 'include', cache: 'no-store' }),
+        apiFetch('/api/dot/agent/permissions', { credentials: 'include', cache: 'no-store' }),
+        apiFetch('/api/dot/agent/missions', { credentials: 'include', cache: 'no-store' }),
       ]);
+      // A resposta de uma empresa anterior não pode contaminar a empresa atual.
+      if (expectedEmpresa !== empresaRef.current) return;
       if (workspaceRes.ok) {
         const data = await workspaceRes.json();
         if (data?.ok) setWorkspace({ goals: data.goals || [], summary: data.summary || { active: 0, attention: 0 } });
@@ -71,8 +120,10 @@ export function DotAgentSurface() {
   }
 
   async function loadIntegrations() {
+    const expectedEmpresa = empresaRef.current;
     try {
-      const res = await apiFetch('/api/dot/agent/integrations', { credentials: 'include' });
+      const res = await apiFetch('/api/dot/agent/integrations', { credentials: 'include', cache: 'no-store' });
+      if (expectedEmpresa !== empresaRef.current) return;
       if (res.ok) {
         const data = await res.json();
         if (data?.ok) setIntegrations(data.integrations || []);
@@ -88,7 +139,22 @@ export function DotAgentSurface() {
     if (!status?.access || !status.enabled) return;
     void loadWorkspace();
     void loadIntegrations();
-  }, [status?.access, status?.enabled]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status?.access, status?.enabled, status?.empresa_id]);
+
+  useEffect(() => {
+    // Revalida o plano quando a aba volta ao foco, evitando cache de sessão.
+    const refresh = () => {
+      if (document.visibilityState === 'visible') void loadStatus();
+    };
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function createGoal() {
     const title = draft.trim();
@@ -127,6 +193,12 @@ export function DotAgentSurface() {
   }
 
   const hasAccess = Boolean(status?.access && status?.enabled);
+  // Nunca inventa um plano: sem plano identificado, o rótulo é neutro.
+  const planDisplay = status?.demo
+    ? 'ambiente local'
+    : status?.plan_label
+      ? status.plan_label
+      : 'Plano não identificado';
   const activeGoals = (workspace?.goals || []).filter((goal) => goal.status === 'active').slice(0, 3);
   const canExecute = permissions.some((p) => p.resource === 'operations' && p.action === 'execute' && Number(p.granted) === 1);
 
@@ -174,7 +246,7 @@ export function DotAgentSurface() {
                 <div>
                   <div className="text-sm font-semibold text-white">DOT</div>
                   <div className="text-[10px] text-zinc-500">
-                    agente da empresa · {status?.demo ? 'ambiente local' : status?.plan_label || status?.plan || 'plano ativo'}
+                    agente da empresa · {planDisplay}
                   </div>
                 </div>
               </div>
@@ -184,13 +256,25 @@ export function DotAgentSurface() {
             <div className="overflow-y-auto p-4">
               {!hasAccess ? (
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                  <div className="text-sm font-semibold text-white">DOT está disponível aqui.</div>
+                  <div className="text-sm font-semibold text-white">{statusError ? 'Plano não identificado' : 'DOT está disponível aqui.'}</div>
                   <p className="mt-2 text-xs leading-5 text-zinc-500">
-                    Entre em uma conta autorizada para usar o agente da empresa. O DOT não executa nada sem autenticação e permissões válidas.
+                    {statusError
+                      ? statusError
+                      : 'Entre em uma conta autorizada para usar o agente da empresa. O DOT não executa nada sem autenticação e permissões válidas.'}
                   </p>
-                  <a href="/login" className="mt-4 inline-flex rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-400">
-                    Entrar na Filtra.AI
-                  </a>
+                  {statusError ? (
+                    <button
+                      type="button"
+                      onClick={() => void loadStatus()}
+                      className="mt-4 inline-flex rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-400"
+                    >
+                      Tentar novamente
+                    </button>
+                  ) : (
+                    <a href="/login" className="mt-4 inline-flex rounded-xl bg-sky-500 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-400">
+                      Entrar na Filtra.AI
+                    </a>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -287,7 +371,7 @@ export function DotAgentSurface() {
                 {integrations.length > 0 && <div className="mt-2 text-[10px] text-zinc-600">{integrations.filter((i) => i.status === 'connected').length} integrações conectadas. Uma integração conectada não significa autorização para ação externa.</div>}
               </section>
 
-              {status.demo && <div className="mt-3 text-[10px] text-zinc-600">Protótipo local: dados demonstrativos. Nenhuma ação externa é executada.</div>}
+              {status?.demo && <div className="mt-3 text-[10px] text-zinc-600">Protótipo local: dados demonstrativos. Nenhuma ação externa é executada.</div>}
                 </div>
               )}
             </div>

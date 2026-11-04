@@ -5,6 +5,7 @@ import {
   classifySpendEvent,
   shouldFailoverForStatus,
   shouldRespectCooldown,
+// @ts-expect-error - executado via tsx; tsc não habilita allowImportingTsExtensions
 } from '../../frontend/src/lib/failoverCore.ts';
 
 test('Vercel HMAC-SHA1 signature is deterministic', () => {

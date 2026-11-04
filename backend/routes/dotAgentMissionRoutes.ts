@@ -3,6 +3,7 @@ import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
 import { requireDotAccess } from '../services/dotAccessControl.js';
+import { resolveDotPlan } from '../lib/plans.js';
 import { createMissionForGoal, listDotAgentMissions, listDotAgentMissionSteps, advanceMission } from '../services/dotAgentMissions.js';
 import { runCurrentDotMissionStep } from '../services/dotAgentMissionRunner.js';
 import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
@@ -18,9 +19,9 @@ async function access(req: any) {
     if (isAdminUser({ empresa_id: p.empresa_id, role: p.role })) return { ok: false, reason: 'Conta admin não possui agente de empresa.' };
     const empresa = await findEmpresa(p.empresa_id);
     if (!empresa || !empresaTemAcesso(empresa)) return { ok: false, reason: 'Assinatura/trial inativo.' };
-    const plan = String(empresa.plan || '').toLowerCase();
-    if (!['rei','corporativo','corp'].includes(plan)) return { ok: false, reason: 'Agente DOT disponível nos planos Rei e Corporativo.' };
-    return { ok: true, empresaId: empresa.id, userId: String(p.id || '') || null, demo: false };
+    const decision = resolveDotPlan(empresa.plan);
+    if (!decision.allowed) return { ok: false, reason: decision.reason || 'Agente DOT disponível nos planos Rei e Corporativo.' };
+    return { ok: true, empresaId: empresa.id, plan: decision.plan, userId: String(p.id || '') || null, demo: false };
   } catch { return { ok: false, reason: 'Token inválido ou expirado.' }; }
 }
 

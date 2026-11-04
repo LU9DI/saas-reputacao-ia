@@ -2,33 +2,63 @@ import type { Express, Request, Response } from 'express';
 import { extrairToken, verifyAccessToken, isAdminUser } from '../lib/auth.js';
 import { findEmpresa } from '../lib/db.js';
 import { empresaTemAcesso } from '../services/billingService.js';
-import { planLabel } from '../lib/plans.js';
+import { planLabel, resolveDotPlan, type PlanoOficial } from '../lib/plans.js';
 import { createDotAgentGoal, getDotAgentWorkspace, listDotAgentGoals, updateDotAgentGoal } from '../services/dotAgent.js';
 import { createMissionForGoal } from '../services/dotAgentMissions.js';
 import { wakeDotAgentWorker } from '../services/dotAgentWorker.js';
 import { requireDotAccess, type DotAccessAction, type DotAccessResource } from '../services/dotAccessControl.js';
 
-type DotAgentAccess = { allowed: boolean; empresaId?: string; plan?: string; reason?: string; userId?: string | null; demo?: boolean };
+type DotAgentAccess = {
+  allowed: boolean;
+  empresaId?: string;
+  plan?: PlanoOficial | null;
+  planLabel?: string | null;
+  planIdentified?: boolean;
+  reason?: string;
+  userId?: string | null;
+  demo?: boolean;
+};
 
 async function resolveDotAgentAccess(req: Request): Promise<DotAgentAccess> {
   const token = extrairToken(req);
   if (!token) {
-    if (process.env.DOT_DEMO_MODE === '1' && process.env.NODE_ENV !== 'production') return { allowed: true, empresaId: 'demo', plan: 'rei', userId: null, demo: true };
-    return { allowed: false, reason: 'Autenticação necessária.' };
+    if (process.env.DOT_DEMO_MODE === '1' && process.env.NODE_ENV !== 'production') {
+      return { allowed: true, empresaId: 'demo', plan: 'rei', planLabel: 'Rei', planIdentified: true, userId: null, demo: true };
+    }
+    return { allowed: false, plan: null, planLabel: null, planIdentified: false, reason: 'Autenticação necessária.' };
   }
   try {
     const payload = verifyAccessToken(token);
     if (isAdminUser({ empresa_id: payload.empresa_id, role: payload.role })) {
-      return { allowed: false, reason: 'Conta admin não possui acesso ao agente de empresa.' };
+      return { allowed: false, plan: null, planLabel: null, planIdentified: false, reason: 'Conta admin não possui acesso ao agente de empresa.' };
     }
     const empresa = await findEmpresa(payload.empresa_id);
-    if (!empresa || !empresaTemAcesso(empresa)) return { allowed: false, reason: 'Assinatura/trial inativo.' };
-    const plan = String(empresa.plan || '').toLowerCase();
-    const enabled = plan === 'rei' || plan === 'corporativo' || plan === 'corp';
-    if (!enabled) return { allowed: false, empresaId: empresa.id, plan, reason: 'O agente DOT está em acesso antecipado para os planos Rei e Corporativo.' };
-    return { allowed: true, empresaId: empresa.id, plan, userId: String(payload.id || '') || null, demo: false };
+    if (!empresa || !empresaTemAcesso(empresa)) {
+      return { allowed: false, plan: null, planLabel: null, planIdentified: false, reason: 'Assinatura/trial inativo.' };
+    }
+    // A empresa autenticada é a única fonte de verdade do plano.
+    const decision = resolveDotPlan(empresa.plan);
+    if (!decision.allowed || !decision.plan) {
+      return {
+        allowed: false,
+        empresaId: empresa.id,
+        plan: decision.plan,
+        planLabel: decision.label,
+        planIdentified: decision.plan !== null,
+        reason: decision.reason || 'O agente DOT está em acesso antecipado para os planos Rei e Corporativo.',
+      };
+    }
+    return {
+      allowed: true,
+      empresaId: empresa.id,
+      plan: decision.plan,
+      planLabel: planLabel(decision.plan),
+      planIdentified: true,
+      userId: String(payload.id || '') || null,
+      demo: false,
+    };
   } catch {
-    return { allowed: false, reason: 'Token inválido ou expirado.' };
+    return { allowed: false, plan: null, planLabel: null, planIdentified: false, reason: 'Token inválido ou expirado.' };
   }
 }
 
@@ -53,7 +83,15 @@ async function requireAgentMutation(res: Response, access: DotAgentAccess, resou
 }
 
 function deny(res: Response, access: DotAgentAccess) {
-  return res.status(403).json({ ok: false, error: access.reason || 'Acesso ao agente DOT não liberado.', code: 'DOT_AGENT_PLAN_REQUIRED', allowedPlans: ['rei', 'corporativo'] });
+  return res.status(403).json({
+    ok: false,
+    error: access.reason || 'Acesso ao agente DOT não liberado.',
+    code: 'DOT_AGENT_PLAN_REQUIRED',
+    allowedPlans: ['rei', 'corporativo'],
+    plan: access.plan ?? null,
+    plan_label: access.planLabel ?? null,
+    plan_identified: Boolean(access.plan),
+  });
 }
 
 export function mountDotAgentRoutes(app: Express) {
@@ -61,7 +99,13 @@ export function mountDotAgentRoutes(app: Express) {
     const access = await resolveDotAgentAccess(req);
     if (!access.allowed || !access.empresaId) return deny(res, access);
     try {
-      res.json({ ok: true, ...await getDotAgentWorkspace(access.empresaId), plan: access.plan, plan_label: planLabel(access.plan || '') });
+      res.json({
+        ok: true,
+        ...await getDotAgentWorkspace(access.empresaId),
+        plan: access.plan ?? null,
+        plan_label: access.planLabel ?? null,
+        plan_identified: Boolean(access.plan),
+      });
     } catch (error) {
       res.status(500).json({ ok: false, error: error instanceof Error ? error.message : 'Falha ao carregar o espaço do agente DOT.' });
     }
