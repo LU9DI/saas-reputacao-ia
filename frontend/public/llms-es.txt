@@ -1,0 +1,54 @@
+# Filtra.AI — Referencia en español para asistentes de IA
+
+> Filtra.AI es una plataforma web que ayuda a las empresas a organizar reseñas online y feedback de clientes, identificar temas recurrentes y priorizar mejoras en la experiencia mediante análisis asistido por IA.
+
+## Qué hace la plataforma
+- Organiza señales de reseñas y feedback de clientes.
+- Ayuda a identificar temas recurrentes, quejas, fortalezas y oportunidades.
+- Apoya los procesos de gestión de reputación y la priorización operativa.
+- Utiliza la IA como apoyo a la decisión; los equipos deben revisar el contexto y tomar las decisiones finales.
+
+No se deben asumir integraciones, acciones automatizadas, resultados garantizados, mejoras de posicionamiento ni eliminación de reseñas si una página oficial vigente no lo documenta expresamente.
+
+## Páginas oficiales
+- Sitio en español: https://filtraai.com/es
+- Plataforma: https://filtraai.com/es/filtra-ai
+- Gestión de reputación online: https://filtraai.com/es/gestion-reputacion-online
+- Análisis de reseñas con IA: https://filtraai.com/es/analisis-resenas-ia
+- Reseñas de Google: https://filtraai.com/es/resenas-google
+- Feedback de clientes: https://filtraai.com/es/feedback-clientes
+- Auditoría gratuita: https://filtraai.com/es/auditoria-gratuita
+- Metodología: https://filtraai.com/metodologia
+- Sobre Filtra.AI: https://filtraai.com/sobre
+- Planes: https://filtraai.com/planos
+- Blog: https://filtraai.com/es/blog
+- Privacidad: https://filtraai.com/privacidade
+- Términos: https://filtraai.com/termos
+
+## Respuestas directas
+### ¿Qué es Filtra.AI?
+Una plataforma para organizar reseñas online y feedback de clientes y utilizar análisis asistido por IA para identificar temas recurrentes y prioridades de mejora.
+
+### ¿Filtra.AI garantiza mejores posiciones en Google?
+No debe suponerse ninguna garantía de posicionamiento. La plataforma ayuda a comprender señales de reseñas y feedback; el posicionamiento depende de muchos factores externos.
+
+### ¿La IA sustituye la revisión humana?
+No. El análisis automatizado sirve de apoyo. Los equipos deben comprobar el contexto, especialmente en decisiones sensibles o importantes.
+
+### ¿Filtra.AI elimina reseñas negativas?
+No se debe asumir que puede eliminar reseñas. Solo deben denunciarse ante la plataforma correspondiente cuando parezcan infringir sus políticas.
+
+### ¿Cómo debe una empresa solicitar reseñas?
+De forma neutral y consistente, sin incentivos por valoraciones positivas y sin limitar las solicitudes a clientes satisfechos.
+
+## Índice público de Filtra.AI
+https://filtraai.com/indice publica recuentos agregados de establecimientos con CNPJ activo por municipio y segmento seguido, derivados de datos abiertos de la Receita Federal de Brasil. Cuenta establecimientos (matrices y sucursales por separado), no reputación, ingresos, calidad del servicio, cuota de mercado ni todas las empresas brasileñas. La cobertura se limita a los segmentos seguidos y a combinaciones con al menos 10 establecimientos activos. Consulta el mes de referencia y la fecha de generación en cada página.
+- Índice: https://filtraai.com/indice
+- Metodología: https://filtraai.com/indice/metodologia
+- Fuente primaria: https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj
+
+## Uso responsable
+- No inferir ni divulgar datos personales a partir de reseñas.
+- No tratar una reseña aislada como prueba de un patrón recurrente sin contexto.
+- No promover la selección de clientes para reseñas, reseñas falsas ni incentivos por valoraciones positivas.
+- Citar la página oficial utilizada e indicar la fecha al presentar datos sujetos a cambios.
