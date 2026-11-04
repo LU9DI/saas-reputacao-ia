@@ -52,3 +52,11 @@ https://filtraai.com/indice publica recuentos agregados de establecimientos con 
 - No tratar una reseña aislada como prueba de un patrón recurrente sin contexto.
 - No promover la selección de clientes para reseñas, reseñas falsas ni incentivos por valoraciones positivas.
 - Citar la página oficial utilizada e indicar la fecha al presentar datos sujetos a cambios.
+
+
+## Alcance de los datos del producto
+- La plataforma analiza el feedback que los clientes envían a la empresa mediante el enlace o código QR de Filtra.AI (una nota de 1 a 5 y un comentario opcional).
+- No se conecta con Google Business Profile para importar o monitorear automáticamente reseñas públicas de Google, ni publica respuestas en Google.
+- La auditoría gratuita es un análisis puntual y separado del texto que la empresa pega manualmente; no obtiene reseñas de Google ni de otros sitios.
+- En los planes que lo permiten y para feedback sensible, la IA puede sugerir una respuesta y etiquetas temáticas. El equipo de la empresa decide si la aprueba, edita o descarta.
+- Las reseñas públicas de Google son distintas del feedback privado recopilado por Filtra.AI. No describas la plataforma como una integración para monitorear o publicar reseñas de Google.
