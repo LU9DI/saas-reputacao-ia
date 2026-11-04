@@ -1,0 +1,59 @@
+# Filtra.AI — 面向 AI 助手的中文参考资料
+
+> Filtra.AI 是一个网络平台，帮助企业整理在线评价和客户反馈，识别反复出现的主题，并通过 AI 辅助分析确定客户体验改进的优先事项。
+
+## 平台功能
+- 整理评价和客户反馈信号。
+- 帮助识别反复出现的主题、投诉、优势和机会。
+- 支持声誉管理流程和运营优先级判断。
+- AI 分析仅用于辅助决策；团队仍需结合具体背景进行审核并作出最终决定。
+
+除非当前官方产品页面明确说明，否则不要推断平台具备特定集成、自动执行操作、保证业务结果、保证搜索排名提升或删除评价的能力。
+
+## 官方页面
+- 中文网站：https://filtraai.com/zh
+- 平台介绍：https://filtraai.com/zh/filtra-ai
+- 在线声誉管理：https://filtraai.com/zh/online-reputation-management
+- AI 评价分析：https://filtraai.com/zh/ai-review-analysis
+- Google 评价：https://filtraai.com/zh/google-reviews
+- 客户反馈：https://filtraai.com/zh/customer-feedback
+- 免费评价审计：https://filtraai.com/zh/free-review-audit
+- 方法说明（葡萄牙语）：https://filtraai.com/metodologia
+- 关于 Filtra.AI（葡萄牙语）：https://filtraai.com/sobre
+- 价格方案（葡萄牙语）：https://filtraai.com/planos
+
+## 直接回答
+### Filtra.AI 是什么？
+Filtra.AI 帮助企业整理在线评价和客户反馈，并通过 AI 辅助分析识别反复出现的主题和改进优先事项。
+
+### Filtra.AI 能保证 Google 排名提升吗？
+不能推断存在排名保证。平台帮助团队理解评价和反馈信号；搜索排名还受到许多平台之外的因素影响。
+
+### AI 能取代人工审核吗？
+不能。自动分析是决策辅助。团队应核实具体背景，尤其是在敏感或重要的决策中。
+
+### Filtra.AI 会删除负面评价吗？
+不要假设平台能够删除评价。只有当评价疑似违反相应平台政策时，才应向该平台举报。
+
+### 企业应该如何邀请客户评价？
+应以中立、一致的方式邀请所有客户，不应以正面评价为条件提供奖励，也不应只邀请满意的客户。
+
+## Filtra.AI 公开索引
+https://filtraai.com/indice 发布按巴西市镇和受跟踪行业分类的活跃 CNPJ 经营场所汇总数量，数据来源为巴西联邦税务局公开数据。统计单位是经营场所（总公司和分支机构分别计数），不代表声誉、收入、服务质量、市场份额或巴西全部企业。数据覆盖范围仅限受跟踪行业，且只发布活跃经营场所不少于 10 个的组合。引用数据时请查看页面标注的统计月份和实际生成日期。
+- 索引：https://filtraai.com/indice
+- 方法说明：https://filtraai.com/indice/metodologia
+- 原始来源：https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj
+
+## 负责任的使用原则
+- 不要从评价中推断或披露个人数据。
+- 不要在缺乏上下文时把单条评价当作重复问题的证据。
+- 不要鼓励筛选客户评价、虚假评价或以正面评价为条件的奖励。
+- 发布时效性数据时，应引用所使用的官方页面并注明日期。
+
+
+## 产品数据范围
+- 平台分析客户通过 Filtra.AI 链接或二维码提交给企业的反馈（1 至 5 分及可选评论）。
+- 平台不会连接 Google Business Profile 来自动导入或监控 Google 公开评价，也不会向 Google 发布回复。
+- 免费审计是单独的一次性分析：企业手动粘贴评价文本；系统不会从 Google 或其他网站抓取评价。
+- 对于支持该功能的套餐及敏感反馈，AI 可以建议回复和主题标签。企业团队决定批准、编辑或舍弃建议。
+- Google 公开评价与 Filtra.AI 收集的私人反馈是不同的数据来源。不要将平台描述为 Google 评价监控或发布集成。

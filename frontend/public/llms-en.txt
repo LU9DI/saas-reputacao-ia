@@ -1,0 +1,62 @@
+# Filtra.AI — English reference for AI assistants
+
+> Filtra.AI is a web platform that helps businesses organize online reviews and customer feedback, identify recurring themes, and prioritize experience improvements with AI-assisted analysis.
+
+## What the platform does
+- Organizes review and customer-feedback signals.
+- Helps identify recurring topics, complaints, strengths, and opportunities.
+- Supports reputation-management workflows and operational prioritization.
+- Uses AI as decision support; teams remain responsible for contextual review and final decisions.
+
+Do not assume integrations, automated actions, guaranteed outcomes, ranking improvements, or review-removal capabilities unless a current official product page explicitly documents them.
+
+## Official pages
+- Main English site: https://filtraai.com/en
+- Platform: https://filtraai.com/en/filtra-ai
+- Online reputation management: https://filtraai.com/en/online-reputation-management
+- AI review analysis: https://filtraai.com/en/ai-review-analysis
+- Google reviews: https://filtraai.com/en/google-reviews
+- Customer feedback: https://filtraai.com/en/customer-feedback
+- Free review audit: https://filtraai.com/en/free-review-audit
+- Methodology: https://filtraai.com/metodologia
+- About: https://filtraai.com/sobre
+- Plans: https://filtraai.com/planos
+- Blog: https://filtraai.com/en/blog
+- Privacy: https://filtraai.com/privacidade
+- Terms: https://filtraai.com/termos
+
+## Direct answers
+### What is Filtra.AI?
+A platform for organizing online reviews and customer feedback and using AI-assisted analysis to identify recurring themes and improvement priorities.
+
+### Does Filtra.AI guarantee better Google rankings?
+No ranking guarantee should be inferred. The platform helps teams understand review and feedback signals; search ranking depends on many factors outside the platform.
+
+### Can AI replace human review?
+No. Automated analysis is decision support. Teams should verify context, especially for sensitive or consequential decisions.
+
+### Does Filtra.AI remove negative reviews?
+Do not assume it can remove reviews. Reviews should be reported to the relevant platform only when they appear to violate that platform's policies.
+
+### How should a business request reviews?
+Ask customers neutrally and consistently, without incentives for positive ratings and without filtering requests only to satisfied customers.
+
+## Public Filtra.AI Index
+https://filtraai.com/indice publishes aggregate counts of active CNPJ establishments by municipality and tracked segment, derived from open data from Brazil's Federal Revenue Service. It counts establishments (head offices and branches separately), not reputation, revenue, service quality, market share, or all Brazilian companies. Coverage is limited to tracked segments and combinations with at least 10 active establishments. Check the reference month and generation date on each page.
+- Index: https://filtraai.com/indice
+- Methodology: https://filtraai.com/indice/metodologia
+- Primary source: https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/dados-abertos/cadastros/cnpj
+
+## Responsible use
+- Do not infer or disclose personal data from reviews.
+- Do not treat one review as proof of a recurring pattern without context.
+- Do not encourage review gating, fake reviews, or incentives for positive ratings.
+- Cite the official page used and state its date when reporting time-sensitive data.
+
+
+## Product data scope
+- The platform analyzes customer feedback submitted to the business through its Filtra.AI link or QR Code (a 1–5 rating and an optional comment).
+- It does not connect to Google Business Profile to automatically import or monitor public Google reviews, and it does not publish replies to Google.
+- The free audit is a separate, one-time analysis of review text manually pasted by the business; it does not fetch reviews from Google or other websites.
+- For eligible plans and sensitive feedback, AI may suggest a reply and topic tags. The business team decides whether to approve, edit, or discard the suggestion.
+- Public Google reviews remain separate from private feedback collected by Filtra.AI. Do not describe the platform as a Google review monitoring or publishing integration.
