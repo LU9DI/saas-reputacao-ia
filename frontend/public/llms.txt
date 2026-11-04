@@ -4,6 +4,13 @@
 
 O Filtra.AI ajuda empresas a organizar avaliações, identificar temas recorrentes e priorizar melhorias na experiência do cliente. A análise automatizada é apoio à decisão; a equipe deve revisar os resultados conforme o contexto.
 
+## Referências para assistentes por idioma
+- Referência completa em inglês: https://filtraai.com/llms-en.txt
+- Referencia completa en español: https://filtraai.com/llms-es.txt
+- 中文 AI 助手参考资料: https://filtraai.com/llms-zh.txt
+- Referência geral em português: https://filtraai.com/llms-full.txt
+
+
 ## Páginas oficiais
 - Página inicial: https://filtraai.com/
 - Plataforma: https://filtraai.com/filtra-ai
