@@ -53,8 +53,18 @@ export default function DotPage() {
     setLoading(true);
     setError('');
     try {
-      const [status, decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
-        getJson('/api/dot/status'),
+      // Consulta primeiro o status: quando o plano não autoriza o Dot, as rotas
+      // operacionais retornam 403 e não devem esconder o plano real na interface.
+      const status = await getJson('/api/dot/status');
+      if (!status.access) {
+        setData({ status, decisions: [], actions: [], cases: [], followups: [], events: [], briefing: null });
+        setAdminState(null);
+        setError(status.plan_identified
+          ? 'O plano identificado da empresa não inclui acesso ao Filtra Dot.'
+          : 'Plano da empresa não identificado. O acesso ao Filtra Dot permanece bloqueado.');
+        return;
+      }
+      const [decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
         getJson('/api/dot/decisions'),
         getJson('/api/dot/actions'),
         getJson('/api/dot/cases'),
