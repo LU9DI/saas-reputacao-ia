@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+// @ts-expect-error - worker Cloudflare é JS sem tipos; o teste roda via tsx
 import worker from '../../infra/cloudflare/worker.js';
 
 class FakeKV {
