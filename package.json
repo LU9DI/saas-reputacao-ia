@@ -14,7 +14,7 @@
     "typecheck": "npm run build --prefix backend"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "devDependencies": {
     "@types/stripe": "^8.0.416",
