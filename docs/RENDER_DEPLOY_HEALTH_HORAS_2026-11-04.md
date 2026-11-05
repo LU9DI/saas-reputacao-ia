@@ -37,6 +37,14 @@ Fatos do Render que sustentam a escolha:
 
 Um endpoint que depende do Postgres como health check transforma indisponibilidade do banco em **restart loop** da API — exatamente o que se quer evitar num plano Free.
 
+### Observação: não usar o domínio público para sonda externa
+
+`https://filtraai.com/api/live` respondeu com `CF-Cache-Status: HIT` e `Age: 1813`, ou seja, **o Cloudflare serve uma cópia em cache de borda** desse caminho (o Worker não cacheia `/api/*`; o cache vem da camada de zona). Consequências:
+
+- o probe do Render **não é afetado**, porque ele fala direto com a instância;
+- monitor externo (UptimeRobot, cron, GitHub Action) **não deve** usar `filtraai.com/api/live`: ele pode receber 200 antigo com a origem fora do ar;
+- para sonda externa, usar `https://filtra-ia-api.onrender.com/api/live`.
+
 ### Procedimento no painel (API)
 
 1. `https://dashboard.render.com` → serviço da API (`filtra-ia-api`) → **Settings**.
@@ -104,6 +112,20 @@ Ganho realista: com o cache funcionando, o tempo de deploy é dominado pelo buil
 ### Suspeita concreta a verificar
 
 `docs/SETUP_EVOLUTION_N8N.md` referencia `https://n8n-reputacao-ia.onrender.com/webhook/filtra-relatorio-v3`. Se esse serviço ainda existir e estiver acordado, ele consome horas **e** é dependência de workflow do n8n — não pode ser suspenso nem removido sem confirmar que nenhum fluxo usa a URL. Verificar em: `dashboard.render.com` → serviço `n8n-reputacao-ia` → **Metrics** (tem tráfego? tem horas no ciclo?) e **Settings → Suspend**.
+
+### Evidência de que a API está hibernando (não reiniciando)
+
+Duas leituras de `/api/live` no origin, com 27 min de intervalo:
+
+| Leitura | Latência | `build.started_at` |
+|---|---|---|
+| 1 | — | `2026-11-05T00:29:24Z` |
+| 2 | 0,7 s | `2026-11-05T01:00:32Z` |
+| 3 | **33,6 s** (cold start) | `2026-11-05T01:27:58Z` — igual ao instante da requisição |
+
+O padrão é **spin-down após 15 min ocioso + cold start**, não restart loop: o processo nasce no momento em que a requisição chega. Isso é bom para a cota (hibernado não consome horas) e ruim para latência (33 s no primeiro acesso depois do repouso).
+
+Consequência prática: se as horas do workspace estiverem estourando, a causa **não** é a API reiniciando, e sim algum serviço que fica acordado — seja por tráfego real, seja por ping periódico.
 
 ### Regra prática sem custo
 
