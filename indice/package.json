@@ -13,6 +13,8 @@
     "ingest": "node scripts/ingest.mjs",
     "test": "node --test \"scripts/lib/*.test.mjs\"",
     "test:seo": "node scripts/test-seo.mjs",
+    "diagnose:memory": "node scripts/diagnose-memory.mjs",
+    "diagnose:memory:data": "node --expose-gc scripts/diagnose-memory-data.mjs",
     "audit:indexability": "node scripts/audit-indexability.mjs",
     "sitemaps:static": "node scripts/build-static-sitemaps.mjs",
     "sitemaps:static:check": "node scripts/build-static-sitemaps.mjs --check",
