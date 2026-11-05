@@ -10,9 +10,11 @@ import assert from 'node:assert/strict';
 
 import {
   CONVERSION_EVENTS,
+  DEFAULT_MEASUREMENT_ID,
   GA4_EVENTS,
   canonicalPageLocation,
   contactChannelFromHref,
+  createGtagShim,
   dedupeKey,
   isEventAllowedOnPath,
   isPageViewPath,
@@ -21,6 +23,7 @@ import {
   looksLikePersonalData,
   normalizeMeasurementId,
   normalizePath,
+  resolveMeasurementId,
   sanitizeEventParams,
 } from '../src/app/lib/analyticsPolicy.ts';
 
@@ -31,6 +34,14 @@ test('Measurement ID só é aceito no formato G-', () => {
   assert.equal(normalizeMeasurementId('G-'), null);
   assert.equal(normalizeMeasurementId('G-abc def'), null);
   assert.equal(normalizeMeasurementId(undefined), null);
+});
+
+test('ID efetivo: env válida ganha; sem env usa o ID real da propriedade', () => {
+  assert.match(DEFAULT_MEASUREMENT_ID, /^G-[A-Z0-9]{4,20}$/);
+  assert.equal(resolveMeasurementId('G-OUTRO123'), 'G-OUTRO123');
+  assert.equal(resolveMeasurementId(''), DEFAULT_MEASUREMENT_ID);
+  assert.equal(resolveMeasurementId(undefined), DEFAULT_MEASUREMENT_ID);
+  assert.equal(resolveMeasurementId('UA-12345-1'), DEFAULT_MEASUREMENT_ID);
 });
 
 test('page_view: só rotas públicas', () => {
@@ -144,6 +155,21 @@ test('links de contato são classificados sem expor o endereço', () => {
   assert.equal(contactChannelFromHref('https://wa.me/5562999998888'), 'whatsapp');
   assert.equal(contactChannelFromHref('/planos'), null);
   assert.equal(contactChannelFromHref(null), null);
+});
+
+test('shim do dataLayer empurra `arguments`, nunca Array', () => {
+  // Regressão: gtag.js ignora Array puro e a tag baixa sem enviar hit algum.
+  const dataLayer = [];
+  const gtag = createGtagShim(dataLayer);
+  gtag('event', 'page_view', { page_path: '/' });
+  gtag('config', DEFAULT_MEASUREMENT_ID);
+
+  assert.equal(dataLayer.length, 2);
+  assert.equal(Array.isArray(dataLayer[0]), false, 'entrada deve ser array-like');
+  assert.equal(dataLayer[0][0], 'event');
+  assert.equal(dataLayer[0][1], 'page_view');
+  assert.deepEqual(dataLayer[0][2], { page_path: '/' });
+  assert.equal(dataLayer[1][0], 'config');
 });
 
 test('catálogo de eventos é coerente', () => {

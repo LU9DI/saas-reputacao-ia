@@ -15,12 +15,13 @@
 import {
   GA4_EVENTS,
   canonicalPageLocation,
+  createGtagShim,
   dedupeKey,
   isEventAllowedOnPath,
   isPageViewPath,
   isTrackableHost,
-  normalizeMeasurementId,
   normalizePath,
+  resolveMeasurementId,
   sanitizeEventParams,
 } from './analyticsPolicy';
 
@@ -39,7 +40,11 @@ interface AnalyticsWindow extends Window {
   __filtraGaLoading?: Promise<boolean>;
 }
 
-const MEASUREMENT_ID = normalizeMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
+/**
+ * ID efetivo: `NEXT_PUBLIC_GA_MEASUREMENT_ID` quando presente e válido, senão o
+ * Measurement ID real da propriedade (ver `docs/ANALYTICS_GA4.md`).
+ */
+const MEASUREMENT_ID = resolveMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 
 const sentEvents = new Map<string, number>();
 const DEDUPE_WINDOW_MS = 1500;
@@ -125,10 +130,11 @@ export function loadAnalytics(): Promise<boolean> {
 
   w.__filtraGaLoading = new Promise<boolean>((resolve) => {
     w.dataLayer = w.dataLayer || [];
-    const gtag: GtagFn = (...args: any[]) => {
-      w.dataLayer!.push(args);
-    };
-    w.gtag = w.gtag || gtag;
+    if (!w.gtag) {
+      // O shim precisa empurrar `arguments` (array-like), não Array: ver
+      // createGtagShim em analyticsPolicy.ts.
+      w.gtag = createGtagShim(w.dataLayer) as GtagFn;
+    }
     w.gtag('consent', 'default', {
       ad_storage: 'denied',
       ad_user_data: 'denied',
@@ -137,6 +143,7 @@ export function loadAnalytics(): Promise<boolean> {
     });
     w.gtag('consent', 'update', { analytics_storage: 'granted' });
     w.gtag('js', new Date());
+    const debug = debugEnabled();
     w.gtag('config', MEASUREMENT_ID, {
       // page_view é enviado manualmente para não duplicar em rotas SPA.
       send_page_view: false,
@@ -144,6 +151,8 @@ export function loadAnalytics(): Promise<boolean> {
       allow_google_signals: false,
       allow_ad_personalization_signals: false,
       cookie_flags: 'SameSite=Lax;Secure',
+      // Sessões de validação ficam marcadas e não entram nos relatórios.
+      ...(debug ? { debug_mode: true } : {}),
     });
 
     const script = w.document.createElement('script');

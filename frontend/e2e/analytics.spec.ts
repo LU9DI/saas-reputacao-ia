@@ -3,19 +3,13 @@ import { test, expect, type Page } from '@playwright/test';
 /**
  * GA4: consentimento, carregamento único da tag e page_view sem duplicação.
  *
- * Só roda quando o build foi feito com um Measurement ID de teste
- * (`E2E_GA_ID=G-…`, ver docs/ANALYTICS_GA4.md). Sem ID a instrumentação fica
- * inerte por desenho, então o teste é marcado como skip em CI.
- *
- * `gtag.js` é stubado: a verificação é do nosso comportamento (consentimento,
- * carregamento único, page_view por rota), nunca de envio real ao Google.
+ * O build já traz o Measurement ID real da propriedade como padrão, então o
+ * teste roda sempre. `gtag.js` é stubado: a verificação é do nosso comportamento
+ * (consentimento, carregamento único, page_view por rota) e nada é enviado ao
+ * Google.
  */
 
-const gaId = process.env.E2E_GA_ID;
-
 test.describe('GA4 instrumentation', () => {
-  test.skip(!gaId, 'E2E_GA_ID not configured for this build');
-
   test.beforeEach(async ({ page }) => {
     // Host de teste não é o domínio canônico: liga o modo debug explicitamente.
     await page.addInitScript(() => {

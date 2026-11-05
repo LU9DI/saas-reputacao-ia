@@ -140,6 +140,25 @@ export function normalizeMeasurementId(value: unknown): string | null {
   return value.trim();
 }
 
+/**
+ * Measurement ID real da propriedade GA4 `filtraai` (conta 414880880,
+ * propriedade 562518631, stream web `properties/562518631/dataStreams/16279145684`).
+ *
+ * Não é segredo: o próprio snippet do GA4 publica esse ID no HTML de qualquer
+ * site que o use. Fica como padrão para a tag funcionar no domínio canônico
+ * mesmo que a variável de ambiente não exista no build, e pode ser trocado por
+ * `NEXT_PUBLIC_GA_MEASUREMENT_ID` sem alterar código.
+ */
+export const DEFAULT_MEASUREMENT_ID = 'G-DCY9RH8NPJ';
+
+/**
+ * Resolve o ID efetivo: variável de ambiente válida > ID padrão da propriedade.
+ * Sem ID válido em nenhum dos dois, devolve `null` e a instrumentação fica inerte.
+ */
+export function resolveMeasurementId(envValue: unknown): string | null {
+  return normalizeMeasurementId(envValue) ?? normalizeMeasurementId(DEFAULT_MEASUREMENT_ID);
+}
+
 function stripHost(host: string): string {
   return host.toLowerCase().replace(/:\d+$/, '');
 }
@@ -287,4 +306,22 @@ export function contactChannelFromHref(href: string | null | undefined): string 
   }
   if (value.startsWith('https://t.me/')) return 'telegram';
   return null;
+}
+
+/**
+ * Cria o shim de `gtag` que alimenta o `dataLayer`.
+ *
+ * ARMADILHA CRÍTICA: `gtag.js` só processa entradas **array-like**
+ * (`arguments`), exatamente como o snippet oficial faz com
+ * `dataLayer.push(arguments)`. Empurrar `Array` puro (`push([...])`) faz a tag
+ * baixar com HTTP 200 e **não enviar nenhum hit** — o site parece instrumentado
+ * e a propriedade fica vazia. Validado em 05/11/2026 no navegador contra a
+ * propriedade real (variantes Array = 0 hits; variantes `arguments` = hit
+ * enviado). Coberto por `scripts/test-analytics.mjs`.
+ */
+export function createGtagShim(dataLayer: unknown[]): (...args: unknown[]) => void {
+  return function gtagShim(this: unknown) {
+    // eslint-disable-next-line prefer-rest-params -- gtag.js exige array-like (`arguments`); rest params geram Array e a tag não envia hit
+    dataLayer.push(arguments as unknown as unknown[]);
+  } as unknown as (...args: unknown[]) => void;
 }

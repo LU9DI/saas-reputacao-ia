@@ -14,28 +14,28 @@ Documento operacional da instrumentação. Código-fonte:
 
 | Campo | Valor |
 |---|---|
-| Conta | `414880880` |
-| Propriedade | `562518631` |
-| Fluxo de dados web | `https://filtraai.com` |
-| Measurement ID | **PENDENTE** — informar o valor `G-XXXXXXXXXX` do fluxo web (GA4 › Administrador › Fluxos de dados) |
+| Conta | `414880880` (`FiltraAI`) |
+| Propriedade | `562518631` (`filtra.ai`) |
+| Stream web | `properties/562518631/dataStreams/16279145684` (`Filtra.AI`, criado 2026-11-05) |
+| URI padrão | `https://filtraai.com` |
+| **Measurement ID** | **`G-DCY9RH8NPJ`** |
+| Eventos-chave já existentes | `purchase`, `qualify_lead`, `close_convert_lead` |
 
-A URL do painel com os IDs acima foi fornecida pelo responsável
-(`analytics.google.com/analytics/web/#/a414880880p562518631/admin/streams/table`).
-O **Measurement ID não é derivável** do account/property ID: precisa ser lido no
-fluxo de dados ou na API Admin do GA4. Nenhum ID foi inventado.
+O ID foi lido na Admin API do GA4 (não foi inventado) e está fixado como padrão
+em `frontend/src/app/lib/analyticsPolicy.ts` → `DEFAULT_MEASUREMENT_ID`, então a
+tag funciona em produção **sem** depender de variável de ambiente no Cloudflare
+Pages/Render/Vercel. `NEXT_PUBLIC_GA_MEASUREMENT_ID` continua aceito como
+override (útil para staging) e tem precedência quando é válido.
 
-### Como ativar
+> Measurement ID não é segredo: é o mesmo valor que o snippet oficial do GA4
+> publica no HTML de qualquer site que o utilize.
 
-1. Copie o Measurement ID do fluxo web (`G-` seguido de letras/dígitos).
-2. Defina `NEXT_PUBLIC_GA_MEASUREMENT_ID` **no ambiente de build**:
-   - Cloudflare Pages (produção estática): Settings › Environment variables › Production.
-   - Render (runtime Next usado pelo failover): Environment › `NEXT_PUBLIC_GA_MEASUREMENT_ID`.
-   - Vercel (fallback): Project › Settings › Environment Variables.
-3. Rode o build novamente (a variável é inlined em build time).
-4. Valide conforme a seção 7.
+### Como ativar (já feito no código)
 
-Sem a variável o comportamento é seguro: `isAnalyticsConfigured()` é `false`, o
-banner não aparece e nada é enviado.
+1. ~~Copiar o Measurement ID~~ → `G-DCY9RH8NPJ` (fixo no código).
+2. ~~Definir variável de build~~ → só é necessária para trocar de propriedade.
+3. Rebuild/redeploy do frontend publica a tag.
+4. Validar conforme a seção 7.
 
 ## 2. Consentimento e privacidade
 
@@ -152,15 +152,20 @@ em navegação SPA), `send_page_view: false`, recusa mantendo a medição deslig
 `cta_click`/`contact` com os parâmetros esperados e ausência de e-mail/CPF no
 `dataLayer`. O teste faz *stub* de `gtag.js` — nada é enviado ao Google.
 
+> O stub não detecta erro de **formato** do `dataLayer` (foi exatamente o bug que
+> a validação no navegador pegou). Essa garantia fica no teste unitário do
+> `createGtagShim` (`npm run test:analytics`).
+
 ## 9. Pendências e o que depende de acesso externo
 
 | Item | Situação | Dependência |
 |---|---|---|
-| Measurement ID `G-…` | **pendente** | Precisa ser lido no fluxo de dados do GA4 (ou via API Admin, conexão `google_analytics` com OAuth ativo) |
-| Dados aparecendo no GA4 | **não validado** | Só é possível após configurar o ID no build de produção e receber tráfego real |
-| Marcar eventos-chave no GA4 | **pendente** | Ação manual no painel (Administrador › Eventos) |
-| App `/indice` (43.920 URLs) | **fora desta entrega** | É um deploy Next separado (`indice/`); precisa da mesma política de consentimento e de um segundo build com o ID |
+| Measurement ID `G-DCY9RH8NPJ` | **resolvido** | Lido na Admin API; fixado como padrão no código |
+| Propriedade recebendo eventos | **validado tecnicamente no navegador** | Hits `g/collect` com `tid=G-DCY9RH8NPJ` foram aceitos pelo Google a partir da build local (com `debug_mode`, fora dos relatórios). Produção só passa a medir depois do redeploy |
+| Marcar eventos-chave restantes | **ação manual no painel** | O toolkit conectado só *lista* key events (`GOOGLE_ANALYTICS_CREATE_KEY_EVENT` não existe). Faltam `sign_up`, `generate_lead`, `report_generated`, `contact` (`purchase` já existe) |
+| App `/indice` (43.920 URLs) | **fora desta entrega** | É um deploy Next separado (`indice/`); precisa da mesma política de consentimento e de um segundo build |
 | PageSpeed/PSI pós-mudança | **não executado** | A API pública do PSI retornou `429 RESOURCE_EXHAUSTED` (quota diária anônima esgotada) e não há deploy de produção autorizado |
+| Passo de CI `npm run test:analytics` | **bloqueado** | O token do GitHub App não tem permissão `workflows` para alterar `.github/workflows/ci.yml`; comando já existe e passa localmente |
 | Validação Windsor/Supermetrics/Ahrefs | **não executado** | Dependem de contas ativas nessas ferramentas; ausência de acesso não é evidência de ausência de problema |
 
 Impacto de performance esperado: a tag **não** entra no HTML e **não** carrega
@@ -172,6 +177,37 @@ antes do consentimento, então LCP/TBT da primeira visita não são afetados. O 
 - Recusar (ou revogar) remove cookies `_ga*`/`_gid` do domínio.
 - Revogação disponível em `/privacidade` → botão "Preferências de cookies".
 - `anonymize_ip`, `allow_google_signals: false`, `allow_ad_personalization_signals: false`.
+- Sessões de validação local usam `localStorage.filtra_ga_debug = '1'` e mandam
+  `debug_mode: true` (ficam fora dos relatórios) e só funcionam fora do domínio
+  canônico nesse modo debug.
 - Nenhum parâmetro de evento carrega e-mail, telefone, nome, empresa, CPF/CNPJ,
   token, UUID, hash, conteúdo de formulário ou texto de avaliação: a allowlist de
   `analyticsPolicy.ts` descarta valores com esse padrão (ver testes).
+
+### Armadilha do `dataLayer` (importante)
+
+`gtag.js` só processa entradas **array-like** (`arguments`), como no snippet
+oficial (`dataLayer.push(arguments)`). Empurrar `Array` puro faz a tag baixar
+com HTTP 200, o `dataLayer` encher e **nenhum hit sair** — parece instalado e a
+propriedade fica vazia. Isso foi reproduzido e corrigido em 05/11/2026
+(variantes com `Array`: 0 hits; com `arguments`: hit enviado). O shim vive em
+`createGtagShim()` e tem teste de regressão.
+
+### Duplicação de `page_view` — medido, não presumido
+
+Medido no navegador contra a propriedade real (com `debug_mode`):
+
+| Cenário | Comandos enviados por nós | Hits `page_view` recebidos |
+|---|---|---|
+| Carga inicial em `/` | 1 | 1 |
+| Carga direta em `/planos` | 1 | 1 |
+| Carga direta em `/blog` | 1 | 1 |
+| Carga direta em `/en` | 1 | 1 |
+| Carga direta em `/avaliacoes-google` | 1 | 1 |
+| Navegação SPA `/` → `/blog` | 2 (uma por rota) | 2 (uma por rota) |
+
+Ou seja: **1 `page_view` por rota**, sem duplicação, e o `page_change` automático
+do enhanced measurement não disparou. Se algum dia o volume de `page_view`
+aparecer ~2× as rotas no GA4, desligue em **Administrador › Fluxos de dados ›
+Filtra.AI › Medição otimizada › "Alterações de página com base em eventos de
+histórico do navegador"** — a coleta manual desta implementação continua correta.
