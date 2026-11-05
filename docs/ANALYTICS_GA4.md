@@ -211,3 +211,32 @@ do enhanced measurement não disparou. Se algum dia o volume de `page_view`
 aparecer ~2× as rotas no GA4, desligue em **Administrador › Fluxos de dados ›
 Filtra.AI › Medição otimizada › "Alterações de página com base em eventos de
 histórico do navegador"** — a coleta manual desta implementação continua correta.
+
+### Recebimento confirmado na propriedade
+
+`GOOGLE_ANALYTICS_RUN_REALTIME_REPORT` em `properties/562518631` (05/11/2026,
+~15:30 UTC), depois dos hits enviados pela build local:
+
+| eventName | eventCount |
+|---|---|
+| `first_visit` | 1 |
+| `page_view` | 1 |
+| `session_start` | 1 |
+
+O Google aceitou os hits com `tid=G-DCY9RH8NPJ`, então a tag está funcional de
+ponta a ponta. Em produção a medição começa quando o redeploy do frontend
+publicar esta branch **e** o visitante aceitar o banner.
+
+
+## 10. Passos manuais que restam no painel do GA4
+
+1. **Marcar 4 eventos-chave** (Administrador › Eventos › "Marcar como evento-chave"):
+   `sign_up`, `generate_lead`, `report_generated`, `contact`.
+   `purchase` já está marcado. O toolkit conectado não expõe `createKeyEvent`.
+2. **Confirmar "Medição otimizada"** do stream `Filtra.AI`: se o volume de
+   `page_view` vier ~2× o número de rotas, desligue "Alterações de página com
+   base em eventos de histórico do navegador" (ver seção 2).
+3. **Google signals / retenção de dados**: decisões do titular da conta; a
+   implementação já envia `allow_google_signals: false`.
+4. **Vincular Search Console** (Administrador › Links do produto › Search
+   Console) para unir consultas orgânicas ao comportamento — não feito aqui.
