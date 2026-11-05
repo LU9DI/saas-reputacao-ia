@@ -6,6 +6,7 @@ import { SITE, OG_IMAGE } from '@/lib/seo';
 import { mesPorExtenso } from '@/lib/format';
 import { SiteHeader } from '@/components/SiteHeader';
 import { BrandMark } from '@/components/BrandMark';
+import { AnalyticsConsent } from '@/components/AnalyticsConsent';
 
 export function generateMetadata(): Metadata {
   const meta = getMeta();
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body>
+        <AnalyticsConsent />
         {meta.sintetico && <div className="amostra">DADOS SINTÉTICOS DE DESENVOLVIMENTO. NÃO PUBLICAR. NÃO REPRESENTAM A REALIDADE.</div>}
         <SiteHeader />
         <div className="wrap">
