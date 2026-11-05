@@ -23,28 +23,28 @@ import {
 const COPY = {
   pt: {
     title: 'Cookies de medição',
-    text: 'Podemos usar cookies do Google Analytics para entender como o site é usado e melhorar o conteúdo. Você escolhe.',
+    text: 'O Google Analytics 4 usa cookies e identificadores do navegador para medir visitas e interações de forma estatística. Não usamos esses dados para anúncios personalizados. Você escolhe.',
     accept: 'Aceitar',
     deny: 'Recusar',
     more: 'Política de Privacidade',
   },
   en: {
     title: 'Measurement cookies',
-    text: 'We may use Google Analytics cookies to understand how the site is used and improve content. It is your choice.',
+    text: 'Google Analytics 4 uses cookies and browser identifiers to measure visits and interactions statistically. We do not use these data for personalized ads. It is your choice.',
     accept: 'Accept',
     deny: 'Decline',
     more: 'Privacy Policy',
   },
   es: {
     title: 'Cookies de medición',
-    text: 'Podemos usar cookies de Google Analytics para entender cómo se usa el sitio y mejorar el contenido. Tú decides.',
+    text: 'Google Analytics 4 utiliza cookies e identificadores del navegador para medir visitas e interacciones con fines estadísticos. No usamos estos datos para anuncios personalizados. Tú decides.',
     accept: 'Aceptar',
     deny: 'Rechazar',
     more: 'Política de Privacidad',
   },
   zh: {
     title: '分析 Cookie',
-    text: '我们可能使用 Google Analytics Cookie 了解网站使用情况并改进内容。由您决定。',
+    text: 'Google Analytics 4 使用 Cookie 和浏览器标识符进行访问与交互统计。我们不会将这些数据用于个性化广告。由您决定。',
     accept: '接受',
     deny: '拒绝',
     more: '隐私政策',
