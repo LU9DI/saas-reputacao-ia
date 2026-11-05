@@ -3,6 +3,8 @@ import './globals.css';
 import { PwaRegister } from './components/PwaRegister';
 import { Providers } from './Providers';
 import { JsonLd } from './components/JsonLd';
+import { GoogleAnalytics } from './components/GoogleAnalytics';
+import { CookieConsent } from './components/CookieConsent';
 
 const siteUrl = 'https://filtraai.com';
 const ogImage = `${siteUrl}/og-image.png`;
@@ -73,6 +75,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           {children}
           <PwaRegister />
+          <GoogleAnalytics />
+          <CookieConsent />
         </Providers>
       </body>
     </html>

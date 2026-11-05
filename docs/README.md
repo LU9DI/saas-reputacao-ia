@@ -34,6 +34,14 @@
 | [../LIMPEZA_GIT.md](../LIMPEZA_GIT.md) | Bancos no Git |
 | [LIMPEZA_CODIGO.md](LIMPEZA_CODIGO.md) | Organização no VS Code |
 
+## Analytics e SEO
+
+| Doc | Conteúdo |
+|------|----------|
+| [ANALYTICS_GA4.md](ANALYTICS_GA4.md) | GA4: consentimento, eventos/conversões, validação |
+| [../SEO_INDEXING_RUNBOOK.md](../SEO_INDEXING_RUNBOOK.md) | Publicação e indexação |
+| [SEO_GOOGLE_SEARCH_CONSOLE_2026-10-19.md](SEO_GOOGLE_SEARCH_CONSOLE_2026-10-19.md) | Search Console |
+
 ## Convenções
 
 1. Rotas finas → lógica em `services/` ou `lib/`
