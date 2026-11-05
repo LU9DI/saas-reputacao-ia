@@ -81,6 +81,33 @@ test.describe('GA4 instrumentation', () => {
     );
   });
 
+  test('revogar e conceder novamente reativa o Consent Mode sem duplicar a tag', async ({ page }) => {
+    const googleRequests = trackGoogleRequests(page);
+
+    await page.goto('/');
+    await page.getByRole('button', { name: /^Aceitar$/ }).click();
+    await expect.poll(async () => (await consentUpdates(page)).length).toBeGreaterThan(0);
+    expect((await consentUpdates(page)).at(-1)).toEqual({ analytics_storage: 'granted' });
+
+    await page.goto('/privacidade');
+    await page.getByRole('button', { name: /Preferências de cookies/i }).click();
+    await page.getByRole('button', { name: /^Recusar$/ }).click();
+    await expect.poll(async () => (await consentUpdates(page)).at(-1)).toEqual({
+      analytics_storage: 'denied',
+    });
+    expect(await page.evaluate(() => window.localStorage.getItem('filtra_consent_v1'))).toBe('denied');
+
+    await page.getByRole('button', { name: /Preferências de cookies/i }).click();
+    await page.getByRole('button', { name: /^Aceitar$/ }).click();
+    await expect.poll(async () => (await consentUpdates(page)).at(-1)).toEqual({
+      analytics_storage: 'granted',
+    });
+    expect(await page.evaluate(() => window.localStorage.getItem('filtra_consent_v1'))).toBe('granted');
+
+    const gtagScripts = googleRequests().filter((url) => url.includes('/gtag/js'));
+    expect(gtagScripts.length).toBe(1);
+  });
+
   test('cta_click e contact saem sem dados pessoais', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: /^Aceitar$/ }).click();
@@ -110,6 +137,15 @@ test.describe('GA4 instrumentation', () => {
     expect(dump).not.toMatch(/\d{3}\.?\d{3}\.?\d{3}-?\d{2}/);
   });
 });
+
+async function consentUpdates(page: Page): Promise<unknown[]> {
+  return page.evaluate(() => {
+    const layer = (window as unknown as { dataLayer?: unknown[][] }).dataLayer || [];
+    return layer
+      .filter((entry) => entry[0] === 'consent' && entry[1] === 'update')
+      .map((entry) => entry[2]);
+  });
+}
 
 async function eventEntries(page: Page): Promise<unknown[][]> {
   return page.evaluate(() => {
