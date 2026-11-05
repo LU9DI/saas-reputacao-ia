@@ -125,23 +125,33 @@ function currentPath(): string {
 export function loadAnalytics(): Promise<boolean> {
   const w = win();
   if (!w || !MEASUREMENT_ID) return Promise.resolve(false);
-  if (w.__filtraGaLoaded) return Promise.resolve(true);
-  if (w.__filtraGaLoading) return w.__filtraGaLoading;
+
+  // Garante o shim antes dos retornos antecipados: após uma revogação, um
+  // novo aceite precisa atualizar o Consent Mode mesmo com gtag.js já carregado
+  // ou ainda em carregamento.
+  w.dataLayer = w.dataLayer || [];
+  if (!w.gtag) {
+    // O shim precisa empurrar `arguments` (array-like), não Array: ver
+    // createGtagShim em analyticsPolicy.ts.
+    w.gtag = createGtagShim(w.dataLayer) as GtagFn;
+  }
+  if (w.__filtraGaLoaded) {
+    w.gtag('consent', 'update', { analytics_storage: 'granted' });
+    return Promise.resolve(true);
+  }
+  if (w.__filtraGaLoading) {
+    w.gtag('consent', 'update', { analytics_storage: 'granted' });
+    return w.__filtraGaLoading;
+  }
 
   w.__filtraGaLoading = new Promise<boolean>((resolve) => {
-    w.dataLayer = w.dataLayer || [];
-    if (!w.gtag) {
-      // O shim precisa empurrar `arguments` (array-like), não Array: ver
-      // createGtagShim em analyticsPolicy.ts.
-      w.gtag = createGtagShim(w.dataLayer) as GtagFn;
-    }
-    w.gtag('consent', 'default', {
+    w.gtag?.('consent', 'default', {
       ad_storage: 'denied',
       ad_user_data: 'denied',
       ad_personalization: 'denied',
       analytics_storage: 'denied',
     });
-    w.gtag('consent', 'update', { analytics_storage: 'granted' });
+    w.gtag?.('consent', 'update', { analytics_storage: 'granted' });
     w.gtag('js', new Date());
     const debug = debugEnabled();
     w.gtag('config', MEASUREMENT_ID, {
