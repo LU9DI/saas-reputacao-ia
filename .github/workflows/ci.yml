@@ -251,7 +251,7 @@ jobs:
           echo "Frontend (static export): ${{ needs.frontend.result }}"
           echo "Frontend (Vercel): ${{ needs['frontend-vercel'].result }}"
           echo "Índice: ${{ needs.indice.result }}"
-          if [ "${{ needs.seo-brand.result }}" != "success" ] || [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ] || [ "${{ needs['frontend-vercel'].result }}" != "success" ]; then
+          if [ "${{ needs.seo-brand.result }}" != "success" ] || [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ] || [ "${{ needs['frontend-vercel'].result }}" != "success" ] || [ "${{ needs.indice.result }}" != "success" ]; then
             echo "CI failed"
             exit 1
           fi
