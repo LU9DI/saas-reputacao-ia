@@ -136,11 +136,11 @@ export function loadAnalytics(): Promise<boolean> {
     w.gtag = createGtagShim(w.dataLayer) as GtagFn;
   }
   if (w.__filtraGaLoaded) {
-    w.gtag('consent', 'update', { analytics_storage: 'granted' });
+    w.gtag?.('consent', 'update', { analytics_storage: 'granted' });
     return Promise.resolve(true);
   }
   if (w.__filtraGaLoading) {
-    w.gtag('consent', 'update', { analytics_storage: 'granted' });
+    w.gtag?.('consent', 'update', { analytics_storage: 'granted' });
     return w.__filtraGaLoading;
   }
 
