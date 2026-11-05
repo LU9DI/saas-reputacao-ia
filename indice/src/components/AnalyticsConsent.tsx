@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const ID = 'G-DCY9RH8NPJ';
@@ -21,6 +20,7 @@ export function AnalyticsConsent() {
   const [consent, setConsent] = useState<Consent>(null);
   const [open, setOpen] = useState(false);
   const initialized = useRef(false);
+  const lastConsent = useRef<Consent>(null);
   const lastPath = useRef('');
 
   useEffect(() => {
@@ -37,6 +37,7 @@ export function AnalyticsConsent() {
         analytics_storage: 'denied', ad_storage: 'denied',
         ad_user_data: 'denied', ad_personalization: 'denied',
       });
+      lastConsent.current = 'denied';
       lastPath.current = '';
       return;
     }
@@ -44,10 +45,6 @@ export function AnalyticsConsent() {
     if (!initialized.current) {
       window.gtag!('consent', 'default', {
         analytics_storage: 'denied', ad_storage: 'denied',
-        ad_user_data: 'denied', ad_personalization: 'denied',
-      });
-      window.gtag!('consent', 'update', {
-        analytics_storage: 'granted', ad_storage: 'denied',
         ad_user_data: 'denied', ad_personalization: 'denied',
       });
       window.gtag!('js', new Date());
@@ -59,7 +56,17 @@ export function AnalyticsConsent() {
       document.head.appendChild(script);
       initialized.current = true;
     }
-    const path = pathname.split('?')[0].split('#')[0] || '/';
+    if (lastConsent.current !== 'granted') {
+      window.gtag!('consent', 'update', {
+        analytics_storage: 'granted', ad_storage: 'denied',
+        ad_user_data: 'denied', ad_personalization: 'denied',
+      });
+      lastConsent.current = 'granted';
+    }
+    const routePath = pathname.split('?')[0].split('#')[0] || '/';
+    const path = routePath === '/indice' || routePath.startsWith('/indice/')
+      ? routePath
+      : `/indice${routePath === '/' ? '' : routePath}`;
     if (lastPath.current !== path) {
       window.gtag!('event', 'page_view', {
         page_location: 'https://filtraai.com' + path,
@@ -80,7 +87,7 @@ export function AnalyticsConsent() {
       {open ? (
         <div role="dialog" aria-live="polite" aria-label="Cookies de medição" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-3xl rounded-xl border border-zinc-300 bg-white p-4 text-zinc-900 shadow-xl">
           <p className="text-sm font-semibold">Cookies de medição</p>
-          <p className="mt-1 text-xs leading-5">O Índice Filtra.AI pode usar o Google Analytics para medir o uso das páginas. A medição só começa se você aceitar. Consulte nossa <Link href="/privacidade" className="underline">Política de Privacidade</Link>.</p>
+          <p className="mt-1 text-xs leading-5">O Índice Filtra.AI pode usar o Google Analytics para medir o uso das páginas. A medição só começa se você aceitar. Consulte nossa <a href="https://filtraai.com/privacidade" className="underline">Política de Privacidade</a>.</p>
           <div className="mt-3 flex gap-2">
             <button type="button" onClick={() => decide('denied')} className="rounded-lg border px-4 py-2 text-xs font-semibold">Recusar</button>
             <button type="button" onClick={() => decide('granted')} className="rounded-lg bg-zinc-900 px-4 py-2 text-xs font-semibold text-white">Aceitar</button>
