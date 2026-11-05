@@ -152,9 +152,9 @@ export function loadAnalytics(): Promise<boolean> {
       analytics_storage: 'denied',
     });
     w.gtag?.('consent', 'update', { analytics_storage: 'granted' });
-    w.gtag('js', new Date());
+    w.gtag?.('js', new Date());
     const debug = debugEnabled();
-    w.gtag('config', MEASUREMENT_ID, {
+    w.gtag?.('config', MEASUREMENT_ID, {
       // page_view é enviado manualmente para não duplicar em rotas SPA.
       send_page_view: false,
       anonymize_ip: true,
