@@ -10,6 +10,7 @@ import { validarSenhaEmpresa, SENHA_EMPRESA_HINT } from '../../utils/passwordPol
 import { readApiError } from '../../utils/apiError';
 import { persistFiltraToken } from '../../utils/persistToken';
 import { apiFetch } from '../../utils/apiFailover';
+import { trackEvent } from '../../lib/analytics';
 
 const TERMOS_VERSAO = '2026-09-15';
 const PRIV_VERSAO = '2026-09-15';
@@ -141,6 +142,9 @@ export default function PreviewTrial() {
       if (!response.ok) throw new Error(await readApiError(response, 'Não foi possível ativar o teste.'));
       const data = await response.json();
       setStatus('success');
+      // Conversão só depois da confirmação do backend (conta criada / trial ativado).
+      // Sem e-mail, empresa, URL ou token: apenas método e plano comercial.
+      trackEvent('sign_up', { method: 'email', plan: 'trial_7d' });
       if (data.verification_required) {
         setErro(data.message || (language === 'pt' ? 'Enviamos um link de confirmação para seu e-mail. Abra sua caixa de entrada para ativar o teste.' : language === 'en' ? 'We sent a confirmation link to your email. Check your inbox to activate the trial.' : language === 'es' ? 'Enviamos un enlace de confirmación a tu correo. Revisa tu bandeja para activar la prueba.' : '我们已向您的邮箱发送确认链接，请查收以激活试用。'));
         return;

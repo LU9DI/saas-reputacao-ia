@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { apiFetch } from '../utils/apiFailover';
+import { trackEvent } from '../lib/analytics';
 import { Loader2, X, Check } from 'lucide-react';
 
 type Props = {
@@ -49,12 +50,38 @@ export function MpTransparentCheckout({
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const brickRef = useRef<any>(null);
+  const purchaseTracked = useRef(false);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [amount, setAmount] = useState<number | null>(null);
   const [pago, setPago] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
   const [pixQr, setPixQr] = useState<string | null>(null);
+
+  /**
+   * `purchase` só depois de status aprovado do provedor e uma única vez por
+   * tentativa. Sem nome, e-mail ou id de pagamento: plano, valor e moeda.
+   * O valor vem de um ref para manter o callback estável (o brick do Mercado
+   * Pago não deve ser recriado quando o valor carrega).
+   */
+  const amountRef = useRef<number | null>(null);
+  const trackPurchase = useCallback(
+    (method: string) => {
+      if (purchaseTracked.current) return;
+      purchaseTracked.current = true;
+      trackEvent('purchase', {
+        plan: planoKey,
+        method,
+        currency: 'BRL',
+        value: typeof amountRef.current === 'number' ? amountRef.current : undefined,
+      });
+    },
+    [planoKey]
+  );
+
+  useEffect(() => {
+    amountRef.current = amount;
+  }, [amount]);
 
   const destroyBrick = useCallback(() => {
     try {
@@ -164,6 +191,7 @@ export function MpTransparentCheckout({
                   if (data.approved || data.status === 'approved') {
                     setPago(true);
                     setStatusMsg('Pagamento aprovado! Plano será ativado em instantes.');
+                    trackPurchase(String(data.payment_method_id || 'card'));
                   } else if (data.status === 'pending' || data.status === 'in_process') {
                     setStatusMsg(
                       data.payment_method_id === 'pix'
@@ -179,6 +207,7 @@ export function MpTransparentCheckout({
                             clearInterval(poll);
                             setPago(true);
                             setStatusMsg('Pagamento confirmado!');
+                            trackPurchase(String(data.payment_method_id || 'pix'));
                           }
                         } catch {
                           /* */
@@ -212,7 +241,7 @@ export function MpTransparentCheckout({
       cancelled = true;
       destroyBrick();
     };
-  }, [open, planoKey, empresaId, email, destroyBrick]);
+  }, [open, planoKey, empresaId, email, destroyBrick, trackPurchase]);
 
   if (!open) return null;
 

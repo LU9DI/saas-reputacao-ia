@@ -8,6 +8,7 @@ import { BrandMark } from '../components/BrandMark';
 import { readApiError } from '../utils/apiError';
 import { useLanguage } from '../Contexts/LanguageContext';
 import { apiFetch } from '../utils/apiFailover';
+import { trackEvent } from '../lib/analytics';
 
 const inputCls =
   'w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 text-sm';
@@ -37,6 +38,8 @@ export default function LoginPage() {
 
   const afterLogin = (data: any) => {
     setOk(t.login_success || 'Login realizado com sucesso.');
+    // Sem e-mail, senha ou token: apenas o método de autenticação.
+    trackEvent('login', { method: 'password' });
     if (data.token) {
       try {
         localStorage.setItem('filtra_token', data.token);

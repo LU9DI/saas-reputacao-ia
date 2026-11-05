@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { apiFetch } from '../utils/apiFailover';
+import { trackEvent } from '../lib/analytics';
 import { Loader2, Copy, Check, X } from 'lucide-react';
 
 type Props = {
@@ -36,6 +37,7 @@ export function PixCheckoutModal({
   const [pix, setPix] = useState<PixPayload | null>(null);
   const [copiado, setCopiado] = useState(false);
   const [pago, setPago] = useState(false);
+  const purchaseTracked = useRef(false);
 
   const criar = useCallback(async () => {
     setLoading(true);
@@ -90,13 +92,24 @@ export function PixCheckoutModal({
         const data = await res.json().catch(() => ({}));
         if (data.approved || data.status === 'approved') {
           setPago(true);
+          // Conversão só na confirmação do provedor, uma única vez. Sem e-mail,
+          // payment_id ou qualquer identificador.
+          if (!purchaseTracked.current) {
+            purchaseTracked.current = true;
+            trackEvent('purchase', {
+              plan: planoKey,
+              method: 'pix',
+              currency: 'BRL',
+              value: typeof pix.amount === 'number' ? pix.amount : undefined,
+            });
+          }
         }
       } catch {
         /* */
       }
     }, 4000);
     return () => clearInterval(t);
-  }, [open, pix?.payment_id, pago]);
+  }, [open, pix?.payment_id, pago, pix?.amount, planoKey]);
 
   if (!open) return null;
 

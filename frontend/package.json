@@ -36,6 +36,7 @@
     "sync:indice": "node scripts/sync-indice-snapshot.mjs",
     "start": "next start",
     "lint": "eslint .",
+    "test:analytics": "node --experimental-strip-types --test scripts/test-analytics.mjs",
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "seo:validate": "node scripts/validate-seo.mjs",
     "seo:audit": "node scripts/audit-indexing.mjs",

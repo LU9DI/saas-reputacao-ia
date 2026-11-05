@@ -372,7 +372,7 @@ export default function LandingPreview() {
             <a href="#planos" className="hover:text-white">{c.plansEyebrow}</a>
           </div>
           <div className="flex items-center gap-3">
-            <a href={TRIAL_HREF} className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
+            <a href={TRIAL_HREF} data-ga-cta="trial_start" data-ga-placement="header" className="hidden rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 sm:inline-flex">{c.start}</a>
           </div>
           </div>
         </nav>
@@ -383,7 +383,7 @@ export default function LandingPreview() {
             <h1 className="max-w-3xl text-5xl font-semibold leading-[1.03] tracking-[-.045em] sm:text-6xl lg:text-7xl">{c.heroTitle} <span className="bg-linear-to-r from-sky-300 via-indigo-300 to-violet-300 bg-clip-text text-transparent">{c.heroAccent}</span></h1>
             <p className="mt-7 max-w-xl text-lg leading-8 text-zinc-400 sm:text-xl">{c.heroText}</p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link href="/teste" className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 font-semibold shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.start} <ArrowRight size={17} /></Link>
+              <Link href="/teste" data-ga-cta="trial_start" data-ga-placement="hero" className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3.5 font-semibold shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.start} <ArrowRight size={17} /></Link>
               <a href="#como-funciona" className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/3 px-6 py-3.5 font-medium text-zinc-200 hover:bg-white/6">{c.howCta}</a>
             </div>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-500"><span>✓ {c.noCard}</span><span>✓ {c.quick}</span><span>✓ {c.cancel}</span></div>
@@ -417,7 +417,7 @@ export default function LandingPreview() {
             <div className="inline-flex items-center gap-2 rounded-full border border-indigo-300/20 bg-indigo-400/10 px-3 py-1.5 text-xs font-medium text-indigo-200"><Bot size={14} /> {c.dotEyebrow}</div>
             <h2 className="mt-5 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">{c.dotTitle}</h2>
             <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-400">{c.dotText}</p>
-            <a href="#planos" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.dotCta} <ArrowRight size={17} /></a>
+            <a href="#planos" data-ga-cta="view_plans" data-ga-placement="dot_section" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400">{c.dotCta} <ArrowRight size={17} /></a>
             <div className="mt-5 flex items-start gap-2 text-sm leading-6 text-zinc-400"><ShieldCheck size={18} className="mt-0.5 shrink-0 text-emerald-300" /><span>{c.dotGuardrail}</span></div>
           </div>
           <div className="relative">
@@ -491,7 +491,7 @@ export default function LandingPreview() {
           <Star className="mx-auto text-indigo-300" size={26} fill="currentColor" />
           <h2 className="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">{c.finalTitle}</h2>
           <p className="mx-auto mt-4 max-w-2xl text-zinc-400">{c.finalText}</p>
-          <Link href="/teste" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 font-semibold text-black hover:bg-zinc-200">{c.start} <ArrowRight size={17} /></Link>
+          <Link href="/teste" data-ga-cta="trial_start" data-ga-placement="footer" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 font-semibold text-black hover:bg-zinc-200">{c.start} <ArrowRight size={17} /></Link>
         </div>
       </section>
 

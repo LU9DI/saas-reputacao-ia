@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { useLanguage, type Language } from '../Contexts/LanguageContext';
 import { SeoPageHeader } from '../components/SeoPageHeader';
 import { getEnv } from '../utils/env';
+import { trackEvent } from '../lib/analytics';
 
 
 const COPY:Record<Language,Record<string,string>>={
@@ -116,6 +117,13 @@ export function AuditoriaGratuitaClient({ languageOverride }: { languageOverride
       const data = await response.json();
       if (!response.ok) throw new Error(data?.error || 'Não foi possível gerar o diagnóstico.');
       setDiagnostic(data.diagnostic);
+      // Conversões só depois da resposta OK do backend. Sem e-mail, empresa ou
+      // texto das avaliações: apenas formulário, idioma e ferramenta.
+      trackEvent('form_submit', { form: 'free_audit', locale: language });
+      trackEvent('report_generated', { tool: 'free_audit' });
+      if (consentData?.lead_id) {
+        trackEvent('generate_lead', { form: 'free_audit', locale: language });
+      }
     } catch (e: any) {
       setError(e?.message || 'Diagnóstico indisponível no momento.');
     } finally {
