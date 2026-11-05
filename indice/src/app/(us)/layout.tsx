@@ -4,6 +4,7 @@ import '../globals.css';
 import { usMeta } from '@/lib/us';
 import { SITE, OG_IMAGE } from '@/lib/seo';
 import { BrandMark } from '@/components/BrandMark';
+import { AnalyticsConsent } from '@/components/AnalyticsConsent';
 
 export function generateMetadata(): Metadata {
   const meta = usMeta();
@@ -24,6 +25,7 @@ export default function UsLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <AnalyticsConsent />
         {meta.sintetico && <div className="amostra">SYNTHETIC DEVELOPMENT DATA. DO NOT PUBLISH. NUMBERS ARE NOT REAL.</div>}
         <header className="topo">
           <div className="wrap topo-in">
