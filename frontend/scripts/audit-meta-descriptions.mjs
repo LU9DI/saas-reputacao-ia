@@ -44,6 +44,12 @@ const SCOPE_VIOLATIONS = [
   /gestión y análisis de reseñas de google/i,
   /管理 google 评价/i,
   /监测客户评论/i,
+  // "Monitore avaliações (do Google) e feedback" promete que o produto monitora
+  // avaliações públicas, o que ele não faz: ele organiza o feedback que a empresa
+  // coleta. Vale para title, description, og/twitter e JSON-LD.
+  /monitore?\s+avalia[çc][õo]es\s+(do\s+)?google/i,
+  /monitore?\s+avalia[çc][õo]es\s+e\s+feedback/i,
+  /melhore?\s+respostas/i,
 ];
 
 const failures = [];
@@ -86,6 +92,32 @@ function metaContent(html, name) {
   return '';
 }
 
+function metaProperty(html, property) {
+  const patterns = [
+    new RegExp(`<meta[^>]+property=["']${property}["'][^>]+content=["']([\\s\\S]*?)["']`, 'i'),
+    new RegExp(`<meta[^>]+content=["']([\\s\\S]*?)["'][^>]+property=["']${property}["']`, 'i'),
+  ];
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    if (match) return decodeEntities(match[1]).trim();
+  }
+  return '';
+}
+
+// Descrições dentro de blocos JSON-LD (dados estruturados consumidos por
+// buscadores e mecanismos generativos). O conteúdo é escapado com \\u003c por
+// serializeJsonLd, então basta tratar as aspas JSON.
+function jsonLdDescriptions(html) {
+  const found = [];
+  for (const block of html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)) {
+    const decoded = block[1].replace(/\\u003c/g, '<');
+    for (const match of decoded.matchAll(/"description"\s*:\s*"((?:[^"\\]|\\.)*)"/g)) {
+      found.push(decodeEntities(match[1].replace(/\\"/g, '"')));
+    }
+  }
+  return found;
+}
+
 if (!existsSync(SITEMAP)) {
   // Build da Vercel (.next) não gera "out"; a auditoria é do export estático.
   console.log('Skipping meta audit: no "out" directory was generated.');
@@ -123,6 +155,11 @@ for (const raw of urls) {
   const titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   const title = titleMatch ? decodeEntities(titleMatch[1]).trim() : '';
   const description = metaContent(html, 'description');
+  const socialAndStructuredDescriptions = [
+    ['og:description', metaProperty(html, 'og:description')],
+    ['twitter:description', metaContent(html, 'twitter:description')],
+    ...jsonLdDescriptions(html).map((value) => ['JSON-LD description', value]),
+  ].filter(([, value]) => value);
 
   if (!title) fail(`sem <title>: ${pathname}`);
   if (!description) fail(`sem meta description: ${pathname}`);
@@ -136,6 +173,9 @@ for (const raw of urls) {
   for (const pattern of SCOPE_VIOLATIONS) {
     if (pattern.test(title)) fail(`title promete escopo não suportado (${pattern}): ${pathname} — "${title}"`);
     if (pattern.test(description)) fail(`description promete escopo não suportado (${pattern}): ${pathname} — "${description}"`);
+    for (const [source, value] of socialAndStructuredDescriptions) {
+      if (pattern.test(value)) fail(`${source} promete escopo não suportado (${pattern}): ${pathname} — "${value}"`);
+    }
   }
 
   if (title) {

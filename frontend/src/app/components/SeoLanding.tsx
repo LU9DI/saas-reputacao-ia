@@ -86,7 +86,7 @@ const CONTEXT_LINKS_BY_PATH: Record<string, ContextLink[]> = {
   '/monitoramento-reputacao-online': [
     { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação online', description: 'Transforme monitoramento em processo de gestão.' },
     { href: '/reputacao-google', title: 'Reputação no Google', description: 'Acompanhe a percepção pública da marca.' },
-    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Monitore volume, temas e evolução das avaliações.' },
+    { href: '/avaliacoes-google', title: 'Avaliações Google', description: 'Acompanhe volume, temas e evolução das avaliações.' },
     { href: '/analise-de-avaliacoes-com-ia', title: 'Análise de avaliações com IA', description: 'Acelere a descoberta de padrões.' },
     { href: '/gestao-de-feedback', title: 'Gestão de feedback', description: 'Conecte sinais públicos e privados.' },
     { href: '/auditoria-gratuita', title: 'Auditoria gratuita', description: 'Comece identificando os sinais mais importantes.' },

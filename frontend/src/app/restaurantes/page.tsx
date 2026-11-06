@@ -24,7 +24,7 @@ export default function RestaurantesPage() {
       lead="Uma avaliação não começa no Maps: ela nasce da experiência. O Filtra.AI coloca o pedido de feedback no ponto de contato da mesa, conta ou delivery e ajuda a equipe a transformar comentários em ações."
       breadcrumbHref="/restaurantes"
       contextLinks={[
-        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação para restaurantes', description: 'Monitore avaliações e transforme sinais do salão e do delivery em ações.' },
+        { href: '/gestao-de-reputacao-online', title: 'Gestão de reputação para restaurantes', description: 'Organize avaliações e transforme sinais do salão e do delivery em ações.' },
         { href: '/analise-de-avaliacoes-com-ia', title: 'Analisar avaliações com IA', description: 'Encontre padrões recorrentes em atendimento, tempo de espera e experiência.' },
         { href: '/blog/seo-local-avaliacoes-local-pack', title: 'SEO local e avaliações', description: 'Entenda como reputação e presença local se conectam.' },
         { href: '/blog/avaliacoes-google-restaurantes', title: 'Avaliações Google para restaurantes', description: 'Aprofunde a rotina de feedback no salão e no delivery.' },

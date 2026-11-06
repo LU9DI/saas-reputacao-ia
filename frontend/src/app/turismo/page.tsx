@@ -5,7 +5,7 @@ import { OG_IMAGE_META } from '../lib/socialMetadata';
 export const metadata: Metadata = {
   title: 'Reputação online para turismo e hotelaria',
   description:
-    'Monitore avaliações e feedback de hóspedes, clientes e visitantes no turismo. Organize padrões de experiência e ações com o Filtra.AI.',
+    'Organize avaliações e feedback de hóspedes, clientes e visitantes no turismo. Identifique padrões de experiência e priorize ações com o Filtra.AI.',
   alternates: {
     canonical: 'https://filtraai.com/turismo',
     languages: {
@@ -19,13 +19,13 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://filtraai.com/turismo',
     title: 'Reputação online para turismo e hotelaria | Filtra.AI',
-    description: 'Monitore avaliações e feedback de hóspedes, clientes e visitantes no turismo. Organize padrões de experiência e ações com o Filtra.AI.',
+    description: 'Organize avaliações e feedback de hóspedes, clientes e visitantes no turismo. Identifique padrões de experiência e priorize ações com o Filtra.AI.',
     images: [OG_IMAGE_META],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Reputação online para turismo e hotelaria | Filtra.AI',
-    description: 'Monitore avaliações e feedback no turismo e transforme padrões de experiência em ações.',
+    description: 'Organize avaliações e feedback no turismo e transforme padrões de experiência em ações.',
     images: [OG_IMAGE_META.url],
   },
 };

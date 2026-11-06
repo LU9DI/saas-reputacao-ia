@@ -41,7 +41,7 @@ export default function Home() {
     url: 'https://filtraai.com/',
     name: 'Filtra.AI | Gestão de reputação online e avaliações Google com IA',
     description:
-      'Monitore avaliações Google, feedback e reputação da sua empresa com IA. Identifique padrões, melhore respostas e transforme a voz do cliente em crescimento.',
+      'Organize o feedback e as avaliações que sua empresa coleta por link ou QR Code, identifique padrões com IA e apoie a gestão da reputação online. Não monitora nem importa avaliações públicas do Google automaticamente.',
     isPartOf: { '@id': 'https://filtraai.com/#website' },
     about: { '@id': 'https://filtraai.com/#organization' },
     mainEntity: { '@id': 'https://filtraai.com/#software' },
