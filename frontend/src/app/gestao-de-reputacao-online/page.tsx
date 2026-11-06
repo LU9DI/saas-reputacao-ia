@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: 'Software de gestão de reputação online',
-      description: 'Monitore avaliações, feedback, temas recorrentes e oportunidades de melhoria com IA.',
+      description: 'Organize avaliações e feedback, identifique temas recorrentes e priorize melhorias com IA.',
       images: [OG_IMAGE_META.url],
     },
   };
