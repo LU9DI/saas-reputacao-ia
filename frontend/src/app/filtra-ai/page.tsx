@@ -74,6 +74,44 @@ const entitySchema = {
   },
 };
 
+const faq = [
+  {
+    question: 'O que é a Filtra.AI?',
+    answer:
+      'É uma plataforma brasileira que organiza o feedback e as avaliações que a empresa coleta, identifica padrões com inteligência artificial e transforma esses sinais em prioridades de gestão da reputação.',
+  },
+  {
+    question: 'Como a Filtra.AI ajuda a gerenciar a reputação da minha empresa?',
+    answer:
+      'A plataforma centraliza avaliações e feedback, agrupa temas recorrentes, aponta pontos de atenção e ajuda a equipe a acompanhar se as ações de melhoria reduzem os problemas ao longo do tempo.',
+  },
+  {
+    question: 'A Filtra.AI importa ou monitora avaliações do Google automaticamente?',
+    answer:
+      'Não. A Filtra.AI trabalha com o feedback e as avaliações que a empresa coleta por link ou QR Code. Ela não se conecta ao Perfil da Empresa no Google, não importa reviews automaticamente e não responde avaliações em nome do negócio.',
+  },
+  {
+    question: 'Para quem é a Filtra.AI?',
+    answer:
+      'Para negócios locais e redes que dependem da confiança do cliente, como clínicas, hotéis, restaurantes, franquias e agências que administram reputação para seus clientes.',
+  },
+  {
+    question: 'A Filtra.AI garante nota ou posição no Google?',
+    answer:
+      'Não. A plataforma organiza sinais de reputação e apoia a decisão da equipe. Ela não cria nota própria de reputação, não garante ranking e não promete remoção de avaliações.',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
+
 export default function FiltraAiPage() {
   return (
     <div className="min-h-screen bg-black text-zinc-100">
@@ -176,10 +214,24 @@ export default function FiltraAiPage() {
         </ol>
       </section>
 
+      <section className="mt-12 space-y-4">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
+        />
+        <h2 className="text-2xl font-bold">Perguntas frequentes</h2>
+        {faq.map((item) => (
+          <details key={item.question} className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+            <summary className="cursor-pointer text-sm font-medium text-zinc-100">{item.question}</summary>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">{item.answer}</p>
+          </details>
+        ))}
+      </section>
+
       <section className="mt-12 grid gap-4 sm:grid-cols-2">
         <Link href="/gestao-de-reputacao-online" className="rounded-2xl border border-zinc-800 p-5">
           <h2 className="font-semibold">Gestão de reputação online</h2>
-          <p className="mt-2 text-sm text-zinc-400">Monitore avaliações, feedback e evolução da reputação.</p>
+          <p className="mt-2 text-sm text-zinc-400">Organize avaliações, feedback e evolução da reputação.</p>
         </Link>
         <Link href="/avaliacoes-google" className="rounded-2xl border border-zinc-800 p-5">
           <h2 className="font-semibold">Avaliações Google</h2>
