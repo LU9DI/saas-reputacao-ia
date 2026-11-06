@@ -79,14 +79,14 @@ export default function BlogReputacaoOnlinePage() {
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">3. Responda sem transformar a crítica em disputa</h2>
-          <p>Respostas públicas devem ser curtas, profissionais e específicas. Reconheça o ponto relatado e leve detalhes sensíveis para um canal privado.</p>
+          <p><Link href="/blog/como-responder-avaliacoes-negativas" className="text-indigo-400 underline">Respostas públicas</Link> devem ser curtas, profissionais e específicas. Reconheça o ponto relatado e leve detalhes sensíveis para um canal privado.</p>
           <p>O objetivo é atender o cliente e mostrar para quem está pesquisando que a empresa acompanha o que acontece depois da venda.</p>
           <p>Se o volume de comentários for alto, a <Link href="/analise-de-avaliacoes-com-ia" className="text-indigo-400 underline">análise de avaliações com IA</Link> ajuda a encontrar padrões sem depender de leitura manual de cada comentário.</p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-semibold text-zinc-100">4. Crie um fluxo contínuo de feedback</h2>
-          <p>Depois de cada atendimento, facilite o envio de feedback com um link ou QR Code e registre os sinais recebidos.</p>
+          <p>Depois de cada atendimento, facilite o envio de feedback com um <Link href="/blog/qr-code-balcao-reviews" className="text-indigo-400 underline">link ou QR Code</Link> e registre os sinais recebidos.</p>
           <p>O pedido deve buscar opinião autêntica, sem comprar avaliações, oferecer vantagem em troca de estrelas ou pressionar clientes a publicar uma nota específica.</p>
           <p>O objetivo é transformar a <Link href="/feedback-de-clientes" className="text-indigo-400 underline">voz do cliente</Link> em uma rotina de gestão.</p>
         </section>

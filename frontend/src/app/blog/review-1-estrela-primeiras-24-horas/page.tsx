@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { BlogArticle, H2 } from '../../components/BlogArticle';
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default function Page() {
       <H2>2. Se o cliente também deixou feedback privado</H2>
       <p>
         Responda pelo canal adequado, ofereça solução quando fizer sentido e registre o aprendizado no time.
-        O feedback privado é um espaço complementar de acompanhamento, não uma substituição de avaliações
+        O <Link href="/feedback-de-clientes" className="text-indigo-400 underline">feedback privado</Link> é um espaço complementar de acompanhamento, não uma substituição de avaliações
         públicas honestas.
       </p>
       <H2>3. Se a avaliação já estiver pública no Google</H2>
