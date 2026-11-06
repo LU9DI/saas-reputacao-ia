@@ -50,7 +50,7 @@ export default function Page() {
       </p>
       <H2>O que acontece depois do toque</H2>
       <p>
-        Com o Filtra.AI, o cliente pode registrar feedback próximo à experiência e receber um convite para
+        Com o Filtra.AI, o cliente pode <Link href="/feedback-de-clientes" className="text-indigo-400 underline">registrar feedback</Link> próximo à experiência e receber um convite para
         compartilhar uma avaliação genuína no Google. Quem preferir falar diretamente com a empresa também
         pode deixar feedback privado para acompanhamento.
       </p>
