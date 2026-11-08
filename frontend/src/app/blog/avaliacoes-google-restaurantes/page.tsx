@@ -52,7 +52,7 @@ export default function Page() {
           Não dependa de uma campanha isolada. O objetivo é estabelecer uma rotina contínua, medir o que está chegando e revisar os temas mais importantes com a equipe.
         </p>
         <p>
-          Veja <Link href="/restaurantes" className="text-indigo-300 underline">gestão de reputação para restaurantes</Link>, <Link href="/pedir-estrela-vs-filtrar" className="text-indigo-300 underline">pedir estrelas vs. feedback</Link> e <Link href="/auditoria-gratuita" className="text-indigo-300 underline">auditoria gratuita</Link>.
+          Veja <Link href="/restaurantes" className="text-indigo-300 underline">gestão de reputação para restaurantes</Link>, <Link href="/pedir-estrela-vs-filtrar" className="text-indigo-300 underline">pedir estrelas vs. feedback</Link>, <Link href="/auditoria-gratuita" className="text-indigo-300 underline">auditoria gratuita</Link> e o <Link href="/indice/rankings/ativos/restaurantes" className="text-indigo-300 underline">ranking nacional de restaurantes no Índice Filtra.AI</Link>.
         </p>
       </BlogArticle>
     </>

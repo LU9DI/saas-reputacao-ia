@@ -476,6 +476,7 @@ export default function LandingPreview() {
               <Link href="/blog/review-1-estrela-primeiras-24-horas" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Como agir diante de uma avaliação de 1 estrela':language==='en'?'What to do after a 1-star review':language==='es'?'Qué hacer ante una reseña de 1 estrella':'收到一星评价后怎么办'}</Link>
               <Link href="/blog/clinica-checklist-avaliacoes-google" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Checklist de avaliações para clínicas':language==='en'?'Review checklist for clinics':language==='es'?'Checklist de reseñas para clínicas':'诊所 Google 评价清单'}</Link>
               <Link href="/blog" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Todos os artigos':language==='en'?'All articles':language==='es'?'Todos los artículos':'所有文章'}</Link>
+              <Link href="/indice/rankings/ativos" className="text-indigo-300 hover:text-indigo-200">{language==='pt'?'Ranking nacional de estabelecimentos':language==='en'?'National establishment ranking':language==='es'?'Ranking nacional de establecimientos':'全国机构排名'}</Link>
             </div>
           </div>
         </div>

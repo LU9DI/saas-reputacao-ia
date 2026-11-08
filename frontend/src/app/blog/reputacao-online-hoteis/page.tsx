@@ -60,7 +60,7 @@ export default function Page() {
           Separe alguns minutos para triar as avaliações novas, marcar os temas críticos e verificar se as ações da semana anterior apareceram no feedback. Uma revisão mensal ajuda a comparar tendências e a apresentar resultados à operação. O processo não precisa ser complexo; precisa acontecer com regularidade.
         </p>
         <p>
-          Aprofunde em <Link href="/hoteis" className="text-indigo-300 underline">gestão de reputação para hotéis</Link>, <Link href="/turismo" className="text-indigo-300 underline">reputação para turismo</Link>, <Link href="/avaliacoes-google" className="text-indigo-300 underline">avaliações Google</Link> e <Link href="/gestao-de-feedback" className="text-indigo-300 underline">gestão de feedback</Link>.
+          Aprofunde em <Link href="/hoteis" className="text-indigo-300 underline">gestão de reputação para hotéis</Link>, <Link href="/turismo" className="text-indigo-300 underline">reputação para turismo</Link>, <Link href="/avaliacoes-google" className="text-indigo-300 underline">avaliações Google</Link>, <Link href="/gestao-de-feedback" className="text-indigo-300 underline">gestão de feedback</Link> e <Link href="/indice/rankings/ativos/hoteis" className="text-indigo-300 underline">ranking nacional de hotéis no Índice Filtra.AI</Link>.
         </p>
       </BlogArticle>
     </>

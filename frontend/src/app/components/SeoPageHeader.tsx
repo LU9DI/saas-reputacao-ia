@@ -17,6 +17,9 @@ export function SeoPageHeader() {
             <Link href="/planos" className="hover:text-white">
               Planos
             </Link>
+            <Link href="/indice" className="hover:text-white">
+              Índice
+            </Link>
           </nav>
           <LanguageSwitcher compact variant="flags" />
           <Link

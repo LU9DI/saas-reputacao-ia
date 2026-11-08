@@ -50,7 +50,7 @@ export default function Page() {
           Cada tema recorrente deve ter um responsável e uma próxima ação. A rede ganha velocidade quando a fricção deixa de ser uma discussão abstrata e vira um backlog de melhoria por unidade.
         </p>
         <p>
-          Veja <Link href="/franquias" className="text-indigo-300 underline">gestão de reputação para franquias</Link>, <Link href="/monitoramento-reputacao-online" className="text-indigo-300 underline">monitoramento</Link> e <Link href="/filtra-ai" className="text-indigo-300 underline">Filtra.AI</Link>.
+          Veja <Link href="/franquias" className="text-indigo-300 underline">gestão de reputação para franquias</Link>, <Link href="/monitoramento-reputacao-online" className="text-indigo-300 underline">monitoramento</Link>, <Link href="/filtra-ai" className="text-indigo-300 underline">Filtra.AI</Link> e o <Link href="/indice/rankings/ativos/franquias" className="text-indigo-300 underline">ranking nacional de franquias no Índice Filtra.AI</Link>.
         </p>
       </BlogArticle>
     </>
