@@ -1,9 +1,9 @@
 # Execução P1 — Links internos contextuais para o Índice Filtra.AI
 
-**PR:** #201 — `seo/p1-links-contextuais-2026-11-08`  
-**Repositório:** `LU9DI/saas-reputacao-ia`  
-**SHA final:** `pending` (será preenchido após o commit)  
-**Base:** `origin/main` = `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200)  
+**PR:** #201 — `seo/p1-links-contextuais-2026-11-08`
+**Repositório:** `LU9DI/saas-reputacao-ia`
+**SHA final:** `pending` (será preenchido após o commit e push)
+**Base:** `origin/main` = `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200)
 **Data:** 08/11/2026
 
 ---
@@ -12,11 +12,12 @@
 
 - Branch anterior: `auditoria/seo-aeo-geo-filtra-ai` (em `61e0df5b`, preservada)
 - Branch de trabalho: `seo/p1-links-contextuais-2026-11-08`, criada a partir de `9be7edab` (origin/main)
+- O branch remoto `origin/seo/p1-links-contextuais-2026-11-08` já existia em `c26c903b` (HEAD de referência informado na tarefa)
 - Working tree: limpo antes e depois das alterações
 - Não houve reset, clean, rebase destrutivo ou force push
-- Commit `c26c903b` (referenciado na tarefa) não existe nem local nem no remoto; base utilizada: `9be7edab`
+- Merge do remoto no branch local para preservar todos os commits (não é merge para main)
 
-## 2. Alterações implementadas (7 arquivos)
+## 2. Alterações implementadas (7 arquivos de código + 2 novos)
 
 | # | Arquivo | Alteração | Destino |
 |---|---------|-----------|---------|
@@ -26,10 +27,12 @@
 | 4 | `frontend/src/app/blog/reputacao-online-clinicas/page.tsx` | Link contextual no artigo de clínicas | `/indice/rankings/ativos/clinicas` |
 | 5 | `frontend/src/app/blog/reputacao-franquias-multilocal/page.tsx` | Link contextual no artigo de franquias | `/indice/rankings/ativos/franquias` |
 | 6 | `frontend/src/app/blog/avaliacoes-google-restaurantes/page.tsx` | Link contextual no artigo de restaurantes | `/indice/rankings/ativos/restaurantes` |
-| 7 | `frontend/package.json` | Adicionado script `test:seo:p1-links` | — |
+| 7 | `frontend/package.json` | Scripts `test:seo:p1-links` e `test:p1-internal-links` | — |
 
-**Arquivo novo (não rastreado até o commit):**
+**Arquivos novos:**
 - `frontend/scripts/test-seo-p1-links.mjs` — suite de testes da rodada P1 (11 testes)
+- `frontend/scripts/test-p1-internal-links.mjs` (do remoto) — verificações P1-1 a P1-6
+- `docs/EXECUCAO_P1_FILTRAAI.md` — este documento
 
 **Preservação dos links do PR #199:** confirmada via teste (4 links mantidos):
 - `/blog/gestao-reputacao-online-guia` → `/blog/como-responder-avaliacoes-negativas`
@@ -47,7 +50,7 @@
 
 ## 3. Testes executados
 
-### `npm run test:seo:p1-links` (novo script)
+### `npm run test:seo:p1-links` (script local)
 
 ```
 ✔ SeoPageHeader contém link para /indice
@@ -65,6 +68,10 @@
 
 **Resultado:** 11/11 aprovados, 0 falhas.
 
+### `npm run test:p1-internal-links` (script do remoto)
+
+Adicionado ao `frontend/package.json`. Verificações para P1-1 a P1-6 e regressão dos quatro links do PR #199.
+
 ### ESLint (arquivos modificados)
 
 ```
@@ -75,7 +82,7 @@
 
 O Next.js build foi concluído com sucesso. Todas as 158 páginas estáticas foram geradas, o guardrail de idioma passou, e os 106 markdown twins foram gerados.
 
-**Observação (pré-existente, não causada por esta PR):** o passo `audit-meta-descriptions.mjs` reportou 5 falhas de "escopo não suportado" na homepage (`/`) e em `/turismo` (menções a "Monitore avaliações Google" e "melhore respostas"). Esses problemas são **pré-existentes** — confirmado via `git diff` que nenhum desses arquivos foi alterado nesta PR.
+**Observação (pré-existente, não causada por esta PR):** o passo `audit-meta-descriptions.mjs` reportou 5 falhas de "escopo não suportado" na homepage (`/`) e em `/turismo`. Esses problemas são **pré-existentes** — confirmado via `git diff` que nenhum desses arquivos foi alterado nesta PR.
 
 ## 4. Validação dos 4 destinos do Índice (produção)
 
@@ -86,7 +93,7 @@ O Next.js build foi concluído com sucesso. Todas as 158 páginas estáticas for
 | `https://filtraai.com/indice/sp/sao-paulo/restaurantes` | 200 | ~0.25s |
 | `https://filtraai.com/indice/rankings/ativos/restaurantes/rj` | 200 | ~0.2s |
 
-Todos os 4 destinos estão acessíveis em produção com HTTP 200.
+Todos os 4 destinos estão acessíveis em produção com HTTP 200, canonical correto e indexação permitida.
 
 ## 5. Deploy de preview Vercel
 
@@ -112,7 +119,7 @@ Todos os 4 destinos estão acessíveis em produção com HTTP 200.
 
 | Item | Status | Observação |
 |------|--------|------------|
-| SHA final do commit | pendente | Será preenchido após o commit |
+| SHA final do commit | pendente | Será preenchido após o commit e push |
 | Push para `origin` | pendente | Aguardando execução |
 | Preview Vercel | pendente | Depende do push |
 | Checks GitHub CI | pendente | Depende do push |
@@ -122,4 +129,3 @@ Todos os 4 destinos estão acessíveis em produção com HTTP 200.
 ---
 
 *Este documento será atualizado com o SHA final e o status dos checks após o commit e push.*
-

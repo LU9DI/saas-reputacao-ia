@@ -135,6 +135,7 @@ export default function BlogReputacaoOnlinePage() {
           <h2 className="text-lg font-semibold text-zinc-100">6. Reputação também é SEO local</h2>
           <p>Para negócios locais, avaliações fazem parte do conjunto de sinais que o consumidor encontra antes de visitar ou comprar. Site, presença local e reputação devem trabalhar juntos.</p>
           <p>Leia o guia sobre <Link href="/blog/seo-local-avaliacoes-local-pack" className="text-indigo-400 underline">SEO local e avaliações no Local Pack</Link> para conectar reputação à estratégia de busca local.</p>
+          <p>Para comparar a presença do setor por município, consulte o <Link href="/indice/rankings/ativos/restaurantes" className="text-indigo-400 underline">ranking nacional de restaurantes</Link> no Índice Filtra.AI.</p>
         </section>
 
         <section className="space-y-3">
