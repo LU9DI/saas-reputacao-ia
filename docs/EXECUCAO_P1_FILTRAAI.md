@@ -40,6 +40,6 @@
 ## Estado final
 
 - Alterações isoladas na branch `seo/p1-links-contextuais-2026-11-08`, baseada diretamente em `main`.
-- Seis commits na branch? Não: a branch contém commits individuais para os cinco arquivos alterados, correção do parágrafo do QR Code, adição do teste e comando de teste; conferir o HEAD atual no GitHub.
+- A branch está 9 commits à frente de `main`; contém alterações isoladas nos cinco arquivos de conteúdo, correção do parágrafo do QR Code, teste automatizado, comando de teste e este relatório.
 - **Nenhum PR foi aberto, nenhum merge foi feito e nenhum deploy de produção foi solicitado ou executado.**
 - `main` permanece intocada.
