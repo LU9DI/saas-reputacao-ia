@@ -51,9 +51,11 @@ export default function Page() {
       <H2>O que acontece depois do toque</H2>
       <p>
         Com o Filtra.AI, o cliente pode <Link href="/feedback-de-clientes" className="text-indigo-400 underline">registrar feedback</Link> próximo à experiência e receber um convite para
-        Para explorar o contexto do setor, veja também o <Link href="/indice/rankings/ativos/restaurantes" className="text-indigo-400 underline">ranking nacional de restaurantes</Link> por município.
         compartilhar uma avaliação genuína no Google. Quem preferir falar diretamente com a empresa também
         pode deixar feedback privado para acompanhamento.
+      </p>
+      <p>
+        Para explorar o contexto do setor, veja também o <Link href="/indice/rankings/ativos/restaurantes" className="text-indigo-400 underline">ranking nacional de restaurantes</Link> por município.
       </p>
       <H2>Piloto de 7 dias</H2>
       <p>
