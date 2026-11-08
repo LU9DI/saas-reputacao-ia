@@ -34,12 +34,13 @@
 - Adicionado `frontend/scripts/test-p1-internal-links.mjs`, com verificações para P1-1 a P1-6 e regressão dos quatro links do PR #199.
 - Adicionado comando `npm run test:seo:p1-links` em `frontend/package.json`.
 - Asserções estáticas equivalentes foram executadas contra os arquivos obtidos da branch: **10/10 verificações de links e preservação passaram**; as três rotas dinâmicas esperadas também foram encontradas na árvore do repositório.
-- **O script Node ainda não foi executado em ambiente com dependências do projeto.** O check Vercel reportado para o último commit está pendente; o check “Vercel Preview Comments” terminou com sucesso, mas não é resultado de build/testes.
-- A consulta HTTP automatizada aos três destinos profundos não pôde ser concluída nesta sessão; existência das rotas foi confirmada no código, mas status HTTP/canonical em produção permanecem pendentes.
+- **O script Node ainda não foi executado em ambiente local com dependências do projeto.** O status Vercel do commit mais recente foi consultado e retornou `success`; o deployment associado foi confirmado como `READY` para o SHA `56b8cc738cb5e8477f2aff5479da75cafa25dd0b` na branch desta tarefa. Os logs detalhados de build não puderam ser consultados por falta de autorização de escopo no Vercel.
+- O preview do Vercel serviu a home e os artigos alterados com os novos links no HTML. O caminho `/indice` e seus subcaminhos retornaram 404 nesse host de preview; portanto, o preview do frontend não foi usado como evidência de disponibilidade do app do Índice.
+- **Validação em produção concluída para os quatro destinos P1:** `https://filtraai.com/indice`, `/indice/rankings/ativos/restaurantes`, `/indice/sp/sao-paulo/restaurantes` e `/indice/rankings/ativos/restaurantes/rj` retornaram conteúdo, com canonical correspondente à URL solicitada e diretiva `robots: index, follow`. Isso confirma que os destinos existem e estão acessíveis em produção; não significa que as novas ligações já estejam publicadas em produção, pois a branch não foi mesclada.
 
 ## Estado final
 
 - Alterações isoladas na branch `seo/p1-links-contextuais-2026-11-08`, baseada diretamente em `main`.
-- A branch está 9 commits à frente de `main`; contém alterações isoladas nos cinco arquivos de conteúdo, correção do parágrafo do QR Code, teste automatizado, comando de teste e este relatório.
+- Na verificação de 2026-11-08, antes da atualização deste relatório, a branch estava 10 commits à frente de `main` e zero atrás.
 - **Nenhum PR foi aberto, nenhum merge foi feito e nenhum deploy de produção foi solicitado ou executado.**
 - `main` permanece intocada.
