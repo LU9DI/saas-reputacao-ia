@@ -41,6 +41,7 @@
 ## Estado final
 
 - Alterações isoladas na branch `seo/p1-links-contextuais-2026-11-08`, baseada diretamente em `main`.
-- Na verificação de 2026-11-08, antes da atualização deste relatório, a branch estava 10 commits à frente de `main` e zero atrás.
-- **Nenhum PR foi aberto, nenhum merge foi feito e nenhum deploy de produção foi solicitado ou executado.**
+- A branch está 12 commits à frente de `main` e zero atrás; HEAD `a3a532289b807016210f29e1c4e44768dba76189`.
+- PR de revisão #201 aberto em rascunho: https://github.com/LU9DI/saas-reputacao-ia/pull/201. O rascunho deixa explícitos os testes pendentes.
+- **Nenhum merge foi feito e nenhum deploy de produção foi solicitado ou executado.**
 - `main` permanece intocada.
