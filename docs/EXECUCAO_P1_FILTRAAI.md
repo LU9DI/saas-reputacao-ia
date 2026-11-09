@@ -35,7 +35,7 @@ implementação `b506b5a3`.
 | 2 | `frontend/src/app/preview/page.tsx` | Link no header da home + card em `seo.links` (PT/EN/ES/ZH) + link de rankings ativos | `/indice`, `/indice/rankings/ativos`, `/indice/rankings/ativos/restaurantes` |
 | 3 | `frontend/src/app/blog/reputacao-online-hoteis/page.tsx` | Link contextual | `/indice/rankings/ativos/hoteis` |
 | 4 | `frontend/src/app/blog/reputacao-online-clinicas/page.tsx` | Link contextual | `/indice/rankings/ativos/clinicas` |
-| 5 | `frontend/src/app/blog/reputacao-franquias-multilocal/page.tsx` | Link contextual | `/indice/rankings/ativos/franquias` |
+| 5 | `frontend/src/app/blog/reputacao-franquias-multilocal/page.tsx` | Link contextual para o Índice geral (não há ranking de franquias) | `/indice` |
 | 6 | `frontend/src/app/blog/avaliacoes-google-restaurantes/page.tsx` | Link contextual | `/indice/rankings/ativos/restaurantes` |
 | 7 | `frontend/src/app/blog/gestao-reputacao-online-guia/page.tsx` | Link contextual (preserva PR #199) | `/indice/rankings/ativos/restaurantes` |
 | 8 | `frontend/src/app/blog/qr-code-balcao-reviews/page.tsx` | Link contextual (preserva PR #199) | `/indice/rankings/ativos/restaurantes` |
@@ -46,7 +46,7 @@ implementação `b506b5a3`.
 
 - `frontend/scripts/test-seo-p1-links.mjs` — 12 testes (7 originais + destinos
   ampliados + validação de rota do app do Índice).
-- `frontend/scripts/test-p1-internal-links.mjs` — 7 testes (P1-1 a P1-6 e
+- `frontend/scripts/test-p1-internal-links.mjs` — 8 testes (P1-1 a P1-6 e
   regressão do PR #199).
 - `frontend/scripts/validate-seo.mjs` — correção do guardrail que reprovava o
   CI (ver seção 3).
@@ -114,14 +114,17 @@ Não executados nesta rodada (cobertos pelo CI do PR): export estático
 `CLOUDFLARE_PAGES=1`, `seo:audit`, `seo:markdown:validate` e os jobs de
 backend/Índice — todos com resultado **pass** no HEAD `b506b5a3`.
 
-## 5. Validação dos 4 destinos (produção)
+## 5. Validação dos 7 destinos válidos (produção)
 
 Consultados via HTTP em 09/11/2026 (sem seguir redirect; `canonical` e `robots`
 extraídos do HTML servido):
 
 | URL | HTTP | canonical | robots | title |
 |-----|------|-----------|--------|-------|
-| `https://filtraai.com/indice` | 200 | `https://filtraai.com/indice` | `index, follow` | Índice Filtra.AI: estabelecimentos ativos por município |
+| `https://filtraai.com/indice` | 200 | autorreferente | `index, follow` | Índice Filtra.AI: estabelecimentos ativos por município |
+| `https://filtraai.com/indice/rankings/ativos` | 200 | autorreferente | `index, follow` | Rankings de estabelecimentos ativos por segmento e estado |
+| `https://filtraai.com/indice/rankings/ativos/hoteis` | 200 | autorreferente | `index, follow` | Ranking de hotéis no Brasil: outubro de 2026 |
+| `https://filtraai.com/indice/rankings/ativos/clinicas` | 200 | autorreferente | `index, follow` | Ranking de clínicas no Brasil: outubro de 2026 |
 | `https://filtraai.com/indice/rankings/ativos/restaurantes` | 200 | autorreferente | `index, follow` | Ranking de restaurantes e bares no Brasil: outubro de 2026 |
 | `https://filtraai.com/indice/sp/sao-paulo/restaurantes` | 200 | autorreferente | `index, follow` | Restaurantes e bares em São Paulo (SP): 79.301 ativos |
 | `https://filtraai.com/indice/rankings/ativos/restaurantes/rj` | 200 | autorreferente | `index, follow` | Ranking de restaurantes e bares no Rio de Janeiro |
@@ -142,7 +145,7 @@ HTML renderizado no preview de `b506b5a3` (SSR, HTTP 200 em todas as páginas):
 | `/` | `/indice`, `/indice/rankings/ativos`, `/indice/rankings/ativos/restaurantes`, `/indice/us` |
 | `/blog/reputacao-online-hoteis` | `…/ativos/hoteis` (+ header/footer `/indice`, `/indice/us`, `/indice/metodologia`) |
 | `/blog/reputacao-online-clinicas` | `…/ativos/clinicas` |
-| `/blog/reputacao-franquias-multilocal` | `…/ativos/franquias` |
+| `/blog/reputacao-franquias-multilocal` | `/indice` (Índice geral; não existe ranking de franquias) |
 | `/blog/avaliacoes-google-restaurantes` | `…/ativos/restaurantes` |
 | `/blog/gestao-reputacao-online-guia` | `…/ativos/restaurantes` |
 | `/blog/qr-code-balcao-reviews` | `…/ativos/restaurantes` |
@@ -188,6 +191,19 @@ Todos os 13 checks do PR #201 em `success`:
 |------|--------|
 | Merge do PR #201 | **não realizado** (fora do escopo; aguarda revisão humana) |
 | Publicação em produção | **não realizada** — nenhum deploy manual, nenhuma URL submetida a indexação |
-| Revalidação pós-merge | após o merge, conferir `https://filtraai.com/` e os 4 artigos em produção para confirmar a presença dos links no HTML servido |
+| Revalidação pós-merge | após o merge, conferir `https://filtraai.com/` e os 8 artigos em produção para confirmar a presença dos links no HTML servido |
 | `/indice` no domínio de preview | 404 esperado (app separado); documentado na seção 6 |
 | Warnings de lint | 108 pré-existentes, nenhum introduzido por esta PR |
+
+
+## 10. Revisão técnica independente — correção adicional
+
+Na revisão independente posterior à validação inicial, foi feita uma consulta HTTP direta a todos os destinos usados pelos links contextuais. O endereço `/indice/rankings/ativos/franquias`, usado no artigo `reputacao-franquias-multilocal`, retornou **404**. A árvore de rotas do app permitia a correspondência sintática, mas isso não garantia que existisse uma página publicada para esse segmento.
+
+**Correção aplicada no branch:** o artigo de franquias agora aponta para `/indice`, com texto-âncora que convida o leitor a explorar os segmentos e dados efetivamente disponíveis, sem afirmar que existe ranking de franquias.
+
+**Regressão coberta:** os testes `test-p1-internal-links.mjs` e `test-seo-p1-links.mjs` agora exigem o destino geral `/indice` e rejeitam explicitamente o antigo caminho inexistente. O conjunto `test-p1-internal-links.mjs` passa a ter 8 testes; o teste de SEO mantém o mesmo número de casos, com a asserção de franquias corrigida.
+
+**Revalidação de produção:** os 7 destinos finais listados na seção 5 foram consultados novamente em 09/11/2026. Todos responderam sem erro, com canonical autorreferente e `robots: index, follow`. O caminho antigo de franquias foi excluído dos links.
+
+**Status desta correção:** o código e os testes foram atualizados diretamente na branch do PR. A execução dos testes e dos checks do GitHub para o novo HEAD precisa terminar antes de considerar esta correção aprovada. Não houve merge nem publicação de produção.
