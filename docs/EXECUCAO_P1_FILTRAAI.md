@@ -235,4 +235,8 @@ A revisão do PR identificou que `infra/cloudflare/worker.js`, em `decorate()`, 
 - Adicionado teste em `backend/tests/worker.failover.test.ts` que percorre o Worker para `/` e `/preview` e verifica a preservação de três formas de link: `/indice`, `/indice/rankings/ativos` e `https://filtraai.com/indice`.
 - O arquivo faz parte do conjunto executado por `backend/scripts/dsv4-test-gate.mjs`, já chamado pelo job Backend do CI.
 
-**Validação pendente neste registro:** aguardar CI no novo HEAD e confirmar o HTML público da home através do Worker Cloudflare real. A execução de teste via Worker simulado não substitui a verificação de produção. Não houve deploy nem alteração de configuração/rotas Cloudflare.
+**CI do HEAD `1b41dd4ada8c0dd2913b5eb3a53773396668bb1c`:** workflow `CI` e `Dependency audit` concluídos com sucesso; 12/12 check-runs concluídos com sucesso. O job `Backend (test + typecheck)` passou, incluindo o `dsv4-test-gate.mjs` que executa `worker.failover.test.ts`; frontend estático, build Vercel, SEO, Índice, auditorias e CI summary também passaram.
+
+**Verificação pública antes da publicação:** a captura HTTP de `https://filtraai.com/` confirmou a falha atual: o HTML não contém a âncora raiz `/indice` (nem o texto `Índice de empresas`), embora os links descendentes `/indice/rankings/ativos` e `/indice/us` permaneçam. Isso é consistente com a regra antiga removida nesta branch.
+
+**Ainda pendente:** a correção do Worker precisa ser publicada no Cloudflare após aprovação/merge e, então, o HTML da home deve ser consultado novamente para confirmar a âncora `/indice`. A simulação do Worker e CI verde não substituem esse teste pós-deploy. Não houve deploy nem merge nesta etapa.
