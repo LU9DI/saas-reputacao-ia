@@ -103,7 +103,7 @@ Todas as execuções locais ocorreram em Node.js `v26.7.0` / npm `11.19.0`
 | Comando | Resultado |
 |---------|-----------|
 | `npm run test:seo:p1-links` (frontend) | **12/12 pass**, 0 fail (13,0s) |
-| `npm run test:p1-internal-links` (frontend) | **7/7 pass**, 0 fail |
+| `npm run test:p1-internal-links` (frontend) | **8/8 pass**, 0 fail |
 | `npm run test:analytics` (frontend) | **13/13 pass**, 0 fail |
 | `npm run seo:validate` (frontend) | **pass** — 21 canonical paths, 28 hreflang families, 135 sitemap path literals |
 | `node spec-kit/audit-seo-brand.mjs` (raiz) | **pass** — nenhuma linguagem proibida |
