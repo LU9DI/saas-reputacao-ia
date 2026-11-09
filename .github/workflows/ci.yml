@@ -130,6 +130,11 @@ jobs:
       - name: GA4 analytics policy tests
         run: npm run test:analytics
 
+      - name: P1 contextual internal-link regression tests
+        run: |
+          npm run test:seo:p1-links
+          npm run test:p1-internal-links
+
       - name: Typecheck
         run: npx tsc --noEmit
 
