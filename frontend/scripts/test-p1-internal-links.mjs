@@ -11,6 +11,7 @@ const guide = read('src/app/blog/gestao-reputacao-online-guia/page.tsx');
 const localSeo = read('src/app/blog/seo-local-avaliacoes-local-pack/page.tsx');
 const qr = read('src/app/blog/qr-code-balcao-reviews/page.tsx');
 const negative = read('src/app/blog/como-responder-avaliacoes-negativas/page.tsx');
+const franchises = read('src/app/blog/reputacao-franquias-multilocal/page.tsx');
 const oneStar = read('src/app/blog/review-1-estrela-primeiras-24-horas/page.tsx');
 
 test('homepage navigation exposes the Filtra.AI Index', () => {
@@ -32,6 +33,11 @@ test('local SEO guide links to the São Paulo restaurant cell', () => {
 test('QR Code guide preserves the feedback link and adds the national ranking', () => {
   assert.match(qr, /href="\/feedback-de-clientes"[^>]*>registrar feedback<\/Link>/);
   assert.match(qr, /href="\/indice\/rankings\/ativos\/restaurantes"[^>]*>ranking nacional de restaurantes<\/Link>/);
+});
+
+test('franchise guide links to the general Index, without claiming a nonexistent ranking', () => {
+  assert.match(franchises, /href="\\/indice"[^>]*>Índice Filtra\\.AI<\\/Link>/);
+  assert.doesNotMatch(franchises, /href="\\/indice\\/rankings\\/ativos\\/franquias"/);
 });
 
 test('negative-review guide links to the Rio de Janeiro state ranking', () => {
