@@ -15,10 +15,11 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = join(process.cwd(), 'src', 'app');
+const INDICE_APP = join(process.cwd(), '..', 'indice', 'src', 'app');
 
 function read(rel) {
   return readFileSync(join(ROOT, rel), 'utf8');
@@ -157,6 +158,19 @@ test('Ausência de links para páginas noindex/de teste', () => {
   }
 });
 
+const CHANGED_FILES = [
+  'components/SeoPageHeader.tsx',
+  'preview/page.tsx',
+  'blog/reputacao-online-hoteis/page.tsx',
+  'blog/reputacao-online-clinicas/page.tsx',
+  'blog/reputacao-franquias-multilocal/page.tsx',
+  'blog/avaliacoes-google-restaurantes/page.tsx',
+  'blog/gestao-reputacao-online-guia/page.tsx',
+  'blog/seo-local-avaliacoes-local-pack/page.tsx',
+  'blog/qr-code-balcao-reviews/page.tsx',
+  'blog/como-responder-avaliacoes-negativas/page.tsx',
+];
+
 test('Destinos /indice existem nos hrefs dos arquivos alterados', () => {
   const expected = [
     '/indice',
@@ -165,27 +179,57 @@ test('Destinos /indice existem nos hrefs dos arquivos alterados', () => {
     '/indice/rankings/ativos/clinicas',
     '/indice/rankings/ativos/franquias',
     '/indice/rankings/ativos/restaurantes',
+    '/indice/sp/sao-paulo/restaurantes',
+    '/indice/rankings/ativos/restaurantes/rj',
   ];
   let total = 0;
   for (const dest of expected) {
-    let found = false;
-    for (const file of [
-      'components/SeoPageHeader.tsx',
-      'preview/page.tsx',
-      'blog/reputacao-online-hoteis/page.tsx',
-      'blog/reputacao-online-clinicas/page.tsx',
-      'blog/reputacao-franquias-multilocal/page.tsx',
-      'blog/avaliacoes-google-restaurantes/page.tsx',
-    ]) {
-      if (read(file).includes(`href="${dest}"`)) {
-        found = true;
-        break;
-      }
-    }
-    assert.ok(found, `destino ${dest} deve aparecer em algum arquivo alterado`);
+    const sources = CHANGED_FILES.filter((file) => read(file).includes(`href="${dest}"`));
+    assert.ok(sources.length > 0, `destino ${dest} deve aparecer em algum arquivo alterado`);
     total++;
   }
-  assert.strictEqual(total, expected.length, 'todos os 6 destinos /indice devem estar presentes');
+  assert.strictEqual(total, expected.length, `todos os ${expected.length} destinos /indice devem estar presentes`);
+});
+
+/**
+ * O Índice é um app Next separado (indice/) servido em filtraai.com/indice.
+ * Aqui os hrefs /indice/* são confrontados com a árvore de rotas desse app,
+ * para que um link contextual não aponte para uma rota inexistente.
+ */
+function collectIndiceRoutePatterns(directory = INDICE_APP, prefix = []) {
+  const patterns = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      const isGroup = entry.name.startsWith('(') && entry.name.endsWith(')');
+      patterns.push(...collectIndiceRoutePatterns(fullPath, isGroup ? prefix : [...prefix, entry.name]));
+    } else if (entry.isFile() && entry.name === 'page.tsx') {
+      patterns.push(prefix);
+    }
+  }
+  return patterns;
+}
+
+function matchesIndicePattern(pattern, segments) {
+  if (pattern.length === 0) return segments.length === 0;
+  const [head, ...rest] = pattern;
+  if (/^\[\[\.\.\..+\]\]$/.test(head)) return rest.length === 0;
+  if (/^\[\.\.\..+\]$/.test(head)) return rest.length === 0 && segments.length >= 1;
+  if (segments.length === 0) return false;
+  if (/^\[.+\]$/.test(head)) return matchesIndicePattern(rest, segments.slice(1));
+  return head === segments[0] && matchesIndicePattern(rest, segments.slice(1));
+}
+
+test('Todo href /indice dos arquivos alterados resolve para uma rota do app do Índice', () => {
+  const patterns = collectIndiceRoutePatterns();
+  assert.ok(patterns.length > 0, 'app do Índice deve expor rotas em indice/src/app');
+  for (const file of CHANGED_FILES) {
+    for (const [, href] of read(file).matchAll(/href="(\/indice(?:\/[^"]*)?)"/g)) {
+      const segments = href.split('/').filter(Boolean).slice(1);
+      const matched = patterns.some((pattern) => matchesIndicePattern(pattern, segments));
+      assert.ok(matched, `${file}: ${href} não corresponde a nenhuma rota do app do Índice`);
+    }
+  }
 });
 
 test('Hreflang/idioma não afetado (sem novos links /zh/)', () => {
