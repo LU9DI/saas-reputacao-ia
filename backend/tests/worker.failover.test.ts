@@ -192,3 +192,45 @@ test('Cloudflare worker verifies spend webhook and switches to fallback', async 
   assert.equal(duplicate.status, 200);
   assert.match(await duplicate.text(), /duplicate/);
 });
+
+test('home and preview preserve internal Index anchors after Worker decoration', async () => {
+  const kv = new FakeKV();
+  const cache = new FakeCache();
+  installCaches(cache);
+
+  const html = `<!doctype html><html><body>
+    <a href="/indice">Índice de empresas</a>
+    <a href="/indice/rankings/ativos">Ranking nacional</a>
+    <a href="https://filtraai.com/indice">Índice absoluto</a>
+  </body></html>`;
+
+  const original = globalThis.fetch;
+  globalThis.fetch = async (input: RequestInfo | URL) => {
+    const url = String(input instanceof Request ? input.url : input);
+    const response = new Response(html, {
+      status: 200,
+      headers: { 'content-type': 'text/html; charset=utf-8' },
+    });
+    Object.defineProperty(response, 'url', { value: url });
+    return response;
+  };
+
+  try {
+    for (const path of ['/', '/preview']) {
+      const response = await worker.fetch(request(path), {
+        FAILOVER_ORIGIN: kv,
+        FALLBACK_ORIGIN: 'https://runtime.example.com',
+        PRIMARY_ORIGIN: 'https://primary.example.com',
+        RECOVERY_PROBE_INTERVAL_MS: '300000',
+      } as any);
+
+      assert.equal(response.status, 200);
+      const body = await response.text();
+      assert.match(body, /href="\/indice"/, `${path} must preserve the root Index link`);
+      assert.match(body, /href="\/indice\/rankings\/ativos"/, `${path} must preserve the Index ranking link`);
+      assert.match(body, /href="https:\/\/filtraai\.com\/indice"/, `${path} must preserve the absolute Index link`);
+    }
+  } finally {
+    globalThis.fetch = original;
+  }
+});
