@@ -3,6 +3,7 @@
 **PR:** #201 — `seo/p1-links-contextuais-2026-11-08`
 **Repositório:** `LU9DI/saas-reputacao-ia`
 **SHA de implementação validado:** `b506b5a36f8e5ad7778098142c5a426f3f0a3370`
+**Correções posteriores no branch:** `cccc213f` (destino de franquias), `83b44a60` (testes P1 no CI), `5973df8d` (Worker Cloudflare), `a7c86cb3` (teste de regressão do Worker)
 **Base:** `origin/main` = `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200)
 **Atualizado em:** 09/11/2026
 
@@ -44,8 +45,8 @@ implementação `b506b5a3`.
 
 **Testes e scripts:**
 
-- `frontend/scripts/test-seo-p1-links.mjs` — 12 testes (7 originais + destinos
-  ampliados + validação de rota do app do Índice).
+- `frontend/scripts/test-seo-p1-links.mjs` — 13 testes (destinos, rotas do app do
+  Índice e segmentos existentes no snapshot).
 - `frontend/scripts/test-p1-internal-links.mjs` — 8 testes (P1-1 a P1-6 e
   regressão do PR #199).
 - `frontend/scripts/validate-seo.mjs` — correção do guardrail que reprovava o
@@ -102,7 +103,7 @@ Todas as execuções locais ocorreram em Node.js `v26.7.0` / npm `11.19.0`
 
 | Comando | Resultado |
 |---------|-----------|
-| `npm run test:seo:p1-links` (frontend) | **12/12 pass**, 0 fail (13,0s) |
+| `npm run test:seo:p1-links` (frontend) | **13/13 pass**, 0 fail |
 | `npm run test:p1-internal-links` (frontend) | **8/8 pass**, 0 fail |
 | `npm run test:analytics` (frontend) | **13/13 pass**, 0 fail |
 | `npm run seo:validate` (frontend) | **pass** — 21 canonical paths, 28 hreflang families, 135 sitemap path literals |
@@ -240,3 +241,116 @@ A revisão do PR identificou que `infra/cloudflare/worker.js`, em `decorate()`, 
 **Verificação pública antes da publicação:** a captura HTTP de `https://filtraai.com/` confirmou a falha atual: o HTML não contém a âncora raiz `/indice` (nem o texto `Índice de empresas`), embora os links descendentes `/indice/rankings/ativos` e `/indice/us` permaneçam. Isso é consistente com a regra antiga removida nesta branch.
 
 **Ainda pendente:** a correção do Worker precisa ser publicada no Cloudflare após aprovação/merge e, então, o HTML da home deve ser consultado novamente para confirmar a âncora `/indice`. A simulação do Worker e CI verde não substituem esse teste pós-deploy. Não houve deploy nem merge nesta etapa.
+
+
+## 13. Rodada de finalização da revisão (09/11/2026)
+
+Esta rodada revisou o diff completo do branch, reexecutou os gates e produziu as
+evidências abaixo. Nenhum merge, force-push ou publicação foi realizado.
+
+### 13.1 Diff do Worker revisado
+
+`git show 5973df8d` altera **uma única linha** em `infra/cloudflare/worker.js`:
+remove a substituição por regex em `decorate()` que apagava âncoras cujo href era
+exatamente `/indice` (relativo ou absoluto) nas rotas `/` e `/preview`.
+
+Nenhuma outra regra foi tocada: o restante de `decorate()` continua apenas
+acrescentando `x-filtra-failover-origin` e, quando o HTML é reprocessado, removendo
+`content-length`, `content-encoding` e `etag`. Failover, webhook, cache,
+`readState`/`writeState`, `publicPath`, `fetchPrimary`/`fetchFallback` e os headers
+de segurança permanecem idênticos ao commit anterior (`git diff 5973df8d^ 5973df8d`
+= 1 remoção, 0 adições).
+
+### 13.2 Testes do Worker e detecção real da regressão
+
+- `node --test backend/tests/worker.failover.test.ts` (Node 26 com type stripping;
+  o CI usa `tsx` via `dsv4-test-gate.mjs`): **5/5 pass**, incluindo
+  `home and preview preserve internal Index anchors after Worker decoration`.
+- **Prova de detecção:** com `git show 5973df8d^:infra/cloudflare/worker.js`
+  restaurado temporariamente (regex antiga de volta), o mesmo arquivo de teste
+  falhou: `AssertionError: / must preserve the root Index link` — 4/5 pass, 1 fail.
+  O Worker corrigido foi restaurado em seguida (`git checkout --` do próprio
+  arquivo, working tree limpo).
+
+### 13.3 Gates reexecutados
+
+| Comando | Resultado |
+|---------|-----------|
+| `npm run test:seo:p1-links` (frontend) | **13/13 pass**, 0 fail |
+| `npm run test:p1-internal-links` (frontend) | **8/8 pass**, 0 fail |
+| `npm run test:analytics` (frontend) | **13/13 pass**, 0 fail |
+| `npm run seo:validate` (frontend) | **pass** — 21 canonical paths, 28 hreflang families, 135 sitemap paths |
+| `node spec-kit/audit-seo-brand.mjs` | **pass** |
+| `node node_modules/eslint/bin/eslint.js scripts/test-seo-p1-links.mjs` | **0 erros, 0 warnings** |
+| `node --test backend/tests/worker.failover.test.ts` | **5/5 pass** |
+
+O build de produção e o export estático não foram reexecutados localmente nesta
+rodada: o único arquivo alterado é um script de teste `.mjs`, e o CI do HEAD
+`c6578030` (que inclui `npm run build`, `Frontend (static export)` e
+`Frontend (Vercel build)`) concluiu com sucesso.
+
+### 13.4 Novo guardrail de segmento (anti-404)
+
+O caso de franquias mostrou que a forma da rota (`[segmento]`) não garante página
+publicada. `test-seo-p1-links.mjs` agora cruza todo href
+`/indice/rankings/ativos/<segmento>` dos arquivos alterados com
+`frontend/src/generated/indice-snapshot.json` (fonte: `indice/data`) e falha se o
+segmento não existir. Verificado nos dois sentidos:
+
+- com o conteúdo atual: **pass**;
+- reintroduzindo `/indice/rankings/ativos/franquias` no artigo: **fail**
+  (`usa segmento sem página publicada no Índice`), além do teste de franquias
+  também falhar. Conteúdo revertido em seguida.
+
+### 13.5 HTML público: origem vs. Worker publicado
+
+| Origem consultada | `href="/indice"` (raiz) | `/indice/rankings/ativos` | `/indice/us` |
+|---|---|---|---|
+| `https://filtraai.com/` (via Cloudflare, `x-filtra-failover-origin: render-frontend-runtime`) | **0** | 1 | 1 |
+| Deployment Vercel de `main` `9be7edab` (mesmo app, sem o Worker) `https://saas-reputacao-br8bhhpi2-lu9di.vercel.app/` | **1** | 1 | 1 |
+
+O HTML de origem contém a âncora raiz e o HTML servido em produção não — o padrão
+exato da regex removida. Isso confirma que **o Worker publicado em produção ainda
+executa a regra destrutiva**; a correção só passa a valer depois de publicar o
+Worker.
+
+Limitação registrada: não foi possível inspecionar a versão publicada do Worker
+por `wrangler` (a execução via `npx wrangler` não completou no ambiente local).
+A conclusão acima vem do comportamento observado no HTML de produção comparado ao
+HTML de origem, não de uma leitura direta do código publicado.
+
+### 13.6 Preview do HEAD atual
+
+Preview do HEAD `c6578030` (`https://saas-reputacao-kr02ozfvs-lu9di.vercel.app`,
+sem autenticação), HTML SSR obtido por HTTP:
+
+| Página | HTTP | hrefs `/indice` |
+|---|---|---|
+| `/` | 200 | `/indice` (×2, header + footer), `/indice/rankings/ativos` (×2), `/indice/rankings/ativos/restaurantes`, `/indice/us` |
+| `/preview` | 200 | `/indice`, `/indice/rankings/ativos`, `/indice/rankings/ativos/restaurantes`, `/indice/us` |
+| `/blog/reputacao-online-hoteis` | 200 | `/indice`, `/indice/rankings/ativos/hoteis`, `/indice/metodologia`, `/indice/rankings/ativos`, `/indice/us` |
+| `/blog/reputacao-franquias-multilocal` | 200 | `/indice` apenas (âncora `Índice Filtra.AI`), sem ranking de franquias |
+
+O preview não passa pelo Worker de failover, portanto representa o HTML de origem
+do branch — com a âncora raiz preservada.
+
+### 13.7 Destinos do Índice (produção, 09/11/2026)
+
+Sete destinos usados pelos links contextuais: todos **200**, canonical
+autorreferente e `robots: index, follow` (`/indice`, `/indice/rankings/ativos`,
+`/indice/rankings/ativos/hoteis`, `/indice/rankings/ativos/clinicas`,
+`/indice/rankings/ativos/restaurantes`, `/indice/sp/sao-paulo/restaurantes`,
+`/indice/rankings/ativos/restaurantes/rj`). O caminho antigo
+`/indice/rankings/ativos/franquias` responde **404** com `robots: noindex`,
+confirmando que sua remoção dos links foi correta.
+
+### 13.8 O que ainda impede a publicação
+
+1. **Aprovação independente:** o PR não tem revisão aprovada; o autor não pode
+   aprovar a própria mudança.
+2. **Publicação do Worker:** o Worker publicado (`filtra-ai-failover`, rota
+   `filtraai.com/*`) só pode ser atualizado após merge e autorização explícita.
+   Enquanto isso, o link do header da home continuará sendo removido em produção.
+3. **Revalidação pós-deploy:** depois de publicar, é obrigatório consultar
+   `https://filtraai.com/` e confirmar `href="/indice"` no HTML servido. Testes
+   locais e CI verde não substituem essa verificação.
