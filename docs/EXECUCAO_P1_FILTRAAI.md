@@ -206,4 +206,20 @@ Na revisão independente posterior à validação inicial, foi feita uma consult
 
 **Revalidação de produção:** os 7 destinos finais listados na seção 5 foram consultados novamente em 09/11/2026. Todos responderam sem erro, com canonical autorreferente e `robots: index, follow`. O caminho antigo de franquias foi excluído dos links.
 
-**Status desta correção:** o código e os testes foram atualizados diretamente na branch do PR. A execução dos testes e dos checks do GitHub para o novo HEAD precisa terminar antes de considerar esta correção aprovada. Não houve merge nem publicação de produção.
+**Status desta correção:** o código, os testes e o workflow foram atualizados diretamente na branch do PR. A execução final de CI foi concluída com sucesso no HEAD `83b44a6059f997401c9eb3dafb03c32cc3bdb32d`. Não houve merge nem publicação de produção.
+
+
+## 11. CI final após a correção de franquias
+
+**HEAD de código + workflow:** `83b44a6059f997401c9eb3dafb03c32cc3bdb32d`
+
+- O job `Frontend (static export)` executou os dois comandos de regressão P1 adicionados ao workflow:
+  - `npm run test:seo:p1-links` — concluído com sucesso.
+  - `npm run test:p1-internal-links` — concluído com sucesso.
+- `Frontend (static export)`, `Frontend (Vercel build)`, `SEO + brand guardrail`, `Backend (test + typecheck)`, `Índice (tests + typecheck + build)`, `Cloudflare Índice sitemap resilience`, `CI summary` e os quatro jobs de audit: **success**.
+- Workflow `CI`: **success**.
+- Workflow `Dependency audit`: **success**.
+- Preview Vercel: `Vercel Preview Comments` **success**.
+- Nenhum check do GitHub falhou ou ficou pendente no HEAD acima.
+
+**Pendência externa:** não há revisão humana registrada no PR. A revisão automática do Codex também não foi concluída porque o limite de uso para code reviews foi atingido. O PR permanece aberto, fora de draft e mergeable; o merge continua aguardando revisão humana.
