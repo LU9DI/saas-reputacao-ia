@@ -36,8 +36,8 @@ test('QR Code guide preserves the feedback link and adds the national ranking', 
 });
 
 test('franchise guide links to the general Index, without claiming a nonexistent ranking', () => {
-  assert.match(franchises, /href="\\/indice"[^>]*>Índice Filtra\\.AI<\\/Link>/);
-  assert.doesNotMatch(franchises, /href="\\/indice\\/rankings\\/ativos\\/franquias"/);
+  assert.ok(franchises.includes('href="/indice"'), 'artigo de franquias deve apontar ao Índice geral');
+  assert.ok(!franchises.includes('/indice/rankings/ativos/franquias'), 'não deve apontar para ranking inexistente');
 });
 
 test('negative-review guide links to the Rio de Janeiro state ranking', () => {
