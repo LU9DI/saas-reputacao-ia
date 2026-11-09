@@ -68,15 +68,15 @@ test('Artigo clinicas contém link para /indice/rankings/ativos/clinicas', () =>
   );
 });
 
-test('Artigo franquias contém link para /indice/rankings/ativos/franquias', () => {
+test('Artigo franquias direciona ao Índice geral, sem prometer ranking inexistente', () => {
   const content = read('blog/reputacao-franquias-multilocal/page.tsx');
   assert.ok(
-    content.includes('href="/indice/rankings/ativos/franquias"'),
-    'artigo franquias deve linkar rankings/ativos/franquias'
+    content.includes('href="/indice"'),
+    'artigo franquias deve direcionar ao Índice geral'
   );
   assert.ok(
-    content.includes('ranking nacional de franquias no Índice Filtra.AI'),
-    'artigo franquias deve conter âncora de ranking de franquias'
+    content.includes('Índice Filtra.AI'),
+    'artigo franquias deve identificar o Índice geral como destino'
   );
 });
 
@@ -177,7 +177,6 @@ test('Destinos /indice existem nos hrefs dos arquivos alterados', () => {
     '/indice/rankings/ativos',
     '/indice/rankings/ativos/hoteis',
     '/indice/rankings/ativos/clinicas',
-    '/indice/rankings/ativos/franquias',
     '/indice/rankings/ativos/restaurantes',
     '/indice/sp/sao-paulo/restaurantes',
     '/indice/rankings/ativos/restaurantes/rj',
