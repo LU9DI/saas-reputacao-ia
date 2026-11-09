@@ -223,3 +223,16 @@ Na revisão independente posterior à validação inicial, foi feita uma consult
 - Nenhum check do GitHub falhou ou ficou pendente no HEAD acima.
 
 **Pendência externa:** não há revisão humana registrada no PR. A revisão automática do Codex também não foi concluída porque o limite de uso para code reviews foi atingido. O PR permanece aberto, fora de draft e mergeable; o merge continua aguardando revisão humana.
+
+
+## 12. Revisão final do Worker Cloudflare — correção P1
+
+A revisão do PR identificou que `infra/cloudflare/worker.js`, em `decorate()`, removia do HTML das rotas `/` e `/preview` âncoras cujo href era exatamente `/indice` (com ou sem domínio absoluto `filtraai.com`). Essa regra eliminava o novo link do header da home. Ela não removia os links descendentes como `/indice/rankings/ativos`; a descrição inicial do achado foi refinada após inspeção da expressão regular.
+
+**Correção aplicada na branch:**
+- Removida a transformação que apagava âncoras legítimas para `/indice`.
+- Mantida a decoração dos headers e a limpeza de metadados de cache quando o HTML é reescrito (sem reescrita de conteúdo).
+- Adicionado teste em `backend/tests/worker.failover.test.ts` que percorre o Worker para `/` e `/preview` e verifica a preservação de três formas de link: `/indice`, `/indice/rankings/ativos` e `https://filtraai.com/indice`.
+- O arquivo faz parte do conjunto executado por `backend/scripts/dsv4-test-gate.mjs`, já chamado pelo job Backend do CI.
+
+**Validação pendente neste registro:** aguardar CI no novo HEAD e confirmar o HTML público da home através do Worker Cloudflare real. A execução de teste via Worker simulado não substitui a verificação de produção. Não houve deploy nem alteração de configuração/rotas Cloudflare.
