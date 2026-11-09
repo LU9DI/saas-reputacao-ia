@@ -219,6 +219,26 @@ function matchesIndicePattern(pattern, segments) {
   return head === segments[0] && matchesIndicePattern(rest, segments.slice(1));
 }
 
+/**
+ * A árvore de rotas aceita qualquer `[segmento]`, mas só existem páginas para os
+ * segmentos presentes no snapshot do Índice (fonte: indice/data). Este teste evita
+ * links contextuais para rankings que respondem 404 — caso do antigo
+ * `/indice/rankings/ativos/franquias`.
+ */
+test('Segmentos usados em /indice/rankings/ativos existem no snapshot do Índice', () => {
+  const snapshot = JSON.parse(readFileSync(join(process.cwd(), 'src', 'generated', 'indice-snapshot.json'), 'utf8'));
+  const known = new Set(Object.keys(snapshot.segmentos));
+  assert.ok(known.size >= 9, 'snapshot do Índice deve listar todos os segmentos');
+  let checked = 0;
+  for (const file of CHANGED_FILES) {
+    for (const [, href, segment] of read(file).matchAll(/href="(\/indice\/rankings\/ativos\/([a-z0-9-]+))"/g)) {
+      checked += 1;
+      assert.ok(known.has(segment), `${file}: ${href} usa segmento sem página publicada no Índice`);
+    }
+  }
+  assert.ok(checked > 0, 'deve existir pelo menos um link para ranking por segmento');
+});
+
 test('Todo href /indice dos arquivos alterados resolve para uma rota do app do Índice', () => {
   const patterns = collectIndiceRoutePatterns();
   assert.ok(patterns.length > 0, 'app do Índice deve expor rotas em indice/src/app');
