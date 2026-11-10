@@ -52,7 +52,7 @@ export default function Page() {
           Redes de clínicas precisam de visão por localização. Compare volume de feedback, temas recorrentes e mudanças ao longo do tempo. Assim fica mais fácil identificar uma unidade fora do padrão e descobrir boas práticas que podem ser replicadas.
         </p>
         <p>
-          Veja também o <Link href="/clinicas" className="text-indigo-300 underline">guia de reputação para clínicas</Link>, <Link href="/monitoramento-reputacao-online" className="text-indigo-300 underline">monitoramento de reputação online</Link> e a <Link href="/auditoria-gratuita" className="text-indigo-300 underline">auditoria gratuita</Link>.
+          Veja também o <Link href="/clinicas" className="text-indigo-300 underline">guia de reputação para clínicas</Link>, <Link href="/monitoramento-reputacao-online" className="text-indigo-300 underline">monitoramento de reputação online</Link>, a <Link href="/auditoria-gratuita" className="text-indigo-300 underline">auditoria gratuita</Link> e o <Link href="/indice/rankings/ativos/clinicas" className="text-indigo-300 underline">ranking nacional de clínicas no Índice Filtra.AI</Link>.
         </p>
       </BlogArticle>
     </>

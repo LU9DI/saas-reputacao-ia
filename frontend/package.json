@@ -43,7 +43,9 @@
     "seo:verify-production": "node scripts/verify-production-seo.mjs",
     "seo:meta:audit": "node scripts/audit-meta-descriptions.mjs",
     "seo:markdown:validate": "node scripts/validate-markdown-twins.mjs",
-    "seo:jsonld:test": "node scripts/test-seo-jsonld-global.mjs"
+    "seo:jsonld:test": "node scripts/test-seo-jsonld-global.mjs",
+    "test:seo:p1-links": "node --experimental-strip-types --test scripts/test-seo-p1-links.mjs",
+    "test:p1-internal-links": "node --test scripts/test-p1-internal-links.mjs"
   },
   "overrides": {
     "minimatch": "^11.0.1"

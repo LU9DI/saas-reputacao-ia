@@ -54,6 +54,9 @@ export default function Page() {
         compartilhar uma avaliação genuína no Google. Quem preferir falar diretamente com a empresa também
         pode deixar feedback privado para acompanhamento.
       </p>
+      <p>
+        Para explorar o contexto do setor, veja também o <Link href="/indice/rankings/ativos/restaurantes" className="text-indigo-400 underline">ranking nacional de restaurantes</Link> por município.
+      </p>
       <H2>Piloto de 7 dias</H2>
       <p>
         Escolha uma mesa ou um turno, meça quantos scans viram feedback e acompanhe quais temas aparecem.

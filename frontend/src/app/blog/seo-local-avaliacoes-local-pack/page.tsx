@@ -187,6 +187,7 @@ export default function Page() {
           Para aprofundar essa frente, consulte a <Link href="/avaliacoes-google" className="text-indigo-400 underline">gestão de avaliações Google</Link>,
           o <Link href="/blog/gestao-reputacao-online-guia" className="text-indigo-400 underline">guia prático de gestão de reputação online</Link> e a página de
           <Link href="/gestao-de-reputacao-online" className="text-indigo-400 underline"> software de gestão de reputação online</Link>.
+          Para um recorte local concreto, consulte os <Link href="/indice/sp/sao-paulo/restaurantes" className="text-indigo-400 underline">restaurantes ativos em São Paulo</Link> no Índice Filtra.AI.
         </p>
 
         <H2>Como medir se o pacote está funcionando</H2>

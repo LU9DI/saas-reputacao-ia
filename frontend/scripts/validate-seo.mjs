@@ -288,8 +288,46 @@ for (const [name, source] of expandedLandingPages) {
   check(source.includes('faq={['), `${name} must expose visible FAQ content and FAQPage schema`);
 }
 
+// /indice vive em um app Next separado (indice/) servido em filtraai.com/indice.
+// Links contextuais para ele não existem em src/app deste app, então são
+// validados contra a árvore de rotas do app do Índice em vez de serem ignorados.
+const indiceAppRoot = resolve(process.cwd(), '..', 'indice', 'src', 'app');
+function collectIndiceRoutePatterns(directory = indiceAppRoot, prefix = []) {
+  const patterns = [];
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const fullPath = resolve(directory, entry.name);
+    if (entry.isDirectory()) {
+      // Route groups `(br)`/`(us)` não entram na URL.
+      const isGroup = entry.name.startsWith('(') && entry.name.endsWith(')');
+      patterns.push(...collectIndiceRoutePatterns(fullPath, isGroup ? prefix : [...prefix, entry.name]));
+    } else if (entry.isFile() && entry.name === 'page.tsx') {
+      patterns.push(prefix);
+    }
+  }
+  return patterns;
+}
+function matchesIndicePattern(pattern, segments) {
+  if (pattern.length === 0) return segments.length === 0;
+  const [head, ...rest] = pattern;
+  if (/^\[\[\.\.\..+\]\]$/.test(head)) return rest.length === 0; // catch-all opcional
+  if (/^\[\.\.\..+\]$/.test(head)) return rest.length === 0 && segments.length >= 1; // catch-all
+  if (segments.length === 0) return false;
+  if (/^\[.+\]$/.test(head)) return matchesIndicePattern(rest, segments.slice(1)); // segmento dinâmico
+  return head === segments[0] && matchesIndicePattern(rest, segments.slice(1));
+}
+const indiceRoutePatterns = collectIndiceRoutePatterns();
+function hasIndiceRoute(path) {
+  const segments = path.split('/').filter(Boolean);
+  if (segments[0] !== 'indice') return false;
+  return indiceRoutePatterns.some((pattern) => matchesIndicePattern(pattern, segments.slice(1)));
+}
+
 const localSeoInternalLinks = [...localSeoArticle.matchAll(/<Link\s+href="(\/[^"]+)"/g)].map((match) => match[1]);
 for (const path of localSeoInternalLinks) {
+  if (path === '/indice' || path.startsWith('/indice/')) {
+    check(hasIndiceRoute(path), `Local SEO article links to a nonexistent Índice route: ${path}`);
+    continue;
+  }
   check(staticRoutes.has(path), `Local SEO article links to a route without a static page: ${path}`);
 }
 check(localSeoInternalLinks.includes('/calculadora-nota-google'), 'Local SEO article must retain its contextual calculator link');

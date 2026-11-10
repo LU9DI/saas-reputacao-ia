@@ -274,7 +274,6 @@ async function decorate(response, origin, requestUrl = response.url) {
   try {
     if (requestUrl && ['/', '/preview'].includes(new URL(requestUrl).pathname) && contentType.includes('text/html')) {
       let html = await response.text();
-      html = html.replace(/<a\b(?=[^>]*\bhref\s*=\s*(["'])(?:https?:\/\/(?:www\.)?filtraai\.com)?\/indice(?:\/)?(?:\?[^"']*)?\1)[^>]*>[\s\S]*?<\/a>/gi, '');
       body = html;
       headers.delete('content-length');
       headers.delete('content-encoding');
