@@ -3,9 +3,26 @@
 **PR:** #201 — `seo/p1-links-contextuais-2026-11-08`
 **Repositório:** `LU9DI/saas-reputacao-ia`
 **SHA de implementação validado:** `b506b5a36f8e5ad7778098142c5a426f3f0a3370`
-**Correções posteriores no branch:** `cccc213f` (destino de franquias), `83b44a60` (testes P1 no CI), `5973df8d` (Worker Cloudflare), `a7c86cb3` (teste de regressão do Worker)
+**Correções posteriores no branch:** `cccc213f` (destino de franquias), `83b44a60` (testes P1 no CI), `5973df8d` (Worker Cloudflare), `a7c86cb3` (teste de regressão do Worker), `600f8d8a` (guardrail anti-404 de segmento)
+**HEAD atual do branch:** `0086164fb6503c8520d563b0131684cd065ce897` (somente documentação após `600f8d8a`; funcional idêntico)
 **Base:** `origin/main` = `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200)
-**Atualizado em:** 09/11/2026
+**Atualizado em:** 10/11/2026
+
+### Mapa de SHAs (HEAD atual × marcos históricos)
+
+| SHA | Papel | Observação |
+|---|---|---|
+| `b506b5a3` | Marco: 1ª validação completa (frontend + guardrail de CI) | referenciado nas seções 3 a 8 como contexto histórico |
+| `cccc213f` | Correção de conteúdo: destino do artigo de franquias | `/indice` em vez do ranking inexistente |
+| `83b44a60` | CI: executa os testes P1 no job de frontend | `.github/workflows/ci.yml` |
+| `5973df8d` | **Correção funcional do Worker Cloudflare** | 1 linha removida em `decorate()` |
+| `a7c86cb3` | Teste de regressão do Worker | `backend/tests/worker.failover.test.ts` |
+| docs `1b41dd4a`…`c6578030` | Apenas documentação | sem efeito funcional |
+| `600f8d8a` | Teste: segmento publicado no Índice | `test-seo-p1-links.mjs` rejeita segmento sem página |
+| **`0086164f`** | **HEAD atual** (documentação) | CI 13/13 verde; ver §14 |
+
+As seções 3 a 8 preservam as evidências dos marcos históricos. O estado atual
+do branch e os checks revalidados estão na seção 14.
 
 O SHA final do branch é o HEAD de `origin/seo/p1-links-contextuais-2026-11-08`
 após o commit de documentação que acompanha esta atualização; ele está
@@ -27,6 +44,9 @@ implementação `b506b5a3`.
 - Nenhum `reset --hard`, `clean`, `checkout`/`restore` destrutivo, rebase,
   force-push, tag ou merge em `main`.
 - Atualização do remoto apenas por fast-forward (`34dab4c7..b506b5a3`).
+- **Nota de marco:** esta seção descreve o estado do Git no marco `b506b5a3`.
+  O estado atual revalidado (HEAD `0086164f`, local == remoto, base
+  `origin/main` = `9be7edab`) está na seção 14.
 
 ## 2. Alterações de código (10 arquivos)
 
@@ -115,7 +135,11 @@ Não executados nesta rodada (cobertos pelo CI do PR): export estático
 `CLOUDFLARE_PAGES=1`, `seo:audit`, `seo:markdown:validate` e os jobs de
 backend/Índice — todos com resultado **pass** no HEAD `b506b5a3`.
 
-## 5. Validação dos 7 destinos válidos (produção)
+## 5. Validação dos 7 destinos válidos (produção) — marco `b506b5a3`
+
+> Nota: o 8º destino da rodada (`/indice/rankings/ativos/franquias`, respondendo
+> **404**) foi removido depois e hoje é rejeitado explicitamente por dois
+> testes — ver seção 13.4.
 
 Consultados via HTTP em 09/11/2026 (sem seguir redirect; `canonical` e `robots`
 extraídos do HTML servido):
@@ -130,7 +154,7 @@ extraídos do HTML servido):
 | `https://filtraai.com/indice/sp/sao-paulo/restaurantes` | 200 | autorreferente | `index, follow` | Restaurantes e bares em São Paulo (SP): 79.301 ativos |
 | `https://filtraai.com/indice/rankings/ativos/restaurantes/rj` | 200 | autorreferente | `index, follow` | Ranking de restaurantes e bares no Rio de Janeiro |
 
-## 6. Deploy de preview (Vercel)
+## 6. Deploy de preview (Vercel) — marcos `34dab4c7` e `b506b5a3`
 
 - **HEAD `34dab4c7`:** deploy `success`, preview
   `https://saas-reputacao-he3jfn2gb-lu9di.vercel.app` (verificado, HTML servido).
@@ -163,7 +187,7 @@ apenas no domínio de produção (`filtraai.com/indice`). Isso não é regressã
 desta PR — os destinos foram validados diretamente em produção (seção 5) e as
 rotas existem em `indice/src/app`.
 
-## 7. Checks do GitHub (HEAD `b506b5a3`)
+## 7. Checks do GitHub (marco `b506b5a3`, histórico)
 
 Todos os 13 checks do PR #201 em `success`:
 
@@ -179,7 +203,7 @@ Todos os 13 checks do PR #201 em `success`:
 | Audit root / backend / frontend / indice | pass |
 | Vercel / Vercel Preview Comments | pass |
 
-## 8. Estado do PR #201
+## 8. Estado do PR #201 (marco `b506b5a3`, histórico)
 
 - Título: *SEO P1: adicionar links internos contextuais para o Índice Filtra.AI*
 - Base `main`, `mergeable: MERGEABLE`.
@@ -354,3 +378,117 @@ confirmando que sua remoção dos links foi correta.
 3. **Revalidação pós-deploy:** depois de publicar, é obrigatório consultar
    `https://filtraai.com/` e confirmar `href="/indice"` no HTML servido. Testes
    locais e CI verde não substituem essa verificação.
+
+---
+
+## 14. Fechamento técnico DSV4 — HEAD `0086164f` (10/11/2026)
+
+Estado revalidado nesta rodada; não presume resultados anteriores.
+
+### 14.1 HEAD e estado da PR
+
+| Item | Valor verificado |
+|---|---|
+| Branch local | `seo/p1-links-contextuais-2026-11-08` |
+| HEAD local | `0086164fb6503c8520d563b0131684cd065ce897` |
+| HEAD remoto (`origin/seo/p1-links-contextuais-2026-11-08`) | `0086164fb6503c8520d563b0131684cd065ce897` — **igual ao local** |
+| Base (`origin/main`) | `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200) |
+| PR #201 | `OPEN`, não-draft, `mergeable: MERGEABLE`, `mergeStateStatus: CLEAN`, `reviewDecision: ""` (sem aprovação), `reviews: []`, sem merge |
+| Working tree (antes desta doc) | limpo — este commit contém **exclusivamente** a correção documental |
+
+Nenhum commit novo entrou no branch desde a validação anterior; o HEAD remoto
+confere com o SHA esperado do brief.
+
+### 14.2 Checks revalidados (HEAD `0086164f`, evento `pull_request`)
+
+| Workflow | Run | Conclusão | Criado em |
+|---|---|---|---|
+| CI | `42653780994` | `success` | 2026-11-09T16:20:40Z |
+| Dependency audit | `42653781067` | `success` | 2026-11-09T16:20:40Z |
+
+`gh pr checks 201` (13/13 `pass`): Backend (test + typecheck), CI summary,
+Cloudflare Índice sitemap resilience, Frontend (Vercel build), Frontend
+(static export), SEO + brand guardrail, Índice (tests + typecheck + build),
+Audit root/backend/frontend/indice, Vercel, Vercel Preview Comments.
+Runs cancelados mais antigos (`42549529118`, `42549529219`) são superseded por
+push posterior e não indicam falha.
+
+### 14.3 Arquivos funcionais auditados (diff `origin/main...0086164f`, 18 arquivos)
+
+- `infra/cloudflare/worker.js` — **1 remoção**: a regex em `decorate()` que
+  apagava âncoras `/indice` em `/` e `/preview`. Restante de `decorate()`,
+  failover, webhook, cache, `readState`/`writeState`, `publicPath`,
+  `fetchPrimary`/`fetchFallback` e headers de segurança: idênticos.
+- `backend/tests/worker.failover.test.ts` — **+42**: teste de regressão que
+  exige a preservação de `/indice`, `/indice/rankings/ativos` e
+  `https://filtraai.com/indice` em `/` e `/preview`.
+- `frontend/scripts/test-seo-p1-links.mjs` (novo), `frontend/scripts/test-p1-internal-links.mjs` (novo),
+  `frontend/scripts/validate-seo.mjs` (guardrail resolve `/indice*` contra
+  `indice/src/app` sem enfraquecer a checagem), `frontend/package.json` (+2 scripts),
+  `.github/workflows/ci.yml` (+1 step executando os dois testes P1).
+- `SeoPageHeader.tsx`, `preview/page.tsx`, 8 artigos: apenas adição de links
+  contextuais `/indice*`; links do PR #199 preservados (verificados no diff).
+- `docs/EXECUCAO_P1_FILTRAAI.md` — apenas documentação.
+- **Ausências confirmadas (ok):** nenhum arquivo de DNS, Render, Supabase,
+  billing, webhook, Vercel config ou wrangler no diff; nenhum self-link, link
+  `/zh/` novo, link noindex/teste, ou alteração de canonical/schema/sitemap/robots.
+
+### 14.4 Testes executados nesta rodada final (Node v26.7.0 / npm 11.19.0)
+
+| Comando | Resultado |
+|---|---|
+| `npm run test:seo:p1-links` (frontend) | **13/13 pass** (reexecutado hoje) |
+| `npm run test:p1-internal-links` (frontend) | **8/8 pass** (reexecutado hoje) |
+| `node --test backend/tests/worker.failover.test.ts` | **5/5 pass** (reexecutado hoje) |
+| `npm run seo:validate` (frontend) | **pass** — 21 canonical paths, 28 hreflang families, 135 sitemap paths |
+| `npm run test:analytics` (frontend) | **13/13 pass** |
+
+SHA validado pelos testes: `0086164f` (working tree limpo no início da rodada;
+a única modificação posterior é a presente documentação).
+
+### 14.5 Resolução da inconsistência documental (§14.1 × §14.5 da rodada anterior)
+
+A rodada DSV4 anterior descreveu correções documentais e ao mesmo tempo
+registrou `M docs/EXECUCAO_P1_FILTRAAI.md` na working tree — ou seja, as
+correções foram redigidas mas **não commitadas**. Nesta rodada:
+
+- O arquivo foi primeiro restaurado ao HEAD (`git checkout --`) para partir de
+  base limpa, sem descartar trabalho funcional (não havia nenhum — o diff local
+  era 100% documental).
+- As correções válidas foram reaplicadas de forma mínima: cabeçalho com HEAD
+  atual + mapa de SHAs, nota de marco na §1, e rótulos "marco histórico" nas
+  §§5–8 (conteúdo reproduzido acima, sem apagar evidências).
+- A nova §14 substitui a anterior, registrando working tree limpo antes desta
+  doc e listando o diff exato a commitar.
+- Nenhum código funcional foi tocado nesta resolução.
+
+### 14.6 Revisão independente
+
+- `reviewDecision: ""`, `reviews: []`, `requested_reviewers: {users: [], teams: []}` — **nenhuma revisão humana**.
+- Comentários recentes: apenas Vercel bot + comentário de encerramento do autor (`LU9DI`, OWNER).
+- Tentativa de listar colaboradores via API falhou antes (TLS timeout); **nenhum
+  revisor foi contatado, nenhum login/equipe foi inventado**.
+- Gate registrado: depende de informação externa — informar qual login GitHub
+  autorizado deve revisar; o autor não pode aprovar a própria PR.
+
+### 14.7 Worker publicado (somente leitura)
+
+- O Worker publicado (`filtra-ai-failover`, rota `filtraai.com/*`) **continua sem
+  a correção** (evidência §13.5: HTML de produção sem `href="/indice"` raiz vs
+  HTML de origem com a âncora).
+- Nada foi publicado, nenhuma rota/DNS/variável/configuração foi alterada,
+  nenhum deploy manual executado, nenhuma URL submetida ao Search Console.
+
+### 14.8 Riscos residuais
+
+1. Worker publicado ainda executa a regra destrutiva; a correção só vale após
+   merge + publicação autorizada + revalidação do HTML de `https://filtraai.com/`.
+2. Revalidação pós-merge/pós-deploy pendente (home + 8 artigos em produção).
+3. Preview Vercel 404 em `/indice` é esperado (app separado via Cloudflare).
+
+### 14.9 Confirmação explícita
+
+Nenhum merge, fast-forward em `main`, force-push, bypass de branch protection,
+aprovação própria, publicação de Worker, deploy manual, ou alteração em
+produção/Render/Supabase/billing foi realizado. Nenhum trabalho local foi
+apagado ou substituído.
