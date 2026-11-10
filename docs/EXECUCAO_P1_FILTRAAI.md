@@ -4,7 +4,8 @@
 **Repositório:** `LU9DI/saas-reputacao-ia`
 **SHA de implementação validado:** `b506b5a36f8e5ad7778098142c5a426f3f0a3370`
 **Correções posteriores no branch:** `cccc213f` (destino de franquias), `83b44a60` (testes P1 no CI), `5973df8d` (Worker Cloudflare), `a7c86cb3` (teste de regressão do Worker), `600f8d8a` (guardrail anti-404 de segmento)
-**HEAD atual do branch:** `0086164fb6503c8520d563b0131684cd065ce897` (somente documentação após `600f8d8a`; funcional idêntico)
+**HEAD funcional validado:** `0086164fb6503c8520d563b0131684cd065ce897` (sem alterações funcionais posteriores)
+**HEAD remoto atual:** `42ea1b2cd8b4a9f26d53b9011fc9a462990d2137` (commit documental; CI e Dependency audit verdes)
 **Base:** `origin/main` = `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200)
 **Atualizado em:** 10/11/2026
 
@@ -19,16 +20,13 @@
 | `a7c86cb3` | Teste de regressão do Worker | `backend/tests/worker.failover.test.ts` |
 | docs `1b41dd4a`…`c6578030` | Apenas documentação | sem efeito funcional |
 | `600f8d8a` | Teste: segmento publicado no Índice | `test-seo-p1-links.mjs` rejeita segmento sem página |
-| **`0086164f`** | **HEAD atual** (documentação) | CI 13/13 verde; ver §14 |
+| `0086164f` | HEAD funcional/documental anterior | validação funcional e gates locais descritos na §14 |
+| **`42ea1b2`** | **HEAD remoto atual** (documentação) | commit documental posterior; CI e Dependency audit verdes |
 
 As seções 3 a 8 preservam as evidências dos marcos históricos. O estado atual
 do branch e os checks revalidados estão na seção 14.
 
-O SHA final do branch é o HEAD de `origin/seo/p1-links-contextuais-2026-11-08`
-após o commit de documentação que acompanha esta atualização; ele está
-registrado no comentário de encerramento do PR #201. O commit de documentação
-não altera código — a validação técnica abaixo refere-se ao commit de
-implementação `b506b5a3`.
+O HEAD remoto atual é `42ea1b2cd8b4a9f26d53b9011fc9a462990d2137`. O commit `42ea1b2` altera somente este documento; a validação funcional permanece referenciada ao HEAD `0086164f` e aos marcos de implementação listados acima.
 
 ---
 
@@ -381,7 +379,7 @@ confirmando que sua remoção dos links foi correta.
 
 ---
 
-## 14. Fechamento técnico DSV4 — HEAD `0086164f` (10/11/2026)
+## 14. Fechamento técnico DSV4 — validação funcional `0086164f`; HEAD documental remoto `42ea1b2` (10/11/2026)
 
 Estado revalidado nesta rodada; não presume resultados anteriores.
 
@@ -389,17 +387,18 @@ Estado revalidado nesta rodada; não presume resultados anteriores.
 
 | Item | Valor verificado |
 |---|---|
-| Branch local | `seo/p1-links-contextuais-2026-11-08` |
-| HEAD local | `0086164fb6503c8520d563b0131684cd065ce897` |
-| HEAD remoto (`origin/seo/p1-links-contextuais-2026-11-08`) | `0086164fb6503c8520d563b0131684cd065ce897` — **igual ao local** |
+| Branch remoto | `seo/p1-links-contextuais-2026-11-08` |
+| HEAD funcional validado | `0086164fb6503c8520d563b0131684cd065ce897` |
+| HEAD remoto atual (`origin/seo/p1-links-contextuais-2026-11-08`) | `42ea1b2cd8b4a9f26d53b9011fc9a462990d2137` — commit documental posterior |
 | Base (`origin/main`) | `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200) |
 | PR #201 | `OPEN`, não-draft, `mergeable: MERGEABLE`, `mergeStateStatus: CLEAN`, `reviewDecision: ""` (sem aprovação), `reviews: []`, sem merge |
-| Working tree (antes desta doc) | limpo — este commit contém **exclusivamente** a correção documental |
+| Working tree local | não revalidado nesta consulta remota; o commit `42ea1b2` contém **exclusivamente** alterações neste arquivo documental |
 
-Nenhum commit novo entrou no branch desde a validação anterior; o HEAD remoto
-confere com o SHA esperado do brief.
+O commit `42ea1b2` entrou no branch após a validação funcional `0086164f`; não altera código. A identidade do working tree local não foi inferida a partir do estado remoto.
 
-### 14.2 Checks revalidados (HEAD `0086164f`, evento `pull_request`)
+### 14.2 Checks revalidados
+
+**Validação funcional `0086164f` (evento `pull_request`):**
 
 | Workflow | Run | Conclusão | Criado em |
 |---|---|---|---|
@@ -412,6 +411,9 @@ Cloudflare Índice sitemap resilience, Frontend (Vercel build), Frontend
 Audit root/backend/frontend/indice, Vercel, Vercel Preview Comments.
 Runs cancelados mais antigos (`42549529118`, `42549529219`) são superseded por
 push posterior e não indicam falha.
+
+**HEAD documental remoto `42ea1b2`:** CI run `42729099711` e Dependency audit run
+`42729098360` — ambos `completed/success` (10/11/2026).
 
 ### 14.3 Arquivos funcionais auditados (diff `origin/main...0086164f`, 18 arquivos)
 
@@ -443,8 +445,7 @@ push posterior e não indicam falha.
 | `npm run seo:validate` (frontend) | **pass** — 21 canonical paths, 28 hreflang families, 135 sitemap paths |
 | `npm run test:analytics` (frontend) | **13/13 pass** |
 
-SHA validado pelos testes: `0086164f` (working tree limpo no início da rodada;
-a única modificação posterior é a presente documentação).
+SHA funcional validado pelos testes locais: `0086164f`. O commit documental `42ea1b2` não modifica código; os workflows CI e Dependency audit também concluíram com sucesso nesse HEAD.
 
 ### 14.5 Resolução da inconsistência documental (§14.1 × §14.5 da rodada anterior)
 
@@ -458,9 +459,8 @@ correções foram redigidas mas **não commitadas**. Nesta rodada:
 - As correções válidas foram reaplicadas de forma mínima: cabeçalho com HEAD
   atual + mapa de SHAs, nota de marco na §1, e rótulos "marco histórico" nas
   §§5–8 (conteúdo reproduzido acima, sem apagar evidências).
-- A nova §14 substitui a anterior, registrando working tree limpo antes desta
-  doc e listando o diff exato a commitar.
-- Nenhum código funcional foi tocado nesta resolução.
+- As correções documentais foram commitadas no branch remoto em `42ea1b2`.
+- O diff desse commit contém somente `docs/EXECUCAO_P1_FILTRAAI.md`; nenhum código funcional foi tocado.
 
 ### 14.6 Revisão independente
 
@@ -492,3 +492,12 @@ Nenhum merge, fast-forward em `main`, force-push, bypass de branch protection,
 aprovação própria, publicação de Worker, deploy manual, ou alteração em
 produção/Render/Supabase/billing foi realizado. Nenhum trabalho local foi
 apagado ou substituído.
+
+### 14.10 Revalidação do HEAD remoto documental (`42ea1b2`)
+
+- Commit `42ea1b2cd8b4a9f26d53b9011fc9a462990d2137` confirmado como HEAD do branch remoto da PR #201.
+- Diff do commit: somente `docs/EXECUCAO_P1_FILTRAAI.md`; nenhuma alteração funcional.
+- CI run `42729099711`: `success`.
+- Dependency audit run `42729098360`: `success`.
+- PR #201 permanece `OPEN`, não-draft e mergeable; não há review humana aprovada nem reviewer solicitado.
+- O Worker de produção não foi publicado; a correção em produção continua pendente de aprovação, merge e autorização explícita de deploy.
