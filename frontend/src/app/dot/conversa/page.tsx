@@ -116,6 +116,9 @@ export default function DotConversationPage() {
         body: JSON.stringify({ message: item.text, session_id: sessionId }),
         deadlineMs: 30_000,
         timeoutMs: 12_000,
+        // A request with side effects must not be replayed automatically on a
+        // different API base whose idempotency database might not be shared.
+        noFailover: true,
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok || body?.ok === false) {
