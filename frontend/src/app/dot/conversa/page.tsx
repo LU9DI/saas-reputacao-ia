@@ -22,6 +22,50 @@ const HISTORY_KEY = 'filtra_dot_conversa_history_v1';
 const OUTBOX_KEY = 'filtra_dot_conversa_outbox_v1';
 const MAX_HISTORY = 60;
 
+type StorageKeys = { session: string; history: string; outbox: string };
+
+/** Hash não reversível usado apenas para escopar chaves locais (nunca expõe o token). */
+function scopeHash(value: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
+}
+
+/**
+ * Escopo local derivado da identidade autenticada (empresa + usuário do JWT
+ * `filtra_token`). Sem isso, histórico, sessão e mensagem pendente de uma
+ * empresa/usuário ficariam visíveis (e poderiam ser reenviados) por outra conta
+ * no mesmo navegador.
+ */
+function tokenScope(token: string | null): string {
+  if (!token) return 'anon';
+  try {
+    const segment = token.split('.')[1];
+    if (segment) {
+      const normalized = segment.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
+      const claims = JSON.parse(atob(padded)) as { empresa_id?: unknown; id?: unknown };
+      const empresa = String(claims?.empresa_id ?? '').trim();
+      const user = String(claims?.id ?? '').trim();
+      if (empresa || user) return `id-${scopeHash(`${empresa}|${user}`)}`;
+    }
+  } catch {
+    /* Token opaco ou payload indisponível: cai para o hash do token completo. */
+  }
+  return `tok-${scopeHash(token)}`;
+}
+
+function storageKeys(scope: string): StorageKeys {
+  return {
+    session: `${SESSION_KEY}:${scope}`,
+    history: `${HISTORY_KEY}:${scope}`,
+    outbox: `${OUTBOX_KEY}:${scope}`,
+  };
+}
+
 type ChatMessage = {
   id: string;
   role: 'user' | 'dot';
@@ -46,6 +90,36 @@ type Outbox = {
 type AccessState = 'checking' | 'allowed' | 'denied' | 'expired';
 
 type Banner = { tone: 'error' | 'warning' | 'info'; text: string } | null;
+
+/** localStorage pode conter JSON antigo/corrompido: validar evita quebrar a tela. */
+function isChatMessage(value: unknown): value is ChatMessage {
+  if (!value || typeof value !== 'object') return false;
+  const item = value as Partial<ChatMessage>;
+  return (
+    typeof item.id === 'string' &&
+    (item.role === 'user' || item.role === 'dot') &&
+    typeof item.text === 'string' &&
+    typeof item.at === 'number'
+  );
+}
+
+function isOutbox(value: unknown): value is Outbox {
+  if (!value || typeof value !== 'object') return false;
+  const item = value as Partial<Outbox>;
+  return (
+    typeof item.key === 'string' &&
+    item.key.length > 0 &&
+    typeof item.payload === 'object' &&
+    item.payload !== null &&
+    typeof item.payload.message === 'string' &&
+    typeof item.payload.session_id === 'string' &&
+    (item.status === 'sending' ||
+      item.status === 'retryable' ||
+      item.status === 'ambiguous' ||
+      item.status === 'failed') &&
+    typeof item.createdAt === 'number'
+  );
+}
 
 function newUuid(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -85,22 +159,22 @@ function removeKey(key: string) {
   }
 }
 
-function ensureSessionId(): string {
+function ensureSessionId(key: string): string {
   try {
-    const existing = localStorage.getItem(SESSION_KEY);
+    const existing = localStorage.getItem(key);
     if (existing) return existing;
     const created = newUuid();
-    localStorage.setItem(SESSION_KEY, created);
+    localStorage.setItem(key, created);
     return created;
   } catch {
     return newUuid();
   }
 }
 
-function resetSessionId(): string {
+function resetSessionId(key: string): string {
   const created = newUuid();
   try {
-    localStorage.setItem(SESSION_KEY, created);
+    localStorage.setItem(key, created);
   } catch {
     /* modo privado */
   }
@@ -190,19 +264,20 @@ export default function DotConversaPage() {
   const logRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sessionIdRef = useRef<string>('');
+  const storageRef = useRef<StorageKeys>(storageKeys('anon'));
   const tokenRef = useRef<string | null>(null);
   const inFlightRef = useRef(false);
 
   const persistMessages = useCallback((next: ChatMessage[]) => {
     const capped = next.slice(-MAX_HISTORY);
     setMessages(capped);
-    writeJson(HISTORY_KEY, capped);
+    writeJson(storageRef.current.history, capped);
   }, []);
 
   const persistOutbox = useCallback((next: Outbox | null) => {
     setOutbox(next);
-    if (next) writeJson(OUTBOX_KEY, next);
-    else removeKey(OUTBOX_KEY);
+    if (next) writeJson(storageRef.current.outbox, next);
+    else removeKey(storageRef.current.outbox);
   }, []);
 
   const loadAccess = useCallback(async () => {
@@ -255,10 +330,20 @@ export default function DotConversaPage() {
   }, []);
 
   useEffect(() => {
-    sessionIdRef.current = ensureSessionId();
+    // O escopo é resolvido antes de hidratar qualquer dado local: a mesma aba
+    // pode ter sido usada por outra empresa/usuário anteriormente.
+    const keys = storageKeys(tokenScope(readFiltraToken()));
+    storageRef.current = keys;
+    sessionIdRef.current = ensureSessionId(keys.session);
     /* eslint-disable react-hooks/set-state-in-effect -- hidratação única do localStorage; não há estado derivado em render */
-    setMessages(readJson<ChatMessage[]>(HISTORY_KEY, []));
-    const restored = readJson<Outbox | null>(OUTBOX_KEY, null);
+    const storedMessages = readJson<unknown>(keys.history, []);
+    setMessages(Array.isArray(storedMessages) ? storedMessages.filter(isChatMessage) : []);
+    const storedOutbox = readJson<unknown>(keys.outbox, null);
+    const restored = isOutbox(storedOutbox) ? storedOutbox : null;
+    if (storedOutbox !== null && restored === null) {
+      // Formato desconhecido: não pode ser reenviado com segurança.
+      removeKey(keys.outbox);
+    }
     if (restored && restored.status === 'sending') {
       // O envio foi interrompido por reload/fechamento da aba. A chave e o
       // payload são preservados: retomar é seguro e NÃO cria uma nova chave.
@@ -269,7 +354,7 @@ export default function DotConversaPage() {
         detail: 'Envio interrompido antes da confirmação.',
       };
       setOutbox(interrupted);
-      writeJson(OUTBOX_KEY, interrupted);
+      writeJson(keys.outbox, interrupted);
       setBanner({
         tone: 'info',
         text: 'Havia uma mensagem pendente quando a página foi recarregada. Use "Tentar novamente" para retomá-la com a mesma chave.',
@@ -420,7 +505,10 @@ export default function DotConversaPage() {
     }
     const pending: Outbox = {
       key: newUuid(),
-      payload: { message: text, session_id: sessionIdRef.current || ensureSessionId() },
+      payload: {
+        message: text,
+        session_id: sessionIdRef.current || ensureSessionId(storageRef.current.session),
+      },
       status: 'sending',
       createdAt: Date.now(),
     };
@@ -431,8 +519,10 @@ export default function DotConversaPage() {
   }, [busy, input, outbox, persistOutbox, send]);
 
   const retryPending = useCallback(() => {
-    if (!outbox || busy) return;
-    if (outbox.status === 'ambiguous') return;
+    // Somente falhas transitórias podem ser retomadas com a MESMA chave. Uma
+    // chave reutilizada com outro conteúdo é recusa definitiva: reenviar só
+    // repetiria o erro; o caminho é descartar e escrever uma nova mensagem.
+    if (!outbox || busy || outbox.status !== 'retryable') return;
     void send(outbox);
   }, [busy, outbox, send]);
 
@@ -467,7 +557,7 @@ export default function DotConversaPage() {
     persistOutbox(null);
     setBanner(null);
     setInput('');
-    sessionIdRef.current = resetSessionId();
+    sessionIdRef.current = resetSessionId(storageRef.current.session);
   }, [busy, outbox, persistMessages, persistOutbox]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -502,12 +592,34 @@ export default function DotConversaPage() {
           </h1>
           <p className="mt-3 text-sm text-zinc-300">{accessDetail}</p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link href="/login" className={primaryButton}>
-              Entrar novamente
-            </Link>
-            <Link href="/" className={ghostButton}>
-              Voltar ao site
-            </Link>
+            {accessState === 'denied' && !status ? (
+              <>
+                {/* Falha de rede/API não é sessão expirada: permitir nova checagem. */}
+                <button
+                  type="button"
+                  className={primaryButton}
+                  onClick={() => {
+                    setAccessState('checking');
+                    void loadAccess();
+                  }}
+                >
+                  <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                  Tentar novamente
+                </button>
+                <Link href="/" className={ghostButton}>
+                  Voltar ao site
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className={primaryButton}>
+                  Entrar novamente
+                </Link>
+                <Link href="/" className={ghostButton}>
+                  Voltar ao site
+                </Link>
+              </>
+            )}
           </div>
         </section>
       </main>
@@ -630,6 +742,11 @@ export default function DotConversaPage() {
                         <ShieldAlert className="h-3 w-3" aria-hidden="true" />
                         Resultado incerto — não reenviado
                       </span>
+                    ) : outbox.status === 'failed' ? (
+                      <span className="inline-flex items-center gap-1.5 text-red-100">
+                        <ShieldAlert className="h-3 w-3" aria-hidden="true" />
+                        Bloqueada — não será reenviada
+                      </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 text-white">
                         <AlertTriangle className="h-3 w-3" aria-hidden="true" />
@@ -655,6 +772,11 @@ export default function DotConversaPage() {
                 <p className="text-xs text-amber-200">
                   Esta mensagem não pode ser reenviada automaticamente. Aguarde a reconciliação ou
                   descarte-a explicitamente.
+                </p>
+              ) : outbox.status === 'failed' ? (
+                <p className="text-xs text-red-200">
+                  Esta mensagem foi bloqueada porque a chave já foi usada com outro conteúdo.
+                  Descarte-a para escrever uma nova mensagem.
                 </p>
               ) : (
                 <button
