@@ -6,7 +6,7 @@ import { anosPublicadosDoSegmento, getPaginaRanking, nomeDoMunicipio, type Pagin
 import { UFS } from '@/lib/ufs';
 import { n, ord, pct, mesPorExtenso, mesCurto, corta, dataCurta, minuscula } from '@/lib/format';
 import { ate, rotuloSegmento } from '@/lib/rotulos';
-import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { JsonLd, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Barras } from '@/components/Barras';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
@@ -117,14 +117,11 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <JsonLd data={dataset} />
-      <JsonLd
-        data={breadcrumb([
-          { nome: 'Índice', caminho: '/' },
-          { nome: 'Rankings de aberturas', caminho: '/rankings/aberturas' },
-          { nome: seg.nome, caminho: caminho },
-        ])}
+      <Migalhas
+        indice
+        caminhoAtual={caminho}
+        itens={[{ nome: 'Índice', href: '/' }, { nome: 'Rankings de aberturas', href: '/rankings/aberturas' }, { nome: seg.nome }]}
       />
-      <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome: 'Rankings de aberturas', href: '/rankings/aberturas' }, { nome: seg.nome, href: caminho }]} />
 
       <h1>{t.titulo}</h1>
       <p className="lead">{p.resposta}</p>

@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { temDadosUS, usMeta, usSegmentos, usCondadosDoEstado, usTopCondados, usTotalSeg } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug } from '@/lib/us-states';
 import { nUS, corta } from '@/lib/format';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
@@ -46,12 +46,14 @@ export default async function Page({ params }: Props) {
   const meta = usMeta();
   return (
     <>
-      <JsonLd data={breadcrumb([{ nome: 'US Index', caminho: '/us' }, { nome: r.nome, caminho: `/us/${state}` }])} />
-      <Migalhas rotulo="You are here" itens={[{ nome: 'US Index', href: '/us' }, { nome: r.nome }]} />
+      <Migalhas indice caminhoAtual={`/us/${state}`} rotulo="You are here" itens={[{ nome: 'US Index', href: '/us' }, { nome: r.nome }]} />
       <h1>Businesses by county and category in {r.nome}</h1>
       <p className="lead">
         The US Index tracks {usSegmentos().length} categories across {nUS(r.condados.length)} counties of {r.nome}, using the Census Bureau&apos;s County Business Patterns ({meta.ano}).
         Counts are establishments with paid employees. See the counties with the most establishments in each category.
+      </p>
+      <p className="nota">
+        Browse the <Link href="/us">US Index</Link> for every state, or open a county hub below to see all categories.
       </p>
       {usSegmentos().map((seg) => {
         const top = usTopCondados(seg.slug, 10, r.sigla);

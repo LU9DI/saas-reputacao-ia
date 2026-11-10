@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getMeta, getSegmentos, minimo } from '@/lib/data';
 import { n, mesPorExtenso, mesCurto, dataCurta } from '@/lib/format';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, datasetDoIndice, FONTE_URL, FONTE_DADOS_ABERTOS_URL, SUPORTE_URL, CONSUMIDOR_URL } from '@/lib/seo';
+import { JsonLd, urlAbsoluta, OG_IMAGE, datasetDoIndice, FONTE_URL, FONTE_DADOS_ABERTOS_URL, SUPORTE_URL, CONSUMIDOR_URL } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Definicao } from '@/components/Definicao';
 import { Faq, type ItemFaq } from '@/components/Faq';
@@ -61,9 +61,8 @@ export default function Page() {
 
   return (
     <>
-      <JsonLd data={breadcrumb([{ nome: 'Índice', caminho: '/' }, { nome: 'Metodologia', caminho: '/metodologia' }])} />
       <JsonLd data={datasetDoIndice(meta)} />
-      <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome: 'Metodologia' }]} />
+      <Migalhas indice caminhoAtual="/metodologia" itens={[{ nome: 'Índice', href: '/' }, { nome: 'Metodologia' }]} />
       <h1>Metodologia do Índice Filtra.AI</h1>
       <p className="lead">
         O Índice Filtra.AI é um levantamento mensal de estabelecimentos com CNPJ ativo, classificados pela atividade

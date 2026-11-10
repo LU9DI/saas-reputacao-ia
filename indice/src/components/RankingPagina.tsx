@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { getMeta, getSegmentos, MIN_MUNICIPIOS_RANKING_UF, minimo, rankingDoSegmento, type LinhaRanking } from '@/lib/data';
 import { n, ord, pct } from '@/lib/format';
-import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta } from '@/lib/seo';
+import { JsonLd, datasetDoRecorte, urlAbsoluta } from '@/lib/seo';
 import { LIMITE_RANKING, type ModeloRanking } from '@/lib/ranking-textos';
 import { UFS } from '@/lib/ufs';
 import { Citacao } from './Citacao';
@@ -27,16 +27,12 @@ export function RankingPagina({ m, caminho }: { m: ModeloRanking; caminho: strin
       { nome: 'Municípios no ranking', valor: m.totalMunicipios, unidade: 'municípios' },
     ],
   });
-  const trilha = [
-    { nome: 'Índice', caminho: '/' },
-    ...(uf ? [{ nome: UFS[uf], caminho: `/${uf.toLowerCase()}` }] : []),
-    { nome: `Ranking de ${seg.curto}`, caminho },
-  ];
   return (
     <>
       <JsonLd data={dataset} />
-      <JsonLd data={breadcrumb(trilha)} />
       <Migalhas
+        indice
+        caminhoAtual={caminho}
         itens={[
           { nome: 'Índice', href: '/' },
           ...(uf ? [{ nome: UFS[uf], href: `/${uf.toLowerCase()}` }] : []),
@@ -106,6 +102,22 @@ export function RankingPagina({ m, caminho }: { m: ModeloRanking; caminho: strin
         Este ranking é por estoque de estabelecimentos ativos. Para eventos de abertura por ano, veja os{' '}
         <Link href="/rankings/aberturas">rankings de aberturas</Link>.
       </p>
+
+      <h2>Navegue pelos hubs</h2>
+      <ul className="lista">
+        {uf ? (
+          <li>
+            <Link href={`/${uf.toLowerCase()}`}>Todos os municípios de {UFS[uf]} no Índice</Link>
+            <span>hub estadual</span>
+          </li>
+        ) : null}
+        {m.porAtivos.slice(0, 3).map((l) => (
+          <li key={`hub-${l.mun.uf}/${l.mun.slug}`}>
+            <Link href={`/${l.mun.uf.toLowerCase()}/${l.mun.slug}`}>{l.mun.nome}</Link>
+            <span>hub municipal</span>
+          </li>
+        ))}
+      </ul>
 
       <h2>Outros rankings</h2>
       <ul className="lista">

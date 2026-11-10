@@ -251,6 +251,60 @@ test('Todo href /indice dos arquivos alterados resolve para uma rota do app do �
   }
 });
 
+test('Links contextuais adicionais para o Índice continuam presentes', () => {
+  const esperados = [
+    ['blog/gestao-reputacao-online-guia/page.tsx', 'href="/indice/rankings/ativos/restaurantes"'],
+    ['blog/como-responder-avaliacoes-negativas/page.tsx', 'href="/indice/rankings/ativos/restaurantes/rj"'],
+    ['blog/seo-local-avaliacoes-local-pack/page.tsx', 'href="/indice/sp/sao-paulo/restaurantes"'],
+  ];
+  for (const [file, href] of esperados) {
+    assert.ok(read(file).includes(href), `${file} deve manter o link contextual ${href}`);
+  }
+});
+
+test('CTA de teste grátis do login permanece em /preview/teste', () => {
+  const content = read('login/page.tsx');
+  assert.ok(content.includes('href="/preview/teste"'), 'login deve manter o CTA para /preview/teste');
+  assert.ok(!/href="\/planos"/.test(content), 'login não deve trocar o teste grátis por /planos');
+  assert.ok(
+    !/href="\/feedback-de-clientes"/.test(content),
+    'login não deve trocar o teste grátis por uma página de feedback/depoimentos',
+  );
+});
+
+test('Fluxo de teste grátis em /preview continua apontando para /preview/teste', () => {
+  const content = read('preview/page.tsx');
+  assert.match(content, /const TRIAL_HREF = '\/preview\/teste'/, 'TRIAL_HREF deve continuar em /preview/teste');
+});
+
+test('Nenhum CTA do app do Índice troca a auditoria por página de feedback', () => {
+  const dir = join(process.cwd(), '..', 'indice', 'src');
+  const fontes = [];
+  const walk = (atual) => {
+    for (const entry of readdirSync(atual, { withFileTypes: true })) {
+      const completo = join(atual, entry.name);
+      if (entry.isDirectory()) walk(completo);
+      else if (entry.isFile() && entry.name.endsWith('.tsx')) fontes.push(readFileSync(completo, 'utf8'));
+    }
+  };
+  walk(dir);
+  assert.ok(fontes.length > 0, 'deve haver fontes do app do Índice para inspecionar');
+  for (const fonte of fontes) {
+    for (const m of fonte.matchAll(/destino=(?:"([^"]+)"|'([^']+)'|{`([^`]+)`})/g)) {
+      const valor = m[1] ?? m[2] ?? m[3] ?? '';
+      assert.ok(
+        !valor.includes('/feedback-de-clientes'),
+        'CTA do Índice não pode apontar para /feedback-de-clientes: a intenção é auditoria gratuita',
+      );
+    }
+  }
+  const cta = readFileSync(join(dir, 'components', 'Cta.tsx'), 'utf8');
+  assert.ok(
+    cta.includes("destino = 'https://filtraai.com/auditoria-gratuita'"),
+    'Cta padrão deve continuar na auditoria gratuita',
+  );
+});
+
 test('Hreflang/idioma não afetado (sem novos links /zh/)', () => {
   for (const file of [
     'components/SeoPageHeader.tsx',

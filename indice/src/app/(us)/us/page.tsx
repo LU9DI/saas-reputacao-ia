@@ -5,7 +5,7 @@ import { temDadosUS, usMeta, usSegmentos, usTopCondados, usTotalSeg, usEstadosCo
 import { slugEstado } from '@/lib/us-states';
 import { nUS } from '@/lib/format';
 import { ate } from '@/lib/rotulos';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
@@ -37,8 +37,7 @@ export default function Page() {
   const estados = usEstadosComDados();
   return (
     <>
-      <JsonLd data={breadcrumb([{ nome: 'US Index', caminho: '/us' }])} />
-      <Migalhas rotulo="You are here" itens={[{ nome: 'US Index' }]} />
+      <Migalhas indice caminhoAtual="/us" rotulo="You are here" itens={[{ nome: 'US Index' }]} />
       <h1>Filtra.AI US Index: how many businesses are there by county and category</h1>
       <p className="lead">
         Counts of establishments with paid employees in {usSegmentos().length} categories across {nUS(estados.reduce((t, e) => t + e.condados, 0))} U.S. counties,

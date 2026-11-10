@@ -5,7 +5,7 @@ import { temDadosUS, usMeta, usPagina, usTopCondados, type UsPagina } from '@/li
 import { ESTADOS_US, siglaDeSlug, slugEstado } from '@/lib/us-states';
 import { nUS, ordUS, pctUS, corta } from '@/lib/format';
 import { ate } from '@/lib/rotulos';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, publisher } from '@/lib/seo';
+import { JsonLd, urlAbsoluta, OG_IMAGE, publisher } from '@/lib/seo';
 import { Faq } from '@/components/Faq';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
@@ -81,12 +81,6 @@ export default async function Page({ params }: Props) {
   const outrosCondados = usTopCondados(seg.slug, 9, st).filter((x) => x.county.slug !== county).slice(0, 8);
   return (
     <>
-      <JsonLd data={breadcrumb([
-        { nome: 'US Index', caminho: '/us' },
-        { nome: estado, caminho: `/us/${state}` },
-        { nome: p.county.nome, caminho: `/us/${state}/${county}` },
-        { nome: seg.nome, caminho: `/us/${state}/${county}/${segment}` },
-      ])} />
       <JsonLd data={{
         '@context': 'https://schema.org',
         '@type': 'Dataset',
@@ -105,12 +99,17 @@ export default async function Page({ params }: Props) {
         creator: publisher,
         publisher,
       }} />
-      <Migalhas rotulo="You are here" itens={[
-        { nome: 'US Index', href: '/us' },
-        { nome: estado, href: `/us/${state}` },
-        { nome: p.county.nome, href: `/us/${state}/${county}` },
-        { nome: seg.nome },
-      ]} />
+      <Migalhas
+        indice
+        caminhoAtual={`/us/${state}/${county}/${segment}`}
+        rotulo="You are here"
+        itens={[
+          { nome: 'US Index', href: '/us' },
+          { nome: estado, href: `/us/${state}` },
+          { nome: p.county.nome, href: `/us/${state}/${county}` },
+          { nome: seg.nome },
+        ]}
+      />
       <h1>{seg.nome} in {p.county.nome}, {st}: how many are there?</h1>
       <p className="lead">{t.lead}</p>
 
@@ -139,6 +138,10 @@ export default async function Page({ params }: Props) {
       <p>
         {estado} has {nUS(p.totalUF)} {seg.curto} with paid employees across {nUS(p.condadosUF)} counties; {p.county.nome} has {pctUS(reg.e, p.totalUF)} of them.
         Nationally, the total is {nUS(p.totalUS)}.
+      </p>
+      <p className="nota">
+        See the <Link href={`/us/${state}/${county}`}>{p.county.nome}</Link> county hub, the{' '}
+        <Link href={`/us/${state}`}>{estado}</Link> hub, or the <Link href="/us">US Index</Link>.
       </p>
       {outrosCondados.length ? (
         <>
