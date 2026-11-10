@@ -493,9 +493,12 @@ export default function DotConversaPage() {
       <main className="flex min-h-dvh items-center justify-center bg-black px-6 py-12 text-zinc-100">
         <section className={`${panel} w-full max-w-lg p-6`} aria-labelledby="dot-access-title">
           <BrandMark size="sm" href="/" subtitle={null} />
-          <h1 id="dot-access-title" className="mt-6 flex items-center gap-2 text-xl font-semibold">
+          <p className="mt-6 text-xs font-medium uppercase tracking-[0.26em] text-zinc-400">
+            Filtra Dot
+          </p>
+          <h1 id="dot-access-title" className="mt-2 flex items-center gap-2 text-xl font-semibold">
             <ShieldAlert className="h-5 w-5 text-amber-400" aria-hidden="true" />
-            {accessState === 'expired' ? 'Sessão expirada' : 'Dot indisponível para este plano'}
+            {accessState === 'expired' ? 'Sessão expirada' : 'Filtra Dot indisponível'}
           </h1>
           <p className="mt-3 text-sm text-zinc-300">{accessDetail}</p>
           <div className="mt-6 flex flex-wrap gap-3">
