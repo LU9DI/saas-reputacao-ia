@@ -17,6 +17,8 @@ type PendingMessage = {
   idempotencyKey: string;
   text: string;
   createdAt: number;
+  ambiguous?: boolean;
+  safeToRenew?: boolean;
 };
 
 const SESSION_KEY = 'filtra_dot_chat_session_v1';
@@ -117,6 +119,11 @@ export default function DotConversationPage() {
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok || body?.ok === false) {
+        if (body?.code === 'DOT_IDEMPOTENCY_AMBIGUOUS' || body?.code === 'DOT_IDEMPOTENCY_PERSIST_FAILED') {
+          persistPending({ ...item, ambiguous: true });
+        } else if (body?.code === 'DOT_TOKEN_LIMIT') {
+          persistPending({ ...item, safeToRenew: true });
+        }
         throw new Error(body?.error || `Não foi possível enviar (HTTP ${response.status}).`);
       }
       const answer = typeof body?.message === 'string'
@@ -152,12 +159,6 @@ export default function DotConversationPage() {
     persistPending(item);
     setDraft('');
     void sendPending(item);
-  }
-
-  function discardPending() {
-    if (sending) return;
-    persistPending(null);
-    setError('');
   }
 
   return (
@@ -199,10 +200,19 @@ export default function DotConversationPage() {
             <div className="rounded-xl border border-amber-400/20 bg-amber-400/5 p-3 text-sm text-amber-100">
               <div className="font-medium">{sending ? 'Enviando mensagem…' : 'Mensagem aguardando confirmação'}</div>
               <p className="mt-1 whitespace-pre-wrap text-xs leading-5 text-amber-100/75">{pending.text}</p>
-              {!sending && (
+              {pending.ambiguous && (
+                <p className="mt-2 text-xs leading-5 text-red-200">Estado ambíguo: esta mensagem está bloqueada para evitar uma segunda execução. É necessária reconciliação administrativa antes de continuar.</p>
+              )}
+              {!sending && !pending.ambiguous && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <button type="button" onClick={() => void sendPending(pending)} className="rounded-lg bg-amber-300 px-3 py-1.5 text-xs font-semibold text-zinc-950">Tentar novamente</button>
-                  <button type="button" onClick={discardPending} className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-zinc-300">Descartar tentativa</button>
+                  <button type="button" onClick={() => void sendPending(pending)} className="rounded-lg bg-amber-300 px-3 py-1.5 text-xs font-semibold text-zinc-950">Retomar a mesma tentativa</button>
+                  {pending.safeToRenew && (
+                    <button type="button" onClick={() => {
+                      const renewed = { ...pending, id: makeId(), idempotencyKey: makeId(), createdAt: Date.now(), safeToRenew: false };
+                      persistPending(renewed);
+                      void sendPending(renewed);
+                    }} className="rounded-lg border border-white/15 px-3 py-1.5 text-xs text-zinc-300">Tentar novamente com nova chave</button>
+                  )}
                 </div>
               )}
             </div>
@@ -233,7 +243,7 @@ export default function DotConversationPage() {
           />
           <button type="submit" disabled={!draft.trim() || sending || !!pending || !sessionId} className="rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-40">Enviar</button>
         </form>
-        <p className="mt-2 text-center text-[11px] text-zinc-600">Shift + Enter para nova linha. Uma tentativa pendente deve ser retomada antes de iniciar outra mensagem.</p>
+        <p className="mt-2 text-center text-[11px] text-zinc-600">Shift + Enter para nova linha. Uma tentativa pendente precisa ser concluída ou reconciliada antes de iniciar outra mensagem.</p>
       </section>
     </main>
   );
