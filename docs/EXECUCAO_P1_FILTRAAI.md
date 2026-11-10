@@ -5,7 +5,7 @@
 **SHA de implementação validado:** `b506b5a36f8e5ad7778098142c5a426f3f0a3370`
 **Correções posteriores no branch:** `cccc213f` (destino de franquias), `83b44a60` (testes P1 no CI), `5973df8d` (Worker Cloudflare), `a7c86cb3` (teste de regressão do Worker), `600f8d8a` (guardrail anti-404 de segmento)
 **HEAD funcional validado:** `0086164fb6503c8520d563b0131684cd065ce897` (sem alterações funcionais posteriores)
-**HEAD remoto atual:** `86ecf3f55f2992430f1afbe512ed7b85713b83fb` (commit documental; checks deste SHA aguardando execução/conclusão)
+**Último HEAD remoto verificado antes desta atualização documental:** `86ecf3f55f2992430f1afbe512ed7b85713b83fb` (commit documental; os checks desse SHA ainda não haviam sido retornados na consulta)
 **Base:** `origin/main` = `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200)
 **Atualizado em:** 10/11/2026
 
@@ -22,12 +22,12 @@
 | `600f8d8a` | Teste: segmento publicado no Índice | `test-seo-p1-links.mjs` rejeita segmento sem página |
 | `0086164f` | HEAD funcional/documental anterior | validação funcional e gates locais descritos na §14 |
 | `42ea1b2` | Commit documental anterior | CI e Dependency audit verdes |
-| **`86ecf3f5`** | **HEAD remoto atual** (documentação) | sincronização final deste registro; checks próprios pendentes |
+| `86ecf3f5` | Commit documental de sincronização | último SHA verificado antes desta atualização; checks próprios pendentes |
 
 As seções 3 a 8 preservam as evidências dos marcos históricos. O estado atual
 do branch e os checks revalidados estão na seção 14.
 
-O HEAD remoto atual é `86ecf3f55f2992430f1afbe512ed7b85713b83fb`. Os commits `42ea1b2` e `86ecf3f5` alteram somente este documento; a validação funcional permanece referenciada ao HEAD `0086164f` e aos marcos de implementação listados acima.
+O HEAD remoto verificado imediatamente antes desta atualização documental era `86ecf3f55f2992430f1afbe512ed7b85713b83fb`. Os commits `42ea1b2` e `86ecf3f5` alteraram somente este documento; a validação funcional permanece referenciada ao HEAD `0086164f` e aos marcos de implementação listados acima.
 
 ---
 
@@ -390,7 +390,7 @@ Estado revalidado nesta rodada; não presume resultados anteriores.
 |---|---|
 | Branch remoto | `seo/p1-links-contextuais-2026-11-08` |
 | HEAD funcional validado | `0086164fb6503c8520d563b0131684cd065ce897` |
-| HEAD remoto atual (`origin/seo/p1-links-contextuais-2026-11-08`) | `86ecf3f55f2992430f1afbe512ed7b85713b83fb` — commit documental posterior |
+| Último HEAD remoto verificado antes desta atualização | `86ecf3f55f2992430f1afbe512ed7b85713b83fb` — commit documental posterior |
 | Base (`origin/main`) | `9be7edaba9a4af2107a480a476247ff9f5cacf32` (Merge PR #200) |
 | PR #201 | `OPEN`, não-draft, `mergeable: MERGEABLE`, `mergeStateStatus: CLEAN`, `reviewDecision: ""` (sem aprovação), `reviews: []`, sem merge |
 | Working tree local | não revalidado nesta consulta remota; o commit `42ea1b2` contém **exclusivamente** alterações neste arquivo documental |
@@ -503,9 +503,10 @@ apagado ou substituído.
 - PR #201 permanece `OPEN`, não-draft e mergeable; não há review humana aprovada nem reviewer solicitado.
 - O Worker de produção não foi publicado; a correção em produção continua pendente de aprovação, merge e autorização explícita de deploy.
 
-### 14.11 HEAD documental atual (`86ecf3f5`)
+### 14.11 Atualização documental baseada no HEAD `86ecf3f5`
 
-- Commit remoto atual: `86ecf3f55f2992430f1afbe512ed7b85713b83fb`.
+- HEAD remoto consultado como base desta atualização: `86ecf3f55f2992430f1afbe512ed7b85713b83fb`.
 - Alteração: somente `docs/EXECUCAO_P1_FILTRAAI.md`; nenhum arquivo funcional foi modificado.
-- No momento desta atualização, os workflows associados a este SHA ainda não haviam sido retornados pela API; confirmar CI e Dependency audit antes de considerar o registro encerrado.
+- O commit criado por esta atualização altera somente este arquivo. Seu SHA definitivo é o commit resultante registrado pelo GitHub; ele não é repetido dentro do próprio arquivo para evitar uma referência autorreferente.
+- Confirmar CI e Dependency audit do commit resultante antes de considerar o registro encerrado.
 - PR #201 continua aberta e sem aprovação independente. Nenhum merge ou deploy do Worker foi realizado.
