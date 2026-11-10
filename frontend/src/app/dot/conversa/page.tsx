@@ -122,7 +122,7 @@ export default function DotConversationPage() {
       });
       const body = await response.json().catch(() => ({}));
       if (!response.ok || body?.ok === false) {
-        if (body?.code === 'DOT_IDEMPOTENCY_AMBIGUOUS' || body?.code === 'DOT_IDEMPOTENCY_PERSIST_FAILED') {
+        if (body?.code === 'DOT_IDEMPOTENCY_AMBIGUOUS' || body?.code === 'DOT_IDEMPOTENCY_PERSIST_FAILED' || body?.code === 'DOT_IDEMPOTENCY_PAYLOAD_MISMATCH') {
           persistPending({ ...item, ambiguous: true });
         } else if (body?.code === 'DOT_TOKEN_LIMIT') {
           persistPending({ ...item, safeToRenew: true });
