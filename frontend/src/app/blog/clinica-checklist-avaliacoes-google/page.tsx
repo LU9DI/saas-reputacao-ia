@@ -139,6 +139,11 @@ export default function Page() {
         Para uma visão mais ampla da presença local, veja o guia de{' '}
         <Link href="/blog/seo-local-avaliacoes-local-pack" className="underline">SEO local e avaliações</Link>.
       </p>
+      <p>
+        Consulte também o{' '}
+        <Link href="/indice/rankings/ativos/clinicas" className="text-indigo-400 underline">ranking nacional de clínicas no Índice Filtra.AI</Link>
+        {' '}para explorar os estabelecimentos ativos por município.
+      </p>
 
       <H2>9. Da reputação para o crescimento</H2>
       <p>
