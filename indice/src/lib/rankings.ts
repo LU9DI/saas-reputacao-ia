@@ -1,4 +1,4 @@
-import { getMeta, getMunicipio, getSegmento, getSegmentos, getStats } from './data';
+import { getMeta, getMunicipio, getSegmento, getSegmentos, getStats, MIN_MUNICIPIOS_RANKING_UF, rankingDoSegmento } from './data';
 import type { Segmento } from './data';
 import { UFS } from './ufs';
 import { n, pct, dataCurta } from './format';
@@ -94,6 +94,16 @@ export function getPaginaRanking(segSlug: string, anoStr: string): PaginaRanking
     anoComp: Number(meta.competencia.slice(0, 4)),
     resposta,
   };
+}
+
+/** Segmentos com ranking de ativos publicado na UF (mesmo critério da rota e do sitemap). */
+export function rankingsAtivosDaUF(sigla: string): Segmento[] {
+  return getSegmentos().filter((seg) => rankingDoSegmento(seg.slug, 'a', sigla).length >= MIN_MUNICIPIOS_RANKING_UF);
+}
+
+/** UFs com ranking de ativos publicado para o segmento. */
+export function ufsComRankingsDoSegmento(segSlug: string): string[] {
+  return Object.keys(UFS).filter((uf) => rankingDoSegmento(segSlug, 'a', uf).length >= MIN_MUNICIPIOS_RANKING_UF);
 }
 
 /** Caminhos de ranking indexáveis (relativos ao basePath), para o sitemap. */

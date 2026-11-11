@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { coberturaDoSegmento, getMeta, getSegmentos, municipiosDaUF, topMunicipios } from '@/lib/data';
+import { coberturaDoSegmento, getMeta, getSegmentos, MIN_MUNICIPIOS_RANKING_UF, municipiosDaUF, topMunicipios } from '@/lib/data';
+import { rankingsAtivosDaUF } from '@/lib/rankings';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { ate } from '@/lib/rotulos';
@@ -55,6 +56,7 @@ export default async function Page({ params }: Props) {
   const { sigla, municipios } = r;
   const nome = UFS[sigla];
   const comp = mesPorExtenso(meta.competencia);
+  const rankingsUF = rankingsAtivosDaUF(sigla);
   const coberturas = getSegmentos()
     .map((seg) => ({ seg, c: coberturaDoSegmento(seg.slug, sigla) }))
     .filter(({ c }) => c.totalNasPaginas > 0);
@@ -181,6 +183,24 @@ export default async function Page({ params }: Props) {
           </section>
         );
       })}
+
+      {rankingsUF.length ? (
+        <>
+          <h2>Rankings de {nome} por segmento</h2>
+          <p className="nota">
+            Municípios de {nome} com mais estabelecimentos ativos em cada segmento, competência {comp}. O ranking estadual
+            só é publicado quando há pelo menos {n(MIN_MUNICIPIOS_RANKING_UF)} municípios com página no segmento.
+          </p>
+          <ul className="lista">
+            {rankingsUF.map((seg) => (
+              <li key={seg.slug}>
+                <Link href={`/rankings/ativos/${seg.slug}/${uf}`}>{seg.nome} em {nome}</Link>
+                <span>ranking do estado</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
 
       <h2>Todos os municípios de {nome} com página no Índice</h2>
       <table>
