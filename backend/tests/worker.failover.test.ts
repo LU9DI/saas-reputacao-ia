@@ -10,7 +10,9 @@ class FakeKV {
 
 class FakeCache {
   private data = new Map<string, Response>();
+  missNext = false;
   async match(request: Request) {
+    if (this.missNext) { this.missNext = false; return undefined; }
     const hit = this.data.get(request.url);
     return hit ? new Response(hit.body, hit) : undefined;
   }
@@ -36,7 +38,7 @@ test('primary response is used and warmed into Cloudflare cache', async () => {
   const original = globalThis.fetch;
   globalThis.fetch = async (input: RequestInfo | URL) => {
     const url = String(input instanceof Request ? input.url : input);
-    return new Response('primary:' + url, { status: 200 });
+    return new Response('<html>primary:' + url + '</html>', { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
   };
 
   try {
@@ -63,6 +65,7 @@ test('upstream failures serve cached page without changing webhook-controlled fa
     status: 200,
     headers: { 'content-type': 'text/html' },
   }));
+  cache.missNext = true;
   await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test', nextProbeAt: 0 }));
 
   const original = globalThis.fetch;
@@ -230,6 +233,110 @@ test('home and preview preserve internal Index anchors after Worker decoration',
       assert.match(body, /href="\/indice\/rankings\/ativos"/, `${path} must preserve the Index ranking link`);
       assert.match(body, /href="https:\/\/filtraai\.com\/indice"/, `${path} must preserve the absolute Index link`);
     }
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test('fresh public HTML cache hits bypass Render and Vercel origins', async () => {
+  const kv = new FakeKV();
+  const cache = new FakeCache();
+  installCaches(cache);
+  await cache.put(request('/filtra-ai'), new Response('<html>edge cached</html>', {
+    status: 200,
+    headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': 'public, max-age=3600, stale-while-revalidate=600',
+    },
+  }));
+  await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test', nextProbeAt: 0 }));
+
+  const original = globalThis.fetch;
+  let upstreamCalls = 0;
+  globalThis.fetch = async () => {
+    upstreamCalls += 1;
+    return new Response('origin should not be called', { status: 500 });
+  };
+
+  try {
+    const response = await worker.fetch(request('/filtra-ai'), {
+      FAILOVER_ORIGIN: kv,
+      FALLBACK_ORIGIN: 'https://fallback.example.com',
+      PRIMARY_ORIGIN: 'https://primary.example.com',
+    } as any);
+
+    assert.equal(response.status, 200);
+    assert.match(await response.text(), /edge cached/);
+    assert.equal(response.headers.get('x-filtra-failover-origin'), 'cloudflare-cache');
+    assert.equal(response.headers.get('x-filtra-cache'), 'hit');
+    assert.equal(upstreamCalls, 0);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test('public HTML cache bypasses query strings, cookies, authorization and RSC requests', async () => {
+  const kv = new FakeKV();
+  const cache = new FakeCache();
+  installCaches(cache);
+  await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test', nextProbeAt: 0 }));
+
+  const original = globalThis.fetch;
+  let upstreamCalls = 0;
+  globalThis.fetch = async () => {
+    upstreamCalls += 1;
+    return new Response('<html>origin response</html>', {
+      status: 200,
+      headers: { 'content-type': 'text/html; charset=utf-8' },
+    });
+  };
+
+  try {
+    const requests = [
+      new Request('https://filtraai.com/filtra-ai?preview=1'),
+      new Request('https://filtraai.com/filtra-ai', { headers: { cookie: 'session=abc' } }),
+      new Request('https://filtraai.com/filtra-ai', { headers: { authorization: 'Bearer abc' } }),
+      new Request('https://filtraai.com/filtra-ai', { headers: { rsc: '1' } }),
+    ];
+    for (const req of requests) {
+      const response = await worker.fetch(req, {
+        FAILOVER_ORIGIN: kv,
+        FALLBACK_ORIGIN: 'https://fallback.example.com',
+        PRIMARY_ORIGIN: 'https://primary.example.com',
+      } as any);
+      assert.equal(response.status, 200);
+      assert.match(await response.text(), /origin response/);
+    }
+    assert.equal(upstreamCalls, 4);
+    assert.equal((cache as any).data.size, 0);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test('private paths and no-store HTML responses are never cached', async () => {
+  const kv = new FakeKV();
+  const cache = new FakeCache();
+  installCaches(cache);
+  await kv.put('active_origin', JSON.stringify({ origin: 'primary', changedAt: Date.now(), reason: 'test', nextProbeAt: 0 }));
+
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => new Response('<html>private</html>', {
+    status: 200,
+    headers: {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': 'private, no-store',
+    },
+  });
+
+  try {
+    const response = await worker.fetch(request('/painel/empresa'), {
+      FAILOVER_ORIGIN: kv,
+      FALLBACK_ORIGIN: 'https://fallback.example.com',
+      PRIMARY_ORIGIN: 'https://primary.example.com',
+    } as any);
+    assert.equal(response.status, 200);
+    assert.equal((cache as any).data.size, 0);
   } finally {
     globalThis.fetch = original;
   }
