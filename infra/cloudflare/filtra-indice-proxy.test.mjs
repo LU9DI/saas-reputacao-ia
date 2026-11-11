@@ -110,3 +110,102 @@ test("does not cache sitemap responses with query strings or authenticated reque
     assert.equal(cache.entries.size, 0);
   });
 });
+
+test("caches public HTML pages for 24 hours to let the Render origin go idle", async () => {
+  const cache = makeCache();
+  let calls = 0;
+  await withGlobals({
+    cache,
+    fetchImpl: async () => {
+      calls += 1;
+      return new Response("<!doctype html><html><body>Índice</body></html>", {
+        status: 200,
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    },
+  }, async () => {
+    const url = "https://filtraai.com/indice/go/goiania";
+    const first = await worker.fetch(new Request(url));
+    assert.equal(first.status, 200);
+    assert.equal(first.headers.get("x-indice-cache"), "refreshed");
+    assert.equal(first.headers.get("cache-control"), "public, max-age=60, s-maxage=86400");
+    assert.match(await first.text(), /Índice/);
+
+    const second = await worker.fetch(new Request(url));
+    assert.equal(second.status, 200);
+    assert.equal(second.headers.get("x-indice-cache"), "hit");
+    assert.equal(second.headers.get("x-indice-proxy"), "render-cache");
+    assert.equal(calls, 1);
+  });
+});
+
+test("serves a last-known-good public page when Render is unavailable", async () => {
+  const cache = makeCache();
+  const key = "https://filtraai.com/indice/go/goiania";
+  await cache.put(new Request(key), new Response("<html>cached page</html>", {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=604800",
+      "x-indice-cached-at": String(Date.now() - 5 * 60 * 1000),
+    },
+  }));
+  let calls = 0;
+  await withGlobals({
+    cache,
+    fetchImpl: async () => {
+      calls += 1;
+      return new Response("bad gateway", { status: 502 });
+    },
+  }, async () => {
+    const response = await worker.fetch(new Request(key));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("x-indice-cache"), "stale");
+    assert.equal(response.headers.get("x-indice-proxy"), "render-stale-cache");
+    assert.equal(response.headers.get("cache-control"), "no-store");
+    assert.match(await response.text(), /cached page/);
+    assert.equal(calls, 1);
+  });
+});
+
+test("does not cache public pages with query strings, cookies, or authorization", async () => {
+  const cache = makeCache();
+  let calls = 0;
+  await withGlobals({
+    cache,
+    fetchImpl: async () => {
+      calls += 1;
+      return new Response("<html>private variation</html>", {
+        status: 200,
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    },
+  }, async () => {
+    await worker.fetch(new Request("https://filtraai.com/indice/go/goiania?preview=1"));
+    await worker.fetch(new Request("https://filtraai.com/indice/go/goiania", {
+      headers: { cookie: "session=test" },
+    }));
+    await worker.fetch(new Request("https://filtraai.com/indice/go/goiania", {
+      headers: { authorization: "Bearer test" },
+    }));
+    assert.equal(calls, 3);
+    assert.equal(cache.entries.size, 0);
+  });
+});
+
+test("does not cache page responses marked private or no-store", async () => {
+  const cache = makeCache();
+  await withGlobals({
+    cache,
+    fetchImpl: async () => new Response("<html>private</html>", {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "private, no-store",
+      },
+    }),
+  }, async () => {
+    await worker.fetch(new Request("https://filtraai.com/indice/go/goiania"));
+    assert.equal(cache.entries.size, 0);
+  });
+});
