@@ -388,6 +388,10 @@ export default function LandingPreview() {
               <a href="#como-funciona" className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/3 px-6 py-3.5 font-medium text-zinc-200 hover:bg-white/6">{c.howCta}</a>
             </div>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-500"><span>✓ {c.noCard}</span><span>✓ {c.quick}</span><span>✓ {c.cancel}</span></div>
+            <Link href="/indice" prefetch={false} className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-indigo-300 transition hover:text-indigo-200">
+              {language === 'pt' ? 'Explorar o Índice de empresas' : language === 'en' ? 'Explore the business index' : language === 'es' ? 'Explorar el índice de empresas' : '探索企业索引'}
+              <ArrowRight size={15} />
+            </Link>
           </div>
           <DashboardMockup c={c} />
         </div>
