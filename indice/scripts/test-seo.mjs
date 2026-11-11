@@ -772,6 +772,30 @@ try {
   check('célula explicita estoque versus aberturas', /não é o estoque ativo|Não é o estoque ativo/i.test(celula.meta.text));
   check('célula separa matrizes e filiais', /matrizes e .* filiais/i.test(celula.meta.text));
   check('célula não trata correlação como causalidade', /não mede|não significa|não formam um saldo/i.test(celula.meta.text));
+  const rankingAtivosNacional = `${BASE_PATH}/rankings/ativos/${AMOSTRAS.celula.segmento}`;
+  check(
+    'célula linka o ranking nacional de ativos do próprio segmento',
+    celula.page.final.body.includes(`href="${rankingAtivosNacional}"`),
+    rankingAtivosNacional,
+  );
+  const municipiosComRankingUF = Object.values(DADOS.stats[AMOSTRAS.uf] || {}).filter((porSegmento) => {
+    const registro = porSegmento[AMOSTRAS.celula.segmento];
+    return registro && registro.a >= META.minimoParaIndexar;
+  }).length;
+  const rankingAtivosUF = `${BASE_PATH}/rankings/ativos/${AMOSTRAS.celula.segmento}/${AMOSTRAS.uf.toLowerCase()}`;
+  if (municipiosComRankingUF >= 10) {
+    check(
+      'célula linka o ranking estadual de ativos quando a rota existe',
+      celula.page.final.body.includes(`href="${rankingAtivosUF}"`),
+      rankingAtivosUF,
+    );
+  } else {
+    check(
+      'célula não linka ranking estadual inexistente',
+      !celula.page.final.body.includes(`href="${rankingAtivosUF}"`),
+      rankingAtivosUF,
+    );
+  }
 
   if (AMOSTRAS.outraCelula) {
     const outra = await conferirPagina(
