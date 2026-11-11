@@ -37,12 +37,16 @@ async function readCache(cache, key) {
   }
 }
 
-async function storeSuccessfulPage(cache, key, response) {
-  if (!cache || response.status !== 200 || response.headers.has("set-cookie")) return;
+function isSafePublicPageResponse(response) {
+  if (response.status !== 200 || response.headers.has("set-cookie")) return false;
   const contentType = response.headers.get("content-type") || "";
-  if (!contentType.includes("text/html") && !contentType.includes("text/markdown")) return;
+  if (!contentType.includes("text/html") && !contentType.includes("text/markdown")) return false;
   const policy = response.headers.get("cache-control") || "";
-  if (/private|no-store/i.test(policy)) return;
+  return !/private|no-store/i.test(policy);
+}
+
+async function storeSuccessfulPage(cache, key, response) {
+  if (!cache || !isSafePublicPageResponse(response)) return;
   const stored = withHeaders(response.clone(), {
     "cache-control": `public, max-age=${STALE_CACHE_SECONDS}`,
     "x-indice-cached-at": String(Date.now()),
@@ -163,10 +167,14 @@ export default {
       const responseHeaders = new Headers(upstream.headers);
       responseHeaders.set("x-indice-proxy", "render-origin");
       responseHeaders.set("x-indice-upstream-status", String(upstream.status));
+      const canCachePage = isPublicPage && isSafePublicPageResponse(upstream);
       responseHeaders.set("cache-control", isSitemap
         ? "public, max-age=60, s-maxage=60"
-        : isPublicPage ? "public, max-age=60, s-maxage=86400" : "public, max-age=60, s-maxage=60");
-      if (isCacheable && request.method === "GET") responseHeaders.set("x-indice-cache", "refreshed");
+        : canCachePage ? "public, max-age=60, s-maxage=86400"
+          : isPublicPage ? (upstream.headers.get("cache-control") || "no-store")
+            : "public, max-age=60, s-maxage=60");
+      if (isSitemap && request.method === "GET") responseHeaders.set("x-indice-cache", "refreshed");
+      else if (canCachePage) responseHeaders.set("x-indice-cache", "refreshed");
       responseHeaders.delete("content-length");
       responseHeaders.delete("content-encoding");
       const response = new Response(request.method === "HEAD" ? null : upstream.body, {
@@ -176,8 +184,8 @@ export default {
       });
       if (isSitemap && request.method === "GET") {
         await storeSuccessfulSitemap(cache, cacheKey, response.clone());
-      } else if (isPublicPage) {
-        await storeSuccessfulPage(cache, cacheKey, response.clone());
+      } else if (canCachePage) {
+        await storeSuccessfulPage(cache, cacheKey, upstream.clone());
       }
       return response;
     }
