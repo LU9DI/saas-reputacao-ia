@@ -918,6 +918,39 @@ try {
     `${linksAtivosQuebrados} de ${linksAtivos} links`,
   );
 
+  // Descoberta interna dos rankings de UF: estar no sitemap não basta. Cada um
+  // precisa de link a partir do hub do estado e do ranking nacional do segmento;
+  // até 2026-11-10 os 208 rankings de UF só existiam no sitemap.
+  const ufRankingsAtivos = ativosPaths.filter((caminho) => caminho.split('/').length === 5);
+  const linkadosPeloHubUF = new Set();
+  for (const sigla of Object.keys(DADOS.stats)) {
+    const pagina = await request(`${BASE_PATH}/${sigla.toLowerCase()}`);
+    if (pagina.final.status !== 200) {
+      fail(`hub de UF ${sigla} respondeu ${pagina.final.status}`);
+      continue;
+    }
+    for (const alvo of hrefsAtivos(pagina.final.body)) linkadosPeloHubUF.add(alvo);
+  }
+  const semLinkDoHub = ufRankingsAtivos.filter((caminho) => !linkadosPeloHubUF.has(caminho));
+  check(
+    'todo ranking de UF é linkado pelo hub do estado',
+    semLinkDoHub.length === 0,
+    `${semLinkDoHub.length} de ${ufRankingsAtivos.length}: ${semLinkDoHub.slice(0, 5).join(', ')}`,
+  );
+
+  const linkadosPeloNacional = new Set();
+  for (const caminho of ativosPaths.filter((c) => c.split('/').length === 4)) {
+    const pagina = await request(`${BASE_PATH}${caminho}`);
+    if (pagina.final.status !== 200) continue;
+    for (const alvo of hrefsAtivos(pagina.final.body)) linkadosPeloNacional.add(alvo);
+  }
+  const semLinkDoNacional = ufRankingsAtivos.filter((caminho) => !linkadosPeloNacional.has(caminho));
+  check(
+    'todo ranking de UF é linkado pelo ranking nacional do segmento',
+    semLinkDoNacional.length === 0,
+    `${semLinkDoNacional.length} de ${ufRankingsAtivos.length}: ${semLinkDoNacional.slice(0, 5).join(', ')}`,
+  );
+
   const ativosInvalido = await request(`${BASE_PATH}/rankings/ativos/nao-existe`);
   checkEqual('ranking de ativos de segmento inválido responde 404', ativosInvalido.final.status, 404);
   check(

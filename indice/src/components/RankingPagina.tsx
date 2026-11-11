@@ -3,6 +3,7 @@ import { getMeta, getSegmentos, MIN_MUNICIPIOS_RANKING_UF, minimo, rankingDoSegm
 import { n, ord, pct } from '@/lib/format';
 import { JsonLd, datasetDoRecorte, urlAbsoluta } from '@/lib/seo';
 import { LIMITE_RANKING, type ModeloRanking } from '@/lib/ranking-textos';
+import { ufsComRankingsDoSegmento } from '@/lib/rankings';
 import { UFS } from '@/lib/ufs';
 import { Citacao } from './Citacao';
 import { Cta } from './Cta';
@@ -118,6 +119,20 @@ export function RankingPagina({ m, caminho }: { m: ModeloRanking; caminho: strin
           </li>
         ))}
       </ul>
+
+      {!uf ? (
+        <>
+          <h2>Rankings por estado</h2>
+          <ul className="lista">
+            {ufsComRankingsDoSegmento(seg.slug).map((sigla) => (
+              <li key={sigla}>
+                <Link href={`/rankings/ativos/${seg.slug}/${sigla.toLowerCase()}`}>{seg.nome} em {UFS[sigla]}</Link>
+                <span>ranking do estado</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : null}
 
       <h2>Outros rankings</h2>
       <ul className="lista">
