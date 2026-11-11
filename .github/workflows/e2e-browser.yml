@@ -16,6 +16,17 @@ on:
     paths:
       - 'frontend/**'
       - '.github/workflows/e2e-browser.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/src/app/dot/conversa/**'
+      - 'frontend/src/app/utils/apiFailover.ts'
+      - 'frontend/src/app/utils/persistToken.ts'
+      - 'frontend/e2e/**'
+      - 'frontend/playwright.config.ts'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - '.github/workflows/e2e-browser.yml'
 
 jobs:
   e2e:
@@ -44,7 +55,25 @@ jobs:
         run: npm install --no-save --no-package-lock @playwright/test
       - run: npx playwright install --with-deps chromium
       - run: npm run build
+        env:
+          # Bases interceptadas pelo Playwright (e2e/dot-conversa.spec.ts). O
+          # build de produção também inclui a base canônica, que os testes
+          # bloqueiam explicitamente: nenhuma chamada sai para a produção.
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:5000
+          NEXT_PUBLIC_API_URL_BACKUP: http://127.0.0.1:5001
       - run: npm start > /tmp/filtra-frontend.log 2>&1 &
+      - name: Aguardar o servidor responder
+        run: |
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000/robots.txt > /dev/null; then
+              echo "servidor pronto"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "servidor não respondeu a tempo"
+          cat /tmp/filtra-frontend.log
+          exit 1
       - run: npx playwright test
       - name: Upload browser artifacts
         if: always()
