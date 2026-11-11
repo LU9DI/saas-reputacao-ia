@@ -168,6 +168,8 @@ export default {
       responseHeaders.set("x-indice-proxy", "render-origin");
       responseHeaders.set("x-indice-upstream-status", String(upstream.status));
       const canCachePage = isPublicPage && isSafePublicPageResponse(upstream);
+      // Clone before transferring the upstream body into the outgoing Response.
+      const pageToCache = canCachePage ? upstream.clone() : null;
       responseHeaders.set("cache-control", isSitemap
         ? "public, max-age=60, s-maxage=60"
         : canCachePage ? "public, max-age=60, s-maxage=86400"
@@ -184,8 +186,8 @@ export default {
       });
       if (isSitemap && request.method === "GET") {
         await storeSuccessfulSitemap(cache, cacheKey, response.clone());
-      } else if (canCachePage) {
-        await storeSuccessfulPage(cache, cacheKey, upstream.clone());
+      } else if (pageToCache) {
+        await storeSuccessfulPage(cache, cacheKey, pageToCache);
       }
       return response;
     }
