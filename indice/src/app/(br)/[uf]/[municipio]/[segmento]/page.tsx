@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getMeta, getPagina, nomeSubclasse, type Pagina } from '@/lib/data';
-import { anosPublicadosDoSegmento } from '@/lib/rankings';
+import { anosPublicadosDoSegmento, rankingsAtivosDaUF } from '@/lib/rankings';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, ord, pct, minuscula, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { ate, maiuscula, rotuloSegmento } from '@/lib/rotulos';
@@ -209,6 +209,20 @@ export default async function Page({ params }: Props) {
           </ul>
         </>
       )}
+
+      <h2>Compare este segmento nos rankings de ativos</h2>
+      <ul className="lista">
+        <li>
+          <Link href={`/rankings/ativos/${seg.slug}`}>Ranking nacional de {seg.nome}</Link>
+          <span>Brasil</span>
+        </li>
+        {rankingsAtivosDaUF(sigla).some((item) => item.slug === seg.slug) ? (
+          <li>
+            <Link href={`/rankings/ativos/${seg.slug}/${uf}`}>Ranking de {seg.nome} em {t.nomeUF}</Link>
+            <span>estado</span>
+          </li>
+        ) : null}
+      </ul>
 
       {p.outrosSegmentos.length > 0 && (
         <>
