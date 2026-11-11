@@ -32,14 +32,14 @@ function findKey(headers, aliases) {
   return -1;
 }
 
-function detectDelimiter(text) {
+export function detectDelimiter(text) {
   const line = text.split(/\r?\n/, 1)[0] || '';
   const counts = [',', ';', '\t'].map((d) => [d, line.split(d).length - 1]);
   counts.sort((a, b) => b[1] - a[1]);
   return counts[0][1] > 0 ? counts[0][0] : ',';
 }
 
-function parseCsv(text, delimiter) {
+export function parseCsv(text, delimiter) {
   const rows = [];
   let row = [];
   let field = '';

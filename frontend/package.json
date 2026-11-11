@@ -47,7 +47,9 @@
     "test:seo:p1-links": "node --experimental-strip-types --test scripts/test-seo-p1-links.mjs",
     "test:p1-internal-links": "node --test scripts/test-p1-internal-links.mjs",
     "test:seo:gsc": "node --test scripts/test-gsc-export.mjs",
-    "seo:gsc:analyze": "node scripts/gsc-export.mjs"
+    "test:seo:gsc:indexing": "node --test scripts/test-gsc-indexing.mjs",
+    "seo:gsc:analyze": "node scripts/gsc-export.mjs",
+    "seo:gsc:indexing": "node scripts/gsc-indexing.mjs"
   },
   "overrides": {
     "minimatch": "^11.0.1"
