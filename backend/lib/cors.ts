@@ -39,7 +39,9 @@ export function buildCorsOptions(): CorsOptions {
       if (!origin) return callback(null, true);
       if (allowlist.includes(origin)) return callback(null, true);
       console.warn(`[cors] origem bloqueada: ${origin}`);
-      callback(new Error(`Origin não permitida: ${origin}`));
+      // Uma origem não autorizada deve simplesmente ficar sem cabeçalhos CORS.
+      // Não é falha interna da API nem deve virar HTTP 500.
+      callback(null, false);
     },
     credentials: true,
   };
