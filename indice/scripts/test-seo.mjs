@@ -415,6 +415,57 @@ function conferirCta(nome, body) {
   );
 }
 
+function conferirDatasetUS(nome, meta, { esperarFaq = false } = {}) {
+  const blocos = todosOsBlocos(meta);
+  check(`${nome}: todos os JSON-LD são JSON válido`, meta.jsonLdInvalid.length === 0, meta.jsonLdInvalid.join('; '));
+  const datasets = blocos.filter((bloco) => bloco['@type'] === 'Dataset');
+  const breadcrumbs = blocos.filter((bloco) => bloco['@type'] === 'BreadcrumbList');
+  const faqs = blocos.filter((bloco) => bloco['@type'] === 'FAQPage');
+  check(`${nome}: Dataset presente`, datasets.length === 1, String(datasets.length));
+  const datasetsNoDocumento = (JSON.stringify(blocos).match(/"@type":"Dataset"/g) || []).length;
+  check(`${nome}: documento declara exatamente um Dataset`, datasetsNoDocumento === 1, String(datasetsNoDocumento));
+  check(`${nome}: BreadcrumbList presente`, breadcrumbs.length === 1, String(breadcrumbs.length));
+  check(
+    `${nome}: FAQPage ${esperarFaq ? 'presente' : 'ausente'}`,
+    esperarFaq ? faqs.length === 1 : faqs.length === 0,
+    String(faqs.length),
+  );
+  const dataset = datasets[0] || {};
+  check(`${nome}: Dataset está em inglês`, dataset.inLanguage === 'en', String(dataset.inLanguage));
+  check(
+    `${nome}: Dataset usa a fonte Census por URL`,
+    dataset.isBasedOn === US_DADOS.meta.fonte.url,
+    JSON.stringify(dataset.isBasedOn),
+  );
+  check(
+    `${nome}: Dataset usa a data real de geração dos EUA`,
+    dataset.dateModified === US_DADOS.meta.geradoEm,
+    `${dataset.dateModified} != ${US_DADOS.meta.geradoEm}`,
+  );
+  check(
+    `${nome}: Dataset usa o ano do CBP`,
+    dataset.temporalCoverage === US_DADOS.meta.ano,
+    String(dataset.temporalCoverage),
+  );
+  check(
+    `${nome}: Dataset tem variável medida`,
+    Array.isArray(dataset.variableMeasured) && dataset.variableMeasured.length > 0,
+    JSON.stringify(dataset.variableMeasured),
+  );
+  check(
+    `${nome}: Dataset tem cobertura espacial`,
+    typeof dataset.spatialCoverage?.name === 'string' && dataset.spatialCoverage.name.length > 0,
+    JSON.stringify(dataset.spatialCoverage),
+  );
+  check(
+    `${nome}: creator e publisher são a Organization da marca`,
+    dataset.creator?.['@id'] === 'https://filtraai.com/#organization' &&
+      dataset.publisher?.['@type'] === 'Organization' &&
+      typeof dataset.publisher?.url === 'string',
+    JSON.stringify({ creator: dataset.creator, publisher: dataset.publisher }),
+  );
+}
+
 function conferirJsonLd(nome, meta, { esperarFaq = true, temporalEsperado = null } = {}) {
   check(`${nome}: todos os JSON-LD são JSON válido`, meta.jsonLdInvalid.length === 0, meta.jsonLdInvalid.join('; '));
   check(`${nome}: página tem JSON-LD`, meta.jsonLdCount > 0, String(meta.jsonLdCount));
@@ -1005,6 +1056,22 @@ try {
       !CONJUNTO_ESPERADO.has(canonicalPath(caminhoAbaixo)),
       caminhoAbaixo,
     );
+  }
+
+  if (US_DADOS) {
+    const usPaths = caminhosEsperadosUS(US_DADOS);
+    const usEstado = usPaths.find((caminho) => caminho.split('/').length === 3 && caminho !== '/us/methodology');
+    const usCondado = usPaths.find((caminho) => caminho.split('/').length === 4);
+    for (const [nome, caminho, esperarFaq] of [
+      ['US home', '/us', false],
+      ['US estado', usEstado, false],
+      ['US condado', usCondado, true],
+    ]) {
+      if (!caminho) continue;
+      const page = await request(`${BASE_PATH}${caminho}`);
+      checkEqual(`${nome}: status`, page.final.status, 200);
+      conferirDatasetUS(nome, parseHtml(page.final.body), { esperarFaq });
+    }
   }
 
   const sitemapIndex = await request(`${BASE_PATH}/sitemap-index.xml`);
