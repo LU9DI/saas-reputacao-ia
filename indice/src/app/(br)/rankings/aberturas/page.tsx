@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getMeta, getSegmentos } from '@/lib/data';
 import { anosPublicadosDoSegmento, getPaginaRanking } from '@/lib/rankings';
 import { n, mesPorExtenso, corta, dataCurta } from '@/lib/format';
-import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { JsonLd, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
 import { Definicao } from '@/components/Definicao';
@@ -69,8 +69,7 @@ export default function Page() {
   return (
     <>
       <JsonLd data={dataset} />
-      <JsonLd data={breadcrumb([{ nome: 'Índice', caminho: '/' }, { nome: 'Rankings de aberturas', caminho: '/rankings/aberturas' }])} />
-      <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome: 'Rankings de aberturas' }]} />
+      <Migalhas indice caminhoAtual="/rankings/aberturas" itens={[{ nome: 'Índice', href: '/' }, { nome: 'Rankings de aberturas' }]} />
 
       <h1>{titulo}</h1>
       <p className="lead">

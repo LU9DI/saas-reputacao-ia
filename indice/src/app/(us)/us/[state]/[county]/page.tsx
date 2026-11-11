@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { temDadosUS, usMeta, usCondado, usSegsDoCondado } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug } from '@/lib/us-states';
 import { nUS, corta } from '@/lib/format';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Faq } from '@/components/Faq';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
@@ -62,12 +62,19 @@ export default async function Page({ params }: Props) {
   ];
   return (
     <>
-      <JsonLd data={breadcrumb([{ nome: 'US Index', caminho: '/us' }, { nome: ESTADOS_US[sigla], caminho: `/us/${state}` }, { nome: c.nome, caminho: `/us/${state}/${county}` }])} />
-      <Migalhas rotulo="You are here" itens={[{ nome: 'US Index', href: '/us' }, { nome: ESTADOS_US[sigla], href: `/us/${state}` }, { nome: c.nome }]} />
+      <Migalhas
+        indice
+        caminhoAtual={`/us/${state}/${county}`}
+        rotulo="You are here"
+        itens={[{ nome: 'US Index', href: '/us' }, { nome: ESTADOS_US[sigla], href: `/us/${state}` }, { nome: c.nome }]}
+      />
       <h1>Businesses by category in {c.nome}, {sigla}</h1>
       <p className="lead">
         {c.nome}, {ESTADOS_US[sigla]} has {nUS(total)} establishments with paid employees in the {segs.length} categories tracked by the US Index, according to the Census
         Bureau&apos;s County Business Patterns ({meta.ano}). The largest is {maior.seg.curto}, with {nUS(maior.reg.e)}.
+      </p>
+      <p className="nota">
+        Part of the <Link href={`/us/${state}`}>{ESTADOS_US[sigla]}</Link> hub and the <Link href="/us">US Index</Link>.
       </p>
       <table>
         <thead><tr><th>Category</th><th className="num">Establishments</th></tr></thead>

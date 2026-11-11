@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { coberturaDoSegmento, getMeta, getSegmentos, resumoDoIndice } from '@/lib/data';
 import { n, mesPorExtenso, corta, dataCurta } from '@/lib/format';
-import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { JsonLd, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
 import { Faq, type ItemFaq } from '@/components/Faq';
@@ -70,8 +70,7 @@ export default function Page() {
   return (
     <>
       <JsonLd data={dataset} />
-      <JsonLd data={breadcrumb([{ nome: 'Índice', caminho: '/' }, { nome: 'Rankings de ativos', caminho: '/rankings/ativos' }])} />
-      <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome: 'Rankings de ativos' }]} />
+      <Migalhas indice caminhoAtual="/rankings/ativos" itens={[{ nome: 'Índice', href: '/' }, { nome: 'Rankings de ativos' }]} />
 
       <span className="pilula">Competência {comp}</span>
       <h1>{titulo}</h1>

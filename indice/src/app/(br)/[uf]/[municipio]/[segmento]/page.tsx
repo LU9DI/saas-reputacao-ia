@@ -6,7 +6,7 @@ import { anosPublicadosDoSegmento } from '@/lib/rankings';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, ord, pct, minuscula, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { ate, maiuscula, rotuloSegmento } from '@/lib/rotulos';
-import { JsonLd, breadcrumb, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { JsonLd, datasetDoRecorte, urlAbsoluta, OG_IMAGE } from '@/lib/seo';
 import { Barras } from '@/components/Barras';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
@@ -128,18 +128,18 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <JsonLd data={dataset} />
-      <JsonLd
-        data={breadcrumb([
-          { nome: 'Índice', caminho: '/' },
-          { nome: UFS[sigla], caminho: `/${uf}` },
-          { nome: mun.nome, caminho: `/${uf}/${municipio}` },
-          { nome: seg.nome, caminho },
-        ])}
+      <Migalhas
+        indice
+        caminhoAtual={caminho}
+        itens={[{ nome: 'Índice', href: '/' }, { nome: UFS[sigla], href: `/${uf}` }, { nome: mun.nome, href: `/${uf}/${municipio}` }, { nome: seg.nome }]}
       />
-      <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome: UFS[sigla], href: `/${uf}` }, { nome: mun.nome, href: `/${uf}/${municipio}` }, { nome: seg.nome }]} />
 
       <h1>{t.titulo}</h1>
       <p className="lead">{t.lead}</p>
+      <p className="nota">
+        Veja também o panorama de <Link href={`/${uf}/${municipio}`}>{mun.nome}</Link> e os demais municípios de{' '}
+        <Link href={`/${uf}`}>{t.nomeUF}</Link> no Índice.
+      </p>
 
       <div className="cards">
         <div className="card"><strong>{n(reg.a)}</strong><small>estabelecimentos ativos</small></div>

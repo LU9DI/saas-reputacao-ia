@@ -4,7 +4,7 @@ import { coberturaDoSegmento, getMeta, getSegmentos, resumoDoIndice, topMunicipi
 import { anosPublicadosDoSegmento } from '@/lib/rankings';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { ate } from '@/lib/rotulos';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, datasetDoIndice } from '@/lib/seo';
+import { JsonLd, urlAbsoluta, OG_IMAGE, datasetDoIndice } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
 import { Definicao } from '@/components/Definicao';
@@ -77,9 +77,8 @@ export default function Page() {
 
   return (
     <>
-      <JsonLd data={breadcrumb([{ nome: 'Índice', caminho: '/' }])} />
       <JsonLd data={datasetDoIndice(meta)} />
-      <Migalhas itens={[{ nome: 'Índice' }]} />
+      <Migalhas indice caminhoAtual="/" itens={[{ nome: 'Índice' }]} />
       <h1>Estabelecimentos ativos por município e segmento no Brasil</h1>
       <p className="lead">
         O Índice Filtra.AI reúne contagens mensais de estabelecimentos com CNPJ ativo nos {resumo.segmentos} segmentos acompanhados,

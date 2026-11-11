@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getMeta, getMunicipio, segmentosDoMunicipio } from '@/lib/data';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, datasetDoRecorte } from '@/lib/seo';
+import { JsonLd, urlAbsoluta, OG_IMAGE, datasetDoRecorte } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
 import { Definicao } from '@/components/Definicao';
@@ -103,8 +103,11 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <JsonLd data={dataset} />
-      <JsonLd data={breadcrumb([{ nome: 'Índice', caminho: '/' }, { nome: UFS[sigla], caminho: `/${uf}` }, { nome: mun.nome, caminho: `/${uf}/${municipio}` }])} />
-      <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome: UFS[sigla], href: `/${uf}` }, { nome: mun.nome }]} />
+      <Migalhas
+        indice
+        caminhoAtual={`/${uf}/${municipio}`}
+        itens={[{ nome: 'Índice', href: '/' }, { nome: UFS[sigla], href: `/${uf}` }, { nome: mun.nome }]}
+      />
       <h1>Estabelecimentos ativos por segmento em {mun.nome} ({sigla})</h1>
       <p className="lead">
         {mun.nome} tem {n(total)} estabelecimentos com CNPJ ativo nos {segs.length} {plural}, segundo o cadastro aberto da

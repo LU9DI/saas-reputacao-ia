@@ -5,7 +5,7 @@ import { coberturaDoSegmento, getMeta, getSegmentos, municipiosDaUF, topMunicipi
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { ate } from '@/lib/rotulos';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, datasetDoRecorte } from '@/lib/seo';
+import { JsonLd, urlAbsoluta, OG_IMAGE, datasetDoRecorte } from '@/lib/seo';
 import { Citacao } from '@/components/Citacao';
 import { Cta } from '@/components/Cta';
 import { Definicao } from '@/components/Definicao';
@@ -98,8 +98,7 @@ export default async function Page({ params }: Props) {
   return (
     <>
       <JsonLd data={dataset} />
-      <JsonLd data={breadcrumb([{ nome: 'Índice', caminho: '/' }, { nome, caminho: `/${uf}` }])} />
-      <Migalhas itens={[{ nome: 'Índice', href: '/' }, { nome }]} />
+      <Migalhas indice caminhoAtual={`/${uf}`} itens={[{ nome: 'Índice', href: '/' }, { nome }]} />
       <h1>Estabelecimentos ativos por segmento no estado de {nome} ({sigla})</h1>
       <p className="lead">
         O Índice acompanha {coberturas.length} segmentos em {n(municipios.length)} municípios de {nome} com página publicada.

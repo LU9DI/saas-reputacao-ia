@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { temDadosUS, usMeta, usSegmentos, usMinimo } from '@/lib/us';
 import { nUS } from '@/lib/format';
-import { JsonLd, breadcrumb, urlAbsoluta, OG_IMAGE, publisher } from '@/lib/seo';
+import { JsonLd, urlAbsoluta, OG_IMAGE, publisher } from '@/lib/seo';
 import { Faq } from '@/components/Faq';
 import { Migalhas } from '@/components/Migalhas';
 
@@ -32,14 +32,13 @@ export default function Page() {
   ];
   return (
     <>
-      <JsonLd data={breadcrumb([{ nome: 'US Index', caminho: '/us' }, { nome: 'Methodology', caminho: '/us/methodology' }])} />
       <JsonLd data={{
         '@context': 'https://schema.org', '@type': 'Dataset',
         name: 'Filtra.AI US Index: establishments by county and category',
         description: descricao, url: urlAbsoluta('/us/methodology'), inLanguage: 'en',
         dateModified: meta.geradoEm, temporalCoverage: meta.ano, isBasedOn: meta.fonte.url, creator: publisher, publisher,
       }} />
-      <Migalhas rotulo="You are here" itens={[{ nome: 'US Index', href: '/us' }, { nome: 'Methodology' }]} />
+      <Migalhas indice caminhoAtual="/us/methodology" rotulo="You are here" itens={[{ nome: 'US Index', href: '/us' }, { nome: 'Methodology' }]} />
       <h1>US Index methodology</h1>
       <p className="lead">
         The US Index aggregates <a href={meta.fonte.url} rel="noopener">{meta.fonte.nome}</a> into counts by county and category. Reference year: {meta.ano}.
