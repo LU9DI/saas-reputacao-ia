@@ -1,12 +1,12 @@
 # Publicar em filtraai.com/indice
 
-O site principal é servido pelo Render (runtime do frontend); `robots.txt` e `sitemap.xml` vêm do deploy da Vercel via Worker de rota exata. O Índice é um app Next.js separado, hospedado em servidor Node no Render, com páginas de município/segmento geradas sob demanda e ISR.
+O site principal é servido pelo Render (runtime do frontend); `robots.txt` e `sitemap.xml` vêm do deploy da Vercel via Worker de rota exata. O Índice é um app Next.js separado, hospedado em servidor Node no Render, com páginas de município/segmento geradas sob demanda e ISR. O Worker Cloudflare mantém páginas HTML/Markdown públicas em cache por 24 horas e serve a cópia válida durante falhas transitórias da origem, reduzindo requisições ao Render e permitindo que a instância entre em idle.
 
 ## Arquitetura e publicação
 
 1. Hospedar `indice/` como serviço Node separado: build `npm ci && npm run build` e start `npm start`. Usar Node 22, conforme `indice/package.json`.
 2. Para atualizar os dados, executar o workflow **Índice: atualizar dados**, revisar os arquivos e resultados gerados e fazer merge do PR em `indice/data/`. Não publicar dados sintéticos.
-3. Configurar a rota/Worker Cloudflare `filtraai.com/indice*` para encaminhar ao serviço sem remover o prefixo: o app usa `basePath: '/indice'`.
+3. Configurar a rota/Worker Cloudflare `filtraai.com/indice*` para encaminhar ao serviço sem remover o prefixo: o app usa `basePath: '/indice'`. O Worker deve cachear somente GETs públicos sem query, cookie ou Authorization; páginas HTML/Markdown por 24h e sitemaps conforme política própria.
 4. A política de robots do site principal é mantida em `frontend/src/app/robots.ts` e deve declarar o índice central e os dois sitemaps:
    - `https://filtraai.com/sitemap-index.xml` — índice central do domínio;
    - `https://filtraai.com/sitemap.xml` — site principal;
