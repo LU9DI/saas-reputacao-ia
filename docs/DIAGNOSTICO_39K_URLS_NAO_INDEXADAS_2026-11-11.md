@@ -88,7 +88,7 @@ Células EUA por segmento: restaurantes 2.611, oficinas 1.905, escritórios méd
 
 **Não disponível nesta sessão.** A tabela abaixo é o contrato que o CSV da Indexação → Páginas deve preencher. Nenhum número foi inventado. A prioridade é uma sugestão determinística, não uma medição.
 
-| Motivo | Quantidade | % do não indexado | Exemplos | Prioridade esperada |
+| Motivo | Quantidade | % do não indexado | Exemplos | Gravidade / prioridade esperada |
 |---|---:|---:|---|---|
 | Descoberta, atualmente não indexada | — | — | — | P1 para hub/ranking; P2 para célula |
 | Rastreada, atualmente não indexada | — | — | — | P1 |
