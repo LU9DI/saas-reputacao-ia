@@ -31,16 +31,17 @@ test('SeoPageHeader contém link para /indice', () => {
   assert.ok(/>\s*Índice\s*</.test(content), 'header deve conter âncora "Índice"');
 });
 
-test('Homepage (preview) contém link para /indice/rankings/ativos', () => {
+test('Homepage (preview) contém link contextual proeminente para o Índice', () => {
   const content = read('preview/page.tsx');
+  assert.ok(content.includes('href="/indice"'), 'home deve conter link direto para /indice');
   assert.ok(
-    content.includes('href="/indice/rankings/ativos"'),
-    'home deve conter link para ranking nacional /indice/rankings/ativos'
+    content.includes('Explorar o Índice de empresas') ||
+      content.includes('Explore the business index'),
+    'home deve exibir uma âncora contextual para explorar o Índice no corpo do hero'
   );
   assert.ok(
-    content.includes('Ranking nacional de estabelecimentos') ||
-      content.includes('National establishment ranking'),
-    'home deve conter âncora de ranking nacional'
+    content.includes('href="/indice/rankings/ativos"'),
+    'home deve manter o link para o ranking nacional'
   );
 });
 
@@ -89,6 +90,24 @@ test('Artigo restaurantes contém link para /indice/rankings/ativos/restaurantes
   assert.ok(
     content.includes('ranking nacional de restaurantes no Índice Filtra.AI'),
     'artigo restaurantes deve conter âncora de ranking de restaurantes'
+  );
+});
+
+test('Artigo como conseguir avaliações contém link contextual para o Índice', () => {
+  const content = read('blog/como-conseguir-avaliacoes-google/page.tsx');
+  assert.ok(content.includes('href="/indice"'), 'artigo deve linkar para o hub /indice');
+  assert.ok(content.includes('Índice Filtra.AI'), 'artigo deve identificar o destino');
+});
+
+test('Checklist de clínicas contém link para o ranking publicado de clínicas', () => {
+  const content = read('blog/clinica-checklist-avaliacoes-google/page.tsx');
+  assert.ok(
+    content.includes('href="/indice/rankings/ativos/clinicas"'),
+    'checklist deve linkar para o ranking publicado de clínicas'
+  );
+  assert.ok(
+    content.includes('ranking nacional de clínicas no Índice Filtra.AI'),
+    'checklist deve explicar o destino contextual'
   );
 });
 
@@ -165,6 +184,8 @@ const CHANGED_FILES = [
   'blog/reputacao-online-clinicas/page.tsx',
   'blog/reputacao-franquias-multilocal/page.tsx',
   'blog/avaliacoes-google-restaurantes/page.tsx',
+  'blog/como-conseguir-avaliacoes-google/page.tsx',
+  'blog/clinica-checklist-avaliacoes-google/page.tsx',
   'blog/gestao-reputacao-online-guia/page.tsx',
   'blog/seo-local-avaliacoes-local-pack/page.tsx',
   'blog/qr-code-balcao-reviews/page.tsx',
@@ -256,6 +277,8 @@ test('Links contextuais adicionais para o Índice continuam presentes', () => {
     ['blog/gestao-reputacao-online-guia/page.tsx', 'href="/indice/rankings/ativos/restaurantes"'],
     ['blog/como-responder-avaliacoes-negativas/page.tsx', 'href="/indice/rankings/ativos/restaurantes/rj"'],
     ['blog/seo-local-avaliacoes-local-pack/page.tsx', 'href="/indice/sp/sao-paulo/restaurantes"'],
+    ['blog/como-conseguir-avaliacoes-google/page.tsx', 'href="/indice"'],
+    ['blog/clinica-checklist-avaliacoes-google/page.tsx', 'href="/indice/rankings/ativos/clinicas"'],
   ];
   for (const [file, href] of esperados) {
     assert.ok(read(file).includes(href), `${file} deve manter o link contextual ${href}`);
