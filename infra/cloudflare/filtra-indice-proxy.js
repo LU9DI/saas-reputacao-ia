@@ -42,7 +42,9 @@ function isSafePublicPageResponse(response) {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html") && !contentType.includes("text/markdown")) return false;
   const policy = response.headers.get("cache-control") || "";
-  return !/private|no-store/i.test(policy);
+  if (/private|no-store|no-cache/i.test(policy)) return false;
+  const vary = (response.headers.get("vary") || "").split(",").map((value) => value.trim());
+  return !vary.some((value) => value === "*");
 }
 
 async function storeSuccessfulPage(cache, key, response) {
