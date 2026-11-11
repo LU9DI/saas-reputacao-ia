@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { temDadosUS, usMeta, usCondado, usSegsDoCondado } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug } from '@/lib/us-states';
 import { nUS, corta } from '@/lib/format';
-import { urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { urlAbsoluta, OG_IMAGE, JsonLd, datasetDoRecorteUS } from '@/lib/seo';
 import { Faq } from '@/components/Faq';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
@@ -62,6 +62,19 @@ export default async function Page({ params }: Props) {
   ];
   return (
     <>
+      <JsonLd
+        data={datasetDoRecorteUS({
+          url: urlAbsoluta(`/us/${state}/${county}`),
+          name: `Businesses by category in ${c.nome}, ${sigla}`,
+          description: `Establishments with paid employees in ${segs.length} categories in ${c.nome}, ${ESTADOS_US[sigla]}, from the Census Bureau County Business Patterns ${meta.ano}.`,
+          espacial: `${c.nome}, ${ESTADOS_US[sigla]}, United States`,
+          meta,
+          variaveis: [
+            { nome: 'Establishments with paid employees in published categories', valor: total, unidade: 'establishments' },
+            { nome: 'Categories with published pages', valor: segs.length, unidade: 'categories' },
+          ],
+        })}
+      />
       <Migalhas
         indice
         caminhoAtual={`/us/${state}/${county}`}

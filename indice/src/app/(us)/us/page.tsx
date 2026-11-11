@@ -5,7 +5,7 @@ import { temDadosUS, usMeta, usSegmentos, usTopCondados, usTotalSeg, usEstadosCo
 import { slugEstado } from '@/lib/us-states';
 import { nUS } from '@/lib/format';
 import { ate } from '@/lib/rotulos';
-import { urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { urlAbsoluta, OG_IMAGE, JsonLd, datasetDoRecorteUS } from '@/lib/seo';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
@@ -35,8 +35,23 @@ export default function Page() {
   if (!temDadosUS()) notFound();
   const meta = usMeta();
   const estados = usEstadosComDados();
+  const total = usSegmentos().reduce((t, seg) => t + usTotalSeg(seg.slug), 0);
   return (
     <>
+      <JsonLd
+        data={datasetDoRecorteUS({
+          url: urlAbsoluta('/us'),
+          name: 'Filtra.AI US Index: establishments by county and category',
+          description: `Establishments with paid employees in the ${usSegmentos().length} categories tracked by the US Index, aggregated by county from the Census Bureau County Business Patterns ${meta.ano}.`,
+          espacial: 'United States',
+          meta,
+          variaveis: [
+            { nome: 'Establishments with paid employees in published categories', valor: total, unidade: 'establishments' },
+            { nome: 'Counties with published pages', valor: estados.reduce((t, e) => t + e.condados, 0), unidade: 'counties' },
+            { nome: 'Categories tracked', valor: usSegmentos().length, unidade: 'categories' },
+          ],
+        })}
+      />
       <Migalhas indice caminhoAtual="/us" rotulo="You are here" itens={[{ nome: 'US Index' }]} />
       <h1>Filtra.AI US Index: how many businesses are there by county and category</h1>
       <p className="lead">

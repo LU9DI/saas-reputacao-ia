@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { temDadosUS, usMeta, usSegmentos, usCondadosDoEstado, usTopCondados, usTotalSeg } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug } from '@/lib/us-states';
 import { nUS, corta } from '@/lib/format';
-import { urlAbsoluta, OG_IMAGE } from '@/lib/seo';
+import { urlAbsoluta, OG_IMAGE, JsonLd, datasetDoRecorteUS } from '@/lib/seo';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
@@ -44,8 +44,23 @@ export default async function Page({ params }: Props) {
   const r = resolver(state);
   if (!r) notFound();
   const meta = usMeta();
+  const total = r.condados.reduce((t, c) => t + c.total, 0);
   return (
     <>
+      <JsonLd
+        data={datasetDoRecorteUS({
+          url: urlAbsoluta(`/us/${state}`),
+          name: `Businesses by county and category in ${r.nome}`,
+          description: `Establishments with paid employees in ${r.condados.length} counties of ${r.nome}, by category, from the Census Bureau County Business Patterns ${meta.ano}.`,
+          espacial: `${r.nome}, United States`,
+          meta,
+          variaveis: [
+            { nome: 'Establishments with paid employees in published categories', valor: total, unidade: 'establishments' },
+            { nome: 'Counties with published pages', valor: r.condados.length, unidade: 'counties' },
+            { nome: 'Categories tracked', valor: usSegmentos().length, unidade: 'categories' },
+          ],
+        })}
+      />
       <Migalhas indice caminhoAtual={`/us/${state}`} rotulo="You are here" itens={[{ nome: 'US Index', href: '/us' }, { nome: r.nome }]} />
       <h1>Businesses by county and category in {r.nome}</h1>
       <p className="lead">

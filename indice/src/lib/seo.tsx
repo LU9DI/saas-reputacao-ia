@@ -112,6 +112,54 @@ export type VariavelDataset = {
   descricao?: string;
 };
 
+/**
+ * Dataset de um recorte do Índice dos EUA (home, estado ou condado).
+ *
+ * Mesma forma do Dataset das células dos EUA: fonte Census CBP por URL, ano de
+ * referência em `temporalCoverage` e apenas variáveis contadas na página.
+ */
+export function datasetDoRecorteUS({
+  url,
+  name,
+  description,
+  espacial,
+  meta,
+  variaveis,
+}: {
+  url: string;
+  name: string;
+  description: string;
+  espacial: string;
+  meta: { ano: string; geradoEm: string; fonte: { url: string } };
+  variaveis: VariavelDataset[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    '@id': `${url}#data`,
+    name,
+    description,
+    url,
+    inLanguage: 'en',
+    isAccessibleForFree: true,
+    creator: organization,
+    publisher,
+    isBasedOn: meta.fonte.url,
+    dateModified: meta.geradoEm,
+    temporalCoverage: meta.ano,
+    spatialCoverage: { '@type': 'Place', name: espacial },
+    measurementTechnique:
+      'Count of establishments with paid employees by county and industry category, from the U.S. Census Bureau County Business Patterns. Businesses with no paid employees are not counted.',
+    variableMeasured: variaveis.map((v) => ({
+      '@type': 'PropertyValue',
+      name: v.nome,
+      value: v.valor,
+      ...(v.unidade ? { unitText: v.unidade } : {}),
+      ...(v.descricao ? { description: v.descricao } : {}),
+    })),
+  };
+}
+
 /** Dataset de um recorte (estado, município ou célula), ligado ao Dataset principal pelo @id. */
 export function datasetDoRecorte({
   url,
