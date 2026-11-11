@@ -209,3 +209,27 @@ test("does not cache page responses marked private or no-store", async () => {
     assert.equal(cache.entries.size, 0);
   });
 });
+
+test("does not cache public pages marked no-cache or Vary star", async () => {
+  const cache = makeCache();
+  let calls = 0;
+  await withGlobals({
+    cache,
+    fetchImpl: async () => {
+      calls += 1;
+      return new Response("<html>must revalidate</html>", {
+        status: 200,
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": calls === 1 ? "public, no-cache" : "public, max-age=60",
+          ...(calls === 2 ? { vary: "*" } : {}),
+        },
+      });
+    },
+  }, async () => {
+    await worker.fetch(new Request("https://filtraai.com/indice/go/goiania"));
+    await worker.fetch(new Request("https://filtraai.com/indice/go/goiania"));
+    assert.equal(calls, 2);
+    assert.equal(cache.entries.size, 0);
+  });
+});
