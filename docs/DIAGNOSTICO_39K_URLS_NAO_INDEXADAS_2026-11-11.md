@@ -298,6 +298,13 @@ Não houve:
 
 As correções anteriores relevantes permanecem: #204 (breadcrumbs), #205 (links para os 208 rankings de UF), #210/#211 (links contextuais), #212 (Dataset nos hubs EUA).
 
+### Publicação desta rodada
+
+- Commit de código e relatório: `18ac2494`.
+- PR: **#213**, aberto para `main`.
+- CI: workflows do PR #213 (CI, Índice, frontend/static export, build e auditorias) — resultado registrado no próprio PR.
+- Nenhum deploy manual foi executado.
+
 ---
 
 ## 9. Como completar o diagnóstico quando o CSV existir
