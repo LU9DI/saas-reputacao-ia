@@ -147,7 +147,7 @@ test("serves a last-known-good public page when Render is unavailable", async ()
     headers: {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "public, max-age=604800",
-      "x-indice-cached-at": String(Date.now() - 5 * 60 * 1000),
+      "x-indice-cached-at": String(Date.now() - 2 * 24 * 60 * 60 * 1000),
     },
   }));
   let calls = 0;
