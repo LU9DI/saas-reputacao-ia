@@ -2,8 +2,10 @@ const ORIGEM = "https://filtra-indice.onrender.com";
 const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504, 521, 522, 523, 524]);
 const CACHEABLE_PATH = /^\/indice\/(?:sitemap-index\.xml|sitemap\/\d+\.xml)$/;
 const FRESH_CACHE_MS = 60_000;
+const PAGE_FRESH_CACHE_MS = 86_400_000;
 const STALE_CACHE_SECONDS = 604800;
 const RETRY_DELAYS_MS = [250, 750, 1500, 3000];
+const PAGE_CACHEABLE_PATH = /^\/indice(?:\/.*)?$/;
 
 function cacheKeyFor(url) {
   return new Request(`${url.origin}${url.pathname}`, { method: "GET" });
@@ -32,6 +34,23 @@ async function readCache(cache, key) {
     return await cache.match(key);
   } catch {
     return null;
+  }
+}
+
+async function storeSuccessfulPage(cache, key, response) {
+  if (!cache || response.status !== 200 || response.headers.has("set-cookie")) return;
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("text/html") && !contentType.includes("text/markdown")) return;
+  const policy = response.headers.get("cache-control") || "";
+  if (/private|no-store/i.test(policy)) return;
+  const stored = withHeaders(response.clone(), {
+    "cache-control": `public, max-age=${STALE_CACHE_SECONDS}`,
+    "x-indice-cached-at": String(Date.now()),
+  });
+  try {
+    await cache.put(key, stored);
+  } catch {
+    // Cache is an optimization only; origin success must still be returned.
   }
 }
 
@@ -98,13 +117,23 @@ export default {
       incoming.search === "" &&
       !request.headers.has("authorization") &&
       !request.headers.has("cookie");
-    const cache = isSitemap ? globalThis.caches?.default : null;
-    const cacheKey = isSitemap ? cacheKeyFor(incoming) : null;
-    const cached = isSitemap ? await readCache(cache, cacheKey) : null;
+    const isPublicPage = request.method === "GET" &&
+      PAGE_CACHEABLE_PATH.test(incoming.pathname) &&
+      !CACHEABLE_PATH.test(incoming.pathname) &&
+      incoming.search === "" &&
+      !request.headers.has("authorization") &&
+      !request.headers.has("cookie");
+    const isCacheable = isSitemap || isPublicPage;
+    const cache = isCacheable ? globalThis.caches?.default : null;
+    const cacheKey = isCacheable ? cacheKeyFor(incoming) : null;
+    const cached = isCacheable ? await readCache(cache, cacheKey) : null;
+    const freshFor = isSitemap ? FRESH_CACHE_MS : PAGE_FRESH_CACHE_MS;
 
-    if (cached && cacheAgeMs(cached) <= FRESH_CACHE_MS) {
+    if (cached && cacheAgeMs(cached) <= freshFor) {
       return withHeaders(cached.clone(), {
-        "cache-control": "public, max-age=60, s-maxage=60",
+        "cache-control": isSitemap
+          ? "public, max-age=60, s-maxage=60"
+          : "public, max-age=60, s-maxage=86400",
         "x-indice-proxy": "render-cache",
         "x-indice-cache": "hit",
         "x-indice-upstream-status": "200",
@@ -134,8 +163,10 @@ export default {
       const responseHeaders = new Headers(upstream.headers);
       responseHeaders.set("x-indice-proxy", "render-origin");
       responseHeaders.set("x-indice-upstream-status", String(upstream.status));
-      responseHeaders.set("cache-control", isSitemap ? "public, max-age=60, s-maxage=60" : "public, max-age=60, s-maxage=60");
-      if (isSitemap && request.method === "GET") responseHeaders.set("x-indice-cache", "refreshed");
+      responseHeaders.set("cache-control", isSitemap
+        ? "public, max-age=60, s-maxage=60"
+        : isPublicPage ? "public, max-age=60, s-maxage=86400" : "public, max-age=60, s-maxage=60");
+      if (isCacheable && request.method === "GET") responseHeaders.set("x-indice-cache", "refreshed");
       responseHeaders.delete("content-length");
       responseHeaders.delete("content-encoding");
       const response = new Response(request.method === "HEAD" ? null : upstream.body, {
@@ -145,12 +176,14 @@ export default {
       });
       if (isSitemap && request.method === "GET") {
         await storeSuccessfulSitemap(cache, cacheKey, response.clone());
+      } else if (isPublicPage) {
+        await storeSuccessfulPage(cache, cacheKey, response.clone());
       }
       return response;
     }
 
     const retryableFailure = error || (upstream && isRetryable(upstream));
-    if (isSitemap && cached && retryableFailure) {
+    if (isCacheable && cached && cacheAgeMs(cached) <= STALE_CACHE_SECONDS * 1000 && retryableFailure) {
       return withHeaders(cached.clone(), {
         "cache-control": "no-store",
         "x-indice-proxy": "render-stale-cache",
