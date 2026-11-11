@@ -6,6 +6,7 @@ const STATE_KEY = 'active_origin';
  */
 const STICKY_WINDOW_MS = 6 * 60 * 60 * 1000;
 const STICKY_JITTER_RATIO = 0.15;
+const PUBLIC_HTML_CACHE_TTL_SECONDS = 3600;
 const RETRYABLE = new Set([402, 429, 500, 502, 503, 504, 521, 522, 523, 524]);
 const WEBHOOK_PATH = '/_failover/vercel';
 const STATIC_ORIGIN = 'https://filtra-ai-frontend.filtra-ai.workers.dev';
@@ -23,11 +24,14 @@ const CACHEABLE_PREFIXES = [
 function normalizeOrigin(value) { return new URL(value).origin; }
 
 function publicPath(pathname) {
+  const privatePrefixes = [
+    '/painel', '/admin', '/login', '/widget',
+    '/recuperar-senha', '/redefinir-senha',
+    '/forgot-password', '/reset-password', '/password-reset',
+  ];
   if (
     pathname.startsWith('/api/') ||
-    pathname.startsWith('/painel') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/login') ||
+    privatePrefixes.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/')) ||
     pathname === WEBHOOK_PATH
   ) return false;
   return CACHEABLE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'));
@@ -227,19 +231,60 @@ async function fetchPrimary(request, env) {
   }
 }
 
+function isPublicHtmlCacheRequest(request) {
+  if (!request || request.method !== 'GET') return false;
+  const url = new URL(request.url);
+  if (!publicPath(url.pathname) || url.search) return false;
+  if (
+    request.headers.has('authorization') ||
+    request.headers.has('cookie') ||
+    request.headers.has('range') ||
+    request.headers.has('upgrade') ||
+    request.headers.has('rsc') ||
+    request.headers.has('next-router-state-tree') ||
+    request.headers.has('next-router-prefetch') ||
+    request.headers.has('next-router-segment-prefetch')
+  ) return false;
+  const purpose = (request.headers.get('purpose') || '') + ' ' + (request.headers.get('sec-purpose') || '');
+  return !/prefetch/i.test(purpose);
+}
+
+function isPublicHtmlCacheCandidate(request, response) {
+  if (!isPublicHtmlCacheRequest(request) || !response || response.status !== 200) return false;
+  const contentType = (response.headers.get('content-type') || '').toLowerCase();
+  if (!contentType.includes('text/html') || response.headers.has('set-cookie')) return false;
+  const cacheControl = (response.headers.get('cache-control') || '').toLowerCase();
+  if (/(?:^|,)\s*(?:private|no-store|no-cache)\b/.test(cacheControl)) return false;
+  const vary = (response.headers.get('vary') || '').split(',').map((value) => value.trim());
+  return !vary.some((value) => value === '*');
+}
+
+function applyPublicHtmlCachePolicy(request, response, headers) {
+  if (!isPublicHtmlCacheCandidate(request, response)) return;
+  headers.set(
+    'cache-control',
+    `public, max-age=0, s-maxage=${PUBLIC_HTML_CACHE_TTL_SECONDS}, stale-while-revalidate=600`,
+  );
+  headers.delete('cdn-cache-control');
+  headers.delete('cloudflare-cdn-cache-control');
+  headers.delete('pragma');
+  headers.delete('expires');
+  headers.set('x-filtra-cache-policy', `public-html-s-maxage-${PUBLIC_HTML_CACHE_TTL_SECONDS}`);
+}
+
 /**
  * Aquece o cache sem bloquear a resposta (REQ-CACHE-08 / EF-12).
  * Em Workers, a promessa vai para `ctx.waitUntil`; fora dele é aguardada com
  * erro descartado. Falha de cache nunca altera a resposta entregue.
  */
 function cacheResponse(request, response, ctx) {
-  if (request.method !== 'GET' || !response || !response.ok) return;
-  if (!publicPath(new URL(request.url).pathname)) return;
+  if (!isPublicHtmlCacheCandidate(request, response)) return;
 
   const write = (async () => {
     const cached = response.clone();
     const headers = new Headers(cached.headers);
-    if (!headers.has('cache-control')) headers.set('cache-control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=86400');
+    applyPublicHtmlCachePolicy(request, cached, headers);
+    headers.set('cache-control', `public, max-age=${PUBLIC_HTML_CACHE_TTL_SECONDS}, stale-while-revalidate=600`);
 
     await caches.default.put(request, new Response(cached.body, {
       status: cached.status,
@@ -256,19 +301,21 @@ function cacheResponse(request, response, ctx) {
 }
 
 async function readCache(request) {
-  if (request.method !== 'GET') return null;
+  if (!isPublicHtmlCacheRequest(request)) return null;
   try {
     const cached = await caches.default.match(request);
-    return cached ? new Response(cached.body, cached) : null;
+    if (!cached || !(cached.headers.get('content-type') || '').toLowerCase().includes('text/html')) return null;
+    return new Response(cached.body, cached);
   } catch {
     // Cache indisponível é equivalente a miss (EF-12).
     return null;
   }
 }
 
-async function decorate(response, origin, requestUrl = response.url) {
+async function decorate(response, origin, requestUrl = response.url, request = null) {
   const headers = new Headers(response.headers);
   headers.set('x-filtra-failover-origin', origin);
+  applyPublicHtmlCachePolicy(request, response, headers);
   const contentType = headers.get('content-type') || '';
   let body = response.body;
   try {
@@ -287,7 +334,7 @@ async function fallbackResponse(request, reason, env, ctx) {
   const fallback = await fetchFallback(request, env);
   if (fallback.response && !fallback.retryable) {
     cacheResponse(request, fallback.response, ctx);
-    return decorate(fallback.response, 'cloudflare-fallback');
+    return decorate(fallback.response, 'cloudflare-fallback', request.url, request);
   }
   if (publicPath(new URL(request.url).pathname)) {
     const cached = await readCache(request);
@@ -299,7 +346,7 @@ async function fallbackResponse(request, reason, env, ctx) {
         status: cached.status,
         statusText: cached.statusText,
         headers,
-      }), 'cloudflare-cache', request.url);
+      }), 'cloudflare-cache', request.url, request);
     }
   }
   return new Response('Filtra.AI temporarily unavailable', {
@@ -322,6 +369,21 @@ export default {
     const probeInterval = Math.max(60000, Number(env.RECOVERY_PROBE_INTERVAL_MS || 300000));
     let state = await readState(env);
 
+    // In primary mode, serve a fresh public HTML cache hit before contacting
+    // Render. Private, personalized, query-string and Next.js RSC requests bypass it.
+    if (state.origin === 'primary') {
+      const cached = await readCache(request);
+      if (cached) {
+        const headers = new Headers(cached.headers);
+        headers.set('x-filtra-cache', 'hit');
+        return decorate(new Response(cached.body, {
+          status: cached.status,
+          statusText: cached.statusText,
+          headers,
+        }), 'cloudflare-cache', request.url, request);
+      }
+    }
+
     if (state.origin === 'fallback') {
       if (Date.now() >= state.nextProbeAt) {
         state = { ...state, nextProbeAt: Date.now() + probeInterval };
@@ -337,7 +399,7 @@ export default {
           });
 
           cacheResponse(request, primary.response, ctx);
-          return decorate(primary.response, 'primary');
+          return decorate(primary.response, 'primary', request.url, request);
         }
       }
 
@@ -346,27 +408,27 @@ export default {
 
     if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml') {
       const staticResponse = await fetchStatic(request);
-      if (staticResponse.response && !staticResponse.retryable) return decorate(staticResponse.response, 'cloudflare-static');
+      if (staticResponse.response && !staticResponse.retryable) return decorate(staticResponse.response, 'cloudflare-static', request.url, request);
     }
 
     if (url.pathname.startsWith('/api/')) {
       const api = await fetchApi(request);
-      if (api.response && !api.retryable) return decorate(api.response, 'render-api');
+      if (api.response && !api.retryable) return decorate(api.response, 'render-api', request.url, request);
       const primary = await fetchPrimary(request, env);
-      if (primary.response && !primary.retryable) return decorate(primary.response, 'primary');
+      if (primary.response && !primary.retryable) return decorate(primary.response, 'primary', request.url, request);
       return new Response('API temporarily unavailable', { status: 503, headers: { 'content-type': 'text/plain; charset=utf-8' } });
     }
 
     const runtime = await fetchRuntimeFast(request, env);
     if (runtime.response && !runtime.retryable) {
       cacheResponse(request, runtime.response, ctx);
-      return decorate(runtime.response, 'render-frontend-runtime');
+      return decorate(runtime.response, 'render-frontend-runtime', request.url, request);
     }
 
     const primary = await fetchPrimary(request, env);
     if (primary.response && !primary.retryable) {
       cacheResponse(request, primary.response, ctx);
-      return decorate(primary.response, 'primary');
+      return decorate(primary.response, 'primary', request.url, request);
     }
     return fallbackResponse(request, runtime.response ? 'runtime-http-' + runtime.response.status : 'runtime-network-error', env, ctx);
   },
