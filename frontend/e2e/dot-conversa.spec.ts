@@ -439,7 +439,7 @@ test.describe('Filtra Dot — /dot/conversa', () => {
     expect(page.getByRole('log').getByText('mensagem com retry manual')).toHaveCount(1);
   });
 
-  test('8. failover entre bases não duplica a execução', async ({ page }) => {
+  test('8. chat financeiro não faz failover entre bases após resposta ambígua', async ({ page }) => {
     await installGlobalGuards(page);
     const statusCalls: Captured[] = [];
     const chatCalls: Captured[] = [];
@@ -457,22 +457,23 @@ test.describe('Filtra Dot — /dot/conversa', () => {
         return;
       }
       backupChatReplies += 1;
-      await fulfillJson(route, 200, chatOk('respondido pelo backup').body);
+      await fulfillJson(route, 200, chatOk('resposta indevida do backup').body);
     });
 
     await openConversation(page);
     await sendMessage(page, 'mensagem durante failover');
-    await expect(page.getByText('respondido pelo backup')).toBeVisible();
 
+    // A primeira base pode ter processado a operação apesar do 503. Sem prova
+    // de ledger compartilhado, o frontend deve preservar a pendência e nunca
+    // repetir o POST financeiro em outra base.
     expect(primaryChatReplies).toBe(1);
-    expect(backupChatReplies).toBe(1);
-    expect(chatCalls).toHaveLength(2);
+    expect(backupChatReplies).toBe(0);
+    expect(chatCalls).toHaveLength(1);
     expect(chatCalls[0].base).toBe(PRIMARY);
-    expect(chatCalls[1].base).toBe(BACKUP);
-    expect(chatCalls[0].headers['x-idempotency-key']).toBe(chatCalls[1].headers['x-idempotency-key']);
-    expect(chatCalls[0].body).toEqual(chatCalls[1].body);
-    await expect(page.getByLabel('Mensagem pendente')).toHaveCount(0);
-    expect(page.getByRole('log').getByText('mensagem durante failover')).toHaveCount(1);
+    expect(chatCalls[0].headers['x-idempotency-key']).toMatch(/^[0-9a-f-]{36}$/i);
+    expect(chatCalls[0].body).toMatchObject({ message: 'mensagem durante failover' });
+    await expect(page.getByLabel('Mensagem pendente')).toContainText('mensagem durante failover');
+    await expect(page.getByText('resposta indevida do backup')).toHaveCount(0);
     expect(statusCalls.length).toBeGreaterThanOrEqual(1);
   });
 
