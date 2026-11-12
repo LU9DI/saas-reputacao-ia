@@ -24,24 +24,37 @@ const MAX_HISTORY = 60;
 
 type StorageKeys = { session: string; history: string; outbox: string };
 
-/** Hash não reversível usado apenas para escopar chaves locais (nunca expõe o token). */
-function scopeHash(value: string): string {
-  let hash = 2166136261;
+/** Fallback curto apenas para navegadores sem Web Crypto; não é controle de autorização. */
+function fallbackScopeHash(value: string): string {
+  let first = 2166136261;
+  let second = 2246822519;
   for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
+    const code = value.charCodeAt(index);
+    first = Math.imul(first ^ code, 16777619);
+    second = Math.imul(second ^ (code + index), 3266489917);
   }
-  return (hash >>> 0).toString(16);
+  return `${(first >>> 0).toString(16)}${(second >>> 0).toString(16)}`;
+}
+
+async function digestScope(value: string): Promise<string> {
+  try {
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  } catch {
+    // Web Crypto pode não existir em contextos legados/inseguros. A separação
+    // local continua funcional, mas a autorização real permanece no backend.
+    return fallbackScopeHash(value);
+  }
 }
 
 /**
  * Escopo local derivado da identidade autenticada (empresa + usuário do JWT
- * `filtra_token`). Sem isso, histórico, sessão e mensagem pendente de uma
- * empresa/usuário ficariam visíveis (e poderiam ser reenviados) por outra conta
- * no mesmo navegador.
+ * `filtra_token`). SHA-256 evita colisões práticas entre contas; o escopo é
+ * apenas isolamento de armazenamento, nunca uma fronteira de autorização.
  */
-function tokenScope(token: string | null): string {
+async function tokenScope(token: string | null): Promise<string> {
   if (!token) return 'anon';
+  let identity = `token:${token}`;
   try {
     const segment = token.split('.')[1];
     if (segment) {
@@ -50,12 +63,12 @@ function tokenScope(token: string | null): string {
       const claims = JSON.parse(atob(padded)) as { empresa_id?: unknown; id?: unknown };
       const empresa = String(claims?.empresa_id ?? '').trim();
       const user = String(claims?.id ?? '').trim();
-      if (empresa || user) return `id-${scopeHash(`${empresa}|${user}`)}`;
+      if (empresa || user) identity = `identity:${JSON.stringify([empresa, user])}`;
     }
   } catch {
-    /* Token opaco ou payload indisponível: cai para o hash do token completo. */
+    /* Token opaco ou payload indisponível: usa o próprio token como identidade. */
   }
-  return `tok-${scopeHash(token)}`;
+  return `scope-${await digestScope(identity)}`;
 }
 
 function storageKeys(scope: string): StorageKeys {
@@ -330,40 +343,48 @@ export default function DotConversaPage() {
   }, []);
 
   useEffect(() => {
-    // O escopo é resolvido antes de hidratar qualquer dado local: a mesma aba
-    // pode ter sido usada por outra empresa/usuário anteriormente.
-    const keys = storageKeys(tokenScope(readFiltraToken()));
-    storageRef.current = keys;
-    sessionIdRef.current = ensureSessionId(keys.session);
-    /* eslint-disable react-hooks/set-state-in-effect -- hidratação única do localStorage; não há estado derivado em render */
-    const storedMessages = readJson<unknown>(keys.history, []);
-    setMessages(Array.isArray(storedMessages) ? storedMessages.filter(isChatMessage) : []);
-    const storedOutbox = readJson<unknown>(keys.outbox, null);
-    const restored = isOutbox(storedOutbox) ? storedOutbox : null;
-    if (storedOutbox !== null && restored === null) {
-      // Formato desconhecido: não pode ser reenviado com segurança.
-      removeKey(keys.outbox);
-    }
-    if (restored && restored.status === 'sending') {
-      // O envio foi interrompido por reload/fechamento da aba. A chave e o
-      // payload são preservados: retomar é seguro e NÃO cria uma nova chave.
-      const interrupted: Outbox = {
-        ...restored,
-        status: 'retryable',
-        code: 'INTERRUPTED',
-        detail: 'Envio interrompido antes da confirmação.',
-      };
-      setOutbox(interrupted);
-      writeJson(keys.outbox, interrupted);
-      setBanner({
-        tone: 'info',
-        text: 'Havia uma mensagem pendente quando a página foi recarregada. Use "Tentar novamente" para retomá-la com a mesma chave.',
-      });
-    } else {
-      setOutbox(restored);
-    }
-    /* eslint-enable react-hooks/set-state-in-effect */
-    void loadAccess();
+    let cancelled = false;
+    const hydrate = async () => {
+      // SHA-256 é assíncrono; só hidratar depois de resolver a identidade para
+      // não mostrar por um instante o histórico de outra conta.
+      const keys = storageKeys(await tokenScope(readFiltraToken()));
+      if (cancelled) return;
+      storageRef.current = keys;
+      sessionIdRef.current = ensureSessionId(keys.session);
+      /* eslint-disable react-hooks/set-state-in-effect -- hidratação única do localStorage; não há estado derivado em render */
+      const storedMessages = readJson<unknown>(keys.history, []);
+      setMessages(Array.isArray(storedMessages) ? storedMessages.filter(isChatMessage) : []);
+      const storedOutbox = readJson<unknown>(keys.outbox, null);
+      const restored = isOutbox(storedOutbox) ? storedOutbox : null;
+      if (storedOutbox !== null && restored === null) {
+        // Formato desconhecido: não pode ser reenviado com segurança.
+        removeKey(keys.outbox);
+      }
+      if (restored && restored.status === 'sending') {
+        // O envio foi interrompido por reload/fechamento da aba. A chave e o
+        // payload são preservados: retomar é seguro e NÃO cria uma nova chave.
+        const interrupted: Outbox = {
+          ...restored,
+          status: 'retryable',
+          code: 'INTERRUPTED',
+          detail: 'Envio interrompido antes da confirmação.',
+        };
+        setOutbox(interrupted);
+        writeJson(keys.outbox, interrupted);
+        setBanner({
+          tone: 'info',
+          text: 'Havia uma mensagem pendente quando a página foi recarregada. Use "Tentar novamente" para retomá-la com a mesma chave.',
+        });
+      } else {
+        setOutbox(restored);
+      }
+      /* eslint-enable react-hooks/set-state-in-effect */
+      void loadAccess();
+    };
+    void hydrate();
+    return () => {
+      cancelled = true;
+    };
   }, [loadAccess]);
 
   useEffect(() => {
