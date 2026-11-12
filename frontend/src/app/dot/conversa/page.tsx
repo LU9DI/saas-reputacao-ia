@@ -393,9 +393,10 @@ export default function DotConversaPage() {
           credentials: 'include',
           headers: { ...authHeaders(token), 'X-Idempotency-Key': pending.key },
           body: JSON.stringify(pending.payload),
-          // Geração de IA pode passar do timeout padrão de 12 s; o deadline é
-          // único e compartilhado entre as tentativas de failover, e cada
-          // tentativa reutiliza a MESMA chave e o MESMO corpo.
+          // Chat é uma operação financeira: não repetir em outra base,
+          // pois ela pode apontar para outro banco/ledger. A chave idempotente
+          // protege retries no backend canônico; failover entre bancos não é seguro.
+          noFailover: true,
           timeoutMs: 45_000,
           deadlineMs: 60_000,
         });
