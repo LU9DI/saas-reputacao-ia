@@ -590,6 +590,42 @@ test.describe('Filtra Dot — /dot/conversa', () => {
     expect(stored.payload.message).toBe('mensagem antes de expirar');
   });
 
+  test('12c. 403 no status informa acesso negado, não sessão expirada', async ({ page }) => {
+    await installGlobalGuards(page);
+    await mockApi(page, STATUS, async (route) =>
+      fulfillJson(route, 403, { error: 'Filtra Dot ainda não está habilitado.' }),
+    );
+
+    await seedSession(page, TOKEN_A);
+    await expect(page.getByRole('heading', { level: 1, name: /Filtra Dot indisponível/i })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /Sessão expirada/i })).toHaveCount(0);
+    await expect(page.getByText('Filtra Dot ainda não está habilitado.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible();
+  });
+
+  test('12d. 403 no chat não encerra a sessão e preserva o texto para correção', async ({ page }) => {
+    await installGlobalGuards(page);
+    await mockApi(page, STATUS, async (route) => fulfillJson(route, 200, statusOk().body));
+    const requests: Captured[] = [];
+    await mockApi(page, CHAT, async (route, request) => {
+      requests.push(request);
+      await fulfillJson(route, 403, {
+        ok: false,
+        code: 'DOT_PLAN_REQUIRED',
+        error: 'O plano da empresa não permite usar o Filtra Dot.',
+      });
+    });
+
+    await openConversation(page);
+    await sendMessage(page, 'mensagem bloqueada por plano');
+    await expect(page.getByRole('heading', { level: 1, name: /Conversa com o Filtra Dot/i })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /Sessão expirada/i })).toHaveCount(0);
+    await expect(page.getByText('O plano da empresa não permite usar o Filtra Dot.')).toBeVisible();
+    await expect(page.getByLabel('Mensagem pendente')).toHaveCount(0);
+    await expect(page.getByLabel('Mensagem para o Filtra Dot')).toHaveValue('mensagem bloqueada por plano');
+    expect(requests).toHaveLength(1);
+  });
+
   test('13. falha total de rede exibe erro e a retomada funciona', async ({ page }) => {
     const productionAttempts = await installGlobalGuards(page);
     await mockApi(page, STATUS, async (route) => fulfillJson(route, 200, statusOk().body));
