@@ -234,6 +234,7 @@ type Classified =
   | { kind: 'expired' }
   | { kind: 'in_progress' }
   | { kind: 'ambiguous' }
+  | { kind: 'result_expired' }
   | { kind: 'key_reused' }
   | { kind: 'budget' }
   | { kind: 'validation' }
@@ -244,6 +245,7 @@ function classify(status: number, body: DotChatBody): Classified {
   if (status === 401 || status === 403) return { kind: 'expired' };
   if (code === 'DOT_REQUEST_IN_PROGRESS') return { kind: 'in_progress' };
   if (code === 'DOT_REQUEST_AMBIGUOUS') return { kind: 'ambiguous' };
+  if (code === 'DOT_IDEMPOTENCY_RESULT_EXPIRED') return { kind: 'result_expired' };
   if (code === 'DOT_IDEMPOTENCY_KEY_REUSED') return { kind: 'key_reused' };
   if (code === 'DOT_TOKEN_LIMIT') return { kind: 'budget' };
   if (
@@ -470,6 +472,14 @@ export default function DotConversaPage() {
           setBanner({
             tone: 'warning',
             text: 'O resultado desta mensagem é incerto e exige reconciliação. Ela não será reenviada automaticamente.',
+          });
+          return;
+        }
+        if (result.kind === 'result_expired') {
+          persistOutbox({ ...pending, status: 'failed', code: 'DOT_IDEMPOTENCY_RESULT_EXPIRED' });
+          setBanner({
+            tone: 'error',
+            text: 'O prazo para recuperar a resposta expirou. Esta mensagem permanece bloqueada no servidor para evitar uma segunda execução; não a reenvie com uma nova chave.',
           });
           return;
         }
