@@ -242,7 +242,8 @@ type Classified =
 
 function classify(status: number, body: DotChatBody): Classified {
   const code = String(body?.code || '');
-  if (status === 401 || status === 403) return { kind: 'expired' };
+  if (status === 401) return { kind: 'expired' };
+  if (status === 403) return { kind: 'validation' };
   if (code === 'DOT_REQUEST_IN_PROGRESS') return { kind: 'in_progress' };
   if (code === 'DOT_REQUEST_AMBIGUOUS') return { kind: 'ambiguous' };
   if (code === 'DOT_IDEMPOTENCY_RESULT_EXPIRED') return { kind: 'result_expired' };
@@ -311,9 +312,14 @@ export default function DotConversaPage() {
         timeoutMs: 12_000,
       });
       const body = (await response.json().catch(() => ({}))) as DotStatus;
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401) {
         setAccessState('expired');
         setAccessDetail('Sua sessão expirou. Entre novamente para continuar.');
+        return;
+      }
+      if (response.status === 403) {
+        setAccessState('denied');
+        setAccessDetail(body?.error || 'Acesso ao Filtra Dot não autorizado para esta conta.');
         return;
       }
       if (!response.ok) {
