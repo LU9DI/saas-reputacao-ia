@@ -1,5 +1,5 @@
 /**
- * Métricas leves em memória — latência HTTP e contadores por rota.
+ * Métricas leves em memória — latência HTTP, contadores por rota e métricas do Filtra Dot.
  * Janela deslizante para percentis (p50 / p95).
  */
 
@@ -15,6 +15,59 @@ type Bucket = {
 const httpByRoute: Map<string, Bucket> = new Map();
 const httpGlobal: Bucket = { samples: [], count: 0, errors: 0, sumMs: 0 };
 const startedAt = Date.now();
+
+// ── Métricas do Filtra Dot (contadores acumulativos) ──────────────────────
+type DotCounters = {
+  eligible_companies: number;
+  due: number;
+  processed: number;
+  skipped: number;
+  errors: number;
+  events_created: number;
+  decisions_created: number;
+  actions_prepared: number;
+  followups_processed: number;
+  pending_sent_over_grace: number;
+  last_run_at: string | null;
+  last_success_at: string | null;
+  last_error_at: string | null;
+  last_error: string | null;
+};
+
+const dotCounters: DotCounters = {
+  eligible_companies: 0,
+  due: 0,
+  processed: 0,
+  skipped: 0,
+  errors: 0,
+  events_created: 0,
+  decisions_created: 0,
+  actions_prepared: 0,
+  followups_processed: 0,
+  pending_sent_over_grace: 0,
+  last_run_at: null,
+  last_success_at: null,
+  last_error_at: null,
+  last_error: null,
+};
+
+export function setDotCounters(partial: Partial<DotCounters>) {
+  Object.assign(dotCounters, partial);
+}
+
+export function incDotCounter(key: keyof DotCounters, value = 1) {
+  const k = key as keyof DotCounters;
+  const current = dotCounters[k];
+  if (typeof current === 'number') {
+    (dotCounters as any)[k] = current + value;
+  } else if (typeof current === 'string' || current === null) {
+    (dotCounters as any)[k] = String(value);
+  }
+}
+
+export function getDotMetrics() {
+  return { ...dotCounters };
+}
 
 function ensure(route: string): Bucket {
   let b = httpByRoute.get(route);
@@ -41,7 +94,6 @@ function percentile(sorted: number[], p: number): number | null {
 function summarize(b: Bucket) {
   const sorted = [...b.samples].sort((a, c) => a - c);
   const last = sorted.length ? sorted[sorted.length - 1] : null;
-  // last is max of window after sort - actually we want last recorded; use samples end
   const lastMs = b.samples.length ? b.samples[b.samples.length - 1] : null;
   return {
     count: b.count,
@@ -57,7 +109,6 @@ function summarize(b: Bucket) {
 }
 
 export function recordHttp(method: string, path: string, status: number, durationMs: number) {
-  // normaliza path com params óbvios
   const norm = path
     .replace(/\/api\/reviews\/[^/]+/g, '/api/reviews/:ref')
     .replace(/\/api\/empresa\/[^/]+/g, '/api/empresa/:ref')
