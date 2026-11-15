@@ -319,8 +319,10 @@ As correções anteriores relevantes permanecem: #204 (breadcrumbs), #205 (links
 
 - Teste local do Worker: `node --test infra/cloudflare/filtra-indexnow-key.test.mjs` — **27/27**.
 - Teste local do Índice: `node --test infra/cloudflare/filtra-indice-proxy.test.mjs` — **8/8**.
-- Commit, PR, CI e deploy do Worker: preencher após a publicação.
-- Produção: a confirmação dos headers `x-filtra-seo-version: v2` e do conjunto de 107 URLs depende do deploy do Worker; até lá, a borda continua na versão anterior.
+- Commit: `56f3bdf0`.
+- PR: **#215**, aberto para `main`.
+- CI: **verde** em `https://github.com/LU9DI/saas-reputacao-ia/actions/runs/43660580434`, incluindo o job `Cloudflare IndexNow Worker` e o gate do `CI summary`.
+- Deploy do Worker na Cloudflare: pendente; a confirmação dos headers `x-filtra-seo-version: v2` e do conjunto de 107 URLs depende dele. Até lá, a borda continua na versão anterior.
 
 ---
 
