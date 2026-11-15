@@ -45,6 +45,23 @@ jobs:
       - name: Test sitemap retry and stale-cache behavior
         run: node --test infra/cloudflare/filtra-indice-proxy.test.mjs
 
+  cloudflare-indexnow-worker:
+    name: Cloudflare IndexNow Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Prova a paridade Render x Vercel, o isolamento do cache v2, o 503
+      # honesto quando não há conjunto íntegro e o envio ao IndexNow.
+      - name: Test sitemap parity, fallback chain and cache versioning
+        run: node --test infra/cloudflare/filtra-indexnow-key.test.mjs
+
   backend:
     name: Backend (test + typecheck)
     runs-on: ubuntu-latest
@@ -246,17 +263,19 @@ jobs:
   summary:
     name: CI summary
     runs-on: ubuntu-latest
-    needs: [seo-brand, backend, frontend, indice, frontend-vercel]
+    needs: [seo-brand, cloudflare-indice-proxy, cloudflare-indexnow-worker, backend, frontend, indice, frontend-vercel]
     if: always()
     steps:
       - name: Check results
         run: |
           echo "SEO/brand: ${{ needs.seo-brand.result }}"
+          echo "Cloudflare Índice: ${{ needs.cloudflare-indice-proxy.result }}"
+          echo "Cloudflare IndexNow: ${{ needs.cloudflare-indexnow-worker.result }}"
           echo "Backend: ${{ needs.backend.result }}"
           echo "Frontend (static export): ${{ needs.frontend.result }}"
           echo "Frontend (Vercel): ${{ needs['frontend-vercel'].result }}"
           echo "Índice: ${{ needs.indice.result }}"
-          if [ "${{ needs.seo-brand.result }}" != "success" ] || [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ] || [ "${{ needs['frontend-vercel'].result }}" != "success" ] || [ "${{ needs.indice.result }}" != "success" ]; then
+          if [ "${{ needs.seo-brand.result }}" != "success" ] || [ "${{ needs.cloudflare-indice-proxy.result }}" != "success" ] || [ "${{ needs.cloudflare-indexnow-worker.result }}" != "success" ] || [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ] || [ "${{ needs['frontend-vercel'].result }}" != "success" ] || [ "${{ needs.indice.result }}" != "success" ]; then
             echo "CI failed"
             exit 1
           fi
