@@ -319,10 +319,23 @@ As correções anteriores relevantes permanecem: #204 (breadcrumbs), #205 (links
 
 - Teste local do Worker: `node --test infra/cloudflare/filtra-indexnow-key.test.mjs` — **27/27**.
 - Teste local do Índice: `node --test infra/cloudflare/filtra-indice-proxy.test.mjs` — **8/8**.
-- Commit: `56f3bdf0`.
-- PR: **#215**, aberto para `main`.
-- CI: **verde** em `https://github.com/LU9DI/saas-reputacao-ia/actions/runs/43660580434`, incluindo o job `Cloudflare IndexNow Worker` e o gate do `CI summary`.
-- Deploy do Worker na Cloudflare: pendente; a confirmação dos headers `x-filtra-seo-version: v2` e do conjunto de 107 URLs depende dele. Até lá, a borda continua na versão anterior.
+- Commits: `56f3bdf0` (correção), `de370bbe` (documentação); merge `5faca2f7`.
+- PR: **#215**, integrado em `main` em 2026-11-15.
+- CI: **verde** no PR (run `43660731593`) e na `main` pós-merge (runs `43660878176`, `43660878181`, `43660878117`), incluindo o job `Cloudflare IndexNow Worker` e o gate do `CI summary`.
+- Deploy do Worker na Cloudflare: **pendente por bloqueio de credencial**. O refresh token OAuth do Wrangler expirou (`invalid_grant`), não há `CLOUDFLARE_API_TOKEN` no ambiente e não há workflow de deploy. Nenhum purge, rota ou canonical foi alterado. O Worker em produção continua na versão anterior; a correção está em `main`, mas ainda não está ativa na borda.
+
+### Evidência de produção (pré-deploy, 2026-11-15)
+
+| Caminho | URLs canônicas | `/zh` | Situação |
+|---|---:|---:|---|
+| Primário Render | **107** | 0 | 200, XML |
+| Fallback Vercel | **107** | 0 | 200, XML, conjunto idêntico ao primário |
+| Borda pública | **107** | 0 | 200, `no-store`; headers `x-filtra-seo-*` ainda ausentes |
+| Legado | **97** | 28 | 125 brutas; 10 URLs ausentes; aposentado |
+
+O script `frontend/scripts/verify-sitemap-fallback.mjs` retornou **5 falhas**, todas de headers `x-filtra-seo-*` ausentes na borda, e **10/10** páginas de regressão aprovadas (200, canonical próprio, sem noindex). Isso prova que o conjunto já é 107 em todos os caminhos, mas que o Worker novo ainda não está ativo.
+
+**Para concluir o deploy:** autenticar na Cloudflare (OAuth/Wrangler ou API token com `Workers Scripts:Edit`), publicar `infra/cloudflare/filtra-indexnow-key.js` como Worker `filtra-indexnow-key`, executar `npm run seo:verify:sitemap-fallback` e confirmar `x-filtra-seo-version: v2`, `x-filtra-seo-urls: 107` e `x-filtra-seo-origin` na borda.
 
 ---
 
