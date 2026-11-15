@@ -1,8 +1,8 @@
 # Diagnóstico das ~39 mil URLs não indexadas — 2026-11-11
 
 **Repositório:** `LU9DI/saas-reputacao-ia`
-**Referência:** `main` em `c4d4e2f9983054466cce71287a62554e8a6d0f11` (merge do PR #212).
-**Branch desta rodada:** `seo/diagnostico-39k-nao-indexadas`.
+**Referência:** `main` em `bc956eb5e1c12ace1678d1a1e68bb3a5474b5a1f`.
+**Branch desta rodada:** `seo/sitemap-fallback-equivalence-2026-11-14`.
 **Natureza:** auditoria técnica com dados públicos e preparação da análise do Search Console. Nenhuma recuperação de indexação foi declarada.
 
 ---
@@ -17,7 +17,8 @@ O que foi comprovado:
 - Uma amostra de **500 URLs** respondeu **500/500 em HTTP 200**, com canonical auto-referente, `index, follow` e sem `X-Robots-Tag`.
 - Não há bloqueio técnico generalizado de robots, noindex, canonical, renderização ou 404 nas URLs publicadas.
 - Há **11.435 células entre 10 e 19 estabelecimentos** (7.678 BR + 3.757 EUA), **2.627 condados EUA no total (amostra com 253–293 palavras)** e similaridade de template de 0,57–0,70 entre células do mesmo segmento. Isso é sinal de qualidade/escala, não prova de exclusão.
-- O fallback estático do `/sitemap.xml` está defasado: 125 URLs brutas, 28 delas `/zh`, resultando em **97 URLs** quando sanitizado; o sitemap primário tem **107**. O evento de 97 URLs observado em 2026-11-11 é explicado por esse fallback.
+- O fallback estático do `/sitemap.xml` estava defasado: 125 URLs brutas, 28 delas `/zh`, resultando em **97 URLs** quando sanitizado; o sitemap primário tem **107**. O evento de 97 URLs observado em 2026-11-11 é explicado por esse fallback. A origem estática foi aposentada e substituída pelo build da Vercel; a correção e os testes estão na seção 8.
+- O build da Vercel (`https://saas-reputacao-ia.vercel.app/sitemap.xml`) serve exatamente as mesmas **107 URLs** do primário Render, com bytes idênticos. Ele passa a ser a fonte de fallback canônica.
 - O cache de borda do Índice pode servir HTML anterior ao deploy por até 24 h; isso foi observado no hub `/indice/us`.
 
 ---
@@ -159,8 +160,9 @@ Não foi encontrado soft 404 nas amostras: caminhos inválidos devolvem 404 real
 | Shards 0–4 | 10.000+10.000+10.000+10.000+3.920 | 200 |
 | Soma | **43.920** | 0 duplicatas |
 | Snapshot do frontend | **43.920** | igual ao sitemap |
-| `/sitemap.xml` primário | **107** | 107 não-zh; 0 zh |
-| Fallback estático sanitizado | **97** | 125 brutas − 28 zh; 10 URLs a menos que o primário |
+| `/sitemap.xml` primário (Render) | **107** | 107 não-zh; 0 zh |
+| Fallback Vercel | **107** | mesmo conjunto do primário; bytes idênticos |
+| Fallback estático legado (aposentado) | **97** | 125 brutas − 28 zh; 10 URLs a menos; não é mais servido |
 | GSC `submitted` (histórico) | **28.853** | 2026-11-03; só Brasil, não é indexação atual |
 | `/sitemap/5.xml` | — | 404, correto |
 
@@ -228,7 +230,7 @@ A célula BR com apenas 10 estabelecimentos ainda tem ~973 palavras. O problema 
 |---|---|---|---|
 | C1 | Não há bloqueio técnico generalizado | 500/500 em 200, canonical self, index/follow, 0 X-Robots | Alta |
 | C2 | O sitemap publicado tem 43.920 URLs, mas o GSC histórico conhecia 28.853 (só Brasil) | Comparação do sitemap com o documento de 2026-11-03 | Alta para o histórico; atual desconhecido |
-| C3 | O fallback estático do `/sitemap.xml` está defasado | estático 125, 28 `/zh`, sanitizado 97; primário 107; 97 observado publicamente às 20:41 e 107 às 20:43 | Alta |
+| C3 | O fallback estático do `/sitemap.xml` estava defasado e podia ser servido antes do primário | estático 125, 28 `/zh`, sanitizado 97; primário 107; 97 observado publicamente às 20:41 e 107 às 20:43; Vercel com 107 idênticas | Alta |
 | C4 | O cache de borda pode servir HTML anterior ao deploy por até 24 h | `/indice/us` com `Dataset` ausente e age ~7.210 s enquanto a origem já tinha `Dataset`; `?verify=1` trouxe o HTML novo | Alta |
 | C5 | Existe um volume grande de células no piso e condados EUA curtos | 11.435 células 10–19; 2.627 condados EUA no total, com amostra de 253–293 palavras; Jaccard 0,57–0,70 | Alta para os números; causalidade não provada |
 
@@ -251,7 +253,7 @@ A célula BR com apenas 10 estabelecimentos ainda tem ~973 palavras. O problema 
 | Problema | Evidência | URLs afetadas | Causa provável | Correção | Validação |
 |---|---|---:|---|---|---|
 | Sem medição de indexação | GSC inacessível | 43.920 (universo) | Falta de acesso | Exportar Indexação → Páginas e rodar o analisador | Tabela por motivo preenchida |
-| Fallback estático defasado | 125 brutas, 28 zh, 97 sanitizadas vs 107 primárias | 10 URLs ausentes no fallback | Deploy estático do `filtra-ai-frontend` não acompanha a `main` | Atualizar o deploy estático e monitorar a contagem; não servir fallback antigo | Fallback com 107 URLs não-zh e igual ao primário |
+| Fallback estático defasado | 125 brutas, 28 zh, 97 sanitizadas vs 107 primárias | 10 URLs ausentes no fallback | Deploy estático do `filtra-ai-frontend` não acompanha a `main` | Aposentar o host estático; usar Vercel como fallback canônico, cache interno v2 e guarda de paridade; 503 quando não houver conjunto íntegro | Fallback Vercel com 107 URLs não-zh e igual ao primário; `filtra-indexnow-key.test.mjs` e `seo:verify:sitemap-fallback` |
 | Se o CSV mostrar 5xx/404/noindex em URL do sitemap | Ainda não medido | Desconhecido | A confirmar | Corrigir rota/canonical/robots e cobrir com teste | Motivo zerado no GSC após recrawl |
 
 ### P1 — impacto provável na indexação
@@ -283,6 +285,13 @@ A célula BR com apenas 10 estabelecimentos ainda tem ~973 palavras. O problema 
 
 | Arquivo | Mudança | Teste |
 |---|---|---|
+| `infra/cloudflare/filtra-indexnow-key.js` | Fallback canônico na Vercel, cache interno versionado `v2`, guarda de paridade, 503 quando não há conjunto íntegro e remoção do host estático legado | `filtra-indexnow-key.test.mjs` |
+| `infra/cloudflare/filtra-indexnow-key.test.mjs` | Testes de comportamento em `vm`: legado 125→97, 107 vs 97, cache v1 ignorado, stale, 503, headers, IndexNow e robots | 27/27 |
+| `.github/workflows/ci.yml` | Job `cloudflare-indexnow-worker`; o teste do Índice também entra no gate do `CI summary` | CI |
+| `frontend/scripts/verify-sitemap-fallback.mjs` | Verificação pós-deploy de primário, Vercel, borda, legado, headers, robots e das 10 páginas de regressão | `npm run seo:verify:sitemap-fallback` |
+| `frontend/package.json` | Script `seo:verify:sitemap-fallback` | — |
+| `infra/cloudflare/README.md` | Documenta a cadeia Render → Vercel → cache v2 → 503 e a aposentadoria do host estático | — |
+| `docs/DIAGNOSTICO_39K_URLS_NAO_INDEXADAS_2026-11-11.md` | Registra a causa raiz, a correção e as evidências desta rodada | — |
 | `frontend/scripts/gsc-indexing.mjs` | Analisador da exportação Indexação → Páginas: motivos separados, contagem, %, exemplos, tipo, país, UF/segmento, prioridade e cruzamento com sitemap | `test-gsc-indexing.mjs` (7 testes) |
 | `frontend/scripts/test-gsc-indexing.mjs` | Fixtures PT/EN, BOM/CRLF, motivo com vírgula, desconhecidos, prioridades e sitemap | 7/7 |
 | `frontend/package.json` | `seo:gsc:indexing` e `test:seo:gsc:indexing` | — |
@@ -294,7 +303,8 @@ Não houve:
 - remoção em massa de URLs;
 - alteração de canonical sem evidência;
 - criação de páginas genéricas;
-- deploy manual.
+- deploy manual do frontend ou de páginas;
+- purge indiscriminado de cache Cloudflare.
 
 As correções anteriores relevantes permanecem: #204 (breadcrumbs), #205 (links para os 208 rankings de UF), #210/#211 (links contextuais), #212 (Dataset nos hubs EUA).
 
@@ -304,6 +314,13 @@ As correções anteriores relevantes permanecem: #204 (breadcrumbs), #205 (links
 - PR: **#213**, aberto para `main`.
 - CI: workflows do PR #213 (CI, Índice, frontend/static export, build e auditorias) — resultado registrado no próprio PR.
 - Nenhum deploy manual foi executado.
+
+### Correção do fallback (esta rodada)
+
+- Teste local do Worker: `node --test infra/cloudflare/filtra-indexnow-key.test.mjs` — **27/27**.
+- Teste local do Índice: `node --test infra/cloudflare/filtra-indice-proxy.test.mjs` — **8/8**.
+- Commit, PR, CI e deploy do Worker: preencher após a publicação.
+- Produção: a confirmação dos headers `x-filtra-seo-version: v2` e do conjunto de 107 URLs depende do deploy do Worker; até lá, a borda continua na versão anterior.
 
 ---
 
@@ -325,6 +342,13 @@ O relatório produzirá, a partir do arquivo:
 
 Para cruzar com o snapshot, use o mesmo sitemap central; o script baixa os 5 shards. Se usar um único shard, o cruzamento será parcial.
 
+Para validar a cadeia publicada do sitemap e do robots sem depender do GSC:
+
+    cd frontend
+    npm run seo:verify:sitemap-fallback
+
+O script compara primário (Render), fallback (Vercel), borda pública e host legado, confere `Content-Type`, `Cache-Control`, `x-filtra-seo-version`, a contagem de URLs, o robots.txt e o canonical das 10 páginas que faltavam no fallback antigo.
+
 ---
 
 ## 10. Critérios de conclusão e dependências externas
@@ -336,6 +360,7 @@ Para cruzar com o snapshot, use o mesmo sitemap central; o script baixa os 5 sha
 - Inventário completo de 43.920 URLs por país e tipo.
 - Quantificação de células no piso, condados curtos, similaridade e conteúdo.
 - Diagnóstico do fallback de 97 URLs e da defasagem do cache de borda.
+- Correção do fallback: Vercel como origem canônica, cache interno v2, guarda de paridade, 503 sem conjunto íntegro e 27 testes de comportamento.
 - Ferramenta e guia para importar a exportação de indexação.
 
 **Depende de acesso externo:**
@@ -344,7 +369,7 @@ Para cruzar com o snapshot, use o mesmo sitemap central; o script baixa os 5 sha
 - `googleCanonical` vs canonical declarada por URL (Inspeção de URL).
 - Consultas/impressões para avaliar demanda e CTR (GSC Performance).
 - Releitura do índice central e recrawl (GSC).
-- Atualização do deploy estático do `filtra-ai-frontend` (Cloudflare/Render).
+- Deploy do Worker `filtra-indexnow-key` na Cloudflare e confirmação dos headers `x-filtra-seo-version: v2` em produção.
 - CWV de campo (CrUX/PSI).
 
 **Não é possível afirmar, sem nova coleta no GSC:**
