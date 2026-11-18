@@ -1,6 +1,6 @@
 {
   "ano": "2023",
-  "geradoEm": "2026-10-29T20:45:38.564Z",
+  "geradoEm": "2026-11-18T15:53:35.658Z",
   "fonte": {
     "nome": "County Business Patterns, U.S. Census Bureau",
     "url": "https://www.census.gov/programs-surveys/cbp.html"
@@ -80,8 +80,1056 @@
       "naics": [
         "445110"
       ]
+    },
+    {
+      "slug": "residential-building-contractors",
+      "nome": "Residential building contractors",
+      "curto": "residential building construction firms",
+      "naics": [
+        "2361//"
+      ]
+    },
+    {
+      "slug": "commercial-building-contractors",
+      "nome": "Commercial building contractors",
+      "curto": "nonresidential building construction firms",
+      "naics": [
+        "2362//"
+      ]
+    },
+    {
+      "slug": "heavy-and-civil-engineering-contractors",
+      "nome": "Heavy and civil engineering contractors",
+      "curto": "other heavy and civil engineering construction firms",
+      "naics": [
+        "2379//"
+      ]
+    },
+    {
+      "slug": "roofing-contractors",
+      "nome": "Roofing contractors",
+      "curto": "roofing contractors",
+      "naics": [
+        "23816/"
+      ]
+    },
+    {
+      "slug": "electrical-contractors",
+      "nome": "Electrical contractors",
+      "curto": "electrical contractors and wiring installers",
+      "naics": [
+        "23821/"
+      ]
+    },
+    {
+      "slug": "plumbing-heating-and-a-c-contractors",
+      "nome": "Plumbing, heating and A/C contractors",
+      "curto": "plumbing, heating and air-conditioning contractors",
+      "naics": [
+        "23822/"
+      ]
+    },
+    {
+      "slug": "painting-contractors",
+      "nome": "Painting contractors",
+      "curto": "painting and wall covering contractors",
+      "naics": [
+        "23832/"
+      ]
+    },
+    {
+      "slug": "flooring-contractors",
+      "nome": "Flooring contractors",
+      "curto": "flooring contractors",
+      "naics": [
+        "23833/"
+      ]
+    },
+    {
+      "slug": "concrete-and-foundation-contractors",
+      "nome": "Concrete and foundation contractors",
+      "curto": "poured concrete foundation and structure contractors",
+      "naics": [
+        "23811/"
+      ]
+    },
+    {
+      "slug": "framing-contractors",
+      "nome": "Framing contractors",
+      "curto": "framing contractors",
+      "naics": [
+        "23813/"
+      ]
+    },
+    {
+      "slug": "masonry-contractors",
+      "nome": "Masonry contractors",
+      "curto": "masonry contractors",
+      "naics": [
+        "23814/"
+      ]
+    },
+    {
+      "slug": "drywall-and-insulation-contractors",
+      "nome": "Drywall and insulation contractors",
+      "curto": "drywall and insulation contractors",
+      "naics": [
+        "23831/"
+      ]
+    },
+    {
+      "slug": "finish-carpentry-contractors",
+      "nome": "Finish carpentry contractors",
+      "curto": "finish carpentry contractors",
+      "naics": [
+        "23835/"
+      ]
+    },
+    {
+      "slug": "site-preparation-contractors",
+      "nome": "Site preparation contractors",
+      "curto": "site preparation contractors",
+      "naics": [
+        "23891/"
+      ]
+    },
+    {
+      "slug": "other-specialty-trade-contractors",
+      "nome": "Other specialty trade contractors",
+      "curto": "all other specialty trade contractors",
+      "naics": [
+        "23899/"
+      ]
+    },
+    {
+      "slug": "bakeries",
+      "nome": "Bakeries",
+      "curto": "bakeries and tortilla manufacturers",
+      "naics": [
+        "3118//"
+      ]
+    },
+    {
+      "slug": "printing-shops",
+      "nome": "Printing shops",
+      "curto": "printing and related support businesses",
+      "naics": [
+        "3231//"
+      ]
+    },
+    {
+      "slug": "car-dealerships",
+      "nome": "Car dealerships",
+      "curto": "automobile dealers",
+      "naics": [
+        "4411//"
+      ]
+    },
+    {
+      "slug": "other-vehicle-dealers",
+      "nome": "Other vehicle dealers",
+      "curto": "motorcycle, boat and other motor vehicle dealers",
+      "naics": [
+        "4412//"
+      ]
+    },
+    {
+      "slug": "auto-parts-and-tire-stores",
+      "nome": "Auto parts and tire stores",
+      "curto": "auto parts, accessories and tire stores",
+      "naics": [
+        "4413//"
+      ]
+    },
+    {
+      "slug": "furniture-stores",
+      "nome": "Furniture stores",
+      "curto": "furniture stores",
+      "naics": [
+        "4421//"
+      ]
+    },
+    {
+      "slug": "home-furnishings-stores",
+      "nome": "Home furnishings stores",
+      "curto": "home furnishings stores",
+      "naics": [
+        "4422//"
+      ]
+    },
+    {
+      "slug": "electronics-and-appliance-stores",
+      "nome": "Electronics and appliance stores",
+      "curto": "electronics and appliance stores",
+      "naics": [
+        "4431//"
+      ]
+    },
+    {
+      "slug": "building-material-stores",
+      "nome": "Building material stores",
+      "curto": "building material and supplies dealers",
+      "naics": [
+        "4441//"
+      ]
+    },
+    {
+      "slug": "lawn-and-garden-stores",
+      "nome": "Lawn and garden stores",
+      "curto": "lawn and garden equipment and supplies stores",
+      "naics": [
+        "4442//"
+      ]
+    },
+    {
+      "slug": "specialty-food-stores",
+      "nome": "Specialty food stores",
+      "curto": "specialty food stores",
+      "naics": [
+        "4452//"
+      ]
+    },
+    {
+      "slug": "liquor-stores",
+      "nome": "Liquor stores",
+      "curto": "beer, wine and liquor stores",
+      "naics": [
+        "4453//"
+      ]
+    },
+    {
+      "slug": "gas-stations",
+      "nome": "Gas stations",
+      "curto": "gasoline stations",
+      "naics": [
+        "4471//"
+      ]
+    },
+    {
+      "slug": "clothing-stores",
+      "nome": "Clothing stores",
+      "curto": "clothing stores",
+      "naics": [
+        "4481//"
+      ]
+    },
+    {
+      "slug": "shoe-stores",
+      "nome": "Shoe stores",
+      "curto": "shoe stores",
+      "naics": [
+        "4482//"
+      ]
+    },
+    {
+      "slug": "jewelry-and-luggage-stores",
+      "nome": "Jewelry and luggage stores",
+      "curto": "jewelry, luggage and leather goods stores",
+      "naics": [
+        "4483//"
+      ]
+    },
+    {
+      "slug": "sporting-goods-and-hobby-stores",
+      "nome": "Sporting goods and hobby stores",
+      "curto": "sporting goods, hobby and musical instrument stores",
+      "naics": [
+        "4511//"
+      ]
+    },
+    {
+      "slug": "book-and-music-stores",
+      "nome": "Book and music stores",
+      "curto": "book, periodical and music stores",
+      "naics": [
+        "4512//"
+      ]
+    },
+    {
+      "slug": "florists",
+      "nome": "Florists",
+      "curto": "florists",
+      "naics": [
+        "4531//"
+      ]
+    },
+    {
+      "slug": "office-supply-and-gift-stores",
+      "nome": "Office supply and gift stores",
+      "curto": "office supplies, stationery and gift stores",
+      "naics": [
+        "4532//"
+      ]
+    },
+    {
+      "slug": "used-merchandise-stores",
+      "nome": "Used merchandise stores",
+      "curto": "used merchandise stores",
+      "naics": [
+        "4533//"
+      ]
+    },
+    {
+      "slug": "other-specialty-retailers",
+      "nome": "Other specialty retailers",
+      "curto": "all other miscellaneous store retailers",
+      "naics": [
+        "4539//"
+      ]
+    },
+    {
+      "slug": "fuel-dealers",
+      "nome": "Fuel dealers",
+      "curto": "fuel dealers",
+      "naics": [
+        "4543//"
+      ]
+    },
+    {
+      "slug": "general-freight-trucking",
+      "nome": "General freight trucking",
+      "curto": "general freight trucking companies",
+      "naics": [
+        "4841//"
+      ]
+    },
+    {
+      "slug": "specialized-freight-and-moving",
+      "nome": "Specialized freight and moving",
+      "curto": "specialized freight trucking and moving companies",
+      "naics": [
+        "4842//"
+      ]
+    },
+    {
+      "slug": "taxi-and-limousine-services",
+      "nome": "Taxi and limousine services",
+      "curto": "taxi and limousine services",
+      "naics": [
+        "4853//"
+      ]
+    },
+    {
+      "slug": "school-and-employee-buses",
+      "nome": "School and employee buses",
+      "curto": "school and employee bus transportation",
+      "naics": [
+        "4854//"
+      ]
+    },
+    {
+      "slug": "other-ground-passenger-transit",
+      "nome": "Other ground passenger transit",
+      "curto": "other transit and ground passenger transportation",
+      "naics": [
+        "4859//"
+      ]
+    },
+    {
+      "slug": "towing-and-road-support",
+      "nome": "Towing and road support",
+      "curto": "support activities for road transportation, including towing",
+      "naics": [
+        "4884//"
+      ]
+    },
+    {
+      "slug": "couriers-and-delivery",
+      "nome": "Couriers and delivery",
+      "curto": "couriers and express delivery services",
+      "naics": [
+        "4921//"
+      ]
+    },
+    {
+      "slug": "warehousing-and-storage",
+      "nome": "Warehousing and storage",
+      "curto": "warehousing and storage facilities",
+      "naics": [
+        "4931//"
+      ]
+    },
+    {
+      "slug": "newspaper-and-book-publishers",
+      "nome": "Newspaper and book publishers",
+      "curto": "newspaper, periodical, book and directory publishers",
+      "naics": [
+        "5111//"
+      ]
+    },
+    {
+      "slug": "film-and-video",
+      "nome": "Film and video",
+      "curto": "motion picture and video industries",
+      "naics": [
+        "5121//"
+      ]
+    },
+    {
+      "slug": "radio-and-tv-broadcasters",
+      "nome": "Radio and TV broadcasters",
+      "curto": "radio and television broadcasting",
+      "naics": [
+        "5151//"
+      ]
+    },
+    {
+      "slug": "data-processing-and-hosting",
+      "nome": "Data processing and hosting",
+      "curto": "data processing, hosting and related services",
+      "naics": [
+        "5182//"
+      ]
+    },
+    {
+      "slug": "banks-and-credit-unions",
+      "nome": "Banks and credit unions",
+      "curto": "depository credit institutions",
+      "naics": [
+        "5221//"
+      ]
+    },
+    {
+      "slug": "lenders-and-credit-companies",
+      "nome": "Lenders and credit companies",
+      "curto": "nondepository credit intermediation, including lenders",
+      "naics": [
+        "5222//"
+      ]
+    },
+    {
+      "slug": "securities-brokers",
+      "nome": "Securities brokers",
+      "curto": "securities and commodity contracts brokerages",
+      "naics": [
+        "5231//"
+      ]
+    },
+    {
+      "slug": "investment-advisors",
+      "nome": "Investment advisors",
+      "curto": "other financial investment activities and advisors",
+      "naics": [
+        "5239//"
+      ]
+    },
+    {
+      "slug": "insurance-carriers",
+      "nome": "Insurance carriers",
+      "curto": "insurance carriers",
+      "naics": [
+        "5241//"
+      ]
+    },
+    {
+      "slug": "insurance-agencies",
+      "nome": "Insurance agencies",
+      "curto": "insurance agencies and brokerages",
+      "naics": [
+        "5242//"
+      ]
+    },
+    {
+      "slug": "real-estate-lessors",
+      "nome": "Real estate lessors",
+      "curto": "lessors of real estate",
+      "naics": [
+        "5311//"
+      ]
+    },
+    {
+      "slug": "real-estate-agents-and-brokers",
+      "nome": "Real estate agents and brokers",
+      "curto": "offices of real estate agents and brokers",
+      "naics": [
+        "5312//"
+      ]
+    },
+    {
+      "slug": "real-estate-services",
+      "nome": "Real estate services",
+      "curto": "activities related to real estate, including property managers and appraisers",
+      "naics": [
+        "5313//"
+      ]
+    },
+    {
+      "slug": "vehicle-rental-and-leasing",
+      "nome": "Vehicle rental and leasing",
+      "curto": "automotive equipment rental and leasing",
+      "naics": [
+        "5321//"
+      ]
+    },
+    {
+      "slug": "consumer-goods-rental",
+      "nome": "Consumer goods rental",
+      "curto": "consumer goods rental, including video and party rental",
+      "naics": [
+        "5322//"
+      ]
+    },
+    {
+      "slug": "general-rental-centers",
+      "nome": "General rental centers",
+      "curto": "general rental centers",
+      "naics": [
+        "5323//"
+      ]
+    },
+    {
+      "slug": "law-firms",
+      "nome": "Law firms",
+      "curto": "legal services and law offices",
+      "naics": [
+        "5411//"
+      ]
+    },
+    {
+      "slug": "accounting-and-tax-services",
+      "nome": "Accounting and tax services",
+      "curto": "accounting, tax preparation, bookkeeping and payroll services",
+      "naics": [
+        "5412//"
+      ]
+    },
+    {
+      "slug": "architecture-and-engineering-firms",
+      "nome": "Architecture and engineering firms",
+      "curto": "architectural, engineering and related services",
+      "naics": [
+        "5413//"
+      ]
+    },
+    {
+      "slug": "specialized-design-studios",
+      "nome": "Specialized design studios",
+      "curto": "specialized design services",
+      "naics": [
+        "5414//"
+      ]
+    },
+    {
+      "slug": "it-and-software-consultancies",
+      "nome": "IT and software consultancies",
+      "curto": "computer systems design and related services",
+      "naics": [
+        "5415//"
+      ]
+    },
+    {
+      "slug": "business-consultancies",
+      "nome": "Business consultancies",
+      "curto": "management, scientific and technical consulting services",
+      "naics": [
+        "5416//"
+      ]
+    },
+    {
+      "slug": "research-laboratories",
+      "nome": "Research laboratories",
+      "curto": "scientific research and development services",
+      "naics": [
+        "5417//"
+      ]
+    },
+    {
+      "slug": "advertising-agencies",
+      "nome": "Advertising agencies",
+      "curto": "advertising, public relations and related agencies",
+      "naics": [
+        "5418//"
+      ]
+    },
+    {
+      "slug": "photography-studios",
+      "nome": "Photography studios",
+      "curto": "photographic services and studios",
+      "naics": [
+        "54192/"
+      ]
+    },
+    {
+      "slug": "veterinary-clinics",
+      "nome": "Veterinary clinics",
+      "curto": "veterinary services and animal hospitals",
+      "naics": [
+        "54194/"
+      ]
+    },
+    {
+      "slug": "other-professional-services",
+      "nome": "Other professional services",
+      "curto": "all other professional, scientific and technical services",
+      "naics": [
+        "54199/"
+      ]
+    },
+    {
+      "slug": "staffing-and-employment-agencies",
+      "nome": "Staffing and employment agencies",
+      "curto": "employment services and staffing agencies",
+      "naics": [
+        "5613//"
+      ]
+    },
+    {
+      "slug": "business-support-services",
+      "nome": "Business support services",
+      "curto": "business support services, including call centers and copy shops",
+      "naics": [
+        "5614//"
+      ]
+    },
+    {
+      "slug": "travel-agencies",
+      "nome": "Travel agencies",
+      "curto": "travel arrangement and reservation services",
+      "naics": [
+        "5615//"
+      ]
+    },
+    {
+      "slug": "security-services",
+      "nome": "Security services",
+      "curto": "investigation, guard and security services",
+      "naics": [
+        "5616//"
+      ]
+    },
+    {
+      "slug": "pest-control",
+      "nome": "Pest control",
+      "curto": "exterminating and pest control services",
+      "naics": [
+        "56171/"
+      ]
+    },
+    {
+      "slug": "janitorial-services",
+      "nome": "Janitorial services",
+      "curto": "janitorial services",
+      "naics": [
+        "56172/"
+      ]
+    },
+    {
+      "slug": "landscaping-services",
+      "nome": "Landscaping services",
+      "curto": "landscaping services",
+      "naics": [
+        "56173/"
+      ]
+    },
+    {
+      "slug": "carpet-and-upholstery-cleaning",
+      "nome": "Carpet and upholstery cleaning",
+      "curto": "carpet and upholstery cleaning services",
+      "naics": [
+        "56174/"
+      ]
+    },
+    {
+      "slug": "other-building-services",
+      "nome": "Other building services",
+      "curto": "other services to buildings and dwellings",
+      "naics": [
+        "56179/"
+      ]
+    },
+    {
+      "slug": "other-support-services",
+      "nome": "Other support services",
+      "curto": "other support services, including packaging and convention organizers",
+      "naics": [
+        "5619//"
+      ]
+    },
+    {
+      "slug": "waste-collection",
+      "nome": "Waste collection",
+      "curto": "waste collection services",
+      "naics": [
+        "5621//"
+      ]
+    },
+    {
+      "slug": "waste-treatment-and-disposal",
+      "nome": "Waste treatment and disposal",
+      "curto": "waste treatment and disposal facilities",
+      "naics": [
+        "5622//"
+      ]
+    },
+    {
+      "slug": "remediation-services",
+      "nome": "Remediation services",
+      "curto": "remediation and other waste management services",
+      "naics": [
+        "5629//"
+      ]
+    },
+    {
+      "slug": "elementary-and-high-schools",
+      "nome": "Elementary and high schools",
+      "curto": "elementary and secondary schools",
+      "naics": [
+        "6111//"
+      ]
+    },
+    {
+      "slug": "colleges-and-universities",
+      "nome": "Colleges and universities",
+      "curto": "colleges, universities and professional schools",
+      "naics": [
+        "6113//"
+      ]
+    },
+    {
+      "slug": "business-and-computer-training",
+      "nome": "Business and computer training",
+      "curto": "business schools and computer and management training",
+      "naics": [
+        "6114//"
+      ]
+    },
+    {
+      "slug": "technical-and-trade-schools",
+      "nome": "Technical and trade schools",
+      "curto": "technical and trade schools",
+      "naics": [
+        "6115//"
+      ]
+    },
+    {
+      "slug": "other-schools-and-instruction",
+      "nome": "Other schools and instruction",
+      "curto": "other schools and instruction, including driving, language and fine arts",
+      "naics": [
+        "6116//"
+      ]
+    },
+    {
+      "slug": "educational-support-services",
+      "nome": "Educational support services",
+      "curto": "educational support services",
+      "naics": [
+        "6117//"
+      ]
+    },
+    {
+      "slug": "outpatient-care-centers",
+      "nome": "Outpatient care centers",
+      "curto": "outpatient care centers",
+      "naics": [
+        "6214//"
+      ]
+    },
+    {
+      "slug": "medical-and-diagnostic-labs",
+      "nome": "Medical and diagnostic labs",
+      "curto": "medical and diagnostic laboratories",
+      "naics": [
+        "6215//"
+      ]
+    },
+    {
+      "slug": "home-health-care",
+      "nome": "Home health care",
+      "curto": "home health care services",
+      "naics": [
+        "6216//"
+      ]
+    },
+    {
+      "slug": "other-ambulatory-care",
+      "nome": "Other ambulatory care",
+      "curto": "other ambulatory health care services, including ambulance services",
+      "naics": [
+        "6219//"
+      ]
+    },
+    {
+      "slug": "general-hospitals",
+      "nome": "General hospitals",
+      "curto": "general medical and surgical hospitals",
+      "naics": [
+        "6221//"
+      ]
+    },
+    {
+      "slug": "nursing-care-facilities",
+      "nome": "Nursing care facilities",
+      "curto": "nursing care facilities",
+      "naics": [
+        "6231//"
+      ]
+    },
+    {
+      "slug": "residential-mental-health-facilities",
+      "nome": "Residential mental health facilities",
+      "curto": "residential intellectual, developmental disability, mental health and substance abuse facilities",
+      "naics": [
+        "6232//"
+      ]
+    },
+    {
+      "slug": "assisted-living-communities",
+      "nome": "Assisted living communities",
+      "curto": "continuing care retirement communities and assisted living facilities",
+      "naics": [
+        "6233//"
+      ]
+    },
+    {
+      "slug": "other-residential-care",
+      "nome": "Other residential care",
+      "curto": "other residential care facilities",
+      "naics": [
+        "6239//"
+      ]
+    },
+    {
+      "slug": "individual-and-family-services",
+      "nome": "Individual and family services",
+      "curto": "individual and family services",
+      "naics": [
+        "6241//"
+      ]
+    },
+    {
+      "slug": "community-food-and-housing-services",
+      "nome": "Community food and housing services",
+      "curto": "community food and housing and emergency services",
+      "naics": [
+        "6242//"
+      ]
+    },
+    {
+      "slug": "vocational-rehabilitation",
+      "nome": "Vocational rehabilitation",
+      "curto": "vocational rehabilitation services",
+      "naics": [
+        "6243//"
+      ]
+    },
+    {
+      "slug": "child-day-care",
+      "nome": "Child day care",
+      "curto": "child day care services",
+      "naics": [
+        "6244//"
+      ]
+    },
+    {
+      "slug": "performing-arts-companies",
+      "nome": "Performing arts companies",
+      "curto": "performing arts companies",
+      "naics": [
+        "7111//"
+      ]
+    },
+    {
+      "slug": "spectator-sports",
+      "nome": "Spectator sports",
+      "curto": "spectator sports teams and clubs",
+      "naics": [
+        "7112//"
+      ]
+    },
+    {
+      "slug": "event-promoters",
+      "nome": "Event promoters",
+      "curto": "promoters of performing arts, sports and similar events",
+      "naics": [
+        "7113//"
+      ]
+    },
+    {
+      "slug": "independent-artists-and-writers",
+      "nome": "Independent artists and writers",
+      "curto": "independent artists, writers and performers",
+      "naics": [
+        "7115//"
+      ]
+    },
+    {
+      "slug": "museums-and-historic-sites",
+      "nome": "Museums and historic sites",
+      "curto": "museums, historical sites and similar institutions",
+      "naics": [
+        "7121//"
+      ]
+    },
+    {
+      "slug": "amusement-parks-and-arcades",
+      "nome": "Amusement parks and arcades",
+      "curto": "amusement parks and arcades",
+      "naics": [
+        "7131//"
+      ]
+    },
+    {
+      "slug": "gambling-venues",
+      "nome": "Gambling venues",
+      "curto": "gambling industries",
+      "naics": [
+        "7132//"
+      ]
+    },
+    {
+      "slug": "golf-courses-and-country-clubs",
+      "nome": "Golf courses and country clubs",
+      "curto": "golf courses and country clubs",
+      "naics": [
+        "71391/"
+      ]
+    },
+    {
+      "slug": "marinas",
+      "nome": "Marinas",
+      "curto": "marinas",
+      "naics": [
+        "71393/"
+      ]
+    },
+    {
+      "slug": "bowling-centers",
+      "nome": "Bowling centers",
+      "curto": "bowling centers",
+      "naics": [
+        "71395/"
+      ]
+    },
+    {
+      "slug": "other-recreation-venues",
+      "nome": "Other recreation venues",
+      "curto": "all other amusement and recreation industries",
+      "naics": [
+        "71399/"
+      ]
+    },
+    {
+      "slug": "rv-parks-and-campgrounds",
+      "nome": "RV parks and campgrounds",
+      "curto": "RV parks and recreational camps",
+      "naics": [
+        "7212//"
+      ]
+    },
+    {
+      "slug": "rooming-and-boarding-houses",
+      "nome": "Rooming and boarding houses",
+      "curto": "rooming and boarding houses and dormitories",
+      "naics": [
+        "7213//"
+      ]
+    },
+    {
+      "slug": "caterers-and-food-trucks",
+      "nome": "Caterers and food trucks",
+      "curto": "special food services, including caterers and mobile food services",
+      "naics": [
+        "7223//"
+      ]
+    },
+    {
+      "slug": "electronics-repair",
+      "nome": "Electronics repair",
+      "curto": "electronic and precision equipment repair and maintenance",
+      "naics": [
+        "8112//"
+      ]
+    },
+    {
+      "slug": "machinery-repair",
+      "nome": "Machinery repair",
+      "curto": "commercial and industrial machinery repair",
+      "naics": [
+        "8113//"
+      ]
+    },
+    {
+      "slug": "home-goods-repair",
+      "nome": "Home goods repair",
+      "curto": "personal and household goods repair and maintenance",
+      "naics": [
+        "8114//"
+      ]
+    },
+    {
+      "slug": "spas-and-other-personal-care",
+      "nome": "Spas and other personal care",
+      "curto": "other personal care services, including day spas and diet centers",
+      "naics": [
+        "81219/"
+      ]
+    },
+    {
+      "slug": "funeral-homes-and-cemeteries",
+      "nome": "Funeral homes and cemeteries",
+      "curto": "death care services",
+      "naics": [
+        "8122//"
+      ]
+    },
+    {
+      "slug": "dry-cleaning-and-laundry",
+      "nome": "Dry cleaning and laundry",
+      "curto": "drycleaning and laundry services",
+      "naics": [
+        "8123//"
+      ]
+    },
+    {
+      "slug": "other-personal-services",
+      "nome": "Other personal services",
+      "curto": "other personal services, including pet care, photofinishing and parking",
+      "naics": [
+        "8129//"
+      ]
+    },
+    {
+      "slug": "religious-organizations",
+      "nome": "Religious organizations",
+      "curto": "religious organizations",
+      "naics": [
+        "8131//"
+      ]
+    },
+    {
+      "slug": "grantmaking-foundations",
+      "nome": "Grantmaking foundations",
+      "curto": "grantmaking and giving services",
+      "naics": [
+        "8132//"
+      ]
+    },
+    {
+      "slug": "advocacy-organizations",
+      "nome": "Advocacy organizations",
+      "curto": "social advocacy organizations",
+      "naics": [
+        "8133//"
+      ]
+    },
+    {
+      "slug": "civic-and-social-clubs",
+      "nome": "Civic and social clubs",
+      "curto": "civic and social organizations",
+      "naics": [
+        "8134//"
+      ]
+    },
+    {
+      "slug": "business-and-professional-associations",
+      "nome": "Business and professional associations",
+      "curto": "business, professional, labor and political organizations",
+      "naics": [
+        "8139//"
+      ]
     }
   ],
   "linhasLidas": 1100961,
-  "linhasNoEscopo": 23444
+  "linhasNoEscopo": 186988
 }
