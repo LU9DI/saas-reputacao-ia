@@ -51,3 +51,15 @@ test('condados: lê arquivo do Census e gera slugs únicos', () => {
   const r = resolverCondados(['08031', '29510', '29189', '72001', '99999'], c);
   assert.deepEqual(r.map((x) => `${x.state}/${x.slug}`), ['CO/denver-county', 'MO/st-louis-county', 'MO/st-louis-city']);
 });
+
+test('selecionarSegmentos: descarta só opcionais com poucos condados', async () => {
+  const { selecionarSegmentos } = await import('./cbp.mjs');
+  const segs = [{ slug: 'base' }, { slug: 'raro', opcional: true }, { slug: 'comum', opcional: true }];
+  const dados = new Map();
+  for (let i = 0; i < 30; i += 1) dados.set(`01${String(i).padStart(3, '0')}`, { base: { e: 12 }, comum: { e: 10 }, ...(i < 3 ? { raro: { e: 50 } } : {}) });
+  dados.set('99001', { base: { e: 3 }, comum: { e: 9 } }); // abaixo do mínimo: não conta
+  const r = selecionarSegmentos(segs, dados, 10, 25);
+  assert.deepEqual(r.mantidos, ['base', 'comum']);
+  assert.deepEqual(r.descartados, [{ slug: 'raro', condados: 3 }]);
+  assert.equal(r.porSegmento.comum, 30);
+});
