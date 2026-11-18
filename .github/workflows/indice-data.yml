@@ -95,6 +95,24 @@ jobs:
             echo "::error title=Falha na ingestão::${MSG}"
             exit "$CODE"
           fi
+      - name: Exportar URLs novas dos EUA (blocos de 50 mil)
+        if: ${{ inputs.base == 'us' }}
+        working-directory: indice
+        run: |
+          git fetch --depth=1 origin main
+          node scripts/export-urls-gsc.mjs --baseline=origin/main --out="$RUNNER_TEMP/gsc-export" | tee "$RUNNER_TEMP/export.log"
+          echo "::notice title=URLs novas dos EUA::$(head -4 "$RUNNER_TEMP/gsc-export/RESUMO.txt" | tr '\n' ' ')"
+      - name: Anexar URLs exportadas
+        if: ${{ inputs.base == 'us' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: urls-novas-us
+          path: ${{ runner.temp }}/gsc-export/
+          retention-days: 30
+      - name: Sincronizar snapshot do site principal
+        if: ${{ inputs.base == 'us' }}
+        working-directory: frontend
+        run: node scripts/sync-indice-snapshot.mjs
       - name: Abrir PR
         env:
           GH_TOKEN: ${{ github.token }}
@@ -111,6 +129,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BR"
           git add -f "$DIR"
+          git add -f frontend/src/generated/indice-snapshot.json 2>/dev/null || true
           git commit -m "chore(indice): dados $BASE, $COMP"
           git push -u origin "$BR"
           gh pr create --title "$TIT" --body "Dados regenerados pelo workflow. Conferir meta.json antes do merge." --base main || echo "::warning title=PR::Não foi possível abrir o PR automaticamente. A branch $BR foi enviada; abra o PR manualmente."

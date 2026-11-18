@@ -102,3 +102,27 @@ export function resolverCondados(chaves, condados) {
   }
   return saida;
 }
+
+/**
+ * Segmentos marcados `opcional` só entram na base se tiverem condados suficientes com
+ * `minimo` estabelecimentos. Evita publicar categorias quase vazias (páginas finas) e
+ * evita que um código NAICS errado ou raro derrube a ingestão inteira.
+ * @param {{slug:string, opcional?:boolean}[]} segmentos
+ * @param {Map<string, Record<string,{e:number}>>} dados "SS CCC" -> { [segmento]: { e } }
+ * @returns {{mantidos: string[], descartados: {slug:string, condados:number}[], porSegmento: Record<string, number>}}
+ */
+export function selecionarSegmentos(segmentos, dados, minimo, minCondados) {
+  const porSegmento = Object.fromEntries(segmentos.map((s) => [s.slug, 0]));
+  for (const porSeg of dados.values()) {
+    for (const [slug, r] of Object.entries(porSeg)) {
+      if (slug in porSegmento && r.e >= minimo) porSegmento[slug] += 1;
+    }
+  }
+  const mantidos = [];
+  const descartados = [];
+  for (const s of segmentos) {
+    if (s.opcional && porSegmento[s.slug] < minCondados) descartados.push({ slug: s.slug, condados: porSegmento[s.slug] });
+    else mantidos.push(s.slug);
+  }
+  return { mantidos, descartados, porSegmento };
+}
