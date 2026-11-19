@@ -155,11 +155,35 @@ function contarUrlsEUA() {
   return total;
 }
 
+// Piloto do Reino Unido (indice/data-uk): mesma regra de indice/src/lib/uk.ts#ukCaminhos.
+function contarUrlsUK() {
+  const dir = path.resolve(frontendDir, '..', 'indice', 'data-uk');
+  if (!existsSync(path.join(dir, 'meta.json'))) return 0;
+  const ukMeta = JSON.parse(readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+  const autoridades = new Set(JSON.parse(readFileSync(path.join(dir, 'authorities.json'), 'utf8')).map((a) => `${a.nation}/${a.slug}`));
+  let total = 2; // /uk e /uk/methodology
+  for (const file of readdirSync(path.join(dir, 'stats'))) {
+    if (!file.endsWith('.json')) continue;
+    const nacao = file.replace(/\.json$/, '');
+    const porAuth = JSON.parse(readFileSync(path.join(dir, 'stats', file), 'utf8'));
+    let n = 0;
+    for (const [slug, porSeg] of Object.entries(porAuth)) {
+      if (!autoridades.has(`${nacao}/${slug}`)) continue;
+      const segs = ukMeta.segmentos.filter((sg) => porSeg[sg.slug] && porSeg[sg.slug].e >= ukMeta.minimoParaIndexar).length;
+      if (segs) n += 1 + segs;
+    }
+    if (n) total += 1 + n;
+  }
+  return total;
+}
+
 const paginasBase = 4;
 const urlsEUA = contarUrlsEUA();
+const urlsUK = contarUrlsUK();
 const totalUrls =
   paginasBase +
   urlsEUA +
+  urlsUK +
   ufsComPagina.size +
   municipiosTodos.size +
   celulasComPagina +
@@ -195,6 +219,7 @@ const snapshot = {
     rankingsAtivosSegmentos,
     rankingsAtivosUF,
     eua: urlsEUA,
+    uk: urlsUK,
     total: totalUrls,
   },
   segmentos: Object.fromEntries(segmentos),

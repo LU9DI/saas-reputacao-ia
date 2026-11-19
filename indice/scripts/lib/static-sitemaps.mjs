@@ -212,3 +212,40 @@ export function caminhosUS({ meta, counties, stats, estados }) {
   }
   return caminhos;
 }
+
+/** Ordem das nações: espelha `Object.keys(NACOES_UK)` em src/lib/uk-nations.ts. */
+export const NACOES_UK_ORDEM = ['england', 'scotland', 'wales', 'northern-ireland'];
+
+/**
+ * Caminhos do piloto do Reino Unido. Espelha `src/lib/uk.ts: ukCaminhos()`:
+ * `/uk`, `/uk/methodology`, uma por nação com autoridade publicável, uma por autoridade
+ * e uma por célula autoridade x categoria com `e >= minimoParaIndexar`.
+ */
+export function caminhosUK({ meta, authorities, stats }) {
+  if (!meta || !authorities?.length) return [];
+  const minimo = meta.minimoParaIndexar;
+  const nomePorChave = new Map(authorities.map((a) => [`${a.nation}/${a.slug}`, a.nome]));
+  const caminhos = ['/uk', '/uk/methodology'];
+  for (const nacao of NACOES_UK_ORDEM) {
+    const autoridades = Object.keys(stats[nacao] ?? {})
+      .map((slug) => {
+        const nome = nomePorChave.get(`${nacao}/${slug}`);
+        const porSeg = stats[nacao][slug];
+        const segs = meta.segmentos
+          .map((seg) => ({ slug: seg.slug, e: porSeg[seg.slug]?.e ?? 0 }))
+          .filter((x) => x.e >= minimo)
+          .sort((a, b) => b.e - a.e);
+        if (!nome || !segs.length) return null;
+        return { slug, nome, total: segs.reduce((t, x) => t + x.e, 0), segs };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.total - a.total || a.nome.localeCompare(b.nome));
+    if (!autoridades.length) continue;
+    caminhos.push(`/uk/${nacao}`);
+    for (const a of autoridades) {
+      caminhos.push(`/uk/${nacao}/${a.slug}`);
+      for (const seg of a.segs) caminhos.push(`/uk/${nacao}/${a.slug}/${seg.slug}`);
+    }
+  }
+  return caminhos;
+}

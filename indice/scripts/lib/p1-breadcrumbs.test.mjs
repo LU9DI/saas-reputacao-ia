@@ -35,7 +35,7 @@ function blocosMigalhas(fonte) {
 const PAGINAS = listarPaginas();
 
 test('toda página do Índice renderiza Migalhas com indice e caminhoAtual', () => {
-  assert.equal(PAGINAS.length, 15, 'o app do Índice deve ter as 15 páginas esperadas');
+  assert.equal(PAGINAS.length, 20, 'o app do Índice deve ter as 20 páginas esperadas (15 + 5 do UK)');
   const falhas = [];
   for (const pagina of PAGINAS) {
     const fonte = lerApp(pagina);
@@ -67,20 +67,20 @@ test('Migalhas é a única fonte do BreadcrumbList das rotas do Índice', () => 
   assert.deepEqual(paginasComJsonLdDeTrilha, [], 'nenhuma página deve montar BreadcrumbList por conta própria');
 });
 
-test('a trilha do Brasil enraíza em Índice e a dos EUA em US Index', () => {
+test('a trilha do Brasil enraíza em Índice, a dos EUA em US Index e a do UK em UK Index', () => {
   for (const pagina of PAGINAS) {
     const fonte = lerApp(pagina);
     const blocos = blocosMigalhas(fonte);
     if (blocos.length === 0) continue;
-    const raizEsperada = pagina.startsWith('(us)/') ? 'US Index' : 'Índice';
+    const raizEsperada = pagina.startsWith('(us)/') ? 'US Index' : pagina.startsWith('(uk)/') ? 'UK Index' : 'Índice';
     for (const bloco of blocos) {
       assert.ok(bloco.includes(raizEsperada), `${pagina}: trilha deve começar em "${raizEsperada}"`);
     }
   }
 });
 
-test('páginas dos EUA usam o rótulo acessível em inglês', () => {
-  for (const pagina of PAGINAS.filter((p) => p.startsWith('(us)/'))) {
+test('páginas dos EUA e do UK usam o rótulo acessível em inglês', () => {
+  for (const pagina of PAGINAS.filter((p) => p.startsWith('(us)/') || p.startsWith('(uk)/'))) {
     const fonte = lerApp(pagina);
     for (const bloco of blocosMigalhas(fonte)) {
       assert.ok(bloco.includes('rotulo="You are here"'), `${pagina}: breadcrumb dos EUA deve usar "You are here"`);

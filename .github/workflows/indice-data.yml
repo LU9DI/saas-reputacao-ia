@@ -9,7 +9,7 @@ on:
         description: 'AAAA-MM (vazio = mais recente disponível)'
         required: false
       base:
-        description: 'br (CNPJ, padrão) ou us (County Business Patterns, EUA)'
+        description: 'br (CNPJ, padrão), us (County Business Patterns, EUA) ou uk (UK Business Counts, Reino Unido)'
         required: false
         default: 'br'
       sondar:
@@ -83,6 +83,8 @@ jobs:
           set +e
           if [ "$BASE" = "us" ]; then
             node scripts/ingest-us.mjs 2>&1 | tee /tmp/ingest.log
+          elif [ "$BASE" = "uk" ]; then
+            node scripts/ingest-uk.mjs 2>&1 | tee /tmp/ingest.log
           else
             ARGS=""
             if [ -n "$COMP" ]; then ARGS="--competencia=$COMP"; fi
@@ -95,22 +97,24 @@ jobs:
             echo "::error title=Falha na ingestão::${MSG}"
             exit "$CODE"
           fi
-      - name: Exportar URLs novas dos EUA (blocos de 50 mil)
-        if: ${{ inputs.base == 'us' }}
+      - name: Exportar URLs novas (blocos de 50 mil)
+        if: ${{ inputs.base == 'us' || inputs.base == 'uk' }}
         working-directory: indice
+        env:
+          BASE: ${{ inputs.base }}
         run: |
           git fetch --depth=1 origin main
-          node scripts/export-urls-gsc.mjs --baseline=origin/main --out="$RUNNER_TEMP/gsc-export" | tee "$RUNNER_TEMP/export.log"
-          echo "::notice title=URLs novas dos EUA::$(head -4 "$RUNNER_TEMP/gsc-export/RESUMO.txt" | tr '\n' ' ')"
+          node scripts/export-urls-gsc.mjs --base="$BASE" --baseline=origin/main --out="$RUNNER_TEMP/gsc-export" | tee "$RUNNER_TEMP/export.log"
+          echo "::notice title=URLs novas ($BASE)::$(head -4 "$RUNNER_TEMP/gsc-export/RESUMO.txt" | tr '\n' ' ')"
       - name: Anexar URLs exportadas
-        if: ${{ inputs.base == 'us' }}
+        if: ${{ inputs.base == 'us' || inputs.base == 'uk' }}
         uses: actions/upload-artifact@v4
         with:
-          name: urls-novas-us
+          name: urls-novas-${{ inputs.base }}
           path: ${{ runner.temp }}/gsc-export/
           retention-days: 30
       - name: Sincronizar snapshot do site principal
-        if: ${{ inputs.base == 'us' }}
+        if: ${{ inputs.base == 'us' || inputs.base == 'uk' }}
         working-directory: frontend
         run: node scripts/sync-indice-snapshot.mjs
       - name: Abrir PR
@@ -121,6 +125,9 @@ jobs:
           if [ "$BASE" = "us" ]; then
             COMP=$(node -p "require('./indice/data-us/meta.json').ano")
             BR="indice/dados-us-v3-$COMP-${GITHUB_RUN_ID}"; DIR=indice/data-us; TIT="Índice EUA: dados CBP $COMP (+categorias)"
+          elif [ "$BASE" = "uk" ]; then
+            COMP=$(node -p "require('./indice/data-uk/meta.json').ano")
+            BR="indice/dados-uk-$COMP-${GITHUB_RUN_ID}"; DIR=indice/data-uk; TIT="Índice Reino Unido: dados UK Business Counts $COMP"
           else
             COMP=$(node -p "require('./indice/data/meta.json').competencia")
             BR="indice/dados-$COMP"; DIR=indice/data; TIT="Índice: dados $COMP"
