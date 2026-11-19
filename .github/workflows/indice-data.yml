@@ -52,7 +52,10 @@ jobs:
           mkdir -p /tmp/insp
           case "$ZIP" in
             *.zip) ;;
-            *) T=$(curl -sS -L -m 120 "$ZIP" | tr -d '\r' | head -12 | cut -c1-200 | base64 -w0); echo "::error title=Inspecao::$T"; exit 1;;
+            *) curl -sS -L -m 300 "$ZIP" -o /tmp/insp/raw
+               iconv -f cp932 -t utf-8 -c /tmp/insp/raw > /tmp/insp/txt 2>/dev/null || cp /tmp/insp/raw /tmp/insp/txt
+               if [ -n "$FILTRO" ]; then B=$(grep -E "$FILTRO" /tmp/insp/txt | head -${NLIN:-30} | cut -c1-${NCOL:-260}); else B=$(head -${NLIN:-12} /tmp/insp/txt | cut -c1-${NCOL:-200}); fi
+               T=$(printf 'bytes: %s linhas: %s\n%s' "$(wc -c </tmp/insp/raw)" "$(wc -l </tmp/insp/txt)" "$B" | tr -d '\r' | head -c 20000 | base64 -w0); echo "::error title=Inspecao::$T"; exit 1;;
           esac
           curl -sS -L -m 300 -o /tmp/insp/a.zip "$ZIP"
           LIST=$(unzip -l /tmp/insp/a.zip | cut -c1-100)
