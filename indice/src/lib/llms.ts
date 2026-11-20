@@ -15,6 +15,7 @@ import { dataCurta, mesCurto, mesPorExtenso, n, pct } from './format';
 import { BASE, FONTE_DADOS_ABERTOS_URL, FONTE_URL } from './seo';
 import { UFS, ufDeSlug } from './ufs';
 import { anosPublicadosDoSegmento, getPaginaRanking, nomeDoMunicipio } from './rankings';
+import { markdownIntl, secaoLlmsIntl } from './llms-intl';
 
 /**
  * Representações em texto para agentes (GEO/AEO).
@@ -128,6 +129,7 @@ export function llmsIndex(): string {
     '## Segmentos acompanhados',
     getSegmentos().map((s) => `- ${s.nome} (${s.slug}; CNAE ${s.classes.join(', ')})`).join('\n'),
     '',
+    ...secaoLlmsIntl(false),
     '## Versões em Markdown',
     'As páginas principais, as UFs e os rankings de aberturas têm uma versão `.md` com o mesmo dado, sem navegação nem scripts, em `https://filtraai.com/indice/md/<caminho>`. A URL canônica continua sendo a página HTML. As versões `.md` ficam fora do sitemap e são descobertas por este arquivo.',
     '',
@@ -187,6 +189,7 @@ export function llmsFull(): string {
       (u) => `- ${u.nome} (${u.sigla}): ${html(`/${u.sigla.toLowerCase()}`)} · Markdown: ${md(`/${u.sigla.toLowerCase()}`)}`,
     ),
     '',
+    ...secaoLlmsIntl(true),
     '## Fonte e atualização',
     fonte(),
     '',
@@ -202,6 +205,7 @@ export function markdownDaPagina(caminho: string[]): Markdown | null {
   const comp = mesPorExtenso(meta.competencia);
   const partes = caminho.filter(Boolean);
   if (partes.some((p) => p !== p.toLowerCase())) return null;
+  if (partes[0] === 'us' || partes[0] === 'uk') return markdownIntl(partes);
 
   if (partes.length === 0) {
     const resumo = resumoDoIndice();
