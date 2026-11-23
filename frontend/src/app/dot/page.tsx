@@ -48,13 +48,13 @@ function dotPlanLabel(status: any): string {
   // O backend aceita os aliases "corp"/"corporate" e o sufixo "-anual".
   // A interface deve aplicar a mesma normalização ao valor bruto e ao rótulo.
   const plan = normalize(status?.plan);
-  if (plan === 'corporativo') return 'Corporativo';
-  if (plan === 'rei') return 'Rei';
+  if (plan === 'corporativo') return 'corporativo';
+  if (plan === 'rei') return 'rei';
 
   const label = String(status?.plan_label || '').trim();
   const normalizedLabel = normalize(label);
-  if (normalizedLabel === 'corporativo') return 'Corporativo';
-  if (normalizedLabel === 'rei') return 'Rei';
+  if (normalizedLabel === 'corporativo') return 'corporativo';
+  if (normalizedLabel === 'rei') return 'rei';
   return label || 'Plano não identificado';
 }
 
