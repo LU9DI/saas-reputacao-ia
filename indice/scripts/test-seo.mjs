@@ -15,6 +15,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { anosPublicados, calcularRanking, podePublicar } from './lib/rankings.mjs';
+import { fetchComRetry } from './lib/fetch-com-retry.mjs';
 import { ESTADOS_US } from '../src/lib/us-states.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -58,11 +59,25 @@ async function request(path, { method = 'GET', follow = false } = {}) {
   const chain = [];
 
   for (let i = 0; i < 6; i += 1) {
-    const response = await fetch(current, {
-      method,
-      redirect: 'manual',
-      headers: { 'user-agent': 'FiltraIndiceSeoTest/1.0' },
-    });
+    let response;
+    const iniciadoEm = Date.now();
+    try {
+      // Retry limitado só para falha transitória de socket: ver lib/fetch-com-retry.mjs.
+      response = await fetchComRetry(
+        current,
+        {
+          method,
+          redirect: 'manual',
+          headers: { 'user-agent': 'FiltraIndiceSeoTest/1.0' },
+        },
+        { tentativas: 2, esperaMs: 500, log: (linha) => console.log(`AVISO ${linha}`) },
+      );
+    } catch (error) {
+      throw new Error(
+        `falha de rede em ${method} ${current} após ${Date.now() - iniciadoEm}ms: ${error.message}`,
+        { cause: error },
+      );
+    }
     const body = method === 'HEAD' ? '' : await response.text();
     const location = response.headers.get('location');
     chain.push({
@@ -219,6 +234,7 @@ function carregarDados() {
 }
 
 const US_DIR = resolve(ROOT, 'data-us');
+const UK_DIR = resolve(ROOT, 'data-uk');
 
 /** Páginas dos EUA esperadas, calculadas direto dos arquivos de dados (sem usar o código do app). */
 function carregarUS() {
@@ -728,10 +744,27 @@ const ESPERADOS = [...ESPERADOS_BR, ...caminhosEsperadosUS(US_DADOS)];
 const SNAPSHOT_FRONTEND = JSON.parse(
   readFileSync(resolve(ROOT, '..', 'frontend', 'src', 'generated', 'indice-snapshot.json'), 'utf8'),
 );
+// Contrato pós-P0: o sitemap publica `publicados` (baseline + lotes já liberados);
+// `total` é o inventário inteiro e inclui o que ainda está bloqueado (ex.: Reino
+// Unido sem estado de rollout). Snapshots anteriores ao P0 não têm o campo, e aí
+// o total é a própria lista publicada.
+const URLS_PUBLICADAS = Number(SNAPSHOT_FRONTEND.urls.publicados ?? SNAPSHOT_FRONTEND.urls.total);
+const URLS_BLOQUEADAS = Number(SNAPSHOT_FRONTEND.urls.bloqueadas ?? 0);
+// URLs do Reino Unido efetivamente publicadas: a lista congelada é a mesma que o
+// sitemap e o app consomem. Sem lista (fail closed) são zero.
+const LISTA_UK = resolve(ROOT, 'rollout', 'uk.publicados.txt');
+const UK_PUBLICADAS = existsSync(LISTA_UK)
+  ? readFileSync(LISTA_UK, 'utf8').split('\n').filter(Boolean).length
+  : 0;
 check(
-  'snapshot do site principal usa a mesma contagem de URLs',
-  SNAPSHOT_FRONTEND.urls.total === ESPERADOS.length,
-  `snapshot=${SNAPSHOT_FRONTEND.urls.total} caminhos=${ESPERADOS.length}`,
+  'publicados + bloqueadas fecham o total do snapshot',
+  URLS_PUBLICADAS + URLS_BLOQUEADAS === Number(SNAPSHOT_FRONTEND.urls.total),
+  `publicados=${URLS_PUBLICADAS} bloqueadas=${URLS_BLOQUEADAS} total=${SNAPSHOT_FRONTEND.urls.total}`,
+);
+check(
+  'snapshot do site principal usa a mesma contagem de URLs publicadas',
+  URLS_PUBLICADAS === ESPERADOS.length + UK_PUBLICADAS,
+  `publicados=${URLS_PUBLICADAS} caminhos=${ESPERADOS.length}+${UK_PUBLICADAS} total=${SNAPSHOT_FRONTEND.urls.total}`,
 );
 const AMOSTRAS = escolherAmostras(DADOS);
 const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
@@ -1086,8 +1119,8 @@ try {
   const filhos = sitemapLocs(sitemapIndexXml);
   check(
     'índice central do site principal declara todos os shards',
-    filhos.length === Math.max(1, Math.ceil(SNAPSHOT_FRONTEND.urls.total / 10000)),
-    `filhos=${filhos.length} snapshot=${SNAPSHOT_FRONTEND.urls.total}`,
+    filhos.length === Math.max(1, Math.ceil(URLS_PUBLICADAS / 10000)),
+    `filhos=${filhos.length} publicados=${URLS_PUBLICADAS} total=${SNAPSHOT_FRONTEND.urls.total}`,
   );
   check('sitemap index tem filhos', filhos.length > 0, String(filhos.length));
   check('sitemap index não repete filhos', new Set(filhos).size === filhos.length);
@@ -1220,7 +1253,19 @@ try {
 
   console.log(`\nDados: competência ${META.competencia}, ${ESPERADOS.length} URLs indexáveis, ${conjuntoLocs.size} no sitemap.`);
 } catch (error) {
-  fail('execução do teste', error instanceof Error ? error.message : String(error));
+  const causa = (() => {
+    const partes = [];
+    let atual = error?.cause;
+    for (let i = 0; i < 4 && atual; i += 1) {
+      partes.push(String(atual.code ?? atual.errno ?? atual.message ?? atual));
+      atual = atual.cause;
+    }
+    return partes.join(' <- ');
+  })();
+  const msg = error instanceof Error ? error.message : String(error);
+  fail('execução do teste', causa ? `${msg} [cause: ${causa}]` : msg);
+  console.error('--- servidor saiu com codigo:', server.exitCode, '---');
+  console.error(serverLog.join('').slice(-4000));
 } finally {
   await stopServer();
 }
