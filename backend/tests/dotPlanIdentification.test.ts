@@ -147,9 +147,12 @@ test('scheduler do Dot inclui o alias corporate e variantes anuais', () => {
 // Frontend: estado neutro, sem plano inventado
 // ---------------------------------------------------------------------------
 
-test('frontend não inventa plano e mostra estado neutro', () => {
+test('frontend exibe o nome canônico do plano sem inventar fallback', () => {
   const page = read('../frontend/src/app/dot/page.tsx');
-  assert.doesNotMatch(page, /['"]REI['"]/);
-  assert.doesNotMatch(page, /['"]Rei['"]/);
+  assert.match(page, /function dotPlanLabel\(status: any\): string/);
+  assert.match(page, /return 'Corporativo'/);
+  assert.match(page, /plan === 'rei'/);
+  assert.match(page, /return 'Rei'/);
   assert.match(page, /Plano não identificado/);
+  assert.match(page, /Administrador da plataforma/);
 });
