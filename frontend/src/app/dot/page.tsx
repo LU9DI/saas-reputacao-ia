@@ -38,18 +38,24 @@ const pill = 'rounded-full border px-2.5 py-1 text-[11px] font-medium';
 const panel = 'rounded-2xl border border-white/10 bg-white/2.5';
 
 function dotPlanLabel(status: any): string {
-  const plan = String(status?.plan || '').trim().toLowerCase();
-  if (['corporativo', 'corp', 'corporate'].includes(plan)) return 'Corporativo';
+  const normalize = (value: unknown) => {
+    let plan = String(value || '').trim().toLowerCase();
+    if (plan.endsWith('-anual')) plan = plan.slice(0, -'-anual'.length);
+    if (plan === 'corp' || plan === 'corporate') return 'corporativo';
+    return plan;
+  };
+
+  // O backend aceita os aliases "corp"/"corporate" e o sufixo "-anual".
+  // A interface deve aplicar a mesma normalização ao valor bruto e ao rótulo.
+  const plan = normalize(status?.plan);
+  if (plan === 'corporativo') return 'Corporativo';
   if (plan === 'rei') return 'Rei';
 
   const label = String(status?.plan_label || '').trim();
-  if (label) {
-    const normalizedLabel = label.toLowerCase();
-    if (['corporativo', 'corp', 'corporate'].includes(normalizedLabel)) return 'Corporativo';
-    if (normalizedLabel === 'rei') return 'Rei';
-    return label;
-  }
-  return 'Plano não identificado';
+  const normalizedLabel = normalize(label);
+  if (normalizedLabel === 'corporativo') return 'Corporativo';
+  if (normalizedLabel === 'rei') return 'Rei';
+  return label || 'Plano não identificado';
 }
 
 export default function DotPage() {
