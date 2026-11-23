@@ -37,6 +37,21 @@ async function getJson(path: string, options: RequestInit = {}) {
 const pill = 'rounded-full border px-2.5 py-1 text-[11px] font-medium';
 const panel = 'rounded-2xl border border-white/10 bg-white/2.5';
 
+function dotPlanLabel(status: any): string {
+  const plan = String(status?.plan || '').trim().toLowerCase();
+  if (['corporativo', 'corp', 'corporate'].includes(plan)) return 'Corporativo';
+  if (plan === 'rei') return 'Rei';
+
+  const label = String(status?.plan_label || '').trim();
+  if (label) {
+    const normalizedLabel = label.toLowerCase();
+    if (['corporativo', 'corp', 'corporate'].includes(normalizedLabel)) return 'Corporativo';
+    if (normalizedLabel === 'rei') return 'Rei';
+    return label;
+  }
+  return 'Plano não identificado';
+}
+
 export default function DotPage() {
   const [data, setData] = useState<DotData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -169,7 +184,7 @@ export default function DotPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               {/* Fail-closed: plano ausente nunca deve ser apresentado como REI. */}
-              <span className={`${pill} border-indigo-400/20 bg-indigo-400/5 text-indigo-200`}>{String(data?.status?.plan_label || data?.status?.plan || 'Plano não identificado')}</span>
+              <span className={`${pill} border-indigo-400/20 bg-indigo-400/5 text-indigo-200`}>{dotPlanLabel(data?.status)}</span>
               <span className={`${pill} ${data?.status?.enabled ? 'border-emerald-400/20 bg-emerald-400/5 text-emerald-200' : 'border-amber-400/20 bg-amber-400/5 text-amber-200'}`}>{data?.status?.enabled ? 'ATIVO' : 'DESLIGADO'}</span>
               <span className={`${pill} border-white/10 bg-white/3 text-zinc-400`}>aprovação humana obrigatória</span>
             </div>
