@@ -78,9 +78,9 @@ export default function DotPage() {
       if (!status.access) {
         setData({ status, decisions: [], actions: [], cases: [], followups: [], events: [], briefing: null });
         setAdminState(null);
-        setError(status.plan_identified
+        setError(status.reason || (status.plan_identified
           ? 'O plano identificado da empresa não inclui acesso ao Filtra Dot.'
-          : 'Plano da empresa não identificado. O acesso ao Filtra Dot permanece bloqueado.');
+          : 'Plano da empresa não identificado. O acesso ao Filtra Dot permanece bloqueado.'));
         return;
       }
       const [decisions, actions, cases, followups, events, briefing, admin] = await Promise.all([
