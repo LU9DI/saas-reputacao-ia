@@ -155,4 +155,5 @@ test('frontend exibe o nome canônico do plano sem inventar fallback', () => {
   assert.match(page, /return 'Rei'/);
   assert.match(page, /Plano não identificado/);
   assert.match(page, /Administrador da plataforma/);
+  assert.match(page, /Conta admin não possui acesso ao Dot de empresa/);
 });
