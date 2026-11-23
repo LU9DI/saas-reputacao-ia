@@ -50,7 +50,11 @@ function dotPlanLabel(status: any): string {
     return label;
   }
 
-  if (String(status?.reason || '').includes('Administrador da plataforma sem empresa selecionada')) {
+  const reason = String(status?.reason || '');
+  if (
+    reason.includes('Administrador da plataforma sem empresa selecionada') ||
+    reason.includes('Conta admin não possui acesso ao Dot de empresa.')
+  ) {
     return 'Administrador da plataforma';
   }
   return 'Plano não identificado';
