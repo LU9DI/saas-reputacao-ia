@@ -231,7 +231,35 @@ async function resolveDotAccess(req: Request): Promise<DotAccess> {
   try {
     const payload = verifyAccessToken(token);
     if (isAdminUser({ empresa_id: payload.empresa_id, role: payload.role })) {
-      return { allowed: false, demo: false, plan: null, planLabel: null, userId: null, planIdentified: false, reason: 'Conta admin não possui acesso ao Dot de empresa.' };
+      // A conta administradora não recebe acesso operacional ao Dot por esta rota,
+      // mas, quando estiver vinculada a uma empresa, podemos identificar e exibir
+      // o plano real dessa empresa sem conceder acesso nem alterar suas permissões.
+      const adminEmpresaId = String(payload.empresa_id || '').trim();
+      if (adminEmpresaId) {
+        const adminEmpresa = await findEmpresa(adminEmpresaId);
+        if (adminEmpresa) {
+          const adminPlan = resolveDotPlan(adminEmpresa.plan);
+          return {
+            allowed: false,
+            demo: false,
+            empresaId: adminEmpresa.id,
+            plan: adminPlan.plan,
+            planLabel: adminPlan.plan ? planLabel(adminPlan.plan) : adminPlan.label,
+            userId: null,
+            planIdentified: Boolean(adminPlan.plan),
+            reason: 'Conta administradora: o plano exibido pertence à empresa vinculada; o acesso operacional do Dot permanece sujeito às permissões da empresa.',
+          };
+        }
+      }
+      return {
+        allowed: false,
+        demo: false,
+        plan: null,
+        planLabel: null,
+        userId: null,
+        planIdentified: false,
+        reason: 'Administrador da plataforma sem empresa selecionada. Selecione uma empresa para identificar o plano.',
+      };
     }
 
     const empresa = await findEmpresa(payload.empresa_id);
