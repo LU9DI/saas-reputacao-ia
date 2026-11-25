@@ -91,7 +91,7 @@ com **43.920 URLs em 5 shards**. Pode ser publicado em qualquer host estático
 (Pages, R2, KV). O script lê os nomes dos estados de `src/lib/us-states.ts`, então
 não há lista duplicada a manter. Sequência de recuperação, sem alterar dados:
 
-1. `npm run sitemaps:static` e publicar os XML no host estático.
+1. `npm run sitemaps:static` e publicar os XML no host estático. No filtraai.com isto é automatizado pelo workflow `indice-sitemaps-kv.yml` (Workers KV, ver `infra/cloudflare/README.md`).
 2. Fazer o artefato responder nas URLs declaradas. **Só publicar não basta**: o
    Worker `filtra-indice-proxy` intercepta todo `/indice/*` e encaminha para o
    Render (`infra/cloudflare/filtra-indice-proxy.js:92-94`); caminhos novos como
