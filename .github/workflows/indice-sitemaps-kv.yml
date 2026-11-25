@@ -1,0 +1,57 @@
+name: Índice – publicar sitemaps no KV
+
+# Gera os sitemaps estáticos do Índice e grava no Workers KV (binding SITEMAPS),
+# para o Worker servir sem acordar o Render. Manual; rode após cada merge de dados.
+# Secrets necessários: CLOUDFLARE_API_TOKEN (permissão Workers KV Storage:Edit),
+# CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_KV_SITEMAPS_ID (id do namespace).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Só gerar e validar, sem gravar no KV"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indice
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Gerar sitemaps estáticos
+        run: node scripts/build-static-sitemaps.mjs --out="$RUNNER_TEMP/sm"
+      - name: Montar payload do KV
+        run: |
+          node -e '
+            const fs=require("fs"),p=process.env.RUNNER_TEMP+"/sm";
+            const out=[];
+            for(const f of fs.readdirSync(p)){
+              let key=f==="sitemap-index.xml"?f:(f.match(/^sitemap-(\d+)\.xml$/)||[])[1]&&"sitemap/"+f.match(/^sitemap-(\d+)\.xml$/)[1]+".xml";
+              if(!key) continue;
+              const value=fs.readFileSync(p+"/"+f,"utf8");
+              if(!value.startsWith("<?xml")) throw new Error("XML inválido: "+f);
+              out.push({key,value});
+            }
+            if(!out.some(e=>e.key==="sitemap-index.xml")||out.length<2) throw new Error("payload incompleto");
+            fs.writeFileSync(p+"/kv.json",JSON.stringify(out));
+            console.log(out.map(e=>e.key+" "+e.value.length+"B").join("\n"));
+          '
+      - name: Gravar no KV
+        if: ${{ !inputs.dry_run }}
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_NS: ${{ secrets.CLOUDFLARE_KV_SITEMAPS_ID }}
+        run: |
+          test -n "$CF_TOKEN" -a -n "$CF_ACCOUNT" -a -n "$CF_NS" || { echo "Secrets do Cloudflare ausentes"; exit 1; }
+          curl -fsS -X PUT "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/storage/kv/namespaces/$CF_NS/bulk" \
+            -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" \
+            --data-binary @"$RUNNER_TEMP/sm/kv.json" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{const j=JSON.parse(d);console.log(j.success?"KV atualizado":d);process.exit(j.success?0:1)})'

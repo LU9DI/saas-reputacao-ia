@@ -61,3 +61,17 @@ npm run seo:verify:sitemap-fallback
 ```
 
 The script compares the primary, Vercel, public edge and retired host sets, and checks the public headers. Public HTTP verification of the domain and confirmation of IndexNow acceptance remain separate checks.
+
+## Índice: sitemaps servidos do KV (sem acordar o Render)
+
+`filtra-indice-proxy.js` serve `/indice/sitemap-index.xml` e `/indice/sitemap/N.xml` a partir do binding Workers KV `SITEMAPS`, antes de qualquer cache, janela de congelamento ou origem. Motivo: fora da janela UTC 03–05 o Worker devolve 503 para sitemap não cacheado naquele data center, e o Search Console reporta "Erro HTTP 503". Sem o binding, ou sem a chave, o comportamento antigo é mantido (fallback seguro).
+
+Passos (ação do dono da conta, nada é aplicado automaticamente):
+1. Criar um namespace KV (ex.: `indice-sitemaps`) no plano Free e vincular ao Worker `filtra-indice-proxy` com o nome `SITEMAPS`.
+2. Criar os secrets do GitHub: `CLOUDFLARE_API_TOKEN` (permissão Workers KV Storage: Edit), `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_KV_SITEMAPS_ID`.
+3. Fazer o deploy deste Worker.
+4. Rodar o workflow **Índice – publicar sitemaps no KV** (primeiro com `dry_run`, depois sem). Repetir após cada merge de dados (BR/US/UK).
+
+Limites do plano Free (documentação Cloudflare): 100 mil leituras/dia e 1 mil gravações/dia; cada publicação grava ~6 chaves. Limite por valor (25 MiB) é do conhecimento do autor, não verificado; os shards têm 0,5–1,4 MB.
+
+Limitação: isto cobre só os sitemaps. Páginas HTML não cacheadas continuam sujeitas ao 503 fora da janela.

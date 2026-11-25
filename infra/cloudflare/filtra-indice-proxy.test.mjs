@@ -1,6 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import worker from "./filtra-indice-proxy.js";
+import worker, { configureOriginWindow, chaveSitemapKv } from "./filtra-indice-proxy.js";
+
+// Os testes legados assumem origem sempre acessível; a janela tem testes próprios abaixo.
+configureOriginWindow({ enabled: false });
 
 function makeCache() {
   const entries = new Map();
@@ -66,7 +69,7 @@ test("serves last known-good sitemap if Render keeps returning 502", async () =>
     headers: {
       "content-type": "application/xml",
       "cache-control": "public, max-age=3600",
-      "x-indice-cached-at": String(Date.now() - 5 * 60 * 1000),
+      "x-indice-cached-at": String(Date.now() - 2 * 24 * 60 * 60 * 1000),
     },
   }));
   let calls = 0;
@@ -232,4 +235,72 @@ test("does not cache public pages marked no-cache or Vary star", async () => {
     assert.equal(calls, 2);
     assert.equal(cache.entries.size, 0);
   });
+});
+
+const XML = '<?xml version="1.0" encoding="UTF-8"?><urlset></urlset>';
+const noFetch = async () => { throw new Error("origem não deve ser chamada"); };
+
+test("chaveSitemapKv mapeia só os caminhos de sitemap", () => {
+  assert.equal(chaveSitemapKv("/indice/sitemap-index.xml"), "sitemap-index.xml");
+  assert.equal(chaveSitemapKv("/indice/sitemap/3.xml"), "sitemap/3.xml");
+  assert.equal(chaveSitemapKv("/indice/metodologia"), null);
+  assert.equal(chaveSitemapKv("/indice/sitemap/x.xml"), null);
+});
+
+test("sitemap no KV é servido sem tocar na origem, mesmo com a janela fechada", async () => {
+  configureOriginWindow({ enabled: true, now: () => new Date("2026-11-24T12:00:00Z") });
+  try {
+    await withGlobals({ cache: makeCache(), fetchImpl: noFetch }, async () => {
+      const env = { SITEMAPS: { get: async (k) => (k === "sitemap/0.xml" ? XML : null) } };
+      const res = await worker.fetch(new Request("https://filtraai.com/indice/sitemap/0.xml"), env);
+      assert.equal(res.status, 200);
+      assert.equal(res.headers.get("x-indice-proxy"), "kv-static");
+      assert.equal(await res.text(), XML);
+      const head = await worker.fetch(new Request("https://filtraai.com/indice/sitemap/0.xml", { method: "HEAD" }), env);
+      assert.equal(head.status, 200);
+      assert.equal(await head.text(), "");
+    });
+  } finally {
+    configureOriginWindow({ enabled: false });
+  }
+});
+
+test("sem binding, chave ausente ou KV com erro: cai no comportamento antigo", async () => {
+  let calls = 0;
+  const fetchImpl = async () => { calls += 1; return new Response(XML, { status: 200, headers: { "content-type": "application/xml" } }); };
+  for (const env of [undefined, {}, { SITEMAPS: { get: async () => null } }, { SITEMAPS: { get: async () => { throw new Error("kv"); } } }, { SITEMAPS: { get: async () => "lixo" } }]) {
+    await withGlobals({ cache: makeCache(), fetchImpl }, async () => {
+      const res = await worker.fetch(new Request("https://filtraai.com/indice/sitemap/1.xml"), env);
+      assert.equal(res.status, 200);
+      assert.equal(res.headers.get("x-indice-proxy"), "render-origin");
+    });
+  }
+  assert.equal(calls, 5);
+});
+
+test("fora da janela: URL nunca vista recebe 503; cache conhecido é servido", async () => {
+  configureOriginWindow({ enabled: true, now: () => new Date("2026-11-24T12:00:00Z") });
+  try {
+    const cache = makeCache();
+    await withGlobals({ cache, fetchImpl: noFetch }, async () => {
+      const miss = await worker.fetch(new Request("https://filtraai.com/indice/metodologia"), {});
+      assert.equal(miss.status, 503);
+      assert.equal(miss.headers.get("x-indice-proxy"), "frozen-miss");
+    });
+  } finally {
+    configureOriginWindow({ enabled: false });
+  }
+});
+
+test("dentro da janela (03–05 UTC) a origem é consultada", async () => {
+  configureOriginWindow({ enabled: true, now: () => new Date("2026-11-24T04:00:00Z") });
+  try {
+    await withGlobals({ cache: makeCache(), fetchImpl: async () => new Response("<html></html>", { status: 200, headers: { "content-type": "text/html" } }) }, async () => {
+      const res = await worker.fetch(new Request("https://filtraai.com/indice/metodologia"), {});
+      assert.equal(res.status, 200);
+      assert.equal(res.headers.get("x-indice-proxy"), "render-origin");
+    });
+  } finally {
+    configureOriginWindow({ enabled: false });
+  }
 });
