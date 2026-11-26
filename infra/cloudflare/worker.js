@@ -219,6 +219,8 @@ async function fetchRuntimeFast(request, env) {
     const u = new URL(request.url);
     const target = new URL(u.pathname + u.search, env.FALLBACK_ORIGIN);
     const headers = new Headers(request.headers);
+    // O host é controlado pela URL do Request; não definir o cabeçalho Host
+    // manualmente (é um cabeçalho reservado pelo Fetch e pode ser rejeitado).
     const response = await fetch(new Request(target.toString(), { method: request.method, headers, body: ['GET','HEAD'].includes(request.method) ? undefined : request.body, redirect: 'follow' }));
     return { response, retryable: RETRYABLE.has(response.status) };
   } catch { return { response: null, retryable: true }; }
@@ -415,7 +417,6 @@ export default {
       return fallbackResponse(request, 'configured-fallback', env, ctx);
     }
 
-    // Sitemaps e robots.txt: origem confiável (Vercel) primeiro. O host legado
     // Sitemaps e robots.txt: origem confiável (Vercel) primeiro. O host legado
     // aposentado pode conter sitemap desatualizado (ex.: /sitemap.xml com 97
     // URLs antigas) e nunca deve ser consultado antes da Vercel.
