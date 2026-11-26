@@ -37,6 +37,16 @@ function publicPath(pathname) {
   return CACHEABLE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'));
 }
 
+/**
+ * Sitemaps e robots.txt são ativos de descoberta estática: nunca devem ficar
+ * indisponíveis por causa da janela de failover nem depender exclusivamente do
+ * processo do Render (free tier adormece e gera cold-start 502/503). Eles são
+ * buscados da origem confiável (Vercel, que não adormece) mesmo durante failover.
+ */
+function isSitemapPath(pathname) {
+  return pathname === '/robots.txt' || pathname === '/sitemap.xml' || pathname === '/sitemap-index.xml';
+}
+
 function buildTarget(origin, requestUrl) {
   const incoming = new URL(requestUrl);
   const target = new URL(normalizeOrigin(origin));
@@ -384,7 +394,7 @@ export default {
       }
     }
 
-    if (state.origin === 'fallback') {
+    if (state.origin === 'fallback' && !isSitemapPath(url.pathname)) {
       if (Date.now() >= state.nextProbeAt) {
         state = { ...state, nextProbeAt: Date.now() + probeInterval };
         await writeState(env, state);
@@ -406,9 +416,13 @@ export default {
       return fallbackResponse(request, 'configured-fallback', env, ctx);
     }
 
-    if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml') {
+    if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml' || url.pathname === '/sitemap-index.xml') {
       const staticResponse = await fetchStatic(request);
-      if (staticResponse.response && !staticResponse.retryable) return decorate(staticResponse.response, 'cloudflare-static', request.url, request);
+      // Só serve do host estático quando ele realmente tiver o arquivo (2xx).
+      // Um 404 do host legado aposentado não deve bloquear a origem (Vercel).
+      if (staticResponse.response && staticResponse.response.ok) {
+        return decorate(staticResponse.response, 'cloudflare-static', request.url, request);
+      }
     }
 
     if (url.pathname.startsWith('/api/')) {
