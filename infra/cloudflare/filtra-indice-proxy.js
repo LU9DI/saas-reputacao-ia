@@ -275,8 +275,11 @@ export default {
       });
     }
 
-    // Congelamento: fora da janela diária nada acorda o Render para página ou
-    // sitemap. Cache conhecido continua no ar; URL nunca vista recebe 503.
+    // Congelamento: fora da janela diária nada acorda o Render para página.
+    // Cache conhecido continua no ar. Para sitemaps sem cache, tenta a origem
+    // uma vez (o Render pode estar acordado fora da janela); só recorre ao 503
+    // se a origem também falhar, para não deixar sitemaps inacessíveis a
+    // crawlers fora da janela. Páginas HTML seguem sem tocar na origem.
     if (originWindow.enabled && isCacheable && !originWindowOpen()) {
       if (cached) {
         return withHeaders(cached.clone(), {
@@ -288,6 +291,43 @@ export default {
           "x-indice-upstream-status": "frozen",
           warning: '110 - "Response is stale"',
         });
+      }
+
+      if (isSitemap) {
+        const target = new URL(incoming.pathname + incoming.search, ORIGEM);
+        const headers = new Headers(request.headers);
+        headers.delete("host");
+        headers.delete("cf-connecting-ip");
+        headers.delete("cf-ipcountry");
+        headers.delete("cf-ray");
+        headers.delete("x-forwarded-host");
+        headers.set("x-forwarded-host", incoming.host);
+        headers.set("x-forwarded-proto", "https");
+        const init = {
+          method: request.method,
+          headers,
+          redirect: "manual",
+        };
+        if (request.method !== "GET" && request.method !== "HEAD") init.body = request.body;
+
+        const { response: upstream } = await fetchWithRetry(target, init, false);
+        if (upstream && upstream.ok) {
+          const responseHeaders = new Headers(upstream.headers);
+          responseHeaders.set("x-indice-proxy", "render-origin");
+          responseHeaders.set("x-indice-upstream-status", String(upstream.status));
+          responseHeaders.set("cache-control", "public, max-age=3600, s-maxage=86400");
+          responseHeaders.delete("content-length");
+          responseHeaders.delete("content-encoding");
+          const response = new Response(request.method === "HEAD" ? null : upstream.body, {
+            status: upstream.status,
+            statusText: upstream.statusText,
+            headers: responseHeaders,
+          });
+          if (request.method === "GET") {
+            await storeSuccessfulSitemap(cache, cacheKey, response.clone());
+          }
+          return response;
+        }
       }
 
       return new Response("Índice temporariamente em manutenção. Tente novamente mais tarde.", {

@@ -37,6 +37,16 @@ function publicPath(pathname) {
   return CACHEABLE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix + '/'));
 }
 
+/**
+ * Sitemaps e robots.txt são ativos de descoberta estática: nunca devem ficar
+ * indisponíveis por causa da janela de failover nem depender exclusivamente do
+ * processo do Render (free tier adormece e gera cold-start 502/503). Eles são
+ * buscados da origem confiável (Vercel, que não adormece) mesmo durante failover.
+ */
+function isSitemapPath(pathname) {
+  return pathname === '/robots.txt' || pathname === '/sitemap.xml' || pathname === '/sitemap-index.xml';
+}
+
 function buildTarget(origin, requestUrl) {
   const incoming = new URL(requestUrl);
   const target = new URL(normalizeOrigin(origin));
@@ -209,7 +219,8 @@ async function fetchRuntimeFast(request, env) {
     const u = new URL(request.url);
     const target = new URL(u.pathname + u.search, env.FALLBACK_ORIGIN);
     const headers = new Headers(request.headers);
-    headers.set('host', new URL(env.FALLBACK_ORIGIN).host);
+    // O host é controlado pela URL do Request; não definir o cabeçalho Host
+    // manualmente (é um cabeçalho reservado pelo Fetch e pode ser rejeitado).
     const response = await fetch(new Request(target.toString(), { method: request.method, headers, body: ['GET','HEAD'].includes(request.method) ? undefined : request.body, redirect: 'follow' }));
     return { response, retryable: RETRYABLE.has(response.status) };
   } catch { return { response: null, retryable: true }; }
@@ -384,7 +395,7 @@ export default {
       }
     }
 
-    if (state.origin === 'fallback') {
+    if (state.origin === 'fallback' && !isSitemapPath(url.pathname)) {
       if (Date.now() >= state.nextProbeAt) {
         state = { ...state, nextProbeAt: Date.now() + probeInterval };
         await writeState(env, state);
@@ -406,9 +417,33 @@ export default {
       return fallbackResponse(request, 'configured-fallback', env, ctx);
     }
 
-    if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml') {
-      const staticResponse = await fetchStatic(request);
-      if (staticResponse.response && !staticResponse.retryable) return decorate(staticResponse.response, 'cloudflare-static', request.url, request);
+    // Sitemaps e robots.txt: origem confiável (Vercel) primeiro. O host legado
+    // aposentado pode conter sitemap desatualizado (ex.: /sitemap.xml com 97
+    // URLs antigas) e nunca deve ser consultado antes da Vercel.
+    // Qualquer resposta não-2xx (incluindo 404) de uma origem dispara a
+    // tentativa da próxima, em vez de interromper a cadeia de fallback.
+    if (isSitemapPath(url.pathname)) {
+      const origins = [
+        { name: 'vercel-origin', try: () => fetchRuntimeFast(request, env) },
+        { name: 'render-origin', try: () => fetchPrimary(request, env) },
+        { name: 'cloudflare-static', try: () => fetchStatic(request) },
+      ];
+      for (const { name, try: tryOrigin } of origins) {
+        const result = await tryOrigin();
+        if (result.response && result.response.ok) {
+          cacheResponse(request, result.response, ctx);
+          return decorate(result.response, name, request.url, request);
+        }
+      }
+      return new Response('Sitemap temporarily unavailable', {
+        status: 503,
+        headers: {
+          'content-type': 'text/plain; charset=utf-8',
+          'cache-control': 'no-store',
+          'retry-after': '60',
+          'x-content-type-options': 'nosniff',
+        },
+      });
     }
 
     if (url.pathname.startsWith('/api/')) {
