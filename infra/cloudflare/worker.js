@@ -219,7 +219,6 @@ async function fetchRuntimeFast(request, env) {
     const u = new URL(request.url);
     const target = new URL(u.pathname + u.search, env.FALLBACK_ORIGIN);
     const headers = new Headers(request.headers);
-    headers.set('host', new URL(env.FALLBACK_ORIGIN).host);
     const response = await fetch(new Request(target.toString(), { method: request.method, headers, body: ['GET','HEAD'].includes(request.method) ? undefined : request.body, redirect: 'follow' }));
     return { response, retryable: RETRYABLE.has(response.status) };
   } catch { return { response: null, retryable: true }; }
@@ -416,13 +415,33 @@ export default {
       return fallbackResponse(request, 'configured-fallback', env, ctx);
     }
 
-    if (url.pathname === '/robots.txt' || url.pathname === '/sitemap.xml' || url.pathname === '/sitemap-index.xml') {
+    // Sitemaps e robots.txt: origem confiável (Vercel) primeiro. O host legado
+    // aposentado pode conter sitemap desatualizado (ex.: /sitemap.xml com 97
+    // URLs antigas) e nunca deve ser consultado antes da Vercel.
+    if (isSitemapPath(url.pathname)) {
+      const runtime = await fetchRuntimeFast(request, env);
+      if (runtime.response && !runtime.retryable) {
+        cacheResponse(request, runtime.response, ctx);
+        return decorate(runtime.response, 'vercel-origin', request.url, request);
+      }
+      const primary = await fetchPrimary(request, env);
+      if (primary.response && !primary.retryable) {
+        cacheResponse(request, primary.response, ctx);
+        return decorate(primary.response, 'render-origin', request.url, request);
+      }
       const staticResponse = await fetchStatic(request);
-      // Só serve do host estático quando ele realmente tiver o arquivo (2xx).
-      // Um 404 do host legado aposentado não deve bloquear a origem (Vercel).
       if (staticResponse.response && staticResponse.response.ok) {
         return decorate(staticResponse.response, 'cloudflare-static', request.url, request);
       }
+      return new Response('Sitemap temporarily unavailable', {
+        status: 503,
+        headers: {
+          'content-type': 'text/plain; charset=utf-8',
+          'cache-control': 'no-store',
+          'retry-after': '60',
+          'x-content-type-options': 'nosniff',
+        },
+      });
     }
 
     if (url.pathname.startsWith('/api/')) {

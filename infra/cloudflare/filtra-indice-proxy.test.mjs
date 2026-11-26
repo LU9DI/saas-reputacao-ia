@@ -304,3 +304,43 @@ test("dentro da janela (03–05 UTC) a origem é consultada", async () => {
     configureOriginWindow({ enabled: false });
   }
 });
+
+test("fora da janela, sitemap sem cache tenta a origem uma vez antes do 503", async () => {
+  configureOriginWindow({ enabled: true, now: () => new Date("2026-11-24T12:00:00Z") });
+  try {
+    const cache = makeCache();
+    let calls = 0;
+    await withGlobals({ cache, fetchImpl: async () => {
+      calls += 1;
+      return new Response('<?xml version="1.0"?><urlset></urlset>', {
+        status: 200,
+        headers: { "content-type": "application/xml" },
+      });
+    } }, async () => {
+      const env = {}; // sem binding SITEMAPS
+      const res = await worker.fetch(new Request("https://filtraai.com/indice/sitemap/0.xml"), env);
+      assert.equal(res.status, 200);
+      assert.equal(res.headers.get("x-indice-proxy"), "render-origin");
+      assert.equal(calls, 1);
+      // O sitemap bem-sucedido é armazenado em cache para reuso
+      assert.ok(cache.entries.size >= 1);
+    });
+  } finally {
+    configureOriginWindow({ enabled: false });
+  }
+});
+
+test("fora da janela, sitemap sem cache e origem indisponível recebe 503", async () => {
+  configureOriginWindow({ enabled: true, now: () => new Date("2026-11-24T12:00:00Z") });
+  try {
+    const cache = makeCache();
+    await withGlobals({ cache, fetchImpl: async () => new Response("bad gateway", { status: 502 }) }, async () => {
+      const env = {};
+      const res = await worker.fetch(new Request("https://filtraai.com/indice/sitemap/0.xml"), env);
+      assert.equal(res.status, 503);
+      assert.equal(res.headers.get("x-indice-proxy"), "frozen-miss");
+    });
+  } finally {
+    configureOriginWindow({ enabled: false });
+  }
+});
