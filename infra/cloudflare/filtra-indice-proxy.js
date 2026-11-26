@@ -52,6 +52,40 @@ async function lerSitemapKv(env, pathname) {
   }
 }
 
+
+function chaveR2DaPagina(pathname) {
+  if (pathname === "/indice" || pathname === "/indice/") return "index.html";
+  if (!pathname.startsWith("/indice/")) return null;
+  const relativo = pathname.slice("/indice/".length);
+  if (!relativo || relativo.endsWith(".xml")) return null;
+  if (relativo.startsWith("_next/")) return relativo;
+  if (/\.[a-z0-9]{2,8}$/i.test(relativo)) return relativo;
+  return relativo.endsWith("/") ? `${relativo}index.html` : `${relativo}.html`;
+}
+async function servirR2(request, env, pathname) {
+  const bucket = env?.PAGES_BUCKET;
+  if (!bucket || typeof bucket.get !== "function") return null;
+  const key = chaveR2DaPagina(pathname);
+  if (!key) return null;
+  try {
+    const object = await bucket.get(key);
+    if (!object) return null;
+    const asset = key.startsWith("_next/");
+    const contentType = object.httpMetadata?.contentType || (key.endsWith(".html") ? "text/html; charset=utf-8" : key.endsWith(".js") ? "application/javascript; charset=utf-8" : key.endsWith(".css") ? "text/css; charset=utf-8" : key.endsWith(".svg") ? "image/svg+xml" : key.endsWith(".woff2") ? "font/woff2" : key.endsWith(".png") ? "image/png" : key.endsWith(".jpg") || key.endsWith(".jpeg") ? "image/jpeg" : key.endsWith(".webp") ? "image/webp" : key.endsWith(".ico") ? "image/x-icon" : key.endsWith(".txt") ? "text/plain; charset=utf-8" : key.endsWith(".md") ? "text/markdown; charset=utf-8" : key.endsWith(".json") ? "application/json" : "application/octet-stream");
+    const headers = new Headers({ "content-type": key.endsWith(".md") ? "text/markdown; charset=utf-8" : contentType, "cache-control": asset ? "public, max-age=31536000, immutable" : "public, max-age=300, s-maxage=86400", "x-indice-proxy": "r2-static", "x-indice-object": key });
+    if (key.endsWith(".md")) {
+      const relativo = pathname.slice("/indice/md".length).replace(/\.md$/, "");
+      const canonicalPath = !relativo || relativo === "/index" ? "" : relativo;
+      headers.set("link", `<https://filtraai.com/indice${canonicalPath}>; rel="canonical"`);
+      headers.set("x-robots-tag", "noindex, follow");
+      headers.set("x-content-type-options", "nosniff");
+    }
+    if (object.httpEtag) headers.set("etag", object.httpEtag);
+    if (object.uploaded) headers.set("last-modified", object.uploaded.toUTCString());
+    return new Response(request.method === "HEAD" ? null : object.body, { status: 200, headers });
+  } catch { return null; }
+}
+
 function cacheKeyFor(url) {
   return new Request(`${url.origin}${url.pathname}`, { method: "GET" });
 }
@@ -161,6 +195,18 @@ export default {
     const incoming = new URL(request.url);
     if (incoming.pathname !== "/indice" && !incoming.pathname.startsWith("/indice/")) {
       return fetch(request);
+    }
+
+    // O export estático usa trailingSlash=false: normaliza /rota/ para /rota.
+    if (incoming.pathname.startsWith("/indice/") && incoming.pathname.endsWith("/") && incoming.pathname !== "/indice/") {
+      incoming.pathname = incoming.pathname.slice(0, -1);
+      return Response.redirect(incoming.toString(), 308);
+    }
+
+    const isStaticRequest = (request.method === 'GET' || request.method === 'HEAD') && incoming.search === '' && !request.headers.has('authorization') && !request.headers.has('cookie');
+    if (isStaticRequest) {
+      const fromR2 = await servirR2(request, env, incoming.pathname);
+      if (fromR2) return fromR2;
     }
 
     const isStaticAsset = STATIC_ASSET_PATH.test(incoming.pathname) &&

@@ -222,6 +222,11 @@ jobs:
       - name: Build Índice
         run: npm run build
 
+      # O export do Índice já foi produzido acima; validar canonical, redirects
+      # e respostas Markdown no mesmo artefato evita um segundo build de 43k páginas.
+      - name: SEO integration checks
+        run: npm run test:seo
+
   # Build normal da Vercel: não define CLOUDFLARE_PAGES. O build não pode
   # depender de out/ nem do pós-processamento usado no export estático.
   frontend-vercel:

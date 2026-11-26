@@ -1,19 +1,30 @@
 import { markdownDaPagina } from '@/lib/llms';
+import { todosOsCaminhos } from '@/lib/data';
 
 type Props = { params: Promise<{ caminho?: string[] }> };
 
 /**
  * Gêmea em Markdown de cada página do Índice, para agentes.
  *
- * A URL canônica continua sendo o HTML; o `.md` fica fora do sitemap e é
- * descoberto por /indice/llms.txt. `X-Robots-Tag: noindex` evita que o texto
- * bruto dispute indexação com a página canônica.
+ * A extensão .md no último segmento evita colisões entre um caminho que é
+ * página (por exemplo /ac) e outro que é descendente (/ac/acrelandia).
+ * A URL canônica continua sendo o HTML; Markdown fica fora do sitemap.
  */
-export const dynamic = 'force-dynamic';
+export function generateStaticParams() {
+  return todosOsCaminhos().map((caminho) => {
+    if (caminho === '/') return { caminho: ['index.md'] };
+    const partes = caminho.slice(1).split('/');
+    partes[partes.length - 1] += '.md';
+    return { caminho: partes };
+  });
+}
 
 export async function GET(_request: Request, { params }: Props) {
   const { caminho = [] } = await params;
-  const pagina = markdownDaPagina(caminho);
+  const partes = [...caminho];
+  if (partes.length === 1 && partes[0] === 'index.md') partes.length = 0;
+  else if (partes.length) partes[partes.length - 1] = partes[partes.length - 1].replace(/\.md$/, '');
+  const pagina = markdownDaPagina(partes);
   if (!pagina) {
     return new Response('Not found\n', {
       status: 404,

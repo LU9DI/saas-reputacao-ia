@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { temDadosUS, usMeta, usSegmentos, usCondadosDoEstado, usTopCondados, usTotalSeg } from '@/lib/us';
+import { temDadosUS, usMeta, usSegmentos, usCondadosDoEstado, usEstadosComDados, usTopCondados, usTotalSeg } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug } from '@/lib/us-states';
 import { nUS, corta } from '@/lib/format';
 import { urlAbsoluta, OG_IMAGE, JsonLd, datasetDoRecorteUS } from '@/lib/seo';
@@ -9,9 +9,8 @@ import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
 type Props = { params: Promise<{ state: string }> };
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return usEstadosComDados().map(({ slug }) => ({ state: slug }));
 }
 
 function resolver(state: string) {

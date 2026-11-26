@@ -25,7 +25,7 @@ import { anosPublicadosDoSegmento, getPaginaRanking, nomeDoMunicipio } from './r
  */
 
 const html = (caminho: string) => `${BASE}${caminho === '/' ? '' : caminho}`;
-const md = (caminho: string) => `${BASE}/md${caminho === '/' ? '' : caminho}`;
+const md = (caminho: string) => `${BASE}/md${caminho === '/' ? '/index' : caminho}.md`;
 
 function cabecalho(caminho: string) {
   const meta = getMeta();
@@ -129,7 +129,7 @@ export function llmsIndex(): string {
     getSegmentos().map((s) => `- ${s.nome} (${s.slug}; CNAE ${s.classes.join(', ')})`).join('\n'),
     '',
     '## Versões em Markdown',
-    'As páginas principais, as UFs e os rankings de aberturas têm uma versão `.md` com o mesmo dado, sem navegação nem scripts, em `https://filtraai.com/indice/md/<caminho>`. A URL canônica continua sendo a página HTML. As versões `.md` ficam fora do sitemap e são descobertas por este arquivo.',
+    'As páginas principais, as UFs e os rankings de aberturas têm uma versão `.md` com o mesmo dado, sem navegação nem scripts, em `https://filtraai.com/indice/md/<caminho>.md` (a home usa `/indice/md/index.md`). A URL canônica continua sendo a página HTML. As versões `.md` ficam fora do sitemap e são descobertas por este arquivo.',
     '',
     '## Limites',
     ...limites().map((l) => `- ${l}`),

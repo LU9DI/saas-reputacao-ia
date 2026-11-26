@@ -9,7 +9,6 @@ import { urlAbsoluta, OG_IMAGE, JsonLd, datasetDoRecorteUS } from '@/lib/seo';
 import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
-export const revalidate = 86400;
 // 72 caracteres é longo demais para a SERP: usa a mesma regra do resto do app.
 const tituloMeta = ate(
   60,

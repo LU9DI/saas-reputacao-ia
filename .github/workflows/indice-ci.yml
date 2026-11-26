@@ -1,16 +1,8 @@
 name: Índice Filtra.AI
 
+# Execução manual de diagnóstico. A CI principal já executa build + SEO
+# no mesmo artefato, evitando dois exports simultâneos de ~44 mil páginas.
 on:
-  pull_request:
-    paths:
-      - 'indice/**'
-      - '.github/workflows/indice-ci.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - 'indice/**'
-      - '.github/workflows/indice-ci.yml'
   workflow_dispatch:
 
 permissions:

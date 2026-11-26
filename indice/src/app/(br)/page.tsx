@@ -12,7 +12,6 @@ import { Faq, type ItemFaq } from '@/components/Faq';
 import { FonteDados } from '@/components/FonteDados';
 import { Migalhas } from '@/components/Migalhas';
 
-export const revalidate = 86400;
 
 // O título do hub era a única string fixa do app que não passava por `ate()`.
 // Com 66 caracteres o Google truncava a SERP; agora segue a mesma regra das

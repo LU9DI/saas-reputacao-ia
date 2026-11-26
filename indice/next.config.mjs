@@ -7,6 +7,7 @@ const nextConfig = {
   basePath: '/indice',
   // Convenção pública: sem barra final. /indice/ responde 308 para /indice.
   trailingSlash: false,
+  output: 'export', // Exporta HTML estático para R2; sem runtime Next/Render.
   // Limite do cache de páginas em memória por instância (padrão do Next: 50 MB).
   // O Índice tem ~43 mil URLs com ISR de 24h e roda em instância Free de 512 MB.
   // Medição reproduzível em docs/MEMORIA_INDICE_2026-11-04.md: com cache em disco
