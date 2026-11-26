@@ -231,3 +231,28 @@ test("404 na Vercel cai para o Render e serve o sitemap", async () => {
   });
 });
 const INDEX_XML = '<?xml version="1.0"?><sitemapindex><sitemap><loc>https://filtraai.com/sitemap.xml</loc></sitemap></sitemapindex>';
+test("fetchRuntimeFast usa a autoridade da URL de destino sem encaminhar Host manualmente", async () => {
+  const kv = makeKV();
+  await kv.put("active_origin", JSON.stringify({
+    origin: "primary",
+    changedAt: 0,
+    reason: "default",
+    nextProbeAt: 0,
+  }));
+  const cache = makeCache();
+  let inspected;
+  await withGlobals({
+    cache,
+    kv,
+    fetchImpl: async (input) => {
+      inspected = input;
+      return new Response(SITEMAP_XML, { status: 200, headers: { "content-type": "application/xml" } });
+    },
+  }, async (env) => {
+    const res = await worker.fetch(new Request("https://filtraai.com/sitemap.xml"), env);
+    assert.equal(res.status, 200);
+    assert.ok(inspected instanceof Request);
+    assert.equal(new URL(inspected.url).host, "vercel.example.com", "a URL de destino define o Host HTTP");
+    assert.equal(inspected.headers.get("host"), null, "não deve existir Host manual nos headers");
+  });
+});
