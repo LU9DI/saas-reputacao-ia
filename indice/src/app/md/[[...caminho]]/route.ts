@@ -1,4 +1,5 @@
 import { markdownDaPagina } from '@/lib/llms';
+import { todosOsCaminhos } from '@/lib/data';
 
 type Props = { params: Promise<{ caminho?: string[] }> };
 
@@ -9,7 +10,10 @@ type Props = { params: Promise<{ caminho?: string[] }> };
  * descoberto por /indice/llms.txt. `X-Robots-Tag: noindex` evita que o texto
  * bruto dispute indexação com a página canônica.
  */
-export const dynamic = 'force-dynamic';
+// O conteúdo é derivado da mesma base do HTML e pré-gerado no build estático.
+export function generateStaticParams() {
+  return todosOsCaminhos().map((caminho) => ({ caminho: caminho === '/' ? [] : caminho.slice(1).split('/') }));
+}
 
 export async function GET(_request: Request, { params }: Props) {
   const { caminho = [] } = await params;
