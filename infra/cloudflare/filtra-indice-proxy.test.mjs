@@ -396,7 +396,17 @@ test("R2 serve HTML pré-gerado sem consultar Render", async () => {
 
 test("R2 serve assets Next com cache imutável e responde HEAD", async () => {
   const keys = [];
-  const env = { PAGES_BUCKET: { get: async (key) => { keys.push(key); return { body: new ReadableStream({ start(c) { c.enqueue(new Uint8Array([1,2,3])); c.close(); } }), httpMetadata: { contentType: "application/javascript" } }; } };
+  const env = {
+    PAGES_BUCKET: {
+      get: async (key) => {
+        keys.push(key);
+        return {
+          body: new ReadableStream({ start(controller) { controller.enqueue(new Uint8Array([1, 2, 3])); controller.close(); } }),
+          httpMetadata: { contentType: "application/javascript" },
+        };
+      },
+    },
+  };
   await withGlobals({ cache: makeCache(), fetchImpl: noFetch }, async () => {
     const res = await worker.fetch(new Request("https://filtraai.com/indice/_next/static/chunks/app.js"), env);
     assert.equal(res.status, 200); assert.equal(res.headers.get("cache-control"), "public, max-age=31536000, immutable"); assert.equal(keys[0], "_next/static/chunks/app.js");
