@@ -44,6 +44,19 @@ The production Workers are updated through the Cloudflare Workers API. After cha
 
 `filtra-indice-proxy.js` caches public HTML/Markdown pages at the edge for 24 hours and sitemap XML for 60 seconds, with a last-known-good fallback for up to 7 days during transient Render outages. It must never cache requests with cookies, authorization, query strings, or responses marked private/no-store.
 
+### Render Free-plan capacity (operational constraint)
+
+Per Render's Free-plan documentation, instance hours are consumed per workspace and, once the monthly allowance is exhausted, every Free web service in that workspace is suspended until the monthly reset — which takes the origin behind `filtra-indice-proxy` offline. Consumption figures are operational data read from the Render dashboard; they are not tracked in this repository and are not reproduced here, so any crawl-volume or capacity decision must start from that dashboard, not from this document.
+
+This version of `filtra-indice-proxy.js` does **not** implement an origin-access window. There is no `originWindow`/`configureOriginWindow`, no `frozen-cache` or `frozen-miss` response header, and no per-day origin freeze: the Worker contacts the origin on demand and relies only on the cache lifetimes below.
+
+- HTML/Markdown pages: fresh for 24 hours (`PAGE_FRESH_CACHE_MS = 86_400_000`).
+- Sitemap XML: fresh for 60 seconds (`FRESH_CACHE_MS = 60_000`), not 24 hours.
+- Last-known-good fallback: served for up to 7 days while the origin fails (`STALE_CACHE_SECONDS = 604800`).
+- Immutable `/_next/static/*` assets are **not** special-cased in this version; they follow the page rule above.
+
+If a quota guard (time window, freeze headers, static-asset exemption) is added later, this section must be updated together with the code change and its tests; a guard that is not in `filtra-indice-proxy.js` must not be described as active.
+
 CI runs both Worker suites:
 
 ```bash

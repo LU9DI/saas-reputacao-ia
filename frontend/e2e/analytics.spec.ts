@@ -104,8 +104,18 @@ test.describe('GA4 instrumentation', () => {
     });
     expect(await page.evaluate(() => window.localStorage.getItem('filtra_consent_v1'))).toBe('granted');
 
-    const gtagScripts = googleRequests().filter((url) => url.includes('/gtag/js'));
-    expect(gtagScripts.length).toBe(1);
+    // The tag is unique PER DOCUMENT: every loaded document injects its own
+    // script element. Counting network requests across two documents measures
+    // HTTP cache/race (1 or 2 depending on cache and navigation timing), not
+    // analytics idempotency. The correct invariant is one gtag <script> in the
+    // current document.
+    await expect.poll(async () => gtagScriptsInDocument(page)).toBe(1);
+    const gtagSrcs = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('script[src*="googletagmanager"]')).map(
+        (script) => (script as HTMLScriptElement).src
+      )
+    );
+    expect(new Set(gtagSrcs).size).toBe(1);
   });
 
   test('cta_click e contact saem sem dados pessoais', async ({ page }) => {
@@ -163,6 +173,12 @@ function trackGoogleRequests(page: Page) {
     }
   });
   return () => urls;
+}
+
+async function gtagScriptsInDocument(page: Page): Promise<number> {
+  return page.evaluate(
+    () => document.querySelectorAll('script[src*="googletagmanager"]').length
+  );
 }
 
 async function pageViews(page: Page): Promise<number> {
