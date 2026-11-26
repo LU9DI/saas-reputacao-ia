@@ -356,9 +356,9 @@ test("fora da janela, HEAD de sitemap tenta a origem uma vez e não devolve corp
   try {
     const cache = makeCache();
     let calls = 0;
-    await withGlobals({ cache, fetchImpl: async (input, init) => {
+    await withGlobals({ cache, fetchImpl: async (input) => {
       calls += 1;
-      assert.equal(init.method, "HEAD");
+      assert.equal(input.method, "HEAD");
       return new Response(null, {
         status: 200,
         headers: { "content-type": "application/xml" },
