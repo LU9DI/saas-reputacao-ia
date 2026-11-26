@@ -414,3 +414,25 @@ test("R2 serve assets Next com cache imutável e responde HEAD", async () => {
     assert.equal(head.status, 200); assert.equal(await head.text(), "");
   });
 });
+
+
+test("R2 serve Markdown .md com content-type correto", async () => {
+  let requestedKey = null;
+  const env = {
+    PAGES_BUCKET: {
+      get: async (key) => {
+        requestedKey = key;
+        return {
+          body: new ReadableStream({ start(controller) { controller.enqueue(new TextEncoder().encode("# Página")); controller.close(); } }),
+        };
+      },
+    },
+  };
+  await withGlobals({ cache: makeCache(), fetchImpl: noFetch }, async () => {
+    const res = await worker.fetch(new Request("https://filtraai.com/indice/md/go/goiania.md"), env);
+    assert.equal(res.status, 200);
+    assert.equal(requestedKey, "md/go/goiania.md");
+    assert.equal(res.headers.get("content-type"), "text/markdown; charset=utf-8");
+    assert.match(await res.text(), /Página/);
+  });
+});
