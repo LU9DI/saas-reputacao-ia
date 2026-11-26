@@ -416,22 +416,23 @@ export default {
     }
 
     // Sitemaps e robots.txt: origem confiável (Vercel) primeiro. O host legado
+    // Sitemaps e robots.txt: origem confiável (Vercel) primeiro. O host legado
     // aposentado pode conter sitemap desatualizado (ex.: /sitemap.xml com 97
     // URLs antigas) e nunca deve ser consultado antes da Vercel.
+    // Qualquer resposta não-2xx (incluindo 404) de uma origem dispara a
+    // tentativa da próxima, em vez de interromper a cadeia de fallback.
     if (isSitemapPath(url.pathname)) {
-      const runtime = await fetchRuntimeFast(request, env);
-      if (runtime.response && !runtime.retryable) {
-        cacheResponse(request, runtime.response, ctx);
-        return decorate(runtime.response, 'vercel-origin', request.url, request);
-      }
-      const primary = await fetchPrimary(request, env);
-      if (primary.response && !primary.retryable) {
-        cacheResponse(request, primary.response, ctx);
-        return decorate(primary.response, 'render-origin', request.url, request);
-      }
-      const staticResponse = await fetchStatic(request);
-      if (staticResponse.response && staticResponse.response.ok) {
-        return decorate(staticResponse.response, 'cloudflare-static', request.url, request);
+      const origins = [
+        { name: 'vercel-origin', try: () => fetchRuntimeFast(request, env) },
+        { name: 'render-origin', try: () => fetchPrimary(request, env) },
+        { name: 'cloudflare-static', try: () => fetchStatic(request) },
+      ];
+      for (const { name, try: tryOrigin } of origins) {
+        const result = await tryOrigin();
+        if (result.response && result.response.ok) {
+          cacheResponse(request, result.response, ctx);
+          return decorate(result.response, name, request.url, request);
+        }
       }
       return new Response('Sitemap temporarily unavailable', {
         status: 503,

@@ -194,4 +194,40 @@ test("quando Vercel e Render falham, sitemap recebe 503 honesto", async () => {
     assert.match(await res.text(), /temporarily unavailable/);
   });
 });
+
+test("404 na Vercel cai para o Render e serve o sitemap", async () => {
+  const kv = makeKV();
+  await kv.put("active_origin", JSON.stringify({
+    origin: "primary",
+    changedAt: 0,
+    reason: "default",
+    nextProbeAt: 0,
+  }));
+  const cache = makeCache();
+  let calls = [];
+  await withGlobals({
+    cache,
+    kv,
+    fetchImpl: async (input) => {
+      const u = typeof input === "string" ? input : (input?.url ?? String(input));
+      calls.push(u);
+      if (u.includes("vercel.example.com")) {
+        return new Response("not found", { status: 404, headers: { "content-type": "text/plain" } });
+      }
+      if (u.includes("render.example.com")) {
+        return new Response(SITEMAP_XML, { status: 200, headers: { "content-type": "application/xml" } });
+      }
+      return new Response("origin error", { status: 502 });
+    },
+  }, async (env) => {
+    const res = await worker.fetch(new Request("https://filtraai.com/sitemap.xml"), env);
+    assert.equal(res.status, 200);
+    assert.match(await res.text(), /urlset/);
+    // A Vercel foi consultada primeiro (retornou 404), depois o Render (retornou 200)
+    const vercelIdx = calls.findIndex((u) => String(u).includes("vercel.example.com"));
+    const renderIdx = calls.findIndex((u) => String(u).includes("render.example.com"));
+    assert.ok(vercelIdx >= 0, "Vercel deve ser consultada primeiro");
+    assert.ok(renderIdx > vercelIdx, "Render deve ser consultado após o 404 da Vercel");
+  });
+});
 const INDEX_XML = '<?xml version="1.0"?><sitemapindex><sitemap><loc>https://filtraai.com/sitemap.xml</loc></sitemap></sitemapindex>';
