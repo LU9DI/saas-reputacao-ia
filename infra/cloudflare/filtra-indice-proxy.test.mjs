@@ -416,7 +416,7 @@ test("R2 serve assets Next com cache imutável e responde HEAD", async () => {
 });
 
 
-test("R2 serve Markdown .md com content-type correto", async () => {
+test("R2 serve Markdown .md com content-type, canonical e noindex", async () => {
   let requestedKey = null;
   const env = {
     PAGES_BUCKET: {
@@ -433,6 +433,9 @@ test("R2 serve Markdown .md com content-type correto", async () => {
     assert.equal(res.status, 200);
     assert.equal(requestedKey, "md/go/goiania.md");
     assert.equal(res.headers.get("content-type"), "text/markdown; charset=utf-8");
+    assert.equal(res.headers.get("link"), '<https://filtraai.com/indice/go/goiania>; rel="canonical"');
+    assert.equal(res.headers.get("x-robots-tag"), "noindex, follow");
+    assert.equal(res.headers.get("x-content-type-options"), "nosniff");
     assert.match(await res.text(), /Página/);
   });
 });

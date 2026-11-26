@@ -72,7 +72,14 @@ async function servirR2(request, env, pathname) {
     if (!object) return null;
     const asset = key.startsWith("_next/");
     const contentType = object.httpMetadata?.contentType || (key.endsWith(".html") ? "text/html; charset=utf-8" : key.endsWith(".js") ? "application/javascript; charset=utf-8" : key.endsWith(".css") ? "text/css; charset=utf-8" : key.endsWith(".svg") ? "image/svg+xml" : key.endsWith(".woff2") ? "font/woff2" : key.endsWith(".png") ? "image/png" : key.endsWith(".jpg") || key.endsWith(".jpeg") ? "image/jpeg" : key.endsWith(".webp") ? "image/webp" : key.endsWith(".ico") ? "image/x-icon" : key.endsWith(".txt") ? "text/plain; charset=utf-8" : key.endsWith(".md") ? "text/markdown; charset=utf-8" : key.endsWith(".json") ? "application/json" : "application/octet-stream");
-    const headers = new Headers({ "content-type": contentType, "cache-control": asset ? "public, max-age=31536000, immutable" : "public, max-age=300, s-maxage=86400", "x-indice-proxy": "r2-static", "x-indice-object": key });
+    const headers = new Headers({ "content-type": key.endsWith(".md") ? "text/markdown; charset=utf-8" : contentType, "cache-control": asset ? "public, max-age=31536000, immutable" : "public, max-age=300, s-maxage=86400", "x-indice-proxy": "r2-static", "x-indice-object": key });
+    if (key.endsWith(".md")) {
+      const relativo = pathname.slice("/indice/md".length).replace(/\.md$/, "");
+      const canonicalPath = !relativo || relativo === "/index" ? "" : relativo;
+      headers.set("link", `<https://filtraai.com/indice${canonicalPath}>; rel="canonical"`);
+      headers.set("x-robots-tag", "noindex, follow");
+      headers.set("x-content-type-options", "nosniff");
+    }
     if (object.httpEtag) headers.set("etag", object.httpEtag);
     if (object.uploaded) headers.set("last-modified", object.uploaded.toUTCString());
     return new Response(request.method === "HEAD" ? null : object.body, { status: 200, headers });

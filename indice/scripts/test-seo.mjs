@@ -6,14 +6,13 @@
  * Run after `npm run build`:
  *   npm run test:seo
  *
- * The test starts the production server on a local port and checks the real
- * HTTP responses and HTML, not source strings. It does not touch production.
+ * The test serves the generated `out/` directory and checks the static HTTP
+ * contract, HTML, and Markdown files. It does not start Next or touch production.
  */
 
-import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { resolve } from 'node:path';
-import { setTimeout as sleep } from 'node:timers/promises';
+import { createServer } from 'node:http';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { resolve, sep } from 'node:path';
 import { anosPublicados, calcularRanking, podePublicar } from './lib/rankings.mjs';
 import { ESTADOS_US } from '../src/lib/us-states.ts';
 
@@ -23,8 +22,7 @@ const PORT = Number(process.env.INDICE_TEST_PORT || 3101);
 const ORIGIN = `http://${HOST}:${PORT}`;
 const BASE_PATH = '/indice';
 const CANONICAL_BASE = 'https://filtraai.com/indice';
-const SERVER_ENTRY = resolve(ROOT, 'server.mjs');
-const BUILD_ID = resolve(ROOT, '.next/BUILD_ID');
+const OUT_DIR = resolve(ROOT, 'out');
 const DATA_DIR = resolve(process.env.INDICE_DATA_DIR || resolve(ROOT, 'data'));
 
 const failures = [];
@@ -671,50 +669,21 @@ async function conferirPagina(nome, caminho, { minTabelas = 1, tfoot = true, den
   return { page, meta };
 }
 
-async function waitForServer() {
-  // 120s: o app carrega 51k+ entradas de lastmod e os stats completos no boot.
-  const deadline = Date.now() + 120_000;
-
-  while (Date.now() < deadline) {
-    if (server.exitCode !== null) {
-      throw new Error(`next start exited with code ${server.exitCode}\n${serverLog.join('')}`);
-    }
-
-    try {
-      const response = await fetch(requestUrl(BASE_PATH), { redirect: 'manual' });
-      if (response.status === 200) return;
-    } catch {
-      // Server is still starting.
-    }
-
-    await sleep(500);
-  }
-
-  throw new Error(`next start did not become ready at ${ORIGIN}${BASE_PATH}\n${serverLog.join('')}`);
+function tipoConteudo(file) {
+  if (file.endsWith('.html')) return 'text/html; charset=utf-8';
+  if (file.endsWith('.md')) return 'text/markdown; charset=utf-8';
+  if (file.endsWith('.txt')) return 'text/plain; charset=utf-8';
+  if (file.endsWith('.xml')) return 'application/xml; charset=utf-8';
+  if (file.endsWith('.js')) return 'application/javascript; charset=utf-8';
+  if (file.endsWith('.css')) return 'text/css; charset=utf-8';
+  if (file.endsWith('.json')) return 'application/json; charset=utf-8';
+  if (file.endsWith('.svg')) return 'image/svg+xml';
+  if (file.endsWith('.woff2')) return 'font/woff2';
+  return 'application/octet-stream';
 }
 
-async function stopServer() {
-  if (!server || server.exitCode !== null) return;
-
-  if (process.platform === 'win32') {
-    spawnSync('taskkill', ['/pid', String(server.pid), '/T', '/F'], { stdio: 'ignore' });
-    return;
-  }
-
-  server.kill('SIGTERM');
-  await Promise.race([
-    new Promise((resolve) => server.once('exit', resolve)),
-    sleep(3_000),
-  ]);
-  if (server.exitCode === null) server.kill('SIGKILL');
-}
-
-if (!existsSync(SERVER_ENTRY)) {
-  console.error(`Entrada de produção não encontrada em ${SERVER_ENTRY}.`);
-  process.exit(1);
-}
-if (!existsSync(BUILD_ID)) {
-  console.error(`Build não encontrado em ${BUILD_ID}. Execute npm run build antes de npm run test:seo.`);
+if (!existsSync(OUT_DIR) || !existsSync(resolve(OUT_DIR, 'index.html'))) {
+  console.error(`Export estático não encontrado em ${OUT_DIR}. Execute npm run build antes de npm run test:seo.`);
   process.exit(1);
 }
 
@@ -735,18 +704,52 @@ check(
 );
 const AMOSTRAS = escolherAmostras(DADOS);
 const CONJUNTO_ESPERADO = new Set(ESPERADOS.map(canonicalPath));
-
-const server = spawn(process.execPath, [SERVER_ENTRY], {
-  cwd: ROOT,
-  env: { ...process.env, NODE_ENV: 'production', PORT: String(PORT), HOSTNAME: HOST },
-  stdio: ['ignore', 'pipe', 'pipe'],
+const htmlAusente = ESPERADOS.filter((caminho) => {
+  const arquivo = caminho === '/' ? 'index.html' : `${caminho.slice(1)}.html`;
+  return !existsSync(resolve(OUT_DIR, arquivo));
 });
+check(
+  'export HTML contém todas as URLs indexáveis esperadas',
+  htmlAusente.length === 0,
+  `${htmlAusente.length} ausentes de ${ESPERADOS.length}: ${htmlAusente.slice(0, 10).join(', ')}`,
+);
 
-server.stdout.on('data', (chunk) => serverLog.push(chunk.toString()));
-server.stderr.on('data', (chunk) => serverLog.push(chunk.toString()));
+const server = createServer((req, res) => {
+  const url = new URL(req.url || '/', ORIGIN);
+  if (url.pathname !== BASE_PATH && !url.pathname.startsWith(`${BASE_PATH}/`)) {
+    res.writeHead(404, { 'cache-control': 'no-store' }).end();
+    return;
+  }
+  if (url.pathname.endsWith('/') && url.pathname !== `${BASE_PATH}/`) {
+    res.writeHead(308, { location: `${url.pathname.slice(0, -1)}${url.search}`, 'cache-control': 'public, max-age=86400' }).end();
+    return;
+  }
+  let relative = url.pathname.slice(BASE_PATH.length).replace(/^\/+/, '');
+  if (!relative) relative = 'index.html';
+  else if (!/\.[a-z0-9]{2,8}$/i.test(relative)) relative += '.html';
+  const file = resolve(OUT_DIR, relative);
+  if (!file.startsWith(OUT_DIR + sep) && file !== resolve(OUT_DIR, 'index.html')) {
+    res.writeHead(400, { 'cache-control': 'no-store' }).end();
+    return;
+  }
+  if (!existsSync(file) || !statSync(file).isFile()) {
+    res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'private, no-cache, no-store, max-age=0', 'x-robots-tag': 'noindex' }).end('Not found\\n');
+    return;
+  }
+  const headers = { 'content-type': tipoConteudo(file), 'cache-control': 'public, max-age=300, s-maxage=86400', 'x-content-type-options': 'nosniff' };
+  if (file.endsWith('.md')) {
+    const relativo = url.pathname.slice(`${BASE_PATH}/md`.length).replace(/\.md$/, '');
+    const canonicalPath = !relativo || relativo === '/index' ? '' : relativo;
+    headers.link = `<https://filtraai.com${BASE_PATH}${canonicalPath}>; rel="canonical"`;
+    headers['x-robots-tag'] = 'noindex, follow';
+  }
+  res.writeHead(200, headers);
+  if (req.method === 'HEAD') res.end();
+  else res.end(readFileSync(file));
+});
+server.listen(PORT, HOST);
 
 try {
-  await waitForServer();
 
   const root = await conferirPagina('raiz', '/', { minTabelas: 1 });
   const rootHtml = root.page.final.body;
@@ -1179,7 +1182,7 @@ try {
   check('llms-full.txt traz a metodologia resumida', /Metodologia resumida/.test(llmsFull.final.body));
   check('llms-full.txt traz o bloco de citação', /Como citar/.test(llmsFull.final.body));
 
-  const mdHome = await request(`${BASE_PATH}/md`);
+  const mdHome = await request(`${BASE_PATH}/md/index.md`);
   checkEqual('GET /indice/md status', mdHome.final.status, 200);
   check('gêmea da home é text/markdown', mdHome.final.contentType.includes('text/markdown'), mdHome.final.contentType);
   check(
@@ -1191,11 +1194,11 @@ try {
   check('gêmea da home tem H1', /^# .+/m.test(mdHome.final.body));
   check('gêmea da home não tem HTML', !/<(div|script|nav)[\s>]/i.test(mdHome.final.body));
 
-  const mdUf = await request(`${BASE_PATH}/md/${AMOSTRAS.uf.toLowerCase()}`);
+  const mdUf = await request(`${BASE_PATH}/md/${AMOSTRAS.uf.toLowerCase()}.md`);
   checkEqual('GET /indice/md/<uf> status', mdUf.final.status, 200);
   check('gêmea do estado traz o recorte', /# Estabelecimentos ativos por segmento em/.test(mdUf.final.body));
 
-  const mdCelula = await request(`${BASE_PATH}/md${caminhoCelula}`);
+  const mdCelula = await request(`${BASE_PATH}/md${caminhoCelula}.md`);
   checkEqual('GET /indice/md/<célula> status', mdCelula.final.status, 200);
   check(
     'gêmea da célula aponta a fonte canônica',
@@ -1211,7 +1214,7 @@ try {
     ufInvalida.final.cacheControl,
   );
 
-  const mdAusente = await request(`${BASE_PATH}/md/zz/nao-existe`);
+  const mdAusente = await request(`${BASE_PATH}/md/zz/nao-existe.md`);
   checkEqual('gêmea de rota inexistente responde 404', mdAusente.final.status, 404);
   check(
     'sitemap não lista gêmeas em Markdown',
@@ -1222,7 +1225,7 @@ try {
 } catch (error) {
   fail('execução do teste', error instanceof Error ? error.message : String(error));
 } finally {
-  await stopServer();
+  await new Promise((resolve) => server.close(resolve));
 }
 
 if (failures.length) {
