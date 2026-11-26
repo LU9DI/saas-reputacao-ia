@@ -330,15 +330,47 @@ test("fora da janela, sitemap sem cache tenta a origem uma vez antes do 503", as
   }
 });
 
-test("fora da janela, sitemap sem cache e origem indisponível recebe 503", async () => {
+test("fora da janela, sitemap sem cache e origem indisponível recebe 503 após uma única tentativa", async () => {
   configureOriginWindow({ enabled: true, now: () => new Date("2026-11-24T12:00:00Z") });
   try {
     const cache = makeCache();
-    await withGlobals({ cache, fetchImpl: async () => new Response("bad gateway", { status: 502 }) }, async () => {
+    let calls = 0;
+    await withGlobals({ cache, fetchImpl: async () => {
+      calls += 1;
+      return new Response("bad gateway", { status: 502 });
+    } }, async () => {
       const env = {};
       const res = await worker.fetch(new Request("https://filtraai.com/indice/sitemap/0.xml"), env);
       assert.equal(res.status, 503);
       assert.equal(res.headers.get("x-indice-proxy"), "frozen-miss");
+      assert.equal(res.headers.get("cache-control"), "no-store");
+      assert.equal(calls, 1, "fora da janela, o sitemap deve fazer exatamente uma tentativa à origem");
+    });
+  } finally {
+    configureOriginWindow({ enabled: false });
+  }
+});
+
+test("fora da janela, HEAD de sitemap tenta a origem uma vez e não devolve corpo", async () => {
+  configureOriginWindow({ enabled: true, now: () => new Date("2026-11-24T12:00:00Z") });
+  try {
+    const cache = makeCache();
+    let calls = 0;
+    await withGlobals({ cache, fetchImpl: async (input, init) => {
+      calls += 1;
+      assert.equal(init.method, "HEAD");
+      return new Response(null, {
+        status: 200,
+        headers: { "content-type": "application/xml" },
+      });
+    } }, async () => {
+      const env = {};
+      const res = await worker.fetch(new Request("https://filtraai.com/indice/sitemap/0.xml", { method: "HEAD" }), env);
+      assert.equal(res.status, 200);
+      assert.equal(res.headers.get("x-indice-proxy"), "render-origin");
+      assert.equal(await res.text(), "");
+      assert.equal(calls, 1);
+      assert.equal(cache.entries.size, 0, "HEAD não deve gravar sitemap no cache");
     });
   } finally {
     configureOriginWindow({ enabled: false });
