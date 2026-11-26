@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { MIN_MUNICIPIOS_RANKING_UF, rankingDoSegmento, getSegmentos } from '@/lib/data';
 import { modeloDoRanking } from '@/lib/ranking-textos';
 import { OG_IMAGE, urlAbsoluta } from '@/lib/seo';
-import { ufDeSlug } from '@/lib/ufs';
+import { ufDeSlug, UFS } from '@/lib/ufs';
 import { RankingPagina } from '@/components/RankingPagina';
 
 type Props = { params: Promise<{ segmento: string; uf: string }> };
