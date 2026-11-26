@@ -13,7 +13,6 @@ import { Migalhas } from '@/components/Migalhas';
 
 const titulo = 'Rankings de aberturas por município e segmento no Brasil';
 
-export const revalidate = 86400;
 
 export function generateMetadata(): Metadata {
   const meta = getMeta();

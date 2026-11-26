@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { temDadosUS, usMeta, usPagina, usTopCondados, type UsPagina } from '@/lib/us';
+import { temDadosUS, usMeta, usPagina, usTopCondados, type UsPagina, usEstadosComDados, usCondadosDoEstado, usSegsDoCondado } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug, slugEstado } from '@/lib/us-states';
 import { nUS, ordUS, pctUS, corta } from '@/lib/format';
 import { ate } from '@/lib/rotulos';
@@ -11,9 +11,8 @@ import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
 type Props = { params: Promise<{ state: string; county: string; segment: string }> };
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return usEstadosComDados().flatMap(({ sigla, slug: state }) => usCondadosDoEstado(sigla).flatMap(({ county }) => usSegsDoCondado(sigla, county.slug).map(({ seg }) => ({ state, county: county.slug, segment: seg.slug }))));
 }
 
 const FAIXAS = ['Under 5 employees', '5 to 9', '10 to 19', '20 to 49', '50 to 99', '100 or more'];

@@ -52,6 +52,32 @@ async function lerSitemapKv(env, pathname) {
   }
 }
 
+
+function chaveR2DaPagina(pathname) {
+  if (pathname === "/indice" || pathname === "/indice/") return "index.html";
+  if (!pathname.startsWith("/indice/")) return null;
+  const relativo = pathname.slice("/indice/".length);
+  if (!relativo || relativo.endsWith(".xml")) return null;
+  if (relativo.startsWith("_next/")) return relativo;
+  return relativo.endsWith("/") ? `${relativo}index.html` : `${relativo}.html`;
+}
+async function servirR2(request, env, pathname) {
+  const bucket = env?.PAGES_BUCKET;
+  if (!bucket || typeof bucket.get !== "function") return null;
+  const key = chaveR2DaPagina(pathname);
+  if (!key) return null;
+  try {
+    const object = await bucket.get(key);
+    if (!object) return null;
+    const asset = key.startsWith("_next/");
+    const contentType = object.httpMetadata?.contentType || (key.endsWith(".html") ? "text/html; charset=utf-8" : key.endsWith(".js") ? "application/javascript; charset=utf-8" : key.endsWith(".css") ? "text/css; charset=utf-8" : key.endsWith(".svg") ? "image/svg+xml" : key.endsWith(".woff2") ? "font/woff2" : "application/octet-stream");
+    const headers = new Headers({ "content-type": contentType, "cache-control": asset ? "public, max-age=31536000, immutable" : "public, max-age=300, s-maxage=86400", "x-indice-proxy": "r2-static", "x-indice-object": key });
+    if (object.httpEtag) headers.set("etag", object.httpEtag);
+    if (object.uploaded) headers.set("last-modified", object.uploaded.toUTCString());
+    return new Response(request.method === "HEAD" ? null : object.body, { status: 200, headers });
+  } catch { return null; }
+}
+
 function cacheKeyFor(url) {
   return new Request(`${url.origin}${url.pathname}`, { method: "GET" });
 }
@@ -161,6 +187,12 @@ export default {
     const incoming = new URL(request.url);
     if (incoming.pathname !== "/indice" && !incoming.pathname.startsWith("/indice/")) {
       return fetch(request);
+    }
+
+    const isStaticRequest = (request.method === 'GET' || request.method === 'HEAD') && incoming.search === '' && !request.headers.has('authorization') && !request.headers.has('cookie');
+    if (isStaticRequest) {
+      const fromR2 = await servirR2(request, env, incoming.pathname);
+      if (fromR2) return fromR2;
     }
 
     const isStaticAsset = STATIC_ASSET_PATH.test(incoming.pathname) &&

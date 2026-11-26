@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { temDadosUS, usMeta, usCondado, usSegsDoCondado } from '@/lib/us';
+import { temDadosUS, usMeta, usCondado, usSegsDoCondado, usEstadosComDados, usCondadosDoEstado } from '@/lib/us';
 import { ESTADOS_US, siglaDeSlug } from '@/lib/us-states';
 import { nUS, corta } from '@/lib/format';
 import { urlAbsoluta, OG_IMAGE, JsonLd, datasetDoRecorteUS } from '@/lib/seo';
@@ -10,9 +10,8 @@ import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
 type Props = { params: Promise<{ state: string; county: string }> };
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return usEstadosComDados().flatMap(({ sigla, slug: state }) => usCondadosDoEstado(sigla).map(({ county }) => ({ state, county: county.slug })));
 }
 
 function resolver(state: string, county: string) {

@@ -17,9 +17,8 @@ import { Migalhas } from '@/components/Migalhas';
 
 type Props = { params: Promise<{ segmento: string; ano: string }> };
 
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return getSegmentos().flatMap((seg) => anosPublicadosDoSegmento(seg.slug).map((ano) => ({ segmento: seg.slug, ano })));
 }
 
 function resolver(segmento: string, ano: string) {

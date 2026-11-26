@@ -376,3 +376,31 @@ test("fora da janela, HEAD de sitemap tenta a origem uma vez e não devolve corp
     configureOriginWindow({ enabled: false });
   }
 });
+
+
+test("R2 serve HTML pré-gerado sem consultar Render", async () => {
+  configureOriginWindow({ enabled: true, now: () => new Date("2026-11-26T12:00:00Z") });
+  try {
+    let calls = 0;
+    const env = { PAGES_BUCKET: { get: async (key) => {
+      assert.equal(key, "go/goiania/restaurantes.html");
+      return { body: new ReadableStream({ start(c) { c.enqueue(new TextEncoder().encode("<html>R2</html>")); c.close(); } }), httpMetadata: { contentType: "text/html; charset=utf-8" }, httpEtag: '"r2-etag"' };
+    } } };
+    await withGlobals({ cache: makeCache(), fetchImpl: async () => { calls++; throw new Error("Render não deve ser chamado"); } }, async () => {
+      const res = await worker.fetch(new Request("https://filtraai.com/indice/go/goiania/restaurantes"), env);
+      assert.equal(res.status, 200); assert.equal(res.headers.get("x-indice-proxy"), "r2-static");
+      assert.equal(res.headers.get("etag"), '"r2-etag"'); assert.match(await res.text(), /R2/); assert.equal(calls, 0);
+    });
+  } finally { configureOriginWindow({ enabled: false }); }
+});
+
+test("R2 serve assets Next com cache imutável e responde HEAD", async () => {
+  const keys = [];
+  const env = { PAGES_BUCKET: { get: async (key) => { keys.push(key); return { body: new ReadableStream({ start(c) { c.enqueue(new Uint8Array([1,2,3])); c.close(); } }), httpMetadata: { contentType: "application/javascript" } }; } };
+  await withGlobals({ cache: makeCache(), fetchImpl: noFetch }, async () => {
+    const res = await worker.fetch(new Request("https://filtraai.com/indice/_next/static/chunks/app.js"), env);
+    assert.equal(res.status, 200); assert.equal(res.headers.get("cache-control"), "public, max-age=31536000, immutable"); assert.equal(keys[0], "_next/static/chunks/app.js");
+    const head = await worker.fetch(new Request("https://filtraai.com/indice/_next/static/chunks/app.js", { method: "HEAD" }), env);
+    assert.equal(head.status, 200); assert.equal(await head.text(), "");
+  });
+});

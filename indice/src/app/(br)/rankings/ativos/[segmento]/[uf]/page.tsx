@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { MIN_MUNICIPIOS_RANKING_UF, rankingDoSegmento } from '@/lib/data';
+import { MIN_MUNICIPIOS_RANKING_UF, rankingDoSegmento, getSegmentos } from '@/lib/data';
 import { modeloDoRanking } from '@/lib/ranking-textos';
 import { OG_IMAGE, urlAbsoluta } from '@/lib/seo';
 import { ufDeSlug } from '@/lib/ufs';
@@ -8,9 +8,8 @@ import { RankingPagina } from '@/components/RankingPagina';
 
 type Props = { params: Promise<{ segmento: string; uf: string }> };
 
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return getSegmentos().flatMap((seg) => Object.keys(UFS).filter((uf) => rankingDoSegmento(seg.slug, 'a', uf).length >= MIN_MUNICIPIOS_RANKING_UF).map((uf) => ({ segmento: seg.slug, uf: uf.toLowerCase() })));
 }
 
 function resolver(segmento: string, uf: string) {

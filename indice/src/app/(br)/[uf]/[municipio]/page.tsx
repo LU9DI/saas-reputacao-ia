@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getMeta, getMunicipio, segmentosDoMunicipio } from '@/lib/data';
+import { getMeta, getMunicipio, segmentosDoMunicipio, ufsComDados, municipiosDaUF } from '@/lib/data';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, pct, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
 import { JsonLd, urlAbsoluta, OG_IMAGE, datasetDoRecorte } from '@/lib/seo';
@@ -14,9 +14,8 @@ import { Migalhas } from '@/components/Migalhas';
 
 type Props = { params: Promise<{ uf: string; municipio: string }> };
 
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return ufsComDados().flatMap(({ sigla }) => municipiosDaUF(sigla).map(({ mun }) => ({ uf: sigla.toLowerCase(), municipio: mun.slug })));
 }
 
 function resolver(uf: string, municipio: string) {

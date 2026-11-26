@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { modeloDoRanking } from '@/lib/ranking-textos';
+import { getSegmentos } from '@/lib/data';
 import { OG_IMAGE, urlAbsoluta } from '@/lib/seo';
 import { RankingPagina } from '@/components/RankingPagina';
 
 type Props = { params: Promise<{ segmento: string }> };
 
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return getSegmentos().filter((seg) => modeloDoRanking(seg.slug)).map((seg) => ({ segmento: seg.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

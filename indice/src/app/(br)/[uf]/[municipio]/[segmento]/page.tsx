@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getMeta, getPagina, nomeSubclasse, type Pagina } from '@/lib/data';
+import { getMeta, getPagina, nomeSubclasse, type Pagina, ufsComDados, municipiosDaUF, segmentosDoMunicipio } from '@/lib/data';
 import { anosPublicadosDoSegmento, rankingsAtivosDaUF } from '@/lib/rankings';
 import { ufDeSlug, UFS } from '@/lib/ufs';
 import { n, ord, pct, minuscula, mesPorExtenso, mesCurto, corta, dataCurta } from '@/lib/format';
@@ -17,11 +17,9 @@ import { Migalhas } from '@/components/Migalhas';
 
 type Props = { params: Promise<{ uf: string; municipio: string; segmento: string }> };
 
-// Páginas geradas na primeira visita e mantidas em cache (ISR); só existem combinações com
-// estabelecimentos suficientes. Sem lista no build: as dezenas de milhares de URLs não são pré-renderizadas.
-export const revalidate = 86400;
+// Pré-renderização integral das combinações publicáveis, conforme o mínimo da base.
 export async function generateStaticParams() {
-  return [];
+  return ufsComDados().flatMap(({ sigla }) => municipiosDaUF(sigla).flatMap(({ mun }) => segmentosDoMunicipio(sigla, mun.slug).map(({ seg }) => ({ uf: sigla.toLowerCase(), municipio: mun.slug, segmento: seg.slug }))));
 }
 
 function resolver(uf: string, municipio: string, segmento: string) {

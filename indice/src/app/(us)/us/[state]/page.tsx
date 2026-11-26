@@ -9,9 +9,8 @@ import { Cta } from '@/components/Cta';
 import { Migalhas } from '@/components/Migalhas';
 
 type Props = { params: Promise<{ state: string }> };
-export const revalidate = 86400;
 export async function generateStaticParams() {
-  return [];
+  return usEstadosComDados().map(({ slug }) => ({ state: slug }));
 }
 
 function resolver(state: string) {
