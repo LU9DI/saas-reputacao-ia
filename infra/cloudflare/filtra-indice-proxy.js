@@ -189,6 +189,12 @@ export default {
       return fetch(request);
     }
 
+    // O export estático usa trailingSlash=false: normaliza /rota/ para /rota.
+    if (incoming.pathname.startsWith("/indice/") && incoming.pathname.endsWith("/") && incoming.pathname !== "/indice/") {
+      incoming.pathname = incoming.pathname.slice(0, -1);
+      return Response.redirect(incoming.toString(), 308);
+    }
+
     const isStaticRequest = (request.method === 'GET' || request.method === 'HEAD') && incoming.search === '' && !request.headers.has('authorization') && !request.headers.has('cookie');
     if (isStaticRequest) {
       const fromR2 = await servirR2(request, env, incoming.pathname);
