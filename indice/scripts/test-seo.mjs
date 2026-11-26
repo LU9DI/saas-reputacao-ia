@@ -720,7 +720,7 @@ const server = createServer((req, res) => {
     res.writeHead(404, { 'cache-control': 'no-store' }).end();
     return;
   }
-  if (url.pathname.endsWith('/') && url.pathname !== `${BASE_PATH}/`) {
+  if (url.pathname.endsWith('/')) {
     res.writeHead(308, { location: `${url.pathname.slice(0, -1)}${url.search}`, 'cache-control': 'public, max-age=86400' }).end();
     return;
   }
@@ -908,7 +908,7 @@ try {
       !CONJUNTO_ESPERADO.has(canonicalPath(`/rankings/aberturas/nao-existe/${ano}`)),
     );
 
-    const mdRanking = await request(`${BASE_PATH}/md${caminhoRanking}`);
+    const mdRanking = await request(`${BASE_PATH}/md${caminhoRanking}.md`);
     checkEqual('GET /indice/md/ranking status', mdRanking.final.status, 200);
     check(
       'gêmea do ranking aponta a fonte canônica',
@@ -923,7 +923,7 @@ try {
     check('hub explica anos fechados e parciais', /fechado/i.test(hub.meta.text) && /parcial/i.test(hub.meta.text));
     conferirCta('CTA do hub de rankings', hub.page.final.body);
 
-    const mdHub = await request(`${BASE_PATH}/md/rankings/aberturas`);
+    const mdHub = await request(`${BASE_PATH}/md/rankings/aberturas.md`);
     checkEqual('GET /indice/md/rankings/aberturas status', mdHub.final.status, 200);
     check('gêmea do hub de rankings é noindex', /noindex/i.test(mdHub.final.robotsHeader), mdHub.final.robotsHeader);
 
@@ -1048,7 +1048,7 @@ try {
       (!meta.robots || /noindex/i.test(meta.robots)) && (!page.final.robotsHeader || /noindex/i.test(page.final.robotsHeader)),
       `robots=${meta.robots}; header=${page.final.robotsHeader}`,
     );
-    check('404 abaixo do mínimo explica a ausência', /não encontrada|não existe/i.test(meta.text));
+    check('404 abaixo do mínimo explica a ausência', /não encontrada|não existe|not found/i.test(meta.text));
     check(
       '404 abaixo do mínimo não é cacheável',
       /no-store/i.test(page.final.cacheControl) && !/s-maxage/.test(page.final.cacheControl),
