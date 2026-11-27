@@ -1,11 +1,1336 @@
 [
-  { "slug": "restaurants-and-bars", "nome": "Restaurants and bars", "curto": "restaurants and bars", "naics": ["7225//", "7224//"] },
-  { "slug": "hotels-and-motels", "nome": "Hotels, motels and lodging", "curto": "hotels, motels and other traveler lodging", "naics": ["7211//"] },
-  { "slug": "medical-and-dental-offices", "nome": "Medical and dental offices", "curto": "offices of physicians and dentists", "naics": ["6211//", "6212//"] },
-  { "slug": "health-practitioner-offices", "nome": "Other health practitioner offices", "curto": "offices of chiropractors, optometrists, therapists and other health practitioners", "naics": ["6213//"] },
-  { "slug": "hair-nail-and-barber-shops", "nome": "Hair, nail and barber shops", "curto": "hair salons, nail salons and barber shops", "naics": ["81211/"] },
-  { "slug": "gyms-and-fitness-centers", "nome": "Gyms and fitness centers", "curto": "fitness and recreational sports centers", "naics": ["713940"] },
-  { "slug": "pharmacies", "nome": "Pharmacies and drug stores", "curto": "pharmacies and drug stores", "naics": ["446110"] },
-  { "slug": "auto-repair-shops", "nome": "Auto repair shops", "curto": "automotive repair and maintenance shops", "naics": ["8111//"] },
-  { "slug": "grocery-stores", "nome": "Supermarkets and grocery stores", "curto": "supermarkets and other grocery stores", "naics": ["445110"] }
+  {
+    "slug": "restaurants-and-bars",
+    "nome": "Restaurants and bars",
+    "curto": "restaurants and bars",
+    "naics": [
+      "7225//",
+      "7224//"
+    ]
+  },
+  {
+    "slug": "hotels-and-motels",
+    "nome": "Hotels, motels and lodging",
+    "curto": "hotels, motels and other traveler lodging",
+    "naics": [
+      "7211//"
+    ]
+  },
+  {
+    "slug": "medical-and-dental-offices",
+    "nome": "Medical and dental offices",
+    "curto": "offices of physicians and dentists",
+    "naics": [
+      "6211//",
+      "6212//"
+    ]
+  },
+  {
+    "slug": "health-practitioner-offices",
+    "nome": "Other health practitioner offices",
+    "curto": "offices of chiropractors, optometrists, therapists and other health practitioners",
+    "naics": [
+      "6213//"
+    ]
+  },
+  {
+    "slug": "hair-nail-and-barber-shops",
+    "nome": "Hair, nail and barber shops",
+    "curto": "hair salons, nail salons and barber shops",
+    "naics": [
+      "81211/"
+    ]
+  },
+  {
+    "slug": "gyms-and-fitness-centers",
+    "nome": "Gyms and fitness centers",
+    "curto": "fitness and recreational sports centers",
+    "naics": [
+      "713940"
+    ]
+  },
+  {
+    "slug": "pharmacies",
+    "nome": "Pharmacies and drug stores",
+    "curto": "pharmacies and drug stores",
+    "naics": [
+      "446110"
+    ]
+  },
+  {
+    "slug": "auto-repair-shops",
+    "nome": "Auto repair shops",
+    "curto": "automotive repair and maintenance shops",
+    "naics": [
+      "8111//"
+    ]
+  },
+  {
+    "slug": "grocery-stores",
+    "nome": "Supermarkets and grocery stores",
+    "curto": "supermarkets and other grocery stores",
+    "naics": [
+      "445110"
+    ]
+  },
+  {
+    "slug": "residential-building-contractors",
+    "nome": "Residential building contractors",
+    "curto": "residential building construction firms",
+    "naics": [
+      "2361//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "commercial-building-contractors",
+    "nome": "Commercial building contractors",
+    "curto": "nonresidential building construction firms",
+    "naics": [
+      "2362//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "heavy-and-civil-engineering-contractors",
+    "nome": "Heavy and civil engineering contractors",
+    "curto": "other heavy and civil engineering construction firms",
+    "naics": [
+      "2379//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "roofing-contractors",
+    "nome": "Roofing contractors",
+    "curto": "roofing contractors",
+    "naics": [
+      "23816/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "electrical-contractors",
+    "nome": "Electrical contractors",
+    "curto": "electrical contractors and wiring installers",
+    "naics": [
+      "23821/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "plumbing-heating-and-a-c-contractors",
+    "nome": "Plumbing, heating and A/C contractors",
+    "curto": "plumbing, heating and air-conditioning contractors",
+    "naics": [
+      "23822/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "painting-contractors",
+    "nome": "Painting contractors",
+    "curto": "painting and wall covering contractors",
+    "naics": [
+      "23832/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "flooring-contractors",
+    "nome": "Flooring contractors",
+    "curto": "flooring contractors",
+    "naics": [
+      "23833/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "concrete-and-foundation-contractors",
+    "nome": "Concrete and foundation contractors",
+    "curto": "poured concrete foundation and structure contractors",
+    "naics": [
+      "23811/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "framing-contractors",
+    "nome": "Framing contractors",
+    "curto": "framing contractors",
+    "naics": [
+      "23813/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "masonry-contractors",
+    "nome": "Masonry contractors",
+    "curto": "masonry contractors",
+    "naics": [
+      "23814/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "drywall-and-insulation-contractors",
+    "nome": "Drywall and insulation contractors",
+    "curto": "drywall and insulation contractors",
+    "naics": [
+      "23831/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "finish-carpentry-contractors",
+    "nome": "Finish carpentry contractors",
+    "curto": "finish carpentry contractors",
+    "naics": [
+      "23835/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "site-preparation-contractors",
+    "nome": "Site preparation contractors",
+    "curto": "site preparation contractors",
+    "naics": [
+      "23891/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-specialty-trade-contractors",
+    "nome": "Other specialty trade contractors",
+    "curto": "all other specialty trade contractors",
+    "naics": [
+      "23899/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "bakeries",
+    "nome": "Bakeries",
+    "curto": "bakeries and tortilla manufacturers",
+    "naics": [
+      "3118//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "printing-shops",
+    "nome": "Printing shops",
+    "curto": "printing and related support businesses",
+    "naics": [
+      "3231//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "car-dealerships",
+    "nome": "Car dealerships",
+    "curto": "automobile dealers",
+    "naics": [
+      "4411//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-vehicle-dealers",
+    "nome": "Other vehicle dealers",
+    "curto": "motorcycle, boat and other motor vehicle dealers",
+    "naics": [
+      "4412//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "auto-parts-and-tire-stores",
+    "nome": "Auto parts and tire stores",
+    "curto": "auto parts, accessories and tire stores",
+    "naics": [
+      "4413//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "furniture-stores",
+    "nome": "Furniture stores",
+    "curto": "furniture stores",
+    "naics": [
+      "4421//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "home-furnishings-stores",
+    "nome": "Home furnishings stores",
+    "curto": "home furnishings stores",
+    "naics": [
+      "4422//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "electronics-and-appliance-stores",
+    "nome": "Electronics and appliance stores",
+    "curto": "electronics and appliance stores",
+    "naics": [
+      "4431//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "building-material-stores",
+    "nome": "Building material stores",
+    "curto": "building material and supplies dealers",
+    "naics": [
+      "4441//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "lawn-and-garden-stores",
+    "nome": "Lawn and garden stores",
+    "curto": "lawn and garden equipment and supplies stores",
+    "naics": [
+      "4442//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "specialty-food-stores",
+    "nome": "Specialty food stores",
+    "curto": "specialty food stores",
+    "naics": [
+      "4452//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "liquor-stores",
+    "nome": "Liquor stores",
+    "curto": "beer, wine and liquor stores",
+    "naics": [
+      "4453//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "gas-stations",
+    "nome": "Gas stations",
+    "curto": "gasoline stations",
+    "naics": [
+      "4471//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "clothing-stores",
+    "nome": "Clothing stores",
+    "curto": "clothing stores",
+    "naics": [
+      "4481//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "shoe-stores",
+    "nome": "Shoe stores",
+    "curto": "shoe stores",
+    "naics": [
+      "4482//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "jewelry-and-luggage-stores",
+    "nome": "Jewelry and luggage stores",
+    "curto": "jewelry, luggage and leather goods stores",
+    "naics": [
+      "4483//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "sporting-goods-and-hobby-stores",
+    "nome": "Sporting goods and hobby stores",
+    "curto": "sporting goods, hobby and musical instrument stores",
+    "naics": [
+      "4511//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "book-and-music-stores",
+    "nome": "Book and music stores",
+    "curto": "book, periodical and music stores",
+    "naics": [
+      "4512//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "department-stores",
+    "nome": "Department stores",
+    "curto": "department stores",
+    "naics": [
+      "4521//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-general-merchandise-stores",
+    "nome": "Other general merchandise stores",
+    "curto": "warehouse clubs, supercenters and other general merchandise stores",
+    "naics": [
+      "4529//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "florists",
+    "nome": "Florists",
+    "curto": "florists",
+    "naics": [
+      "4531//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "office-supply-and-gift-stores",
+    "nome": "Office supply and gift stores",
+    "curto": "office supplies, stationery and gift stores",
+    "naics": [
+      "4532//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "used-merchandise-stores",
+    "nome": "Used merchandise stores",
+    "curto": "used merchandise stores",
+    "naics": [
+      "4533//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-specialty-retailers",
+    "nome": "Other specialty retailers",
+    "curto": "all other miscellaneous store retailers",
+    "naics": [
+      "4539//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "fuel-dealers",
+    "nome": "Fuel dealers",
+    "curto": "fuel dealers",
+    "naics": [
+      "4543//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "general-freight-trucking",
+    "nome": "General freight trucking",
+    "curto": "general freight trucking companies",
+    "naics": [
+      "4841//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "specialized-freight-and-moving",
+    "nome": "Specialized freight and moving",
+    "curto": "specialized freight trucking and moving companies",
+    "naics": [
+      "4842//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "taxi-and-limousine-services",
+    "nome": "Taxi and limousine services",
+    "curto": "taxi and limousine services",
+    "naics": [
+      "4853//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "school-and-employee-buses",
+    "nome": "School and employee buses",
+    "curto": "school and employee bus transportation",
+    "naics": [
+      "4854//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-ground-passenger-transit",
+    "nome": "Other ground passenger transit",
+    "curto": "other transit and ground passenger transportation",
+    "naics": [
+      "4859//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "sightseeing-transportation-by-land",
+    "nome": "Sightseeing transportation by land",
+    "curto": "scenic and sightseeing transportation by land",
+    "naics": [
+      "4871//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "towing-and-road-support",
+    "nome": "Towing and road support",
+    "curto": "support activities for road transportation, including towing",
+    "naics": [
+      "4884//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "couriers-and-delivery",
+    "nome": "Couriers and delivery",
+    "curto": "couriers and express delivery services",
+    "naics": [
+      "4921//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "warehousing-and-storage",
+    "nome": "Warehousing and storage",
+    "curto": "warehousing and storage facilities",
+    "naics": [
+      "4931//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "newspaper-and-book-publishers",
+    "nome": "Newspaper and book publishers",
+    "curto": "newspaper, periodical, book and directory publishers",
+    "naics": [
+      "5111//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "film-and-video",
+    "nome": "Film and video",
+    "curto": "motion picture and video industries",
+    "naics": [
+      "5121//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "radio-and-tv-broadcasters",
+    "nome": "Radio and TV broadcasters",
+    "curto": "radio and television broadcasting",
+    "naics": [
+      "5151//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "wired-telecom-carriers",
+    "nome": "Wired telecom carriers",
+    "curto": "wired telecommunications carriers",
+    "naics": [
+      "5171//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "wireless-telecom-carriers",
+    "nome": "Wireless telecom carriers",
+    "curto": "wireless telecommunications carriers",
+    "naics": [
+      "5172//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "data-processing-and-hosting",
+    "nome": "Data processing and hosting",
+    "curto": "data processing, hosting and related services",
+    "naics": [
+      "5182//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "banks-and-credit-unions",
+    "nome": "Banks and credit unions",
+    "curto": "depository credit institutions",
+    "naics": [
+      "5221//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "lenders-and-credit-companies",
+    "nome": "Lenders and credit companies",
+    "curto": "nondepository credit intermediation, including lenders",
+    "naics": [
+      "5222//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "securities-brokers",
+    "nome": "Securities brokers",
+    "curto": "securities and commodity contracts brokerages",
+    "naics": [
+      "5231//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "investment-advisors",
+    "nome": "Investment advisors",
+    "curto": "other financial investment activities and advisors",
+    "naics": [
+      "5239//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "insurance-carriers",
+    "nome": "Insurance carriers",
+    "curto": "insurance carriers",
+    "naics": [
+      "5241//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "insurance-agencies",
+    "nome": "Insurance agencies",
+    "curto": "insurance agencies and brokerages",
+    "naics": [
+      "5242//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "real-estate-lessors",
+    "nome": "Real estate lessors",
+    "curto": "lessors of real estate",
+    "naics": [
+      "5311//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "real-estate-agents-and-brokers",
+    "nome": "Real estate agents and brokers",
+    "curto": "offices of real estate agents and brokers",
+    "naics": [
+      "5312//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "real-estate-services",
+    "nome": "Real estate services",
+    "curto": "activities related to real estate, including property managers and appraisers",
+    "naics": [
+      "5313//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "vehicle-rental-and-leasing",
+    "nome": "Vehicle rental and leasing",
+    "curto": "automotive equipment rental and leasing",
+    "naics": [
+      "5321//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "consumer-goods-rental",
+    "nome": "Consumer goods rental",
+    "curto": "consumer goods rental, including video and party rental",
+    "naics": [
+      "5322//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "general-rental-centers",
+    "nome": "General rental centers",
+    "curto": "general rental centers",
+    "naics": [
+      "5323//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "law-firms",
+    "nome": "Law firms",
+    "curto": "legal services and law offices",
+    "naics": [
+      "5411//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "accounting-and-tax-services",
+    "nome": "Accounting and tax services",
+    "curto": "accounting, tax preparation, bookkeeping and payroll services",
+    "naics": [
+      "5412//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "architecture-and-engineering-firms",
+    "nome": "Architecture and engineering firms",
+    "curto": "architectural, engineering and related services",
+    "naics": [
+      "5413//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "specialized-design-studios",
+    "nome": "Specialized design studios",
+    "curto": "specialized design services",
+    "naics": [
+      "5414//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "it-and-software-consultancies",
+    "nome": "IT and software consultancies",
+    "curto": "computer systems design and related services",
+    "naics": [
+      "5415//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "business-consultancies",
+    "nome": "Business consultancies",
+    "curto": "management, scientific and technical consulting services",
+    "naics": [
+      "5416//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "research-laboratories",
+    "nome": "Research laboratories",
+    "curto": "scientific research and development services",
+    "naics": [
+      "5417//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "advertising-agencies",
+    "nome": "Advertising agencies",
+    "curto": "advertising, public relations and related agencies",
+    "naics": [
+      "5418//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "photography-studios",
+    "nome": "Photography studios",
+    "curto": "photographic services and studios",
+    "naics": [
+      "54192/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "veterinary-clinics",
+    "nome": "Veterinary clinics",
+    "curto": "veterinary services and animal hospitals",
+    "naics": [
+      "54194/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-professional-services",
+    "nome": "Other professional services",
+    "curto": "all other professional, scientific and technical services",
+    "naics": [
+      "54199/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "staffing-and-employment-agencies",
+    "nome": "Staffing and employment agencies",
+    "curto": "employment services and staffing agencies",
+    "naics": [
+      "5613//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "business-support-services",
+    "nome": "Business support services",
+    "curto": "business support services, including call centers and copy shops",
+    "naics": [
+      "5614//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "travel-agencies",
+    "nome": "Travel agencies",
+    "curto": "travel arrangement and reservation services",
+    "naics": [
+      "5615//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "security-services",
+    "nome": "Security services",
+    "curto": "investigation, guard and security services",
+    "naics": [
+      "5616//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "pest-control",
+    "nome": "Pest control",
+    "curto": "exterminating and pest control services",
+    "naics": [
+      "56171/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "janitorial-services",
+    "nome": "Janitorial services",
+    "curto": "janitorial services",
+    "naics": [
+      "56172/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "landscaping-services",
+    "nome": "Landscaping services",
+    "curto": "landscaping services",
+    "naics": [
+      "56173/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "carpet-and-upholstery-cleaning",
+    "nome": "Carpet and upholstery cleaning",
+    "curto": "carpet and upholstery cleaning services",
+    "naics": [
+      "56174/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-building-services",
+    "nome": "Other building services",
+    "curto": "other services to buildings and dwellings",
+    "naics": [
+      "56179/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-support-services",
+    "nome": "Other support services",
+    "curto": "other support services, including packaging and convention organizers",
+    "naics": [
+      "5619//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "waste-collection",
+    "nome": "Waste collection",
+    "curto": "waste collection services",
+    "naics": [
+      "5621//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "waste-treatment-and-disposal",
+    "nome": "Waste treatment and disposal",
+    "curto": "waste treatment and disposal facilities",
+    "naics": [
+      "5622//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "remediation-services",
+    "nome": "Remediation services",
+    "curto": "remediation and other waste management services",
+    "naics": [
+      "5629//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "elementary-and-high-schools",
+    "nome": "Elementary and high schools",
+    "curto": "elementary and secondary schools",
+    "naics": [
+      "6111//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "junior-colleges",
+    "nome": "Junior colleges",
+    "curto": "junior colleges",
+    "naics": [
+      "6112//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "colleges-and-universities",
+    "nome": "Colleges and universities",
+    "curto": "colleges, universities and professional schools",
+    "naics": [
+      "6113//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "business-and-computer-training",
+    "nome": "Business and computer training",
+    "curto": "business schools and computer and management training",
+    "naics": [
+      "6114//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "technical-and-trade-schools",
+    "nome": "Technical and trade schools",
+    "curto": "technical and trade schools",
+    "naics": [
+      "6115//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-schools-and-instruction",
+    "nome": "Other schools and instruction",
+    "curto": "other schools and instruction, including driving, language and fine arts",
+    "naics": [
+      "6116//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "educational-support-services",
+    "nome": "Educational support services",
+    "curto": "educational support services",
+    "naics": [
+      "6117//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "outpatient-care-centers",
+    "nome": "Outpatient care centers",
+    "curto": "outpatient care centers",
+    "naics": [
+      "6214//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "medical-and-diagnostic-labs",
+    "nome": "Medical and diagnostic labs",
+    "curto": "medical and diagnostic laboratories",
+    "naics": [
+      "6215//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "home-health-care",
+    "nome": "Home health care",
+    "curto": "home health care services",
+    "naics": [
+      "6216//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-ambulatory-care",
+    "nome": "Other ambulatory care",
+    "curto": "other ambulatory health care services, including ambulance services",
+    "naics": [
+      "6219//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "general-hospitals",
+    "nome": "General hospitals",
+    "curto": "general medical and surgical hospitals",
+    "naics": [
+      "6221//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "psychiatric-and-substance-abuse-hospitals",
+    "nome": "Psychiatric and substance abuse hospitals",
+    "curto": "psychiatric and substance abuse hospitals",
+    "naics": [
+      "6222//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "specialty-hospitals",
+    "nome": "Specialty hospitals",
+    "curto": "specialty hospitals",
+    "naics": [
+      "6223//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "nursing-care-facilities",
+    "nome": "Nursing care facilities",
+    "curto": "nursing care facilities",
+    "naics": [
+      "6231//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "residential-mental-health-facilities",
+    "nome": "Residential mental health facilities",
+    "curto": "residential intellectual, developmental disability, mental health and substance abuse facilities",
+    "naics": [
+      "6232//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "assisted-living-communities",
+    "nome": "Assisted living communities",
+    "curto": "continuing care retirement communities and assisted living facilities",
+    "naics": [
+      "6233//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-residential-care",
+    "nome": "Other residential care",
+    "curto": "other residential care facilities",
+    "naics": [
+      "6239//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "individual-and-family-services",
+    "nome": "Individual and family services",
+    "curto": "individual and family services",
+    "naics": [
+      "6241//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "community-food-and-housing-services",
+    "nome": "Community food and housing services",
+    "curto": "community food and housing and emergency services",
+    "naics": [
+      "6242//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "vocational-rehabilitation",
+    "nome": "Vocational rehabilitation",
+    "curto": "vocational rehabilitation services",
+    "naics": [
+      "6243//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "child-day-care",
+    "nome": "Child day care",
+    "curto": "child day care services",
+    "naics": [
+      "6244//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "performing-arts-companies",
+    "nome": "Performing arts companies",
+    "curto": "performing arts companies",
+    "naics": [
+      "7111//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "spectator-sports",
+    "nome": "Spectator sports",
+    "curto": "spectator sports teams and clubs",
+    "naics": [
+      "7112//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "event-promoters",
+    "nome": "Event promoters",
+    "curto": "promoters of performing arts, sports and similar events",
+    "naics": [
+      "7113//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "independent-artists-and-writers",
+    "nome": "Independent artists and writers",
+    "curto": "independent artists, writers and performers",
+    "naics": [
+      "7115//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "museums-and-historic-sites",
+    "nome": "Museums and historic sites",
+    "curto": "museums, historical sites and similar institutions",
+    "naics": [
+      "7121//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "amusement-parks-and-arcades",
+    "nome": "Amusement parks and arcades",
+    "curto": "amusement parks and arcades",
+    "naics": [
+      "7131//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "gambling-venues",
+    "nome": "Gambling venues",
+    "curto": "gambling industries",
+    "naics": [
+      "7132//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "golf-courses-and-country-clubs",
+    "nome": "Golf courses and country clubs",
+    "curto": "golf courses and country clubs",
+    "naics": [
+      "71391/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "ski-resorts",
+    "nome": "Ski resorts",
+    "curto": "skiing facilities",
+    "naics": [
+      "71392/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "marinas",
+    "nome": "Marinas",
+    "curto": "marinas",
+    "naics": [
+      "71393/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "bowling-centers",
+    "nome": "Bowling centers",
+    "curto": "bowling centers",
+    "naics": [
+      "71395/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-recreation-venues",
+    "nome": "Other recreation venues",
+    "curto": "all other amusement and recreation industries",
+    "naics": [
+      "71399/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "rv-parks-and-campgrounds",
+    "nome": "RV parks and campgrounds",
+    "curto": "RV parks and recreational camps",
+    "naics": [
+      "7212//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "rooming-and-boarding-houses",
+    "nome": "Rooming and boarding houses",
+    "curto": "rooming and boarding houses and dormitories",
+    "naics": [
+      "7213//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "caterers-and-food-trucks",
+    "nome": "Caterers and food trucks",
+    "curto": "special food services, including caterers and mobile food services",
+    "naics": [
+      "7223//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "electronics-repair",
+    "nome": "Electronics repair",
+    "curto": "electronic and precision equipment repair and maintenance",
+    "naics": [
+      "8112//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "machinery-repair",
+    "nome": "Machinery repair",
+    "curto": "commercial and industrial machinery repair",
+    "naics": [
+      "8113//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "home-goods-repair",
+    "nome": "Home goods repair",
+    "curto": "personal and household goods repair and maintenance",
+    "naics": [
+      "8114//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "spas-and-other-personal-care",
+    "nome": "Spas and other personal care",
+    "curto": "other personal care services, including day spas and diet centers",
+    "naics": [
+      "81219/"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "funeral-homes-and-cemeteries",
+    "nome": "Funeral homes and cemeteries",
+    "curto": "death care services",
+    "naics": [
+      "8122//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "dry-cleaning-and-laundry",
+    "nome": "Dry cleaning and laundry",
+    "curto": "drycleaning and laundry services",
+    "naics": [
+      "8123//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "other-personal-services",
+    "nome": "Other personal services",
+    "curto": "other personal services, including pet care, photofinishing and parking",
+    "naics": [
+      "8129//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "religious-organizations",
+    "nome": "Religious organizations",
+    "curto": "religious organizations",
+    "naics": [
+      "8131//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "grantmaking-foundations",
+    "nome": "Grantmaking foundations",
+    "curto": "grantmaking and giving services",
+    "naics": [
+      "8132//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "advocacy-organizations",
+    "nome": "Advocacy organizations",
+    "curto": "social advocacy organizations",
+    "naics": [
+      "8133//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "civic-and-social-clubs",
+    "nome": "Civic and social clubs",
+    "curto": "civic and social organizations",
+    "naics": [
+      "8134//"
+    ],
+    "opcional": true
+  },
+  {
+    "slug": "business-and-professional-associations",
+    "nome": "Business and professional associations",
+    "curto": "business, professional, labor and political organizations",
+    "naics": [
+      "8139//"
+    ],
+    "opcional": true
+  }
 ]

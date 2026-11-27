@@ -66,7 +66,7 @@ export default function Page() {
         ))}
       </ul>
       {usSegmentos().map((seg) => {
-        const top = usTopCondados(seg.slug, 10);
+        const top = usTopCondados(seg.slug, usSegmentos().length > 12 ? 3 : 10); // com muitas categorias, a home lista só os 3 maiores condados
         if (!top.length) return null;
         return (
           <section key={seg.slug}>
