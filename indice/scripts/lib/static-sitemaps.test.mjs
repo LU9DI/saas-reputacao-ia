@@ -137,7 +137,7 @@ test('US: espelha a regra do app (base, estado, condado e célula acima do míni
   const stats = {
     CA: {
       'los-angeles-county': { 'restaurants-and-bars': { e: 4200 }, 'auto-repair-shops': { e: 12 } },
-      'alpine-county': { 'restaurants-and-bars': { e: 4 } },
+      'alpine-county': { 'restaurants-and-bars': { e: null }, 'auto-repair-shops': { e: 4 } },
     },
     WY: { 'niobrara-county': { 'restaurants-and-bars': { e: 1 } } },
   };
@@ -231,6 +231,8 @@ test('dados reais: total do artefato bate com o snapshot do site principal', () 
   assert.equal(shards.length, Math.ceil(real.length / POR_ARQUIVO), 'quantidade de shards deve acompanhar o total real');
   assert.ok(shards.every((shard) => shard.length > 0 && shard.length <= POR_ARQUIVO), 'cada shard deve ser não vazio e respeitar o limite');
   assert.equal(shards.reduce((total, shard) => total + shard.length, 0), real.length, 'soma dos shards deve bater com o total');
+  assert.equal(realUS.length, snapshot.urls.eua, 'URLs dos EUA devem bater com o snapshot');
+  assert.equal(realUK.length, snapshot.urls.uk, 'URLs do Reino Unido devem bater com o snapshot');
   assert.equal(new Set(real).size, real.length);
   assert.ok(realUS.length > 0, 'data-us presente: deve gerar rotas /us');
   if (existsSync(path.join(dirUK, 'meta.json'))) {

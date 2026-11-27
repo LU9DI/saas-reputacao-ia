@@ -31,8 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!r) return { robots: { index: false } };
   const meta = ukMeta();
   const total = r.segs.reduce((t, x) => t + x.reg.e, 0);
-  const titulo = ate(60, `Businesses by category in ${r.a.nome}`, `Businesses in ${r.a.nome}`);
-  const descricao = corta(`About ${nUS(total)} business sites in ${r.segs.length} categories in ${r.a.nome}, ${NACOES_UK[r.slug]} (ONS UK Business Counts ${meta.ano}). Counts, size and ranking.`, 158);
+  const titulo = ate(60, `Local units by category in ${r.a.nome}`, `Local units in ${r.a.nome}`);
+  const descricao = corta(`About ${nUS(total)} local units (business sites) in ${r.segs.length} categories in ${r.a.nome}, ${NACOES_UK[r.slug]} (ONS UK Business Counts ${meta.ano}). Counts, size and ranking.`, 158);
   const url = urlAbsoluta(`/uk/${nation}/${authority}`);
   return {
     title: { absolute: titulo },
@@ -54,11 +54,11 @@ export default async function Page({ params }: Props) {
   const maior = segs[0];
   const faq = [
     {
-      pergunta: `Which category has the most business sites in ${a.nome}?`,
-      resposta: `Among the ${segs.length} categories tracked, ${maior.seg.curto} have the most in ${a.nome}, ${nome}: about ${nUS(maior.reg.e)} business sites, according to ONS UK Business Counts ${meta.ano}.`,
+      pergunta: `Which category has the most local units in ${a.nome}?`,
+      resposta: `Among the ${segs.length} categories tracked, ${maior.seg.curto} have the most in ${a.nome}, ${nome}: about ${nUS(maior.reg.e)} local units (business sites), according to ONS UK Business Counts ${meta.ano}.`,
     },
     {
-      pergunta: `How many business sites are there in ${a.nome} across these categories?`,
+      pergunta: `How many local units are there in ${a.nome} across these categories?`,
       resposta: `About ${nUS(total)}, adding up the ${segs.length} categories with enough data to publish. This is not the total number of businesses in the area, and businesses that are not VAT or PAYE registered are not counted.`,
     },
   ];
@@ -67,12 +67,12 @@ export default async function Page({ params }: Props) {
       <JsonLd
         data={datasetDoRecorteUK({
           url: urlAbsoluta(`/uk/${nation}/${authority}`),
-          name: `Businesses by category in ${a.nome}`,
-          description: `Business sites in ${segs.length} categories in ${a.nome}, ${nome}, from the ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`,
+          name: `Local units by category in ${a.nome}`,
+          description: `Local units (business sites) in ${segs.length} categories in ${a.nome}, ${nome}, from the ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`,
           espacial: `${a.nome}, ${nome}, United Kingdom`,
           meta,
           variaveis: [
-            { nome: 'Business sites in published categories', valor: total, unidade: 'local units' },
+            { nome: 'Local units in published categories', valor: total, unidade: 'local units' },
             { nome: 'Categories with published pages', valor: segs.length, unidade: 'categories' },
           ],
         })}
@@ -83,16 +83,16 @@ export default async function Page({ params }: Props) {
         rotulo="You are here"
         itens={[{ nome: 'UK Index', href: '/uk' }, { nome, href: `/uk/${nation}` }, { nome: a.nome }]}
       />
-      <h1>Businesses by category in {a.nome}</h1>
+      <h1>Local units (business sites) by category in {a.nome}</h1>
       <p className="lead">
-        {a.nome}, {nome} has about {nUS(total)} business sites in the {segs.length} categories tracked by the UK Index, according to the ONS
+        {a.nome}, {nome} has about {nUS(total)} local units (business sites) in the {segs.length} categories tracked by the UK Index, according to the ONS
         UK Business Counts ({meta.ano}). The largest is {maior.seg.curto}, with about {nUS(maior.reg.e)}.
       </p>
       <p className="nota">
         Part of the <Link href={`/uk/${nation}`}>{nome}</Link> hub and the <Link href="/uk">UK Index</Link>.
       </p>
       <table>
-        <thead><tr><th>Category</th><th className="num">Business sites</th></tr></thead>
+        <thead><tr><th>Category</th><th className="num">Local units</th></tr></thead>
         <tbody>
           {segs.map(({ seg, reg }) => (
             <tr key={seg.slug}><td><Link href={`/uk/${nation}/${authority}/${seg.slug}`}>{seg.nome}</Link></td><td className="num">{nUS(reg.e)}</td></tr>

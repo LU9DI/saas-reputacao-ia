@@ -185,8 +185,8 @@ export function caminhosUS({ meta, counties, stats, estados }) {
   const segmentosDoCondado = (sigla, county) => {
     const porSeg = stats[sigla]?.[county] ?? {};
     return meta.segmentos
-      .map((seg) => ({ slug: seg.slug, e: porSeg[seg.slug]?.e ?? 0 }))
-      .filter((x) => x.e >= minimo)
+      .map((seg) => ({ slug: seg.slug, e: porSeg[seg.slug]?.e }))
+      .filter((x) => typeof x.e === 'number' && x.e >= minimo)
       .sort((a, b) => b.e - a.e);
   };
 

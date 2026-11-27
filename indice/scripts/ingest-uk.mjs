@@ -1,20 +1,18 @@
 #!/usr/bin/env node
-// Ingestão do UK Business Counts (ONS, via Nomis API, dataset NM_142_1) -> data-uk/
+// Ingestão do UK Business Counts (ONS, via Nomis API, dataset NM_141_1 = local units) -> data-uk/
 //   node scripts/ingest-uk.mjs [--out=DIR] [--min=10] [--min-autoridades=25]
 // API pública, sem chave. Uma requisição por autoridade local (todas as classes SIC de 5 dígitos x faixas de tamanho).
 // Guarda só contagens agregadas por autoridade e categoria. Licença: Open Government Licence v3.0.
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseCsv, montarAutoridades, agregarAutoridade } from './lib/nomis.mjs';
+import { parseCsv, montarAutoridades, agregarAutoridade, urlAutoridades, urlAutoridade, DATASET, UNIDADE } from './lib/nomis.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.resolve(args.out || path.join(raiz, 'data-uk'));
 const MIN = Number(args.min || 10);
 const MIN_AUTORIDADES = Number(args['min-autoridades'] || 25);
-const API = 'https://www.nomisweb.co.uk/api/v01/dataset/NM_142_1.data.csv';
-const COMUM = 'date=latest&legal_status=0&measures=20100';
 const PREFIXO = { E: 'england', S: 'scotland', W: 'wales', N: 'northern-ireland' };
 const log = (...a) => console.log('[ingest-uk]', ...a);
 const falha = (m) => { console.error(`[ingest-uk] ERRO: ${m}`); process.exit(1); };
@@ -37,7 +35,7 @@ const segmentos = JSON.parse(await readFile(path.join(raiz, 'config', 'segments-
 
 // 1) Lista de autoridades (distritos e unitárias) com o total geral, para obter códigos, nomes e o ano.
 log('lendo lista de autoridades locais');
-const listaCsv = parseCsv(await baixar(`${API}?geography=TYPE424&${COMUM}&industry=37748736&employment_sizeband=0&select=geography_code,geography_name,date_name,obs_value&recordlimit=3000`));
+const listaCsv = parseCsv(await baixar(urlAutoridades()));
 if (listaCsv.length < 300) falha(`só ${listaCsv.length} autoridades retornadas (esperado ~360).`);
 const ano = listaCsv[0].date_name;
 if (!/^\d{4}$/.test(ano)) falha(`ano inválido: ${ano}`);
@@ -50,7 +48,7 @@ const vistos = new Set();
 let linhasLidas = 0;
 let feitas = 0;
 async function processar(a) {
-  const url = `${API}?geography=${a.codigo}&${COMUM}&employment_sizeband=0,1,2,3,4,5,6,40&select=industry_code,employment_sizeband,obs_value&recordlimit=25000`;
+  const url = urlAutoridade(a.codigo);
   const linhas = parseCsv(await baixar(url));
   if (linhas.length < 500) throw new Error(`${a.codigo}: só ${linhas.length} linhas`);
   linhasLidas += linhas.length;
@@ -66,7 +64,7 @@ await Promise.all(Array.from({ length: 3 }, async () => { for (let a = fila.shif
 const condados = new Map();
 for (const seg of segmentos) {
   let n = 0;
-  for (const por of Object.values(porNacao)) for (const cel of Object.values(por)) if (cel[seg.slug]?.e >= MIN) n += 1;
+  for (const por of Object.values(porNacao)) for (const cel of Object.values(por)) if (typeof cel[seg.slug]?.e === 'number' && cel[seg.slug].e >= MIN) n += 1;
   condados.set(seg.slug, n);
 }
 const mantidos = segmentos.filter((s) => condados.get(s.slug) >= MIN_AUTORIDADES);
@@ -83,8 +81,12 @@ for (const [nacao, por] of Object.entries(porNacao)) {
   const saida = {};
   for (const [slug, cel] of Object.entries(por)) {
     const reg = {};
-    for (const seg of mantidos) if (cel[seg.slug]?.e >= MIN) { reg[seg.slug] = cel[seg.slug]; celulas += 1; }
-    if (Object.keys(reg).length) { saida[slug] = reg; publicadas.push(autoridades.find((a) => a.nation === nacao && a.slug === slug)); }
+    for (const seg of mantidos) if (typeof cel[seg.slug]?.e === 'number' && cel[seg.slug].e >= MIN) { reg[seg.slug] = cel[seg.slug]; celulas += 1; }
+    if (Object.keys(reg).length) {
+      saida[slug] = reg;
+      const auth = autoridades.find((a) => a.nation === nacao && a.slug === slug);
+      if (auth) publicadas.push(auth);
+    }
   }
   await writeFile(path.join(OUT, 'stats', `${nacao}.json`), JSON.stringify(saida));
 }
@@ -92,7 +94,10 @@ await writeFile(path.join(OUT, 'authorities.json'), JSON.stringify(publicadas));
 await writeFile(path.join(OUT, 'meta.json'), JSON.stringify({
   ano,
   geradoEm: new Date().toISOString(),
-  fonte: { nome: 'UK Business Counts, Office for National Statistics (via Nomis). Open Government Licence v3.0', url: 'https://www.ons.gov.uk/businessindustryandtrade/business/activitysizeandlocation' },
+  fonte: { nome: 'UK Business Counts — local units, Office for National Statistics (via Nomis). Open Government Licence v3.0', url: 'https://www.ons.gov.uk/businessindustryandtrade/business/activitysizeandlocation' },
+  serie: DATASET,
+  unidade: UNIDADE,
+  metodologia: 'Local units (workplaces) live in March, not enterprises. Counts are rounded by the ONS; size bands are not used to infer missing values.',
   minimoParaIndexar: MIN,
   segmentos: mantidos.map(({ slug, nome, curto, sic }) => ({ slug, nome, curto, sic })),
   linhasLidas,

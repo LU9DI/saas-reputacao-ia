@@ -27,8 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const r = resolver(nation);
   if (!r) return { robots: { index: false } };
   const meta = ukMeta();
-  const titulo = `Businesses by local authority and category in ${r.nome}`;
-  const descricao = corta(`Business sites (restaurants, pubs, clinics, gyms and more) in ${r.autoridades.length} local authorities of ${r.nome}, from ONS UK Business Counts ${meta.ano}.`, 158);
+  const titulo = `Local units by local authority and category in ${r.nome}`;
+  const descricao = corta(`Local units (business sites such as restaurants, pubs, clinics and gyms) in ${r.autoridades.length} local authorities of ${r.nome}, from ONS UK Business Counts ${meta.ano}.`, 158);
   const url = urlAbsoluta(`/uk/${nation}`);
   return {
     title: { absolute: titulo },
@@ -50,22 +50,22 @@ export default async function Page({ params }: Props) {
       <JsonLd
         data={datasetDoRecorteUK({
           url: urlAbsoluta(`/uk/${nation}`),
-          name: `Businesses by local authority and category in ${r.nome}`,
-          description: `Business sites in ${r.autoridades.length} local authorities of ${r.nome}, by category, from the ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`,
+          name: `Local units by local authority and category in ${r.nome}`,
+          description: `Local units (business sites) in ${r.autoridades.length} local authorities of ${r.nome}, by category, from the ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`,
           espacial: `${r.nome}, United Kingdom`,
           meta,
           variaveis: [
-            { nome: 'Business sites in published categories', valor: total, unidade: 'local units' },
+            { nome: 'Local units in published categories', valor: total, unidade: 'local units' },
             { nome: 'Local authorities with published pages', valor: r.autoridades.length, unidade: 'local authorities' },
             { nome: 'Categories tracked', valor: ukSegmentos().length, unidade: 'categories' },
           ],
         })}
       />
       <Migalhas indice caminhoAtual={`/uk/${nation}`} rotulo="You are here" itens={[{ nome: 'UK Index', href: '/uk' }, { nome: r.nome }]} />
-      <h1>Businesses by local authority and category in {r.nome}</h1>
+      <h1>Local units (business sites) by local authority and category in {r.nome}</h1>
       <p className="lead">
         The UK Index tracks {ukSegmentos().length} categories across {nUS(r.autoridades.length)} local authorities of {r.nome}, using the ONS UK Business Counts ({meta.ano}).
-        Counts are business sites, rounded to the nearest 5. See the local authorities with the most sites in each category.
+        Counts are local units (business sites), rounded to the nearest 5. See the local authorities with the most local units in each category.
       </p>
       <p className="nota">
         Browse the <Link href="/uk">UK Index</Link> for every nation, or open a local authority hub below to see all categories.
@@ -75,7 +75,7 @@ export default async function Page({ params }: Props) {
         if (!top.length) return null;
         return (
           <section key={seg.slug}>
-            <h2>{seg.nome} in {r.nome}: about {nUS(ukTotalSeg(seg.slug, r.slug))} sites</h2>
+            <h2>{seg.nome} in {r.nome}: about {nUS(ukTotalSeg(seg.slug, r.slug))} local units</h2>
             <ul className="lista">
               {top.map(({ auth, e }) => (
                 <li key={auth.slug}><Link href={`/uk/${nation}/${auth.slug}/${seg.slug}`}>{auth.nome}</Link><span>{nUS(e)}</span></li>

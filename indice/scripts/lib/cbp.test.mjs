@@ -1,7 +1,7 @@
 // Testes com linhas SINTÉTICAS no layout do cbp23co.txt. Não representam dados reais.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { lerCabecalho, parseLinhaCbp, criarAgregadorCbp, condadosDeTxt, resolverCondados } from './cbp.mjs';
+import { lerCabecalho, parseLinhaCbp, lerContagem, criarAgregadorCbp, condadosDeTxt, resolverCondados } from './cbp.mjs';
 
 const CAB = '"fipstate","fipscty","naics","emp_nf","emp","qp1_nf","qp1","ap_nf","ap","est","n<5","n5_9","n10_19","n20_49","n50_99","n100_249","n250_499","n500_999","n1000","n1000_1","n1000_2","n1000_3","n1000_4"';
 const linha = (st, cty, naics, nf, emp, est, sz) => `"${st}","${cty}","${naics}","${nf}",${emp},"G",1,"G",1,${est},${sz.join(',')},"N","N","N","N"`;
@@ -15,6 +15,51 @@ test('cabeçalho: mapeia colunas e rejeita layout incompleto', () => {
   assert.equal(idx.naics, 2);
   assert.equal(idx['n<5'], 10);
   assert.throws(() => lerCabecalho('"fipstate","fipscty","naics"'), /sem as colunas/);
+});
+
+test('lerContagem distingue zero real de ausente, suprimido e não aplicável', () => {
+  assert.deepEqual(lerContagem('0'), { valor: 0, status: null });
+  assert.deepEqual(lerContagem('12'), { valor: 12, status: null });
+  assert.deepEqual(lerContagem('N'), { valor: null, status: 'unavailable' });
+  assert.deepEqual(lerContagem('S'), { valor: null, status: 'suppressed' });
+  assert.deepEqual(lerContagem('X'), { valor: null, status: 'not_applicable' });
+  assert.deepEqual(lerContagem(''), { valor: null, status: 'invalid' });
+});
+
+test('agregador preserva faixas ausentes e não as converte em zero', () => {
+  const idx = lerCabecalho(CAB);
+  const ag = criarAgregadorCbp([{ slug: 'parks', naics: ['7131//'] }], idx);
+  ag.ingerir(parseLinhaCbp(linha('01', '003', '7131//', 'H', 726, 10, ['N', 'N', 'N', 'N', 'N', 'N', 'N', 'N', 'N'])));
+  const r = ag.dados.get('01003').parks;
+  assert.equal(r.e, 10);
+  assert.deepEqual(r.sz, [null, null, null, null, null, null]);
+  assert.equal(r.szStatus, 'unavailable');
+  assert.equal(r.emp, 726);
+  assert.equal(r.empOk, true);
+});
+
+test('agregador mantém zero real e marca distribuição incompleta', () => {
+  const idx = lerCabecalho(CAB);
+  const ag = criarAgregadorCbp([{ slug: 'zero', naics: ['7225//'] }, { slug: 'parcial', naics: ['7224//'] }], idx);
+  ag.ingerir(parseLinhaCbp(linha('01', '001', '7225//', 'G', 0, 0, [0, 0, 0, 0, 0, 0, 0, 0, 0])));
+  ag.ingerir(parseLinhaCbp(linha('01', '001', '7224//', 'G', 10, 10, [5, 'N', 2, 1, 1, 1, 0, 0, 0])));
+  const zero = ag.dados.get('01001').zero;
+  assert.equal(zero.e, 0);
+  assert.deepEqual(zero.sz, [0, 0, 0, 0, 0, 0]);
+  assert.equal(zero.szStatus, 'complete');
+  const parcial = ag.dados.get('01001').parcial;
+  assert.equal(parcial.e, 10);
+  assert.deepEqual(parcial.sz, [5, null, 2, 1, 1, 1]);
+  assert.equal(parcial.szStatus, 'partial');
+});
+
+test('agregador não publica emprego quando o sinalizador não é G/H/J', () => {
+  const idx = lerCabecalho(CAB);
+  const ag = criarAgregadorCbp([{ slug: 'x', naics: ['7225//'] }], idx);
+  ag.ingerir(parseLinhaCbp(linha('01', '001', '7225//', 'S', 7, 3, [3, 0, 0, 0, 0, 0, 0, 0, 0])));
+  const r = ag.dados.get('01001').x;
+  assert.equal(r.empOk, false);
+  assert.equal(r.emp, 0);
 });
 
 test('agregador soma códigos do mesmo segmento, ignora totais e outros códigos', () => {
@@ -50,6 +95,8 @@ test('condados: lê arquivo do Census e gera slugs únicos', () => {
   const c = condadosDeTxt(txt);
   const r = resolverCondados(['08031', '29510', '29189', '72001', '99999'], c);
   assert.deepEqual(r.map((x) => `${x.state}/${x.slug}`), ['CO/denver-county', 'MO/st-louis-county', 'MO/st-louis-city']);
+  const ct = resolverCondados(['09110', '09190'], c);
+  assert.deepEqual(ct.map((x) => `${x.state}/${x.slug}`), ['CT/capitol-planning-region', 'CT/western-connecticut-planning-region']);
 });
 
 test('selecionarSegmentos: descarta só opcionais com poucos condados', async () => {

@@ -22,29 +22,35 @@ const FAIXAS = ['0 to 4 employees', '5 to 9', '10 to 19', '20 to 49', '50 to 99'
 function textos(p: UkPagina, ano: string) {
   const { auth, seg, reg } = p;
   const nome = NACOES_UK[auth.nation];
-  const soma = reg.sz.reduce((t, x) => t + x, 0);
-  const micro = pctUS(reg.sz[0] + reg.sz[1], soma, 0);
-  const grandes = pctUS(reg.sz[3] + reg.sz[4] + reg.sz[5], soma, 0);
-  const titulo = `${seg.nome} in ${auth.nome}: how many are there?`;
+  const completa = reg.sz.every((x): x is number => x !== null);
+  const soma = completa ? (reg.sz as number[]).reduce((t, x) => t + x, 0) : null;
+  const distribuivel = completa && soma !== null && soma > 0;
+  const micro = distribuivel ? pctUS((reg.sz[0] as number) + (reg.sz[1] as number), soma as number, 0) : null;
+  const grandes = distribuivel ? pctUS((reg.sz[3] as number) + (reg.sz[4] as number) + (reg.sz[5] as number), soma as number, 0) : null;
+  const titulo = `${seg.nome} in ${auth.nome}: how many local units are there?`;
   const tituloMeta = ate(60, titulo, `${seg.nome} in ${auth.nome}, ${nome}`, `${seg.nome} in ${auth.nome}`);
   const descricao = corta(
-    `${auth.nome} has about ${nUS(reg.e)} ${seg.curto} (ONS UK Business Counts ${ano}): ranked ${ordUS(p.rankUK)} of ${nUS(p.autoridadesUK)} UK local authorities. Size and ranking.`,
+    `${auth.nome} has about ${nUS(reg.e)} local units in ${seg.curto} (ONS UK Business Counts ${ano}): ranked ${ordUS(p.rankUK)} of ${nUS(p.autoridadesUK)} UK local authorities. Size and ranking.`,
     158,
   );
   const ranking = `${auth.nome} ranks ${ordUS(p.rankUK)} among the ${nUS(p.autoridadesUK)} UK local authorities with data for this category, and ${ordUS(p.rankNacao)} of ${nUS(p.autoridadesNacao)} in ${nome}.`;
-  const lead = `${auth.nome}, ${nome} had about ${nUS(reg.e)} ${seg.curto} in ${ano}, according to the Office for National Statistics UK Business Counts (rounded to the nearest 5). ${ranking}`;
+  const lead = `${auth.nome}, ${nome} had about ${nUS(reg.e)} local units (business sites) in ${seg.curto} in ${ano}, according to the Office for National Statistics UK Business Counts (rounded to the nearest 5). ${ranking}`;
   const faq = [
     {
-      pergunta: `How many ${seg.curto} are there in ${auth.nome}?`,
-      resposta: `About ${nUS(reg.e)} business sites in ${ano}, according to ONS UK Business Counts. Counts are rounded to the nearest 5, and businesses that are not VAT or PAYE registered are not included.`,
+      pergunta: `How many ${seg.curto} local units are there in ${auth.nome}?`,
+      resposta: `About ${nUS(reg.e)} local units (business sites) in ${ano}, according to ONS UK Business Counts. Counts are rounded to the nearest 5, and businesses that are not VAT or PAYE registered are not included.`,
     },
     { pergunta: `How does ${auth.nome} compare with other local authorities?`, resposta: ranking },
     {
       pergunta: `How big are ${seg.curto} in ${auth.nome}?`,
-      resposta: `Around ${micro} have fewer than 10 employees and ${grandes} have 20 or more, based on the number of employees per site. Each figure is rounded, so shares are approximate.`,
+      resposta: distribuivel
+        ? `Around ${micro} have fewer than 10 employees and ${grandes} have 20 or more, based on the number of employees per local unit. Each figure is rounded, so shares are approximate.`
+        : completa
+          ? 'At this level the ONS rounded every size class to zero, so no meaningful share can be calculated. The local-unit total is still published and no class is treated as missing.'
+          : 'The ONS withheld one or more size classes for this local authority, so a complete size distribution is not available. The local-unit total is still published; no missing class is treated as zero.',
     },
   ];
-  return { titulo, tituloMeta, descricao, lead, faq, soma };
+  return { titulo, tituloMeta, descricao, lead, faq, soma, completa };
 }
 
 function resolver(nation: string, authority: string, segment: string) {
@@ -84,7 +90,7 @@ export default async function Page({ params }: Props) {
         '@context': 'https://schema.org',
         '@type': 'Dataset',
         '@id': `${urlAbsoluta(caminho)}#data`,
-        name: `${seg.nome} in ${p.auth.nome}: business sites`,
+        name: `${seg.nome} in ${p.auth.nome}: local units`,
         description: t.descricao,
         url: urlAbsoluta(caminho),
         inLanguage: 'en-GB',
@@ -110,25 +116,33 @@ export default async function Page({ params }: Props) {
           { nome: seg.nome },
         ]}
       />
-      <h1>{seg.nome} in {p.auth.nome}: how many are there?</h1>
+      <h1>{seg.nome} in {p.auth.nome}: how many local units are there?</h1>
       <p className="lead">{t.lead}</p>
 
       <div className="cards">
-        <div className="card"><strong>~{nUS(reg.e)}</strong><small>business sites, rounded to the nearest 5</small></div>
+        <div className="card"><strong>~{nUS(reg.e)}</strong><small>local units (business sites), rounded to the nearest 5</small></div>
         <div className="card"><strong>{ordUS(p.rankUK)}</strong><small>of {nUS(p.autoridadesUK)} UK local authorities</small></div>
         <div className="card"><strong>{ordUS(p.rankNacao)}</strong><small>of {nUS(p.autoridadesNacao)} in {nome}</small></div>
       </div>
 
-      <h2>Business sites by number of employees</h2>
+      <h2>Local units by number of employees</h2>
       <table>
-        <caption>Business sites of {seg.curto} in {p.auth.nome}, by employees per site ({meta.ano}). Figures are rounded to the nearest 5.</caption>
+        <caption>Local units (business sites) of {seg.curto} in {p.auth.nome}, by employees per unit ({meta.ano}). Figures are rounded to the nearest 5.</caption>
         <thead><tr><th scope="col">Employees</th><th scope="col" className="num">Sites</th><th scope="col" className="num">Share</th></tr></thead>
         <tbody>
-          {FAIXAS.map((rot, i) => (
-            <tr key={rot}><th scope="row">{rot}</th><td className="num">{nUS(reg.sz[i])}</td><td className="num">{pctUS(reg.sz[i], t.soma)}</td></tr>
-          ))}
+          {FAIXAS.map((rot, i) => {
+            const valor = reg.sz[i];
+            return (
+              <tr key={rot}><th scope="row">{rot}</th><td className="num">{typeof valor === 'number' ? nUS(valor) : 'Not available'}</td><td className="num">{typeof valor === 'number' && t.soma !== null && t.soma > 0 ? pctUS(valor, t.soma) : '—'}</td></tr>
+            );
+          })}
         </tbody>
       </table>
+      {!t.completa ? (
+        <p className="nota">The ONS withheld one or more size classes for this local authority. Missing classes are shown as “Not available”, not as zero, and no share is inferred from an incomplete distribution.</p>
+      ) : t.soma !== null && t.soma !== reg.e ? (
+        <p className="nota">Size classes are rounded independently by the ONS and may not add up to the local-unit total ({nUS(reg.e)}). {t.soma === 0 ? 'At this level all classes rounded to zero, so no share is shown.' : 'Shares use the rounded class sum as the denominator.'}</p>
+      ) : null}
 
       <h2>Where {p.auth.nome} fits in {nome}</h2>
       <p>

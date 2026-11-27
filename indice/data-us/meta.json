@@ -1,6 +1,6 @@
 {
   "ano": "2023",
-  "geradoEm": "2026-11-18T15:53:35.658Z",
+  "geradoEm": "2026-11-27T22:52:21.365Z",
   "fonte": {
     "nome": "County Business Patterns, U.S. Census Bureau",
     "url": "https://www.census.gov/programs-surveys/cbp.html"
@@ -1131,5 +1131,22 @@
     }
   ],
   "linhasLidas": 1100961,
-  "linhasNoEscopo": 186988
+  "linhasNoEscopo": 186988,
+  "valores": {
+    "zero": 0,
+    "ausentes": [
+      "N",
+      "S",
+      "X"
+    ],
+    "observacao": "Valores N/S/X são preservados como null; zero é uma contagem observada.",
+    "faixas": [
+      "0-4",
+      "5-9",
+      "10-19",
+      "20-49",
+      "50-99",
+      "100+"
+    ]
+  }
 }

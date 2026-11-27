@@ -1,8 +1,42 @@
-// Funções puras para agregar o UK Business Counts (ONS, via Nomis, dataset NM_142_1).
+// Funções puras para agregar o UK Business Counts (ONS, via Nomis, dataset NM_141_1).
+// NM_141_1 = local units (workplaces), NÃO NM_142_1 = enterprises. Ver teste de regressão.
 // Sem rede e sem disco: o ingestor chama estas funções e os testes as exercitam.
 
-/** Faixas de tamanho do Nomis -> índice das 6 faixas publicadas. 40 = "Large (250+)". */
-export const FAIXA_PARA_INDICE = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 40: 5 };
+/** Série oficial usada em todo o ingestor e nos metadados. */
+export const DATASET = 'NM_141_1';
+export const UNIDADE = 'local units';
+export const API = `https://www.nomisweb.co.uk/api/v01/dataset/${DATASET}.data.csv`;
+export const COMUM = 'date=latest&legal_status=0&measures=20100';
+/** Códigos de faixa detalhados 0..9. 10/20/30/40 são agregados derivados e não entram (evitam dupla contagem). */
+export const FAIXAS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+/** Faixas detalhadas do Nomis -> índice das 6 faixas publicadas. 7/8/9 compõem "100+". */
+export const FAIXA_PARA_INDICE = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 5, 8: 5, 9: 5 };
+
+/** URL da lista de autoridades (total geral, faixa 0). */
+export function urlAutoridades() {
+  return `${API}?geography=TYPE424&${COMUM}&industry=37748736&employment_sizeband=0&select=geography_code,geography_name,date_name,obs_value&recordlimit=3000`;
+}
+
+/** URL de uma autoridade, com todas as classes SIC e faixas detalhadas. */
+export function urlAutoridade(codigo) {
+  return `${API}?geography=${encodeURIComponent(codigo)}&${COMUM}&employment_sizeband=${FAIXAS.join(',')}&select=industry_code,employment_sizeband,obs_value&recordlimit=30000`;
+}
+
+/**
+ * Lê uma contagem do Nomis sem transformar ausência/supressão em zero.
+ * O Nomis pode devolver vazio, N, S, X ou "-" em vez de uma contagem.
+ * @returns {{valor:number|null,status:'suppressed'|'unavailable'|'not_applicable'|'invalid'|null}}
+ */
+export function lerContagemNomis(valor) {
+  const texto = String(valor ?? '').trim();
+  if (/^\d+$/.test(texto)) return { valor: Number(texto), status: null };
+  const status = texto === 'S' ? 'suppressed'
+    : texto === 'N' ? 'unavailable'
+      : texto === 'X' ? 'not_applicable'
+        : 'invalid';
+  return { valor: null, status };
+}
 
 /** Divide uma linha CSV com campos entre aspas. */
 export function campos(linha) {
@@ -48,7 +82,8 @@ export function montarAutoridades(lista, nacaoDoCodigo) {
 
 /**
  * Agrega as linhas de UMA autoridade (industry_code, employment_sizeband, obs_value) por categoria.
- * Retorna { slug: { e, sz[6] } }. `e` vem da faixa 0 (total); sz das faixas 1..6 e 40.
+ * Retorna { slug: { e, eStatus?, sz[6], szStatus? } }. `e` vem da faixa 0 (total);
+ * sz das faixas 1..9. Valores ausentes/suprimidos ficam null, nunca zero.
  */
 export function agregarAutoridade(linhas, segmentos, codigosVistos) {
   const porCodigo = new Map();
@@ -56,24 +91,56 @@ export function agregarAutoridade(linhas, segmentos, codigosVistos) {
     const cod = String(l.industry_code || '').trim();
     if (!/^\d{5}$/.test(cod)) continue;
     codigosVistos?.add(cod);
-    const v = Number(l.obs_value);
-    if (!Number.isFinite(v) || v < 0) continue;
     const faixa = Number(l.employment_sizeband);
     let reg = porCodigo.get(cod);
-    if (!reg) porCodigo.set(cod, (reg = { e: 0, sz: [0, 0, 0, 0, 0, 0] }));
-    if (faixa === 0) reg.e += v;
-    else if (faixa in FAIXA_PARA_INDICE) reg.sz[FAIXA_PARA_INDICE[faixa]] += v;
+    if (!reg) porCodigo.set(cod, (reg = { e: 0, eStatus: null, sz: [0, 0, 0, 0, 0, 0], szStatus: null }));
+    const leitura = lerContagemNomis(l.obs_value);
+    if (faixa === 0) {
+      if (leitura.valor === null) {
+        if (reg.e !== null) reg.eStatus = reg.e === 0 ? leitura.status : 'partial';
+        reg.e = null;
+      } else if (reg.e !== null) {
+        reg.e += leitura.valor;
+      }
+    } else if (faixa in FAIXA_PARA_INDICE) {
+      const i = FAIXA_PARA_INDICE[faixa];
+      if (leitura.valor === null) {
+        if (reg.sz[i] !== null) reg.szStatus = reg.sz[i] === 0 ? leitura.status : 'partial';
+        reg.sz[i] = null;
+      } else if (reg.sz[i] !== null) {
+        reg.sz[i] += leitura.valor;
+      }
+    }
   }
   const out = {};
   for (const seg of segmentos) {
-    const reg = { e: 0, sz: [0, 0, 0, 0, 0, 0] };
+    const reg = { e: 0, eStatus: null, sz: [0, 0, 0, 0, 0, 0], szStatus: null };
     for (const cod of seg.sic) {
       const r = porCodigo.get(cod);
       if (!r) continue;
-      reg.e += r.e;
-      r.sz.forEach((x, i) => { reg.sz[i] += x; });
+      if (r.e === null) {
+        if (reg.e !== null) reg.eStatus = 'partial';
+        reg.e = null;
+      } else if (reg.e !== null) {
+        reg.e += r.e;
+      }
+      r.sz.forEach((x, i) => {
+        if (x === null) {
+          if (reg.sz[i] !== null) reg.szStatus = 'partial';
+          reg.sz[i] = null;
+        } else if (reg.sz[i] !== null) {
+          reg.sz[i] += x;
+        }
+      });
     }
-    if (reg.e > 0) out[seg.slug] = reg;
+    const preenchidos = reg.sz.filter((x) => x !== null).length;
+    if (preenchidos === 6) {
+      const soma = reg.sz.reduce((t, x) => t + (x ?? 0), 0);
+      reg.szStatus = soma === reg.e ? 'complete' : 'rounded';
+    } else {
+      reg.szStatus = preenchidos === 0 ? (reg.szStatus || 'unavailable') : 'partial';
+    }
+    if (typeof reg.e === 'number' && reg.e > 0) out[seg.slug] = reg;
   }
   return out;
 }

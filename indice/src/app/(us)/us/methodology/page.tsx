@@ -29,6 +29,7 @@ export default function Page() {
     { pergunta: 'Are businesses without employees included?', resposta: 'No. CBP covers establishments with paid employees. Self-employed people and owner-only businesses are not counted, so real business counts can be higher, especially for salons and repair shops.' },
     { pergunta: 'Why are some counties missing?', resposta: `Only county and category combinations with at least ${nUS(usMinimo())} establishments are published, to avoid pages with almost no information.` },
     { pergunta: 'Is employment exact?', resposta: 'No. The Census Bureau adds statistical noise to employment and payroll to protect confidentiality, so employment is shown as approximate. Establishment counts are not noised.' },
+    { pergunta: 'Why is a size breakdown sometimes unavailable?', resposta: 'The Census Bureau withholds some size classes to protect confidentiality (flags N, S and X). Those classes are shown as “Not available”, never as zero, and no share is calculated from an incomplete distribution. The county total is still shown when it is published.' },
   ];
   return (
     <>
@@ -63,6 +64,7 @@ export default function Page() {
         <li>They do not measure revenue, quality or reputation, only the existence of establishments.</li>
         <li>The data lag: the latest CBP release is typically about two years behind.</li>
         <li>Employment figures are approximate because of statistical noise.</li>
+        <li>Some size classes are withheld by the Census Bureau. Missing values are not zero, and an incomplete distribution is not used to calculate shares.</li>
       </ul>
       <h2>How to cite</h2>
       <p>&ldquo;Filtra.AI US Index, based on U.S. Census Bureau County Business Patterns {meta.ano}. filtraai.com/indice/us&rdquo;. See also <Link href="/us">the index home</Link>.</p>
