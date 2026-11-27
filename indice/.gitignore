@@ -14,3 +14,4 @@ npm-debug.log*
 
 # Sitemap materializado como artefato estático (npm run sitemaps:static).
 /.static-sitemaps/
+.gsc-export/

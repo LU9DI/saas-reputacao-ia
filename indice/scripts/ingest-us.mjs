@@ -9,7 +9,7 @@ import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { lerCabecalho, parseLinhaCbp, criarAgregadorCbp, condadosDeTxt, resolverCondados } from './lib/cbp.mjs';
+import { lerCabecalho, parseLinhaCbp, criarAgregadorCbp, condadosDeTxt, resolverCondados, selecionarSegmentos } from './lib/cbp.mjs';
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
@@ -21,6 +21,7 @@ const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.resolve(args.out || path.join(raiz, 'data-us'));
 const TMP = path.join(raiz, '.tmp', 'us');
 const MIN = Number(args.min || 10);
+const MIN_CONDADOS_OPCIONAL = Number(args['min-condados'] || 25); // categorias opcionais com menos condados são descartadas
 const BASE = 'https://www2.census.gov/programs-surveys/cbp/datasets';
 const URL_CONDADOS = 'https://www2.census.gov/geo/docs/reference/codes2020/national_county2020.txt';
 const LINHAS_MINIMAS = 900_000; // o arquivo de 2023 tem ~1,1 milhão de linhas
@@ -114,17 +115,25 @@ async function main() {
   log(`condados com dados: ${ag.dados.size} | resolvidos: ${lista.length} | descartados (sem nome/estado fora do escopo): ${semNome}`);
   if (!args.sintetico && lista.length < 2500) falha(`só ${lista.length} condados resolvidos (esperado ~3.100).`);
 
+  // Categorias opcionais só entram se tiverem condados suficientes (evita páginas finas).
+  const escolha = selecionarSegmentos(segmentos, ag.dados, MIN, MIN_CONDADOS_OPCIONAL);
+  const mantidos = new Set(escolha.mantidos);
+  if (escolha.descartados.length) log(`categorias opcionais descartadas (< ${MIN_CONDADOS_OPCIONAL} condados com ${MIN}+ estabelecimentos): ${escolha.descartados.map((d) => `${d.slug}=${d.condados}`).join(', ')}`);
+  const segmentosFinais = segmentos.filter((s) => mantidos.has(s.slug));
+  const celulas = segmentosFinais.reduce((t, s) => t + escolha.porSegmento[s.slug], 0);
+  log(`categorias mantidas: ${segmentosFinais.length}/${segmentos.length} | células condado×categoria publicáveis: ${celulas.toLocaleString('en-US')}`);
+
   const stats = {};
-  const totais = Object.fromEntries(segmentos.map((s) => [s.slug, 0]));
+  const totais = Object.fromEntries(segmentosFinais.map((s) => [s.slug, 0]));
   for (const c of lista) {
     for (const [seg, r] of Object.entries(ag.dados.get(c.chave))) {
-      if (r.e < 1) continue;
+      if (r.e < 1 || !mantidos.has(seg)) continue;
       ((stats[c.state] ||= {})[c.slug] ||= {})[seg] = { e: r.e, ...(r.empOk && r.emp > 0 ? { emp: r.emp } : {}), sz: r.sz };
       totais[seg] += r.e;
     }
   }
   for (const [s, t] of Object.entries(totais)) log(`total EUA ${s}: ${t.toLocaleString('en-US')}`);
-  if (!args.sintetico && Object.values(totais).some((t) => t < 1000)) falha('algum segmento ficou com menos de 1.000 estabelecimentos; verifique os códigos NAICS.');
+  if (!args.sintetico && segmentosFinais.some((s) => !s.opcional && totais[s.slug] < 1000)) falha('algum segmento ficou com menos de 1.000 estabelecimentos; verifique os códigos NAICS.');
 
   await rm(OUT, { recursive: true, force: true });
   await mkdir(path.join(OUT, 'stats'), { recursive: true });
@@ -136,7 +145,7 @@ async function main() {
     geradoEm: new Date().toISOString(),
     fonte: { nome: 'County Business Patterns, U.S. Census Bureau', url: 'https://www.census.gov/programs-surveys/cbp.html' },
     minimoParaIndexar: MIN,
-    segmentos: segmentos.map(({ slug, nome, curto, naics }) => ({ slug, nome, curto, naics })),
+    segmentos: segmentosFinais.map(({ slug, nome, curto, naics }) => ({ slug, nome, curto, naics })),
     linhasLidas: lidas,
     linhasNoEscopo: usadas,
     ...(args.sintetico ? { sintetico: true } : {}),
