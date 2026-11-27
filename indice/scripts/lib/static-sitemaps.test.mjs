@@ -215,8 +215,8 @@ test('dados reais: total do artefato bate com o snapshot do site principal', () 
     const authorities = JSON.parse(readFileSync(path.join(dirUK, 'authorities.json'), 'utf8'));
     const statsUK = {};
     for (const arquivo of readdirSync(path.join(dirUK, 'stats'))) {
-      if (/^[a-z-]+\\.json$/.test(arquivo)) {
-        statsUK[arquivo.replace(/\\.json$/, '')] = JSON.parse(readFileSync(path.join(dirUK, 'stats', arquivo), 'utf8'));
+      if (/^[a-z-]+\.json$/.test(arquivo)) {
+        statsUK[arquivo.replace(/\.json$/, '')] = JSON.parse(readFileSync(path.join(dirUK, 'stats', arquivo), 'utf8'));
       }
     }
     realUK = caminhosUK({ meta: metaUK, authorities, stats: statsUK });
