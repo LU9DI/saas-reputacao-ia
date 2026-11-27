@@ -267,8 +267,8 @@ function carregarUK() {
     ]),
   );
   const stats = {};
-  for (const arquivo of readdirSync(resolve(UK_DIR, 'stats')).filter((name) => /^[a-z-]+\\.json$/.test(name)).sort()) {
-    stats[arquivo.replace(/\\.json$/, '')] = JSON.parse(readFileSync(resolve(UK_DIR, 'stats', arquivo), 'utf8'));
+  for (const arquivo of readdirSync(resolve(UK_DIR, 'stats')).filter((name) => /^[a-z-]+\.json$/.test(name)).sort()) {
+    stats[arquivo.replace(/\.json$/, '')] = JSON.parse(readFileSync(resolve(UK_DIR, 'stats', arquivo), 'utf8'));
   }
   return { meta, authorities, stats };
 }
