@@ -1,14 +1,19 @@
 import { getLastmod, iterarCaminhos } from './data';
 import { temDadosUS, usCaminhos, usMeta } from './us';
+import { temDadosUK, ukCaminhos, ukMeta } from './uk';
 
 export type Item = { caminho: string; lastmod: string };
 
-/** Brasil + EUA, sem alocar a lista inteira. BR: lastmod por página. EUA: data de geração da base. */
+/** Brasil + EUA + Reino Unido, sem alocar a lista inteira. BR: lastmod por página. EUA: data de geração da base. */
 export function* iterarItens(): Generator<Item> {
   for (const caminho of iterarCaminhos()) yield { caminho, lastmod: getLastmod(caminho).toISOString() };
   if (temDadosUS()) {
     const us = usMeta().geradoEm;
     for (const caminho of usCaminhos()) yield { caminho, lastmod: us };
+  }
+  if (temDadosUK()) {
+    const uk = ukMeta().geradoEm;
+    for (const caminho of ukCaminhos()) yield { caminho, lastmod: uk };
   }
 }
 

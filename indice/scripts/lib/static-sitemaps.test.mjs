@@ -4,13 +4,14 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { anosPublicados, calcularRanking, podePublicar } from './rankings.mjs';
 import {
   caminhosIndexaveis,
   caminhosUS,
+  caminhosUK,
   lerEstadosUS,
   criarLastmodDe,
   dividirShards,
@@ -206,13 +207,33 @@ test('dados reais: total do artefato bate com o snapshot do site principal', () 
     realUS = caminhosUS({ meta: metaUS, counties, stats: statsUS, estados });
   }
 
-  const real = [...realBR, ...realUS];
+  // Reino Unido é opcional: entra quando data-uk/ existe (PR de dados separado).
+  const dirUK = path.resolve(raiz, 'data-uk');
+  let realUK = [];
+  if (existsSync(path.join(dirUK, 'meta.json'))) {
+    const metaUK = JSON.parse(readFileSync(path.join(dirUK, 'meta.json'), 'utf8'));
+    const authorities = JSON.parse(readFileSync(path.join(dirUK, 'authorities.json'), 'utf8'));
+    const statsUK = {};
+    for (const arquivo of readdirSync(path.join(dirUK, 'stats'))) {
+      if (/^[a-z-]+\.json$/.test(arquivo)) {
+        statsUK[arquivo.replace(/\.json$/, '')] = JSON.parse(readFileSync(path.join(dirUK, 'stats', arquivo), 'utf8'));
+      }
+    }
+    realUK = caminhosUK({ meta: metaUK, authorities, stats: statsUK });
+  }
+
+  const real = [...realBR, ...realUS, ...realUK];
   const shards = dividirShards(real, POR_ARQUIVO);
   const snapshot = JSON.parse(readFileSync(path.resolve(raiz, '../frontend/src/generated/indice-snapshot.json'), 'utf8'));
   assert.equal(real.length, snapshot.urls.total, 'total do artefato deve bater com o snapshot');
+  assert.equal(realUS.length, snapshot.urls.eua, 'URLs dos EUA devem bater com o snapshot');
+  assert.equal(realUK.length, snapshot.urls.uk, 'URLs do Reino Unido devem bater com o snapshot');
   assert.equal(shards.length, Math.ceil(real.length / POR_ARQUIVO), 'quantidade de shards deve acompanhar o total real');
   assert.ok(shards.every((shard) => shard.length > 0 && shard.length <= POR_ARQUIVO), 'cada shard deve ser não vazio e respeitar o limite');
   assert.equal(shards.reduce((total, shard) => total + shard.length, 0), real.length, 'soma dos shards deve bater com o total');
   assert.equal(new Set(real).size, real.length);
   assert.ok(realUS.length > 0, 'data-us presente: deve gerar rotas /us');
+  if (existsSync(path.join(dirUK, 'meta.json'))) {
+    assert.ok(realUK.length > 0, 'data-uk presente: deve gerar rotas /uk');
+  }
 });
