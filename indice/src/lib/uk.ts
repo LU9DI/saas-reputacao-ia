@@ -8,6 +8,9 @@ export type UkMeta = {
   ano: string;
   geradoEm: string;
   fonte: { nome: string; url: string };
+  serie?: string;
+  unidade?: string;
+  metodologia?: string;
   minimoParaIndexar: number;
   segmentos: UkSegmento[];
   sintetico?: boolean;
@@ -15,7 +18,7 @@ export type UkMeta = {
   linhasNoEscopo?: number;
 };
 export type UkAutoridade = { nation: string; slug: string; nome: string; codigo: string };
-export type UkRegistro = { e: number; emp?: number; sz: number[] };
+export type UkRegistro = { e: number; emp?: number; sz: (number | null)[]; szStatus?: string };
 type Posicao = { nation: string; auth: string; e: number };
 type Loja = {
   meta: UkMeta;

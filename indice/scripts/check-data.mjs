@@ -227,10 +227,36 @@ if (existsSync(path.join(dirUk, 'meta.json'))) {
   if (!/^\d{4}$/.test(metaUk.ano || '')) erro('data-uk/meta.json sem ano válido.');
   if (metaUk.sintetico && process.env.INDICE_ALLOW_SAMPLE !== '1') erro('Os dados do Reino Unido são SINTÉTICOS e não podem ser publicados.');
   if (!existsSync(path.join(dirUk, 'authorities.json'))) erro('Arquivo ausente em data-uk: authorities.json');
+  if (metaUk.serie !== 'NM_141_1') erro(`data-uk/meta.json deve declarar serie NM_141_1 (local units), não ${metaUk.serie ?? 'ausente'}.`);
+  if (metaUk.unidade !== 'local units') erro(`data-uk/meta.json deve declarar unidade "local units", não ${metaUk.unidade ?? 'ausente'}.`);
+  const autoridadesUk = JSON.parse(readFileSync(path.join(dirUk, 'authorities.json'), 'utf8'));
+  if (!Array.isArray(autoridadesUk) || autoridadesUk.length < 300) erro('data-uk/authorities.json deve listar as autoridades locais.');
+  const chavesUk = new Set((autoridadesUk || []).map((a) => `${a.nation}/${a.slug}`));
+  const segmentosUk = new Set((metaUk.segmentos || []).map((s) => s.slug));
   const statsUk = path.join(dirUk, 'stats');
   const nacoes = existsSync(statsUk) ? readdirSync(statsUk).filter((f) => f.endsWith('.json')) : [];
   if (!metaUk.sintetico && nacoes.length < 4) erro(`Só ${nacoes.length} nações em data-uk/stats (esperado 4). A ingestão parece incompleta.`);
-  console.log(`[check-data] UK ok: ano ${metaUk.ano}, ${nacoes.length} nações${metaUk.sintetico ? ' (SINTÉTICO, só local)' : ''}.`);
+  let celulasUk = 0;
+  for (const arquivo of nacoes) {
+    const nacao = arquivo.replace(/\.json$/, '');
+    const dados = JSON.parse(readFileSync(path.join(statsUk, arquivo), 'utf8'));
+    for (const [slug, porSeg] of Object.entries(dados || {})) {
+      const chave = `${nacao}/${slug}`;
+      if (!chavesUk.has(chave)) erro(`data-uk/stats/${arquivo}: autoridade ${chave} fora de authorities.json.`);
+      for (const [seg, reg] of Object.entries(porSeg || {})) {
+        const rotulo = `data-uk ${chave}/${seg}`;
+        if (!segmentosUk.has(seg)) erro(`${rotulo}: segmento desconhecido.`);
+        if (!Number.isInteger(reg?.e) || reg.e <= 0) erro(`${rotulo}: e deve ser inteiro > 0.`);
+        if (!Array.isArray(reg?.sz) || reg.sz.length !== 6) erro(`${rotulo}: sz deve ter 6 faixas.`);
+        const vals = Array.isArray(reg?.sz) ? reg.sz : [];
+        for (const v of vals) if (v !== null && (!Number.isInteger(v) || v < 0)) erro(`${rotulo}: faixa inválida ${v}.`);
+        if (vals.every((v) => v === 0) && reg?.szStatus !== 'rounded') erro(`${rotulo}: e > 0 com todas as faixas zeradas; ausência não pode virar zero.`);
+        if (reg?.szStatus !== undefined && !['complete', 'rounded', 'partial', 'suppressed', 'unavailable', 'not_applicable', 'invalid'].includes(reg.szStatus)) erro(`${rotulo}: szStatus inválido.`);
+        celulasUk += 1;
+      }
+    }
+  }
+  console.log(`[check-data] UK ok: ano ${metaUk.ano}, ${nacoes.length} nações, ${autoridadesUk.length} autoridades, ${celulasUk} células${metaUk.sintetico ? ' (SINTÉTICO, só local)' : ''}.`);
 } else {
   console.log('[check-data] sem dados do Reino Unido (data-uk/): rotas /uk ficam desligadas.');
 }

@@ -12,15 +12,15 @@ import { Migalhas } from '@/components/Migalhas';
 export const revalidate = 86400;
 const tituloMeta = ate(
   60,
-  'Filtra.AI UK Index: businesses by local authority and category',
-  'Filtra.AI UK Index: businesses by local authority',
-  'Filtra.AI UK Index: businesses',
+  'Filtra.AI UK Index: local units by local authority and category',
+  'Filtra.AI UK Index: local units by local authority',
+  'Filtra.AI UK Index: local units',
 );
 
 export function generateMetadata(): Metadata {
   if (!temDadosUK()) return { robots: { index: false } };
   const meta = ukMeta();
-  const descricao = `Business sites (restaurants, pubs, dentists, hairdressers, gyms and more) by UK local authority, from ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`;
+  const descricao = `Local units (business sites such as restaurants, pubs, dentists, hairdressers and gyms) by UK local authority, from ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`;
   return {
     title: { absolute: tituloMeta },
     description: descricao,
@@ -41,8 +41,8 @@ export default function Page() {
       <JsonLd
         data={datasetDoRecorteUK({
           url: urlAbsoluta('/uk'),
-          name: 'Filtra.AI UK Index: business sites by local authority and category',
-          description: `Business sites in the ${ukSegmentos().length} categories tracked by the UK Index, aggregated by local authority from the ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`,
+          name: 'Filtra.AI UK Index: local units by local authority and category',
+          description: `Local units (business sites) in the ${ukSegmentos().length} categories tracked by the UK Index, aggregated by local authority from the ONS UK Business Counts ${meta.ano}, rounded to the nearest 5.`,
           espacial: 'United Kingdom',
           meta,
           variaveis: [
@@ -53,9 +53,9 @@ export default function Page() {
         })}
       />
       <Migalhas indice caminhoAtual="/uk" rotulo="You are here" itens={[{ nome: 'UK Index' }]} />
-      <h1>Filtra.AI UK Index: how many businesses are there by local authority and category</h1>
+      <h1>Filtra.AI UK Index: how many local units are there by local authority and category</h1>
       <p className="lead">
-        Counts of business sites in {ukSegmentos().length} categories across {nUS(nAuth)} UK local authorities, from the Office for National Statistics
+        Counts of local units (business sites) in {ukSegmentos().length} categories across {nUS(nAuth)} UK local authorities, from the Office for National Statistics
         UK Business Counts ({meta.ano}), rounded to the nearest 5. Aggregated numbers only, no company names.{' '}
         <Link href="/uk/methodology">See how we calculate</Link>.
       </p>
@@ -70,7 +70,7 @@ export default function Page() {
         if (!top.length) return null;
         return (
           <section key={seg.slug}>
-            <h2>{seg.nome}: about {nUS(ukTotalSeg(seg.slug))} sites in the UK</h2>
+            <h2>{seg.nome}: about {nUS(ukTotalSeg(seg.slug))} local units in the UK</h2>
             <ul className="lista">
               {top.map(({ auth, e }) => (
                 <li key={`${auth.nation}-${auth.slug}`}>
