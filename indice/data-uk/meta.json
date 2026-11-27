@@ -1,0 +1,921 @@
+{
+ "ano": "2026",
+ "geradoEm": "2026-11-19T12:58:06.904Z",
+ "fonte": {
+  "nome": "UK Business Counts, Office for National Statistics (via Nomis). Open Government Licence v3.0",
+  "url": "https://www.ons.gov.uk/businessindustryandtrade/business/activitysizeandlocation"
+ },
+ "minimoParaIndexar": 10,
+ "segmentos": [
+  {
+   "slug": "restaurants",
+   "nome": "Restaurants",
+   "curto": "restaurants",
+   "sic": [
+    "56101",
+    "56102"
+   ]
+  },
+  {
+   "slug": "takeaways",
+   "nome": "Takeaways and food stands",
+   "curto": "take-away food shops and mobile food stands",
+   "sic": [
+    "56103"
+   ]
+  },
+  {
+   "slug": "pubs-and-bars",
+   "nome": "Pubs and bars",
+   "curto": "pubs and bars",
+   "sic": [
+    "56302"
+   ]
+  },
+  {
+   "slug": "social-clubs",
+   "nome": "Social clubs",
+   "curto": "licensed and social clubs",
+   "sic": [
+    "56301"
+   ]
+  },
+  {
+   "slug": "event-catering",
+   "nome": "Event caterers",
+   "curto": "event catering businesses",
+   "sic": [
+    "56210"
+   ]
+  },
+  {
+   "slug": "bakeries",
+   "nome": "Bakeries",
+   "curto": "bakeries",
+   "sic": [
+    "10710"
+   ]
+  },
+  {
+   "slug": "convenience-stores",
+   "nome": "Convenience stores",
+   "curto": "non-specialised food stores and convenience stores",
+   "sic": [
+    "47110"
+   ]
+  },
+  {
+   "slug": "greengrocers",
+   "nome": "Greengrocers",
+   "curto": "greengrocers and fruit and vegetable shops",
+   "sic": [
+    "47210"
+   ]
+  },
+  {
+   "slug": "butchers",
+   "nome": "Butchers",
+   "curto": "butchers and meat shops",
+   "sic": [
+    "47220"
+   ]
+  },
+  {
+   "slug": "fishmongers",
+   "nome": "Fishmongers",
+   "curto": "fishmongers",
+   "sic": [
+    "47230"
+   ]
+  },
+  {
+   "slug": "bakery-and-sweet-shops",
+   "nome": "Bread and confectionery shops",
+   "curto": "bread, cake and confectionery shops",
+   "sic": [
+    "47240"
+   ]
+  },
+  {
+   "slug": "off-licences",
+   "nome": "Off-licences",
+   "curto": "off-licences and drinks shops",
+   "sic": [
+    "47250"
+   ]
+  },
+  {
+   "slug": "specialist-food-shops",
+   "nome": "Specialist food shops",
+   "curto": "specialist food shops",
+   "sic": [
+    "47290"
+   ]
+  },
+  {
+   "slug": "petrol-stations",
+   "nome": "Petrol stations",
+   "curto": "petrol stations",
+   "sic": [
+    "47300"
+   ]
+  },
+  {
+   "slug": "computer-shops",
+   "nome": "Computer and software shops",
+   "curto": "computer, peripheral and software shops",
+   "sic": [
+    "47410"
+   ]
+  },
+  {
+   "slug": "electrical-goods-shops",
+   "nome": "Electrical goods shops",
+   "curto": "audio, video and household electrical goods shops",
+   "sic": [
+    "47430",
+    "47540"
+   ]
+  },
+  {
+   "slug": "diy-and-hardware",
+   "nome": "DIY and hardware shops",
+   "curto": "hardware, paint and DIY shops",
+   "sic": [
+    "47520"
+   ]
+  },
+  {
+   "slug": "carpet-and-flooring-shops",
+   "nome": "Carpet and flooring shops",
+   "curto": "carpet, rug and floor covering shops",
+   "sic": [
+    "47530"
+   ]
+  },
+  {
+   "slug": "furniture-shops",
+   "nome": "Furniture shops",
+   "curto": "furniture and home furnishing shops",
+   "sic": [
+    "47591",
+    "47599"
+   ]
+  },
+  {
+   "slug": "bookshops",
+   "nome": "Bookshops",
+   "curto": "bookshops",
+   "sic": [
+    "47610"
+   ]
+  },
+  {
+   "slug": "newsagents",
+   "nome": "Newsagents",
+   "curto": "newsagents and stationers",
+   "sic": [
+    "47620"
+   ]
+  },
+  {
+   "slug": "sports-goods-shops",
+   "nome": "Sports goods shops",
+   "curto": "sports goods shops",
+   "sic": [
+    "47640"
+   ]
+  },
+  {
+   "slug": "toy-shops",
+   "nome": "Toy and game shops",
+   "curto": "toy and game shops",
+   "sic": [
+    "47650"
+   ]
+  },
+  {
+   "slug": "clothes-shops",
+   "nome": "Clothes shops",
+   "curto": "clothes shops",
+   "sic": [
+    "47710"
+   ]
+  },
+  {
+   "slug": "shoe-shops",
+   "nome": "Footwear shops",
+   "curto": "footwear shops",
+   "sic": [
+    "47721"
+   ]
+  },
+  {
+   "slug": "pharmacies",
+   "nome": "Pharmacies",
+   "curto": "pharmacies and dispensing chemists",
+   "sic": [
+    "47730"
+   ]
+  },
+  {
+   "slug": "medical-goods-shops",
+   "nome": "Medical and orthopaedic goods shops",
+   "curto": "medical and orthopaedic goods shops",
+   "sic": [
+    "47741",
+    "47749"
+   ]
+  },
+  {
+   "slug": "beauty-product-shops",
+   "nome": "Cosmetics and perfume shops",
+   "curto": "cosmetics, toiletries and perfume shops",
+   "sic": [
+    "47750"
+   ]
+  },
+  {
+   "slug": "florists-and-garden-centres",
+   "nome": "Florists, garden and pet shops",
+   "curto": "florists, garden centres and pet shops",
+   "sic": [
+    "47760"
+   ]
+  },
+  {
+   "slug": "opticians",
+   "nome": "Opticians",
+   "curto": "opticians and optical goods shops",
+   "sic": [
+    "47782"
+   ]
+  },
+  {
+   "slug": "jewellers",
+   "nome": "Jewellers and watch shops",
+   "curto": "jewellery, watch and clock shops",
+   "sic": [
+    "47770"
+   ]
+  },
+  {
+   "slug": "antique-shops",
+   "nome": "Antique shops",
+   "curto": "antique shops",
+   "sic": [
+    "47791"
+   ]
+  },
+  {
+   "slug": "second-hand-shops",
+   "nome": "Second-hand shops",
+   "curto": "second-hand goods shops, including charity shops",
+   "sic": [
+    "47799"
+   ]
+  },
+  {
+   "slug": "mobile-phone-shops",
+   "nome": "Mobile phone and telecom shops",
+   "curto": "telecommunications equipment shops",
+   "sic": [
+    "47421"
+   ]
+  },
+  {
+   "slug": "hairdressers",
+   "nome": "Hairdressers and beauty salons",
+   "curto": "hairdressers, barbers and beauty salons",
+   "sic": [
+    "96020"
+   ]
+  },
+  {
+   "slug": "laundries",
+   "nome": "Laundries and dry cleaners",
+   "curto": "laundries and dry cleaners",
+   "sic": [
+    "96010"
+   ]
+  },
+  {
+   "slug": "funeral-directors",
+   "nome": "Funeral directors",
+   "curto": "funeral directors and related services",
+   "sic": [
+    "96030"
+   ]
+  },
+  {
+   "slug": "spas-and-wellbeing",
+   "nome": "Spas and wellbeing",
+   "curto": "spas, saunas and physical wellbeing services",
+   "sic": [
+    "96040"
+   ]
+  },
+  {
+   "slug": "gyms",
+   "nome": "Gyms and fitness centres",
+   "curto": "gyms and fitness centres",
+   "sic": [
+    "93130"
+   ]
+  },
+  {
+   "slug": "sports-facilities",
+   "nome": "Sports facilities",
+   "curto": "sports facilities",
+   "sic": [
+    "93110"
+   ]
+  },
+  {
+   "slug": "sports-clubs",
+   "nome": "Sports clubs",
+   "curto": "sports clubs",
+   "sic": [
+    "93120"
+   ]
+  },
+  {
+   "slug": "amusement-and-leisure",
+   "nome": "Amusement and leisure",
+   "curto": "amusement and recreation businesses",
+   "sic": [
+    "93290",
+    "93210"
+   ]
+  },
+  {
+   "slug": "hotels",
+   "nome": "Hotels",
+   "curto": "hotels and similar accommodation",
+   "sic": [
+    "55100"
+   ]
+  },
+  {
+   "slug": "holiday-accommodation",
+   "nome": "Holiday accommodation",
+   "curto": "holiday and other short-stay accommodation",
+   "sic": [
+    "55209",
+    "55201"
+   ]
+  },
+  {
+   "slug": "camping-and-caravan-sites",
+   "nome": "Campsites and caravan parks",
+   "curto": "campsites and caravan parks",
+   "sic": [
+    "55300"
+   ]
+  },
+  {
+   "slug": "travel-agents",
+   "nome": "Travel agents",
+   "curto": "travel agencies",
+   "sic": [
+    "79110"
+   ]
+  },
+  {
+   "slug": "gp-surgeries",
+   "nome": "GP surgeries",
+   "curto": "general medical practices",
+   "sic": [
+    "86210"
+   ]
+  },
+  {
+   "slug": "specialist-medical-practices",
+   "nome": "Specialist medical practices",
+   "curto": "specialist medical practices",
+   "sic": [
+    "86220"
+   ]
+  },
+  {
+   "slug": "dentists",
+   "nome": "Dentists",
+   "curto": "dental practices",
+   "sic": [
+    "86230"
+   ]
+  },
+  {
+   "slug": "other-health-services",
+   "nome": "Physiotherapy and other health services",
+   "curto": "physiotherapists, osteopaths and other human health services",
+   "sic": [
+    "86900"
+   ]
+  },
+  {
+   "slug": "care-homes-nursing",
+   "nome": "Nursing care homes",
+   "curto": "nursing care facilities",
+   "sic": [
+    "87100"
+   ]
+  },
+  {
+   "slug": "care-homes-elderly",
+   "nome": "Care homes for older people",
+   "curto": "residential care homes for the elderly and disabled",
+   "sic": [
+    "87300"
+   ]
+  },
+  {
+   "slug": "residential-care-other",
+   "nome": "Other residential care",
+   "curto": "residential care for people with learning or mental health needs",
+   "sic": [
+    "87200",
+    "87900"
+   ]
+  },
+  {
+   "slug": "child-day-care",
+   "nome": "Childcare and nurseries",
+   "curto": "child day-care providers and nurseries",
+   "sic": [
+    "88910"
+   ]
+  },
+  {
+   "slug": "pre-primary-education",
+   "nome": "Pre-school education",
+   "curto": "pre-primary education providers",
+   "sic": [
+    "85100"
+   ]
+  },
+  {
+   "slug": "driving-schools",
+   "nome": "Driving schools",
+   "curto": "driving schools",
+   "sic": [
+    "85530"
+   ]
+  },
+  {
+   "slug": "sports-and-recreation-education",
+   "nome": "Sports and recreation tuition",
+   "curto": "sports and recreation instructors",
+   "sic": [
+    "85510"
+   ]
+  },
+  {
+   "slug": "cultural-education",
+   "nome": "Music, dance and arts tuition",
+   "curto": "cultural education providers",
+   "sic": [
+    "85520"
+   ]
+  },
+  {
+   "slug": "vets",
+   "nome": "Vets",
+   "curto": "veterinary practices",
+   "sic": [
+    "75000"
+   ]
+  },
+  {
+   "slug": "estate-agents",
+   "nome": "Estate agents",
+   "curto": "estate agents",
+   "sic": [
+    "68310"
+   ]
+  },
+  {
+   "slug": "property-management",
+   "nome": "Property management",
+   "curto": "property management agents",
+   "sic": [
+    "68320"
+   ]
+  },
+  {
+   "slug": "solicitors",
+   "nome": "Solicitors",
+   "curto": "solicitors and law firms",
+   "sic": [
+    "69102"
+   ]
+  },
+  {
+   "slug": "accountants",
+   "nome": "Accountants",
+   "curto": "accounting and auditing firms",
+   "sic": [
+    "69201"
+   ]
+  },
+  {
+   "slug": "bookkeepers",
+   "nome": "Bookkeepers and tax advisers",
+   "curto": "bookkeeping and tax consultancy firms",
+   "sic": [
+    "69202"
+   ]
+  },
+  {
+   "slug": "architects",
+   "nome": "Architects",
+   "curto": "architectural practices",
+   "sic": [
+    "71111"
+   ]
+  },
+  {
+   "slug": "photographers",
+   "nome": "Photographers",
+   "curto": "photography studios and photographers",
+   "sic": [
+    "74201",
+    "74209"
+   ]
+  },
+  {
+   "slug": "graphic-design",
+   "nome": "Graphic and design studios",
+   "curto": "graphic and specialised design studios",
+   "sic": [
+    "74100"
+   ]
+  },
+  {
+   "slug": "advertising-agencies",
+   "nome": "Advertising agencies",
+   "curto": "advertising agencies",
+   "sic": [
+    "73110"
+   ]
+  },
+  {
+   "slug": "it-consultancies",
+   "nome": "IT consultancies",
+   "curto": "IT consultancy businesses",
+   "sic": [
+    "62020"
+   ]
+  },
+  {
+   "slug": "software-developers",
+   "nome": "Software developers",
+   "curto": "software development businesses",
+   "sic": [
+    "62012",
+    "62011"
+   ]
+  },
+  {
+   "slug": "car-dealers",
+   "nome": "Car dealers",
+   "curto": "car dealerships",
+   "sic": [
+    "45111",
+    "45112"
+   ]
+  },
+  {
+   "slug": "garages",
+   "nome": "Garages and car repair",
+   "curto": "garages and car repair workshops",
+   "sic": [
+    "45200"
+   ]
+  },
+  {
+   "slug": "car-parts-shops",
+   "nome": "Car parts shops",
+   "curto": "motor vehicle parts shops",
+   "sic": [
+    "45320"
+   ]
+  },
+  {
+   "slug": "motorcycle-dealers",
+   "nome": "Motorcycle dealers and repairers",
+   "curto": "motorcycle dealers and repairers",
+   "sic": [
+    "45400"
+   ]
+  },
+  {
+   "slug": "car-hire",
+   "nome": "Car and van hire",
+   "curto": "car and van rental businesses",
+   "sic": [
+    "77110",
+    "77120"
+   ]
+  },
+  {
+   "slug": "taxis",
+   "nome": "Taxi firms",
+   "curto": "taxi operators",
+   "sic": [
+    "49320"
+   ]
+  },
+  {
+   "slug": "removals-and-freight",
+   "nome": "Removals and road freight",
+   "curto": "road freight and removals firms",
+   "sic": [
+    "49410",
+    "49420"
+   ]
+  },
+  {
+   "slug": "couriers",
+   "nome": "Couriers",
+   "curto": "courier businesses",
+   "sic": [
+    "53202"
+   ]
+  },
+  {
+   "slug": "electricians",
+   "nome": "Electricians",
+   "curto": "electrical installation firms",
+   "sic": [
+    "43210"
+   ]
+  },
+  {
+   "slug": "plumbers-and-heating",
+   "nome": "Plumbers and heating engineers",
+   "curto": "plumbing, heating and air-conditioning installers",
+   "sic": [
+    "43220"
+   ]
+  },
+  {
+   "slug": "plasterers",
+   "nome": "Plasterers",
+   "curto": "plastering firms",
+   "sic": [
+    "43310"
+   ]
+  },
+  {
+   "slug": "joiners",
+   "nome": "Joiners and carpenters",
+   "curto": "joinery installation firms",
+   "sic": [
+    "43320"
+   ]
+  },
+  {
+   "slug": "floor-and-wall-covering",
+   "nome": "Floor and wall covering fitters",
+   "curto": "floor and wall covering installers",
+   "sic": [
+    "43330"
+   ]
+  },
+  {
+   "slug": "painters-and-decorators",
+   "nome": "Painters and decorators",
+   "curto": "painting and glazing firms",
+   "sic": [
+    "43341",
+    "43342"
+   ]
+  },
+  {
+   "slug": "roofers",
+   "nome": "Roofers",
+   "curto": "roofing contractors",
+   "sic": [
+    "43910"
+   ]
+  },
+  {
+   "slug": "builders-domestic",
+   "nome": "Builders of houses",
+   "curto": "domestic building contractors",
+   "sic": [
+    "41202"
+   ]
+  },
+  {
+   "slug": "builders-commercial",
+   "nome": "Builders of commercial buildings",
+   "curto": "commercial building contractors",
+   "sic": [
+    "41201"
+   ]
+  },
+  {
+   "slug": "other-construction-trades",
+   "nome": "Other building completion trades",
+   "curto": "other building completion and finishing firms",
+   "sic": [
+    "43390"
+   ]
+  },
+  {
+   "slug": "scaffolders",
+   "nome": "Scaffolding and specialist builders",
+   "curto": "scaffolding and other specialist construction firms",
+   "sic": [
+    "43991",
+    "43999"
+   ]
+  },
+  {
+   "slug": "cleaners",
+   "nome": "Cleaning services",
+   "curto": "general cleaning firms",
+   "sic": [
+    "81210"
+   ]
+  },
+  {
+   "slug": "other-cleaning",
+   "nome": "Other building cleaning",
+   "curto": "other building and industrial cleaning firms",
+   "sic": [
+    "81229",
+    "81221"
+   ]
+  },
+  {
+   "slug": "landscaping-and-gardeners",
+   "nome": "Landscaping and gardening",
+   "curto": "landscape service firms and gardeners",
+   "sic": [
+    "81300"
+   ]
+  },
+  {
+   "slug": "pest-control",
+   "nome": "Pest control",
+   "curto": "pest control and other facility services",
+   "sic": [
+    "81299"
+   ]
+  },
+  {
+   "slug": "security-services",
+   "nome": "Security services",
+   "curto": "private security firms",
+   "sic": [
+    "80100"
+   ]
+  },
+  {
+   "slug": "computer-repair",
+   "nome": "Computer repair",
+   "curto": "computer and peripheral equipment repairers",
+   "sic": [
+    "95110"
+   ]
+  },
+  {
+   "slug": "phone-repair",
+   "nome": "Phone and electronics repair",
+   "curto": "communications equipment and consumer electronics repairers",
+   "sic": [
+    "95120",
+    "95210"
+   ]
+  },
+  {
+   "slug": "appliance-repair",
+   "nome": "Household appliance repair",
+   "curto": "household appliance and home equipment repairers",
+   "sic": [
+    "95220"
+   ]
+  },
+  {
+   "slug": "tattoo-and-other-personal-services",
+   "nome": "Tattoo and other personal services",
+   "curto": "other personal service businesses",
+   "sic": [
+    "96090"
+   ]
+  },
+  {
+   "slug": "printing",
+   "nome": "Printers",
+   "curto": "printing businesses",
+   "sic": [
+    "18121",
+    "18129"
+   ]
+  },
+  {
+   "slug": "sign-makers",
+   "nome": "Sign makers and engravers",
+   "curto": "sign-making, engraving and other manufacturing firms",
+   "sic": [
+    "32990"
+   ]
+  },
+  {
+   "slug": "museums-and-galleries",
+   "nome": "Museums and galleries",
+   "curto": "museums and art galleries",
+   "sic": [
+    "91020"
+   ]
+  },
+  {
+   "slug": "arts-venues",
+   "nome": "Theatres and arts venues",
+   "curto": "theatres, arts venues and facilities",
+   "sic": [
+    "90040"
+   ]
+  },
+  {
+   "slug": "arts-creative",
+   "nome": "Artists and creative businesses",
+   "curto": "creative arts and entertainment businesses",
+   "sic": [
+    "90010",
+    "90020",
+    "90030"
+   ]
+  },
+  {
+   "slug": "employment-agencies",
+   "nome": "Recruitment agencies",
+   "curto": "employment placement agencies",
+   "sic": [
+    "78101",
+    "78109"
+   ]
+  },
+  {
+   "slug": "temp-agencies",
+   "nome": "Temporary work agencies",
+   "curto": "temporary employment agencies",
+   "sic": [
+    "78200"
+   ]
+  },
+  {
+   "slug": "management-consultancies",
+   "nome": "Management consultancies",
+   "curto": "management consultancy firms",
+   "sic": [
+    "70229"
+   ]
+  },
+  {
+   "slug": "engineering-consultancies",
+   "nome": "Engineering consultancies",
+   "curto": "engineering design and consultancy firms",
+   "sic": [
+    "71129"
+   ]
+  },
+  {
+   "slug": "insurance-brokers",
+   "nome": "Insurance brokers",
+   "curto": "insurance agents and brokers",
+   "sic": [
+    "66220"
+   ]
+  },
+  {
+   "slug": "mortgage-and-financial-advisers",
+   "nome": "Financial advisers",
+   "curto": "financial advisers and fund managers",
+   "sic": [
+    "66190",
+    "66300"
+   ]
+  },
+  {
+   "slug": "storage-and-warehousing",
+   "nome": "Self-storage and warehousing",
+   "curto": "warehousing and storage firms",
+   "sic": [
+    "52103"
+   ]
+  },
+  {
+   "slug": "driving-and-bus-transport",
+   "nome": "Bus and coach operators",
+   "curto": "bus and coach operators",
+   "sic": [
+    "49390"
+   ]
+  }
+ ],
+ "linhasLidas": 4929816
+}
