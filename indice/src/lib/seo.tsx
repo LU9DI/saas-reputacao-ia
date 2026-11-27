@@ -160,6 +160,49 @@ export function datasetDoRecorteUS({
   };
 }
 
+export function datasetDoRecorteUK({
+  url,
+  name,
+  description,
+  espacial,
+  meta,
+  variaveis,
+}: {
+  url: string;
+  name: string;
+  description: string;
+  espacial: string;
+  meta: { ano: string; geradoEm: string; fonte: { url: string } };
+  variaveis: VariavelDataset[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dataset',
+    '@id': `${url}#data`,
+    name,
+    description,
+    url,
+    inLanguage: 'en-GB',
+    license: 'https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/',
+    isAccessibleForFree: true,
+    creator: organization,
+    publisher,
+    isBasedOn: meta.fonte.url,
+    dateModified: meta.geradoEm,
+    temporalCoverage: meta.ano,
+    spatialCoverage: { '@type': 'Place', name: espacial },
+    measurementTechnique:
+      'Count of local business units (VAT and/or PAYE registered) by local authority and industry category (UK SIC 2007), from the Office for National Statistics UK Business Counts, rounded to the nearest 5. Unregistered businesses are not counted.',
+    variableMeasured: variaveis.map((v) => ({
+      '@type': 'PropertyValue',
+      name: v.nome,
+      value: v.valor,
+      ...(v.unidade ? { unitText: v.unidade } : {}),
+      ...(v.descricao ? { description: v.descricao } : {}),
+    })),
+  };
+}
+
 /** Dataset de um recorte (estado, município ou célula), ligado ao Dataset principal pelo @id. */
 export function datasetDoRecorte({
   url,
