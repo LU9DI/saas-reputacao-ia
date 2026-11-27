@@ -219,6 +219,7 @@ function carregarDados() {
 }
 
 const US_DIR = resolve(ROOT, 'data-us');
+const UK_DIR = resolve(ROOT, 'data-uk');
 
 /** Páginas dos EUA esperadas, calculadas direto dos arquivos de dados (sem usar o código do app). */
 function carregarUS() {
@@ -251,6 +252,45 @@ function caminhosEsperadosUS(us) {
     for (const { slug, segs } of estado) {
       paths.push(`/us/${slugEstado(sigla)}/${slug}`);
       for (const sl of segs) paths.push(`/us/${slugEstado(sigla)}/${slug}/${sl}`);
+    }
+  }
+  return paths;
+}
+
+function carregarUK() {
+  if (!existsSync(resolve(UK_DIR, 'meta.json'))) return null;
+  const meta = JSON.parse(readFileSync(resolve(UK_DIR, 'meta.json'), 'utf8'));
+  const authorities = new Map(
+    JSON.parse(readFileSync(resolve(UK_DIR, 'authorities.json'), 'utf8')).map((authority) => [
+      `${authority.nation}/${authority.slug}`,
+      authority,
+    ]),
+  );
+  const stats = {};
+  for (const arquivo of readdirSync(resolve(UK_DIR, 'stats')).filter((name) => /^[a-z-]+\\.json$/.test(name)).sort()) {
+    stats[arquivo.replace(/\\.json$/, '')] = JSON.parse(readFileSync(resolve(UK_DIR, 'stats', arquivo), 'utf8'));
+  }
+  return { meta, authorities, stats };
+}
+
+/** Páginas UK esperadas, calculadas dos dados e do limiar de publicação. */
+function caminhosEsperadosUK(uk) {
+  if (!uk) return [];
+  const paths = ['/uk', '/uk/methodology'];
+  for (const nation of ['england', 'scotland', 'wales', 'northern-ireland']) {
+    const published = [];
+    for (const [slug, bySegment] of Object.entries(uk.stats[nation] || {})) {
+      if (!uk.authorities.has(`${nation}/${slug}`)) continue;
+      const segments = uk.meta.segmentos.filter(
+        (segment) => Number.isInteger(bySegment[segment.slug]?.e) && bySegment[segment.slug].e >= uk.meta.minimoParaIndexar,
+      );
+      if (segments.length) published.push({ slug, segments });
+    }
+    if (!published.length) continue;
+    paths.push(`/uk/${nation}`);
+    for (const { slug, segments } of published) {
+      paths.push(`/uk/${nation}/${slug}`);
+      for (const segment of segments) paths.push(`/uk/${nation}/${slug}/${segment.slug}`);
     }
   }
   return paths;
@@ -723,8 +763,11 @@ const META = DADOS.meta;
 const LAST_MOD = DADOS.lastmod;
 const US_DADOS = carregarUS();
 const US_DATA = US_DADOS ? US_DADOS.meta.geradoEm.slice(0, 10) : null;
+const UK_DADOS = carregarUK();
+const UK_DATA = UK_DADOS ? UK_DADOS.meta.geradoEm.slice(0, 10) : null;
 const ESPERADOS_BR = caminhosEsperados(DADOS);
-const ESPERADOS = [...ESPERADOS_BR, ...caminhosEsperadosUS(US_DADOS)];
+const ESPERADOS_UK = caminhosEsperadosUK(UK_DADOS);
+const ESPERADOS = [...ESPERADOS_BR, ...caminhosEsperadosUS(US_DADOS), ...ESPERADOS_UK];
 const SNAPSHOT_FRONTEND = JSON.parse(
   readFileSync(resolve(ROOT, '..', 'frontend', 'src', 'generated', 'indice-snapshot.json'), 'utf8'),
 );
@@ -1074,6 +1117,33 @@ try {
     }
   }
 
+  if (UK_DADOS) {
+    const ukNation = ESPERADOS_UK.find((item) => item.split('/').length === 3 && item !== '/uk/methodology');
+    const ukAuthority = ESPERADOS_UK.find((item) => item.split('/').length === 4);
+    const ukCell = ESPERADOS_UK.find((item) => item.split('/').length === 5);
+    for (const [nome, caminho] of [
+      ['UK home', '/uk'],
+      ['UK nation', ukNation],
+      ['UK local authority', ukAuthority],
+      ['UK category cell', ukCell],
+    ]) {
+      if (!caminho) continue;
+      const page = await request(`${BASE_PATH}${caminho}`);
+      const pageMeta = parseHtml(page.final.body);
+      checkEqual(`${nome}: status`, page.final.status, 200);
+      check(`${nome}: canonical próprio`, pageMeta.canonical === canonicalPath(caminho), `${pageMeta.canonical} != ${canonicalPath(caminho)}`);
+      check(`${nome}: indexável`, !/noindex/i.test(pageMeta.robots || ''), pageMeta.robots);
+      check(`${nome}: idioma en-GB`, pageMeta.lang === 'en-GB', String(pageMeta.lang));
+      check(`${nome}: JSON-LD válido`, pageMeta.jsonLdInvalid.length === 0, pageMeta.jsonLdInvalid.join('; '));
+      const datasets = todosOsBlocos(pageMeta).filter((block) => block['@type'] === 'Dataset');
+      check(`${nome}: exatamente um Dataset`, datasets.length === 1, String(datasets.length));
+      const dataset = datasets[0] || {};
+      check(`${nome}: Dataset usa a data real UK`, dataset.dateModified === UK_DADOS.meta.geradoEm, String(dataset.dateModified));
+      check(`${nome}: Dataset usa o ano UK`, dataset.temporalCoverage === UK_DADOS.meta.ano, String(dataset.temporalCoverage));
+      check(`${nome}: Dataset usa a fonte ONS`, dataset.isBasedOn === UK_DADOS.meta.fonte.url, String(dataset.isBasedOn));
+    }
+  }
+
   const sitemapIndex = await request(`${BASE_PATH}/sitemap-index.xml`);
   const sitemapIndexXml = sitemapIndex.final.body;
   checkEqual('GET /indice/sitemap-index.xml status', sitemapIndex.final.status, 200);
@@ -1112,8 +1182,9 @@ try {
       const lastmod = lastmodsFilho[indiceUrl];
       const caminho = loc.replace(CANONICAL_BASE, '') || '/';
       const ehUS = caminho === '/us' || caminho.startsWith('/us/');
-      const entrada = ehUS ? undefined : LAST_MOD[caminho];
-      const dataEsperada = ehUS ? US_DATA : entrada ? entrada.split('|')[1] : dataGeracao;
+      const ehUK = caminho === '/uk' || caminho.startsWith('/uk/');
+      const entrada = ehUS || ehUK ? undefined : LAST_MOD[caminho];
+      const dataEsperada = ehUS ? US_DATA : ehUK ? UK_DATA : entrada ? entrada.split('|')[1] : dataGeracao;
       check(
         `${caminhoFilho} lastmod de ${caminho} segue lastmod.json (ou a data de geração)`,
         Boolean(lastmod) && lastmod.startsWith(dataEsperada),
@@ -1121,7 +1192,7 @@ try {
       );
       check(
         `${caminhoFilho} lastmod de ${caminho} não é futuro`,
-        Boolean(lastmod) && lastmod.slice(0, 10) <= (ehUS ? US_DATA : dataGeracao),
+        Boolean(lastmod) && lastmod.slice(0, 10) <= (ehUS ? US_DATA : ehUK ? UK_DATA : dataGeracao),
         lastmod,
       );
       if (caminho.startsWith('/rankings/')) {
