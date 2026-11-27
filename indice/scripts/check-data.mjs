@@ -219,3 +219,18 @@ if (existsSync(path.join(dirUs, 'meta.json'))) {
 } else {
   console.log('[check-data] sem dados dos EUA (data-us/): rotas /us ficam desligadas.');
 }
+
+// Dados do Reino Unido: opcionais, mas se existirem precisam estar completos e não podem ser sintéticos em produção.
+const dirUk = path.resolve(process.env.INDICE_UK_DATA_DIR || path.join(raiz, 'data-uk'));
+if (existsSync(path.join(dirUk, 'meta.json'))) {
+  const metaUk = JSON.parse(readFileSync(path.join(dirUk, 'meta.json'), 'utf8'));
+  if (!/^\d{4}$/.test(metaUk.ano || '')) erro('data-uk/meta.json sem ano válido.');
+  if (metaUk.sintetico && process.env.INDICE_ALLOW_SAMPLE !== '1') erro('Os dados do Reino Unido são SINTÉTICOS e não podem ser publicados.');
+  if (!existsSync(path.join(dirUk, 'authorities.json'))) erro('Arquivo ausente em data-uk: authorities.json');
+  const statsUk = path.join(dirUk, 'stats');
+  const nacoes = existsSync(statsUk) ? readdirSync(statsUk).filter((f) => f.endsWith('.json')) : [];
+  if (!metaUk.sintetico && nacoes.length < 4) erro(`Só ${nacoes.length} nações em data-uk/stats (esperado 4). A ingestão parece incompleta.`);
+  console.log(`[check-data] UK ok: ano ${metaUk.ano}, ${nacoes.length} nações${metaUk.sintetico ? ' (SINTÉTICO, só local)' : ''}.`);
+} else {
+  console.log('[check-data] sem dados do Reino Unido (data-uk/): rotas /uk ficam desligadas.');
+}
