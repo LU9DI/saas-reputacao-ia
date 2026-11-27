@@ -90,7 +90,8 @@ const somaUrls =
   indiceUrls.rankingsAberturas +
   indiceUrls.rankingsAtivosSegmentos +
   indiceUrls.rankingsAtivosUF +
-  (indiceUrls.eua ?? 0);
+  (indiceUrls.eua ?? 0) +
+  (indiceUrls.uk ?? 0);
 check(
   indiceUrls.total === somaUrls,
   `Índice snapshot urls.total must equal base + ufs + municípios + células + rankings (${indiceUrls.total} != ${somaUrls})`,

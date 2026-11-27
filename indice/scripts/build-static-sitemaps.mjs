@@ -19,6 +19,7 @@ import { anosPublicados, calcularRanking, podePublicar } from './lib/rankings.mj
 import {
   caminhosIndexaveis,
   caminhosUS,
+  caminhosUK,
   criarLastmodDe,
   dividirShards,
   lerEstadosUS,
@@ -71,11 +72,26 @@ if (existsSync(path.join(dirUS, 'meta.json'))) {
   console.warn('[static-sitemaps] aviso: data-us/ ausente; apenas as URLs do Brasil foram geradas.');
 }
 
-const caminhos = [...caminhosBR, ...caminhosEUA];
+// Piloto do Reino Unido (opcional): `data-uk/` é a fonte que o app lê via src/lib/uk.ts.
+const dirUK = path.resolve(process.env.INDICE_UK_DATA_DIR || path.join(raiz, 'data-uk'));
+let caminhosUKLista = [];
+let ukGeradoEm = null;
+if (existsSync(path.join(dirUK, 'meta.json'))) {
+  const metaUK = JSON.parse(readFileSync(path.join(dirUK, 'meta.json'), 'utf8'));
+  const authorities = JSON.parse(readFileSync(path.join(dirUK, 'authorities.json'), 'utf8'));
+  const statsUK = {};
+  for (const arquivo of readdirSync(path.join(dirUK, 'stats')).filter((f) => /^[a-z-]+\.json$/.test(f))) {
+    statsUK[arquivo.replace(/\.json$/, '')] = JSON.parse(readFileSync(path.join(dirUK, 'stats', arquivo), 'utf8'));
+  }
+  caminhosUKLista = caminhosUK({ meta: metaUK, authorities, stats: statsUK });
+  ukGeradoEm = metaUK.geradoEm;
+}
+
+const caminhos = [...caminhosBR, ...caminhosEUA, ...caminhosUKLista];
 const shards = dividirShards(caminhos, POR_ARQUIVO);
 const lastmodBrasil = criarLastmodDe(lastmodMapa, meta.geradoEm);
 // US: a página não tem lastmod por página; usa a data de geração da base, como o app.
-const lastmodDe = (p) => (p.startsWith('/us') && usGeradoEm ? usGeradoEm : lastmodBrasil(p));
+const lastmodDe = (p) => (p.startsWith('/us') && usGeradoEm ? usGeradoEm : p.startsWith('/uk') && ukGeradoEm ? ukGeradoEm : lastmodBrasil(p));
 const xmlIndex = xmlSitemapIndex(shards.length, meta.geradoEm);
 
 const erros = validarArtefato({ caminhos, shards, xmlIndex, porArquivo: POR_ARQUIVO, lastmodDe });
