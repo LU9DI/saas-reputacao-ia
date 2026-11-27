@@ -136,7 +136,7 @@ test('US: espelha a regra do app (base, estado, condado e célula acima do míni
   const stats = {
     CA: {
       'los-angeles-county': { 'restaurants-and-bars': { e: 4200 }, 'auto-repair-shops': { e: 12 } },
-      'alpine-county': { 'restaurants-and-bars': { e: 4 } },
+      'alpine-county': { 'restaurants-and-bars': { e: null }, 'auto-repair-shops': { e: 4 } },
     },
     WY: { 'niobrara-county': { 'restaurants-and-bars': { e: 1 } } },
   };

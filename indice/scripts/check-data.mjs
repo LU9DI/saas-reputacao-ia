@@ -13,6 +13,8 @@ const falhaFatal = (m) => {
   process.exit(1);
 };
 
+const erro = (m) => falhaFatal(m);
+
 const lerJson = (caminho) => {
   try {
     return JSON.parse(readFileSync(caminho, 'utf8'));
@@ -198,6 +200,21 @@ if (existsSync(path.join(dirUs, 'meta.json'))) {
   const statsUs = path.join(dirUs, 'stats');
   const estados = existsSync(statsUs) ? readdirSync(statsUs).filter((f) => f.endsWith('.json')) : [];
   if (!metaUs.sintetico && estados.length < 45) erro(`Só ${estados.length} estados em data-us/stats (esperado 51). A ingestão parece incompleta.`);
+  const invalidos = [];
+  for (const arquivo of estados) {
+    const sigla = arquivo.slice(0, 2);
+    const porCondado = lerJson(path.join(statsUs, arquivo));
+    for (const [condado, porSeg] of Object.entries(porCondado)) {
+      for (const [seg, reg] of Object.entries(porSeg)) {
+        const onde = `${sigla}/${condado}/${seg}`;
+        if (reg.e !== null && (!Number.isInteger(reg.e) || reg.e < 0)) invalidos.push(`${onde}: e inválido`);
+        if (!Array.isArray(reg.sz) || reg.sz.length !== 6) invalidos.push(`${onde}: sz deve ter 6 faixas`);
+        else if (reg.sz.some((v) => v !== null && (!Number.isInteger(v) || v < 0))) invalidos.push(`${onde}: faixa inválida`);
+        else if (typeof reg.e === 'number' && reg.e > 0 && reg.sz.every((v) => v === 0)) invalidos.push(`${onde}: e>0 com todas as faixas em zero (ausência virou zero?)`);
+      }
+    }
+  }
+  if (invalidos.length) erro(`data-us com ${invalidos.length} registro(s) inválido(s): ${invalidos.slice(0, 8).join('; ')}`);
   console.log(`[check-data] EUA ok: ano ${metaUs.ano}, ${estados.length} estados${metaUs.sintetico ? ' (SINTÉTICO, só local)' : ''}.`);
 } else {
   console.log('[check-data] sem dados dos EUA (data-us/): rotas /us ficam desligadas.');
