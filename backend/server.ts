@@ -14,7 +14,7 @@ import { jwtRotationStatus } from './lib/jwtKeys.js';
 import { buildCorsOptions } from './lib/cors.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import { requestIdMiddleware, securityHeaders } from './middleware/security.js';
-import { latencyMiddleware, getHttpMetrics } from './lib/metrics.js';
+import { latencyMiddleware, getHttpMetrics, getDotMetrics } from './lib/metrics.js';
 import { mountTrialRoutes } from './routes/trialRoutes.js';
 import { mountAuthRoutes } from './routes/authRoutes.js';
 import { mountEmpresaRoutes } from './routes/empresaRoutes.js';
@@ -96,7 +96,7 @@ app.get('/api/health', async (_req, res) => {
   const body = { ok: dbPing.ok, db: dbPing.engine || (typeof dbEngine === 'function' ? dbEngine() : 'sqlite'), db_ok: dbPing.ok, build: BUILD, stripe: stripeConfigured(), paypal: paypalConfigured(), pix: mpConfigured(), wechat: wechatConfigured(), ai: aiConfigured(), ai_providers: listAiProviders(), plan_switch: allowPlanSwitch(), jwt: jwtRotationStatus(), webauthn: webauthnConfig(), push: pushConfigured(), smtp: smtpConfigured(), ai_latency: { groq: ai.stats.groq.latency, gemini: ai.stats.gemini.latency }, http_latency: getHttpMetrics().global, env: process.env.NODE_ENV || 'development', time: new Date().toISOString() };
   res.status(dbPing.ok ? 200 : 503).json(body);
 });
-app.get('/api/metrics', (req, res) => { const secret = process.env.JOBS_SECRET?.trim(); if (process.env.NODE_ENV === 'production' && secret && String(req.headers['x-jobs-secret'] || '') !== secret) return res.status(401).json({ error: 'Não autorizado.' }); res.json({ time: new Date().toISOString(), build: BUILD, http: getHttpMetrics(), ai: getAiLoadStats() }); });
+app.get('/api/metrics', (req, res) => { const secret = process.env.JOBS_SECRET?.trim(); if (process.env.NODE_ENV === 'production' && secret && String(req.headers['x-jobs-secret'] || '') !== secret) return res.status(401).json({ error: 'Não autorizado.' }); res.json({ time: new Date().toISOString(), build: BUILD, http: getHttpMetrics(), ai: getAiLoadStats(), dot: getDotMetrics() }); });
 const PORT = Number(process.env.PORT || 5000);
 let server: Server | null = null;
 let shuttingDown = false;
@@ -119,12 +119,15 @@ async function main() {
   await runSentimentBackfillOnBoot();
   await runLgpdSweepOnBoot();
   mountTrialRoutes(app); mountAuthRoutes(app); mountEmpresaRoutes(app); mountReviewRoutes(app); mountDiagnosticRoutes(app); mountAcquisitionRoutes(app); mountLeadRoutes(app); mountAdminDashboardRoutes(app); mountAdminTecnicoRoutes(app); mountAdminNegocioRoutes(app); mountTokenMetricsRoutes(app); mountRelatorioRoutes(app); mountRelatorioInteligenteRoutes(app); mountPlanSwitchRoutes(app); mountWebAuthnRoutes(app); mountPushRoutes(app); mountJobsRoutes(app); mountMonthlyReportJobsRoutes(app); mountPayPalRoutes(app); mountPixRoutes(app); mountWechatRoutes(app); mountSubscriptionRoutes(app); mountUnidadeRoutes(app); mountExportRoutes(app); mountPublicPlanosRoutes(app); mountAuditRoutes(app); mountLegalAcceptRoutes(app); mountSmtpTestRoutes(app); mountMcpRoutes(app);
-  const dotEnabled = process.env.NODE_ENV !== 'production' || process.env.FILTRA_DOT_ENABLED === '1';
+  const dotEnabled = process.env.FILTRA_DOT_ENABLED === '1';
   if (dotEnabled) {
     try { await ensureDotSchema(); } catch (e) { console.error('DOT schema:', e); throw e; }
     mountDotRoutes(app);
     mountDotAccessRoutes(app);
-    if (process.env.FILTRA_DOT_SCHEDULER_ENABLED === '1') startDotMonitorScheduler();
+    const dotSchedulerForced = process.env.FILTRA_DOT_FORCE_ON === '1';
+    if (process.env.FILTRA_DOT_SCHEDULER_ENABLED === '1' || dotSchedulerForced) {
+      startDotMonitorScheduler();
+    }
   }
   mountAdminLoginRoute(app, getDb, { setAuthCookie, JWT_SECRET }); mountAdminPasswordResetRoutes(app, getDb); mountMfaRoutes(app, getDb, { JWT_SECRET, setAuthCookie, autenticarToken }); mountPasswordResetRoutes(app, getDb); mountStripeRoutes(app, getDb);
   app.use(notFoundHandler); app.use(errorHandler);

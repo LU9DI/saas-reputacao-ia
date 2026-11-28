@@ -2,6 +2,7 @@ import { getDb, dbEngine } from '../lib/db.js';
 import { getDotPreferences } from './dotPreferences.js';
 import { runDotMonitor } from './dotMonitor.js';
 import { monitorDueDotFollowUps } from './dotFollowUp.js';
+import { setDotCounters } from '../lib/metrics.js';
 
 type DotSchedulerStatus = {
   running: boolean;
@@ -123,11 +124,31 @@ export async function runDueDotMonitors() {
     schedulerStatus.decisions_created = decisionsCreated;
     schedulerStatus.actions_prepared = actionsPrepared;
 
+    setDotCounters({
+      eligible_companies: (companies || []).length,
+      due: processed + skipped,
+      processed,
+      skipped,
+      errors: companyErrors,
+      events_created: eventsCreated,
+      decisions_created: decisionsCreated,
+      actions_prepared: actionsPrepared,
+      followups_processed: followupsProcessed,
+      last_run_at: schedulerStatus.last_run_at,
+      last_success_at: schedulerStatus.last_success_at,
+      last_error_at: schedulerStatus.last_error_at,
+      last_error: schedulerStatus.last_error,
+    });
+
     return { ok: true, processed, skipped, results, followups: followUpResults };
   } catch (error: any) {
     schedulerStatus.last_error_at = new Date().toISOString();
     schedulerStatus.last_error = String(error?.message || error).slice(0, 500);
     schedulerStatus.duration_ms = Date.now() - startedMs;
+    setDotCounters({
+      last_error_at: schedulerStatus.last_error_at,
+      last_error: schedulerStatus.last_error,
+    });
     throw error;
   } finally {
     schedulerStatus.running = false;
