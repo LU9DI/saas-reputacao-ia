@@ -168,7 +168,7 @@ export default async function Page({ params }: Props) {
           <h3>Other categories in {p.county.nome}</h3>
           <ul className="lista">
             {p.outros.slice(0, 8).map(({ seg: s, reg: r }) => (
-              <li key={s.slug}><Link href={`/us/${state}/${county}/${s.slug}`}>{s.nome}</Link><span>{nUS(r.e)}</span></li>
+              <li key={s.slug}><Link href={`/us/${state}/${county}/${s.slug}`}>{s.nome}</Link><span>{r.e === null ? '—' : nUS(r.e)}</span></li>
             ))}
           </ul>
         </>
