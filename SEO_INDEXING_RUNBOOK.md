@@ -18,7 +18,7 @@ This runbook is for the production publication window. Do not submit URLs before
 ## Google Search Console
 
 1. Open the verified Domain property for `filtraai.com`. If no Domain property exists, verify it using the DNS TXT method in Search Console.
-2. Open **Sitemaps** and submit the central index `https://filtraai.com/sitemap-index.xml` (not only `/sitemap.xml`). The central index lists the main site sitemap plus **all five** Índice shards (0–4), covering **43,920** URLs (28,853 Brazil + 15,067 US). If Search Console shows only about 106 discovered URLs, first verify which sitemap entry was submitted and whether the central index was successfully read.
+2. Open **Sitemaps** and submit the central index `https://filtraai.com/sitemap-index.xml` (not only `/sitemap.xml`). The central index lists the main site sitemap plus **all 16** Índice shards (0–15), covering **151,685** URLs (28,853 Brazil + 91,497 US + 31,335 UK). If Search Console shows only about 106 discovered URLs, first verify which sitemap entry was submitted and whether the central index was successfully read.
 3. Review the sitemap status and discovered URL count. Resolve fetch/parsing errors before requesting individual indexing.
 4. Use **URL inspection** for a small priority set after deployment: homepage, core product/solution pages, free audit page, and representative translated pages.
 5. Use **Test live URL** first. If the page is accessible and indexable, request indexing. Requests are rate-limited and do not guarantee inclusion.
@@ -29,13 +29,16 @@ This runbook is for the production publication window. Do not submit URLs before
 `https://filtraai.com/sitemap-index.xml` is the **primary sitemap to submit in Search Console** for the canonical host. `robots.txt` may also list leaf sitemap URLs; that does not replace submitting the central index. The central index is a `<sitemapindex>` that lists only sitemap files:
 
 - `https://filtraai.com/sitemap.xml` — the main site leaf (same directory).
-- `https://filtraai.com/indice/sitemap/0.xml` — Índice shard 0 (10,000 URLs, Brazil only).
-- `https://filtraai.com/indice/sitemap/1.xml` — Índice shard 1 (10,000 URLs, Brazil only).
-- `https://filtraai.com/indice/sitemap/2.xml` — Índice shard 2 (8,853 Brazil + 1,147 US = 10,000 URLs).
-- `https://filtraai.com/indice/sitemap/3.xml` — Índice shard 3 (10,000 URLs, US only).
-- `https://filtraai.com/indice/sitemap/4.xml` — Índice shard 4 (3,920 URLs, US only).
+- `https://filtraai.com/indice/sitemap/0.xml` — 10,000 URLs, Brazil only.
+- `https://filtraai.com/indice/sitemap/1.xml` — 10,000 URLs, Brazil only.
+- `https://filtraai.com/indice/sitemap/2.xml` — 10,000 URLs: 8,853 Brazil + 1,147 US.
+- `https://filtraai.com/indice/sitemap/3.xml` through `11.xml` — 10,000 US URLs each (9 shards).
+- `https://filtraai.com/indice/sitemap/12.xml` — 10,000 URLs: 350 US + 9,650 UK.
+- `https://filtraai.com/indice/sitemap/13.xml` — 10,000 UK URLs.
+- `https://filtraai.com/indice/sitemap/14.xml` — 10,000 UK URLs.
+- `https://filtraai.com/indice/sitemap/15.xml` — 1,685 UK URLs.
 
-Current published total: **43,920** URLs (28,853 Brazil + 15,067 US). Do **not** read the sitemap API's `indexed` field as a measurement — it is deprecated and always `0` for domain properties. The only real per-bucket numbers come from the **Page indexing** report export.
+Current published total: **151,685** URLs (28,853 Brazil + 91,497 US + 31,335 UK) in **16** shards; shards 0–14 have 10,000 URLs and shard 15 has 1,685. Do **not** read the sitemap API's `indexed` field as a measurement — it is deprecated and always `0` for domain properties. The only real per-bucket numbers come from the **Page indexing** report export.
 
 Rules this artifact must keep satisfying:
 
@@ -45,13 +48,26 @@ Rules this artifact must keep satisfying:
 4. Never list page URLs here. Pages belong to the leaves; duplicating them makes counts unreliable.
 5. No `<lastmod>` in the index. Index-level `lastmod` describes the sitemap file, not the pages. The UTF-8 `<lastmod>` that matters lives on each URL inside the leaves.
 
-`frontend/scripts/validate-seo.mjs` fails when the declared shard list diverges from the real Índice URL count (it reads `indice/scripts/audit-indexability.mjs`). Adding a shard means: bump the list in `frontend/src/app/sitemap-index.xml/route.ts`, run `npm run seo:validate`, then resubmit.
+`frontend/src/app/sitemap-index.xml/route.ts` derives the shard count from `frontend/src/generated/indice-snapshot.json`; do not hardcode a shard list. Adding a shard means: regenerate the snapshot, run `npm run seo:validate`, and rebuild the static artifact.
 
 `/sitemap.xml` stays a `<urlset>` leaf on purpose. `scripts/submit-indexnow.mjs` and external consumers read that exact URL.
 
 ### Precondition before submitting
 
-The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Require at least 20 consecutive `200` responses from each of `/indice/sitemap/0.xml` through `/indice/sitemap/4.xml` after `npm run seo:verify-production` (2026-11-03) before submitting or re-submitting the central index. A few successful responses from one shard do not establish stability for the whole sitemap set.
+The Índice app must answer consistently before the index points at it. On 2026-10-28 the same shard alternated between `200` and `502` across consecutive requests (`200, 502, 200, 502, 200`), and `/indice/metodologia`, `/indice/llms.txt`, and `/indice/llms-full.txt` returned `502` with `X-Indice-Origem: render`. Require at least 20 consecutive `200` responses from each of `/indice/sitemap/0.xml` through `/indice/sitemap/15.xml` after `npm run seo:verify-production` before submitting or re-submitting the central index. A few successful responses from one shard do not establish stability for the whole sitemap set.
+
+Before touching Search Console, reproduce the artifact locally and compare it with the snapshot:
+
+    cd indice
+    node scripts/check-data.mjs
+    node scripts/build-static-sitemaps.mjs
+    node scripts/build-static-sitemaps.mjs --check
+    # expect: 151,685 URLs in 16 shards (15 x 10,000 + 1,685)
+    cd ../frontend
+    node scripts/sync-indice-snapshot.mjs --check
+    npm run seo:validate
+
+The static check must report the exact same total as `frontend/src/generated/indice-snapshot.json`. If either count differs, stop: the central index would advertise a shard that the app does not publish.
 
 On 2026-10-31 the Render service `filtra-indice` was **suspended by billing** (`503`,
 `This service has been suspended.`). Every `/indice` page returned `503`, shard 1
@@ -71,7 +87,7 @@ Automated gate (run before and after every publish):
 Static sitemap fallback (removes the runtime dependency):
 
     cd indice && npm run sitemaps:static && npm run sitemaps:static:check
-    # .static-sitemaps/sitemap-index.xml + sitemap-0..N.xml, same URL set as iterarCaminhos()
+    # .static-sitemaps/sitemap-index.xml + sitemap-0..15.xml, same URL set as iterarCaminhos()
 
 
 ### Tracking each group separately
