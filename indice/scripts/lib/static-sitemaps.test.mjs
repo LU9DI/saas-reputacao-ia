@@ -226,6 +226,8 @@ test('dados reais: total do artefato bate com o snapshot do site principal', () 
   const shards = dividirShards(real, POR_ARQUIVO);
   const snapshot = JSON.parse(readFileSync(path.resolve(raiz, '../frontend/src/generated/indice-snapshot.json'), 'utf8'));
   assert.equal(real.length, snapshot.urls.total, 'total do artefato deve bater com o snapshot');
+  assert.equal(realUS.length, snapshot.urls.eua, 'URLs dos EUA devem bater com o snapshot');
+  assert.equal(realUK.length, snapshot.urls.uk, 'URLs do Reino Unido devem bater com o snapshot');
   assert.equal(shards.length, Math.ceil(real.length / POR_ARQUIVO), 'quantidade de shards deve acompanhar o total real');
   assert.ok(shards.every((shard) => shard.length > 0 && shard.length <= POR_ARQUIVO), 'cada shard deve ser não vazio e respeitar o limite');
   assert.equal(shards.reduce((total, shard) => total + shard.length, 0), real.length, 'soma dos shards deve bater com o total');
