@@ -27,10 +27,23 @@ export function lerCabecalho(linha) {
   return idx;
 }
 
-const num = (v) => {
-  const x = Number(v);
-  return Number.isFinite(x) ? x : 0;
-};
+/**
+ * Interpreta uma célula de contagem do CBP sem transformar ausência em zero.
+ * O CBP usa N (não disponível), S (suprimido) e X (não aplicável). `null` é
+ * deliberadamente diferente de 0: zero é uma contagem observada.
+ * @returns {{valor:number|null,status:'suppressed'|'unavailable'|'not_applicable'|'invalid'|null}}
+ */
+export function lerContagem(valor) {
+  const texto = String(valor ?? '').trim();
+  if (/^\d+$/.test(texto)) return { valor: Number(texto), status: null };
+  const status = texto === 'S' ? 'suppressed'
+    : texto === 'N' ? 'unavailable'
+      : texto === 'X' ? 'not_applicable'
+        : 'invalid';
+  return { valor: null, status };
+}
+
+const novoRegistro = () => ({ e: 0, eStatus: null, emp: 0, empOk: true, sz: [0, 0, 0, 0, 0, 0], szStatus: null });
 
 /**
  * @param {{slug:string, naics:string[]}[]} segmentos
@@ -57,17 +70,40 @@ export function criarAgregadorCbp(segmentos, idx) {
     const chave = `${st}${cty}`;
     let porSeg = dados.get(chave);
     if (!porSeg) { porSeg = {}; dados.set(chave, porSeg); }
-    const r = porSeg[seg] || (porSeg[seg] = { e: 0, emp: 0, empOk: true, sz: [0, 0, 0, 0, 0, 0] });
+    const r = porSeg[seg] || (porSeg[seg] = novoRegistro());
     usadas += 1;
-    r.e += num(campos[idx.est]);
-    r.emp += num(campos[idx.emp]);
-    if (!FLAGS_EMP_OK.has(campos[idx.emp_nf])) r.empOk = false;
-    r.sz[0] += num(campos[idx['n<5']]);
-    r.sz[1] += num(campos[idx.n5_9]);
-    r.sz[2] += num(campos[idx.n10_19]);
-    r.sz[3] += num(campos[idx.n20_49]);
-    r.sz[4] += num(campos[idx.n50_99]);
-    r.sz[5] += num(campos[idx.n100_249]) + num(campos[idx.n250_499]) + num(campos[idx.n500_999]) + num(campos[idx.n1000]);
+    const est = lerContagem(campos[idx.est]);
+    if (est.valor === null) {
+      if (r.e !== null) r.eStatus = r.e === 0 ? est.status : 'partial';
+      r.e = null;
+    } else if (r.e !== null) {
+      r.e += est.valor;
+    }
+    const emp = lerContagem(campos[idx.emp]);
+    if (!FLAGS_EMP_OK.has(campos[idx.emp_nf]) || emp.valor === null) r.empOk = false;
+    else r.emp += emp.valor;
+    const colunas = ['n<5', 'n5_9', 'n10_19', 'n20_49', 'n50_99'];
+    colunas.forEach((col, i) => {
+      const v = lerContagem(campos[idx[col]]);
+      if (v.valor === null) {
+        if (r.sz[i] !== null) r.szStatus = r.sz[i] === 0 ? v.status : 'partial';
+        r.sz[i] = null;
+      } else if (r.sz[i] !== null) {
+        r.sz[i] += v.valor;
+      }
+    });
+    const ultima = ['n100_249', 'n250_499', 'n500_999', 'n1000'];
+    for (const col of ultima) {
+      const v = lerContagem(campos[idx[col]]);
+      if (v.valor === null) {
+        if (r.sz[5] !== null) r.szStatus = r.sz[5] === 0 ? v.status : 'partial';
+        r.sz[5] = null;
+      } else if (r.sz[5] !== null) {
+        r.sz[5] += v.valor;
+      }
+    }
+    const preenchidos = r.sz.filter((x) => x !== null).length;
+    r.szStatus = preenchidos === 6 ? 'complete' : preenchidos === 0 ? (r.szStatus || 'unavailable') : 'partial';
   }
   return { ingerir, dados, contagem: () => ({ lidas, usadas }) };
 }
@@ -87,13 +123,27 @@ export function condadosDeTxt(texto) {
   }).filter((c) => c.state && c.fips && c.nome);
 }
 
+// Connecticut substituiu os 8 condados históricos por 9 planning regions usadas pelo CBP 2023.
+// Nomes e GEOIDs oficiais: 2023 Census Gazetteer, 2023_gaz_counties_09.txt.
+export const CONDADOS_CT = new Map([
+  ['09110', 'Capitol Planning Region'],
+  ['09120', 'Greater Bridgeport Planning Region'],
+  ['09130', 'Lower Connecticut River Valley Planning Region'],
+  ['09140', 'Naugatuck Valley Planning Region'],
+  ['09150', 'Northeastern Connecticut Planning Region'],
+  ['09160', 'Northwest Hills Planning Region'],
+  ['09170', 'South Central Connecticut Planning Region'],
+  ['09180', 'Southeastern Connecticut Planning Region'],
+  ['09190', 'Western Connecticut Planning Region'],
+]);
+
 /** Casa os códigos FIPS dos dados com nomes e gera slugs únicos por estado. */
 export function resolverCondados(chaves, condados) {
   const porFips = new Map(condados.map((c) => [`${c.stateFp}${c.fips}`, c]));
   const usados = new Set();
   const saida = [];
   for (const chave of [...chaves].sort()) {
-    const c = porFips.get(chave);
+    const c = porFips.get(chave) ?? (CONDADOS_CT.has(chave) ? { state: 'CT', nome: CONDADOS_CT.get(chave) } : null);
     if (!c || !ESTADOS_VALIDOS.has(c.state)) continue;
     let slug = slugify(c.nome);
     if (usados.has(`${c.state}/${slug}`)) slug = `${slug}-${c.fips}`;
@@ -115,7 +165,7 @@ export function selecionarSegmentos(segmentos, dados, minimo, minCondados) {
   const porSegmento = Object.fromEntries(segmentos.map((s) => [s.slug, 0]));
   for (const porSeg of dados.values()) {
     for (const [slug, r] of Object.entries(porSeg)) {
-      if (slug in porSegmento && r.e >= minimo) porSegmento[slug] += 1;
+      if (slug in porSegmento && typeof r.e === 'number' && r.e >= minimo) porSegmento[slug] += 1;
     }
   }
   const mantidos = [];

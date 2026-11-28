@@ -11,11 +11,12 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BASE, caminhosUS, lerEstadosUS } from './lib/static-sitemaps.mjs';
+import { validarDestino } from './lib/output-dir.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BLOCO = Number(args.bloco || 50000);
-const OUT = path.resolve(args.out || path.join(raiz, '.gsc-export'));
+const OUT = validarDestino(path.resolve(args.out || path.join(raiz, '.gsc-export')), raiz, 'gsc');
 if (!Number.isInteger(BLOCO) || BLOCO < 1 || BLOCO > 50000) throw new Error('--bloco deve estar entre 1 e 50000');
 const estados = lerEstadosUS(readFileSync(path.join(raiz, 'src/lib/us-states.ts'), 'utf8'));
 

@@ -15,7 +15,14 @@ export type UsMeta = {
   linhasNoEscopo?: number;
 };
 export type UsCondado = { state: string; slug: string; nome: string };
-export type UsRegistro = { e: number; emp?: number; sz: number[] };
+export type UsRegistro = {
+  e: number | null;
+  eStatus?: 'suppressed' | 'unavailable' | 'not_applicable' | 'invalid' | 'partial';
+  emp?: number;
+  sz: (number | null)[];
+  szStatus?: 'complete' | 'partial' | 'suppressed' | 'unavailable' | 'not_applicable' | 'invalid';
+};
+export type UsRegistroPublicado = UsRegistro & { e: number };
 type Posicao = { state: string; county: string; e: number };
 type Loja = {
   meta: UsMeta;
@@ -44,7 +51,10 @@ function carregar(): Loja {
   const ranking: Loja['ranking'] = new Map();
   for (const seg of meta.segmentos) {
     const lista: Posicao[] = [];
-    for (const [state, porCondado] of stats) for (const [county, porSeg] of Object.entries(porCondado)) if (porSeg[seg.slug]) lista.push({ state, county, e: porSeg[seg.slug].e });
+    for (const [state, porCondado] of stats) for (const [county, porSeg] of Object.entries(porCondado)) {
+      const registro = porSeg[seg.slug];
+      if (registro && typeof registro.e === 'number') lista.push({ state, county, e: registro.e });
+    }
     lista.sort((a, b) => b.e - a.e || `${a.state}/${a.county}`.localeCompare(`${b.state}/${b.county}`));
     const rankUS = new Map<string, number>();
     const rankUF = new Map<string, number>();
@@ -78,13 +88,13 @@ export function usRegistro(st: string, county: string, seg: string): UsRegistro 
   return carregar().stats.get(st)?.[county]?.[seg] ?? null;
 }
 /** Segmentos publicáveis do condado, do maior para o menor. */
-export function usSegsDoCondado(st: string, county: string): { seg: UsSegmento; reg: UsRegistro }[] {
+export function usSegsDoCondado(st: string, county: string): { seg: UsSegmento; reg: UsRegistroPublicado }[] {
   const L = carregar();
   const porSeg = L.stats.get(st)?.[county];
   if (!porSeg) return [];
   return L.meta.segmentos
     .map((seg) => ({ seg, reg: porSeg[seg.slug] }))
-    .filter((x): x is { seg: UsSegmento; reg: UsRegistro } => !!x.reg && x.reg.e >= L.meta.minimoParaIndexar)
+    .filter((x): x is { seg: UsSegmento; reg: UsRegistroPublicado } => !!x.reg && typeof x.reg.e === 'number' && x.reg.e >= L.meta.minimoParaIndexar)
     .sort((a, b) => b.reg.e - a.reg.e);
 }
 export function usCondadosDoEstado(st: string): { county: UsCondado; total: number; segmentos: number }[] {
@@ -125,7 +135,7 @@ export function usEstadosComDados(): { sigla: string; nome: string; slug: string
 export type UsPagina = {
   county: UsCondado;
   seg: UsSegmento;
-  reg: UsRegistro;
+  reg: UsRegistroPublicado;
   rankUS: number;
   condadosUS: number;
   rankUF: number;
@@ -139,11 +149,12 @@ export function usPagina(st: string, countySlug: string, segSlug: string): UsPag
   const county = usCondado(st, countySlug);
   const seg = usSegmento(segSlug);
   const reg = usRegistro(st, countySlug, segSlug);
-  if (!county || !seg || !reg || reg.e < L.meta.minimoParaIndexar) return null;
+  if (!county || !seg || !reg || typeof reg.e !== 'number' || reg.e < L.meta.minimoParaIndexar) return null;
+  const publicado: UsRegistroPublicado = { ...reg, e: reg.e };
   const r = L.ranking.get(segSlug)!;
   const chave = `${st}/${countySlug}`;
   return {
-    county, seg, reg,
+    county, seg, reg: publicado,
     rankUS: r.rankUS.get(chave)!,
     condadosUS: r.ordenado.length,
     rankUF: r.rankUF.get(chave)!,

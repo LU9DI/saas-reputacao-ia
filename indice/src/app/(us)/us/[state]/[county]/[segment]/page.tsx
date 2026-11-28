@@ -23,9 +23,10 @@ function textos(p: UsPagina, ano: string) {
   const { county, seg, reg } = p;
   const st = county.state;
   const estado = ESTADOS_US[st];
-  const soma = reg.sz.reduce((t, x) => t + x, 0);
-  const micro = pctUS(reg.sz[0], soma, 0);
-  const grandes = pctUS(reg.sz[3] + reg.sz[4] + reg.sz[5], soma, 0);
+  const completa = reg.sz.every((x): x is number => x !== null);
+  const soma = completa ? (reg.sz as number[]).reduce((t, x) => t + x, 0) : null;
+  const micro = completa && soma !== null ? pctUS(reg.sz[0] as number, soma, 0) : null;
+  const grandes = completa && soma !== null ? pctUS((reg.sz[3] as number) + (reg.sz[4] as number) + (reg.sz[5] as number), soma, 0) : null;
   const titulo = `${seg.nome} in ${county.nome}, ${st}: how many are there?`;
   const tituloMeta = ate(60, titulo, `${seg.nome} in ${county.nome}, ${st}`, `${seg.nome} in ${county.nome}`);
   const descricao = corta(
@@ -42,10 +43,12 @@ function textos(p: UsPagina, ano: string) {
     { pergunta: `How does ${county.nome} compare with other counties?`, resposta: ranking },
     {
       pergunta: `How big are ${seg.curto} in ${county.nome}?`,
-      resposta: `${micro} of them have fewer than 5 employees and ${grandes} have 20 or more, based on the number of employees per establishment.`,
+      resposta: completa
+        ? `${micro} of them have fewer than 5 employees and ${grandes} have 20 or more, based on the number of employees per establishment.`
+        : `The Census Bureau withheld one or more size classes for this county, so a complete size distribution is not available. The total of ${nUS(reg.e)} establishments is still published; no missing class is treated as zero.`,
     },
   ];
-  return { titulo, tituloMeta, descricao, lead, faq, soma };
+  return { titulo, tituloMeta, descricao, lead, faq, soma, completa };
 }
 
 function resolver(state: string, county: string, segment: string) {
@@ -76,6 +79,7 @@ export default async function Page({ params }: Props) {
   const meta = usMeta();
   const t = textos(p, meta.ano);
   const { seg, reg } = p;
+  const tamanho = reg.sz.every((x): x is number => x !== null) ? (reg.sz as number[]).reduce((soma, x) => soma + x, 0) : null;
   const st = p.county.state;
   const estado = ESTADOS_US[st];
   const outrosCondados = usTopCondados(seg.slug, 9, st).filter((x) => x.county.slug !== county).slice(0, 8);
@@ -125,11 +129,17 @@ export default async function Page({ params }: Props) {
         <caption>Establishments of {seg.curto} in {p.county.nome}, {st}, by employees per establishment ({meta.ano}).</caption>
         <thead><tr><th scope="col">Employees</th><th scope="col" className="num">Establishments</th><th scope="col" className="num">Share</th></tr></thead>
         <tbody>
-          {FAIXAS.map((rot, i) => (
-            <tr key={rot}><th scope="row">{rot}</th><td className="num">{nUS(reg.sz[i])}</td><td className="num">{pctUS(reg.sz[i], t.soma)}</td></tr>
-          ))}
+          {FAIXAS.map((rot, i) => {
+            const valor = reg.sz[i];
+            return (
+              <tr key={rot}><th scope="row">{rot}</th><td className="num">{typeof valor === 'number' ? nUS(valor) : 'Not available'}</td><td className="num">{typeof valor === 'number' && tamanho !== null ? pctUS(valor, tamanho) : '—'}</td></tr>
+            );
+          })}
         </tbody>
       </table>
+      {!t.completa ? (
+        <p className="nota">The Census Bureau withheld one or more size classes for this county. Missing classes are shown as “Not available”, not as zero, and no share is inferred from an incomplete distribution.</p>
+      ) : null}
       {reg.emp ? (
         <p className="nota">Employment is approximate: the Census Bureau adds statistical noise to protect confidentiality. Establishment counts are not noised.</p>
       ) : null}
@@ -158,7 +168,7 @@ export default async function Page({ params }: Props) {
           <h3>Other categories in {p.county.nome}</h3>
           <ul className="lista">
             {p.outros.slice(0, 8).map(({ seg: s, reg: r }) => (
-              <li key={s.slug}><Link href={`/us/${state}/${county}/${s.slug}`}>{s.nome}</Link><span>{nUS(r.e)}</span></li>
+              <li key={s.slug}><Link href={`/us/${state}/${county}/${s.slug}`}>{s.nome}</Link><span>{r.e === null ? '—' : nUS(r.e)}</span></li>
             ))}
           </ul>
         </>

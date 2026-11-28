@@ -1,6 +1,14 @@
 # Filtra.AI — SEO indexing runbook
 
-This runbook is for the production publication window. Do not submit URLs before the production hostname serves the expected artifact.
+This runbook is for a future production publication window. It describes a **candidate snapshot** and the checks required before publication; it does not assert that a deploy, sitemap submission, or Search Console submission has already happened. Do not submit URLs before the production hostname serves the expected artifact.
+
+## Candidate snapshot status
+
+Keep these three states separate:
+
+- **Generated locally:** the snapshot and static artifact produced from `indice/data` and `indice/data-us`. The current candidate totals **120,350** URLs (28,853 Brazil + 91,497 US) in **13** shards.
+- **Validated in CI:** only the total reported by a successful workflow on the exact commit, plus the static-artifact `--check`. A green unit test or a local build alone does not establish this state.
+- **Published and served:** only after the production endpoints and shard responses have been verified after an authorized deploy. This runbook makes no such claim for the candidate snapshot.
 
 ## Before publishing
 
@@ -18,7 +26,7 @@ This runbook is for the production publication window. Do not submit URLs before
 ## Google Search Console
 
 1. Open the verified Domain property for `filtraai.com`. If no Domain property exists, verify it using the DNS TXT method in Search Console.
-2. Open **Sitemaps** and submit the central index `https://filtraai.com/sitemap-index.xml` (not only `/sitemap.xml`). The central index lists the main site sitemap plus **all five** Índice shards (0–4), covering **43,920** URLs (28,853 Brazil + 15,067 US). If Search Console shows only about 106 discovered URLs, first verify which sitemap entry was submitted and whether the central index was successfully read.
+2. Open **Sitemaps** and submit the central index `https://filtraai.com/sitemap-index.xml` (not only `/sitemap.xml`). The central index lists the main site sitemap plus **all 13** Índice shards (0–12), covering **120,350** candidate URLs (28,853 Brazil + 91,497 US). If Search Console shows only about 106 discovered URLs, first verify which sitemap entry was submitted and whether the central index was successfully read.
 3. Review the sitemap status and discovered URL count. Resolve fetch/parsing errors before requesting individual indexing.
 4. Use **URL inspection** for a small priority set after deployment: homepage, core product/solution pages, free audit page, and representative translated pages.
 5. Use **Test live URL** first. If the page is accessible and indexable, request indexing. Requests are rate-limited and do not guarantee inclusion.
@@ -29,13 +37,13 @@ This runbook is for the production publication window. Do not submit URLs before
 `https://filtraai.com/sitemap-index.xml` is the **primary sitemap to submit in Search Console** for the canonical host. `robots.txt` may also list leaf sitemap URLs; that does not replace submitting the central index. The central index is a `<sitemapindex>` that lists only sitemap files:
 
 - `https://filtraai.com/sitemap.xml` — the main site leaf (same directory).
-- `https://filtraai.com/indice/sitemap/0.xml` — Índice shard 0 (10,000 URLs, Brazil only).
-- `https://filtraai.com/indice/sitemap/1.xml` — Índice shard 1 (10,000 URLs, Brazil only).
-- `https://filtraai.com/indice/sitemap/2.xml` — Índice shard 2 (8,853 Brazil + 1,147 US = 10,000 URLs).
-- `https://filtraai.com/indice/sitemap/3.xml` — Índice shard 3 (10,000 URLs, US only).
-- `https://filtraai.com/indice/sitemap/4.xml` — Índice shard 4 (3,920 URLs, US only).
+- `https://filtraai.com/indice/sitemap/0.xml` — 10,000 URLs, Brazil only.
+- `https://filtraai.com/indice/sitemap/1.xml` — 10,000 URLs, Brazil only.
+- `https://filtraai.com/indice/sitemap/2.xml` — 10,000 URLs: 8,853 Brazil + 1,147 US.
+- `https://filtraai.com/indice/sitemap/3.xml` through `11.xml` — 10,000 US URLs each (9 shards).
+- `https://filtraai.com/indice/sitemap/12.xml` — 350 US URLs.
 
-Current published total: **43,920** URLs (28,853 Brazil + 15,067 US). Do **not** read the sitemap API's `indexed` field as a measurement — it is deprecated and always `0` for domain properties. The only real per-bucket numbers come from the **Page indexing** report export.
+Current candidate total: **120,350** URLs (28,853 Brazil + 91,497 US) in **13** shards; shards 0–11 have 10,000 URLs and shard 12 has 350. This is a generated/CI-checked snapshot reference, not evidence that the production deployment is serving it. Do **not** read the sitemap API's `indexed` field as a measurement — it is deprecated and always `0` for domain properties. The only real per-bucket numbers come from the **Page indexing** report export.
 
 Rules this artifact must keep satisfying:
 

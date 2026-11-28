@@ -10,6 +10,7 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { lerCabecalho, parseLinhaCbp, criarAgregadorCbp, condadosDeTxt, resolverCondados, selecionarSegmentos } from './lib/cbp.mjs';
+import { validarDestino } from './lib/output-dir.mjs';
 
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
@@ -18,7 +19,7 @@ const args = Object.fromEntries(
   }),
 );
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = path.resolve(args.out || path.join(raiz, 'data-us'));
+const OUT = validarDestino(path.resolve(args.out || path.join(raiz, 'data-us')), raiz, 'dados', 'us');
 const TMP = path.join(raiz, '.tmp', 'us');
 const MIN = Number(args.min || 10);
 const MIN_CONDADOS_OPCIONAL = Number(args['min-condados'] || 25); // categorias opcionais com menos condados são descartadas
@@ -127,9 +128,18 @@ async function main() {
   const totais = Object.fromEntries(segmentosFinais.map((s) => [s.slug, 0]));
   for (const c of lista) {
     for (const [seg, r] of Object.entries(ag.dados.get(c.chave))) {
-      if (r.e < 1 || !mantidos.has(seg)) continue;
-      ((stats[c.state] ||= {})[c.slug] ||= {})[seg] = { e: r.e, ...(r.empOk && r.emp > 0 ? { emp: r.emp } : {}), sz: r.sz };
-      totais[seg] += r.e;
+      if (!mantidos.has(seg)) continue;
+      const temFaixa = r.sz.some((x) => x !== null);
+      if (typeof r.e !== 'number' && !temFaixa) continue;
+      const registro = {
+        e: r.e,
+        ...(r.eStatus ? { eStatus: r.eStatus } : {}),
+        ...(r.empOk && r.emp > 0 ? { emp: r.emp } : {}),
+        sz: r.sz,
+        ...(r.szStatus ? { szStatus: r.szStatus } : {}),
+      };
+      ((stats[c.state] ||= {})[c.slug] ||= {})[seg] = registro;
+      if (typeof r.e === 'number') totais[seg] += r.e;
     }
   }
   for (const [s, t] of Object.entries(totais)) log(`total EUA ${s}: ${t.toLocaleString('en-US')}`);
@@ -137,8 +147,8 @@ async function main() {
 
   await rm(OUT, { recursive: true, force: true });
   await mkdir(path.join(OUT, 'stats'), { recursive: true });
-  const usados = new Set(Object.entries(stats).flatMap(([st, m]) => Object.keys(m).map((s) => `${st}/${s}`)));
-  await writeFile(path.join(OUT, 'counties.json'), JSON.stringify(lista.filter((c) => usados.has(`${c.state}/${c.slug}`)).map(({ state, slug, nome }) => ({ state, slug, nome }))));
+  const chavesComDados = new Set(Object.entries(stats).flatMap(([st, m]) => Object.keys(m).map((s) => `${st}/${s}`)));
+  await writeFile(path.join(OUT, 'counties.json'), JSON.stringify(lista.filter((c) => chavesComDados.has(`${c.state}/${c.slug}`)).map(({ state, slug, nome }) => ({ state, slug, nome }))));
   for (const [st, m] of Object.entries(stats)) await writeFile(path.join(OUT, 'stats', `${st}.json`), JSON.stringify(m));
   const meta = {
     ano,
@@ -148,6 +158,12 @@ async function main() {
     segmentos: segmentosFinais.map(({ slug, nome, curto, naics }) => ({ slug, nome, curto, naics })),
     linhasLidas: lidas,
     linhasNoEscopo: usadas,
+    valores: {
+      zero: 0,
+      ausentes: ['N', 'S', 'X'],
+      observacao: 'Valores N/S/X são preservados como null; zero é uma contagem observada.',
+      faixas: ['0-4', '5-9', '10-19', '20-49', '50-99', '100+'],
+    },
     ...(args.sintetico ? { sintetico: true } : {}),
   };
   await writeFile(path.join(OUT, 'meta.json'), JSON.stringify(meta, null, 2));

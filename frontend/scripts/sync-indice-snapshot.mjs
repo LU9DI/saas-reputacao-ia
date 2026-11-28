@@ -147,7 +147,7 @@ function contarUrlsEUA() {
     let estado = 0;
     for (const [slug, porSeg] of Object.entries(porCondado)) {
       if (!condados.has(`${sigla}/${slug}`)) continue;
-      const segs = usMeta.segmentos.filter((sg) => porSeg[sg.slug] && porSeg[sg.slug].e >= usMeta.minimoParaIndexar).length;
+      const segs = usMeta.segmentos.filter((sg) => typeof porSeg[sg.slug]?.e === 'number' && porSeg[sg.slug].e >= usMeta.minimoParaIndexar).length;
       if (segs) estado += 1 + segs;
     }
     if (estado) total += 1 + estado;
