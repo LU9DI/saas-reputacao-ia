@@ -11,7 +11,7 @@ import { validarDestino } from './lib/output-dir.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] = a.replace(/^--/, '').split('='); return [k, v ?? true]; }));
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = validarDestino(path.resolve(args.out || path.join(raiz, 'data-uk')), raiz, 'dados');
+const OUT = validarDestino(path.resolve(args.out || path.join(raiz, 'data-uk')), raiz, 'dados', 'uk');
 const MIN = Number(args.min || 10);
 const MIN_AUTORIDADES = Number(args['min-autoridades'] || 25);
 const PREFIXO = { E: 'england', S: 'scotland', W: 'wales', N: 'northern-ireland' };
