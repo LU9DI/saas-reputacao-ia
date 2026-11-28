@@ -1,0 +1,72 @@
+{
+  "contractVersion": 1,
+  "dataset": "consumidor-gov-br",
+  "status": "blocked_until_csv_schema_verified",
+  "source": {
+    "publisher": "Secretaria Nacional do Consumidor (Senacon), Ministério da Justiça e Segurança Pública",
+    "catalogUrl": "https://dados.mj.gov.br/dataset/reclamacoes-do-consumidor-gov-br",
+    "resourceUrl": null,
+    "referenceMonth": null,
+    "retrievedAt": null,
+    "sha256": null,
+    "license": null
+  },
+  "schema": {
+    "verified": false,
+    "dictionaryVersion": "3.0",
+    "dictionaryDate": "2020-09-23",
+    "delimiter": null,
+    "encoding": null,
+    "columns": [],
+    "fieldMappings": {
+      "companyIdentifier": null,
+      "complaintStatus": null,
+      "complaintOpenedAt": null,
+      "companyRespondedAt": null,
+      "consumerEvaluation": null,
+      "consumerResolution": null,
+      "consumerSatisfactionScore": null
+    }
+  },
+  "metrics": {
+    "resolutionRate": {
+      "status": "blocked",
+      "definition": "(finalized resolved + finalized not evaluated) / all finalized",
+      "numeratorFieldMappings": [],
+      "denominatorFieldMappings": [],
+      "denominatorRequired": true
+    },
+    "satisfactionScore": {
+      "status": "blocked",
+      "definition": "mean valid satisfaction scores on the official 1–5 scale among evaluated finalized complaints",
+      "scoreFieldMapping": null,
+      "validMinimum": 1,
+      "validMaximum": 5,
+      "denominatorRequired": true
+    },
+    "answeredRate": {
+      "status": "blocked",
+      "definition": "finalized answered complaints / all finalized complaints",
+      "numeratorFieldMappings": [],
+      "denominatorFieldMappings": [],
+      "denominatorRequired": true
+    },
+    "averageResponseDays": {
+      "status": "blocked",
+      "definition": "mean elapsed days from complaint opening to company response among finalized answered complaints",
+      "openedAtFieldMapping": null,
+      "respondedAtFieldMapping": null,
+      "denominatorRequired": true
+    }
+  },
+  "publicationGate": {
+    "enabled": false,
+    "requiresVerifiedSourceSchema": true,
+    "requiresMetricReconciliationAgainstOfficialIndicators": true,
+    "requiresPrivacyReview": true,
+    "requiresMinimumCohortPolicy": true,
+    "prohibitConsumerIdentifiers": true,
+    "prohibitRawComplaintNarratives": true,
+    "prohibitMixingWithFiltraReviewBenchmarks": true
+  }
+}

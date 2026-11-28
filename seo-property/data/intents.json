@@ -1,0 +1,52 @@
+[
+  {
+    "slug": "como-escolher",
+    "name": "Como escolher",
+    "angle": "critérios verificáveis, perguntas antes da contratação, sinais de alerta e checklist"
+  },
+  {
+    "slug": "precos",
+    "name": "Preços e orçamento",
+    "angle": "componentes do preço, variáveis que alteram o custo, itens incluídos e comparação de propostas"
+  },
+  {
+    "slug": "avaliacoes",
+    "name": "Avaliações e reputação",
+    "angle": "recência, volume, temas recorrentes, respostas e limites das avaliações"
+  },
+  {
+    "slug": "problemas-comuns",
+    "name": "Problemas comuns",
+    "angle": "diagnóstico, prevenção, escalonamento e quando buscar ajuda especializada"
+  },
+  {
+    "slug": "checklist",
+    "name": "Checklist",
+    "angle": "passos por etapa, evidências a guardar, responsabilidades e critérios de conclusão"
+  },
+  {
+    "slug": "comparativo",
+    "name": "Comparativo",
+    "angle": "matriz de decisão, custo total, escopo, garantias, limitações e adequação"
+  },
+  {
+    "slug": "perguntas-frequentes",
+    "name": "Perguntas frequentes",
+    "angle": "respostas diretas, exceções importantes, documentos e limites do serviço"
+  },
+  {
+    "slug": "melhores-praticas",
+    "name": "Boas práticas",
+    "angle": "processo recomendado, indicadores, rotina de revisão e exemplos setoriais"
+  },
+  {
+    "slug": "modelos-e-exemplos",
+    "name": "Modelos e exemplos",
+    "angle": "modelo adaptável, exemplo ilustrativo, campos necessários e erros a evitar"
+  },
+  {
+    "slug": "sinais-de-alerta",
+    "name": "Sinais de alerta",
+    "angle": "sinais verificáveis, perguntas de validação e diferença entre alerta e prova"
+  }
+]
