@@ -1,6 +1,14 @@
 # Filtra.AI — SEO indexing runbook
 
-This runbook is for the production publication window. Do not submit URLs before the production hostname serves the expected artifact.
+This runbook is for a future production publication window. It describes a **candidate snapshot** and the checks required before publication; it does not assert that a deploy, sitemap submission, or Search Console submission has already happened. Do not submit URLs before the production hostname serves the expected artifact.
+
+## Candidate snapshot status
+
+Keep these three states separate:
+
+- **Generated locally:** the snapshot and static artifact produced from `indice/data`, `indice/data-us`, and `indice/data-uk`. The current candidate totals **151,685** URLs (28,853 Brazil + 91,497 US + 31,335 UK) in **16** shards.
+- **Validated in CI:** only the total reported by a successful workflow on the exact commit, plus the static-artifact `--check`. A green unit test or a local build alone does not establish this state.
+- **Published and served:** only after the production endpoints and shard responses have been verified after an authorized deploy. This runbook makes no such claim for the candidate snapshot.
 
 ## Before publishing
 
@@ -38,7 +46,7 @@ This runbook is for the production publication window. Do not submit URLs before
 - `https://filtraai.com/indice/sitemap/14.xml` — 10,000 UK URLs.
 - `https://filtraai.com/indice/sitemap/15.xml` — 1,685 UK URLs.
 
-Current published total: **151,685** URLs (28,853 Brazil + 91,497 US + 31,335 UK) in **16** shards; shards 0–14 have 10,000 URLs and shard 15 has 1,685. Do **not** read the sitemap API's `indexed` field as a measurement — it is deprecated and always `0` for domain properties. The only real per-bucket numbers come from the **Page indexing** report export.
+Current candidate total: **151,685** URLs (28,853 Brazil + 91,497 US + 31,335 UK) in **16** shards; shards 0–14 have 10,000 URLs and shard 15 has 1,685. This is a generated/CI-checked snapshot reference, not evidence that the production deployment is serving it. Do **not** read the sitemap API's `indexed` field as a measurement — it is deprecated and always `0` for domain properties. The only real per-bucket numbers come from the **Page indexing** report export.
 
 Rules this artifact must keep satisfying:
 
