@@ -98,7 +98,7 @@ await writeFile(path.join(OUT, 'meta.json'), JSON.stringify({
   fonte: { nome: 'UK Business Counts — local units, Office for National Statistics (via Nomis). Open Government Licence v3.0', url: 'https://www.ons.gov.uk/businessindustryandtrade/business/activitysizeandlocation' },
   serie: DATASET,
   unidade: UNIDADE,
-  metodologia: 'Local units (workplaces) live in March, not enterprises. Counts are rounded by the ONS; size bands are not used to infer missing values.',
+  metodologia: 'Local units (workplaces) are counted in March, not enterprises. Counts are rounded by the ONS; size bands are not used to infer missing values.',
   minimoParaIndexar: MIN,
   segmentos: mantidos.map(({ slug, nome, curto, sic }) => ({ slug, nome, curto, sic })),
   linhasLidas,
