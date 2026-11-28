@@ -214,3 +214,17 @@ test('falha antes de remover: script US recusa keep.txt e preserva o conteúdo',
   } finally { limpar(base); }
 });
 
+
+test('falha antes de remover: script UK recusa keep.txt e preserva o conteúdo', () => {
+  const base = temp();
+  try {
+    const alvo = path.join(base, 'data-uk');
+    dadosUK(alvo);
+    writeFileSync(path.join(alvo, 'stats', 'keep.txt'), 'preservar');
+    const r = spawnSync(process.execPath, [path.join(repo, 'scripts', 'ingest-uk.mjs'), `--out=${alvo}`], { encoding: 'utf8' });
+    assert.notEqual(r.status, 0);
+    assert.match(r.stderr, /arquivo desconhecido em stats/);
+    assert.equal(readFileSync(path.join(alvo, 'stats', 'keep.txt'), 'utf8'), 'preservar');
+  } finally { limpar(base); }
+});
+
