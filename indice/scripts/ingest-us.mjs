@@ -19,7 +19,7 @@ const args = Object.fromEntries(
   }),
 );
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = validarDestino(path.resolve(args.out || path.join(raiz, 'data-us')), raiz, 'dados');
+const OUT = validarDestino(path.resolve(args.out || path.join(raiz, 'data-us')), raiz, 'dados', 'us');
 const TMP = path.join(raiz, '.tmp', 'us');
 const MIN = Number(args.min || 10);
 const MIN_CONDADOS_OPCIONAL = Number(args['min-condados'] || 25); // categorias opcionais com menos condados são descartadas
