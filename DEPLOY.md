@@ -1,67 +1,69 @@
 # Deploy — Filtra.AI
 
-Arquitetura de produção:
+## Arquitetura de produção (atual)
 
-| Parte | Host | Motivo |
+O **Render é a plataforma de execução/publicação das aplicações Filtra.AI**. O Cloudflare continua na camada de DNS/borda e pode manter Workers específicos que atendem rotas dedicadas. Não use o workflow de Cloudflare Pages deste repositório como caminho de deploy do frontend: ele foi aposentado para evitar dois pipelines concorrentes.
+
+| Componente | Plataforma / serviço | Responsabilidade |
 | --- | --- | --- |
-| Frontend (Next.js) | **Vercel** | Next.js, HTTPS e CDN |
-| API (Express) | **Render** | Serviço web com healthcheck |
-| Banco | **Supabase ou Neon** | Postgres gerenciado, separado do app |
+| Frontend estático | Render Static Site (serviço existente, se aplicável) | Publicar o artefato estático do frontend |
+| Frontend com runtime | Render Web Service (serviço existente) | Rotas que precisam de Next.js no servidor |
+| Índice empresarial | Render Web Service `filtra-indice` | Páginas do índice e sitemaps do índice |
+| API | Render Web Service `filtra-ia-api` | Backend HTTP e regras de negócio |
+| DNS / borda | Cloudflare | DNS, proteção, cache e roteamento |
+| Workers específicos | Cloudflare Workers | Somente rotas explicitamente configuradas, como workers de sitemap/robots/IndexNow quando ativos |
+| Banco de dados | Supabase/PostgreSQL conforme configuração do ambiente | Persistência gerenciada |
 
-## 1. API no Render
+Os serviços Render existentes não devem ser apagados apenas por parecerem duplicados. Antes de consolidar serviços, verificar domínio, rotas, build/publish path, logs, healthchecks e dependências. O frontend estático, o frontend com runtime e o índice podem ter funções distintas.
 
-1. Crie um **Web Service** apontando para o repositório.
-2. Root do serviço: `backend`.
-3. Build: `npm ci` ou o comando definido pelo projeto.
-4. Start: `npm start`.
-5. Configure as variáveis de produção:
+## 1. Deploy no Render
 
-```env
-NODE_ENV=production
-PORT=5000
-DATABASE_URL=postgresql://...
-JWT_SECRET=segredo-longo-e-aleatorio
-APP_URL=https://filtraai.com
-FRONTEND_URL=https://filtraai.com
-```
+Para cada serviço existente, preserve as configurações atuais até validar a função e as rotas:
 
-Para produção, use Postgres via `DATABASE_URL`; não dependa de SQLite local.
+1. Confirme repositório, branch, root directory, build command, start command ou publish directory.
+2. Configure as variáveis necessárias no painel do Render (nunca commite segredos).
+3. Use deploy automático do Render apenas para o serviço correspondente e configure path filters quando disponíveis para evitar builds sem relação com o serviço.
+4. Verifique o estado do deploy e os logs antes de considerar a publicação concluída.
 
-Healthcheck: `GET /api/health`.
+URLs atualmente conhecidas:
+- API: `https://filtra-ia-api.onrender.com`
+- Frontend estático: `https://filtra-ai-web-cloud.onrender.com`
+- Frontend com runtime: `https://filtra-ai-web-runtime.onrender.com`
+- Índice: `https://filtra-indice.onrender.com`
 
-## 2. Frontend na Vercel
+Esses endereços de serviço não substituem a verificação dos domínios públicos.
 
-- Root Directory: `frontend`
-- Framework: Next.js
-- `NEXT_PUBLIC_API_URL`: URL pública da API Render
-- `NEXT_PUBLIC_APP_URL`: `https://filtraai.com`
+## 2. Smoke tests após deploy
 
-O deploy automático usa os secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID`.
+- [ ] API: `GET /api/health` responde com sucesso.
+- [ ] Site público `https://filtraai.com/` responde HTTP 200.
+- [ ] Índice `https://filtraai.com/indice/sitemap-index.xml` responde HTTP 200.
+- [ ] Sitemap central `https://filtraai.com/sitemap-index.xml` responde HTTP 200 e aponta para os sitemaps esperados.
+- [ ] `https://filtraai.com/robots.txt` responde e lista os sitemaps canônicos.
+- [ ] Páginas representativas do índice e páginas de estado/município respondem corretamente.
+- [ ] Login, Filtra Admin e painel do cliente funcionam.
+- [ ] Workers Cloudflare de rotas específicas continuam respondendo como esperado.
+- [ ] Verificar logs e erros 4xx/5xx; não inferir sucesso apenas pelo estado “Live” do provedor.
 
-## 3. Banco
+## 3. Cloudflare e Workers
 
-Use Supabase ou Neon como Postgres gerenciado. A URL deve ser configurada apenas no ambiente de produção da API.
+Cloudflare Pages **não é o caminho de produção do frontend**. O workflow `.github/workflows/deploy-cloudflare.yml` foi removido deste repositório como pipeline de produção. Isso não remove nem desativa serviços ou Workers Cloudflare existentes.
 
-Consulte `docs/POSTGRES.md` para o procedimento.
+Antes de alterar Workers, routes, DNS ou regras de cache:
+- identifique a rota exata e o Worker associado;
+- confirme a origem primária e o comportamento de fallback;
+- teste sitemap, robots.txt e a chave IndexNow quando aplicável;
+- faça deploy manual separado apenas quando a mudança exigir isso e após validar a origem Render.
 
-## 4. CORS e cookies
+## 4. Banco, CORS e segredos
 
-Garanta que `APP_URL`, `FRONTEND_URL` e `CORS_ORIGINS` apontem para o domínio de produção. Em domínio separado, cookies de autenticação devem usar HTTPS e as políticas SameSite adequadas.
+- Use a URL de PostgreSQL configurada para o ambiente real; não presuma que SQLite local seja produção.
+- Restrinja `APP_URL`, `FRONTEND_URL` e `CORS_ORIGINS` aos domínios legítimos.
+- Mantenha tokens, credenciais e chaves exclusivamente nas configurações seguras do provedor.
+- Teste autenticação, autorização e persistência após deploy.
 
-## 5. Stripe
+## 5. Fluxo operacional
 
-Quando billing estiver ativo, configure `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET` no Render e aponte o webhook para a URL pública da API.
+`push/PR → CI e revisão → merge em main → deploy Render do serviço afetado → smoke tests`.
 
-## 6. Checklist pós-deploy
-
-- [ ] `GET /api/health` retorna `{ ok: true }`
-- [ ] Frontend abre sem erro
-- [ ] Trial funciona
-- [ ] Login funciona
-- [ ] Avaliação e painel funcionam
-- [ ] Banco Postgres permanece íntegro após redeploy
-- [ ] Sitemap público responde em `/sitemap.xml`
-
-## 7. Fluxo
-
-push em `main` → CI → deploy do backend no Render e frontend na Vercel conforme configuração dos provedores.
+Não dispare deploy paralelo no Cloudflare Pages. Não apague serviços Render ou Workers Cloudflare durante uma limpeza de pipeline; consolidação de infraestrutura requer auditoria e plano separado.
