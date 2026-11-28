@@ -1,10 +1,13 @@
 {
  "ano": "2026",
- "geradoEm": "2026-11-19T12:58:06.904Z",
+ "geradoEm": "2026-11-27T23:16:14.184Z",
  "fonte": {
-  "nome": "UK Business Counts, Office for National Statistics (via Nomis). Open Government Licence v3.0",
+  "nome": "UK Business Counts — local units, Office for National Statistics (via Nomis). Open Government Licence v3.0",
   "url": "https://www.ons.gov.uk/businessindustryandtrade/business/activitysizeandlocation"
  },
+ "serie": "NM_141_1",
+ "unidade": "local units",
+ "metodologia": "Local units (workplaces) are counted in March, not enterprises. Counts are rounded by the ONS; size bands are not used to infer missing values.",
  "minimoParaIndexar": 10,
  "segmentos": [
   {
@@ -346,6 +349,14 @@
    "sic": [
     "93290",
     "93210"
+   ]
+  },
+  {
+   "slug": "gambling-and-betting",
+   "nome": "Betting shops and casinos",
+   "curto": "betting shops, casinos and gambling venues",
+   "sic": [
+    "92000"
    ]
   },
   {
@@ -917,5 +928,5 @@
    ]
   }
  ],
- "linhasLidas": 4929816
+ "linhasLidas": 6162270
 }
