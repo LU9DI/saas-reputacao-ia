@@ -51,6 +51,8 @@ test('validarLayout aprova linha válida e reprova layout deslocado', () => {
   assert.ok(validarLayout(quebrada).length > 0);
   const cnaeRuim = parseLinha(linha({ cnae: 'ABC' }));
   assert.ok(validarLayout(cnaeRuim).some((p) => p.includes('CNAE')));
+  assert.ok(validarLayout(parseLinha(linha({ ini: '20260230' }))).some((p) => p.includes('data')));
+  assert.ok(validarLayout(parseLinha(linha({ dsit: '20261301' }))).some((p) => p.includes('data')));
 });
 
 test('janelas: 12 meses fechados antes da competência', () => {
@@ -62,6 +64,9 @@ test('janelas: 12 meses fechados antes da competência', () => {
   assert.equal(jan.inicioJanela, 20250101);
   assert.deepEqual(jan.rotuloJanela, { inicio: '2025-01', fim: '2025-12' });
   assert.throws(() => janelas('2026-1'));
+  assert.throws(() => janelas('2026-00'));
+  assert.throws(() => janelas('2026-13'));
+  assert.throws(() => janelas('1899-12'));
 });
 
 test('agregador conta ativos, matrizes, aberturas, baixas e subclasses', () => {
@@ -161,4 +166,12 @@ test('municipiosDeCsv lê código, nome e UF (com BOM e aspas)', () => {
     { id: 5208707, nome: 'Goiânia', uf: 'GO' },
     { id: 3106200, nome: 'Belo Horizonte', uf: 'MG' },
   ]);
+});
+
+test('datas de calendário inválidas não contaminam séries ou aberturas', () => {
+  const ag = criarAgregador(SEGMENTOS, '2026-10');
+  ag.ingerir(parseLinha(linha({ ini: '20260230' })));
+  const reg = ag.dados.get('GO|9373').restaurantes;
+  assert.equal(reg.ab, 0);
+  assert.deepEqual(reg.ano, {});
 });
