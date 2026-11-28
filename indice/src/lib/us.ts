@@ -150,10 +150,11 @@ export function usPagina(st: string, countySlug: string, segSlug: string): UsPag
   const seg = usSegmento(segSlug);
   const reg = usRegistro(st, countySlug, segSlug);
   if (!county || !seg || !reg || typeof reg.e !== 'number' || reg.e < L.meta.minimoParaIndexar) return null;
+  const publicado: UsRegistroPublicado = { ...reg, e: reg.e };
   const r = L.ranking.get(segSlug)!;
   const chave = `${st}/${countySlug}`;
   return {
-    county, seg, reg,
+    county, seg, reg: publicado,
     rankUS: r.rankUS.get(chave)!,
     condadosUS: r.ordenado.length,
     rankUF: r.rankUF.get(chave)!,
